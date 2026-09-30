@@ -21,3 +21,6 @@ desktop.ini
 *.log
 .env
 .env.*
+
+# Owner's working folder of AI generations (organized copies live in art-inbox/)
+asset animali ai/
