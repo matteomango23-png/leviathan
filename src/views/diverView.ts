@@ -46,6 +46,14 @@ export class DiverView {
     layer.add([this.line, this.tip, ...this.aimDots, this.root]);
   }
 
+  /** Hidden while the diver sits on Aurelio's boat (the story view draws the scene). */
+  setHidden(hidden: boolean): void {
+    this.root.setVisible(!hidden);
+    this.line.setVisible(!hidden); // redrawn every frame by update()
+    if (!hidden) return; // the tip is shown again by update() while a shot is out
+    this.tip.setVisible(false);
+  }
+
   private easeFace(face: number, dt: number): number {
     const step = dt / 0.22; // seconds for a full turn
     this.faceAnim += Math.max(-step * 2, Math.min(step * 2, face - this.faceAnim));

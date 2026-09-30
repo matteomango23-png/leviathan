@@ -1,5 +1,7 @@
 // Things that happened during a game step. Scenes turn them into sounds, toasts and effects.
 
+import type { DialogueId, StoryStep } from '../data/story';
+
 export type GameEvent =
   | { type: 'hurt' }
   | { type: 'died' }
@@ -18,6 +20,10 @@ export type GameEvent =
   | { type: 'wildRecovered'; id: number }
   | { type: 'wildExhausted'; id: number }
   | { type: 'wildFled'; id: number }
+  // story
+  | { type: 'storyStep'; step: StoryStep }
+  | { type: 'dialogueOpened'; id: DialogueId }
+  | { type: 'storyNote'; text: string }
   // Guardians
   | { type: 'tailSwipe'; id: number; dir: 1 | -1 }
   | { type: 'guardianAppeared'; id: number }

@@ -7,6 +7,7 @@ import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
+import { objectiveText } from '../systems/story';
 import { depthMetres } from '../systems/world/zones';
 import { BossBar } from './bossBar';
 import { el } from './dom';
@@ -24,12 +25,13 @@ export class Hud {
   private readonly o2: HTMLDivElement;
   private readonly o2Fill: HTMLDivElement;
   private readonly info: HTMLDivElement;
+  private readonly goal: HTMLDivElement;
   private readonly zone: HTMLDivElement;
   private readonly toastEl: HTMLDivElement;
   private readonly boss: BossBar;
   private toastTimer = 0;
   private zoneTimer = 0;
-  private cache = { hp: -1, max: -1, o2: -1, info: '' };
+  private cache = { hp: -1, max: -1, o2: -1, info: '', goal: '' };
 
   constructor(root: HTMLElement) {
     const hud = el('div', 'hud', root);
@@ -39,6 +41,7 @@ export class Hud {
     const bar = el('div', 'hud-o2-bar', this.o2);
     this.o2Fill = el('div', 'hud-o2-fill', bar);
     this.info = el('div', 'hud-info', hud);
+    this.goal = el('div', 'hud-goal', hud);
     this.zone = el('div', 'zone-name', root);
     this.toastEl = el('div', 'toast', root);
     this.boss = new BossBar(root);
@@ -105,7 +108,8 @@ export class Hud {
       } else if (e.type === 'beastKo') {
         const b = tamed(e.uid);
         if (b) this.toast(`${formName(b.form)} è KO. Portalo a un santuario per curarlo.`, 3.2);
-      } else if (e.type === 'guardianAppeared')
+      } else if (e.type === 'storyNote') this.toast(e.text, 5);
+      else if (e.type === 'guardianAppeared')
         this.toast('Lo Sfregiato! Il Guardiano della Baia esce dal buio.', 3.5);
       else if (e.type === 'guardianRage') this.toast('È furioso: morde a raffica e colpisce con la coda!', 3);
       else if (e.type === 'guardianCalls') this.toast('Lo Sfregiato chiama i suoi squali!', 3);
@@ -174,6 +178,12 @@ export class Hud {
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;
+    }
+    const goal = objectiveText(g.story) ?? '';
+    if (goal !== this.cache.goal) {
+      this.cache.goal = goal;
+      this.goal.textContent = goal;
+      this.goal.classList.toggle('show', !!goal);
     }
     this.boss.update(g);
     if (this.toastTimer > 0) {

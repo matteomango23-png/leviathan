@@ -31,6 +31,7 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 
 - **Premessa:** il Leviatano si è svegliato, le bestie impazziscono. La Compagnia dell'Olio Nero le caccia, le incatena con collari di ferro e ne estrae l'olio; il piano finale è dissanguare il Leviatano.
 - **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
+- **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
 - **Personaggi:** Nonno Aurelio (mentore), il mercante di denti, la Compagnia (un comandante per regione con una bestia incatenata da liberare), il Leviatano (finale).
 - **Dopo il finale:** Fossa Nera coi leggendari; il Leviatano diventa domabile.
 
@@ -99,7 +100,8 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 2. ✅ **Bestie e combattimento (v0.2.0):** tipi, mosse, squadra, compagno, cavalcatura, domatura, santuari.
 3. ✅ **Porto ed economia (v0.3.0):** mercato, mute, zaino, missioni, denti.
 4. ✅ **Livelli e crescita (v0.4.0):** esperienza, sblocco mosse, crescita 31-50, forme finali, Lo Sfregiato come primo Guardiano.
-5. **Storia del capitolo 1**, poi le regioni successive una alla volta.
+5. ✅ **Storia del capitolo 1 (v0.5.0):** apertura, collare spezzato, lo Sfregiato è lo squalo di Aurelio, finale verso il Delta.
+6. **Capitolo 2 e seguenti:** una regione alla volta.
 
 ## Decisioni aperte
 

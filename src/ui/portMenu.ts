@@ -10,6 +10,7 @@ import { icon, iconFor, type IconName } from './icons';
 import { portCard } from './portCard';
 import { renderBackpack, renderBoard, type TabContext } from './portTabs';
 import { renderTeamPanel } from './teamPanel';
+import { askAurelio } from '../systems/story';
 
 export { slotName } from './portTabs';
 
@@ -43,6 +44,9 @@ export class PortMenu {
     const title = el('div', 'port-title', top);
     el('span', '', title, 'Portofosco');
     this.teeth = el('span', 'port-teeth', top);
+    const aurelio = el('button', 'pbtn', top);
+    aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
+    aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));
     const dive = el('button', 'pbtn primary', top);
     dive.append(icon('dive'), document.createTextNode(' Tuffati'));
     dive.addEventListener('click', () => {

@@ -1,8 +1,9 @@
-// Pause menu: resume, export and import the save.
+// Pause menu: resume, bestiary, replay the opening, export and import the save.
 import type { GameState } from '../systems/game';
 import { SaveError } from '../systems/save/saveData';
 import { toSave } from '../systems/game';
 import type { Session } from '../scenes/session';
+import { replayIntro } from '../systems/story';
 import { testMode } from '../systems/testTools';
 import { el } from './dom';
 import { openBestiary } from './bestiary';
@@ -36,6 +37,11 @@ export class PauseMenu {
     const book = el('button', 'menu-btn', panel);
     book.append(icon('book'), document.createTextNode(' Bestiario'));
     book.addEventListener('click', () => openBestiary(parent, game));
+    const replay = el('button', 'menu-btn', panel, 'Rivedi l’inizio');
+    replay.addEventListener('click', () => {
+      replayIntro(game);
+      onResume();
+    });
     const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
     const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');
     this.msg = el('p', 'menu-msg', panel);

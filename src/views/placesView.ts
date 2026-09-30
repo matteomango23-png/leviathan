@@ -7,6 +7,14 @@ import type { Wreck } from '../systems/economy/places';
 import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
 
+/** Houses of Portofosco on the land: x, width, height (world units). The story sets them on fire. */
+export const PORT_HOUSES: [number, number, number][] = [
+  [26, 20, 20],
+  [50, 18, 26],
+  [72, 22, 18],
+  [94, 14, 14],
+];
+
 function drawPort(g: Phaser.GameObjects.Graphics): void {
   const s = WORLD.surfaceY;
   const x = PORT.x;
@@ -17,13 +25,7 @@ function drawPort(g: Phaser.GameObjects.Graphics): void {
   g.fillStyle(0x3a2c20, 1);
   g.fillRect(shore - 8, s - 8, x + 38 - shore, 3.5);
   // houses of Portofosco on the land (dark silhouettes against the storm sky, lit windows)
-  const houses: [number, number, number][] = [
-    [26, 20, 20],
-    [50, 18, 26],
-    [72, 22, 18],
-    [94, 14, 14],
-  ];
-  for (const [hx, w, h] of houses) {
+  for (const [hx, w, h] of PORT_HOUSES) {
     const base = s - landHeight(hx + w / 2) + 1;
     g.fillStyle(0x0d1216, 1);
     g.fillRect(hx, base - h, w, h + 2);

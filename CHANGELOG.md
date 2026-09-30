@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.5.0 — La storia del capitolo 1 (30 settembre 2026)
+
+- **Apertura sulla barca di Nonno Aurelio:** una nave nera della Compagnia dell'Olio Nero passa davanti al porto trascinando una megattera in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore, poi ti tuffi.
+- **Prima immersione guidata:** nuota, cattura una sardina, scatta, torna al molo. L'obiettivo è scritto sotto i cuori.
+- **Il molo brucia:** mentre eri sott'acqua la Compagnia è passata da Portofosco. Aurelio ti consegna un collare spezzato: "Trovalo".
+- **Le tracce:** tre segni sul fondale (catene arrugginite, olio nero, ossa) portano alla tana sotto la Baia.
+- **Lo Sfregiato è lo squalo di Aurelio:** la Compagnia gli aveva messo il collare. Domandolo lo liberi; poi portalo da Aurelio al molo.
+- **Finale del capitolo:** Aurelio lo riconosce, e in lontananza la nave della Compagnia salpa verso est, verso il Delta delle Mangrovie (capitolo 2).
+- **Dialoghi** in basso: tocca per andare avanti, "Salta" per saltarli.
+- **Aurelio al porto:** pulsante "Aurelio" in alto nel menu del porto, ti dice cosa fare.
+- **"Rivedi l'inizio"** nel menu di pausa: rigioca l'apertura senza perdere i progressi.
+- Chi ha già una partita riprende dal punto giusto: se hai già domato lo Sfregiato il capitolo risulta completato, altrimenti parti da "Trova lo squalo di Aurelio".
+- Il salvataggio si aggiorna da solo (versione 5).
+
 ## v0.4.1 — Pulizia (30 settembre 2026)
 
 - Nessun cambiamento nel gioco: codice più ordinato, numeri spostati nei dati, un controllo automatico in più. Se qualcosa si comporta diversamente dalla 0.4.0, è un errore: segnalalo.

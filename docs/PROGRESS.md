@@ -1,5 +1,32 @@
 # Progressi
 
+## Sessione 6 — Storia del capitolo 1 (30 settembre 2026) → v0.5.0
+
+**Fatto (tappa 5, capitolo 1)**
+
+- Apertura giocabile sulla barca di Aurelio: la nave della Compagnia passa trascinando una megattera in catene col collare di ferro; dialogo; tuffo.
+- Immersione guidata in 4 passi, con l'obiettivo sotto i cuori.
+- Molo e case in fiamme al ritorno, collare spezzato, obiettivo "Trova lo squalo di Aurelio".
+- Tre tracce sul fondale fino alla tana; suggerimento sulle ossa (serve la Carica); "è lui" quando appare lo Sfregiato; libero quando lo domi; finale con Aurelio e la nave verso est.
+- Dialoghi (tocca per andare avanti, Salta), pulsante "Aurelio" al porto, "Rivedi l'inizio" nella pausa.
+- Salvataggio v5; le partite vecchie riprendono dal punto giusto.
+- 135 test automatici.
+
+**Mancante / da sapere**
+
+- Visto nel browser: l'apertura (nave, balena, Aurelio, dialogo, tuffo) e il molo in fiamme. Il finale e le tracce sono provati dai test automatici, ma non li ho visti a schermo.
+- Aurelio e il sub sulla barca sono sagome semplici (come il sub segnaposto): si possono sostituire con immagini dipinte quando le avrai.
+- Il capitolo 2 (Delta delle Mangrovie, coccodrilli, primo comandante della Compagnia) è la prossima tappa.
+
+**Da provare sull'iPhone**
+
+1. Per vedere l'inizio senza perdere la partita: Pausa → "Rivedi l'inizio".
+2. Se hai già domato lo Sfregiato, l'obiettivo sotto i cuori deve dire "Capitolo 1 completato"; al porto prova il pulsante "Aurelio".
+3. Per giocare la storia da capo: esporta prima il salvataggio (Pausa → Esporta), poi cancella i dati del sito da Safari.
+4. Segui le tracce (piccole catene luminose sul fondale) fino alla tana; al primo scontro con lo Sfregiato deve comparire il dialogo "è lui".
+
+**Prossima sessione:** Sessione 7 — Capitolo 2: il Delta delle Mangrovie (nuova regione, coccodrilli, comandante della Compagnia con una bestia incatenata). Serve prima un piano con le tue scelte.
+
 ## Sessione 5 — Pulizia (30 settembre 2026) → v0.4.1
 
 **Fatto (nessuna funzione nuova, come da CLAUDE.md ogni 3 tappe)**

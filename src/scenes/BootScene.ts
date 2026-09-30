@@ -6,10 +6,11 @@ import { UNIQUE_VARIANTS } from '../data/species';
 import { addStripFrames, loadBeastSprites } from '../views/beastView';
 import { createTextures } from '../views/textures';
 import { Session } from './session';
+import { SCENES } from '../data/story';
 
 /** Sprites the game needs now: every version of the beasts that live in the regions already in the game. */
 function neededKeys(): string[] {
-  const species = WILD_SPAWNS.map((s) => s.speciesId);
+  const species = [...WILD_SPAWNS.map((s) => s.speciesId), SCENES.ship.whaleSpecies]; // + the whale of the opening
   const uniques = UNIQUE_VARIANTS.filter((u) => species.includes(u.speciesId)).map((u) => u.id);
   return SPRITE_KEYS.filter(
     (k) => uniques.includes(k) || species.some((s) => k === s || k.startsWith(`${s}_`)),

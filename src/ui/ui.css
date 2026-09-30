@@ -1144,7 +1144,7 @@
 }
 
 /* while the port is open only the port (and sheets opened from it) are shown */
-#ui.in-port > :not(.port):not(.sheet) {
+#ui.in-port > :not(.port):not(.sheet):not(.dialogue) {
   display: none !important;
 }
 
@@ -1235,4 +1235,89 @@
   bottom: 0;
   width: 2px;
   background: #ffd9a0;
+}
+
+/* Story: the goal under the hearts, and dialogues */
+.hud-goal {
+  display: none;
+  max-width: min(360px, 42vw);
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-left: 2px solid var(--lamp);
+  font-size: 12px;
+  line-height: 1.3;
+  color: #ffe6bf;
+  background: rgba(2, 7, 12, 0.45);
+  text-shadow: 0 1px 2px #000;
+}
+.hud-goal.show {
+  display: block;
+}
+.dialogue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  z-index: 40;
+  width: min(640px, calc(100vw - 32px));
+  min-height: 74px;
+  padding: 10px 16px 14px;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255, 217, 160, 0.45);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(10, 16, 22, 0.94), rgba(3, 7, 11, 0.96));
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+  cursor: pointer;
+}
+.dialogue.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.dialogue-who {
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--lamp);
+}
+.dialogue-text {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #e6ede8;
+}
+.dialogue.narration .dialogue-text {
+  font-style: italic;
+  color: #b9c6c9;
+}
+.dialogue-next {
+  position: absolute;
+  right: 14px;
+  bottom: 6px;
+  font-size: 10px;
+  color: var(--lamp);
+  animation: dialogue-blink 1s infinite;
+}
+@keyframes dialogue-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+.dialogue-skip {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 3px 9px;
+  font-size: 11px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+#ui.in-scene > :not(.dialogue):not(.hud):not(.toast):not(.zone-name):not(.port):not(.sheet) {
+  visibility: hidden;
 }
