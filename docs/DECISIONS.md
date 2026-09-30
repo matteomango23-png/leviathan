@@ -88,7 +88,7 @@ Ogni scelta tecnica importante: data, decisione, motivo. Le più recenti in fond
 
 - **Portofosco** è al molo sopra il punto di partenza (x 2400): arrivando in superficie vicino al molo compare "Porto". Il porto ha il suo santuario: cura sub e squadra e diventa il punto di rinascita. Le scorte del mercato si rinnovano a ogni visita.
 - **Pesci:** se ti manca un cuore la sardina ti cura, altrimenti il pesce va nella sacca e si vende al mercato (`sellPrice` in world.ts). Aggiunti gli sgombri nella Baia.
-- **Mute:** la muta fissa la profondità massima: oltre, il sub viene spinto su con un avviso. Il muro di ossa (circa 163 m) richiede la muta rinforzata (500 m).
+- **Mute:** la muta fissa la profondità massima: oltre, il sub viene spinto su con un avviso (cambiato in v0.3.1: l'ossigeno scende più in fretta). Il muro di ossa (circa 163 m) richiede la muta rinforzata (500 m).
 - **Potenziamenti:** in vendita solo quelli con effetto già nel gioco (apnea, lampada potenziata, lampada abissale); lampo sonar e nuoto controcorrente sono visibili ma "in arrivo".
 - **Armi:** le fiocine sono nel relitto della Baia, la rete nel relitto della Barriera. Folgore e arpione runico arriveranno con le loro regioni.
 - **Zaino:** 3 posti scelti al porto. In immersione si toccano: un'arma diventa quella del pulsante arpione (ritoccandola si torna all'arpione), un oggetto si usa, uno sciame si chiama.
@@ -103,3 +103,17 @@ Ogni scelta tecnica importante: data, decisione, motivo. Le più recenti in fond
 ## 2026-09-30 — Orche e bestie leggendarie
 
 Decisioni del proprietario sulle orche matriarche, la Madre delle madri, l'orca preistorica albina e il coccodrillo albino leggendario: vedi `docs/GDD.md`. Sprite e illustrazioni pronti (`orca_matriarca`, `orca_matriarca_finale`, `orca_preistorica_albina`, `coccodrillo_marino_leggendario`). Il comportamento arriva con le loro regioni.
+
+## 2026-09-30 — Correzioni v0.3.1 (dopo la prova del proprietario)
+
+- **Costa ovest e porto:** a ovest della Baia c'è la terraferma (`COAST` in `worldLayout.ts`); il molo è a x 160, la partenza (`START`) è accanto al molo. Sopra la superficie a ovest della riva la mappa è roccia (terra), sotto la riva scende in pendenza fino a `COAST.maxY`.
+- **Tartaruga marina 2 m** (scelta del proprietario, "tartaruga gigante"). Le bestie hanno `speedMult` in `BEAST_TEMPER` (tartaruga 0,4, torpedine 0,65).
+- **Velocità in sella:** l'accelerazione ora tiene conto dell'attrito dell'acqua, altrimenti la velocità massima in sella non si raggiungeva mai (trovato con un test). In sella `rideSpeedMult` 1,6 e scatto proprio (`TEAM_RULES.rideDash`).
+- **Affondo nei morsi:** ogni morso dà una spinta in avanti (`MOVE_RULES.biteLunge`); in sella la spinta va al sub.
+- **Le bestie grandi mangiano** (`FEEDING` in `beasts.ts`, `systems/feeding.ts`): solo taglia grande o colossale; il pesce va nella sacca come se l'avesse pescato il sub.
+- **Oltre la profondità della muta** l'ossigeno scende più in fretta (`SUIT_RULES`) invece di spingere su il sub: più naturale e lascia la scelta al giocatore.
+- **Virata a partire dalla testa** (il proprietario non vuole per ora un'immagine di tre quarti): ogni striscia si gira con un ritardo che cresce verso la coda, a metà passa di taglio, si scurisce e il corpo si inarca. Vale per le bestie domate e per le selvatiche contro una parete (`TEAM_RULES.turnSeconds`).
+- **Fondale dipinto un po' alla volta:** `ChunkPaintJob` divide il lavoro di ogni pezzo e ne fa al massimo 4 ms per fotogramma; i pezzi visibili si dipingono subito, quelli vicini in anticipo. Pezzi più piccoli (128 unità) e meno pixel (2,5 per unità) per non bloccare l'iPhone.
+- **Rarità come le carte:** 1 grigio, 2 verde, 3 blu, 4 viola, 5 oro (`data/cards.ts`); cornici speciali per albino, alfa, varianti uniche e forme finali.
+- **Scheda e bestiario:** i dati li prepara `systems/beasts/sheet.ts` (niente calcoli nell'interfaccia). Icone disegnate a mano in SVG (`ui/icons.ts`), nessuna libreria nuova.
+- **Menu del porto a schermo intero** con schede a sinistra e card a destra; l'HUD si nasconde (classe `in-port`) per non sovrapporsi.

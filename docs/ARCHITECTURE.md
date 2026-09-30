@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `sprites.generated.ts` (scritto da `npm run art`). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
@@ -48,6 +48,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beasts/companion.ts` | La bestia in acqua: arriva dal buio, segue, difende, si cavalca. |
 | `beasts/moves.ts` | Mosse: morso, carica (rompe le ossa antiche), frenesia; attacchi automatici del compagno. |
 | `beastPlay.ts` | Collega tutto quello che riguarda le bestie in un passo di gioco (azione contestuale, domatura, morsi). |
+| `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca). |
+| `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse con livello e danno. |
 | `sanctuary.ts` | Santuari: cura graduale di sub e squadra, punto di rinascita. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
 
@@ -56,13 +58,23 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 - **Boot**: carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
 - **World**: fa girare il gioco e lo disegna con tre telecamere: sfondo (schermo), mondo (zoom, segue il sub), sovrapposizione (buio e luce).
 - **UI**: HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
-- **Menus**: menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Più avanti bestiario e scheda bestia.
+- **Menus**: menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Bestiario e scheda della bestia (stile carta).
 - Le scene si passano un oggetto `Session` (stato, input, messaggi): niente variabili globali.
+
+## Interfaccia (`src/ui/`)
+
+| File | Cosa fa |
+|---|---|
+| `icons.ts` | Icone SVG disegnate per il gioco. |
+| `art.ts` | Indirizzo dell'illustrazione di una bestia. |
+| `beastSheet.ts`, `bestiary.ts` | Scheda della bestia e bestiario. |
+| `portMenu.ts`, `portTabs.ts`, `portCard.ts` | Porto a schermo intero: schede, card, zaino e bacheca. |
+| `teamPanel.ts`, `pauseMenu.ts` | Squadra e menu di pausa. |
 
 ## Come si disegna il mare
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.
-2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 256×256 unità dipinti al volo attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
+2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
 3. **Mondo**: santuari, molo e case di Portofosco, relitti e forzieri (`placesView`), alghe, pesci, dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione, sub (anche in groppa), bolle, linea della superficie; alcune alghe davanti al sub.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
 5. **Sopra il buio** (`combatView`): barre della vita con la tacca di sfinimento, numeri dei danni, segnale "domabile".

@@ -1,5 +1,38 @@
 # Progressi
 
+## Sessione 3b — Correzioni dopo la prova (30 settembre 2026) → v0.3.1
+
+**Fatto (tutte le richieste del proprietario dopo la v0.3.0)**
+
+- Costa ovest con terraferma e case; porto e partenza sulla riva.
+- In sella più veloce, con scatto; affondo in avanti nei morsi (selvatiche, compagno, in sella).
+- Virate che partono dalla testa (senza immagine di tre quarti, come deciso).
+- Tartaruga gigante 2 m e lenta; torpedine più lenta. Barracuda, tartaruga e torpedine restano compagni, non cavalcature.
+- Lo squalo in squadra mangia le sardine vicine: vanno nella sacca.
+- Oltre la profondità della muta l'ossigeno scende più in fretta (niente muro invisibile).
+- Scheda della bestia in stile carta con rarità, stelle e cornici speciali; bestiario dal menu di pausa.
+- Menu del porto rifatto con icone e card.
+- Fondale dipinto un po' alla volta (meno scatti con la lampada e nuotando veloce).
+- 102 test automatici.
+
+**Mancante / da sapere**
+
+- Il gioco in movimento l'ho provato poco nel browser (il pannello era spesso nascosto): scheda, bestiario e porto sono stati controllati da soli, a misura di iPhone in orizzontale.
+- La virata migliorata è fatta nel codice; se non basta, la soluzione vera resta un'immagine di tre quarti (da generare quando vuoi).
+- Resta tutto quello elencato sotto per la sessione 3 (livelli, Guardiani, armi delle altre regioni).
+
+**Da provare sull'iPhone**
+
+1. All'avvio sei sulla riva ovest: guarda case, molo e la Baia che scende davanti.
+2. Tocca "Porto": prova tutte le schede, compra, metti qualcosa nello zaino (tocca un posto, poi l'oggetto).
+3. Doma uno squalo, cavalcalo: velocità, scatto in sella, affondo nei morsi, virate.
+4. Con lo squalo in acqua passa vicino a un banco di sardine: la sacca deve salire.
+5. Nuota veloce e muovi la lampada: deve restare fluido. Se scatta ancora, dimmi dove.
+6. Scendi oltre i 150 m con la muta leggera: l'ossigeno deve calare in fretta.
+7. Menu di pausa → Bestiario; tocca una bestia della squadra per aprire la sua scheda.
+
+**Prossima sessione:** Sessione 4 — Livelli, crescita e primo Guardiano (`docs/PROMPT.md`). Ramo consigliato: `tappa-4-livelli`.
+
 ## Sessione 3 — Porto ed economia (30 settembre 2026) → v0.3.0
 
 **Fatto (tappa 3 + altre bestie della Baia)**
@@ -25,14 +58,12 @@
 
 **Da provare sull'iPhone**
 
-1. Risali in superficie vicino al molo (sopra la partenza) e tocca "Porto": guarda le 5 schede.
+1. Risali in superficie vicino al molo e tocca "Porto": guarda le 5 schede.
 2. Accetta 2-3 missioni in Bacheca, poi pesca sardine e sgombri; torna al porto, vendi e riscuoti.
 3. Cerca il relitto della Baia (luce dorata sul fondo, a ovest a metà Baia): "Apri" → fiocine. Al porto, Zaino → mettile in un posto; in immersione tocca "Fiocine" in alto a destra.
 4. Dopo 10 sardine metti lo "Sciame di sardine" nello zaino e chiamalo quando arriva uno squalo.
 5. Compra la muta rinforzata (400 denti) e prova a scendere oltre i 150 m.
 6. Con `?prove`: fai apparire barracuda, tartaruga e torpedine e prova a domarli; "+2000 denti" per provare il mercato.
-
-**Prossima sessione:** Sessione 4 — Livelli, crescita e primo Guardiano (`docs/PROMPT.md`). Ramo consigliato: `tappa-4-livelli`.
 
 ## Sessione 2 — Solo lo squalo bianco (30 settembre 2026) → v0.2.0
 
