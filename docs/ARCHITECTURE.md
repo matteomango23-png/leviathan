@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
@@ -50,7 +50,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beastPlay.ts` | Collega tutto quello che riguarda le bestie in un passo di gioco (azione contestuale, domatura, morsi). |
 | `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca, o per crescere); al porto "Nutri" dalla sacca. |
 | `beasts/growth.ts` | Esperienza, livelli, barra del cibo (31-50), forme finali. |
-| `story.ts` | La storia: apertura, immersione guidata, molo in fiamme, tracce, finale; apre i dialoghi (il gioco si ferma). |
+| `chapter2.ts` | Capitolo 2: la Vedova Nera nel Delta, il suo coccodrillo, gli ancoraggi da spezzare, la megattera liberata. |
+| `chapters.ts` | Unisce i capitoli: chiusura dei dialoghi e obiettivo sotto i cuori. |
+| `story.ts` | La storia (capitolo 1 e parte comune): apertura, immersione guidata, molo in fiamme, tracce, finale; apre i dialoghi (il gioco si ferma). |
 | `catching.ts` | Pesci catturati: cuore, ossigeno o sacca; nuove creature nel bestiario. |
 | `save/storySave.ts` | Controllo della storia salvata. |
 | `progress.ts` | Dopo ogni passo: esperienza alla squadra, missioni, profondità massima. |
@@ -94,7 +96,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
-3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), bolle e linea della superficie (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`. Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
+3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), bolle e linea della superficie (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
 5. **Sopra il buio** (`combatView`): barre della vita con la tacca di sfinimento, numeri dei danni, segnale "domabile".
 

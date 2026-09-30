@@ -1,5 +1,31 @@
 # Progressi
 
+## Sessione 7 — Capitolo 2: il Delta delle Mangrovie (1 ottobre 2026) → v0.6.0
+
+**Fatto**
+
+- Il Delta tra Baia e Barriera (mondo allargato di 520 unità, tutto l'est spostato), bassa profondità, acqua torbida, mangrovie, cefali e pesci arciere.
+- Coccodrilli marini che attaccano dalla superficie; coccodrillo albino leggendario raro (3%).
+- La Vedova Nera con la megattera incatenata: dialogo, il suo coccodrillo alfa (livello 12) con la barra grande, 3 ancoraggi da spezzare, la megattera (livello 10) si unisce alla squadra, la nave fugge verso la Barriera.
+- Salvataggio v6 con migrazione (ossa rotte e posizione nel mondo più largo).
+- 144 test automatici.
+
+**Mancante / da sapere**
+
+- Visto nel browser: il Delta (acqua torbida, radici, pesci) e la balena incatenata sotto la nave con il dialogo della Vedova. Il coccodrillo in azione, la rottura degli ancoraggi e il finale sono provati dai test automatici, ma non li ho visti a schermo.
+- Il coccodrillo del Nilo non c'è ancora (scelta tua: forse più avanti come coccodrillo comune).
+- La Vedova Nera non ha un ritratto: parla dalla nave, nei dialoghi.
+
+**Da provare sull'iPhone**
+
+1. Se hai già finito il capitolo 1: l'obiettivo dice "Segui la nave della Compagnia a est". Nuota a est dalla Baia fino al Delta (oppure, con `?prove`, "Portami nel Delta").
+2. Avvicinati alla nave nera: dialogo della Vedova, poi arriva il suo coccodrillo dalla superficie.
+3. Spezza i tre ancoraggi (paletti di ferro con catene, un po' illuminati sul fondale): 8 colpi d'arpione ciascuno.
+4. Liberata la balena: controlla che sia nella squadra e prova a cavalcarla.
+5. Controlla che le ossa già rotte (muro di ossa, botola della tana) siano ancora rotte.
+
+**Prossima sessione:** Sessione 8 — Capitolo 3: la Barriera Rossa (Re Corallo come Guardiano, la Vedova di nuovo). Serve prima un piano con le tue scelte. Dopo il capitolo 3 viene una sessione di pulizia (ogni 3 tappe).
+
 ## Sessione 6 — Storia del capitolo 1 (30 settembre 2026) → v0.5.0
 
 **Fatto (tappa 5, capitolo 1)**

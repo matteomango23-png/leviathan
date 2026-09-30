@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.6.0 — Capitolo 2: il Delta delle Mangrovie (1 ottobre 2026)
+
+- **Nuova regione, il Delta delle Mangrovie**, a est della Baia: acqua bassa (circa 30 m) e torbida, si vede meno e la lampada arriva meno lontano; isolotti di mangrovie con le radici che scendono in acqua; cefali e pesci arciere. La Barriera Rossa e il resto del mondo ora sono più a est.
+- **Coccodrilli marini** nel Delta: nuotano appena sotto la superficie e si tuffano su di te per mordere. Raro: il **coccodrillo albino leggendario** (livello 14).
+- **La Vedova Nera:** la sua nave è all'ancora nel Delta, con la megattera dell'inizio incatenata sotto la chiglia. Avvicinati e parla lei; poi ti manda contro il suo coccodrillo (grande barra in alto).
+- **Libera la balena:** spezza i 3 ancoraggi delle catene sul fondale con l'arpione (o le fiocine). Liberata, la megattera si unisce alla tua squadra e nuota con te; la Vedova fugge verso la Barriera Rossa.
+- Aurelio al porto ha nuovi consigli; l'obiettivo sotto i cuori guida il capitolo.
+- Pannello di prova: "Portami nel Delta".
+- Il salvataggio si aggiorna da solo (versione 6): le ossa già rotte e la tua posizione restano giuste nel mondo più largo.
+
 ## v0.5.0 — La storia del capitolo 1 (30 settembre 2026)
 
 - **Apertura sulla barca di Nonno Aurelio:** una nave nera della Compagnia dell'Olio Nero passa davanti al porto trascinando una megattera in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore, poi ti tuffi.

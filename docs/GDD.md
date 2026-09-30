@@ -32,6 +32,7 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 - **Premessa:** il Leviatano si è svegliato, le bestie impazziscono. La Compagnia dell'Olio Nero le caccia, le incatena con collari di ferro e ne estrae l'olio; il piano finale è dissanguare il Leviatano.
 - **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
 - **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
+- **Capitolo 2 (deciso il 1 ottobre 2026):** nel Delta delle Mangrovie la nave della Vedova Nera (prima comandante della Compagnia) tiene incatenata la megattera dell'apertura. Spezzi i tre ancoraggi mentre il suo coccodrillo ti attacca; la balena liberata si unisce a te e la Vedova fugge verso la Barriera Rossa.
 - **Personaggi:** Nonno Aurelio (mentore), il mercante di denti, la Compagnia (un comandante per regione con una bestia incatenata da liberare), il Leviatano (finale).
 - **Dopo il finale:** Fossa Nera coi leggendari; il Leviatano diventa domabile.
 
@@ -101,11 +102,12 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 3. ✅ **Porto ed economia (v0.3.0):** mercato, mute, zaino, missioni, denti.
 4. ✅ **Livelli e crescita (v0.4.0):** esperienza, sblocco mosse, crescita 31-50, forme finali, Lo Sfregiato come primo Guardiano.
 5. ✅ **Storia del capitolo 1 (v0.5.0):** apertura, collare spezzato, lo Sfregiato è lo squalo di Aurelio, finale verso il Delta.
-6. **Capitolo 2 e seguenti:** una regione alla volta.
+6. ✅ **Capitolo 2 (v0.6.0):** il Delta delle Mangrovie, i coccodrilli, la Vedova Nera e la megattera liberata.
+7. **Capitolo 3 e seguenti:** una regione alla volta (prossimo: la Barriera Rossa).
 
 ## Decisioni aperte
 
-- Nomi definitivi di personaggi e comandanti.
+- Nomi definitivi dei comandanti dei capitoli successivi (il primo è la Vedova Nera).
 - Prezzi, curva di esperienza, valori di danno (primo passaggio in `data/`, da bilanciare giocando).
 - Penalità alla morte: per ora nessuna (si rinasce al santuario o al porto); contro i Guardiani il proprietario ha scelto "solo rinascita".
 - Guardiano della Fossa: Abissale o Tempesta (ora due Guardiani Abissali).
