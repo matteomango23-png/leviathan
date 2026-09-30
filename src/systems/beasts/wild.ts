@@ -3,7 +3,15 @@
 // slowing down, cruise past near the diver's depth, speed up towards the far edge and leave; off screen they
 // wait, turn, and come back from the side they left. Followed, or in view too long, they bolt faster than you.
 // Attacks are lunges during a pass, announced by open jaws.
-import { BEAST_COMBAT, BIG_BEAST_MOTION as M, TAMING_FLOW, type WildSpawnDef } from '../../data/beasts';
+import {
+  BEAST_COMBAT,
+  BEAST_TEMPER,
+  BIG_BEAST_MOTION as M,
+  STATUS_RULES,
+  TAMING_FLOW,
+  type WildSpawnDef,
+} from '../../data/beasts';
+import { WEAPON_RULES } from '../../data/economy';
 import { DIVER } from '../../data/diver';
 import { TAMING } from '../../data/rules';
 import type { Stats } from '../../data/species';
@@ -46,6 +54,10 @@ export interface WildBeast extends BodyPose {
   respawn: number;
   leaving: boolean;
   announced: boolean;
+  /** Seconds left stunned (no attacks, almost still). */
+  stun: number;
+  /** Seconds left slowed (e.g. caught in a net). */
+  slow: number;
 }
 
 export interface Rect {
@@ -102,6 +114,8 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     respawn: 0,
     leaving: false,
     announced: false,
+    stun: 0,
+    slow: 0,
   };
 }
 
@@ -129,6 +143,21 @@ export function spawnWild(
   b.leaving = false;
   b.announced = false;
   b.biteCooldown = 0;
+  b.stun = 0;
+  b.slow = 0;
+}
+
+/** Chance that a calm beast of this species attacks on a pass. */
+export function attackChanceOf(b: WildBeast): number {
+  return BEAST_TEMPER[b.form.speciesId]?.attackChance ?? BEAST_COMBAT.attackChance;
+}
+
+/** Stuns (and interrupts an attack). */
+export function stunWild(b: WildBeast, seconds: number): void {
+  if (!isInWater(b) || b.mood === 'taming') return;
+  b.stun = Math.max(b.stun, seconds);
+  if (b.motion === 'attack') b.motion = 'exit';
+  b.attackPlanned = false;
 }
 
 export const isInWater = (b: WildBeast): boolean =>
@@ -236,6 +265,8 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
   b.jaw = Math.max(0, b.jaw - dt);
   b.barTime = Math.max(0, b.barTime - dt);
   b.biteCooldown -= dt;
+  b.stun = Math.max(0, b.stun - dt);
+  b.slow = Math.max(0, b.slow - dt);
   if (b.motion === 'gone' || b.mood === 'taming') return;
   updateMood(b, dt, events);
 
@@ -276,7 +307,7 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
       b.vx = b.face * M.enterSpeed * U;
       b.onScreenTime = 0;
       b.followTime = 0;
-      b.attackPlanned = b.mood !== 'tired' && (b.mood === 'angry' || rng() < BEAST_COMBAT.attackChance);
+      b.attackPlanned = b.mood !== 'tired' && (b.mood === 'angry' || rng() < attackChanceOf(b));
       if (!b.announced) {
         b.announced = true;
         events.push({ type: 'wildAppeared', id: b.id });
@@ -308,6 +339,7 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
   if (
     b.attackPlanned &&
     b.mood !== 'tired' &&
+    b.stun <= 0 &&
     (b.motion === 'enter' || b.motion === 'cruise') &&
     b.biteCooldown <= 0 &&
     !d.dead
@@ -338,7 +370,9 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
     b.motion = rel < M.enterZone ? 'enter' : rel < M.exitZone ? 'cruise' : 'exit';
   }
 
-  const want = wantedSpeed(b, ctx, rel, off, aheadOff);
+  let want = wantedSpeed(b, ctx, rel, off, aheadOff);
+  if (b.stun > 0) want *= STATUS_RULES.stunSlowdown;
+  else if (b.slow > 0) want *= WEAPON_RULES.rete.slowMult;
   let ty = b.motion === 'attack' ? clamp(d.y, top, map.height - r) : ty0;
   // look ahead: rock in front of the snout → rise over it
   if (map.solidAt(head.x + b.face * b.length * 0.12, head.y)) ty = b.y - b.length * 0.4;

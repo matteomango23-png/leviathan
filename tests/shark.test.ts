@@ -8,7 +8,7 @@ import { spawnWild, isInWater, type Rect, type WildBeast } from '../src/systems/
 import { createGame, stepGame, toSave, type GameState } from '../src/systems/game';
 import { emptyInput, consumePresses, type InputState } from '../src/systems/input';
 import { makeRng } from '../src/systems/math';
-import { migrate, parseSave, validate } from '../src/systems/save/saveData';
+import { SAVE_VERSION, migrate, parseSave, validate } from '../src/systems/save/saveData';
 import { generateWorld } from '../src/systems/world/worldGen';
 import type { TileMap } from '../src/systems/world/tileMap';
 import type { GameEvent } from '../src/systems/events';
@@ -211,6 +211,7 @@ describe('riding, moves and the bone wall', () => {
       },
     ];
     const g2 = createGame(generateWorld(), save, 3);
+    g2.gear.suit = 'rinforzata'; // the bone wall is deeper than the light suit allows
     let bone: { x: number; y: number } | null = null;
     for (let i = 0; i < g2.map.data.length && !bone; i++)
       if (g2.map.data[i] === TILE.bone) {
@@ -290,7 +291,8 @@ describe('save v2', () => {
       seen: ['sardina'],
     };
     const s = validate(migrate(v1));
-    expect(s.version).toBe(2);
+    expect(s.version).toBe(SAVE_VERSION);
+    expect(s.gear).toBeNull(); // the game fills in the starting equipment
     expect(s.fishCaught.sardina).toBe(4);
     expect(s.team).toEqual([]);
     expect(s.sanctuary).toBeNull();

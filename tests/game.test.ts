@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { DIVER, HARPOON } from '../src/data/diver';
 import { START } from '../src/data/worldLayout';
-import { WEAPONS } from '../src/data/world';
+import { SUITS, WEAPONS } from '../src/data/world';
 import { createGame, stepGame, toSave, applySave, type GameState } from '../src/systems/game';
 import { emptyInput } from '../src/systems/input';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -46,7 +46,8 @@ describe('diver', () => {
   it('never exceeds max speed without dashing', () => {
     const g = createGame(map, null, 1);
     run(g, 1, { ...emptyInput(), moveX: 1, moveY: 1 });
-    expect(Math.hypot(g.diver.vx, g.diver.vy)).toBeLessThanOrEqual(DIVER.maxSpeed + 1e-6);
+    const suit = SUITS.find((s) => s.id === g.gear.suit)!;
+    expect(Math.hypot(g.diver.vx, g.diver.vy)).toBeLessThanOrEqual(DIVER.maxSpeed * suit.speedMult + 1e-6);
   });
 
   it('dashes faster than swimming, then has to wait', () => {

@@ -1,6 +1,7 @@
 // The diver: swimming, dash, oxygen, hearts, death and respawn.
 // Port of the diver part of update() in prototype/leviatano.html.
 import { DIVER } from '../data/diver';
+import { SUIT_RULES } from '../data/economy';
 import { START } from '../data/worldLayout';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
@@ -26,6 +27,7 @@ export interface DiverState {
   chokeTime: number;
   bubbleTime: number;
   oxygenWarned: boolean;
+  depthWarn: number;
 }
 
 export function createDiver(x = START.x, y = START.y): DiverState {
@@ -48,6 +50,7 @@ export function createDiver(x = START.x, y = START.y): DiverState {
     chokeTime: 0,
     bubbleTime: 0,
     oxygenWarned: false,
+    depthWarn: 0,
   };
 }
 
@@ -70,13 +73,13 @@ function respawn(d: DiverState, at: { x: number; y: number }, events: GameEvent[
   events.push({ type: 'respawned' });
 }
 
-function updateOxygen(d: DiverState, map: TileMap, dt: number, events: GameEvent[]): void {
+function updateOxygen(d: DiverState, map: TileMap, dt: number, events: GameEvent[], drainMult: number): void {
   const o = DIVER.oxygen;
   if (d.y < map.surfaceY + o.surfaceBand + DIVER.radius) {
     d.o2 = Math.min(d.maxO2, d.o2 + o.surfaceRefill * dt);
   } else {
     const depthF = clamp((d.y - map.surfaceY) / (o.fullDepthY - map.surfaceY), 0, 1);
-    d.o2 = Math.max(0, d.o2 - (o.drainBase + o.drainDepthExtra * depthF) * dt);
+    d.o2 = Math.max(0, d.o2 - (o.drainBase + o.drainDepthExtra * depthF) * drainMult * dt);
   }
   if (d.o2 <= 0) {
     d.chokeTime -= dt;
@@ -99,6 +102,12 @@ export interface DiverOptions {
   /** Riding a beast: its speed (u/s) replaces the diver's, and the dash button is not used. */
   mountSpeed?: number;
   mountAccelMult?: number;
+  /** Suit effects (world.ts SUITS + upgrades). */
+  speedMult?: number;
+  o2DrainMult?: number;
+  canDash?: boolean;
+  /** Deepest world y the suit allows; deeper pushes you back up. */
+  maxDepthY?: number;
 }
 
 export function stepDiver(
@@ -122,7 +131,7 @@ export function stepDiver(
     return;
   }
   const mounted = opt.mountSpeed !== undefined;
-  const maxSpeed = opt.mountSpeed ?? DIVER.maxSpeed;
+  const maxSpeed = opt.mountSpeed ?? DIVER.maxSpeed * (opt.speedMult ?? 1);
   const accel = mounted ? maxSpeed * (opt.mountAccelMult ?? 1) : DIVER.accel;
 
   let ix = input.moveX;
@@ -152,7 +161,7 @@ export function stepDiver(
   while (da < -Math.PI) da += Math.PI * 2;
   d.aim += da * Math.min(1, dt * DIVER.aimTurnRate);
 
-  if (input.dash && d.dashCooldown <= 0 && !mounted) {
+  if (input.dash && d.dashCooldown <= 0 && !mounted && opt.canDash !== false) {
     d.vx = Math.cos(d.aim) * DIVER.dash.speed;
     d.vy = Math.sin(d.aim) * DIVER.dash.speed;
     d.dashTime = DIVER.dash.duration;
@@ -163,7 +172,16 @@ export function stepDiver(
 
   map.moveBody(d, DIVER.radius, dt);
   if (mounted && d.y < map.surfaceY + DIVER.lengthUnits) d.y = map.surfaceY + DIVER.lengthUnits;
-  updateOxygen(d, map, dt, events);
+  if (opt.maxDepthY !== undefined && d.y > opt.maxDepthY) {
+    d.vy = Math.min(d.vy, -SUIT_RULES.pushBack);
+    d.y = Math.min(d.y, opt.maxDepthY + 8);
+    d.depthWarn -= dt;
+    if (d.depthWarn <= 0) {
+      d.depthWarn = SUIT_RULES.warnEvery;
+      events.push({ type: 'tooDeep' });
+    }
+  }
+  updateOxygen(d, map, dt, events, opt.o2DrainMult ?? 1);
 
   d.bubbleTime -= dt;
   if (d.bubbleTime <= 0 && d.y > map.surfaceY + 6) {
