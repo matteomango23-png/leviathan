@@ -18,8 +18,7 @@ export function chunkHasRock(map: TileMap, x0: number, y0: number, size: number)
   const ty0 = Math.floor(y0 / T) - 1;
   const n = Math.ceil(size / T) + 2;
   for (let ty = ty0; ty < ty0 + n; ty++)
-    for (let tx = tx0; tx < tx0 + n; tx++)
-      if (map.get(tx, ty) !== TILE.water && ty * T + T > map.surfaceY) return true;
+    for (let tx = tx0; tx < tx0 + n; tx++) if (map.get(tx, ty) !== TILE.water) return true;
   return false;
 }
 

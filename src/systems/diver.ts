@@ -2,7 +2,7 @@
 // Port of the diver part of update() in prototype/leviatano.html.
 import { DIVER } from '../data/diver';
 import { SUIT_RULES } from '../data/economy';
-import { START } from '../data/worldLayout';
+import { START, WORLD } from '../data/worldLayout';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { clamp, range, type Rng } from './math';
@@ -99,8 +99,9 @@ function updateOxygen(d: DiverState, map: TileMap, dt: number, events: GameEvent
 export interface DiverOptions {
   /** Where to wake up after dying (last sanctuary, or the start). */
   respawnAt: { x: number; y: number };
-  /** Riding a beast: its speed (u/s) replaces the diver's, and the dash button is not used. */
+  /** Riding a beast: its speed (u/s) replaces the diver's, and the dash is the beast's. */
   mountSpeed?: number;
+  mountDash?: { speedMult: number; duration: number; cooldown: number };
   mountAccelMult?: number;
   /** Suit effects (world.ts SUITS + upgrades). */
   speedMult?: number;
@@ -132,7 +133,8 @@ export function stepDiver(
   }
   const mounted = opt.mountSpeed !== undefined;
   const maxSpeed = opt.mountSpeed ?? DIVER.maxSpeed * (opt.speedMult ?? 1);
-  const accel = mounted ? maxSpeed * (opt.mountAccelMult ?? 1) : DIVER.accel;
+  // riding: enough thrust to beat the water drag and reach the beast's top speed quickly
+  const accel = mounted ? maxSpeed * (DIVER.drag + (opt.mountAccelMult ?? 1)) : DIVER.accel;
 
   let ix = input.moveX;
   let iy = input.moveY;
@@ -161,27 +163,32 @@ export function stepDiver(
   while (da < -Math.PI) da += Math.PI * 2;
   d.aim += da * Math.min(1, dt * DIVER.aimTurnRate);
 
-  if (input.dash && d.dashCooldown <= 0 && !mounted && opt.canDash !== false) {
-    d.vx = Math.cos(d.aim) * DIVER.dash.speed;
-    d.vy = Math.sin(d.aim) * DIVER.dash.speed;
-    d.dashTime = DIVER.dash.duration;
-    d.dashCooldown = DIVER.dash.cooldown;
+  if (input.dash && d.dashCooldown <= 0 && (mounted || opt.canDash !== false)) {
+    // on foot the diver's own dash; riding, the beast bursts forward (TEAM_RULES.rideDash)
+    const md = opt.mountDash;
+    const speed = mounted && md ? maxSpeed * md.speedMult : DIVER.dash.speed;
+    d.vx = Math.cos(d.aim) * speed;
+    d.vy = Math.sin(d.aim) * speed;
+    d.dashTime = mounted && md ? md.duration : DIVER.dash.duration;
+    d.dashCooldown = mounted && md ? md.cooldown : DIVER.dash.cooldown;
     events.push({ type: 'dash', x: d.x, y: d.y });
   }
   d.dashTime = Math.max(0, d.dashTime - dt);
 
   map.moveBody(d, DIVER.radius, dt);
   if (mounted && d.y < map.surfaceY + DIVER.lengthUnits) d.y = map.surfaceY + DIVER.lengthUnits;
+  let drainMult = opt.o2DrainMult ?? 1;
   if (opt.maxDepthY !== undefined && d.y > opt.maxDepthY) {
-    d.vy = Math.min(d.vy, -SUIT_RULES.pushBack);
-    d.y = Math.min(d.y, opt.maxDepthY + 8);
+    // too deep for the suit: the pressure burns oxygen much faster, more and more with depth
+    const overM = (d.y - opt.maxDepthY) / WORLD.unitsPerMetre;
+    drainMult *= SUIT_RULES.overDepthDrainMult + overM * SUIT_RULES.overDepthDrainPerM;
     d.depthWarn -= dt;
     if (d.depthWarn <= 0) {
       d.depthWarn = SUIT_RULES.warnEvery;
       events.push({ type: 'tooDeep' });
     }
   }
-  updateOxygen(d, map, dt, events, opt.o2DrainMult ?? 1);
+  updateOxygen(d, map, dt, events, drainMult);
 
   d.bubbleTime -= dt;
   if (d.bubbleTime <= 0 && d.y > map.surfaceY + 6) {

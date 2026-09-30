@@ -1,7 +1,8 @@
 // Portofosco's pier and houses at the surface, and the wrecks/chests on the sea floor.
 import Phaser from 'phaser';
 import { PORT } from '../data/economy';
-import { WORLD } from '../data/worldLayout';
+import { COAST, WORLD } from '../data/worldLayout';
+import { landHeight } from '../systems/world/worldGen';
 import type { Wreck } from '../systems/economy/places';
 import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
@@ -9,35 +10,37 @@ import { TEX } from './textures';
 function drawPort(g: Phaser.GameObjects.Graphics): void {
   const s = WORLD.surfaceY;
   const x = PORT.x;
-  // stilts and deck
+  const shore = COAST.shoreX;
+  // the pier: from the shore out over the water, on stilts
   g.fillStyle(0x1b1612, 1);
-  for (let i = -3; i <= 3; i++) g.fillRect(x + i * 14 - 1, s - 6, 2.2, 22);
+  for (let px = shore; px <= x + 30; px += 13) g.fillRect(px - 1, s - 6, 2.2, 24);
   g.fillStyle(0x3a2c20, 1);
-  g.fillRect(x - 48, s - 8, 96, 3.5);
-  // houses on the shore (dark silhouettes against the storm sky)
+  g.fillRect(shore - 8, s - 8, x + 38 - shore, 3.5);
+  // houses of Portofosco on the land (dark silhouettes against the storm sky, lit windows)
   const houses: [number, number, number][] = [
-    [-120, 26, 24],
-    [-92, 20, 30],
-    [-66, 28, 20],
-    [60, 22, 26],
-    [88, 30, 22],
+    [26, 20, 20],
+    [50, 18, 26],
+    [72, 22, 18],
+    [94, 14, 14],
   ];
-  for (const [dx, w, h] of houses) {
+  for (const [hx, w, h] of houses) {
+    const base = s - landHeight(hx + w / 2) + 1;
     g.fillStyle(0x0d1216, 1);
-    g.fillRect(x + dx, s - 4 - h, w, h + 4);
-    g.fillTriangle(x + dx - 3, s - 4 - h, x + dx + w + 3, s - 4 - h, x + dx + w / 2, s - 16 - h);
+    g.fillRect(hx, base - h, w, h + 2);
+    g.fillTriangle(hx - 3, base - h, hx + w + 3, base - h, hx + w / 2, base - h - 11);
     g.fillStyle(0xffc878, 0.85);
-    g.fillRect(x + dx + w * 0.35, s - h * 0.6, 3, 3);
+    g.fillRect(hx + w * 0.35, base - h * 0.6, 3, 3);
   }
-  // shore
-  g.fillStyle(0x0b0f12, 1);
-  g.fillRect(x - 150, s - 4, 90, 6);
-  g.fillRect(x + 50, s - 4, 100, 6);
-  // a small boat
+  // a small boat moored at the end of the pier
   g.fillStyle(0x141b20, 1);
-  g.fillTriangle(x + 20, s - 5, x + 44, s - 5, x + 38, s + 1);
-  g.fillRect(x + 24, s - 7, 16, 2);
-  g.fillRect(x + 31, s - 24, 1.4, 18);
+  g.fillTriangle(x + 8, s - 5, x + 32, s - 5, x + 26, s + 1);
+  g.fillRect(x + 12, s - 7, 16, 2);
+  g.fillRect(x + 19, s - 24, 1.4, 18);
+  // a lantern at the end of the pier
+  g.fillStyle(0xffd9a0, 1);
+  g.fillRect(x + 1, s - 16, 2.4, 3);
+  g.fillStyle(0x1b1612, 1);
+  g.fillRect(x + 1.6, s - 13, 1.2, 6);
 }
 
 function drawWreck(g: Phaser.GameObjects.Graphics, w: Wreck): void {

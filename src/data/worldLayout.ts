@@ -151,8 +151,18 @@ export const SANCTUARIES: SanctuaryDef[] = [
   { name: 'il santuario della fossa', x: 4300, y: 1250 },
 ];
 
-/** Where a new game starts (at the surface, above Portofosco). */
-export const START = { x: 2400, y: 38 };
+/** The west coast of the bay: the sea floor rises to a rocky shore; Portofosco stands on the land. */
+export const COAST = {
+  shoreX: 110, // where the land meets the water line
+  slope: 0.55, // under water the shore moves out this many units per unit of depth
+  maxY: 420, // the slope stops here (the caves below are unchanged)
+  noise: 20, // how rough the underwater shore is
+  landHeight: 18, // how high the land rises above the water, inland
+  landRise: 0.3, // how quickly it rises going inland
+};
+
+/** Where a new game starts (at the surface, by the pier of Portofosco). */
+export const START = { x: 185, y: 38 };
 
 /** Named zones shown when you enter them (prototype zoneOf). First match wins. */
 export interface ZoneDef {

@@ -134,6 +134,7 @@ function executeMove(b: TeamBeast, c: Companion, move: MoveDef, ctx: MoveContext
     return { ok: true, charge: false };
   }
   biteAround(b, c, move, ctx);
+  c.lunge++;
   return { ok: true, charge: false };
 }
 
@@ -162,6 +163,7 @@ export function stepMoveEffects(b: TeamBeast, c: Companion, ctx: MoveContext, dt
       c.frenzyTick = MOVE_RULES.frenzyBiteInterval;
       const m = moves.find((x) => x.move.fx.some((f) => f.startsWith('frenzy:')))?.move;
       if (m) biteAround(b, c, m, ctx);
+      c.lunge++;
     }
   }
   if (c.charge > 0) {
@@ -204,6 +206,7 @@ export function companionAttack(b: TeamBeast, c: Companion, w: WildBeast, ctx: M
     const hits = fxNumber(pick.move, 'hits:', 1) ?? 1;
     for (let i = 0; i < hits; i++) strike(b, pick.move, w, ctx);
     c.jaw = 0.4;
+    c.lunge++;
     return;
   }
   executeMove(b, c, pick.move, ctx);

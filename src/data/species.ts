@@ -34,7 +34,7 @@ export const SPECIES: SpeciesDef[] = [
   // ---- Baia di Portofosco (1-5)
   { id: 'barracuda', name: 'Barracuda', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [1, 3], rarity: 1, size: 'piccola', lengthM: 1.8, trait: 'Morsi rapidi, caccia in coppia',
     artPrompt: 'a lean silver barracuda with a jutting lower jaw full of needle teeth and a cold yellow eye' },
-  { id: 'tartaruga_marina', name: 'Tartaruga marina', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [2, 4], rarity: 2, size: 'media', lengthM: 1.1, trait: 'Scudo che assorbe un colpo',
+  { id: 'tartaruga_marina', name: 'Tartaruga marina', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [2, 4], rarity: 2, size: 'media', lengthM: 2, trait: 'Scudo che assorbe un colpo',
     artPrompt: 'an ancient loggerhead sea turtle with a barnacle-crusted shell like a stone shield and wise heavy eyes' },
   { id: 'torpedine', name: 'Torpedine', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [3, 5], rarity: 2, size: 'piccola', lengthM: 1.5, trait: 'Scarica che stordisce i vicini',
     artPrompt: 'a round dark torpedo ray with electric veins crackling across its disc' },

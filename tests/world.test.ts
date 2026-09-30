@@ -1,7 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { BONE_WALL, START, TILE, WORLD } from '../src/data/worldLayout';
+import { BONE_WALL, COAST, START, TILE, WORLD } from '../src/data/worldLayout';
+import { PORT } from '../src/data/economy';
 import { DIVER } from '../src/data/diver';
-import { generateWorld, isOpen } from '../src/systems/world/worldGen';
+import { generateWorld, isOpen, landHeight } from '../src/systems/world/worldGen';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { depthMetres, zoneAt } from '../src/systems/world/zones';
 
@@ -78,9 +79,19 @@ describe('collisions', () => {
 
 describe('zones', () => {
   it('names the start zone and measures depth in metres', () => {
-    expect(zoneAt(START.x, START.y)).toBe('Barriera Rossa');
+    expect(zoneAt(START.x, START.y)).toBe('Baia di Portofosco');
     expect(zoneAt(500, 1300)).toBe('Abisso');
     expect(depthMetres(WORLD.surfaceY)).toBe(0);
     expect(depthMetres(WORLD.surfaceY + WORLD.unitsPerMetre * 10)).toBe(10);
+  });
+});
+
+describe('the west coast', () => {
+  it('has land above the water, a shore sloping into the bay and open water at the pier', () => {
+    expect(map.solidAt(COAST.shoreX - 40, WORLD.surfaceY - 6)).toBe(true); // land
+    expect(map.solidAt(COAST.shoreX + 40, WORLD.surfaceY - 6)).toBe(false); // sky over the sea
+    expect(map.solidAt(COAST.shoreX + 20, 300)).toBe(true); // the shore under water
+    expect(map.hitCircle(PORT.x, START.y, DIVER.radius)).toBe(false);
+    expect(landHeight(COAST.shoreX + 10)).toBe(0);
   });
 });

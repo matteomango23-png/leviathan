@@ -3,7 +3,14 @@
 // slowing down, cruise past near the diver's depth, speed up towards the far edge and leave; off screen they
 // wait, turn, and come back from the side they left. Followed, or in view too long, they bolt faster than you.
 // Attacks are lunges during a pass, announced by open jaws.
-import { BEAST_COMBAT, BIG_BEAST_MOTION as M, STATUS_RULES, TAMING_FLOW } from '../../data/beasts';
+import {
+  BEAST_COMBAT,
+  BEAST_TEMPER,
+  BIG_BEAST_MOTION as M,
+  STATUS_RULES,
+  TAMING_FLOW,
+  TEAM_RULES,
+} from '../../data/beasts';
 import { WEAPON_RULES } from '../../data/economy';
 import { DIVER } from '../../data/diver';
 import type { GameEvent } from '../events';
@@ -41,6 +48,11 @@ function wantedSpeed(b: WildBeast, ctx: WildContext, rel: number, off: boolean, 
   if (b.motion === 'bolt') return Math.max(M.boltSpeed * U, Math.abs(d.vx) + M.boltOverDiver * U);
   if (off && !aheadOff) return M.catchUpSpeed * U;
   if (b.mood === 'tired') return TAMING_FLOW.tiredSpeed * U;
+  return passSpeed(b, rel) * (BEAST_TEMPER[b.form.speciesId]?.speedMult ?? 1);
+}
+
+/** Speed during a pass (slow species like the sea turtle scale it down). */
+function passSpeed(b: WildBeast, rel: number): number {
   if (b.motion === 'attack') return b.telegraph > 0 ? M.cruiseSpeed * U * 0.6 : M.attackSpeed * U;
   if (rel < M.enterZone) return M.enterSpeed * U - (rel / M.enterZone) * M.enterSlowdown * U;
   if (rel < M.exitZone) return M.cruiseSpeed * U;
@@ -188,12 +200,18 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
   const before = b.vx;
   const blocked = map.moveBody(b, r, dt);
   if (blocked && Math.sign(before) === b.face && Math.abs(b.vx) < Math.abs(before) * 0.5) {
-    // against a wall a visible turn is allowed (CLAUDE.md)
+    // against a wall a visible turn is allowed (CLAUDE.md): animated head first
+    b.turnFrom = b.face;
+    b.turn = 0.001;
     b.face = b.face > 0 ? -1 : 1;
     b.vx = b.face * Math.abs(before) * 0.3;
     b.onScreenTime = 0;
   }
 
+  if (b.turn > 0) {
+    b.turn += dt / TEAM_RULES.turnSeconds;
+    if (b.turn >= 1) b.turn = 0;
+  }
   const wp = clamp(Math.atan2(b.vy, Math.abs(b.vx) + U * 1.5), -M.pitchMax, M.pitchMax);
   const np = b.pitch + (wp - b.pitch) * Math.min(1, dt * M.pitchRate);
   b.pitchV = (np - b.pitch) / Math.max(dt, 1e-3);

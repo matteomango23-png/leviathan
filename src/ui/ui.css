@@ -379,9 +379,6 @@
 .act-move.locked {
   opacity: 0.5;
 }
-#ui.riding .act-dash {
-  display: none;
-}
 
 /* Taming minigame */
 .tame {

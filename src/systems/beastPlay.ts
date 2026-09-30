@@ -50,7 +50,7 @@ export function contextAction(g: BeastWorld): ContextAction {
 /** Speed of the beast you ride (u/s), or undefined on foot. */
 export function mountSpeed(g: BeastWorld): number | undefined {
   const b = activeBeast(g);
-  return g.beasts.riding && b ? formStats(b.form, b.level).speed : undefined;
+  return g.beasts.riding && b ? formStats(b.form, b.level).speed * TEAM_RULES.rideSpeedMult : undefined;
 }
 
 function summon(g: BeastWorld, slot: number, events: GameEvent[]): void {

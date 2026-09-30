@@ -43,6 +43,9 @@ export interface WildBeast extends BodyPose {
   stun: number;
   /** Seconds left slowed (e.g. caught in a net). */
   slow: number;
+  /** 0 = normal; 0..1 while turning around against a wall (animated), from turnFrom. */
+  turn: number;
+  turnFrom: 1 | -1;
 }
 
 export interface Rect {
@@ -99,6 +102,8 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     announced: false,
     stun: 0,
     slow: 0,
+    turn: 0,
+    turnFrom: 1,
   };
 }
 

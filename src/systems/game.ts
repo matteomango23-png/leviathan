@@ -6,7 +6,9 @@ import { FISH } from '../data/world';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { speciesOf } from './beasts/forms';
 import type { Rect } from './beasts/wild';
+import { beastEats } from './feeding';
 import {
+  activeBeast,
   beastAction,
   contextAction,
   createBeasts,
@@ -49,6 +51,8 @@ export interface GameState extends BackpackWorld {
   tamingLock: boolean;
   /** True while the diver floats at the pier of Portofosco. */
   atPort: boolean;
+  /** Seconds before your big beast can eat the next fish (not saved). */
+  timers: { feed: number };
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -96,6 +100,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     wrecks: placeWrecks(map),
     tamingLock: false,
     atPort: false,
+    timers: { feed: 0 },
   };
 }
 
@@ -216,6 +221,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
       respawnAt: respawnPoint(g),
       mountSpeed: mountSpeed(g),
       mountAccelMult: TEAM_RULES.accelMult,
+      mountDash: TEAM_RULES.rideDash,
       speedMult: mods.speedMult,
       o2DrainMult: mods.o2DrainMult,
       canDash: mods.canDash,
@@ -245,6 +251,8 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   events.push(...beastEvents);
   for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
 
+  const eaten = beastEats(g.beasts.companion, activeBeast(g), g.fish, g.timers, dt);
+  if (eaten) catchFish(g, eaten, events);
   stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {
