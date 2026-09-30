@@ -19,6 +19,8 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     const b = makeTeamBeast(s.uid, { ...s.form }, s.level, s.inTeam);
     b.hp = Math.min(s.hp, maxHpOf(b));
     b.ko = s.ko || b.hp <= 0;
+    b.xp = s.xp;
+    b.food = s.food;
     return b;
   });
 }
@@ -43,6 +45,7 @@ function saveGear(g: GearState): SavedGear {
     missions: structuredClone(g.missions),
     mythicStock: g.mythicStock,
     deepestM: Math.floor(g.deepestM),
+    guardians: [...g.guardians],
   };
 }
 
@@ -65,6 +68,8 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     uid: b.uid,
     form: { ...b.form },
     level: b.level,
+    xp: Math.round(b.xp),
+    food: b.food,
     hp: Math.round(b.hp * 10) / 10,
     ko: b.ko,
     inTeam: b.inTeam,

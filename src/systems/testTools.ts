@@ -1,8 +1,11 @@
 // Tools for the test panel (open the game with ?prove in the link). Not part of normal play.
+import { LAIR } from '../data/guardians';
 import { SPECIES } from '../data/species';
 import type { GameState } from './game';
-import type { BeastForm } from './beasts/forms';
-import { addTamed, makeTeamBeast, maxHpOf } from './beasts/team';
+import { formLengthUnits, type BeastForm } from './beasts/forms';
+import { raiseLevel } from './beasts/growth';
+import type { GameEvent } from './events';
+import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { spawnWild } from './beasts/wild';
 
 /** Makes a wild beast of this form appear near the diver, wherever the diver is. */
@@ -37,3 +40,18 @@ export const testMode = (): boolean => {
     return false;
   }
 };
+
+/** Every team beast gains levels (for trying moves, growth and final forms). */
+export function raiseTeam(g: GameState, levels: number): void {
+  const events: GameEvent[] = [];
+  for (const b of teamMembers(g.beasts.team)) raiseLevel(b, levels, events);
+  const c = g.beasts.companion;
+  const b = g.beasts.team.find((x) => x.uid === c?.uid);
+  if (c && b) c.length = formLengthUnits(b.form, b.level);
+}
+
+/** Straight into the Guardian's lair (the fight starts at once). */
+export function goToLair(g: GameState): void {
+  Object.assign(g.diver, { x: LAIR.x - LAIR.rx * 0.6, y: LAIR.y, vx: 0, vy: 0 });
+  g.guardian.ready = true;
+}

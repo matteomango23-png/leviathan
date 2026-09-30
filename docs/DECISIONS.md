@@ -117,3 +117,16 @@ Decisioni del proprietario sulle orche matriarche, la Madre delle madri, l'orca 
 - **Rarità come le carte:** 1 grigio, 2 verde, 3 blu, 4 viola, 5 oro (`data/cards.ts`); cornici speciali per albino, alfa, varianti uniche e forme finali.
 - **Scheda e bestiario:** i dati li prepara `systems/beasts/sheet.ts` (niente calcoli nell'interfaccia). Icone disegnate a mano in SVG (`ui/icons.ts`), nessuna libreria nuova.
 - **Menu del porto a schermo intero** con schede a sinistra e card a destra; l'HUD si nasconde (classe `in-port`) per non sovrapporsi.
+
+## 2026-09-30 — Sessione 4: livelli, crescita e Lo Sfregiato
+
+- **Chi prende l'esperienza** (scelta del proprietario): tutta alla bestia in acqua o cavalcata, un quarto alle altre della squadra (`XP_RULES` in `data/progression.ts`). Si prende quando una bestia selvatica viene sfinita, o fugge perché è un doppione; una sola volta per ogni sua apparizione, così non si può "farmare" la stessa bestia.
+- **Ricompensa:** 12 × livello^1,5, ×1,5 per albini e alfa, ×4 per un Guardiano. La curva dei livelli è quella già scritta in `rules.ts` (`xpCurve`). Primo bilanciamento: circa 2-3 bestie del proprio livello per salire.
+- **Salendo di livello** la vita persa resta la stessa (non si cura tutto). Il Krill dorato passa dallo stesso sistema: sblocca le mosse e dà la forma finale come un livello normale.
+- **Crescita 31-50:** con l'esperienza piena la bestia aspetta la barra del cibo (8 pesci). Il cibo arriva da due parti: la bestia grande in acqua mangia i pesci che attraversa (quando ha fame il pesce va a lei invece che nella sacca) e al porto il pulsante "Nutri" le dà un pesce della sacca (quello di cui ne hai di più). Così crescono anche le bestie piccole, che non mangiano da sole.
+- **Forma finale al 50** solo per le specie iconiche; l'albino ha la sua solo dove è definita (Mega albino), l'alfa e le varianti uniche nessuna.
+- **Salvataggio versione 4:** ogni bestia ha `xp` e `food`; l'equipaggiamento ha `guardians` (Guardiani già sconfitti).
+- **Tana dello Sfregiato** (scelta del proprietario): una grotta chiusa sotto il fondale della Baia (x 780, `LAIR` in `data/guardians.ts`), scavata esattamente e circondata da roccia piena, così nessun'altra grotta ci sbuca dentro. Si entra da un pozzo chiuso da due file di ossa antiche: serve la Carica (livello 7); lo Sfregiato è di livello 8.
+- **Lo scontro:** dentro la grotta le bestie si girano contro le pareti (virata visibile ammessa da CLAUDE.md). Fase 1: giri e affondi, con le fauci aperte come segnale. Sotto il 70%: morsi a raffica (3) e colpo di coda se sei dietro. Sotto il 50%: due squali di livello 4 scendono dal pozzo, una volta per scontro. I suoi morsi tolgono un cuore in più. Durante lo scontro le altre bestie selvatiche non arrivano.
+- **Dopo** (scelte del proprietario): sfinito dà 800 denti e rinnova l'Arpione mitico solo la prima volta, e si può domare. Morte o uscita dalla grotta durante lo scontro: riparte a vita piena, nessuna penalità. Domatura fallita (o uscita lasciandolo sfinito): scappa e torna nella tana dopo la prossima visita al porto. Domato: la tana resta vuota.
+- **Barra del Guardiano** in alto al centro con la tacca di sfinimento; la barretta sopra la bestia per il Guardiano non si mostra.

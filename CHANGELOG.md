@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.4.0 — Livelli, crescita e Lo Sfregiato (30 settembre 2026)
+
+- **Esperienza:** quando una bestia selvatica viene sfinita (o fugge perché ce l'hai già), la bestia che hai in acqua prende tutta l'esperienza, le altre della squadra un quarto. Bestie più forti, albine e alfa ne danno di più.
+- **Livelli:** salendo di livello crescono vita, morso, difesa e velocità (e quindi il danno delle mosse). Al 7 si impara Carica, al 15 Frenesia: un messaggio te lo dice.
+- **Crescita dal 31 al 50:** oltre all'esperienza serve la barra del cibo (8 pesci per livello). La bestia grande mangia da sola i pesci che attraversa; al porto, nel Recinto, il pulsante "Nutri" le dà un pesce della sacca. Cresce del 2% a livello.
+- **Forma finale al 50:** lo squalo bianco diventa lo Squalo bianco Titano (9 m), l'albino il Mega albino. L'alfa non ha forma finale.
+- **Barre di esperienza e cibo** nella squadra e nella scheda della bestia.
+- **Lo Sfregiato, Guardiano della Baia (livello 8):** vive in una tana sotto il fondale della Baia, chiusa da ossa antiche (serve la Carica, livello 7). Entrando parte lo scontro, con una grande barra in alto. Sotto il 70% di vita morde a raffica e colpisce con la coda, sotto metà chiama due squali. Sfinito dà 800 denti e un nuovo Arpione mitico al mercato (solo la prima volta), e si può domare. Se muori o esci ricomincia a vita piena; se fallisci la domatura scappa e torna dopo la tua prossima visita al porto.
+- Il salvataggio si aggiorna da solo (versione 4).
+
 ## v0.3.1 — Correzioni dopo la prova (30 settembre 2026)
 
 - **Portofosco sulla costa:** a ovest della Baia ora c'è la terraferma con le case; il molo parte dalla riva e la partita inizia lì. La Baia comincia subito sotto il porto.

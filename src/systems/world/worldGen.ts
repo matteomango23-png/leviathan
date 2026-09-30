@@ -12,6 +12,8 @@ import {
   type ZoneShapeDef,
 } from '../../data/worldLayout';
 import { fbm, smoothstep } from '../math';
+import { LAIR } from '../../data/guardians';
+import { inLairCave, inLairShaft, inLairShell } from './lair';
 import { TileMap } from './tileMap';
 
 function floorHeight(f: FloorDef, x: number, n: number): number {
@@ -58,6 +60,9 @@ export function isOpen(x: number, y: number): boolean {
   const worldW = WORLD.cols * WORLD.tileSize;
   const worldH = WORLD.rows * WORLD.tileSize;
   if (x < WORLD.edgeMargin || x > worldW - WORLD.edgeMargin || y > worldH - WORLD.edgeMargin) return false;
+  // the Guardian's lair is carved exactly, whatever the noise does around it
+  if (inLairCave(x, y) || inLairShaft(x, y)) return true;
+  if (inLairShell(x, y)) return false;
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
   if (y < COAST.maxY && x < COAST.shoreX + (y - WORLD.surfaceY) * COAST.slope + n * COAST.noise) return false;
   const z = zoneFor(x);
@@ -94,6 +99,13 @@ export function generateWorld(): TileMap {
   for (let ty = BONE_WALL.ty0; ty <= BONE_WALL.ty1; ty++) {
     for (let tx = BONE_WALL.tx0; tx <= BONE_WALL.tx1; tx++) {
       if (map.get(tx, ty) === TILE.water) map.set(tx, ty, TILE.bone);
+    }
+  }
+  // ancient bones close the shaft down to the lair
+  for (const ty of LAIR.gateRows) {
+    for (let tx = 0; tx < map.cols; tx++) {
+      if (map.get(tx, ty) === TILE.water && inLairShaft(tx * T + T / 2, ty * T + T / 2))
+        map.set(tx, ty, TILE.bone);
     }
   }
   for (let ty = 0; ty < map.rows; ty++) {

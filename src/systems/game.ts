@@ -4,7 +4,6 @@ import { TEAM_RULES } from '../data/beasts';
 import { DIVER, SARDINE } from '../data/diver';
 import { FISH } from '../data/world';
 import { START, TILE, WORLD } from '../data/worldLayout';
-import { speciesOf } from './beasts/forms';
 import type { Rect } from './beasts/wild';
 import { beastEats } from './feeding';
 import {
@@ -17,10 +16,13 @@ import {
   weaponHitsBeast,
 } from './beastPlay';
 import { createDiver, stepDiver } from './diver';
-import { checkSwarmBinding, stepSwarmCooldowns, useSlot, type BackpackWorld } from './economy/backpack';
+import { checkSwarmBinding, stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers, newGear, sellBag } from './economy/gear';
+import { feedBeast, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
+import { createGuardian, guardianReturns, stepGuardian, type GuardianWorld } from './guardian';
+import { stepProgress } from './progress';
 import { atPort, nearWreck, openWreck, placeWrecks, type Wreck } from './economy/places';
 import type { GameEvent } from './events';
 import { createFish, stepFish, takeFish, type Fish, type FishState } from './fish';
@@ -32,13 +34,13 @@ import { newSave, type SaveData } from './save/saveData';
 import { restoreGear, restoreTeam } from './save/convert';
 import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
 import type { TileMap } from './world/tileMap';
-import { depthMetres, zoneAt } from './world/zones';
+import { zoneAt } from './world/zones';
 import { stunWild, isInWater } from './beasts/wild';
 import { WEAPON_RULES } from '../data/economy';
 
 export { toSave } from './save/convert';
 
-export interface GameState extends BackpackWorld {
+export interface GameState extends GuardianWorld {
   time: number;
   playTime: number;
   zone: string;
@@ -74,6 +76,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
+  const beasts = createBeasts(restoreTeam(s));
   return {
     map,
     rng,
@@ -86,7 +89,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     fish: createFish(map, rng),
     fishCaught: { ...s.fishCaught },
     seen: new Set(s.seen),
-    beasts: createBeasts(restoreTeam(s)),
+    beasts,
+    guardian: createGuardian(beasts),
     sanctuaries: {
       list,
       current: s.sanctuary !== null && s.sanctuary < list.length ? s.sanctuary : null,
@@ -173,29 +177,6 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
 }
 
-function stepMissionsAndDepth(g: GameState, events: GameEvent[]): void {
-  const d = g.diver;
-  const depth = depthMetres(d.y);
-  const done: string[] = [];
-  if (!d.dead && depth > g.gear.deepestM) {
-    g.gear.deepestM = depth;
-    done.push(...signalMissions(g.gear, { kind: 'depth', metres: depth }));
-  }
-  for (const e of events) {
-    if (e.type === 'fishCaught') done.push(...signalMissions(g.gear, { kind: 'catch', fish: e.fishId }));
-    else if (e.type === 'wreckOpened')
-      done.push(...signalMissions(g.gear, { kind: 'openWreck', wreck: e.id }));
-    else if (e.type === 'wildExhausted') {
-      const w = g.beasts.wilds.find((x) => x.id === e.id);
-      if (w) done.push(...signalMissions(g.gear, { kind: 'exhaust', species: w.form.speciesId }));
-    } else if (e.type === 'tamed') {
-      const b = g.beasts.team.find((x) => x.uid === e.uid);
-      if (b) done.push(...signalMissions(g.gear, { kind: 'tame', region: speciesOf(b.form).region }));
-    }
-  }
-  for (const id of done) events.push({ type: 'missionComplete', id });
-}
-
 /**
  * @param view the world rectangle on screen (beasts use it to stay out of sight when turning)
  */
@@ -250,9 +231,15 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   g.tamingLock = stepBeasts(g, { ...input, action: input.action && wasTaming }, screen, dt, beastEvents);
   events.push(...beastEvents);
   for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
+  stepGuardian(g, dt, events);
 
-  const eaten = beastEats(g.beasts.companion, activeBeast(g), g.fish, g.timers, dt);
-  if (eaten) catchFish(g, eaten, events);
+  const eater = activeBeast(g);
+  const eaten = beastEats(g.beasts.companion, eater, g.fish, g.timers, dt);
+  // a growing beast (levels 31–50) keeps the fish for its nourishment bar
+  if (eaten && eater && isHungry(eater)) {
+    takeFish(eaten);
+    feedBeast(eater, events);
+  } else if (eaten) catchFish(g, eaten, events);
   stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {
@@ -262,7 +249,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   }
 
   g.atPort = atPort(d, g.map);
-  stepMissionsAndDepth(g, events);
+  stepProgress(g, events);
   const zone = zoneAt(d.x, d.y);
   if (zone && zone !== g.zone) {
     g.zone = zone;
@@ -281,6 +268,7 @@ export function enterPort(g: GameState): void {
     b.ko = false;
   }
   g.gear.shopBought = {};
+  guardianReturns(g);
   g.sanctuaries.current = null;
 }
 

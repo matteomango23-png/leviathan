@@ -3,6 +3,8 @@
 import { SPECIAL_FRAMES } from '../data/cards';
 import { buildSheet } from '../systems/beasts/sheet';
 import type { BeastForm } from '../systems/beasts/forms';
+import type { TeamBeast } from '../systems/beasts/team';
+import { growthBars } from './growthBars';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { artUrl } from './art';
@@ -11,6 +13,8 @@ export interface SheetExtra {
   hp?: number;
   ko?: boolean;
   count?: number; // how many of this form you own
+  /** A tamed beast: shows its experience and nourishment bars. */
+  beast?: TeamBeast;
 }
 
 /** Opens a sheet over everything; returns a function that closes it. */
@@ -61,6 +65,7 @@ export function openBeastSheet(
   el('span', 'tag', tags, s.roleName);
   el('span', 'tag', tags, s.levelLabel);
   if (extra.count && extra.count > 1) el('span', 'tag', tags, `×${extra.count}`);
+  if (extra.beast) growthBars(info, extra.beast);
 
   const stats = el('div', 'sheet-stats', info);
   const stat = (label: string, value: string, iconName?: Parameters<typeof icon>[0]): void => {

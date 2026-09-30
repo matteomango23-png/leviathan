@@ -173,6 +173,7 @@ export interface ZoneDef {
   yMax: number;
 }
 export const ZONES: ZoneDef[] = [
+  { name: 'Tana dello Sfregiato', xMin: 560, xMax: 1000, yMin: 340, yMax: 512 }, // LAIR in guardians.ts
   { name: 'Baia di Portofosco', xMin: 0, xMax: 1940, yMin: -Infinity, yMax: 420 },
   { name: 'Barriera Rossa', xMin: 1940, xMax: 3500, yMin: -Infinity, yMax: 420 },
   { name: 'Foresta Sommersa', xMin: 3500, xMax: 4700, yMin: -Infinity, yMax: 420 },

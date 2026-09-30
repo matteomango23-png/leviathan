@@ -1,12 +1,14 @@
 // Hearts, oxygen, depth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
+import { PROGRESSION } from '../data/rules';
 import { SPECIES } from '../data/species';
 import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
 import { depthMetres } from '../systems/world/zones';
+import { BossBar } from './bossBar';
 import { el } from './dom';
 
 const fishName = (id: string): string =>
@@ -24,6 +26,7 @@ export class Hud {
   private readonly info: HTMLDivElement;
   private readonly zone: HTMLDivElement;
   private readonly toastEl: HTMLDivElement;
+  private readonly boss: BossBar;
   private toastTimer = 0;
   private zoneTimer = 0;
   private cache = { hp: -1, max: -1, o2: -1, info: '' };
@@ -38,6 +41,7 @@ export class Hud {
     this.info = el('div', 'hud-info', hud);
     this.zone = el('div', 'zone-name', root);
     this.toastEl = el('div', 'toast', root);
+    this.boss = new BossBar(root);
   }
 
   toast(text: string, seconds = 2.6): void {
@@ -101,6 +105,32 @@ export class Hud {
       } else if (e.type === 'beastKo') {
         const b = tamed(e.uid);
         if (b) this.toast(`${formName(b.form)} è KO. Portalo a un santuario per curarlo.`, 3.2);
+      } else if (e.type === 'guardianAppeared')
+        this.toast('Lo Sfregiato! Il Guardiano della Baia esce dal buio.', 3.5);
+      else if (e.type === 'guardianRage') this.toast('È furioso: morde a raffica e colpisce con la coda!', 3);
+      else if (e.type === 'guardianCalls') this.toast('Lo Sfregiato chiama i suoi squali!', 3);
+      else if (e.type === 'guardianBeaten')
+        this.toast(
+          e.teeth
+            ? `Guardiano sconfitto! +${e.teeth} denti, e c’è di nuovo un Arpione mitico al mercato. Ora domalo!`
+            : 'Guardiano sfinito: avvicinati e domalo!',
+          5,
+        );
+      else if (e.type === 'guardianEscaped')
+        this.toast('Lo Sfregiato fugge. Tornerà nella sua tana dopo la tua prossima visita al porto.', 4.5);
+      else if (e.type === 'guardianLeft') this.toast('Lo Sfregiato torna nel buio della sua tana.', 3);
+      else if (e.type === 'tailSwipe') this.toast('Colpo di coda!', 1.2);
+      else if (e.type === 'levelUp') {
+        const b = tamed(e.uid);
+        const move = e.move ? ` Nuova mossa: ${e.move}.` : '';
+        if (b) this.toast(`${formName(b.form)} sale al livello ${e.level}!${move}`, e.move ? 4 : 2.4);
+      } else if (e.type === 'finalForm') {
+        const b = tamed(e.uid);
+        if (b) this.toast(`Forma finale: ${formName(b.form)}!`, 4.5);
+      } else if (e.type === 'beastFed') {
+        const b = tamed(e.uid);
+        const need = PROGRESSION.nourishmentPerGrowthLevel;
+        if (b) this.toast(`${formName(b.form)} mangia per crescere (${e.food}/${need}).`, 1.6);
       } else if (e.type === 'sanctuaryReached')
         this.toast('Santuario raggiunto: rinascerai qui. Resta fermo per curarti.', 3);
       else if (e.type === 'bonesBroken') this.toast('Le ossa antiche cedono!', 1.5);
@@ -145,6 +175,7 @@ export class Hud {
       this.cache.info = info;
       this.info.textContent = info;
     }
+    this.boss.update(g);
     if (this.toastTimer > 0) {
       this.toastTimer -= dt;
       if (this.toastTimer <= 0) this.toastEl.classList.remove('show');

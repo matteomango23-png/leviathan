@@ -1147,3 +1147,92 @@
 #ui.in-port > :not(.port):not(.sheet) {
   display: none !important;
 }
+
+/* Experience and nourishment bars */
+.gbars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+.gbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.gbar-label {
+  width: 34px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.gbar-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.gbar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6fb3e8, #a8dcff);
+}
+.gbar.food .gbar-fill {
+  background: linear-gradient(90deg, #c79a58, #ffd9a0);
+}
+.gbar-value {
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Guardian health bar */
+.boss-bar {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  left: 50%;
+  width: min(420px, 46vw);
+  transform: translate(-50%, -8px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.4s,
+    transform 0.4s;
+  text-align: center;
+}
+.boss-bar.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.boss-name {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #ffd9a0;
+  text-shadow: 0 1px 3px #000;
+}
+.boss-track {
+  position: relative;
+  height: 9px;
+  border: 1px solid rgba(255, 217, 160, 0.5);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+.boss-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8f2019, #d94a3f);
+  transition: width 0.25s;
+}
+.boss-bar.tired .boss-fill {
+  background: linear-gradient(90deg, #2c9c86, #5ff3d6);
+}
+.boss-notch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ffd9a0;
+}

@@ -18,6 +18,14 @@ export type GameEvent =
   | { type: 'wildRecovered'; id: number }
   | { type: 'wildExhausted'; id: number }
   | { type: 'wildFled'; id: number }
+  // Guardians
+  | { type: 'tailSwipe'; id: number; dir: 1 | -1 }
+  | { type: 'guardianAppeared'; id: number }
+  | { type: 'guardianRage' }
+  | { type: 'guardianCalls' }
+  | { type: 'guardianBeaten'; teeth: number }
+  | { type: 'guardianEscaped' }
+  | { type: 'guardianLeft' }
   | {
       type: 'damage';
       x: number;
@@ -36,6 +44,9 @@ export type GameEvent =
   | { type: 'mounted' }
   | { type: 'dismounted' }
   | { type: 'beastKo'; uid: string }
+  | { type: 'levelUp'; uid: string; level: number; move?: string }
+  | { type: 'finalForm'; uid: string }
+  | { type: 'beastFed'; uid: string; food: number }
   | { type: 'moveUsed'; uid: string; slot: number; x: number; y: number }
   | { type: 'bonesBroken'; tiles: number[] }
   | { type: 'areaPulse'; x: number; y: number; radius: number }

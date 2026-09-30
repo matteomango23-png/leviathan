@@ -8,7 +8,7 @@ import { validateGear, type SavedGear } from './gearSave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -16,6 +16,8 @@ export interface SavedBeast {
   uid: string;
   form: { speciesId: string; variant: 'comune' | 'albino' | 'alfa'; unique?: string; final?: boolean };
   level: number;
+  xp: number; // v4
+  food: number; // v4
   hp: number;
   ko: boolean;
   inTeam: boolean;
@@ -63,6 +65,14 @@ export const MIGRATIONS: Migration[] = [
   { from: 1, migrate: (o) => ({ ...o, team: [], sanctuary: null, brokenTiles: [] }) },
   // v2 → v3 (tappa 3): equipment and economy start empty (the game fills in defaults)
   { from: 2, migrate: (o) => ({ ...o, gear: null }) },
+  // v3 → v4 (tappa 4): tamed beasts gain experience and a nourishment bar
+  {
+    from: 3,
+    migrate: (o) => ({
+      ...o,
+      team: Array.isArray(o.team) ? o.team.map((b) => (isObject(b) ? { ...b, xp: 0, food: 0 } : b)) : o.team,
+    }),
+  },
 ];
 
 export class SaveError extends Error {}
@@ -157,6 +167,8 @@ function validateBeast(raw: unknown): SavedBeast {
     uid: raw.uid,
     form,
     level: level as number,
+    xp: isFiniteNumber(raw.xp) ? Math.max(0, raw.xp) : 0,
+    food: isFiniteNumber(raw.food) ? Math.max(0, Math.floor(raw.food)) : 0,
     hp: raw.hp,
     ko: raw.ko === true,
     inTeam: raw.inTeam === true,

@@ -35,6 +35,7 @@ export interface GearState {
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   mythicStock: number;
   deepestM: number;
+  guardians: string[]; // Guardians beaten (their reward is given once)
 }
 
 export function newGear(): GearState {
@@ -54,6 +55,7 @@ export function newGear(): GearState {
     shopBought: {},
     mythicStock: MARKET.mythicHarpoonStock,
     deepestM: 0,
+    guardians: [],
   };
 }
 

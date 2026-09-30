@@ -4,6 +4,7 @@ import { PROGRESSION } from '../../data/rules';
 import { SWARMS } from '../../data/world';
 import { activeBeast, type BeastWorld } from '../beastState';
 import type { GameEvent } from '../events';
+import { raiseLevel } from '../beasts/growth';
 import { maxHpOf, teamMembers } from '../beasts/team';
 import { cleanBackpack, slotKind, type GearState } from './gear';
 
@@ -48,7 +49,7 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
       break;
     case 'krill_dorato':
       if (!target || target.level >= PROGRESSION.maxLevel) return false;
-      target.level = Math.min(PROGRESSION.maxLevel, target.level + ITEM_RULES.krillLevels);
+      raiseLevel(target, ITEM_RULES.krillLevels, events);
       target.hp = maxHpOf(target);
       break;
     case 'esca':

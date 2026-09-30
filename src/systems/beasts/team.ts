@@ -8,6 +8,10 @@ export interface TeamBeast {
   uid: string;
   form: BeastForm;
   level: number;
+  /** Experience towards the next level. */
+  xp: number;
+  /** Fish eaten towards the next growth level (31–50). */
+  food: number;
   hp: number;
   ko: boolean;
   inTeam: boolean;
@@ -22,7 +26,18 @@ export function maxHpOf(b: TeamBeast): number {
 }
 
 export function makeTeamBeast(uid: string, form: BeastForm, level: number, inTeam: boolean): TeamBeast {
-  const b: TeamBeast = { uid, form, level, hp: 0, ko: false, inTeam, cooldown: 0, moveCooldowns: [0, 0, 0] };
+  const b: TeamBeast = {
+    uid,
+    form,
+    level,
+    xp: 0,
+    food: 0,
+    hp: 0,
+    ko: false,
+    inTeam,
+    cooldown: 0,
+    moveCooldowns: [0, 0, 0],
+  };
   b.hp = maxHpOf(b);
   return b;
 }

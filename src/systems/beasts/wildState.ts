@@ -46,6 +46,12 @@ export interface WildBeast extends BodyPose {
   /** 0 = normal; 0..1 while turning around against a wall (animated), from turnFrom. */
   turn: number;
   turnFrom: 1 | -1;
+  /** Experience already given for this appearance (exhausting it again gives none). */
+  xpGiven: boolean;
+  /** Guardian id (e.g. 'sfregiato') when this beast is a region's Guardian or one of its escorts. */
+  guardian?: string;
+  /** Lives in a Guardian's lair (the Guardian and its escort): moved by beasts/arena.ts, never respawns. */
+  arena?: boolean;
 }
 
 export interface Rect {
@@ -104,6 +110,7 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     slow: 0,
     turn: 0,
     turnFrom: 1,
+    xpGiven: false,
   };
 }
 
@@ -133,6 +140,7 @@ export function spawnWild(
   b.biteCooldown = 0;
   b.stun = 0;
   b.slow = 0;
+  b.xpGiven = false;
 }
 
 /** Chance that a calm beast of this species attacks on a pass. */
