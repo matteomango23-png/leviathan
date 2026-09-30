@@ -118,3 +118,22 @@ describe('chapter 2: freeing the whale', () => {
     expect(hitAnchor(g, a.x, a.y, 1, [])).toBe(false);
   });
 });
+
+describe('saves from before the Delta', () => {
+  it('keep broken walls and the diver in the same place of the wider world', async () => {
+    const { parseSave } = await import('../src/systems/save/saveData');
+    const { BONE_WALL } = await import('../src/data/worldLayout');
+    const g = createGame(map, null, 1);
+    const { toSave } = await import('../src/systems/game');
+    const v5 = JSON.parse(JSON.stringify(toSave(g, new Date()))) as Record<string, unknown>;
+    v5.version = 5;
+    // a tile of the ancient bone wall, numbered with the old 720 columns
+    const tx = BONE_WALL.tx0 + 2;
+    const ty = BONE_WALL.ty0;
+    v5.brokenTiles = [ty * 720 + tx];
+    v5.diver = { x: 2400, y: 150 }; // the reef, before the Delta moved it east
+    const save = parseSave(JSON.stringify(v5));
+    expect(save.brokenTiles).toEqual([ty * WORLD.cols + tx]);
+    expect(save.diver.x).toBe(2400 + (DELTA.x1 - DELTA.x0));
+  });
+});

@@ -9,7 +9,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -78,6 +78,25 @@ export const MIGRATIONS: Migration[] = [
   },
   // v4 → v5 (tappa 5): the story; older saves pick it up from where the player is
   { from: 4, migrate: (o) => ({ ...o, story: null }) },
+  // v5 → v6 (tappa 6): the Delta widened the world by 520 units (65 tiles) at x 1940; the map had 720 columns.
+  // Broken tiles are stored as row × columns + column: re-number them, and move a diver saved in the east.
+  {
+    from: 5,
+    migrate: (o) => {
+      const [oldCols, at, add] = [720, 1940, 520];
+      const newCols = oldCols + add / 8;
+      const tiles = Array.isArray(o.brokenTiles) ? o.brokenTiles : [];
+      const brokenTiles = tiles.map((i) => {
+        if (typeof i !== 'number') return i;
+        const tx = i % oldCols;
+        const ty = Math.floor(i / oldCols);
+        return ty * newCols + tx + (tx * 8 >= at ? add / 8 : 0);
+      });
+      const d = o.diver;
+      const diver = isObject(d) && isFiniteNumber(d.x) && d.x >= at ? { ...d, x: d.x + add } : d;
+      return { ...o, brokenTiles, diver };
+    },
+  },
 ];
 
 export class SaveError extends Error {}
