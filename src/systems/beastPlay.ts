@@ -355,7 +355,7 @@ export function stepBeasts(
       d.vx = 0;
       d.vy = 0;
       w.jaw = 0.2;
-      if (input.tameTap || input.action || input.fireHeld) {
+      if (input.tameTap || input.action) {
         const r = attemptTaming(t, g.rng);
         if (r === 'hit') events.push({ type: 'tamingHit' });
         else if (r === 'miss') events.push({ type: 'tamingMiss' });

@@ -75,7 +75,7 @@ export const TEAM_RULES = {
   biteCooldown: 1.6,
   leaveSeconds: 1.5,
   rideReach: 40, // how close to your beast you must be to climb on
-  riderOffset: [0.1, -0.12] as [number, number], // where you sit, × body length (forward, up)
+  riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   turnSeconds: 0.35, // a companion turning around (only allowed for your own beasts)
   accelMult: 1.7, // riding: acceleration × the beast's speed
 };

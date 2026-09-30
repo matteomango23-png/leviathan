@@ -44,19 +44,31 @@ export class DiverView {
     layer.add([this.line, this.tip, ...this.aimDots, this.root]);
   }
 
-  update(d: DiverState, h: HarpoonState, aim: number | null, dt: number, time: number): void {
+  /**
+   * @param rider when riding a beast: where the diver sits and the beast's pitch
+   */
+  update(
+    d: DiverState,
+    h: HarpoonState,
+    aim: number | null,
+    dt: number,
+    time: number,
+    rider: { x: number; y: number; pitch: number } | null = null,
+  ): void {
     const speed = Math.hypot(d.vx, d.vy);
-    this.kick += dt * (2 + speed * 0.05);
+    this.kick += dt * (rider ? 0.8 : 2 + speed * 0.05);
     const k = Math.sin(this.kick * 5);
     this.finA.setRotation(0.25 * k - 0.05);
     this.finB.setRotation(-0.25 * k + 0.05);
 
     const scale = DIVER.lengthUnits / LOCAL_LENGTH;
-    const wantTilt = Phaser.Math.Clamp(Math.atan2(d.vy, Math.abs(d.vx) + 30) * 0.5, -0.35, 0.35);
+    const wantTilt = rider
+      ? rider.pitch
+      : Phaser.Math.Clamp(Math.atan2(d.vy, Math.abs(d.vx) + 30) * 0.5, -0.35, 0.35);
     this.tilt += (wantTilt - this.tilt) * Math.min(1, dt * 6);
     const blink = d.invulnerable > 0 && !d.dead && Math.floor(time * 12) % 2 === 0;
     this.root
-      .setPosition(d.x, d.y)
+      .setPosition(rider ? rider.x : d.x, rider ? rider.y : d.y)
       .setScale(d.face * scale, scale)
       .setRotation(this.tilt * d.face)
       .setAlpha(d.dead ? 0.5 : blink ? 0.55 : 1);
@@ -66,8 +78,8 @@ export class DiverView {
     const shot = h.shot;
     this.tip.setVisible(!!shot);
     if (shot) {
-      const hx = d.x + d.face * DIVER.lengthUnits * 0.28;
-      const hy = d.y + DIVER.lengthUnits * 0.05;
+      const hx = (rider ? rider.x : d.x) + d.face * DIVER.lengthUnits * 0.28;
+      const hy = (rider ? rider.y : d.y) + DIVER.lengthUnits * 0.05;
       this.line.lineStyle(0.35, 0xb9c7c9, 0.8);
       this.line.lineBetween(hx, hy, shot.x, shot.y);
       this.tip.setPosition(shot.x, shot.y);

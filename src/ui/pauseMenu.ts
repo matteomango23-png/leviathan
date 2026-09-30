@@ -3,8 +3,11 @@ import type { GameState } from '../systems/game';
 import { SaveError } from '../systems/save/saveData';
 import { toSave } from '../systems/game';
 import type { Session } from '../scenes/session';
+import { testMode } from '../systems/testTools';
 import { el } from './dom';
 import { exportSave, pickSaveFile } from './saveTransfer';
+import { renderTeamPanel } from './teamPanel';
+import { renderTestPanel } from './testPanel';
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -31,6 +34,12 @@ export class PauseMenu {
     const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
     const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');
     this.msg = el('p', 'menu-msg', panel);
+    renderTeamPanel(panel, game);
+    if (testMode())
+      renderTestPanel(panel, game, (m) => {
+        this.say(m);
+        onResume();
+      });
     el(
       'p',
       '',

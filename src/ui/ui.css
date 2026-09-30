@@ -287,3 +287,232 @@
 .menu-msg.error {
   color: #ff8a80;
 }
+
+/* Team slots (top centre) */
+.team-slots {
+  position: absolute;
+  top: calc(8px + var(--safe-t));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.team-slot {
+  pointer-events: auto;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--panel);
+  border: 2px solid rgba(176, 138, 74, 0.7);
+}
+.team-slot img {
+  width: 100%;
+  height: 130%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  display: block;
+}
+.team-slot.out {
+  border-color: var(--glow);
+  box-shadow: 0 0 8px var(--glow);
+}
+.team-slot.ko img {
+  filter: grayscale(1) brightness(0.45);
+}
+.team-hp {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 5px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.7);
+}
+.team-hp-fill {
+  height: 100%;
+  background: #86d89a;
+}
+.team-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+}
+
+/* Context button and moves */
+.act-ctx {
+  position: absolute;
+  right: calc(26px + var(--safe-r));
+  bottom: calc(112px + var(--safe-b));
+  width: 64px;
+  height: 64px;
+  border-color: var(--glow);
+  color: #fff;
+  font-size: 13px;
+}
+.move-row {
+  position: absolute;
+  right: calc(110px + var(--safe-r));
+  bottom: calc(18px + var(--safe-b));
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.act-move {
+  --cd: 0;
+  width: 66px;
+  height: 66px;
+  font-size: 11px;
+  line-height: 1.1;
+  padding: 4px;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.65) calc(var(--cd) * 100%), transparent 0),
+    radial-gradient(circle at 50% 38%, rgba(120, 40, 36, 0.55), rgba(3, 10, 16, 0.85));
+}
+.act-move.locked {
+  opacity: 0.5;
+}
+#ui.riding .act-dash {
+  display: none;
+}
+
+/* Taming minigame */
+.tame {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: auto;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-bottom: calc(22% + var(--safe-b));
+  background: radial-gradient(ellipse at 50% 70%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.45));
+}
+.tame-title {
+  color: var(--lamp);
+  font-size: 18px;
+  letter-spacing: 2px;
+  font-variant: small-caps;
+  text-shadow: 0 1px 4px #000;
+}
+.tame-bar {
+  position: relative;
+  width: min(420px, 70vw);
+  height: 22px;
+  border: 2px solid var(--line);
+  background: rgba(3, 12, 19, 0.85);
+  border-radius: 3px;
+}
+.tame-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(95, 243, 214, 0.45);
+  box-shadow: 0 0 10px rgba(95, 243, 214, 0.6);
+}
+.tame-needle {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 4px;
+  margin-left: -2px;
+  background: #fff;
+  box-shadow: 0 0 6px #fff;
+}
+.tame-pips {
+  display: flex;
+  gap: 8px;
+}
+.tame-pips span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--glow);
+}
+.tame-pips span.ok {
+  background: var(--glow);
+}
+.tame-msg {
+  font-size: 13px;
+  color: var(--muted);
+  text-shadow: 0 1px 3px #000;
+}
+.tame.shake .tame-bar {
+  animation: shake 0.25s;
+  border-color: var(--blood);
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+/* Team list and test panel in the pause menu */
+.team-panel,
+.test-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.menu h3 {
+  margin: 6px 0 2px;
+  font-size: 14px;
+  color: var(--lamp);
+  letter-spacing: 1px;
+}
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+  border: 1px solid rgba(176, 138, 74, 0.3);
+  border-radius: 4px;
+}
+.team-row img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.team-info {
+  flex: 1;
+  min-width: 0;
+}
+.team-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.team-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+.menu-btn.small {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+.menu-btn:disabled {
+  opacity: 0.45;
+}
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 6px;
+}
+
+/* the hidden attribute always wins over display rules */
+#ui [hidden] {
+  display: none !important;
+}

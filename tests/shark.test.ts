@@ -88,9 +88,32 @@ describe('white shark movement rules', () => {
     for (let t = 0; t < BIG_BEAST_MOTION.followSeconds + 1; t += DT) {
       g.diver.vx = DIVER.lengthUnits * 3;
       stepGame(g, emptyInput(), DT, viewAround(g));
-      if (w.motion === 'bolt') bolted = true;
+      if ((w.motion as string) === 'bolt') bolted = true;
     }
     expect(bolted).toBe(true);
+  });
+});
+
+describe('white shark attacks', () => {
+  it('opens its jaws first (the cue), then lunges and bites the diver', () => {
+    const g = bayGame(21);
+    const w = shark(g);
+    spawnWild(w, { speciesId: 'squalo_bianco', variant: 'comune' }, 5, makeRng(4), 0);
+    run(g, 0.1);
+    w.motion = 'enter';
+    w.face = 1;
+    w.x = g.diver.x - w.length * 0.9;
+    w.y = g.diver.y;
+    w.attackPlanned = true;
+    w.biteCooldown = 0;
+    let telegraphed = false;
+    const events = run(g, 3, emptyInput(), (gg) => {
+      const s = shark(gg);
+      if (s.motion === 'attack' && s.telegraph > 0 && s.jaw > 0) telegraphed = true;
+    });
+    expect(telegraphed).toBe(true);
+    expect(events.some((e) => e.type === 'wildBite')).toBe(true);
+    expect(g.diver.hp).toBeLessThan(g.diver.maxHp);
   });
 });
 

@@ -66,4 +66,13 @@ Poi: `Edit this image: same exact pose, size and position, but with the jaws wid
 
 L'alfa non ha forma finale; l'albino ha solo la sua (Mega albino). Per le altre specie non è ancora deciso.
 
+## Altre bestie già pronte (npm run art, 30 settembre 2026)
+
+Card e sprite (chiuso + aperto) generati da `art-inbox/`: barracuda (card già presente), tartaruga marina, squalo martello, squalo tigre, megattera, orca, coccodrillo marino. Torpedine: card già presente + solo profilo chiuso (manca il profilo a bocca aperta).
+
+## Come aggiungere immagini nuove
+
+1. Salva le immagini in `art-inbox/` con i nomi `<id>_card.jpg`, `<id>_side.jpg`, `<id>_side_open.jpg` (se il profilo guarda a sinistra: `<id>_side_left.jpg`).
+2. Chiedi a Claude Code di eseguire `npm run art` (i file già presenti non vengono toccati; con `--force` si rifanno).
+
 Per polpo, calamari, Piovra, Kraken, granchio, lontra, foca e coccodrilli (zampe) servono pezzi separati: da definire quando si arriva a loro.

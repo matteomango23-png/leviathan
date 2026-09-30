@@ -40,6 +40,34 @@ export class TerrainView {
     }
   }
 
+  /** Forgets the painted chunks containing these tiles (e.g. a broken bone wall) so they are repainted. */
+  invalidateTiles(tiles: number[]): void {
+    const S = TERRAIN.chunkUnits;
+    const T = this.map.tileSize;
+    const ids = new Set<string>();
+    for (const i of tiles) {
+      const x = (i % this.map.cols) * T;
+      const y = Math.floor(i / this.map.cols) * T;
+      // the soft outline reaches a little into the neighbouring chunks
+      for (const [dx, dy] of [
+        [0, 0],
+        [-T, 0],
+        [T, 0],
+        [0, -T],
+        [0, T],
+      ] as const)
+        ids.add(`${Math.floor((x + dx) / S)},${Math.floor((y + dy) / S)}`);
+    }
+    for (const id of ids) {
+      const slot = this.byChunk.get(id);
+      if (!slot) continue;
+      this.byChunk.delete(id);
+      slot.chunk = null;
+      slot.lastUsed = -1;
+      slot.image.setVisible(false);
+    }
+  }
+
   /** Chunk coordinates covering a world rectangle (plus a margin of `pad` chunks). */
   private chunksIn(view: Phaser.Geom.Rectangle, pad: number): [number, number][] {
     const S = TERRAIN.chunkUnits;

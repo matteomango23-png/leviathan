@@ -65,7 +65,13 @@ export class Controls {
         return;
       }
       this.keys.add(k);
-      if ((k === 'shift' || k === 'k') && !e.repeat) this.session.input.dash = true;
+      if (e.repeat) return;
+      const input = this.session.input;
+      if (k === 'shift' || k === 'k') input.dash = true;
+      else if (k === 'e') input.action = true;
+      else if (k === ' ' || k === 'j') input.tameTap = true;
+      else if (k >= '1' && k <= '5') input.summon = Number(k) - 1;
+      else if (k === 'z' || k === 'x' || k === 'c') input.move = { z: 1, x: 2, c: 3 }[k];
     });
     this.listen<KeyboardEvent>(window, 'keyup', (e) => this.keys.delete(e.key.toLowerCase()));
     this.listen(window, 'blur', () => this.releaseAll());
