@@ -1,6 +1,6 @@
 # Illustrazioni delle card
 
-Nel gioco resta la pixel art; le illustrazioni servono per card di squadra, bestiario e scheda della bestia. La descrizione di ogni bestia è il campo `artPrompt` in `data/species.ts` (e in `UNIQUE_VARIANTS` per Lo Sfregiato e La Regina bianca, in `SWARMS` di `data/world.ts` per i 4 sciami).
+Nel gioco le bestie sono sprite di profilo dipinti (sezione "Sprite di gioco"); le illustrazioni servono per card di squadra, bestiario e scheda della bestia. La descrizione di ogni bestia è il campo `artPrompt` in `data/species.ts` (e in `UNIQUE_VARIANTS` per Lo Sfregiato e La Regina bianca, in `SWARMS` di `data/world.ts` per i 4 sciami).
 
 ## Come generarle
 

@@ -4,7 +4,7 @@ Aggiornato al 29 settembre 2026. La copia viva e commentabile è il Claude Doc "
 
 ## Visione
 
-Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D pixel art: Pokémon incontra Monster Hunter sott'acqua. Sei l'ultimo domatore di Portofosco: domi squali, cetacei e mostri preistorici, li cavalchi e li schieri in squadra per fermare la Compagnia dell'Olio Nero prima che dissangui il Leviatano.
+Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafica realistica dipinta: Pokémon incontra Monster Hunter sott'acqua. Sei l'ultimo domatore di Portofosco: domi squali, cetacei e mostri preistorici, li cavalchi e li schieri in squadra per fermare la Compagnia dell'Olio Nero prima che dissangui il Leviatano.
 
 - **Collezione:** 34 bestie, tutte domabili, più varianti rare; ogni bestia sale di livello e impara mosse.
 - **Caccia:** le bestie grandi si affrontano leggendo i loro attacchi e usando le mosse del tipo giusto.
@@ -46,7 +46,7 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 - **Forme finali delle varianti:** l'albino ha una propria forma finale (per lo squalo bianco il Mega albino, 1,5 volte la taglia standard); l'alfa non ne ha. Per le altre specie non è ancora deciso.
 - **Varianti:** ogni specie ha albino (+10%, 8% degli incontri) e alfa (+20%, più grande, 4%); i Guardiani hanno varianti uniche. Una stella in più.
 - **Scheda della bestia:** illustrazione, stelle, tipo, ruolo, statistiche, le tre mosse con livello di sblocco, lucchetto, danno attuale e al prossimo livello, habitat, varianti, storia.
-- **Layout della scheda in orizzontale** (il gioco si usa in orizzontale): illustrazione a sinistra a tutta altezza, sempre intera; a destra nome, stelle, tipo, statistiche e mosse, scorrevoli. In verticale: illustrazione sopra, dati sotto. L'illustrazione non va mai tagliata. Tocco sull'illustrazione: passa al modello pixel animato.
+- **Layout della scheda in orizzontale** (il gioco si usa in orizzontale): illustrazione a sinistra a tutta altezza, sempre intera; a destra nome, stelle, tipo, statistiche e mosse, scorrevoli. In verticale: illustrazione sopra, dati sotto. L'illustrazione non va mai tagliata. Tocco sull'illustrazione: passa al modello animato del gioco.
 - **Ossigeno:** capodoglio, megattera e Livyatan sono stazioni d'ossigeno: mentre li cavalchi l'ossigeno non cala.
 - **Vita e KO:** in sella i colpi li prende la bestia; a zero va KO e si cura in un santuario.
 - **Catena alimentare:** i predatori, tuoi e selvatici, mangiano le creature più piccole.

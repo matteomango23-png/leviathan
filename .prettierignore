@@ -1,0 +1,16 @@
+# Build output and dependencies
+dist/
+dev-dist/
+node_modules/
+coverage/
+package-lock.json
+
+# Kit files kept exactly as delivered (see docs/DECISIONS.md)
+src/data/
+prototype/
+docs/
+public/
+art-inbox/
+CLAUDE.md
+LEGGIMI.md
+CHANGELOG.md
