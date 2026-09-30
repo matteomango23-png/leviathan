@@ -1,7 +1,7 @@
 {
   "name": "leviathan",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Leviatano: underwater exploration and beast-taming game (iPhone PWA)",
   "type": "module",
   "scripts": {
@@ -9,19 +9,21 @@
     "dev:phone": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "art": "node scripts/art.ts"
   },
   "dependencies": {
     "phaser": "4.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.0",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",

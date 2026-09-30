@@ -50,3 +50,36 @@ Ogni scelta tecnica importante: data, decisione, motivo. Le più recenti in fond
 ## 2026-09-30 — Direzione grafica realistica
 
 **Decisione:** confermata dal proprietario la grafica realistica dark fantasy di `CLAUDE.md` e `prototype/prova-realistica.html`. Le frasi sulla "pixel art" in `docs/GDD.md` e `docs/ART.md` sono state allineate.
+
+## 2026-09-30 — Sessione 2: animazione a strisce al posto di Rope/Mesh
+
+**Decisione:** `src/views/beastView.ts` taglia il profilo (1000×460) in 26 strisce verticali. Ogni striscia segue un tratto della spina dorsale: è ruotata e accorciata come nella prova realistica (coda che ondeggia, testa quasi ferma). Le strisce si sovrappongono del 7% per non mostrare fessure. Per la bocca aperta si cambia immagine (`<id>_open`).
+**Motivo:** Phaser 4 non ha Rope/Mesh. Costa poco (26 immagini per bestia) e il risultato è uguale alla prova.
+
+## 2026-09-30 — Regole del combattimento delle bestie
+
+- **Danno di una mossa** = morso della bestia (`statsAt`, che cresce già del 4% per livello) × `POWER_MULT` della mossa × moltiplicatore di tipo × bonus (`x2vsWounded`) × (1 − difesa del bersaglio). La crescita del 4% non viene applicata due volte.
+- **Lo squalo selvatico** attacca con un affondo durante un passaggio: prima apre le fauci e rallenta (il segnale per schivare), poi accelera e morde. Dopo il morso prosegue ed esce: non si gira mai in vista. Da calmo attacca nel 35% dei passaggi; se l'hai colpito, a ogni passaggio per 30 s.
+- **Sfinimento:** sotto il 25% della vita (`TAMING.exhaustionThresholdFraction`) diventa domabile per 20 s. Un doppione della versione comune invece fugge (GDD).
+- **Domatura:** "tre errori concessi" = tre errori sono perdonati, il quarto fa fallire. Senza squadra la differenza di livello si misura da `TAMING_FLOW.levelWithoutTeam` (1).
+- **In sella** i morsi li prende la bestia (GDD). Il compagno che morde un selvatico ne riceve metà del danno in cambio.
+- **Il compagno può girarsi in vista** con un'animazione di virata: la regola "non si girano mai in vista" vale per le bestie selvatiche.
+
+## 2026-09-30 — Dove vive lo squalo bianco
+
+**Decisione:** `WILD_SPAWNS` in `src/data/beasts.ts`: lo squalo compare quando sei nella Baia di Portofosco (x 80–1900, fino a circa 60 m). Nella Baia c'è anche un santuario (`SANCTUARIES`).
+**Motivo:** nel prototipo lo squalo stava nelle grotte crepuscolari, oltre i 90 m, troppo profonde per l'ossigeno della muta leggera; la Baia (0–60 m in `REGIONS`) è la sua regione nei dati.
+
+## 2026-09-30 — Pannello di prova
+
+**Decisione:** aprendo il gioco con `?prove` in fondo al link, nel menu di pausa compare un pannello per far apparire una qualsiasi delle sei versioni dello squalo, avere uno squalo di livello 15 (tutte e 3 le mosse) e curarsi.
+**Motivo:** Titano, Mega albino e lo Sfregiato arrivano normalmente con la crescita (tappa 4) e il Guardiano (tappa 4). Senza pannello non si potrebbero vedere adesso. Il gioco normale non cambia.
+
+## 2026-09-30 — npm run art e cartella del proprietario
+
+**Decisione:** `scripts/art.ts` (TypeScript eseguito direttamente da Node 24) + `scripts/art/cutout.ts` (funzioni pure, testate). Non sovrascrive mai i file già pronti senza `--force`. Il suffisso `_left` specchia i profili rivolti a sinistra (torpedine). Le immagini della cartella "asset animali ai" sono state copiate in `art-inbox/` con i nomi standard; la cartella originale resta sul computer ed è esclusa da git (sarebbe un doppione).
+**Dipendenza aggiunta:** `@types/node` (solo per controllare i tipi degli script; separato dal codice del gioco con `tsconfig.scripts.json`).
+
+## 2026-09-30 — Salvataggio versione 2
+
+**Decisione:** aggiunti `team` (bestie domate: forma, livello, vita, KO, squadra o riserva), `sanctuary` (dove rinasci) e `brokenTiles` (ossa rotte). Prima migrazione reale: v1 → v2 aggiunge i campi vuoti. Una bestia sconosciuta nel file di importazione blocca l'importazione con un messaggio chiaro.

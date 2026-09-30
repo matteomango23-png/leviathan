@@ -1,0 +1,364 @@
+// Wild big beasts (tappa 2: the white shark). Movement follows CLAUDE.md and the shark block of
+// update() in prototype/prova-realistica.html: they never turn around in view. They enter from an edge
+// slowing down, cruise past near the diver's depth, speed up towards the far edge and leave; off screen they
+// wait, turn, and come back from the side they left. Followed, or in view too long, they bolt faster than you.
+// Attacks are lunges during a pass, announced by open jaws.
+import { BEAST_COMBAT, BIG_BEAST_MOTION as M, TAMING_FLOW, type WildSpawnDef } from '../../data/beasts';
+import { DIVER } from '../../data/diver';
+import { TAMING } from '../../data/rules';
+import type { Stats } from '../../data/species';
+import type { GameEvent } from '../events';
+import { clamp, range, type Rng } from '../math';
+import type { TileMap } from '../world/tileMap';
+import { headOf, inBiteReach, type BodyPose } from './combat';
+import { formLengthUnits, formStats, type BeastForm } from './forms';
+
+export type Mood = 'calm' | 'angry' | 'tired' | 'taming' | 'fleeing';
+export type Motion = 'gone' | 'away' | 'hidden' | 'enter' | 'cruise' | 'exit' | 'bolt' | 'attack';
+
+export interface WildBeast extends BodyPose {
+  id: number;
+  spawn: WildSpawnDef;
+  form: BeastForm;
+  level: number;
+  stats: Stats;
+  hp: number;
+  maxHp: number;
+  vx: number;
+  vy: number;
+  pitchV: number;
+  phase: number;
+  jaw: number;
+  flash: number;
+  barTime: number;
+  motion: Motion;
+  mood: Mood;
+  t: number;
+  dy: number;
+  onScreenTime: number;
+  followTime: number;
+  angryTime: number;
+  tiredTime: number;
+  attackPlanned: boolean;
+  telegraph: number;
+  biteCooldown: number;
+  bit: boolean;
+  respawn: number;
+  leaving: boolean;
+  announced: boolean;
+}
+
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface WildContext {
+  diver: { x: number; y: number; vx: number; vy: number; dead: boolean };
+  view: Rect;
+  map: TileMap;
+  rng: Rng;
+  dt: number;
+}
+
+const U = DIVER.lengthUnits;
+
+export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
+  const form: BeastForm = { speciesId: spawn.speciesId, variant: 'comune' };
+  return {
+    id,
+    spawn,
+    form,
+    level: 1,
+    stats: formStats(form, 1),
+    hp: 1,
+    maxHp: 1,
+    x: -1000,
+    y: 0,
+    face: 1,
+    pitch: 0,
+    length: formLengthUnits(form),
+    vx: 0,
+    vy: 0,
+    pitchV: 0,
+    phase: 0,
+    jaw: 0,
+    flash: 0,
+    barTime: 0,
+    motion: 'gone',
+    mood: 'calm',
+    t: 0,
+    dy: 0,
+    onScreenTime: 0,
+    followTime: 0,
+    angryTime: 0,
+    tiredTime: 0,
+    attackPlanned: false,
+    telegraph: 0,
+    biteCooldown: 0,
+    bit: false,
+    respawn: 0,
+    leaving: false,
+    announced: false,
+  };
+}
+
+/** Brings a beast (back) into the world as a given form and level; it waits off screen. */
+export function spawnWild(
+  b: WildBeast,
+  form: BeastForm,
+  level: number,
+  rng: Rng,
+  waitSeconds?: number,
+): void {
+  b.form = form;
+  b.level = level;
+  b.stats = formStats(form, level);
+  b.maxHp = b.stats.hp;
+  b.hp = b.maxHp;
+  b.length = formLengthUnits(form, level);
+  b.mood = 'calm';
+  b.motion = 'hidden';
+  b.t = waitSeconds ?? range(rng, M.waitCalm[0], M.waitCalm[1]);
+  b.face = rng() < 0.5 ? 1 : -1;
+  b.vx = 0;
+  b.vy = 0;
+  b.attackPlanned = false;
+  b.leaving = false;
+  b.announced = false;
+  b.biteCooldown = 0;
+}
+
+export const isInWater = (b: WildBeast): boolean =>
+  b.motion !== 'gone' && b.motion !== 'away' && b.motion !== 'hidden';
+export const isVisibleWild = isInWater;
+
+function diverInArea(b: WildBeast, d: WildContext['diver'], map: TileMap): boolean {
+  const [x0, y0, x1, y1] = b.spawn.area;
+  const m = 60;
+  return d.x > x0 - m && d.x < x1 + m && d.y > y0 - m && d.y < y1 + m && d.y > map.surfaceY + 6;
+}
+
+/** Keeps a y inside open water near an x (so the beast does not appear inside rock). */
+function openY(map: TileMap, x: number, y: number, r: number): number | null {
+  for (let k = 0; k <= 12; k++) {
+    for (const s of k === 0 ? [0] : [-k, k]) {
+      const yy = y + s * 10;
+      if (yy > map.surfaceY + r && !map.hitCircle(x, yy, r)) return yy;
+    }
+  }
+  return null;
+}
+
+/** Damage to a wild beast. Returns what happened. */
+export function hitWild(
+  b: WildBeast,
+  dmg: number,
+  tameable: boolean,
+): 'hit' | 'exhausted' | 'flee' | 'tiredHit' | 'ignored' {
+  if (b.mood === 'taming' || b.mood === 'fleeing' || !isInWater(b)) return 'ignored';
+  b.flash = BEAST_COMBAT.hitFlashSeconds;
+  b.barTime = BEAST_COMBAT.barSeconds;
+  if (b.mood === 'tired') {
+    b.tiredTime = Math.max(b.tiredTime, TAMING_FLOW.tiredSeconds * 0.5);
+    return 'tiredHit';
+  }
+  b.hp = Math.max(0, b.hp - dmg);
+  b.mood = 'angry';
+  b.angryTime = BEAST_COMBAT.angrySeconds;
+  if (b.motion === 'enter' || b.motion === 'cruise') b.attackPlanned = true;
+  const threshold = b.maxHp * TAMING.exhaustionThresholdFraction;
+  if (b.hp <= threshold) {
+    b.hp = Math.max(b.hp, 0.1); // exhausted, never dead
+    b.attackPlanned = false;
+    if (b.motion === 'attack') b.motion = 'exit';
+    if (tameable) {
+      b.mood = 'tired';
+      b.tiredTime = TAMING_FLOW.tiredSeconds;
+      return 'exhausted';
+    }
+    b.mood = 'fleeing';
+    b.motion = 'bolt';
+    return 'flee';
+  }
+  return 'hit';
+}
+
+function updateMood(b: WildBeast, dt: number, events: GameEvent[]): void {
+  if (b.mood === 'angry') {
+    b.angryTime -= dt;
+    if (b.angryTime <= 0) b.mood = 'calm';
+  } else if (b.mood === 'tired') {
+    b.tiredTime -= dt;
+    if (b.tiredTime <= 0) {
+      b.mood = 'angry';
+      b.angryTime = BEAST_COMBAT.angrySeconds;
+      b.hp = Math.max(b.hp, b.maxHp * TAMING_FLOW.failHpFraction);
+      events.push({ type: 'wildRecovered', id: b.id });
+    }
+  }
+}
+
+/** Speed the beast wants along its facing, from where it is on screen. */
+function wantedSpeed(b: WildBeast, ctx: WildContext, rel: number, off: boolean, aheadOff: boolean): number {
+  const d = ctx.diver;
+  if (b.motion === 'bolt') return Math.max(M.boltSpeed * U, Math.abs(d.vx) + M.boltOverDiver * U);
+  if (off && !aheadOff) return M.catchUpSpeed * U;
+  if (b.mood === 'tired') return TAMING_FLOW.tiredSpeed * U;
+  if (b.motion === 'attack') return b.telegraph > 0 ? M.cruiseSpeed * U * 0.6 : M.attackSpeed * U;
+  if (rel < M.enterZone) return M.enterSpeed * U - (rel / M.enterZone) * M.enterSlowdown * U;
+  if (rel < M.exitZone) return M.cruiseSpeed * U;
+  return M.cruiseSpeed * U + Math.pow((rel - M.exitZone) / (1 - M.exitZone), 2) * M.exitBoost * U;
+}
+
+function goHidden(b: WildBeast, ctx: WildContext): void {
+  if (b.mood === 'fleeing') {
+    b.motion = 'gone';
+    b.mood = 'calm';
+    b.respawn = range(ctx.rng, b.spawn.respawnSeconds[0], b.spawn.respawnSeconds[1]);
+    return;
+  }
+  if (b.leaving) {
+    b.motion = 'away';
+    return;
+  }
+  b.motion = 'hidden';
+  const wait = b.mood === 'angry' ? M.waitHidden : M.waitCalm;
+  b.t = range(ctx.rng, wait[0], wait[1]);
+}
+
+export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): void {
+  const { dt, view, map, rng } = ctx;
+  const d = ctx.diver;
+  b.flash = Math.max(0, b.flash - dt);
+  b.jaw = Math.max(0, b.jaw - dt);
+  b.barTime = Math.max(0, b.barTime - dt);
+  b.biteCooldown -= dt;
+  if (b.motion === 'gone' || b.mood === 'taming') return;
+  updateMood(b, dt, events);
+
+  const present = diverInArea(b, d, map);
+  if (b.motion === 'away') {
+    if (present) {
+      b.leaving = false;
+      b.motion = 'hidden';
+      b.t = range(rng, M.waitCalm[0], M.waitCalm[1]);
+    }
+    return;
+  }
+  b.leaving = !present;
+
+  const halfL = b.length * M.offscreenMargin;
+  const r = b.length * BEAST_COMBAT.collideRadiusFrac;
+  const top = map.surfaceY + b.length * 0.12;
+  const ty0 = clamp(d.y + b.dy, top, map.height - r);
+
+  if (b.motion === 'hidden') {
+    b.t -= dt;
+    b.x = b.face > 0 ? view.x + view.w + halfL * 1.3 : view.x - halfL * 1.3;
+    b.y += (ty0 - b.y) * Math.min(1, dt * 2);
+    b.vx = 0;
+    b.vy = 0;
+    if (b.t <= 0 && !b.leaving && !d.dead) {
+      b.face = b.face > 0 ? -1 : 1;
+      const dy = (rng() * 2 - 1) * M.depthSpread * view.h;
+      const y = openY(map, b.x + b.face * halfL, clamp(d.y + dy, top, map.height - r), r * 2);
+      if (y === null) {
+        b.face = b.face > 0 ? -1 : 1;
+        b.t = 1;
+        return;
+      }
+      b.dy = y - d.y;
+      b.y = y;
+      b.motion = 'enter';
+      b.vx = b.face * M.enterSpeed * U;
+      b.onScreenTime = 0;
+      b.followTime = 0;
+      b.attackPlanned = b.mood !== 'tired' && (b.mood === 'angry' || rng() < BEAST_COMBAT.attackChance);
+      if (!b.announced) {
+        b.announced = true;
+        events.push({ type: 'wildAppeared', id: b.id });
+      }
+    }
+    return;
+  }
+
+  const sx = b.x - view.x;
+  const off = sx < -halfL || sx > view.w + halfL;
+  const aheadOff = off && ((b.face > 0 && sx > view.w) || (b.face < 0 && sx < 0));
+  const rel = b.face > 0 ? sx / view.w : 1 - sx / view.w;
+
+  if (!off) {
+    b.onScreenTime += dt;
+    const following = Math.sign(d.vx) === b.face && Math.abs(d.vx) > U * M.followMinSpeed;
+    b.followTime = following ? b.followTime + dt : Math.max(0, b.followTime - dt * 0.5);
+  }
+  const canBolt = b.motion !== 'bolt' && b.motion !== 'attack' && b.mood !== 'tired';
+  if (canBolt && (b.followTime > M.followSeconds || b.onScreenTime > M.lingerSeconds)) b.motion = 'bolt';
+
+  if (aheadOff && b.motion !== 'attack') {
+    goHidden(b, ctx);
+    return;
+  }
+
+  // the attack: jaws open (the cue), then a lunge at the diver
+  const head = headOf(b);
+  if (
+    b.attackPlanned &&
+    b.mood !== 'tired' &&
+    (b.motion === 'enter' || b.motion === 'cruise') &&
+    b.biteCooldown <= 0 &&
+    !d.dead
+  ) {
+    const ahead = (d.x - head.x) * b.face;
+    if (ahead > 0 && ahead < BEAST_COMBAT.attackRange * U && Math.abs(d.y - b.y) < view.h * 0.35) {
+      b.motion = 'attack';
+      b.telegraph = BEAST_COMBAT.telegraphSeconds;
+      b.jaw = BEAST_COMBAT.telegraphSeconds + 0.3;
+      b.bit = false;
+    }
+  }
+  if (b.motion === 'attack') {
+    if (b.telegraph > 0) b.telegraph -= dt;
+    else b.jaw = Math.max(b.jaw, 0.2);
+    const passed = (d.x - head.x) * b.face < -b.length * 0.1;
+    if (b.telegraph <= 0 && !b.bit && !d.dead && inBiteReach(b, d.x, d.y)) {
+      b.bit = true;
+      b.jaw = 0.45;
+      b.biteCooldown = BEAST_COMBAT.biteCooldown;
+      events.push({ type: 'wildBite', id: b.id });
+    }
+    if (b.bit || passed || d.dead || aheadOff) {
+      b.motion = 'exit';
+      b.attackPlanned = false;
+    }
+  } else if (b.motion !== 'bolt') {
+    b.motion = rel < M.enterZone ? 'enter' : rel < M.exitZone ? 'cruise' : 'exit';
+  }
+
+  const want = wantedSpeed(b, ctx, rel, off, aheadOff);
+  let ty = b.motion === 'attack' ? clamp(d.y, top, map.height - r) : ty0;
+  // look ahead: rock in front of the snout → rise over it
+  if (map.solidAt(head.x + b.face * b.length * 0.12, head.y)) ty = b.y - b.length * 0.4;
+  const ky = b.motion === 'attack' && b.telegraph <= 0 ? 4 : M.steerY;
+  b.vx += (b.face * want - b.vx) * Math.min(1, dt * M.steerX);
+  b.vy += ((ty - b.y) * 0.8 - b.vy) * Math.min(1, dt * ky);
+
+  const before = b.vx;
+  const blocked = map.moveBody(b, r, dt);
+  if (blocked && Math.sign(before) === b.face && Math.abs(b.vx) < Math.abs(before) * 0.5) {
+    // against a wall a visible turn is allowed (CLAUDE.md)
+    b.face = b.face > 0 ? -1 : 1;
+    b.vx = b.face * Math.abs(before) * 0.3;
+    b.onScreenTime = 0;
+  }
+
+  const wp = clamp(Math.atan2(b.vy, Math.abs(b.vx) + U * 1.5), -M.pitchMax, M.pitchMax);
+  const np = b.pitch + (wp - b.pitch) * Math.min(1, dt * M.pitchRate);
+  b.pitchV = (np - b.pitch) / Math.max(dt, 1e-3);
+  b.pitch = np;
+  const speed = Math.hypot(b.vx, b.vy);
+  b.phase += dt * (M.swimPhaseBase + (speed / U) * M.swimPhasePerSpeed + (b.motion === 'attack' ? 4 : 0));
+}

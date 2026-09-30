@@ -2,8 +2,21 @@
 // Every save carries `version`. When the format changes: bump SAVE_VERSION and add a migration
 // from the previous version below. Never edit an existing migration.
 
-export const SAVE_VERSION = 1;
+import { PROGRESSION } from '../../data/rules';
+import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
+
+export const SAVE_VERSION = 2;
 export const SAVE_GAME_ID = 'leviatano';
+
+/** A tamed beast as stored in the save. */
+export interface SavedBeast {
+  uid: string;
+  form: { speciesId: string; variant: 'comune' | 'albino' | 'alfa'; unique?: string; final?: boolean };
+  level: number;
+  hp: number;
+  ko: boolean;
+  inTeam: boolean;
+}
 
 export interface SaveData {
   game: typeof SAVE_GAME_ID;
@@ -13,6 +26,9 @@ export interface SaveData {
   diver: { x: number; y: number };
   fishCaught: Record<string, number>;
   seen: string[]; // bestiary ids seen at least once
+  team: SavedBeast[]; // team and reserve (v2)
+  sanctuary: number | null; // respawn sanctuary index (v2)
+  brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -24,6 +40,9 @@ export function newSave(start: { x: number; y: number }): SaveData {
     diver: { x: start.x, y: start.y },
     fishCaught: {},
     seen: [],
+    team: [],
+    sanctuary: null,
+    brokenTiles: [],
   };
 }
 
@@ -33,8 +52,11 @@ export interface Migration {
   migrate: (old: Record<string, unknown>) => Record<string, unknown>;
 }
 
-/** Real migrations of the game, in order. Empty until the save format changes for the first time. */
-export const MIGRATIONS: Migration[] = [];
+/** Real migrations of the game, in order. Never edit one: add the next. */
+export const MIGRATIONS: Migration[] = [
+  // v1 → v2 (tappa 2): tamed beasts, respawn sanctuary, broken tiles
+  { from: 1, migrate: (o) => ({ ...o, team: [], sanctuary: null, brokenTiles: [] }) },
+];
 
 export class SaveError extends Error {}
 
@@ -75,6 +97,16 @@ export function validate(data: Record<string, unknown>): SaveData {
   }
   if (!Array.isArray(data.seen) || !data.seen.every((s) => typeof s === 'string'))
     throw new SaveError('Bestiario non valido.');
+  if (!Array.isArray(data.team)) throw new SaveError('Squadra non valida.');
+  const team = data.team.map(validateBeast);
+  if (new Set(team.map((b) => b.uid)).size !== team.length) throw new SaveError('Squadra non valida.');
+  const inTeam = team.filter((b) => b.inTeam);
+  for (const b of inTeam.slice(PROGRESSION.teamSize)) b.inTeam = false;
+  const sanctuary = data.sanctuary;
+  if (sanctuary !== null && (!Number.isInteger(sanctuary) || (sanctuary as number) < 0))
+    throw new SaveError('Santuario non valido.');
+  if (!Array.isArray(data.brokenTiles) || !data.brokenTiles.every((t) => Number.isInteger(t) && t >= 0))
+    throw new SaveError('Mappa non valida.');
   return {
     game: SAVE_GAME_ID,
     version: SAVE_VERSION,
@@ -83,6 +115,35 @@ export function validate(data: Record<string, unknown>): SaveData {
     diver: { x: diver.x, y: diver.y },
     fishCaught,
     seen: [...new Set(data.seen as string[])],
+    team,
+    sanctuary: sanctuary as number | null,
+    brokenTiles: [...new Set(data.brokenTiles as number[])],
+  };
+}
+
+function validateBeast(raw: unknown): SavedBeast {
+  const bad = (): never => {
+    throw new SaveError('Una bestia della squadra non è valida.');
+  };
+  if (!isObject(raw) || typeof raw.uid !== 'string' || !isObject(raw.form)) return bad();
+  const f = raw.form;
+  if (typeof f.speciesId !== 'string' || !SPECIES.some((s) => s.id === f.speciesId)) return bad();
+  if (f.variant !== 'comune' && f.variant !== 'albino' && f.variant !== 'alfa') return bad();
+  if (f.unique !== undefined && !UNIQUE_VARIANTS.some((u) => u.id === f.unique)) return bad();
+  const level = raw.level;
+  if (!Number.isInteger(level) || (level as number) < 1 || (level as number) > PROGRESSION.maxLevel)
+    return bad();
+  if (!isFiniteNumber(raw.hp) || raw.hp < 0) return bad();
+  const form: SavedBeast['form'] = { speciesId: f.speciesId, variant: f.variant };
+  if (typeof f.unique === 'string') form.unique = f.unique;
+  if (f.final === true) form.final = true;
+  return {
+    uid: raw.uid,
+    form,
+    level: level as number,
+    hp: raw.hp,
+    ko: raw.ko === true,
+    inTeam: raw.inTeam === true,
   };
 }
 

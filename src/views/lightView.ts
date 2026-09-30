@@ -52,7 +52,13 @@ export class LightView {
    * @param flash red overlay strength (hurt, low oxygen), 0..1
    * @param fade black fade (death), 0..1
    */
-  update(v: ViewInfo, lamp: LampInfo, flash: number, fade: number): void {
+  update(
+    v: ViewInfo,
+    lamp: LampInfo,
+    flash: number,
+    fade: number,
+    glows: { x: number; y: number; r: number }[] = [],
+  ): void {
     const s = LIGHT.maskScale;
     const mw = Math.ceil(v.w * s);
     const mh = Math.ceil(v.h * s);
@@ -79,6 +85,17 @@ export class LightView {
       scale: (diverPx * LIGHT.haloRadiusDiver * s) / HALO_TEX.radius,
       blendMode: Phaser.BlendModes.ERASE,
     });
+    for (const gl of glows) {
+      const gx = v.w / 2 + (gl.x - v.cx) * v.zoom;
+      const gy = v.h / 2 + (gl.y - v.cy) * v.zoom;
+      const r = gl.r * v.zoom;
+      if (gx < -r || gy < -r || gx > v.w + r || gy > v.h + r) continue;
+      rt.stamp(TEX.halo, undefined, gx * s, gy * s, {
+        scale: (r * s) / HALO_TEX.radius,
+        alpha: 0.8,
+        blendMode: Phaser.BlendModes.ERASE,
+      });
+    }
     rt.stamp(TEX.cone, undefined, lx * s, ly * s, {
       originX: 0,
       originY: 0.5,

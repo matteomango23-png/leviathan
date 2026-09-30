@@ -1,5 +1,6 @@
 // UI: HUD and touch/keyboard controls, drawn as HTML over the game canvas (crisp text, safe areas).
 import Phaser from 'phaser';
+import { BeastUi } from '../ui/beastUi';
 import { Controls } from '../ui/controls';
 import { el } from '../ui/dom';
 import { Hud } from '../ui/hud';
@@ -11,6 +12,7 @@ export class UIScene extends Phaser.Scene {
   private root!: HTMLDivElement;
   private hud!: Hud;
   private controls!: Controls;
+  private beastUi!: BeastUi;
 
   constructor() {
     super('UI');
@@ -25,6 +27,7 @@ export class UIScene extends Phaser.Scene {
     this.root.id = 'ui';
     this.hud = new Hud(this.root);
     this.controls = new Controls(this.root, this.session, () => this.openPause());
+    this.beastUi = new BeastUi(this.root, this.session);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -49,7 +52,8 @@ export class UIScene extends Phaser.Scene {
   }
 
   private onGameEvents(events: GameEvent[]): void {
-    this.hud.onEvents(events);
+    if (this.session.game) this.hud.onEvents(events, this.session.game);
+    this.beastUi.onEvents(events);
   }
 
   private onToast(text: string): void {
@@ -76,5 +80,6 @@ export class UIScene extends Phaser.Scene {
     if (!g) return;
     this.controls.update(g.diver.dashCooldown <= 0);
     this.hud.update(g, Math.min(0.1, deltaMs / 1000));
+    this.beastUi.update(g);
   }
 }
