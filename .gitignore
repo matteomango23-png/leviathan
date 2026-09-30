@@ -1,0 +1,23 @@
+# Dependencies and build output
+node_modules/
+dist/
+dev-dist/
+coverage/
+*.tsbuildinfo
+
+# Original kit files (kept locally, not in the repository)
+*.zip
+*.pdf
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and local env
+*.log
+.env
+.env.*

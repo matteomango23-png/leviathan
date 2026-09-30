@@ -1,0 +1,178 @@
+// Leviatano — moves. 3 per beast, unlocked at PROGRESSION.moveUnlockLevels (1, 7, 15).
+// `text` is the authoritative description shown in the UI; `fx` are implementation hints.
+import { MoveTypeId } from './rules';
+
+export type Power = 'nessuno' | 'basso' | 'medio' | 'alto' | 'altissimo';
+export const POWER_MULT: Record<Power, number> = { nessuno: 0, basso: 1, medio: 1.6, alto: 2.5, altissimo: 4 }; // tuning, × beast bite stat
+
+export interface MoveDef {
+  id: string;
+  species: string;
+  slot: 1 | 2 | 3;
+  name: string;
+  type: MoveTypeId;
+  cooldown: number;   // seconds
+  power: Power;
+  fx: string[];       // e.g. 'stun:1.5', 'area:vicini', 'breakBone', 'heal:team', 'summon:orca:2:4'
+  text: string;       // Italian UI description
+  anim?: string;      // signature moves only: animation brief for the artist/implementer
+}
+
+const m = (species: string, slot: 1 | 2 | 3, name: string, type: MoveTypeId, cooldown: number, power: Power, fx: string[], text: string, anim?: string): MoveDef =>
+  ({ id: `${species}_${slot}`, species, slot, name, type, cooldown, power, fx, text, anim });
+
+export const MOVES: MoveDef[] = [
+  // ---- Baia di Portofosco
+  m('barracuda', 1, 'Morso rapido', 'predatore', 1, 'basso', ['hits:2'], 'Due morsi veloci'),
+  m('barracuda', 2, 'Affondo', 'predatore', 5, 'medio', ['dash', 'ranged'], 'Scatta sul bersaglio da lontano'),
+  m('barracuda', 3, 'Branco d\u2019argento', 'predatore', 18, 'basso', ['buff:attackSpeed:2:6'], 'Per 6 s attacca al doppio della velocità',
+    'Un banco di barracuda argentati sfreccia intorno al bersaglio come una lama rotante'),
+  m('tartaruga_marina', 1, 'Colpo di becco', 'corazzato', 1.5, 'basso', [], 'Danno basso'),
+  m('tartaruga_marina', 2, 'Guscio protettivo', 'corazzato', 8, 'nessuno', ['shield:diver:next'], 'Scudo sul sub che assorbe il prossimo colpo'),
+  m('tartaruga_marina', 3, 'Muraglia di pietra', 'corazzato', 20, 'nessuno', ['dmgReduce:team:0.5:5'], 'Per 5 s tutta la squadra subisce metà danni',
+    'Il guscio si ingrandisce in una cupola di pietra traslucida sopra la squadra'),
+  m('torpedine', 1, 'Scossa', 'tempesta', 1.5, 'basso', ['stunChance:0.15:1'], 'Danno basso, piccola probabilità di stordire'),
+  m('torpedine', 2, 'Campo elettrico', 'tempesta', 7, 'basso', ['area:vicini', 'stun:1.5'], 'Stordisce 1,5 s i nemici vicini'),
+  m('torpedine', 3, 'Scarica totale', 'tempesta', 20, 'alto', ['area:ampia', 'stun:2'], 'Onda elettrica ampia: danno alto, stordimento 2 s',
+    'Il disco si accende e un anello di fulmini si espande a onda'),
+  m('squalo_bianco', 1, 'Morso', 'predatore', 1, 'medio', [], 'Danno medio'),
+  m('squalo_bianco', 2, 'Carica', 'predatore', 6, 'medio', ['dash', 'breakBone', 'executeLowHp'], 'Travolge chi ha poca vita; sfonda le ossa antiche'),
+  m('squalo_bianco', 3, 'Frenesia', 'predatore', 18, 'medio', ['frenzy:4', 'x2vsWounded'], '4 s di morsi a raffica, danno doppio sui bersagli feriti',
+    'Occhi che diventano rossi, schermo che vibra, scia di sangue a ogni morso'),
+
+  // ---- Delta delle Mangrovie
+  m('coccodrillo_nilo', 1, 'Morso corazzato', 'corazzato', 1.5, 'medio', [], 'Danno medio'),
+  m('coccodrillo_nilo', 2, 'Agguato dalla riva', 'corazzato', 8, 'alto', ['invisible:self:3', 'ambush'], 'Sparisce sotto la superficie e colpisce di sorpresa'),
+  m('coccodrillo_nilo', 3, 'Frustata di coda', 'corazzato', 18, 'alto', ['area:vicini', 'knockback'], 'La coda spazza tutto intorno e respinge i nemici',
+    'La coda spazza l\u2019acqua in un arco di fango e bolle'),
+  m('coccodrillo_marino', 1, 'Morso a tenaglia', 'predatore', 1.5, 'medio', ['grab:0.5'], 'Morso che blocca il bersaglio per un istante'),
+  m('coccodrillo_marino', 2, 'Balzo dalla superficie', 'predatore', 7, 'medio', ['dash', 'fromAbove'], 'Si lancia sul bersaglio dall\u2019alto'),
+  m('coccodrillo_marino', 3, 'Rotolo della morte', 'predatore', 20, 'altissimo', ['grab:2', 'stun:2'], 'Afferra, ruota su se stesso e stordisce: danno altissimo',
+    'Afferra il bersaglio e rotola su se stesso in un vortice di bolle e fango'),
+
+  // ---- Barriera Rossa
+  m('pesce_palla', 1, 'Spine', 'corazzato', 2, 'basso', ['area:vicini'], 'Danno basso a chi è vicino'),
+  m('pesce_palla', 2, 'Gonfiarsi', 'corazzato', 8, 'nessuno', ['area:vicini', 'knockback'], 'Respinge tutti i nemici vicini'),
+  m('pesce_palla', 3, 'Nube tossica', 'abissale', 18, 'medio', ['cloud:poison:6'], 'Veleno: danno nel tempo a chi la attraversa',
+    'Si gonfia e sputa una nube verde-viola che resta sospesa nell\u2019acqua'),
+  m('murena', 1, 'Morso dalle crepe', 'abissale', 1.5, 'medio', [], 'Danno medio'),
+  m('murena', 2, 'Presa', 'abissale', 7, 'basso', ['grab:2'], 'Trattiene il bersaglio 2 s'),
+  m('murena', 3, 'Seconda mascella', 'predatore', 16, 'alto', [], 'La mascella interna scatta: danno alto',
+    'Zoom rapido sulla bocca: la mascella interna scatta fuori'),
+  m('squalo_martello', 1, 'Testata', 'tempesta', 1.5, 'medio', ['knockback'], 'Danno medio, respinge'),
+  m('squalo_martello', 2, 'Senso elettrico', 'tempesta', 10, 'nessuno', ['reveal:8', 'weakPoints'], 'Per 8 s rivela creature, relitti e punti deboli'),
+  m('squalo_martello', 3, 'Martello di tuono', 'tempesta', 18, 'alto', ['dash', 'trail:lightning'], 'Carica che lascia fulmini lungo il percorso',
+    'Scia elettrica lungo la carica, fulmini che cadono dietro'),
+  m('manta', 1, 'Colpo d\u2019ala', 'tempesta', 1.5, 'basso', [], 'Danno basso'),
+  m('manta', 2, 'Planata', 'tempesta', 6, 'nessuno', ['dash:long', 'crossCurrents'], 'Scatto lunghissimo; attraversa le correnti forti'),
+  m('manta', 3, 'Ricaduta', 'tempesta', 20, 'alto', ['area:ampia', 'stun:1.5'], 'Balzo e ricaduta: onda d\u2019urto che stordisce tutto intorno',
+    'Sale fuori inquadratura e ricade con un\u2019onda d\u2019urto circolare di bolle'),
+  m('megattera', 1, 'Colpo di pinna', 'glaciale', 2, 'medio', ['slowAttack'], 'Danno medio, lento'),
+  m('megattera', 2, 'Canto', 'glaciale', 10, 'nessuno', ['heal:team', 'strongerWhenRidden'], 'Cura la squadra; più forte mentre la cavalchi'),
+  m('megattera', 3, 'Rete di bolle', 'glaciale', 22, 'basso', ['area:ampia', 'trap:3'], 'Anello di bolle gelide che intrappola i nemici 3 s',
+    'Nuota a spirale intorno ai nemici, la colonna di bolle si chiude come una gabbia'),
+  m('re_corallo', 1, 'Chela', 'corazzato', 1.5, 'medio', [], 'Danno medio'),
+  m('re_corallo', 2, 'Corazza di corallo', 'corazzato', 10, 'nessuno', ['taunt:5', 'dmgReduce:self:0.5:5'], 'Attira gli attacchi su di sé e ne dimezza il danno'),
+  m('re_corallo', 3, 'Tenaglia', 'corazzato', 18, 'alto', ['grab:1', 'armorBreak'], 'Afferra e schiaccia: danno alto, spezza le corazze',
+    'Una chela gigante entra dal bordo dello schermo e schiaccia, schegge di corallo'),
+
+  // ---- Foresta Sommersa
+  m('lontra_marina', 1, 'Colpo di sasso', 'corazzato', 2, 'basso', ['ranged'], 'Lancia un sasso: danno basso a distanza'),
+  m('lontra_marina', 2, 'Scorte', 'glaciale', 12, 'nessuno', ['heal:team'], 'Cura la squadra'),
+  m('lontra_marina', 3, 'Fiuto per tesori', 'glaciale', 25, 'nessuno', ['teethBonus:2:20'], 'Per 20 s relitti e pesci danno il doppio dei denti',
+    'Scintille dorate su relitti e pesci vicini per tutta la durata'),
+  m('anguilla_elettrica', 1, 'Scarica', 'tempesta', 1.5, 'medio', [], 'Danno medio'),
+  m('anguilla_elettrica', 2, 'Catena', 'tempesta', 7, 'medio', ['chain:3'], 'La scarica salta tra 3 nemici'),
+  m('anguilla_elettrica', 3, 'Sovraccarico', 'tempesta', 20, 'basso', ['aura:stun:5'], 'Per 5 s chi la tocca viene stordito',
+    'Il corpo diventa bianco elettrico, archi che collegano tutto ciò che tocca'),
+  m('squalo_tigre', 1, 'Morso vorace', 'predatore', 1.5, 'medio', ['lifesteal:0.2'], 'Si cura un po\u2019 a ogni morso'),
+  m('squalo_tigre', 2, 'Divorare', 'predatore', 10, 'nessuno', ['devourSmall', 'heal:self:big'], 'Ingoia un pesce o un nemico piccolo e si cura molto'),
+  m('squalo_tigre', 3, 'Mascella d\u2019acciaio', 'corazzato', 18, 'alto', [], 'Denti che segano anche gli altri squali: danno alto',
+    'Denti che brillano come metallo, scintille all\u2019impatto'),
+  m('polpo_gigante', 1, 'Tentacolo', 'abissale', 1.5, 'basso', [], 'Danno basso'),
+  m('polpo_gigante', 2, 'Inchiostro', 'abissale', 10, 'nessuno', ['loseAggro:4'], 'I nemici perdono le tue tracce per 4 s'),
+  m('polpo_gigante', 3, 'Mimetismo', 'abissale', 22, 'nessuno', ['invisible:diverAndSelf:6'], 'Tu e il polpo diventate invisibili per 6 s',
+    'Tu e il polpo sfumate nell\u2019acqua, restano visibili solo gli occhi'),
+  m('piovra', 1, 'Frusta di tentacoli', 'abissale', 1.5, 'medio', ['targets:2'], 'Colpisce 2 bersagli'),
+  m('piovra', 2, 'Stretta', 'abissale', 8, 'basso', ['grab:3'], 'Immobilizza un bersaglio 3 s'),
+  m('piovra', 3, 'Abbraccio degli abissi', 'abissale', 22, 'alto', ['area:ampia', 'pull', 'grab:2'], 'Trascina a sé i nemici vicini e li stritola',
+    'Tentacoli enormi escono dai bordi dello schermo e trascinano i nemici al centro'),
+
+  // ---- Mare di Ghiaccio
+  m('foca_leopardo', 1, 'Morso gelido', 'glaciale', 1.5, 'medio', [], 'Danno medio'),
+  m('foca_leopardo', 2, 'Trascinare', 'glaciale', 7, 'basso', ['grab:1', 'dragAway'], 'Afferra un nemico e lo trascina via'),
+  m('foca_leopardo', 3, 'Agguato dal ghiaccio', 'glaciale', 18, 'alto', ['blink:behindTarget'], 'Riappare alle spalle del bersaglio: danno alto',
+    'Sparisce in un lampo di cristalli e riappare alle spalle del bersaglio'),
+  m('beluga', 1, 'Schiocco sonar', 'glaciale', 2, 'basso', ['ranged'], 'Danno basso a distanza'),
+  m('beluga', 2, 'Canto della balena bianca', 'glaciale', 12, 'nessuno', ['revealMap:10'], 'Rivela la mappa intorno per 10 s'),
+  m('beluga', 3, 'Coro gelido', 'glaciale', 22, 'nessuno', ['area:ampia', 'slow:0.5:6'], 'Rallenta tutti i nemici del 50% per 6 s',
+    'Cerchi di suono azzurri che si allargano, i nemici si coprono di brina'),
+  m('narvalo', 1, 'Colpo di corno', 'glaciale', 1.5, 'medio', [], 'Trafigge: danno medio'),
+  m('narvalo', 2, 'Lancia', 'glaciale', 6, 'medio', ['dash', 'pierce', 'thinIce'], 'Carica che trapassa più nemici; apre il ghiaccio sottile'),
+  m('narvalo', 3, 'Corno risonante', 'tempesta', 18, 'medio', ['area:cono', 'stun:1.5', 'armorBreak'], 'Il corno vibra: onda che stordisce e spacca i carapaci',
+    'Il corno vibra, onde concentriche viola partono dalla punta'),
+  m('orca', 1, 'Morso', 'glaciale', 1.5, 'medio', [], 'Danno medio'),
+  m('orca', 2, 'Sfondamento', 'glaciale', 8, 'medio', ['dash', 'breakIce'], 'Carica che spezza il ghiaccio antico'),
+  m('orca', 3, 'Tattica di branco', 'glaciale', 20, 'alto', ['summon:orca:2:4', 'x3target'], 'Arrivano altre due orche: per 4 s attaccano in branco il bersaglio, danno ×3, poi ripartono',
+    'Due orche arrivano dal buio, le tre attaccano in formazione per 4 s, poi ripartono insieme'),
+
+  // ---- Fossa del Capodoglio
+  m('rana_pescatrice', 1, 'Morso trappola', 'abissale', 2, 'medio', ['melee:close'], 'Danno medio a distanza ravvicinata'),
+  m('rana_pescatrice', 2, 'Lampada viva', 'abissale', 12, 'nessuno', ['light:x2:15'], 'Per 15 s raddoppia la luce intorno al sub'),
+  m('rana_pescatrice', 3, 'Esca', 'abissale', 20, 'nessuno', ['lure:point:6'], 'Attira i nemici verso un punto, lontano da te',
+    'La lampada si stacca e fluttua nel punto scelto, i nemici la seguono'),
+  m('squalo_goblin', 1, 'Mascella scattante', 'predatore', 1.5, 'medio', ['reach:x2'], 'Colpisce da doppia distanza'),
+  m('squalo_goblin', 2, 'Rostro', 'predatore', 7, 'basso', ['bleed:4'], 'Perfora: danno nel tempo'),
+  m('squalo_goblin', 3, 'Presa dal buio', 'abissale', 18, 'medio', ['pull:target'], 'Scatta dal buio e trascina a sé il bersaglio',
+    'Lo schermo si scurisce, si vede solo la mascella che scatta e trascina'),
+  m('calamaro_gigante', 1, 'Tentacoli', 'abissale', 1.5, 'medio', [], 'Danno medio'),
+  m('calamaro_gigante', 2, 'Presa uncinata', 'abissale', 8, 'basso', ['grab:3', 'worksOnBeasts'], 'Blocca una bestia per 3 s'),
+  m('calamaro_gigante', 3, 'Nube d\u2019inchiostro', 'abissale', 20, 'nessuno', ['cloud:blind:6'], 'I nemici nella nube mancano i colpi',
+    'Esplosione di inchiostro che copre mezzo schermo'),
+  m('capodoglio', 1, 'Testata', 'abissale', 2, 'alto', ['slowAttack'], 'Danno alto, lenta'),
+  m('capodoglio', 2, 'Ecolocalizzazione', 'abissale', 12, 'nessuno', ['reveal:10', 'weakPoints'], 'Rivela tutto nel raggio, punti deboli compresi'),
+  m('capodoglio', 3, 'Colpo sonico', 'tempesta', 22, 'medio', ['area:cono', 'stun:2'], 'Onda sonora che stordisce tutto davanti a sé',
+    'Onda a cono che deforma l\u2019acqua davanti a lui'),
+  m('calamaro_colossale', 1, 'Uncini rotanti', 'abissale', 1.5, 'medio', ['bleed:3'], 'Danno medio, fa sanguinare'),
+  m('calamaro_colossale', 2, 'Occhio abissale', 'abissale', 10, 'nessuno', ['area:ampia', 'fear:3'], 'Terrore: i nemici fuggono per 3 s'),
+  m('calamaro_colossale', 3, 'Stritolamento', 'abissale', 22, 'altissimo', ['grab:2'], 'Danno altissimo su un bersaglio',
+    'Tentacoli che avvolgono il bersaglio, schermo che trema a ogni stretta'),
+
+  // ---- Abisso del Tempio
+  m('isopode_gigante', 1, 'Morso raschiante', 'corazzato', 2, 'basso', [], 'Danno basso'),
+  m('isopode_gigante', 2, 'Arrotolarsi', 'corazzato', 10, 'nessuno', ['invulnerable:diver:3'], 'Fa da scudo: il sub non subisce danni per 3 s'),
+  m('isopode_gigante', 3, 'Carapace riparatore', 'corazzato', 25, 'nessuno', ['heal:team:0.33'], 'Cura la squadra di un terzo della vita',
+    'Si arrotola, un bagliore dorato passa alla squadra'),
+  m('serpente_di_mare', 1, 'Frustata', 'tempesta', 1.5, 'medio', [], 'Danno medio'),
+  m('serpente_di_mare', 2, 'Vortice', 'tempesta', 8, 'basso', ['area:ampia', 'pull'], 'Risucchia i nemici in un gorgo'),
+  m('serpente_di_mare', 3, 'Tempesta degli abissi', 'tempesta', 24, 'alto', ['randomBolts:6'], 'Fulmini sui nemici per 6 s',
+    'L\u2019acqua si oscura, fulmini viola cadono a caso sui nemici'),
+  m('mosasauro', 1, 'Morso frantumante', 'corazzato', 1.5, 'medio', ['ignoreDefense'], 'Ignora la difesa'),
+  m('mosasauro', 2, 'Carica corazzata', 'corazzato', 7, 'medio', ['dash', 'unstoppable', 'breakBone'], 'Non si ferma e non può essere stordito'),
+  m('mosasauro', 3, 'Fauci del mondo antico', 'predatore', 20, 'altissimo', [], 'Morso enorme: danno altissimo',
+    'Mezzo secondo al rallentatore, poi le fauci si chiudono'),
+  m('megalodonte', 1, 'Morso colossale', 'predatore', 1.5, 'alto', [], 'Danno alto'),
+  m('megalodonte', 2, 'Carica', 'predatore', 7, 'alto', ['dash', 'breakBone', 'executeLowHp'], 'Travolge tutto'),
+  m('megalodonte', 3, 'Terrore', 'predatore', 22, 'medio', ['area:enorme', 'stun:2.5'], 'Paralizza tutto intorno per 2,5 s',
+    'Ruggito, onda rossa che si espande, tutto si immobilizza'),
+
+  // ---- Fossa Nera
+  m('kraken', 1, 'Tentacolo titanico', 'abissale', 2, 'medio', ['targets:3'], 'Colpisce 3 bersagli'),
+  m('kraken', 2, 'Maelstrom', 'tempesta', 10, 'medio', ['area:ampia', 'pull', 'stun:1.5'], 'Gorgo che trascina e stordisce'),
+  m('kraken', 3, 'Risveglio del Kraken', 'abissale', 30, 'alto', ['tentaclesEverywhere:6'], 'Per 6 s tentacoli emergono dal fondale ovunque',
+    'Il fondale trema e i tentacoli emergono ovunque'),
+  m('dunkleosteus', 1, 'Lame ossee', 'corazzato', 1.5, 'alto', [], 'Danno alto'),
+  m('dunkleosteus', 2, 'Scudo cranico', 'corazzato', 8, 'nessuno', ['parry:next'], 'Para completamente il prossimo colpo'),
+  m('dunkleosteus', 3, 'Il morso più forte', 'corazzato', 20, 'altissimo', ['x1.5'], 'Il danno più alto del gioco su un bersaglio',
+    'Zoom, lampo bianco all\u2019impatto, numero di danno enorme'),
+  m('livyatan', 1, 'Morso del re', 'predatore', 1.5, 'alto', [], 'Danno alto'),
+  m('livyatan', 2, 'Speronata sonica', 'abissale', 8, 'medio', ['stun:1.5'], 'Testata che stordisce'),
+  m('livyatan', 3, 'Caccia ai giganti', 'predatore', 22, 'alto', ['x3vsBigger'], 'Danno triplo contro bestie più grandi di lui',
+    'Occhi che si accendono, carica con scia rossa, scossone al morso'),
+  m('leviatano', 1, 'Onda primordiale', 'variabile', 2, 'medio', ['counterType'], 'Prende il tipo che batte il bersaglio'),
+  m('leviatano', 2, 'Muta di scaglie', 'variabile', 12, 'nessuno', ['setOwnType'], 'Cambia il proprio tipo a scelta'),
+  m('leviatano', 3, 'Occhio del Leviatano', 'variabile', 30, 'alto', ['area:schermo', 'stun:4'], 'Paralizza 4 s tutti i nemici visibili, danno alto',
+    'Un occhio enorme si apre sullo sfondo e tutto si ferma'),
+];
+
+export const movesOf = (speciesId: string) => MOVES.filter((mv) => mv.species === speciesId).sort((a, b) => a.slot - b.slot);
