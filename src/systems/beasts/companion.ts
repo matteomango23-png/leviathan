@@ -28,6 +28,10 @@ export interface Companion extends BodyPose {
   frenzyTick: number;
   /** Seconds of doubled attack speed (buff:attackSpeed). */
   haste: number;
+  /** Bites waiting to push the beast forward (each bite lunges a little). */
+  lunge: number;
+  /** Facing before the current turn (the view bends the body from this side). */
+  turnFrom: 1 | -1;
   charge: number;
   chargeHits: number[];
 }
@@ -72,6 +76,8 @@ export function summonCompanion(
     frenzy: 0,
     frenzyTick: 0,
     haste: 0,
+    lunge: 0,
+    turnFrom: 1,
     charge: 0,
     chargeHits: [],
   };
@@ -95,7 +101,10 @@ function steer(c: Companion, tx: number, ty: number, speed: number, k: number, d
 /** Turning around is animated (a companion may turn in view, unlike wild beasts). */
 function faceTowards(c: Companion, dir: number, dt: number): void {
   const want: 1 | -1 = dir >= 0 ? 1 : -1;
-  if (want !== c.face && c.turn === 0) c.turn = 0.001;
+  if (want !== c.face && c.turn === 0) {
+    c.turn = 0.001;
+    c.turnFrom = c.face;
+  }
   if (c.turn > 0) {
     c.turn += dt / TEAM_RULES.turnSeconds;
     if (c.turn >= 0.5 && c.face !== want) c.face = want;

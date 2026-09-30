@@ -47,10 +47,17 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
 export const WILD_RULES = { maxPresent: 2 };
 
 /** How eager each species is to attack on a pass (default BEAST_COMBAT.attackChance). */
-export const BEAST_TEMPER: Record<string, { attackChance: number }> = {
-  tartaruga_marina: { attackChance: 0 }, // only defends itself when hit
+export const BEAST_TEMPER: Record<string, { attackChance: number; speedMult?: number }> = {
+  tartaruga_marina: { attackChance: 0, speedMult: 0.4 }, // only defends itself when hit; slow swimmer
   barracuda: { attackChance: 0.5 },
-  torpedine: { attackChance: 0.25 },
+  torpedine: { attackChance: 0.25, speedMult: 0.65 },
+};
+
+/** Big beasts eat small fish they swim through (food chain): into your bag, or a heart back. */
+export const FEEDING = {
+  sizes: ['grande', 'colossale'], // species size classes that eat fish
+  reachFrac: 0.22, // × body length, around the head
+  interval: 0.25, // seconds between bites
 };
 
 /** Status effects on wild beasts. */
@@ -95,8 +102,10 @@ export const TEAM_RULES = {
   leaveSeconds: 1.5,
   rideReach: 40, // how close to your beast you must be to climb on
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
-  turnSeconds: 0.35, // a companion turning around (only allowed for your own beasts)
+  turnSeconds: 0.6, // a companion turning around (only allowed for your own beasts)
   accelMult: 1.7, // riding: acceleration × the beast's speed
+  rideSpeedMult: 1.6, // tuning: riding speed × the beast's speed stat
+  rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // the dash button while riding
 };
 
 /** How moves behave (fx names in moves.ts). */
@@ -107,6 +116,7 @@ export const MOVE_RULES = {
   executeHpFraction: 0.25, // 'executeLowHp': targets under this share of health are overwhelmed
   woundedFraction: 0.5, // 'x2vsWounded': double damage under this share of health
   frenzyBiteInterval: 0.35,
+  biteLunge: 1.3, // a bite pushes the beast forward: × its speed
   boneBreakRadius: 28, // world units around the head
 };
 

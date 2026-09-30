@@ -98,14 +98,23 @@ describe('shopping', () => {
 });
 
 describe('the suit sets the maximum depth', () => {
-  it('pushes the diver back up below it', () => {
-    const g = fresh();
-    const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
-    g.diver.x = 900;
-    g.diver.y = limitY + 20;
-    const ev = run(g, 0.5, { ...emptyInput(), moveY: 1 });
-    expect(g.diver.y).toBeLessThan(limitY + 20);
-    expect(ev.some((e) => e.type === 'tooDeep')).toBe(true);
+  it('below it there is no wall, but oxygen drains much faster (more the deeper)', () => {
+    const drainAt = (extraM: number): number => {
+      const g = fresh();
+      const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
+      g.diver.x = 900;
+      g.diver.y = limitY + extraM * WORLD.unitsPerMetre;
+      const y0 = g.diver.y;
+      const ev = run(g, 0.5);
+      expect(g.diver.y).toBeGreaterThanOrEqual(y0 - 1); // not pushed back up
+      if (extraM > 0) expect(ev.some((e) => e.type === 'tooDeep')).toBe(true);
+      return g.diver.maxO2 - g.diver.o2;
+    };
+    const inside = drainAt(-5);
+    const just = drainAt(1);
+    const deep = drainAt(20);
+    expect(just).toBeGreaterThan(inside * 2.5);
+    expect(deep).toBeGreaterThan(just);
   });
 });
 

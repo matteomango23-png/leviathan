@@ -18,8 +18,7 @@ export function chunkHasRock(map: TileMap, x0: number, y0: number, size: number)
   const ty0 = Math.floor(y0 / T) - 1;
   const n = Math.ceil(size / T) + 2;
   for (let ty = ty0; ty < ty0 + n; ty++)
-    for (let tx = tx0; tx < tx0 + n; tx++)
-      if (map.get(tx, ty) !== TILE.water && ty * T + T > map.surfaceY) return true;
+    for (let tx = tx0; tx < tx0 + n; tx++) if (map.get(tx, ty) !== TILE.water) return true;
   return false;
 }
 
@@ -99,49 +98,77 @@ function drawCorals(g: CanvasRenderingContext2D, map: TileMap, x0: number, y0: n
 }
 
 /**
- * Paints the chunk whose top-left world corner is (x0, y0) into `g` (size × texelsPerUnit pixels square).
+ * Paints one chunk (top-left world corner x0, y0; size × texelsPerUnit pixels square) a few rows at a time,
+ * so painting never freezes a frame: the view gives each job a small time budget per frame.
  */
-export function paintChunk(
-  g: CanvasRenderingContext2D,
-  map: TileMap,
-  x0: number,
-  y0: number,
-  size: number,
-): void {
-  const tpu = TERRAIN.texelsPerUnit;
-  const px = size * tpu;
-  const M = TERRAIN.shadeRadius + 2; // margin in units around the chunk
-  const W = size + 2 * M + 1; // unit grid width
-  const field = new Float32Array(W * W);
-  const blotch = new Float32Array(W * W);
-  for (let j = 0; j < W; j++) {
-    for (let i = 0; i < W; i++) {
-      const wx = x0 - M + i;
-      const wy = y0 - M + j;
-      field[j * W + i] = map.field(wx, wy);
-      blotch[j * W + i] = noise2(wx * 0.07, wy * 0.07) * 0.65 + noise2(wx * 0.23 + 11, wy * 0.23 + 5) * 0.35;
+export class ChunkPaintJob {
+  readonly px: number;
+  private readonly M: number;
+  private readonly W: number;
+  private readonly field: Float32Array;
+  private readonly blotch: Float32Array;
+  private readonly depth: Float32Array;
+  /** RGBA pixels of the chunk (filled by step). */
+  readonly data: Uint8ClampedArray;
+  private readonly rowRock: [number, number, number][] = [];
+  private readonly rowSed: [number, number, number][] = [];
+  private row = 0;
+
+  constructor(
+    private readonly map: TileMap,
+    readonly x0: number,
+    readonly y0: number,
+    readonly size: number,
+  ) {
+    const tpu = TERRAIN.texelsPerUnit;
+    this.px = Math.round(size * tpu);
+    this.M = TERRAIN.shadeRadius + 2; // margin in units around the chunk
+    const M = this.M;
+    const W = (this.W = size + 2 * M + 1); // unit grid width
+    this.field = new Float32Array(W * W);
+    this.blotch = new Float32Array(W * W);
+    for (let j = 0; j < W; j++) {
+      for (let i = 0; i < W; i++) {
+        const wx = x0 - M + i;
+        const wy = y0 - M + j;
+        this.field[j * W + i] = map.field(wx, wy);
+        this.blotch[j * W + i] =
+          noise2(wx * 0.07, wy * 0.07) * 0.65 + noise2(wx * 0.23 + 11, wy * 0.23 + 5) * 0.35;
+      }
+    }
+    this.depth = boxBlur(this.field, W, TERRAIN.shadeRadius);
+    this.data = new Uint8ClampedArray(this.px * this.px * 4);
+    for (let py = 0; py < this.px; py++) {
+      const wy = y0 + (py + 0.5) / tpu;
+      this.rowRock.push(rampColor(SEA.rockByY, wy));
+      this.rowSed.push(rampColor(SEA.sedimentByY, wy));
     }
   }
-  const depth = boxBlur(field, W, TERRAIN.shadeRadius);
 
-  const img = g.createImageData(px, px);
-  const d = img.data;
-  const soft = TERRAIN.edgeSoftness;
-  const rowRock: [number, number, number][] = [];
-  const rowSed: [number, number, number][] = [];
-  for (let py = 0; py < px; py++) {
-    const wy = y0 + (py + 0.5) / tpu;
-    rowRock.push(rampColor(SEA.rockByY, wy));
-    rowSed.push(rampColor(SEA.sedimentByY, wy));
+  get done(): boolean {
+    return this.row >= this.px;
   }
 
-  for (let py = 0; py < px; py++) {
+  /** Paints rows until the deadline (performance.now() ms). Returns true when the chunk is complete. */
+  step(deadline: number): boolean {
+    while (this.row < this.px) {
+      this.paintRow(this.row++);
+      if ((this.row & 7) === 0 && performance.now() > deadline) break;
+    }
+    return this.done;
+  }
+
+  private paintRow(py: number): void {
+    const { map, x0, y0, px, M, W, field, depth, blotch } = this;
+    const d = this.data;
+    const tpu = TERRAIN.texelsPerUnit;
+    const soft = TERRAIN.edgeSoftness;
     const v = (py + 0.5) / tpu + M;
     const j0 = Math.floor(v);
     const fy = v - j0;
     const wy = y0 + (py + 0.5) / tpu;
-    const rock = rowRock[py]!;
-    const sed = rowSed[py]!;
+    const rock = this.rowRock[py]!;
+    const sed = this.rowSed[py]!;
     for (let pxx = 0; pxx < px; pxx++) {
       const u = (pxx + 0.5) / tpu + M;
       const i0 = Math.floor(u);
@@ -198,7 +225,26 @@ export function paintChunk(
       d[o + 3] = alpha * 255;
     }
   }
-  g.clearRect(0, 0, px, px);
-  g.putImageData(img, 0, 0);
-  drawCorals(g, map, x0, y0, size);
+
+  /** Puts the painted pixels (and the corals) into a canvas. */
+  finish(g: CanvasRenderingContext2D): void {
+    const img = g.createImageData(this.px, this.px);
+    img.data.set(this.data);
+    g.clearRect(0, 0, this.px, this.px);
+    g.putImageData(img, 0, 0);
+    drawCorals(g, this.map, this.x0, this.y0, this.size);
+  }
+}
+
+/** Paints a whole chunk at once (used when a chunk is needed on screen right now). */
+export function paintChunk(
+  g: CanvasRenderingContext2D,
+  map: TileMap,
+  x0: number,
+  y0: number,
+  size: number,
+): void {
+  const job = new ChunkPaintJob(map, x0, y0, size);
+  job.step(Infinity);
+  job.finish(g);
 }

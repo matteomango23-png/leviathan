@@ -4,7 +4,7 @@
 /** Portofosco: the only base, at the surface where a new game starts. */
 export const PORT = {
   name: 'Portofosco',
-  x: 2400, // pier position on the surface (world units)
+  x: 160, // pier position on the surface, just off the west coast (world units)
   reach: 60, // how close (horizontally) to the pier you must be, at the surface
   surfaceBand: 48, // up to 8 m below the surface still counts as "at the pier"
 };
@@ -138,9 +138,10 @@ export const SWARM_RULES = {
   ringFish: 24,
 };
 
-/** Suits: going deeper than the suit allows pushes you back up. */
+/** Suits: deeper than the suit allows, the pressure makes oxygen drain much faster. */
 export const SUIT_RULES = {
-  pushBack: 60, // u/s upwards when too deep
+  overDepthDrainMult: 3, // oxygen drain × this as soon as you pass the limit…
+  overDepthDrainPerM: 0.15, // …plus this much more for every metre beyond it
   warnEvery: 4, // seconds between warnings
 };
 

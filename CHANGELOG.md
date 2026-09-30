@@ -2,6 +2,21 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.3.1 — Correzioni dopo la prova (30 settembre 2026)
+
+- **Portofosco sulla costa:** a ovest della Baia ora c'è la terraferma con le case; il molo parte dalla riva e la partita inizia lì. La Baia comincia subito sotto il porto.
+- **In sella:** la cavalcatura è molto più veloce e ha il suo **scatto** (stesso pulsante del sub).
+- **Morsi con affondo:** quando una bestia morde (anche la tua, anche in sella) scatta in avanti.
+- **Virate più belle:** la testa gira per prima e il corpo la segue fino alla coda, con un'ombra a metà; non sembra più un foglio di carta che si ribalta.
+- **Tartaruga marina** più grande (2 m) e più lenta; la torpedine è un po' più lenta.
+- **Le bestie grandi mangiano:** lo squalo in acqua con te acchiappa le sardine vicine e finiscono nella sacca.
+- **Troppo profondo per la muta:** niente più muro invisibile; l'ossigeno scende molto più in fretta, con un avviso.
+- **Scheda della bestia** in stile carta: illustrazione a sinistra, dati a destra, colore della rarità (grigio, verde, blu, viola, oro), stelle, cornici speciali per albini, alfa, varianti uniche e forme finali; mosse con il livello di sblocco e il danno.
+- **Bestiario** (dal menu di pausa): tutte le bestie, quelle viste e quelle domate.
+- **Menu del porto** rifatto a schermo intero, con icone e card; mentre sei al porto i comandi di immersione spariscono.
+- **Più fluido:** il fondale si dipinge un po' alla volta, niente scatti quando nuoti veloce o muovi la lampada.
+- Il carattere rovinato nel menu di pausa è corretto.
+
 ## v0.3.0 — Porto ed economia (30 settembre 2026)
 
 - **Portofosco:** risali in superficie vicino al molo (sopra la partenza) e tocca "Porto". Il porto cura te e la squadra ed è il tuo punto di rinascita.

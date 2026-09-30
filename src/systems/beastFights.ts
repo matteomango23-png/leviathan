@@ -237,5 +237,15 @@ export function stepCompanionAndMoves(
       hurtTeamBeast(g, b, wildMoveDamage(reached, b) * 0.5, c.x, c.y - c.length * 0.2, events);
   }
   if (c.state !== 'leaving') stepMoveEffects(b, c, ctx, dt);
+  if (c.lunge > 0) {
+    // every bite lunges a little forward
+    const push = formStats(b.form, b.level).speed * MOVE_RULES.biteLunge;
+    if (g.beasts.riding) {
+      d.vx += Math.cos(c.pitch) * c.face * push;
+      d.vy += Math.sin(c.pitch) * push;
+      d.dashTime = Math.max(d.dashTime, 0.15);
+    } else c.vx += c.face * push;
+    c.lunge = 0;
+  }
   if (c.state === 'leaving' && c.t <= 0) g.beasts.companion = null;
 }

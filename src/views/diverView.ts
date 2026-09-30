@@ -18,6 +18,8 @@ export class DiverView {
   private readonly aimDots: Phaser.GameObjects.Image[] = [];
   private kick = 0;
   private tilt = 0;
+  /** Eased facing: goes from -1 to 1 through a short turn instead of flipping at once. */
+  private faceAnim = 1;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     const s = 1 / DIVER_TEX_SCALE;
@@ -42,6 +44,13 @@ export class DiverView {
       this.aimDots.push(scene.add.image(0, 0, TEX.dot).setTint(0x5ff3d6).setScale(0.12).setVisible(false));
     }
     layer.add([this.line, this.tip, ...this.aimDots, this.root]);
+  }
+
+  private easeFace(face: number, dt: number): number {
+    const step = dt / 0.22; // seconds for a full turn
+    this.faceAnim += Math.max(-step * 2, Math.min(step * 2, face - this.faceAnim));
+    const f = this.faceAnim;
+    return Math.sign(f || face) * Math.max(0.15, Math.abs(f));
   }
 
   /**
@@ -69,7 +78,7 @@ export class DiverView {
     const blink = d.invulnerable > 0 && !d.dead && Math.floor(time * 12) % 2 === 0;
     this.root
       .setPosition(rider ? rider.x : d.x, rider ? rider.y : d.y)
-      .setScale(d.face * scale, scale)
+      .setScale(this.easeFace(d.face, dt) * scale, scale)
       .setRotation(this.tilt * d.face)
       .setAlpha(d.dead ? 0.5 : blink ? 0.55 : 1);
 

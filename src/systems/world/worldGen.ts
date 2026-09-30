@@ -2,6 +2,7 @@
 // Port of isOpen/genWorld from prototype/leviatano.html, with the shapes moved to src/data/worldLayout.ts.
 import {
   BONE_WALL,
+  COAST,
   ICE,
   TILE,
   WORLD,
@@ -45,13 +46,20 @@ function zoneFor(x: number): ZoneShapeDef {
   return WORLD_SHAPE.find((z) => x >= z.xMin && x < z.xMax) ?? WORLD_SHAPE[WORLD_SHAPE.length - 1]!;
 }
 
-/** True where the sea is open (water), false where there is rock. */
+/** Height of the land above the water line at x (0 in the sea). */
+export function landHeight(x: number): number {
+  if (x >= COAST.shoreX) return 0;
+  return Math.min(COAST.landHeight, 2 + (COAST.shoreX - x) * COAST.landRise);
+}
+
+/** True where the sea (or air) is open, false where there is rock or land. */
 export function isOpen(x: number, y: number): boolean {
-  if (y < WORLD.surfaceY) return true;
+  if (y < WORLD.surfaceY) return y < WORLD.surfaceY - landHeight(x);
   const worldW = WORLD.cols * WORLD.tileSize;
   const worldH = WORLD.rows * WORLD.tileSize;
   if (x < WORLD.edgeMargin || x > worldW - WORLD.edgeMargin || y > worldH - WORLD.edgeMargin) return false;
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
+  if (y < COAST.maxY && x < COAST.shoreX + (y - WORLD.surfaceY) * COAST.slope + n * COAST.noise) return false;
   const z = zoneFor(x);
   for (const s of z.solids) if (inside(s, x, y, n)) return false;
   if (y < floorHeight(z.floor, x, n)) return true;

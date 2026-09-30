@@ -53,6 +53,8 @@ export class BeastsLayer {
         length: w.length,
         flash: w.flash,
         alpha: 1,
+        turn: w.turn,
+        turnFrom: w.turnFrom,
       });
       if (w.barTime > 0 || w.mood === 'tired' || w.mood === 'angry' || w.mood === 'taming') {
         bars.push({
@@ -83,6 +85,7 @@ export class BeastsLayer {
         flash: c.flash,
         alpha: c.alpha,
         turn: c.turn,
+        turnFrom: c.turnFrom,
         rage: c.frenzy > 0,
       });
       if (c.state !== 'leaving' && (b.hp < maxHpOf(b) || c.flash > 0))

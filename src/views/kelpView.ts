@@ -47,6 +47,8 @@ export class KelpView {
   private readonly frontG: Phaser.GameObjects.Graphics;
   private readonly back: Strand[];
   private readonly front: Strand[];
+  private readonly backColor = Phaser.Display.Color.HexStringToColor(SEA.kelpBack).color;
+  private readonly frontColor = Phaser.Display.Color.HexStringToColor(SEA.kelpFront).color;
 
   constructor(
     scene: Phaser.Scene,
@@ -71,25 +73,30 @@ export class KelpView {
     front: boolean,
   ) {
     g.clear();
-    const color = Phaser.Display.Color.HexStringToColor(front ? SEA.kelpFront : SEA.kelpBack).color;
+    const color = front ? this.frontColor : this.backColor;
     const leaf = 0x1d5a45;
     for (const k of list) {
       if (k.x < view.x - 20 || k.x > view.right + 20 || k.y - k.h > view.bottom || k.y < view.y) continue;
-      const pts: Phaser.Math.Vector2[] = [];
+      // drawn with a path (no new objects every frame)
       const steps = Math.max(4, Math.round(k.h / 5));
+      const amp = Math.min(6, k.h * 0.12);
+      g.lineStyle(k.width * (front ? 1.6 : 1), color, 1);
+      g.beginPath();
       for (let i = 0; i <= steps; i++) {
         const s = i / steps;
-        const sway = Math.sin(time * 1.1 + k.phase + s * 2.5) * s * Math.min(6, k.h * 0.12);
-        pts.push(new Phaser.Math.Vector2(k.x + sway, k.y - s * k.h));
+        const x = k.x + Math.sin(time * 1.1 + k.phase + s * 2.5) * s * amp;
+        const y = k.y - s * k.h;
+        if (i === 0) g.moveTo(x, y);
+        else g.lineTo(x, y);
       }
-      g.lineStyle(k.width * (front ? 1.6 : 1), color, 1);
-      g.strokePoints(pts);
+      g.strokePath();
       if (!front) {
         g.fillStyle(leaf, 0.9);
-        for (let i = 2; i < pts.length; i += 2) {
-          const p = pts[i]!;
+        for (let i = 2; i <= steps; i += 2) {
+          const s = i / steps;
+          const x = k.x + Math.sin(time * 1.1 + k.phase + s * 2.5) * s * amp;
           const side = i % 4 === 0 ? 1 : -1;
-          g.fillEllipse(p.x + side * 1.6, p.y, 3.2, 1.1);
+          g.fillEllipse(x + side * 1.6, k.y - s * k.h, 3.2, 1.1);
         }
       }
     }

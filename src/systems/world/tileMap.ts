@@ -30,7 +30,8 @@ export class TileMap {
   }
 
   get(tx: number, ty: number): TileValue {
-    if (tx < 0 || ty < 0 || tx >= this.cols || ty >= this.rows) return TILE.rock;
+    if (ty < 0) return TILE.water; // open sky above the world
+    if (tx < 0 || tx >= this.cols || ty >= this.rows) return TILE.rock;
     return this.data[ty * this.cols + tx] as TileValue;
   }
 
@@ -46,7 +47,6 @@ export class TileMap {
 
   /** Smooth rock field in [0, 1]: > 0.5 means rock. */
   field(x: number, y: number): number {
-    if (y < this.surfaceY) return 0;
     const gx = x / this.tileSize - 0.5;
     const gy = y / this.tileSize - 0.5;
     const x0 = Math.floor(gx);
@@ -124,6 +124,10 @@ export class TileMap {
 
   /** A tile is a "top" if it is solid with water right above it (where kelp and corals grow). */
   isTop(tx: number, ty: number): boolean {
-    return this.get(tx, ty) === TILE.rock && this.get(tx, ty - 1) === TILE.water;
+    return (
+      ty * this.tileSize >= this.surfaceY &&
+      this.get(tx, ty) === TILE.rock &&
+      this.get(tx, ty - 1) === TILE.water
+    );
   }
 }
