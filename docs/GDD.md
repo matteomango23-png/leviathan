@@ -54,6 +54,15 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 - **Bestiario:** 34 bestie, 4 sciami, 12 pesci da cattura.
 - **Branco:** indicatore che si riempie combattendo; quando è pieno tutta la squadra esce per 20 s.
 
+## Orche e bestie leggendarie (deciso il 30 settembre 2026)
+
+- **Orche:** si muovono e attaccano in gruppo, sono intelligenti e sociali.
+- **Orca matriarca** (`orca_matriarca`): la capa del gruppo. Un'orca, a un certo livello, si evolve in matriarca, ma c'è una sola matriarca per gruppo. Se hai una matriarca e altre orche domate, quando schieri la matriarca ti seguono al massimo altre 2 orche, che la difendono attivamente. Le orche di scorta occupano posti della squadra (e devi averle domate prima). Se hai una matriarca, le orche selvatiche non ti attaccano spontaneamente, solo se attaccate.
+- **Madre delle madri** (`orca_matriarca_finale`, matriarca leggendaria): forma finale della matriarca a livello molto alto. Porta con sé una squadra di 3 orche più una matriarca.
+- **Orca preistorica albina** (`orca_preistorica_albina`): leggendaria, ancora più rara della Madre delle madri. Solitaria, malvagia, più forte di tutte le altre orche.
+- **Coccodrillo albino leggendario** (`coccodrillo_marino_leggendario`): raro e leggendario, più raro e più forte del coccodrillo marino normale.
+- Da decidere: livello dell'evoluzione in matriarca e in Madre delle madri, probabilità di incontro, statistiche (si fissano quando si arriva al Mare di Ghiaccio e al Delta).
+
 ## Domatura
 
 Nessun limite artificiale: si può provare con qualsiasi bestia, ma la differenza di livello rende quasi impossibile domarne una molto più forte della tua squadra.
