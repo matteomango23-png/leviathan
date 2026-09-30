@@ -76,3 +76,27 @@ Card e sprite (chiuso + aperto) generati da `art-inbox/`: barracuda (card già p
 2. Chiedi a Claude Code di eseguire `npm run art` (i file già presenti non vengono toccati; con `--force` si rifanno).
 
 Per polpo, calamari, Piovra, Kraken, granchio, lontra, foca e coccodrilli (zampe) servono pezzi separati: da definire quando si arriva a loro.
+
+## Capitolo 3, la Barriera Rossa: immagini da generare (1 ottobre 2026)
+
+Servono prima di iniziare il capitolo 3. Salva tutto in `art-inbox/`, poi chiedi `npm run art`.
+
+**Bestie che nuotano** (come lo squalo: card + profilo chiuso + profilo a bocca aperta, fondo nero, muso a destra):
+
+| Bestia | File |
+| --- | --- |
+| Murena (3 m) | `murena_card.jpg`, `murena_side.jpg`, `murena_side_open.jpg` |
+| Manta (7 m) | `manta_card.jpg`, `manta_side.jpg`, `manta_side_open.jpg` (vista di lato, ali un po' abbassate) |
+| Pesce palla (0,6 m) | `pesce_palla_card.jpg`, `pesce_palla_side.jpg`, `pesce_palla_side_open.jpg` (per lui "aperto" = gonfio, con gli aculei) |
+
+**Re Corallo** (granchio-corallo gigante, 5 m, Guardiano, tipo Corazzato): cammina sul fondale e si anima a pezzi, quindi servono parti separate, tutte **di profilo, rivolte a destra, su fondo nero, stessa luce**:
+
+| Pezzo | File | Come |
+| --- | --- | --- |
+| Card | `re_corallo_card.jpg` | come le altre card |
+| Corpo | `re_corallo_body.jpg` | solo il carapace (guscio con coralli e incrostazioni), **senza zampe e senza chele** |
+| Chela chiusa | `re_corallo_claw.jpg` | una sola chela grande, staccata, che punta a destra, chiusa |
+| Chela aperta | `re_corallo_claw_open.jpg` | la stessa chela, stessa posizione, aperta |
+| Zampa | `re_corallo_leg.jpg` | una sola zampa, staccata, dritta, verticale (il gioco la ripete e la muove) |
+
+Prompt suggerito per i pezzi (dopo la card, nella stessa chat): `Same style and colors as the previous image. Now only the [PEZZO] of the same creature, isolated on a pure black background, flat side view facing right, no perspective, no other parts, no text.`

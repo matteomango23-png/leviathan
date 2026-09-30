@@ -24,7 +24,7 @@
 4. Liberata la balena: controlla che sia nella squadra e prova a cavalcarla.
 5. Controlla che le ossa già rotte (muro di ossa, botola della tana) siano ancora rotte.
 
-**Prossima sessione:** Sessione 8 — Capitolo 3: la Barriera Rossa (Re Corallo come Guardiano, la Vedova di nuovo). Serve prima un piano con le tue scelte. Dopo il capitolo 3 viene una sessione di pulizia (ogni 3 tappe).
+**Prossima sessione:** Sessione 8 — Capitolo 3: la Barriera Rossa, ramo `tappa-7-barriera` (già creato). **In attesa delle immagini del proprietario** (elenco in `docs/ART.md`, "Capitolo 3"): murena, manta, pesce palla e i pezzi del Re Corallo. Scelte già fatte (1 ottobre 2026): la Vedova Nera sta strappando il Re Corallo dalla Barriera con catene e argani; impazzito ti attacca; lo sfinisci, rompi le catene e lo domi; la Vedova fugge verso la Foresta Sommersa. Lo scontro è in un anfiteatro di corallo sul fondale: cammina sul fondo, si chiude nella corazza (i colpi rimbalzano), attacca con le chele da vicino, lancia schegge di corallo; si colpisce quando apre le chele o di lato. Dopo il capitolo 3 viene una sessione di pulizia (ogni 3 tappe).
 
 ## Sessione 6 — Storia del capitolo 1 (30 settembre 2026) → v0.5.0
 
