@@ -1,5 +1,6 @@
 // Fights between you, your team and wild beasts: bites, harpoon hits, taming, spawns, the companion.
 import { BEAST_COMBAT, MOVE_RULES, TAMING_FLOW, WILD_RULES } from '../data/beasts';
+import { GUARDIAN_FIGHT } from '../data/guardians';
 import { movesOf } from '../data/moves';
 import { TAMING } from '../data/rules';
 import { activeBeast, dismount, recall, type BeastWorld } from './beastState';
@@ -58,7 +59,7 @@ function wildMoveDamage(w: WildBeast, target: TeamBeast): number {
 }
 
 /** A wild beast's bite: the sardine swarm or a shield take it first, then the beast you ride, then you. */
-function resolveWildBite(g: BeastWorld, w: WildBeast, events: GameEvent[]): void {
+export function resolveWildBite(g: BeastWorld, w: WildBeast, events: GameEvent[]): void {
   const bs = g.beasts;
   if (bs.decoy && bs.decoy.absorb > 0) {
     bs.decoy.absorb--;
@@ -76,7 +77,9 @@ function resolveWildBite(g: BeastWorld, w: WildBeast, events: GameEvent[]): void
     return;
   }
   const hearts =
-    BEAST_COMBAT.diverBiteHearts + (w.form.variant === 'alfa' ? BEAST_COMBAT.alfaExtraHearts : 0);
+    BEAST_COMBAT.diverBiteHearts +
+    (w.form.variant === 'alfa' ? BEAST_COMBAT.alfaExtraHearts : 0) +
+    (w.guardian ? GUARDIAN_FIGHT.extraBiteHearts : 0);
   const before = g.diver.hp;
   hurtDiver(g.diver, hearts, events);
   if (g.diver.hp < before)
@@ -176,13 +179,17 @@ export function finishTaming(g: BeastWorld, w: WildBeast, won: boolean, events: 
 /** Wild beasts come and go; at most WILD_RULES.maxPresent are around at once. */
 export function stepWildSpawns(g: BeastWorld, view: Rect, dt: number, events: GameEvent[]): void {
   const d = g.diver;
-  let present = g.beasts.wilds.filter((w) => w.motion !== 'gone' && w.motion !== 'away').length;
+  const arena = g.beasts.arena;
+  let present = g.beasts.wilds.filter((w) => !w.arena && w.motion !== 'gone' && w.motion !== 'away').length;
   for (const w of g.beasts.wilds) {
+    if (w.arena) continue; // moved by the Guardian fight (guardian.ts)
+    // during a Guardian fight the others keep away
+    if (arena && w.motion === 'hidden') w.t = Math.max(w.t, 1);
     if (w.motion === 'gone') {
       w.respawn -= dt;
       const [x0, y0, x1, y1] = w.spawn.area;
       const inside = d.x > x0 && d.x < x1 && d.y > y0 && d.y < y1;
-      if (w.respawn <= 0 && inside && !d.dead && present < WILD_RULES.maxPresent) {
+      if (w.respawn <= 0 && inside && !d.dead && !arena && present < WILD_RULES.maxPresent) {
         const form = rollWildForm(w.spawn.speciesId, g.rng);
         spawnWild(w, form, rollWildLevel(form, g.rng), g.rng);
         present++;

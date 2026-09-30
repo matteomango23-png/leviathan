@@ -1,4 +1,5 @@
 // Tools for the test panel (open the game with ?prove in the link). Not part of normal play.
+import { LAIR } from '../data/guardians';
 import { SPECIES } from '../data/species';
 import type { GameState } from './game';
 import { formLengthUnits, type BeastForm } from './beasts/forms';
@@ -47,4 +48,10 @@ export function raiseTeam(g: GameState, levels: number): void {
   const c = g.beasts.companion;
   const b = g.beasts.team.find((x) => x.uid === c?.uid);
   if (c && b) c.length = formLengthUnits(b.form, b.level);
+}
+
+/** Straight into the Guardian's lair (the fight starts at once). */
+export function goToLair(g: GameState): void {
+  Object.assign(g.diver, { x: LAIR.x - LAIR.rx * 0.6, y: LAIR.y, vx: 0, vy: 0 });
+  g.guardian.ready = true;
 }

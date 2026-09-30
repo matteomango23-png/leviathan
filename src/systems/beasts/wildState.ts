@@ -50,6 +50,8 @@ export interface WildBeast extends BodyPose {
   xpGiven: boolean;
   /** Guardian id (e.g. 'sfregiato') when this beast is a region's Guardian or one of its escorts. */
   guardian?: string;
+  /** Lives in a Guardian's lair (the Guardian and its escort): moved by beasts/arena.ts, never respawns. */
+  arena?: boolean;
 }
 
 export interface Rect {

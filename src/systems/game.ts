@@ -16,11 +16,12 @@ import {
   weaponHitsBeast,
 } from './beastPlay';
 import { createDiver, stepDiver } from './diver';
-import { checkSwarmBinding, stepSwarmCooldowns, useSlot, type BackpackWorld } from './economy/backpack';
+import { checkSwarmBinding, stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers, newGear, sellBag } from './economy/gear';
 import { feedBeast, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
+import { createGuardian, guardianReturns, stepGuardian, type GuardianWorld } from './guardian';
 import { stepProgress } from './progress';
 import { atPort, nearWreck, openWreck, placeWrecks, type Wreck } from './economy/places';
 import type { GameEvent } from './events';
@@ -39,7 +40,7 @@ import { WEAPON_RULES } from '../data/economy';
 
 export { toSave } from './save/convert';
 
-export interface GameState extends BackpackWorld {
+export interface GameState extends GuardianWorld {
   time: number;
   playTime: number;
   zone: string;
@@ -75,6 +76,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
+  const beasts = createBeasts(restoreTeam(s));
   return {
     map,
     rng,
@@ -87,7 +89,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     fish: createFish(map, rng),
     fishCaught: { ...s.fishCaught },
     seen: new Set(s.seen),
-    beasts: createBeasts(restoreTeam(s)),
+    beasts,
+    guardian: createGuardian(beasts),
     sanctuaries: {
       list,
       current: s.sanctuary !== null && s.sanctuary < list.length ? s.sanctuary : null,
@@ -228,6 +231,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   g.tamingLock = stepBeasts(g, { ...input, action: input.action && wasTaming }, screen, dt, beastEvents);
   events.push(...beastEvents);
   for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
+  stepGuardian(g, dt, events);
 
   const eater = activeBeast(g);
   const eaten = beastEats(g.beasts.companion, eater, g.fish, g.timers, dt);
@@ -264,6 +268,7 @@ export function enterPort(g: GameState): void {
     b.ko = false;
   }
   g.gear.shopBought = {};
+  guardianReturns(g);
   g.sanctuaries.current = null;
 }
 

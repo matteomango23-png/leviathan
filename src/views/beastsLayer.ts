@@ -56,7 +56,9 @@ export class BeastsLayer {
         turn: w.turn,
         turnFrom: w.turnFrom,
       });
-      if (w.barTime > 0 || w.mood === 'tired' || w.mood === 'angry' || w.mood === 'taming') {
+      // the Guardian's health is the big bar at the top of the screen (ui/bossBar.ts)
+      const wantsBar = w.barTime > 0 || w.mood === 'tired' || w.mood === 'angry' || w.mood === 'taming';
+      if (wantsBar && !w.guardian) {
         bars.push({
           x: w.x,
           y: w.y - w.length * 0.2,

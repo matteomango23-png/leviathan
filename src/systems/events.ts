@@ -18,6 +18,14 @@ export type GameEvent =
   | { type: 'wildRecovered'; id: number }
   | { type: 'wildExhausted'; id: number }
   | { type: 'wildFled'; id: number }
+  // Guardians
+  | { type: 'tailSwipe'; id: number; dir: 1 | -1 }
+  | { type: 'guardianAppeared'; id: number }
+  | { type: 'guardianRage' }
+  | { type: 'guardianCalls' }
+  | { type: 'guardianBeaten'; teeth: number }
+  | { type: 'guardianEscaped' }
+  | { type: 'guardianLeft' }
   | {
       type: 'damage';
       x: number;

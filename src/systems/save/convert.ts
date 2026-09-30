@@ -45,6 +45,7 @@ function saveGear(g: GearState): SavedGear {
     missions: structuredClone(g.missions),
     mythicStock: g.mythicStock,
     deepestM: Math.floor(g.deepestM),
+    guardians: [...g.guardians],
   };
 }
 

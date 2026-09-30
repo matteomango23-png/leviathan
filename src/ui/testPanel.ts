@@ -1,7 +1,7 @@
 // Test panel (only with ?prove in the link): show any beast version, get strong beasts, teeth, heal.
 import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
-import { giveTestBeast, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
+import { giveTestBeast, goToLair, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
 import { el } from './dom';
 
 const OTHERS: BeastForm[] = [
@@ -42,6 +42,11 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
   grow.addEventListener('click', () => {
     giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 30);
     done('Squalo liv. 30 aggiunto: dagli esperienza e fagli mangiare pesci.');
+  });
+  const lair = el('button', 'menu-btn small', grid, 'Portami nella tana dello Sfregiato');
+  lair.addEventListener('click', () => {
+    goToLair(g);
+    done('Sei nella tana dello Sfregiato (liv. 8). Porta una squadra forte!');
   });
   const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
   teeth.addEventListener('click', () => {

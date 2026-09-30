@@ -29,6 +29,8 @@ export interface BeastState {
   decoy: Decoy | null;
   /** Seconds the mythic harpoon stays armed after using it. */
   mythic: number;
+  /** A Guardian fight is on: no other wild beast comes. */
+  arena: boolean;
 }
 
 export interface BeastWorld {
@@ -58,6 +60,7 @@ export function createBeasts(team: TeamBeast[]): BeastState {
     effects: { shield: 0, guardTime: 0, guardMult: 1 },
     decoy: null,
     mythic: 0,
+    arena: false,
   };
 }
 

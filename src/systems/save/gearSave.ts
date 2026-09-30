@@ -2,6 +2,7 @@
 import { MISSIONS } from '../../data/economy';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES, SWARMS, WEAPONS, BACKPACK_SLOTS } from '../../data/world';
 import { WRECKS } from '../../data/economy';
+import { UNIQUE_VARIANTS } from '../../data/species';
 
 export interface SavedGear {
   teeth: number;
@@ -18,6 +19,8 @@ export interface SavedGear {
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
   mythicStock: number;
   deepestM: number;
+  /** Guardians already beaten (their reward is given once). */
+  guardians: string[];
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> =>
@@ -83,5 +86,9 @@ export function validateGear(raw: unknown): SavedGear {
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     mythicStock: Math.floor(num(raw.mythicStock)),
     deepestM: num(raw.deepestM),
+    guardians: ids(
+      raw.guardians,
+      UNIQUE_VARIANTS.map((u) => u.id),
+    ),
   };
 }
