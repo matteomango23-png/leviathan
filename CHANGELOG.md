@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.4.1 — Pulizia (30 settembre 2026)
+
+- Nessun cambiamento nel gioco: codice più ordinato, numeri spostati nei dati, un controllo automatico in più. Se qualcosa si comporta diversamente dalla 0.4.0, è un errore: segnalalo.
+
 ## v0.4.0 — Livelli, crescita e Lo Sfregiato (30 settembre 2026)
 
 - **Esperienza:** quando una bestia selvatica viene sfinita (o fugge perché ce l'hai già), la bestia che hai in acqua prende tutta l'esperienza, le altre della squadra un quarto. Bestie più forti, albine e alfa ne danno di più.

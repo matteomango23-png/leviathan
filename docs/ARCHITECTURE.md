@@ -13,7 +13,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `src/ui/` | Interfaccia HTML sopra il gioco: HUD, controlli touch e tastiera, menu di pausa, esporta/importa. |
 | `tests/` | Test automatici (Vitest). |
 | `public/` | File serviti così come sono: sprite, illustrazioni, icone dell'app. |
-| `scripts/` | Script di servizio: `make-icons.mjs` (icone), `art.ts` + `art/cutout.ts` (`npm run art`). |
+| `scripts/` | Script di servizio: `make-icons.mjs` (icone), `art.ts` + `art/cutout.ts` (`npm run art`), `check-cycles.mjs` (controllo delle dipendenze circolari). |
 | `prototype/` | Prototipi HTML di riferimento (non fanno parte del gioco). |
 | `art-inbox/` | Immagini originali del proprietario con i nomi standard (`<id>_card`, `<id>_side`, `<id>_side_open`, `_left` se guarda a sinistra). `npm run art` le trasforma in `public/sprites/` e `public/art/`. |
 | `docs/` | Design, decisioni, progressi, crediti. |
@@ -60,16 +60,24 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 ## Scene (`src/scenes/`)
 
-- **Boot**: carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
-- **World**: fa girare il gioco e lo disegna con tre telecamere: sfondo (schermo), mondo (zoom, segue il sub), sovrapposizione (buio e luce).
-- **UI**: HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
-- **Menus**: menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Bestiario e scheda della bestia (stile carta).
-- Le scene si passano un oggetto `Session` (stato, input, messaggi): niente variabili globali.
+- **Boot** (`BootScene.ts`): carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
+- **World** (`WorldScene.ts`): fa girare il gioco e lo disegna con tre telecamere: sfondo (schermo), mondo (zoom, segue il sub), sovrapposizione (buio e luce).
+- **UI** (`UIScene.ts`): HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
+- **Menus** (`MenusScene.ts`): menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Bestiario e scheda della bestia (stile carta).
+- Le scene si passano un oggetto `Session` (`session.ts`: stato, input, messaggi): niente variabili globali.
+- Fuori dalle scene: `main.ts` crea il gioco a piena risoluzione (massimo 2×), `pwa.ts` registra il service worker per giocare offline.
 
 ## Interfaccia (`src/ui/`)
 
 | File | Cosa fa |
 |---|---|
+| `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
+| `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
+| `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
+| `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
+| `saveTransfer.ts` | Esporta e importa il salvataggio come file. |
+| `testPanel.ts` | Pannello di prova (link con `?prove`). |
+| `dom.ts` | Piccolo aiuto per creare gli elementi della pagina. |
 | `icons.ts` | Icone SVG disegnate per il gioco. |
 | `art.ts` | Indirizzo dell'illustrazione di una bestia. |
 | `beastSheet.ts`, `bestiary.ts` | Scheda della bestia e bestiario. |
@@ -82,7 +90,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
-3. **Mondo**: santuari, molo e case di Portofosco, relitti e forzieri (`placesView`), alghe, pesci, dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione, sub (anche in groppa), bolle, linea della superficie; alcune alghe davanti al sub.
+3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), bolle e linea della superficie (`effectsView`); alcune alghe davanti al sub. Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
 5. **Sopra il buio** (`combatView`): barre della vita con la tacca di sfinimento, numeri dei danni, segnale "domabile".
 
@@ -92,7 +100,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `npm run dev` | Avvia il gioco sul computer (http://localhost:5173). |
 | `npm run dev:phone` | Come sopra, raggiungibile dall'iPhone sulla stessa rete Wi-Fi. |
-| `npm run check` | Tutti i controlli: tipi, ESLint, Prettier, test, build. Obbligatorio prima di ogni commit. |
+| `npm run check` | Tutti i controlli: tipi, ESLint, dipendenze circolari (`scripts/check-cycles.mjs`), Prettier, test, build. Obbligatorio prima di ogni commit. |
 | `npm run build` | Crea la versione pubblicabile in `dist/` (con il service worker per l'offline). |
 | `npm run icons` | Rigenera le icone dell'app da `public/art/squalo_bianco.webp`. |
 | `npm run art` | Elabora le immagini nuove di `art-inbox/` (`-- --force` per rifare anche quelle già presenti, `-- --only=<id>` per una sola bestia). |

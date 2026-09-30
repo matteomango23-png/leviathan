@@ -95,15 +95,15 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 
 ## Roadmap
 
-1. **Fondamenta:** progetto, mondo, luce, sub, arpione, PWA offline, salvataggi, deploy.
-2. **Bestie e combattimento:** tipi, mosse, squadra, compagno, cavalcatura, domatura, santuari.
-3. **Porto ed economia:** mercato, mute, zaino, missioni, denti.
-4. **Livelli e crescita:** esperienza, sblocco mosse, crescita 31-50, forme finali, Lo Sfregiato come primo Guardiano.
+1. ✅ **Fondamenta (v0.1.0):** progetto, mondo, luce, sub, arpione, PWA offline, salvataggi, deploy.
+2. ✅ **Bestie e combattimento (v0.2.0):** tipi, mosse, squadra, compagno, cavalcatura, domatura, santuari.
+3. ✅ **Porto ed economia (v0.3.0):** mercato, mute, zaino, missioni, denti.
+4. ✅ **Livelli e crescita (v0.4.0):** esperienza, sblocco mosse, crescita 31-50, forme finali, Lo Sfregiato come primo Guardiano.
 5. **Storia del capitolo 1**, poi le regioni successive una alla volta.
 
 ## Decisioni aperte
 
 - Nomi definitivi di personaggi e comandanti.
 - Prezzi, curva di esperienza, valori di danno (primo passaggio in `data/`, da bilanciare giocando).
-- Penalità alla morte (perdere denti o solo rinascere al santuario).
+- Penalità alla morte: per ora nessuna (si rinasce al santuario o al porto); contro i Guardiani il proprietario ha scelto "solo rinascita".
 - Guardiano della Fossa: Abissale o Tempesta (ora due Guardiani Abissali).
