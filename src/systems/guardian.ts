@@ -9,6 +9,7 @@ import { UNIQUE_VARIANTS } from '../data/species';
 import { GUARDIAN_TEETH_REWARD } from '../data/world';
 import { resolveWildBite } from './beastFights';
 import type { BeastState, BeastWorld } from './beastState';
+import type { TeamBeast } from './beasts/team';
 import { newArenaAi, stepArenaBeast, type ArenaAi } from './beasts/arena';
 import { rollWildLevel, type BeastForm } from './beasts/forms';
 import { createWild, spawnWild, type WildBeast } from './beasts/wildState';
@@ -62,8 +63,9 @@ const arenaBeasts = (g: GuardianWorld): WildBeast[] => g.beasts.wilds.filter((w)
 const bossOf = (g: GuardianWorld): WildBeast | undefined => g.beasts.wilds.find((w) => w.id === BOSS_ID);
 
 /** You already tamed it: the lair stays empty. */
-export const guardianOwned = (g: BeastWorld): boolean =>
-  g.beasts.team.some((b) => b.form.unique === LAIR.guardian);
+export const teamHasGuardian = (team: TeamBeast[]): boolean =>
+  team.some((b) => b.form.unique === LAIR.guardian);
+export const guardianOwned = (g: BeastWorld): boolean => teamHasGuardian(g.beasts.team);
 
 /** The Guardian while it is fighting or can be tamed (for its health bar). */
 export function activeGuardian(g: GuardianWorld): WildBeast | undefined {

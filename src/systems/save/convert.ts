@@ -4,6 +4,7 @@ import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
 import type { BackpackWorld } from '../economy/backpack';
 import { newSave, type SaveData, type SavedGear } from './saveData';
+import { saveStory, type StoryState } from '../story';
 
 /** The parts of the game that are saved. */
 export interface SaveSource extends Pick<
@@ -12,6 +13,7 @@ export interface SaveSource extends Pick<
 > {
   playTime: number;
   fishCaught: Record<string, number>;
+  story: StoryState;
 }
 
 export function restoreTeam(save: SaveData): TeamBeast[] {
@@ -77,5 +79,6 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.sanctuary = g.sanctuaries.current;
   s.brokenTiles = [...new Set(g.brokenTiles)];
   s.gear = saveGear(g.gear);
+  s.story = saveStory(g.story);
   return s;
 }

@@ -2,7 +2,6 @@
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { TEAM_RULES } from '../data/beasts';
 import { CAMERA, DIVER, SARDINE } from '../data/diver';
-import { FISH } from '../data/world';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import type { Rect } from './beasts/wild';
 import { beastEats } from './feeding';
@@ -16,16 +15,18 @@ import {
   weaponHitsBeast,
 } from './beastPlay';
 import { createDiver, stepDiver } from './diver';
-import { checkSwarmBinding, stepSwarmCooldowns, useSlot } from './economy/backpack';
+import { catchFish, markSeen } from './catching';
+import { stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers, newGear, sellBag } from './economy/gear';
 import { feedBeast, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
-import { createGuardian, guardianReturns, stepGuardian, type GuardianWorld } from './guardian';
+import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
+import { createStory, stepStory, storyHoldsDiver, type StoryWorld } from './story';
 import { stepProgress } from './progress';
 import { atPort, nearWreck, openWreck, placeWrecks, type Wreck } from './economy/places';
 import type { GameEvent } from './events';
-import { createFish, stepFish, takeFish, type Fish, type FishState } from './fish';
+import { createFish, stepFish, takeFish, type FishState } from './fish';
 import { BASE_HARPOON, createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
 import type { InputState } from './input';
 import { makeRng } from './math';
@@ -40,7 +41,7 @@ import { WEAPON_RULES } from '../data/economy';
 
 export { toSave } from './save/convert';
 
-export interface GameState extends GuardianWorld {
+export interface GameState extends StoryWorld {
   time: number;
   playTime: number;
   zone: string;
@@ -77,7 +78,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
   const beasts = createBeasts(restoreTeam(s));
-  return {
+  const g: GameState = {
     map,
     rng,
     time: 0,
@@ -105,7 +106,9 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     tamingLock: false,
     atPort: false,
     timers: { feed: 0 },
+    story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
+  return g;
 }
 
 /** The world rectangle on screen when the game runs without a real screen (tests). */
@@ -113,32 +116,6 @@ function defaultView(x: number, y: number): Rect {
   const h = CAMERA.viewHeightUnits;
   const w = h * CAMERA.defaultAspect;
   return { x: x - w / 2, y: y - h / 2, w, h };
-}
-
-function markSeen(g: GameState, id: string, events: GameEvent[]): void {
-  if (g.seen.has(id)) return;
-  g.seen.add(id);
-  events.push({ type: 'creatureSeen', id });
-}
-
-/** A fish reaches the diver: eaten if it heals a missing heart, otherwise into the bag to sell. */
-function catchFish(g: GameState, f: Fish, events: GameEvent[]): void {
-  takeFish(f);
-  const kind = f.kind;
-  const def = FISH.find((x) => x.id === kind);
-  const count = (g.fishCaught[kind] ?? 0) + 1;
-  g.fishCaught[kind] = count;
-  let healed = false;
-  if (def?.effect === 'cuore' && g.diver.hp < g.diver.maxHp) {
-    g.diver.hp++;
-    healed = true;
-  } else if (def?.effect === 'ossigeno' && g.diver.o2 < g.diver.maxO2) {
-    g.diver.o2 = g.diver.maxO2;
-    healed = true;
-  } else g.gear.bag[kind] = (g.gear.bag[kind] ?? 0) + 1;
-  markSeen(g, kind, events);
-  events.push({ type: 'fishCaught', fishId: kind, count, healed });
-  checkSwarmBinding(g, g.fishCaught, events);
 }
 
 export function respawnPoint(g: GameState): { x: number; y: number } {
@@ -150,6 +127,7 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
 /** What the context button does right now. */
 export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri';
 export function currentAction(g: GameState): Action {
+  if (storyHoldsDiver(g) || g.story.dialogue) return null;
   const beast = contextAction(g);
   if (beast === 'doma' || beast === 'scendi') return beast;
   const d = g.diver;
@@ -188,7 +166,8 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
  * @param view the world rectangle on screen (beasts use it to stay out of sight when turning)
  */
 export function stepGame(g: GameState, input: InputState, dt: number, view?: Rect): GameEvent[] {
-  const events: GameEvent[] = [];
+  const events: GameEvent[] = g.story.pending.splice(0);
+  if (g.story.dialogue) return events; // the game waits while a dialogue is on screen
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;
@@ -204,7 +183,8 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   if (input.slot >= 0 && !g.tamingLock) useSlot(g, input.slot, events);
   stepSwarmCooldowns(g, dt);
 
-  if (!g.tamingLock) {
+  const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
+  if (!g.tamingLock && !held) {
     stepDiver(d, input, g.map, dt, g.rng, events, {
       respawnAt: respawnPoint(g),
       mountSpeed: mountSpeed(g),
@@ -216,7 +196,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
     });
   }
-  fire(g, input, events);
+  if (!held) fire(g, input, events);
   const hitBeast = (x: number, y: number, dmg: number): boolean => weaponHitsBeast(g, x, y, dmg, events);
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
     hitBeast(x, y, BASE_HARPOON.damage),
@@ -257,6 +237,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
 
   g.atPort = atPort(d, g.map);
   stepProgress(g, events);
+  stepStory(g, dt, events);
   const zone = zoneAt(d.x, d.y);
   if (zone && zone !== g.zone) {
     g.zone = zone;

@@ -5,10 +5,11 @@
 import { PROGRESSION } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
+import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -35,6 +36,7 @@ export interface SaveData {
   sanctuary: number | null; // respawn sanctuary index (v2)
   brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
+  story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -50,6 +52,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     sanctuary: null,
     brokenTiles: [],
     gear: null,
+    story: null,
   };
 }
 
@@ -73,6 +76,8 @@ export const MIGRATIONS: Migration[] = [
       team: Array.isArray(o.team) ? o.team.map((b) => (isObject(b) ? { ...b, xp: 0, food: 0 } : b)) : o.team,
     }),
   },
+  // v4 → v5 (tappa 5): the story; older saves pick it up from where the player is
+  { from: 4, migrate: (o) => ({ ...o, story: null }) },
 ];
 
 export class SaveError extends Error {}
@@ -136,6 +141,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     sanctuary: sanctuary as number | null,
     brokenTiles: [...new Set(data.brokenTiles as number[])],
     gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
+    story: validateStory(data.story),
   };
 }
 

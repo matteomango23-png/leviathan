@@ -3,9 +3,11 @@ import Phaser from 'phaser';
 import { BackpackBar } from '../ui/backpackBar';
 import { BeastUi } from '../ui/beastUi';
 import { Controls } from '../ui/controls';
+import { DialogueBox } from '../ui/dialogueBox';
 import { el } from '../ui/dom';
 import { Hud } from '../ui/hud';
 import type { GameEvent } from '../systems/events';
+import { storyHoldsDiver } from '../systems/story';
 import type { SceneData, Session } from './session';
 
 export class UIScene extends Phaser.Scene {
@@ -15,6 +17,7 @@ export class UIScene extends Phaser.Scene {
   private controls!: Controls;
   private beastUi!: BeastUi;
   private backpack!: BackpackBar;
+  private dialogue!: DialogueBox;
 
   constructor() {
     super('UI');
@@ -31,6 +34,7 @@ export class UIScene extends Phaser.Scene {
     this.controls = new Controls(this.root, this.session, () => this.openPause());
     this.beastUi = new BeastUi(this.root, this.session);
     this.backpack = new BackpackBar(this.root, this.session);
+    this.dialogue = new DialogueBox(this.root);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -45,6 +49,7 @@ export class UIScene extends Phaser.Scene {
       this.session.off('resume', this.onResume, this);
       this.session.off('openPort', this.openPort, this);
       this.controls.destroy();
+      this.dialogue.destroy();
       this.root.remove();
       rotate.remove();
     });
@@ -92,7 +97,11 @@ export class UIScene extends Phaser.Scene {
     const g = this.session.game;
     if (!g) return;
     this.controls.update(g.diver.dashCooldown <= 0);
-    this.hud.update(g, Math.min(0.1, deltaMs / 1000));
+    const dt = Math.min(0.1, deltaMs / 1000);
+    this.hud.update(g, dt);
+    this.dialogue.update(g, dt);
+    // story scenes: only the story on screen (the controls do nothing then)
+    this.root.classList.toggle('in-scene', !!g.story.dialogue || storyHoldsDiver(g));
     this.beastUi.update(g);
     this.backpack.update(g);
   }
