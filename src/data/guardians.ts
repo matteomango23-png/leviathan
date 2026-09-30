@@ -26,6 +26,8 @@ export const GUARDIAN_FIGHT = {
   telegraph: [0.55, 0.35] as [number, number], // seconds of open jaws before a lunge, phase 1 / phase 2
   attackPause: [2.2, 3.6] as [number, number], // seconds between attacks
   burstBites: 3, // phase 2: bites in a row
+  burstInterval: 0.25, // seconds between the bites of a burst
+  firstAttackDelay: 1.5, // seconds before its first lunge
   phase2HpFraction: 0.7, // below this share of health: bites in bursts and tail swipes
   escortHpFraction: 0.5, // below this share it calls its escort, once per fight
   tailReachFrac: 0.4, // × body length, around the tail

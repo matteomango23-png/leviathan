@@ -69,7 +69,7 @@ export function hurtDiver(d: DiverState, amount: number, events: GameEvent[]): v
 
 function respawn(d: DiverState, at: { x: number; y: number }, events: GameEvent[]): void {
   Object.assign(d, createDiver(at.x, at.y), { face: d.face });
-  d.invulnerable = 1.5;
+  d.invulnerable = DIVER.invulnerableAfterRespawn;
   events.push({ type: 'respawned' });
 }
 

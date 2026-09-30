@@ -66,10 +66,6 @@ export function distanceToBody(p: BodyPose, x: number, y: number): number {
   return Math.max(0, Math.hypot(x - cx, y - cy) - thickness);
 }
 
-export function pointHitsBody(p: BodyPose, x: number, y: number, extra = 0): boolean {
-  return distanceToBody(p, x, y) <= extra;
-}
-
 /** Is a point within the bite reach of the head? */
 export function inBiteReach(
   p: BodyPose,

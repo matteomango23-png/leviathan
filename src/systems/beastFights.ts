@@ -122,7 +122,7 @@ export function weaponHitsBeast(
 ): boolean {
   for (const w of g.beasts.wilds) {
     if (!isInWater(w) || w.mood === 'taming') continue;
-    if (distanceToBody(w, x, y) > 1.5) continue;
+    if (distanceToBody(w, x, y) > BEAST_COMBAT.weaponHitMargin) continue;
     const tameable = isTameable(g.beasts.team, w.form);
     if (g.beasts.mythic > 0 && tameable && w.mood !== 'fleeing') {
       g.beasts.mythic = 0;

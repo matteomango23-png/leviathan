@@ -30,7 +30,12 @@ export interface ArenaAi {
   fleeT: number; // seconds left to swim out when fleeing
 }
 
-export const newArenaAi = (): ArenaAi => ({ attackT: 1.5, burst: 0, tailT: 0, fleeT: F.fleeSeconds });
+export const newArenaAi = (): ArenaAi => ({
+  attackT: F.firstAttackDelay,
+  burst: 0,
+  tailT: 0,
+  fleeT: F.fleeSeconds,
+});
 
 export interface ArenaContext {
   diver: { x: number; y: number; dead: boolean };
@@ -82,7 +87,7 @@ function fight(w: WildBeast, ai: ArenaAi, ctx: ArenaContext, events: GameEvent[]
     if (w.bit || passed || d.dead) {
       w.motion = 'cruise';
       ai.burst = Math.max(0, ai.burst - 1);
-      if (ai.burst > 0 && !passed) ai.attackT = 0.25;
+      if (ai.burst > 0 && !passed) ai.attackT = F.burstInterval;
       else {
         ai.burst = 0;
         ai.attackT = range(ctx.rng, F.attackPause[0], F.attackPause[1]);

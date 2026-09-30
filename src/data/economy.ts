@@ -129,7 +129,7 @@ export const ITEM_RULES = {
 /** Fishing weapons (WEAPONS in world.ts). */
 export const WEAPON_RULES = {
   fiocine: { darts: 3, spread: 0.22, speed: 300, life: 0.34, catchRadius: 5 },
-  rete: { speed: 190, life: 0.5, radius: 26, maxFish: 5, slowSeconds: 3, slowMult: 0.4 },
+  rete: { speed: 190, life: 0.5, radius: 26, maxFish: 5, slowSeconds: 3, slowMult: 0.4, trapMaxLength: 20 }, // beasts shorter than trapMaxLength (units) are trapped, not just slowed
 };
 
 /** Swarm summons (SWARMS in world.ts). */

@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
-    "lint": "eslint .",
+    "lint": "eslint . && node scripts/check-cycles.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
