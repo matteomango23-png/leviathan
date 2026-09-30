@@ -59,8 +59,10 @@ export interface BeastPoseView {
   length: number;
   flash: number;
   alpha: number;
-  /** 0 = normal; 0..1 while turning around (own beasts only). */
+  /** 0 = normal; 0..1 while turning around (own beasts, or wild ones against a wall). */
   turn?: number;
+  /** The facing before the turn started. */
+  turnFrom?: 1 | -1;
   /** Frenzy: red eyes and shaking. */
   rage?: boolean;
 }
@@ -106,23 +108,39 @@ export class BeastSprite {
       this.root.setVisible(false);
       return;
     }
-    const turn = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
+    const bend = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
+    // Turning around (own beasts, or against a wall): the head turns first and the body follows
+    // to the tail, each piece folding through edge-on; mid-turn the body darkens (showing its back)
+    // and arches, so it reads as a turn in depth rather than a flat card flipping.
+    const turning = p.turn !== undefined && p.turn > 0;
+    const t = turning ? p.turn! : 0;
+    const baseFace = turning ? (p.turnFrom ?? p.face) : p.face;
+    const facing = (u: number): number => {
+      if (!turning) return 1;
+      const q = Math.max(0, Math.min(1, t * 1.7 - u * 0.7));
+      return Math.cos(Math.PI * q);
+    };
     const pts: [number, number][] = [];
     const ang: number[] = [];
     const lens: number[] = [];
+    const fs: number[] = [];
     let px = 0;
     let py = 0;
     for (let i = 0; i <= N; i++) {
       const u = i / N;
       const env = Math.pow(Math.max(0, (u - 0.35) / 0.65), 1.5);
       const th = 1.05 * env * Math.sin(p.phase - u * 2.2);
-      const a = p.pitch + turn * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2);
+      const f = facing(u);
+      const arch = turning ? -0.45 * Math.sin(Math.PI * Math.max(0, Math.min(1, t * 1.7 - u * 0.7))) : 0;
+      const a = p.pitch + bend * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2) + arch;
       const len = SEG * (0.62 + 0.38 * Math.cos(th));
       pts.push([px, py]);
       ang.push(a);
       lens.push(len);
+      fs.push(f);
       if (i < N) {
-        px -= Math.cos(a) * len;
+        const fm = (f + facing((i + 1) / N)) / 2;
+        px -= Math.cos(a) * len * fm;
         py -= Math.sin(a) * len;
       }
     }
@@ -131,20 +149,25 @@ export class BeastSprite {
       const s = this.strips[i]!;
       const [x, y] = pts[i]!;
       const a = (ang[i]! + ang[i + 1]!) / 2;
+      const fm = (fs[i]! + fs[i + 1]!) / 2;
+      const width = (lens[i]! / SEG) * OVERLAP;
+      // never exactly zero wide: a thin sliver keeps the silhouette continuous
+      const w = Math.sign(fm || 1) * Math.max(0.08, Math.abs(fm)) * width;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
-        .setScale((lens[i]! / SEG) * OVERLAP, 1);
-      if (p.flash > 0) s.setTint(0xff9a8a);
-      else if (p.rage) s.setTint(0xffd0c8);
+        .setScale(w, 1);
+      const shade = turning ? 0.45 + 0.55 * Math.abs(fm) : 1;
+      const base = p.flash > 0 ? [255, 154, 138] : p.rage ? [255, 208, 200] : [255, 255, 255];
+      if (shade < 1 || p.flash > 0 || p.rage)
+        s.setTint(((base[0]! * shade) << 16) | ((base[1]! * shade) << 8) | (base[2]! * shade));
       else s.clearTint();
     }
     const sc = p.length / IW;
-    const squash = p.turn && p.turn > 0 ? Math.max(0.06, Math.abs(1 - 2 * p.turn)) : 1;
     const shake = p.rage ? (Math.random() - 0.5) * p.length * 0.02 : 0;
     this.root
       .setVisible(true)
       .setPosition(p.x + shake, p.y + shake)
-      .setScale(p.face * sc * squash, sc)
+      .setScale(baseFace * sc, sc)
       .setAlpha(p.alpha);
   }
 

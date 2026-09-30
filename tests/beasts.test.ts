@@ -178,3 +178,24 @@ describe('wild spawns data', () => {
     ]);
   });
 });
+
+describe('beast sheet', () => {
+  it('shows rarity, type, role, stats and moves with locks and damage', async () => {
+    const { buildSheet } = await import('../src/systems/beasts/sheet');
+    const s = buildSheet({ speciesId: 'squalo_bianco', variant: 'comune' }, 7);
+    expect(s.name).toBe('Squalo bianco');
+    expect(s.stars).toBe(3);
+    expect(s.rarityName).toBe('Rara');
+    expect(s.typeName).toBe('Predatore');
+    expect(s.roleName).toBe('Cavalcatura');
+    expect(s.moves.map((m) => m.unlocked)).toEqual([true, true, false]);
+    expect(s.moves[0]!.damageNext).toBeGreaterThanOrEqual(s.moves[0]!.damageNow);
+    expect(s.lengthM).toBe(6);
+    expect(s.habitat).toBe('Baia di Portofosco');
+    const albino = buildSheet({ speciesId: 'squalo_bianco', variant: 'albino' }, 5);
+    expect(albino.special).toBe('albino');
+    expect(albino.rarityName).toBe('Epica');
+    const wild = buildSheet({ speciesId: 'barracuda', variant: 'comune' });
+    expect(wild.levelLabel).toContain('in natura');
+  });
+});

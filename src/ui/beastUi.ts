@@ -7,7 +7,7 @@ import { needle } from '../systems/beasts/taming';
 import { maxHpOf, movesFor, teamMembers } from '../systems/beasts/team';
 import type { GameEvent } from '../systems/events';
 import { currentAction, type GameState } from '../systems/game';
-import { artUrl } from './teamPanel';
+import { artUrl } from './art';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 
