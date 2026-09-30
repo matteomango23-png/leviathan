@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
@@ -48,7 +48,12 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beasts/companion.ts` | La bestia in acqua: arriva dal buio, segue, difende, si cavalca. |
 | `beasts/moves.ts` | Mosse: morso, carica (rompe le ossa antiche), frenesia; attacchi automatici del compagno. |
 | `beastPlay.ts` | Collega tutto quello che riguarda le bestie in un passo di gioco (azione contestuale, domatura, morsi). |
-| `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca). |
+| `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca, o per crescere); al porto "Nutri" dalla sacca. |
+| `beasts/growth.ts` | Esperienza, livelli, barra del cibo (31-50), forme finali. |
+| `progress.ts` | Dopo ogni passo: esperienza alla squadra, missioni, profondità massima. |
+| `guardian.ts` | Lo scontro col Guardiano: inizio nella tana, fasi, scorta, ricompensa, fuga e ritorno. |
+| `beasts/arena.ts` | Come si muovono le bestie dentro la tana (giri, affondi, raffiche, coda, fuga dal pozzo). |
+| `world/lair.ts` | Forma della tana: grotta, pozzo, guscio di roccia. |
 | `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse con livello e danno. |
 | `sanctuary.ts` | Santuari: cura graduale di sub e squadra, punto di rinascita. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
@@ -69,7 +74,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `art.ts` | Indirizzo dell'illustrazione di una bestia. |
 | `beastSheet.ts`, `bestiary.ts` | Scheda della bestia e bestiario. |
 | `portMenu.ts`, `portTabs.ts`, `portCard.ts` | Porto a schermo intero: schede, card, zaino e bacheca. |
-| `teamPanel.ts`, `pauseMenu.ts` | Squadra e menu di pausa. |
+| `teamPanel.ts`, `pauseMenu.ts` | Squadra (con "Nutri" al porto) e menu di pausa. |
+| `growthBars.ts` | Barre di esperienza e cibo. |
+| `bossBar.ts` | Barra del Guardiano in alto. |
 
 ## Come si disegna il mare
 

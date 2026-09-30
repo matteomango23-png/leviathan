@@ -1,5 +1,33 @@
 # Progressi
 
+## Sessione 4 — Livelli, crescita e primo Guardiano (30 settembre 2026) → v0.4.0
+
+**Fatto (tappa 4)**
+
+- Esperienza dalle bestie sfinite (tutta a chi è in acqua, un quarto al resto della squadra), livelli fino al 50, mosse sbloccate al 7 e al 15 con un messaggio, statistiche e danno che crescono col livello.
+- Crescita 31-50 con barra del cibo: la bestia grande mangia da sola, al porto c'è il pulsante "Nutri". Forme finali al 50 (Titano, Mega albino).
+- Barre di esperienza e cibo in squadra e nella scheda (che già mostrava mosse, lucchetti e danno al prossimo livello).
+- Lo Sfregiato nella sua tana sotto la Baia: due fasi, colpo di coda, scorta di due squali, 800 denti e Arpione mitico la prima volta, domabile; se scappa torna dopo la visita al porto.
+- Salvataggio v4 con migrazione. Pannello di prova: "+5 livelli alla squadra", "Squalo bianco liv. 30", "Portami nella tana dello Sfregiato".
+- 123 test automatici.
+
+**Mancante / da sapere**
+
+- Lo scontro è provato dai test automatici e l'ho visto nel browser (la tana, lo Sfregiato che gira e morde, la barra in alto), ma non l'ho giocato fino in fondo: la difficoltà va provata sull'iPhone.
+- I numeri dell'esperienza sono un primo bilanciamento (`data/progression.ts`): dimmi se si sale troppo piano o troppo in fretta.
+- Lo Sfregiato domato usa le mosse dello squalo bianco (non ha mosse sue).
+- Nella tana non c'è ancora una scena di storia: arriverà con la Storia del capitolo 1 (tappa 5).
+
+**Da provare sull'iPhone**
+
+1. Doma uno squalo e combatti le bestie della Baia: guarda la barra dell'esperienza (Pausa → tocca la bestia) e il messaggio "Nuova mossa: Carica" al livello 7.
+2. Cerca la tana: al centro della Baia, sul fondo (circa 55 m), compare la scritta "Tana dello Sfregiato" sopra una botola di ossa. Cavalca lo squalo e usa Carica per romperla.
+3. Scendi e combatti lo Sfregiato: schiva gli affondi (fauci aperte = segnale), stai lontano dalla coda quando è furioso.
+4. Sfinito, domalo. Se fallisci: torna al porto e poi di nuovo nella tana.
+5. Con `?prove`: "Squalo bianco liv. 30", poi al porto nel Recinto "Nutri" con qualche pesce nella sacca; "+5 livelli" fino al 50 per vedere il Titano.
+
+**Prossima sessione:** Sessione 5 — pulizia (CLAUDE.md: ogni 3 tappe una sessione senza nuove funzioni), poi la Storia del capitolo 1.
+
 ## Sessione 3b — Correzioni dopo la prova (30 settembre 2026) → v0.3.1
 
 **Fatto (tutte le richieste del proprietario dopo la v0.3.0)**
