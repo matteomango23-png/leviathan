@@ -1147,3 +1147,42 @@
 #ui.in-port > :not(.port):not(.sheet) {
   display: none !important;
 }
+
+/* Experience and nourishment bars */
+.gbars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+.gbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.gbar-label {
+  width: 34px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.gbar-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.gbar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6fb3e8, #a8dcff);
+}
+.gbar.food .gbar-fill {
+  background: linear-gradient(90deg, #c79a58, #ffd9a0);
+}
+.gbar-value {
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

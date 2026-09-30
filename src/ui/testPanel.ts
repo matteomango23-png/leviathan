@@ -1,7 +1,7 @@
 // Test panel (only with ?prove in the link): show any beast version, get strong beasts, teeth, heal.
 import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
-import { giveTestBeast, healAll, spawnTestBeast } from '../systems/testTools';
+import { giveTestBeast, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
 import { el } from './dom';
 
 const OTHERS: BeastForm[] = [
@@ -33,6 +33,16 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
       done(`${formName(form)} liv. 15 aggiunto (se la squadra è piena va in riserva).`);
     });
   }
+  const up = el('button', 'menu-btn small', grid, '+5 livelli alla squadra');
+  up.addEventListener('click', () => {
+    raiseTeam(g, 5);
+    done('Squadra +5 livelli.');
+  });
+  const grow = el('button', 'menu-btn small', grid, 'Squalo bianco liv. 30 (prova la crescita)');
+  grow.addEventListener('click', () => {
+    giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 30);
+    done('Squalo liv. 30 aggiunto: dagli esperienza e fagli mangiare pesci.');
+  });
   const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
   teeth.addEventListener('click', () => {
     g.gear.teeth += 2000;

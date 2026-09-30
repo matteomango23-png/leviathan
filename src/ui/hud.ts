@@ -1,6 +1,7 @@
 // Hearts, oxygen, depth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
+import { PROGRESSION } from '../data/rules';
 import { SPECIES } from '../data/species';
 import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
@@ -101,6 +102,17 @@ export class Hud {
       } else if (e.type === 'beastKo') {
         const b = tamed(e.uid);
         if (b) this.toast(`${formName(b.form)} è KO. Portalo a un santuario per curarlo.`, 3.2);
+      } else if (e.type === 'levelUp') {
+        const b = tamed(e.uid);
+        const move = e.move ? ` Nuova mossa: ${e.move}.` : '';
+        if (b) this.toast(`${formName(b.form)} sale al livello ${e.level}!${move}`, e.move ? 4 : 2.4);
+      } else if (e.type === 'finalForm') {
+        const b = tamed(e.uid);
+        if (b) this.toast(`Forma finale: ${formName(b.form)}!`, 4.5);
+      } else if (e.type === 'beastFed') {
+        const b = tamed(e.uid);
+        const need = PROGRESSION.nourishmentPerGrowthLevel;
+        if (b) this.toast(`${formName(b.form)} mangia per crescere (${e.food}/${need}).`, 1.6);
       } else if (e.type === 'sanctuaryReached')
         this.toast('Santuario raggiunto: rinascerai qui. Resta fermo per curarti.', 3);
       else if (e.type === 'bonesBroken') this.toast('Le ossa antiche cedono!', 1.5);

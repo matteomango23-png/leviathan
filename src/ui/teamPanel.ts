@@ -3,7 +3,10 @@ import { PROGRESSION } from '../data/rules';
 import { formName, formStars } from '../systems/beasts/forms';
 import { maxHpOf, teamMembers, toggleInTeam } from '../systems/beasts/team';
 import type { GameState } from '../systems/game';
+import { isHungry } from '../systems/beasts/growth';
+import { feedFromBag } from '../systems/feeding';
 import { artUrl } from './art';
+import { growthBars } from './growthBars';
 import { el } from './dom';
 import { openBeastSheet } from './beastSheet';
 
@@ -26,6 +29,7 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         openBeastSheet(document.getElementById('ui') ?? document.body, b.form, b.level, {
           hp: b.hp,
           ko: b.ko,
+          beast: b,
         });
       });
       const img = el('img', '', row);
@@ -39,7 +43,17 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         info,
         `Liv. ${b.level} · Vita ${Math.ceil(b.hp)}/${maxHpOf(b)}${b.ko ? ' · KO' : ''} · ${b.inTeam ? 'in squadra' : 'in riserva'}`,
       );
+      growthBars(info, b);
       if (!editable) continue;
+      if (isHungry(b)) {
+        const feed = el('button', 'menu-btn small', row, 'Nutri');
+        feed.disabled = !Object.values(g.gear.bag).some((n) => n > 0);
+        if (feed.disabled) feed.title = 'La sacca è vuota: pesca qualcosa';
+        feed.addEventListener('click', () => {
+          feedFromBag(g.gear.bag, b, []);
+          draw();
+        });
+      }
       const inWater = g.beasts.companion?.uid === b.uid;
       const btn = el('button', 'menu-btn small', row, b.inTeam ? 'In riserva' : 'In squadra');
       btn.disabled = inWater;

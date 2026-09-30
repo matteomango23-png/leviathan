@@ -36,6 +36,9 @@ export type GameEvent =
   | { type: 'mounted' }
   | { type: 'dismounted' }
   | { type: 'beastKo'; uid: string }
+  | { type: 'levelUp'; uid: string; level: number; move?: string }
+  | { type: 'finalForm'; uid: string }
+  | { type: 'beastFed'; uid: string; food: number }
   | { type: 'moveUsed'; uid: string; slot: number; x: number; y: number }
   | { type: 'bonesBroken'; tiles: number[] }
   | { type: 'areaPulse'; x: number; y: number; radius: number }
