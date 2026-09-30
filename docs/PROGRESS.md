@@ -1,5 +1,39 @@
 # Progressi
 
+## Sessione 3 — Porto ed economia (30 settembre 2026) → v0.3.0
+
+**Fatto (tappa 3 + altre bestie della Baia)**
+
+- Portofosco al molo (Mercato, Mute, Zaino, Bacheca, Recinto), cura e rinascita al porto.
+- Denti di squalo; sacca dei pesci e vendita; sgombri nella Baia.
+- Mute con profondità massima, cuori, velocità e scatto; potenziamenti Apnea e lampade.
+- Relitti e forzieri (fiocine nella Baia, rete nella Barriera, denti e oggetti).
+- Zaino con 3 posti (armi, oggetti, sciami); oggetti: Bolla d'aria, Alga curativa, Esca, Krill dorato, Arpione mitico.
+- 8 missioni semplici; sciame di sardine (legame dopo 10 catture, assorbe morsi).
+- Barracuda, tartaruga marina e torpedine selvatici nella Baia, domabili, con mosse generali (morsi multipli, affondo, velocità doppia, scudo, cupola, scosse e stordimento ad area).
+- Solo le cavalcature si cavalcano. Al massimo 2 bestie selvatiche insieme.
+- Salvataggio v3 con migrazione. Regole di orche matriarche e leggendarie nel GDD; loro immagini pronte.
+- 94 test automatici.
+
+**Mancante / da sapere**
+
+- Il menu del porto è stato provato nel browser (tutte le schede, vendita), ma non l'ho potuto vedere dentro il gioco in movimento: il pannello del browser era nascosto. Da provare bene sull'iPhone.
+- Folgore e arpione runico, lampo sonar e nuoto controcorrente arrivano con le loro regioni.
+- Skin delle bestie, barca e viaggio veloce: non in questa tappa.
+- Le bestie domate non salgono ancora di livello (tappa 4): per ora il Krill dorato è l'unico modo.
+- Alla torpedine manca ancora il profilo a bocca aperta (usa quello chiuso).
+
+**Da provare sull'iPhone**
+
+1. Risali in superficie vicino al molo (sopra la partenza) e tocca "Porto": guarda le 5 schede.
+2. Accetta 2-3 missioni in Bacheca, poi pesca sardine e sgombri; torna al porto, vendi e riscuoti.
+3. Cerca il relitto della Baia (luce dorata sul fondo, a ovest a metà Baia): "Apri" → fiocine. Al porto, Zaino → mettile in un posto; in immersione tocca "Fiocine" in alto a destra.
+4. Dopo 10 sardine metti lo "Sciame di sardine" nello zaino e chiamalo quando arriva uno squalo.
+5. Compra la muta rinforzata (400 denti) e prova a scendere oltre i 150 m.
+6. Con `?prove`: fai apparire barracuda, tartaruga e torpedine e prova a domarli; "+2000 denti" per provare il mercato.
+
+**Prossima sessione:** Sessione 4 — Livelli, crescita e primo Guardiano (`docs/PROMPT.md`). Ramo consigliato: `tappa-4-livelli`.
+
 ## Sessione 2 — Solo lo squalo bianco (30 settembre 2026) → v0.2.0
 
 **Fatto (tappa 2 ristretta allo squalo bianco)**

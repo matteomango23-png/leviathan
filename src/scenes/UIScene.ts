@@ -1,5 +1,6 @@
 // UI: HUD and touch/keyboard controls, drawn as HTML over the game canvas (crisp text, safe areas).
 import Phaser from 'phaser';
+import { BackpackBar } from '../ui/backpackBar';
 import { BeastUi } from '../ui/beastUi';
 import { Controls } from '../ui/controls';
 import { el } from '../ui/dom';
@@ -13,6 +14,7 @@ export class UIScene extends Phaser.Scene {
   private hud!: Hud;
   private controls!: Controls;
   private beastUi!: BeastUi;
+  private backpack!: BackpackBar;
 
   constructor() {
     super('UI');
@@ -28,6 +30,7 @@ export class UIScene extends Phaser.Scene {
     this.hud = new Hud(this.root);
     this.controls = new Controls(this.root, this.session, () => this.openPause());
     this.beastUi = new BeastUi(this.root, this.session);
+    this.backpack = new BackpackBar(this.root, this.session);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -35,10 +38,12 @@ export class UIScene extends Phaser.Scene {
     this.session.on('gameEvents', this.onGameEvents, this);
     this.session.on('toast', this.onToast, this);
     this.session.on('resume', this.onResume, this);
+    this.session.on('openPort', this.openPort, this);
     this.events.once('shutdown', () => {
       this.session.off('gameEvents', this.onGameEvents, this);
       this.session.off('toast', this.onToast, this);
       this.session.off('resume', this.onResume, this);
+      this.session.off('openPort', this.openPort, this);
       this.controls.destroy();
       this.root.remove();
       rotate.remove();
@@ -60,12 +65,20 @@ export class UIScene extends Phaser.Scene {
     this.hud.toast(text, 4);
   }
 
-  private openPause(): void {
+  private openMenus(mode: 'pause' | 'port'): void {
     if (this.session.paused || !this.session.game) return;
     this.session.paused = true;
     this.controls.releaseAll();
     this.scene.pause('World');
-    this.scene.launch('Menus', { session: this.session });
+    this.scene.launch('Menus', { session: this.session, mode });
+  }
+
+  private openPause(): void {
+    this.openMenus('pause');
+  }
+
+  private openPort(): void {
+    this.openMenus('port');
   }
 
   private onResume(): void {
@@ -81,5 +94,6 @@ export class UIScene extends Phaser.Scene {
     this.controls.update(g.diver.dashCooldown <= 0);
     this.hud.update(g, Math.min(0.1, deltaMs / 1000));
     this.beastUi.update(g);
+    this.backpack.update(g);
   }
 }

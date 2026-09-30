@@ -1,27 +1,38 @@
-// Menus: for now only the pause menu (squad, bestiary, beast sheet, port and backpack arrive in later stages).
+// Menus: the pause menu and the port of Portofosco (bestiary and beast sheet arrive with tappa 4).
 import Phaser from 'phaser';
 import { PauseMenu } from '../ui/pauseMenu';
+import { PortMenu } from '../ui/portMenu';
 import type { SceneData, Session } from './session';
+
+export interface MenusData extends SceneData {
+  mode: 'pause' | 'port';
+}
 
 export class MenusScene extends Phaser.Scene {
   private session!: Session;
-  private menu: PauseMenu | null = null;
+  private mode: MenusData['mode'] = 'pause';
+  private menu: { destroy(): void } | null = null;
 
   constructor() {
     super('Menus');
   }
 
-  init(data: SceneData): void {
+  init(data: MenusData): void {
     this.session = data.session;
+    this.mode = data.mode ?? 'pause';
   }
 
   create(): void {
     const game = this.session.game;
     const ui = document.getElementById('ui') ?? document.body;
     if (!game) return;
-    this.menu = new PauseMenu(ui, this.session, game, () => this.session.emit('resume'));
+    const close = (): void => this.session.emit('resume');
+    this.menu =
+      this.mode === 'port'
+        ? new PortMenu(ui, this.session, game, close)
+        : new PauseMenu(ui, this.session, game, close);
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' || e.key.toLowerCase() === 'p') this.session.emit('resume');
+      if (e.key === 'Escape' || (this.mode === 'pause' && e.key.toLowerCase() === 'p')) close();
     };
     window.addEventListener('keydown', onKey);
     this.events.once('shutdown', () => {

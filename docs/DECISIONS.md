@@ -83,3 +83,23 @@ Ogni scelta tecnica importante: data, decisione, motivo. Le più recenti in fond
 ## 2026-09-30 — Salvataggio versione 2
 
 **Decisione:** aggiunti `team` (bestie domate: forma, livello, vita, KO, squadra o riserva), `sanctuary` (dove rinasci) e `brokenTiles` (ossa rotte). Prima migrazione reale: v1 → v2 aggiunge i campi vuoti. Una bestia sconosciuta nel file di importazione blocca l'importazione con un messaggio chiaro.
+
+## 2026-09-30 — Sessione 3: porto ed economia
+
+- **Portofosco** è al molo sopra il punto di partenza (x 2400): arrivando in superficie vicino al molo compare "Porto". Il porto ha il suo santuario: cura sub e squadra e diventa il punto di rinascita. Le scorte del mercato si rinnovano a ogni visita.
+- **Pesci:** se ti manca un cuore la sardina ti cura, altrimenti il pesce va nella sacca e si vende al mercato (`sellPrice` in world.ts). Aggiunti gli sgombri nella Baia.
+- **Mute:** la muta fissa la profondità massima: oltre, il sub viene spinto su con un avviso. Il muro di ossa (circa 163 m) richiede la muta rinforzata (500 m).
+- **Potenziamenti:** in vendita solo quelli con effetto già nel gioco (apnea, lampada potenziata, lampada abissale); lampo sonar e nuoto controcorrente sono visibili ma "in arrivo".
+- **Armi:** le fiocine sono nel relitto della Baia, la rete nel relitto della Barriera. Folgore e arpione runico arriveranno con le loro regioni.
+- **Zaino:** 3 posti scelti al porto. In immersione si toccano: un'arma diventa quella del pulsante arpione (ritoccandola si torna all'arpione), un oggetto si usa, uno sciame si chiama.
+- **Arpione mitico:** una sola scorta finché non cade un Guardiano (tappa 4). Usato, il prossimo colpo entro 20 s porta subito al minigioco.
+- **Missioni:** 8 missioni semplici sulla bacheca (massimo 3 attive); il progresso conta dopo averle accettate; i denti si riscuotono al porto.
+- **Sciame di sardine:** si lega dopo 10 sardine catturate in totale (anche quelle prima della versione 0.3.0). Nello zaino assorbe fino a 6 morsi per 8 s.
+- **Bestie della Baia:** barracuda, tartaruga marina e torpedine usano le stesse regole di movimento dello squalo. Al massimo 2 bestie selvatiche intorno a te nello stesso momento (`WILD_RULES.maxPresent`). La tartaruga non attacca se non la colpisci.
+- **Solo le cavalcature si cavalcano** (ruolo "cavalcatura" in species.ts): barracuda e torpedine (compagni) e tartaruga (supporto) combattono e usano le mosse da soli.
+- **Varianti senza immagine** (es. barracuda alfa): usano lo sprite e l'illustrazione della specie. `npm run art` scrive `src/data/sprites.generated.ts` con le immagini disponibili, così il gioco non chiede mai file mancanti.
+- **Salvataggio versione 3** con l'equipaggiamento (`gear`). Migrazione v2 → v3. Gli id sconosciuti in un file importato vengono scartati.
+
+## 2026-09-30 — Orche e bestie leggendarie
+
+Decisioni del proprietario sulle orche matriarche, la Madre delle madri, l'orca preistorica albina e il coccodrillo albino leggendario: vedi `docs/GDD.md`. Sprite e illustrazioni pronti (`orca_matriarca`, `orca_matriarca_finale`, `orca_preistorica_albina`, `coccodrillo_marino_leggendario`). Il comportamento arriva con le loro regioni.

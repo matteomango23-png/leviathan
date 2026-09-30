@@ -1,16 +1,17 @@
 // Interface for beasts: team slots (call / recall), the context button (Doma, Cavalca, Scendi),
 // the three move buttons while riding, and the taming minigame.
 import { PROGRESSION, TAMING } from '../data/rules';
-import { activeBeast, contextAction } from '../systems/beastPlay';
+import { activeBeast } from '../systems/beastPlay';
 import { formKey, formName } from '../systems/beasts/forms';
 import { needle } from '../systems/beasts/taming';
 import { maxHpOf, movesFor, teamMembers } from '../systems/beasts/team';
 import type { GameEvent } from '../systems/events';
-import type { GameState } from '../systems/game';
+import { currentAction, type GameState } from '../systems/game';
+import { artUrl } from './teamPanel';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 
-const LABELS = { doma: 'Doma', cavalca: 'Cavalca', scendi: 'Scendi' } as const;
+const LABELS = { doma: 'Doma', cavalca: 'Cavalca', scendi: 'Scendi', apri: 'Apri', porto: 'Porto' } as const;
 
 function press(btn: HTMLElement, fn: () => void): void {
   btn.addEventListener('pointerdown', (e) => {
@@ -105,7 +106,7 @@ export class BeastUi {
       const key = formKey(b.form);
       if (s.img.dataset.key !== key) {
         s.img.dataset.key = key;
-        s.img.src = `art/${key}.webp`;
+        s.img.src = artUrl(b.form);
       }
       s.root.title = `${formName(b.form)} · liv. ${b.level}`;
       s.fill.style.width = `${Math.round((b.hp / maxHpOf(b)) * 100)}%`;
@@ -116,7 +117,7 @@ export class BeastUi {
     });
 
     // context button and moves
-    const act = contextAction(g);
+    const act = currentAction(g);
     this.ctxBtn.hidden = act === null;
     if (act) this.ctxBtn.textContent = LABELS[act];
     const mount = g.beasts.riding ? activeBeast(g) : undefined;

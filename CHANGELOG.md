@@ -2,6 +2,21 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.3.0 — Porto ed economia (30 settembre 2026)
+
+- **Portofosco:** risali in superficie vicino al molo (sopra la partenza) e tocca "Porto". Il porto cura te e la squadra ed è il tuo punto di rinascita.
+- **Denti di squalo**, la moneta del gioco: si guadagnano vendendo pesci, aprendo relitti e forzieri e completando missioni.
+- **Mercato:** vendi i pesci della sacca e compra oggetti (Bolla d'aria, Alga curativa, Esca, Krill dorato, Arpione mitico).
+- **Mute:** leggera, rinforzata, scafandro da palombaro, abissale. Ognuna ha la sua profondità massima, i suoi cuori e la sua velocità. Potenziamenti: Apnea, Lampada potenziata, Lampada abissale.
+- **Relitti e forzieri** sul fondale, con una luce dorata: tocca "Apri". Nel relitto della Baia ci sono le **fiocine** (tre dardi a ventaglio), in quello della Barriera la **rete** (fino a 5 pesci per lancio, rallenta le bestie).
+- **Zaino:** l'arpione è sempre con te, più 3 posti che scegli al porto (armi, oggetti, sciami). In immersione li trovi in alto a destra.
+- **Bacheca:** 8 missioni semplici (pesca, vendi, sfianca, doma, relitti, profondità), fino a 3 alla volta; riscuoti al porto.
+- **Sciame di sardine:** dopo 10 sardine catturate lo sciame ti segue. Chiamato dallo zaino, per 8 secondi assorbe fino a 6 morsi.
+- **Nuove bestie nella Baia:** barracuda (morsi rapidi), tartaruga marina (scudo sul sub, cupola che dimezza i danni della squadra) e torpedine (scosse che stordiscono). Si domano come lo squalo e combattono al tuo fianco; solo le cavalcature si cavalcano.
+- **Sgombri** nella Baia: valgono più delle sardine.
+- Nuove immagini pronte: orca matriarca, Madre delle madri, orca preistorica albina, coccodrillo albino leggendario (per le prossime regioni).
+- Il salvataggio si aggiorna da solo (versione 3).
+
 ## v0.2.0 — Lo squalo bianco (30 settembre 2026)
 
 - Nella Baia di Portofosco (a ovest della partenza) vive lo squalo bianco: dipinto, lungo 6 m, con la coda che ondeggia lungo la spina dorsale.

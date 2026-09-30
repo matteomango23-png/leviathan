@@ -6,7 +6,7 @@ export const PORT = {
   name: 'Portofosco',
   x: 2400, // pier position on the surface (world units)
   reach: 60, // how close (horizontally) to the pier you must be, at the surface
-  surfaceBand: 22, // below the surface still counts as "at the pier"
+  surfaceBand: 48, // up to 8 m below the surface still counts as "at the pier"
 };
 
 /** Things that open with the context button: wrecks hold a weapon, chests hold teeth. */

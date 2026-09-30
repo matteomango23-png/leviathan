@@ -72,6 +72,7 @@ export class Controls {
       else if (k === ' ' || k === 'j') input.tameTap = true;
       else if (k >= '1' && k <= '5') input.summon = Number(k) - 1;
       else if (k === 'z' || k === 'x' || k === 'c') input.move = { z: 1, x: 2, c: 3 }[k];
+      else if (k === 'r' || k === 't' || k === 'y') input.slot = { r: 0, t: 1, y: 2 }[k];
     });
     this.listen<KeyboardEvent>(window, 'keyup', (e) => this.keys.delete(e.key.toLowerCase()));
     this.listen(window, 'blur', () => this.releaseAll());
