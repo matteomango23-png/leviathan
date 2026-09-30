@@ -1,5 +1,18 @@
 # Progressi
 
+## Sessione 5 — Pulizia (30 settembre 2026) → v0.4.1
+
+**Fatto (nessuna funzione nuova, come da CLAUDE.md ogni 3 tappe)**
+
+- Tolto il codice che nessuno usava; spostati nei dati gli ultimi numeri di gioco rimasti nel codice.
+- Nuovo controllo automatico in `npm run check`: nessun file può importarne un altro che lo reimporta (dipendenze circolari). Oggi: nessuna.
+- Documenti allineati: ARCHITECTURE elenca tutti i file, GDD con la roadmap aggiornata (tappe 1-4 fatte) e la decisione sulla morte contro i Guardiani.
+- 123 test automatici, tutti verdi.
+
+**Da provare sull'iPhone:** niente di nuovo; il gioco deve comportarsi esattamente come la 0.4.0.
+
+**Prossima sessione:** Sessione 6 — Storia del capitolo 1 (tappa 5 della roadmap). Ramo consigliato: `tappa-5-storia`.
+
 ## Sessione 4 — Livelli, crescita e primo Guardiano (30 settembre 2026) → v0.4.0
 
 **Fatto (tappa 4)**

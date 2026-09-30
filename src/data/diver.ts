@@ -12,6 +12,7 @@ export const DIVER = {
   sinkWhenIdle: 10, // slow sinking when not swimming
   aimTurnRate: 10,
   invulnerableAfterHit: 1.2,
+  invulnerableAfterRespawn: 1.5,
   respawnDelay: 2,
   dash: { speed: 150, duration: 0.25, cooldown: 0.8, drag: 0.6 },
   oxygen: {
@@ -31,6 +32,7 @@ export const HARPOON = {
   returnSpeed: 340,
   range: 135,
   catchRadius: 6,
+  backInHandRadius: 9, // the shot is back in the diver's hand within this distance
   muzzleOffset: 6,
   aimDotsFrom: 14,
   aimDotsTo: 70,
@@ -46,6 +48,7 @@ export const SARDINE = {
   swimSpeed: 36,
   fleeRadius: 42,
   fleeSpeed: 86,
+  fleeDistance: 50, // how far ahead of the threat a fleeing sardine aims
   steer: 3,
   radius: 2,
   respawnSeconds: 30,
@@ -54,6 +57,7 @@ export const SARDINE = {
 
 export const CAMERA = {
   viewHeightUnits: 160, // how much sea is visible vertically: "telecamera lontana" (tuning)
+  defaultAspect: 2.16, // screen width / height assumed when no real screen is known (tests)
   lookAhead: 20, // looks ahead in the direction the diver faces
   follow: 5, // how fast the camera catches up
   minY: -60, // can peek above the surface

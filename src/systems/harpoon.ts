@@ -87,7 +87,7 @@ export function stepHarpoon(
   const dy = d.y - s.y;
   const dist = Math.hypot(dx, dy) || 1;
   const step = HARPOON.returnSpeed * dt;
-  if (dist <= Math.max(9, step)) {
+  if (dist <= Math.max(HARPOON.backInHandRadius, step)) {
     const caught = s.caught;
     h.shot = null;
     return caught;

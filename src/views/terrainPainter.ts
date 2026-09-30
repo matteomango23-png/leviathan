@@ -235,16 +235,3 @@ export class ChunkPaintJob {
     drawCorals(g, this.map, this.x0, this.y0, this.size);
   }
 }
-
-/** Paints a whole chunk at once (used when a chunk is needed on screen right now). */
-export function paintChunk(
-  g: CanvasRenderingContext2D,
-  map: TileMap,
-  x0: number,
-  y0: number,
-  size: number,
-): void {
-  const job = new ChunkPaintJob(map, x0, y0, size);
-  job.step(Infinity);
-  job.finish(g);
-}

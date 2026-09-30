@@ -110,6 +110,3 @@ export const WHITE_SHARK_FORMS: BeastForm[] = [
   { speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' },
   { speciesId: 'squalo_bianco', variant: 'comune', final: true },
 ];
-
-export const sameForm = (a: BeastForm, b: BeastForm): boolean =>
-  a.speciesId === b.speciesId && a.variant === b.variant && a.unique === b.unique && !!a.final === !!b.final;

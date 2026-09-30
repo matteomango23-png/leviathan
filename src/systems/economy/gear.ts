@@ -1,6 +1,6 @@
 // The diver's side of progress: teeth, the fish bag, suits and upgrades, weapons, items,
 // the backpack (base harpoon + BACKPACK_SLOTS chosen at the port) and bound swarms.
-import { ITEM_RULES, MARKET, UPGRADE_EFFECTS } from '../../data/economy';
+import { MARKET, UPGRADE_EFFECTS } from '../../data/economy';
 import {
   BACKPACK_SLOTS,
   FISH,
@@ -197,5 +197,3 @@ export function cleanBackpack(g: GearState): void {
     id && slotKind(id) === 'item' && (g.inventory[id] ?? 0) <= 0 ? null : id,
   );
 }
-
-export const KRILL_LEVELS = ITEM_RULES.krillLevels;

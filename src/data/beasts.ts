@@ -80,6 +80,7 @@ export const BEAST_COMBAT = {
   biteCooldown: 2.5,
   hitFlashSeconds: 0.15,
   barSeconds: 4, // health bar stays visible after a hit
+  weaponHitMargin: 1.5, // units: a weapon tip this close to the body hits
 };
 
 /** Taming flow around the minigame (TAMING in rules.ts sets the minigame itself). */

@@ -1,7 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { TEAM_RULES } from '../data/beasts';
-import { DIVER, SARDINE } from '../data/diver';
+import { CAMERA, DIVER, SARDINE } from '../data/diver';
 import { FISH } from '../data/world';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import type { Rect } from './beasts/wild';
@@ -108,6 +108,13 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   };
 }
 
+/** The world rectangle on screen when the game runs without a real screen (tests). */
+function defaultView(x: number, y: number): Rect {
+  const h = CAMERA.viewHeightUnits;
+  const w = h * CAMERA.defaultAspect;
+  return { x: x - w / 2, y: y - h / 2, w, h };
+}
+
 function markSeen(g: GameState, id: string, events: GameEvent[]): void {
   if (g.seen.has(id)) return;
   g.seen.add(id);
@@ -185,7 +192,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;
-  const screen: Rect = view ?? { x: d.x - 173, y: d.y - 80, w: 346, h: 160 };
+  const screen: Rect = view ?? defaultView(d.x, d.y);
   const mods = diverModifiers(g.gear);
   if (d.maxHp !== mods.maxHp) {
     d.maxHp = mods.maxHp;
@@ -222,7 +229,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
       for (const w of g.beasts.wilds)
         if (isInWater(w) && Math.hypot(w.x - x, w.y - y) < r + w.length * 0.3) {
           w.slow = WEAPON_RULES.rete.slowSeconds;
-          if (w.length < 20) stunWild(w, WEAPON_RULES.rete.slowSeconds); // small beasts get trapped
+          if (w.length < WEAPON_RULES.rete.trapMaxLength) stunWild(w, WEAPON_RULES.rete.slowSeconds);
         }
     },
   });

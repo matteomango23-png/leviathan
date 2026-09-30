@@ -117,8 +117,8 @@ export function stepFish(
     const dy = f.y - threat.y;
     const d = Math.hypot(dx, dy) || 1;
     if (threat.alive && d < SARDINE.fleeRadius) {
-      tx = f.x + (dx / d) * 50;
-      ty = f.y + (dy / d) * 50;
+      tx = f.x + (dx / d) * SARDINE.fleeDistance;
+      ty = f.y + (dy / d) * SARDINE.fleeDistance;
       sp = SARDINE.fleeSpeed * mult;
     }
     const ex = tx - f.x;

@@ -158,4 +158,3 @@ export function stunWild(b: WildBeast, seconds: number): void {
 
 export const isInWater = (b: WildBeast): boolean =>
   b.motion !== 'gone' && b.motion !== 'away' && b.motion !== 'hidden';
-export const isVisibleWild = isInWater;
