@@ -7,7 +7,7 @@ import type { GameEvent } from './events';
 import type { Fish, FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 
-const BASE_HARPOON = WEAPONS.find((w) => w.id === 'arpione')!;
+export const BASE_HARPOON = WEAPONS.find((w) => w.id === 'arpione')!;
 
 export interface HarpoonShot {
   x: number;
@@ -50,6 +50,8 @@ export function stepHarpoon(
   map: TileMap,
   dt: number,
   events: GameEvent[],
+  /** Called while flying: return true if the tip hit a beast (the harpoon then reels back). */
+  hitBeast: (x: number, y: number) => boolean = () => false,
 ): Fish | null {
   h.cooldown = Math.max(0, h.cooldown - dt);
   const s = h.shot;
@@ -66,6 +68,10 @@ export function stepHarpoon(
     } else {
       s.x = nx;
       s.y = ny;
+      if (hitBeast(s.x, s.y)) {
+        s.returning = true;
+        return null;
+      }
       for (const f of fish.fish) {
         if (f.alive && !f.hooked && Math.hypot(f.x - s.x, f.y - s.y) < HARPOON.catchRadius) {
           f.hooked = true;

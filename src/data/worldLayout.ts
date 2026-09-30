@@ -137,6 +137,20 @@ export const ICE = {
   sheet: { x0: 5100, x1: 5300, y0: 700, y1: 734 }, // ancient ice over the eastern trench
 };
 
+/** Sanctuaries: x and a y above the sea floor they rest on (the floor is found at runtime). */
+export interface SanctuaryDef {
+  name: string;
+  x: number;
+  y: number;
+}
+export const SANCTUARIES: SanctuaryDef[] = [
+  { name: 'il santuario della Barriera', x: 2330, y: 200 },
+  { name: 'il santuario della Baia', x: 1010, y: 200 },
+  { name: 'il santuario crepuscolare', x: 1290, y: 650 },
+  { name: "il santuario dell'abisso", x: 520, y: 1250 },
+  { name: 'il santuario della fossa', x: 4300, y: 1250 },
+];
+
 /** Where a new game starts (at the surface, above Portofosco). */
 export const START = { x: 2400, y: 38 };
 
