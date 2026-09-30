@@ -7,7 +7,7 @@ import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
-import { objectiveText } from '../systems/story';
+import { currentObjective } from '../systems/chapters';
 import { depthMetres } from '../systems/world/zones';
 import { BossBar } from './bossBar';
 import { el } from './dom';
@@ -179,7 +179,7 @@ export class Hud {
       this.cache.info = info;
       this.info.textContent = info;
     }
-    const goal = objectiveText(g.story) ?? '';
+    const goal = currentObjective(g) ?? '';
     if (goal !== this.cache.goal) {
       this.cache.goal = goal;
       this.goal.textContent = goal;

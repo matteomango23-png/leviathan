@@ -1,5 +1,6 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
+import { RARE_UNIQUES } from '../../data/chapter2';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
@@ -85,8 +86,10 @@ export function formType(form: BeastForm): TypeId | 'variabile' {
   return speciesOf(form).type;
 }
 
-/** A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance). */
+/** A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance); a few species have a legendary. */
 export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
+  const rare = RARE_UNIQUES[speciesId];
+  if (rare && rng() < rare.chance) return { speciesId, variant: 'comune', unique: rare.unique };
   const r = rng();
   if (r < VARIANT_RULES.albino.spawnChance) return { speciesId, variant: 'albino' };
   if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance)

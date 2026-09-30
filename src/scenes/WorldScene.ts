@@ -10,6 +10,8 @@ import type { SaveData } from '../systems/save/saveData';
 import { startNewGame, storyHoldsDiver } from '../systems/story';
 import { backupBrokenSave, loadFromStorage, writeToStorage } from '../systems/save/storage';
 import { generateWorld } from '../systems/world/worldGen';
+import { murkAt } from '../systems/world/zones';
+import { DELTA } from '../data/worldLayout';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
 import { CameraRig } from '../views/cameraRig';
@@ -23,6 +25,7 @@ import { KelpView } from '../views/kelpView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
+import { DeltaView } from '../views/deltaView';
 import { TerrainView } from '../views/terrainView';
 import type { SceneData, Session } from './session';
 
@@ -77,6 +80,7 @@ export class WorldScene extends Phaser.Scene {
     this.sanctuaries = new SanctuaryView(this, L.world, g.sanctuaries);
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
+    new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
@@ -199,7 +203,7 @@ export class WorldScene extends Phaser.Scene {
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.effects.update(view, g.time, dt);
     this.places.update(g.gear, g.time);
-    this.story.update(g.story, g.time);
+    this.story.update(g.story, g.chapter2.anchors, g.time);
     this.diverView.setHidden(storyHoldsDiver(g));
     this.gearFx.update(g, rider ?? d, dt, g.time);
 
@@ -215,9 +219,10 @@ export class WorldScene extends Phaser.Scene {
     const glows = [
       ...g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 })),
       ...this.places.glowSpots(g.gear),
-      ...this.story.glowSpots(g.story),
+      ...this.story.glowSpots(g.story, g.chapter2.anchors),
     ];
     const mods = diverModifiers(g.gear);
+    const murk = murkAt(info.cx, info.cy);
     this.light.update(
       info,
       {
@@ -225,12 +230,14 @@ export class WorldScene extends Phaser.Scene {
         y: lamp.y,
         angle: this.lampAngle,
         face: d.face,
-        lengthMult: storyHoldsDiver(g) ? 0 : mods.coneMult, // no lamp while sitting on the boat
+        // no lamp while sitting on the boat; shorter in murky water
+        lengthMult: storyHoldsDiver(g) ? 0 : mods.coneMult * (1 - (1 - DELTA.murk.lampMult) * murk),
         widthMult: mods.coneWidthMult,
       },
       Math.max(this.hurtFlash, lowO2),
       fade,
       glows,
+      murk,
     );
     this.combat.update(info, bars, dt, g.time);
   }

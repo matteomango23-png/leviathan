@@ -19,9 +19,9 @@ export interface WreckDef {
 }
 export const WRECKS: WreckDef[] = [
   { id: 'relitto_baia', name: 'Relitto della Baia', x: 1250, y: 200, reward: { weapon: 'fiocine', teeth: 20 } },
-  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: 2900, y: 330, reward: { weapon: 'rete', teeth: 30 } },
+  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: 3420, y: 330, reward: { weapon: 'rete', teeth: 30 } },
   { id: 'forziere_baia', name: 'Forziere', x: 560, y: 200, reward: { teeth: 60, item: 'bolla_aria' } },
-  { id: 'forziere_reef', name: 'Forziere', x: 3300, y: 200, reward: { teeth: 80 } },
+  { id: 'forziere_reef', name: 'Forziere', x: 3820, y: 200, reward: { teeth: 80 } },
   { id: 'forziere_crepuscolo', name: 'Forziere', x: 900, y: 640, reward: { teeth: 150, item: 'alga_curativa' } },
 ];
 export const WRECK_REACH = 26; // how close you must be to open one
@@ -155,8 +155,13 @@ export interface FishSchoolDef {
 export const OTHER_FISH_SCHOOLS: FishSchoolDef[] = [
   { kind: 'sgombro', x: 700, y: 260, roam: [80, 120, 1850, 330] },
   { kind: 'sgombro', x: 1600, y: 220, roam: [80, 120, 1850, 330] },
+  { kind: 'cefalo', x: 2100, y: 150, roam: [1980, 60, 2420, 200] }, // the Delta
+  { kind: 'cefalo', x: 2320, y: 170, roam: [1980, 60, 2420, 200] },
+  { kind: 'pesce_arciere', x: 2250, y: 40, roam: [1980, 30, 2420, 70] }, // just under the surface
 ];
 export const FISH_LOOK: Record<string, { length: number; tint: number; perSchool: number; speedMult: number }> = {
   sardina: { length: 5, tint: 0xffffff, perSchool: 12, speedMult: 1 },
   sgombro: { length: 7, tint: 0xa8d4c8, perSchool: 7, speedMult: 1.2 },
+  cefalo: { length: 8, tint: 0xb8b8a0, perSchool: 6, speedMult: 0.9 },
+  pesce_arciere: { length: 5, tint: 0xd8e0a0, perSchool: 5, speedMult: 1.1 },
 };

@@ -50,7 +50,7 @@ describe('world generation', () => {
   });
 
   it('has ice under the surface in the east', () => {
-    expect(map.tileAtPoint(4800, 36)).toBe(TILE.ice);
+    expect(map.tileAtPoint(5320, 36)).toBe(TILE.ice);
   });
 });
 

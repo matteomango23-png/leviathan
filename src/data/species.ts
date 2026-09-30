@@ -135,6 +135,8 @@ export interface UniqueVariantDef { id: string; speciesId: string; name: string;
 export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
   { id: 'sfregiato', speciesId: 'squalo_bianco', name: 'Lo Sfregiato', level: 8, statMult: 1.35, sizeMult: 1.25, region: 'baia',
     artPrompt: 'a colossal great white shark covered in deep scars, a rusted iron collar embedded in its neck, broken chains trailing' },
+  { id: 'coccodrillo_marino_leggendario', speciesId: 'coccodrillo_marino', name: 'Coccodrillo albino leggendario', level: 14, statMult: 1.5, sizeMult: 1.3, region: 'delta',
+    artPrompt: 'a legendary albino saltwater crocodile, pale white scales, red eyes, ancient and enormous' },
   { id: 'regina_bianca', speciesId: 'orca', name: 'La Regina bianca', level: 22, statMult: 1.35, sizeMult: 1.2, region: 'ghiaccio',
     artPrompt: 'a pure white orca queen with pale glowing eyes and a crown of frost on her head' },
 ];

@@ -41,16 +41,18 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'barracuda', area: [80, 60, 1900, 340], respawnSeconds: [15, 35] },
   { speciesId: 'tartaruga_marina', area: [200, 60, 1800, 320], respawnSeconds: [30, 60] },
   { speciesId: 'torpedine', area: [100, 180, 1900, 380], respawnSeconds: [25, 50] },
+  { speciesId: 'coccodrillo_marino', area: [1960, 30, 2440, 215], respawnSeconds: [40, 80] }, // the Delta
 ];
 
 /** At most this many wild beasts are around you at the same time (tuning). */
 export const WILD_RULES = { maxPresent: 2 };
 
 /** How eager each species is to attack on a pass (default BEAST_COMBAT.attackChance). */
-export const BEAST_TEMPER: Record<string, { attackChance: number; speedMult?: number }> = {
+export const BEAST_TEMPER: Record<string, { attackChance: number; speedMult?: number; surface?: boolean }> = {
   tartaruga_marina: { attackChance: 0, speedMult: 0.4 }, // only defends itself when hit; slow swimmer
   barracuda: { attackChance: 0.5 },
   torpedine: { attackChance: 0.25, speedMult: 0.65 },
+  coccodrillo_marino: { attackChance: 0.55, speedMult: 0.8, surface: true }, // cruises at the surface, dives to bite
 };
 
 /** Big beasts eat small fish they swim through (food chain): into your bag, or a heart back. */

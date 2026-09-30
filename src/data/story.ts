@@ -7,7 +7,16 @@ import { LAIR } from './guardians';
 import { WORLD } from './worldLayout';
 
 /** Where the story is. 'off' = no story (games created by tests or tools). */
-export type StoryStep = 'off' | 'intro' | 'tutorial' | 'pier' | 'findShark' | 'returnToAurelio' | 'chapter1Done';
+export type StoryStep =
+  | 'off'
+  | 'intro'
+  | 'tutorial'
+  | 'pier'
+  | 'findShark'
+  | 'returnToAurelio'
+  | 'chapter1Done' // …and on the way to the Delta
+  | 'freeWhale' // chapter 2: break the chains in the Delta
+  | 'chapter2Done';
 
 export const STORY_STEPS: StoryStep[] = [
   'off',
@@ -17,6 +26,8 @@ export const STORY_STEPS: StoryStep[] = [
   'findShark',
   'returnToAurelio',
   'chapter1Done',
+  'freeWhale',
+  'chapter2Done',
 ];
 
 /** The story as kept in the save (v5). */
@@ -27,9 +38,10 @@ export interface SavedStory {
   seen: string[];
 }
 
-export type Speaker = 'aurelio' | 'tu' | 'narratore';
+export type Speaker = 'aurelio' | 'vedova' | 'tu' | 'narratore';
 export const SPEAKERS: Record<Speaker, string> = {
   aurelio: 'Nonno Aurelio',
+  vedova: 'La Vedova Nera',
   tu: 'Tu',
   narratore: '',
 };
@@ -64,6 +76,18 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Vanno al Delta delle Mangrovie. Altre bestie, altre catene. Tu e lui adesso siete una squadra.' },
     { who: 'aurelio', text: 'Riposa. Quando sarai pronto, seguili.' },
   ],
+  // chapter 2: the Delta delle Mangrovie
+  vedova: [
+    { who: 'narratore', text: 'Tra le mangrovie, la nave nera è all’ancora. Sotto la chiglia, la balena tira le catene.' },
+    { who: 'vedova', text: 'Un domatore di Portofosco. Aurelio manda i ragazzini, adesso.' },
+    { who: 'vedova', text: 'Quella balena vale più del tuo villaggio intero. Toccala, e il mio coccodrillo ti trova prima del buio.' },
+    { who: 'narratore', text: 'Tre ancoraggi tengono le catene sul fondale. Spezzali con l’arpione.' },
+  ],
+  whaleFree: [
+    { who: 'narratore', text: 'L’ultimo anello cede. La megattera si scuote, e il suo canto riempie il Delta.' },
+    { who: 'vedova', text: 'Questa me la pagherete. Si salpa: rotta sulla Barriera Rossa!' },
+    { who: 'narratore', text: 'La megattera ti gira intorno, lenta. Ha scelto di seguirti.' },
+  ],
   // Aurelio at the port (button "Aurelio" in the port menu), one per step
   hintTutorial: [{ who: 'aurelio', text: 'Prendi confidenza col mare: nuota, pesca una sardina, prova lo scatto. Poi torna qui.' }],
   hintFindShark: [
@@ -73,6 +97,14 @@ export const DIALOGUES = {
   hintDone: [
     { who: 'aurelio', text: 'La nave è andata a est, verso il Delta. Rinforza la squadra: laggiù l’acqua è torbida e piena di denti.' },
   ],
+  hintFreeWhale: [
+    { who: 'aurelio', text: 'La Vedova Nera… la conosco di fama. Non combatterla: libera la balena e lascia che sia lei a scappare.' },
+    { who: 'aurelio', text: 'Gli ancoraggi sono di ferro vecchio. Colpiscili tante volte, e tieni d’occhio la superficie: i coccodrilli attaccano da lì.' },
+  ],
+  hintChapter2Done: [
+    { who: 'aurelio', text: 'Una megattera che ti segue di sua volontà. Tuo padre non ci avrebbe creduto.' },
+    { who: 'aurelio', text: 'La Vedova è andata alla Barriera Rossa. Quando sarai pronto, ci andremo.' },
+  ],
 } satisfies Record<string, DialogueLine[]>;
 export type DialogueId = keyof typeof DIALOGUES;
 
@@ -81,6 +113,8 @@ export const STORY_NOTES = {
   gate: 'Ossa antiche, dure come ferro. Solo una bestia che carica può sfondarle (Carica, livello 7).',
   freed: 'Il collare si spezza e cade nel buio. Lo Sfregiato è libero. Portalo da Aurelio.',
   chapterDone: 'Capitolo 1 completato.',
+  anchorBroken: (n: number, total: number): string => `Un ancoraggio cede (${n}/${total}). La balena tira più forte.`,
+  chapter2Done: 'Capitolo 2 completato.',
 };
 
 /** The guided first dive, in order. */
@@ -107,7 +141,10 @@ export const OBJECTIVES = {
       ? `Trova lo squalo di Aurelio: segui le tracce (${found}/${total})`
       : 'Sfonda le ossa al centro della Baia e scendi nella tana',
   returnToAurelio: 'Porta lo Sfregiato da Aurelio, al molo',
-  chapter1Done: 'Capitolo 1 completato · la nave della Compagnia va verso il Delta (capitolo 2 in arrivo)',
+  chapter1Done: 'Segui la nave della Compagnia a est, nel Delta delle Mangrovie',
+  freeWhale: (broken: number, total: number): string =>
+    `Libera la balena: spezza gli ancoraggi delle catene sul fondale (${broken}/${total})`,
+  chapter2Done: 'Capitolo 2 completato · la Vedova Nera fugge verso la Barriera Rossa (capitolo 3 in arrivo)',
 };
 
 /** The scripted scenes (tuning). */

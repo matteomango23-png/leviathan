@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DELTA } from '../src/data/worldLayout';
 import { MOVES } from '../src/data/moves';
 import { TAMING } from '../src/data/rules';
 import { WILD_SPAWNS } from '../src/data/beasts';
@@ -168,14 +169,15 @@ describe('team', () => {
 });
 
 describe('wild spawns data', () => {
-  it('only spawns beasts of the bay that exist', () => {
-    for (const s of WILD_SPAWNS) expect(SPECIES.find((sp) => sp.id === s.speciesId)?.region).toBe('baia');
-    expect(WILD_SPAWNS.map((s) => s.speciesId).sort()).toEqual([
-      'barracuda',
-      'squalo_bianco',
-      'tartaruga_marina',
-      'torpedine',
-    ]);
+  it('only spawns beasts of the regions already in the game, inside their region', () => {
+    const regions: Record<string, [number, number]> = { baia: [0, DELTA.x0], delta: [DELTA.x0, DELTA.x1] };
+    for (const sp of WILD_SPAWNS) {
+      const region = SPECIES.find((x) => x.id === sp.speciesId)?.region ?? '';
+      const range = regions[region];
+      expect(range, sp.speciesId).toBeDefined();
+      expect(sp.area[0]).toBeGreaterThanOrEqual(range![0]);
+      expect(sp.area[2]).toBeLessThanOrEqual(range![1]);
+    }
   });
 });
 

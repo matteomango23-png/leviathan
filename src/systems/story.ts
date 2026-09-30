@@ -83,13 +83,13 @@ export function createStory(
 export const saveStory = (s: StoryState): SavedStory | null =>
   s.step === 'off' ? null : { step: s.step, tutorial: s.tutorial, clues: [...s.clues], seen: [...s.seen] };
 
-function setStep(s: StoryState, step: StoryStep, events: GameEvent[]): void {
+export function setStep(s: StoryState, step: StoryStep, events: GameEvent[]): void {
   s.step = step;
   s.t = 0;
   events.push({ type: 'storyStep', step });
 }
 
-function open(s: StoryState, id: DialogueId, events: GameEvent[]): void {
+export function openDialogue(s: StoryState, id: DialogueId, events: GameEvent[]): void {
   s.dialogue = id;
   events.push({ type: 'dialogueOpened', id });
 }
@@ -165,7 +165,7 @@ function stepFindShark(g: StoryWorld, events: GameEvent[]): void {
   if (gateClosed(g) && Math.hypot(d.x - gx, d.y - gy) < GATE_HINT_REACH)
     note(s, 'gate', STORY_NOTES.gate, events);
   if (events.some((e) => e.type === 'guardianAppeared') && !s.seen.includes('sharkFound'))
-    open(s, 'sharkFound', events);
+    openDialogue(s, 'sharkFound', events);
   if (guardianOwned(g)) {
     note(s, 'freed', STORY_NOTES.freed, events);
     setStep(s, 'returnToAurelio', events);
@@ -185,26 +185,26 @@ export function stepStory(g: StoryWorld, dt: number, events: GameEvent[]): void 
   switch (s.step) {
     case 'intro':
       Object.assign(d, { x: SCENES.boat.x, y: SCENES.boat.y, vx: 0, vy: 0 });
-      if (s.t >= SCENES.introShipSeconds) open(s, 'intro', events);
+      if (s.t >= SCENES.introShipSeconds) openDialogue(s, 'intro', events);
       break;
     case 'tutorial':
       stepTutorial(g, events);
       break;
     case 'pier':
-      if (s.t >= SCENES.collarDelay) open(s, 'collar', events);
+      if (s.t >= SCENES.collarDelay) openDialogue(s, 'collar', events);
       break;
     case 'findShark':
       stepFindShark(g, events);
       break;
     case 'returnToAurelio':
-      if (atPort(d, g.map)) open(s, 'end', events);
+      if (atPort(d, g.map)) openDialogue(s, 'end', events);
       break;
     default:
       break;
   }
 }
 
-/** The interface read the last line: what the dialogue changes. */
+/** The last line of a chapter 1 dialogue was read: what it changes (chapters.ts calls it). */
 export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
   const s = g.story;
   const id = s.dialogue;
@@ -236,20 +236,23 @@ export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
 export function askAurelio(g: StoryWorld, events: GameEvent[]): void {
   const step = g.story.step;
   const id: DialogueId =
-    step === 'chapter1Done'
-      ? 'hintDone'
-      : step === 'findShark' || step === 'off'
-        ? 'hintFindShark'
-        : 'hintTutorial';
-  open(g.story, id, events);
+    step === 'chapter2Done'
+      ? 'hintChapter2Done'
+      : step === 'freeWhale'
+        ? 'hintFreeWhale'
+        : step === 'chapter1Done'
+          ? 'hintDone'
+          : step === 'findShark' || step === 'off'
+            ? 'hintFindShark'
+            : 'hintTutorial';
+  openDialogue(g.story, id, events);
 }
 
-/** The goal shown under the hearts, or null. */
+/** The chapter 1 goal shown under the hearts, or null (chapters.ts adds the later chapters). */
 export function objectiveText(s: StoryState): string | null {
   if (s.step === 'tutorial') return TUTORIAL[s.tutorial]?.text ?? null;
   if (s.step === 'findShark') return OBJECTIVES.findShark(s.clues.length, CLUES.length);
   if (s.step === 'returnToAurelio') return OBJECTIVES.returnToAurelio;
-  if (s.step === 'chapter1Done') return OBJECTIVES.chapter1Done;
   return null;
 }
 

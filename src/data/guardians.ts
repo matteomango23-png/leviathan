@@ -6,6 +6,7 @@
 /** The lair: a closed cave under the floor of the Baia, reached by a shaft closed by ancient bones. */
 export const LAIR = {
   guardian: 'sfregiato', // UNIQUE_VARIANTS id
+  title: 'Guardiano della Baia', // under its name in the big health bar
   x: 780, // centre of the cave (world units)
   y: 430,
   rx: 200,

@@ -6,6 +6,14 @@ import { rampNumber } from '../systems/math';
 import { depthMetres } from '../systems/world/zones';
 import type { ViewInfo } from './backgroundView';
 import { CONE_TEX, HALO_TEX, TEX } from './textures';
+import { DELTA } from '../data/worldLayout';
+
+/** Mixes two 0xRRGGBB colours (t = 0: a, 1: b). */
+function mixColor(a: number, b: number, t: number): number {
+  const ch = (c: number, sh: number): number => (c >> sh) & 255;
+  const m = (sh: number): number => Math.round(ch(a, sh) + (ch(b, sh) - ch(a, sh)) * t) << sh;
+  return m(16) | m(8) | m(0);
+}
 
 export interface LampInfo {
   x: number; // world
@@ -46,7 +54,7 @@ export class LightView {
     return rt;
   }
 
-  /** Screen darkness (0..1) at a world depth. */
+  /** Screen darkness (0..1) at a world depth (without the murk of the Delta). */
   static darknessAt(worldY: number): number {
     return rampNumber(LIGHT.darknessByDepthM, depthMetres(worldY));
   }
@@ -54,6 +62,7 @@ export class LightView {
   /**
    * @param flash red overlay strength (hurt, low oxygen), 0..1
    * @param fade black fade (death), 0..1
+   * @param murk murky water (the Delta), 0..1: darker and brownish
    */
   update(
     v: ViewInfo,
@@ -61,6 +70,7 @@ export class LightView {
     flash: number,
     fade: number,
     glows: { x: number; y: number; r: number }[] = [],
+    murk = 0,
   ): void {
     const s = LIGHT.maskScale;
     const mw = Math.ceil(v.w * s);
@@ -81,10 +91,11 @@ export class LightView {
     const coneLen = v.w * LIGHT.coneLengthView * (lamp.lengthMult ?? 1);
     const coneScale = (coneLen * s) / CONE_TEX.length;
 
-    const dark = LightView.darknessAt(v.cy);
+    const dark = Math.min(1, LightView.darknessAt(v.cy) + DELTA.murk.darkness * murk);
+    const color = murk > 0 ? mixColor(LIGHT.darkColor, DELTA.murk.tint, murk) : LIGHT.darkColor;
     const rt = this.mask;
     rt.clear();
-    rt.fill(LIGHT.darkColor, dark);
+    rt.fill(color, dark);
     rt.stamp(TEX.halo, undefined, sx * s, sy * s, {
       scale: (diverPx * LIGHT.haloRadiusDiver * s) / HALO_TEX.radius,
       blendMode: Phaser.BlendModes.ERASE,

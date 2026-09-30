@@ -22,7 +22,8 @@ import { feedBeast, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
 import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
-import { createStory, stepStory, storyHoldsDiver, type StoryWorld } from './story';
+import { createStory, stepStory, storyHoldsDiver } from './story';
+import { createChapter2, hitAnchor, stepChapter2, type Chapter2World } from './chapter2';
 import { stepProgress } from './progress';
 import { atPort, nearWreck, openWreck, placeWrecks, type Wreck } from './economy/places';
 import type { GameEvent } from './events';
@@ -41,7 +42,7 @@ import { WEAPON_RULES } from '../data/economy';
 
 export { toSave } from './save/convert';
 
-export interface GameState extends StoryWorld {
+export interface GameState extends Chapter2World {
   time: number;
   playTime: number;
   zone: string;
@@ -106,6 +107,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     tamingLock: false,
     atPort: false,
     timers: { feed: 0 },
+    chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
   return g;
@@ -197,7 +199,8 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
     });
   }
   if (!held) fire(g, input, events);
-  const hitBeast = (x: number, y: number, dmg: number): boolean => weaponHitsBeast(g, x, y, dmg, events);
+  const hitBeast = (x: number, y: number, dmg: number): boolean =>
+    hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, dmg, events);
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
     hitBeast(x, y, BASE_HARPOON.damage),
   );
@@ -238,6 +241,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   g.atPort = atPort(d, g.map);
   stepProgress(g, events);
   stepStory(g, dt, events);
+  stepChapter2(g, events);
   const zone = zoneAt(d.x, d.y);
   if (zone && zone !== g.zone) {
     g.zone = zone;

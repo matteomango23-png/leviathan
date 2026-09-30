@@ -1,5 +1,6 @@
 // Tools for the test panel (open the game with ?prove in the link). Not part of normal play.
 import { LAIR } from '../data/guardians';
+import { DELTA } from '../data/worldLayout';
 import { SPECIES } from '../data/species';
 import type { GameState } from './game';
 import { formLengthUnits, type BeastForm } from './beasts/forms';
@@ -54,4 +55,10 @@ export function raiseTeam(g: GameState, levels: number): void {
 export function goToLair(g: GameState): void {
   Object.assign(g.diver, { x: LAIR.x - LAIR.rx * 0.6, y: LAIR.y, vx: 0, vy: 0 });
   g.guardian.ready = true;
+}
+
+/** Into the Delta delle Mangrovie, under the middle island. */
+export function goToDelta(g: GameState): void {
+  const x = (DELTA.x0 + DELTA.x1) / 2;
+  Object.assign(g.diver, { x, y: g.map.surfaceY + 50, vx: 0, vy: 0 });
 }

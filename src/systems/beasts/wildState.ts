@@ -52,6 +52,8 @@ export interface WildBeast extends BodyPose {
   guardian?: string;
   /** Lives in a Guardian's lair (the Guardian and its escort): moved by beasts/arena.ts, never respawns. */
   arena?: boolean;
+  /** Title under its name in the big health bar at the top (Guardians, the Vedova's crocodile). */
+  boss?: string;
 }
 
 export interface Rect {
@@ -141,6 +143,7 @@ export function spawnWild(
   b.stun = 0;
   b.slow = 0;
   b.xpGiven = false;
+  b.boss = undefined;
 }
 
 /** Chance that a calm beast of this species attacks on a pass. */
