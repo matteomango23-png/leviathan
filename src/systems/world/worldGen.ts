@@ -3,6 +3,7 @@
 import {
   BONE_WALL,
   COAST,
+  DELTA,
   ICE,
   TILE,
   WORLD,
@@ -50,8 +51,11 @@ function zoneFor(x: number): ZoneShapeDef {
 
 /** Height of the land above the water line at x (0 in the sea). */
 export function landHeight(x: number): number {
-  if (x >= COAST.shoreX) return 0;
-  return Math.min(COAST.landHeight, 2 + (COAST.shoreX - x) * COAST.landRise);
+  if (x < COAST.shoreX) return Math.min(COAST.landHeight, 2 + (COAST.shoreX - x) * COAST.landRise);
+  // mangrove islands in the Delta: a low rounded mound
+  for (const [x0, x1, h] of DELTA.islands)
+    if (x > x0 && x < x1) return h * Math.sqrt(Math.sin((Math.PI * (x - x0)) / (x1 - x0)));
+  return 0;
 }
 
 /** True where the sea (or air) is open, false where there is rock or land. */

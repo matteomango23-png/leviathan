@@ -101,7 +101,9 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
   const halfL = b.length * M.offscreenMargin;
   const r = b.length * BEAST_COMBAT.collideRadiusFrac;
   const top = map.surfaceY + b.length * 0.12;
-  const ty0 = clamp(d.y + b.dy, top, map.height - r);
+  // surface hunters (crocodiles) cruise just under the surface and only dive to bite
+  const surface = !!BEAST_TEMPER[b.form.speciesId]?.surface;
+  const ty0 = surface ? top : clamp(d.y + b.dy, top, map.height - r);
 
   if (b.motion === 'hidden') {
     b.t -= dt;
@@ -112,7 +114,7 @@ export function stepWild(b: WildBeast, ctx: WildContext, events: GameEvent[]): v
     if (b.t <= 0 && !b.leaving && !d.dead) {
       b.face = b.face > 0 ? -1 : 1;
       const dy = (rng() * 2 - 1) * M.depthSpread * view.h;
-      const y = openY(map, b.x + b.face * halfL, clamp(d.y + dy, top, map.height - r), r * 2);
+      const y = openY(map, b.x + b.face * halfL, surface ? top : clamp(d.y + dy, top, map.height - r), r * 2);
       if (y === null) {
         b.face = b.face > 0 ? -1 : 1;
         b.t = 1;

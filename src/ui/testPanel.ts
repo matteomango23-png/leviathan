@@ -1,7 +1,7 @@
 // Test panel (only with ?prove in the link): show any beast version, get strong beasts, teeth, heal.
 import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
-import { giveTestBeast, goToLair, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
+import { giveTestBeast, goToDelta, goToLair, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
 import { el } from './dom';
 
 const OTHERS: BeastForm[] = [
@@ -47,6 +47,11 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
   lair.addEventListener('click', () => {
     goToLair(g);
     done('Sei nella tana dello Sfregiato (liv. 8). Porta una squadra forte!');
+  });
+  const delta = el('button', 'menu-btn small', grid, 'Portami nel Delta');
+  delta.addEventListener('click', () => {
+    goToDelta(g);
+    done('Sei nel Delta delle Mangrovie.');
   });
   const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
   teeth.addEventListener('click', () => {

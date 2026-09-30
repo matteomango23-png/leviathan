@@ -2,6 +2,7 @@
 // boat with you during the opening, then on the pier), Portofosco burning, and the clues on the sea floor.
 import Phaser from 'phaser';
 import { PORT } from '../data/economy';
+import { VEDOVA } from '../data/chapter2';
 import { SCENES } from '../data/story';
 import { COAST, WORLD } from '../data/worldLayout';
 import { formLengthUnits } from '../systems/beasts/forms';
@@ -11,6 +12,8 @@ import { BeastSprite } from './beastView';
 import { PORT_HOUSES } from './placesView';
 
 const S = WORLD.surfaceY;
+
+type Anchor = { x: number; y: number; hp: number };
 const SHIP = SCENES.ship;
 const WHALE = { speciesId: SHIP.whaleSpecies, variant: 'comune' } as const;
 const PIER_FIRE_X = COAST.shoreX + 12; // where the pier catches fire, near the shore
@@ -108,14 +111,16 @@ export class StoryView {
     }
   }
 
-  private drawShipScene(s: StoryState, time: number): void {
+  private drawShipScene(s: StoryState, anchors: Anchor[], time: number): void {
     const f = this.fx;
-    if (!s.ship) {
+    // chapter 2: the Vedova's ship at anchor in the Delta, until the whale is freed
+    const anchored = !s.ship && (s.step === 'chapter1Done' || s.step === 'freeWhale');
+    if (!s.ship && !anchored) {
       this.ship.setVisible(false);
       this.whale.hide();
       return;
     }
-    const x = s.ship.x;
+    const x = s.ship ? s.ship.x : VEDOVA.shipX;
     const bob = Math.sin(time * 1.3) * 0.8;
     this.ship.setVisible(true).setPosition(x, S + bob);
     // smoke from the stack
@@ -124,7 +129,11 @@ export class StoryView {
       f.fillStyle(0x1a1c1e, 0.5 * (1 - t));
       f.fillCircle(x - SHIP.length * 0.4 + 3 - t * 30, S - 38 - t * 34, 3 + t * 9);
     }
-    if (!s.ship.whale) {
+    if (anchored) {
+      this.drawChainedWhale(anchors, time);
+      return;
+    }
+    if (!s.ship?.whale) {
       this.whale.hide();
       return;
     }
@@ -149,6 +158,47 @@ export class StoryView {
     for (const dy of [-1, 2, 5]) f.lineBetween(x - SHIP.length + 4, S - 2, head - 6, S + dy);
     f.lineStyle(1.6, 0x3a2a20, 1);
     f.strokeEllipse(head - len * 0.14, S + len * 0.05, 6, len * 0.16); // the iron collar
+  }
+
+  /** The whale under the keel, pulling at chains that run to the anchors on the sea floor. */
+  private drawChainedWhale(anchors: Anchor[], time: number): void {
+    const f = this.fx;
+    const len = this.whaleLength;
+    const { x, y } = VEDOVA.whale;
+    const pull = Math.sin(time * 0.9) * 3;
+    this.whale.update({
+      key: SHIP.whaleSpecies,
+      x: x + pull,
+      y,
+      face: -1,
+      pitch: Math.sin(time * 0.7) * 0.08,
+      pitchV: 0,
+      phase: time * 1.8,
+      jaw: 0,
+      length: len,
+      flash: 0,
+      alpha: 1,
+    });
+    const collar = { x: x + pull - len * 0.28, y: y + len * 0.02 };
+    f.lineStyle(1.8, 0x3a2a20, 1);
+    f.strokeEllipse(collar.x, collar.y, 7, len * 0.17);
+    for (const a of anchors) {
+      // the anchor: an iron post with a ring, broken ones leaning over
+      const broken = a.hp <= 0;
+      f.fillStyle(0x2a2420, 1);
+      if (broken) f.fillTriangle(a.x - 3, a.y + 3, a.x + 9, a.y - 1, a.x + 8, a.y + 3);
+      else f.fillRect(a.x - 2.5, a.y - 9, 5, 12);
+      f.lineStyle(1.2, broken ? 0x3a2a20 : 0x6a3a1c, 1);
+      f.strokeCircle(a.x, a.y - (broken ? 1 : 9), 2.4);
+      if (broken) continue;
+      // the chain, taut when the whale pulls
+      f.lineStyle(1.3, 0x4a3426, 1);
+      const sag = 6 - pull;
+      const mx = (a.x + collar.x) / 2;
+      const my = (a.y - 9 + collar.y) / 2 + sag;
+      f.lineBetween(a.x, a.y - 9, mx, my);
+      f.lineBetween(mx, my, collar.x, collar.y);
+    }
   }
 
   private drawFire(s: StoryState, time: number): void {
@@ -191,17 +241,19 @@ export class StoryView {
     for (let i = 0; i < 3; i++) flame(PIER_FIRE_X + i * 11, S - 8, 7 + (i % 2) * 3, 40 + i * 2.3);
   }
 
-  update(s: StoryState, time: number): void {
+  update(s: StoryState, anchors: Anchor[], time: number): void {
     this.fx.clear();
     this.drawPeople(s);
     this.drawClues(s);
-    this.drawShipScene(s, time);
+    this.drawShipScene(s, anchors, time);
     this.drawFire(s, time);
   }
 
   /** Warm light from the fire and the lanterns, a faint glow on clues not yet found (they cut the darkness). */
-  glowSpots(s: StoryState): { x: number; y: number; r: number }[] {
+  glowSpots(s: StoryState, anchors: Anchor[]): { x: number; y: number; r: number }[] {
     const out: { x: number; y: number; r: number }[] = [];
+    if (s.step === 'freeWhale')
+      for (const a of anchors) if (a.hp > 0) out.push({ x: a.x, y: a.y - 6, r: 14 });
     if (s.step === 'pier' || s.step === 'findShark')
       for (const [hx, w] of PORT_HOUSES) out.push({ x: hx + w / 2, y: S - 20, r: 26 });
     if (s.step === 'findShark')

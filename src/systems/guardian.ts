@@ -83,6 +83,7 @@ function start(g: GuardianWorld, events: GameEvent[]): void {
   spawnWild(boss, form, rollWildLevel(form, g.rng), g.rng);
   const side = g.diver.x < LAIR.x ? 1 : -1; // the far side of the cave
   place(boss, LAIR.x + side * LAIR.rx * 0.6, LAIR.y, side > 0 ? -1 : 1);
+  boss.boss = LAIR.title;
   g.guardian = { ...g.guardian, status: 'fight', phase: 1, escorted: false, ai: { [BOSS_ID]: newArenaAi() } };
   g.beasts.arena = true;
   events.push({ type: 'guardianAppeared', id: boss.id });

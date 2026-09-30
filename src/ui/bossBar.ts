@@ -1,7 +1,8 @@
-// The Guardian's health bar, big at the top of the screen during the fight, with the exhaustion notch.
+// The big health bar at the top of the screen for Guardians and other named beasts, with the exhaustion notch.
 import { TAMING } from '../data/rules';
 import { formName } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
+import { isInWater } from '../systems/beasts/wild';
 import { activeGuardian } from '../systems/guardian';
 import { el } from './dom';
 
@@ -20,13 +21,13 @@ export class BossBar {
   }
 
   update(g: GameState): void {
-    const w = activeGuardian(g);
+    const w = activeGuardian(g) ?? g.beasts.wilds.find((x) => x.boss && isInWater(x) && x.mood !== 'fleeing');
     const key = w ? `${Math.round((w.hp / w.maxHp) * 200)}|${w.mood}` : '';
     if (key === this.shown) return;
     this.shown = key;
     this.root.classList.toggle('show', !!w);
     if (!w) return;
-    this.name.textContent = `${formName(w.form)} · Guardiano della Baia · liv. ${w.level}`;
+    this.name.textContent = `${formName(w.form)} · ${w.boss ?? ''} · liv. ${w.level}`;
     this.fill.style.width = `${Math.max(0, (w.hp / w.maxHp) * 100)}%`;
     this.root.classList.toggle('tired', w.mood === 'tired' || w.mood === 'taming');
   }
