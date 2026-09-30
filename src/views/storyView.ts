@@ -124,6 +124,10 @@ export class StoryView {
       f.fillStyle(0x1a1c1e, 0.5 * (1 - t));
       f.fillCircle(x - SHIP.length * 0.4 + 3 - t * 30, S - 38 - t * 34, 3 + t * 9);
     }
+    if (!s.ship.whale) {
+      this.whale.hide();
+      return;
+    }
     // the whale dragged behind, half out of the water, with chains to the stern
     const head = x - SHIP.length - SHIP.whaleGap;
     const len = this.whaleLength;

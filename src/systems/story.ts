@@ -39,7 +39,7 @@ export interface StoryState {
   /** Seconds since the current step began. */
   t: number;
   /** The Company ship on the surface during a scene (x of its bow), or null. */
-  ship: { x: number; untilX: number } | null;
+  ship: { x: number; untilX: number; whale: boolean } | null;
   /** Where the guided dive started (for "swim"). */
   swimFrom: { x: number; y: number } | null;
   /** Events made outside a game step (a dialogue closed from the interface): sent with the next step. */
@@ -103,6 +103,7 @@ function note(s: StoryState, id: string, text: string, events: GameEvent[]): voi
 const introShip = (): StoryState['ship'] => ({
   x: SCENES.ship.introFromX,
   untilX: SCENES.ship.introFromX + 700,
+  whale: true, // dragging the chained whale
 });
 
 /** A brand new game: it begins on Aurelio's boat while the Company ship goes by. */
@@ -225,7 +226,7 @@ export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
     setStep(s, 'tutorial', events);
   } else if (id === 'collar') setStep(s, 'findShark', events);
   else if (id === 'end') {
-    s.ship = { x: SCENES.ship.endFromX, untilX: SCENES.ship.endFromX + 800 };
+    s.ship = { x: SCENES.ship.endFromX, untilX: SCENES.ship.endFromX + 800, whale: false };
     events.push({ type: 'storyNote', text: STORY_NOTES.chapterDone });
     setStep(s, 'chapter1Done', events);
   }
