@@ -38,5 +38,16 @@ export type GameEvent =
   | { type: 'beastKo'; uid: string }
   | { type: 'moveUsed'; uid: string; slot: number; x: number; y: number }
   | { type: 'bonesBroken'; tiles: number[] }
+  | { type: 'areaPulse'; x: number; y: number; radius: number }
+  | { type: 'shieldBlocked' }
+  | { type: 'weaponFired'; weapon: string }
+  | { type: 'swarmBound'; id: string }
+  | { type: 'swarmSummoned'; id: string }
+  | { type: 'swarmAbsorbed' }
+  | { type: 'itemUsed'; id: string }
+  | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string }
+  | { type: 'portArrived' }
+  | { type: 'tooDeep' }
+  | { type: 'missionComplete'; id: string }
   | { type: 'sanctuaryReached'; index: number }
   | { type: 'healed' };

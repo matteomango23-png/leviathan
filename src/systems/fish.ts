@@ -1,5 +1,6 @@
-// Small fish in schools (tappa 1: sardines). Port of initEntities/updateFish from the prototype.
+// Small fish in schools (sardines, mackerel…). Port of initEntities/updateFish from the prototype.
 import { SARDINE } from '../data/diver';
+import { FISH_LOOK, OTHER_FISH_SCHOOLS } from '../data/economy';
 import { SARDINE_SCHOOLS } from '../data/worldLayout';
 import { range, type Rng } from './math';
 import type { TileMap } from './world/tileMap';
@@ -14,7 +15,7 @@ export interface School {
 }
 
 export interface Fish {
-  kind: 'sardina';
+  kind: string; // FISH id in world.ts
   x: number;
   y: number;
   vx: number;
@@ -37,13 +38,15 @@ export function createFish(map: TileMap, rng: Rng): FishState {
   const schools: School[] = [];
   const fish: Fish[] = [];
   const [sx, sy] = SARDINE.schoolSpread;
-  for (const def of SARDINE_SCHOOLS) {
+  const defs = [...SARDINE_SCHOOLS.map((s) => ({ ...s, kind: 'sardina' })), ...OTHER_FISH_SCHOOLS];
+  for (const def of defs) {
     const school: School = { x: def.x, y: def.y, tx: def.x, ty: def.y, t: 0, roam: def.roam };
     schools.push(school);
-    for (let k = 0; k < SARDINE.perSchool; k++) {
+    const count = FISH_LOOK[def.kind]?.perSchool ?? SARDINE.perSchool;
+    for (let k = 0; k < count; k++) {
       const p = map.randomOpen(rng, def.x - 30, def.y - 18, def.x + 30, def.y + 18, 3);
       fish.push({
-        kind: 'sardina',
+        kind: def.kind,
         x: p.x,
         y: p.y,
         vx: 0,
@@ -108,14 +111,15 @@ export function stepFish(
     }
     let tx = f.school.x + f.ox + Math.sin(time * 1.3 + f.phase) * 6;
     let ty = f.school.y + f.oy + Math.cos(time * 1.1 + f.phase) * 4;
-    let sp = SARDINE.swimSpeed;
+    const mult = FISH_LOOK[f.kind]?.speedMult ?? 1;
+    let sp = SARDINE.swimSpeed * mult;
     const dx = f.x - threat.x;
     const dy = f.y - threat.y;
     const d = Math.hypot(dx, dy) || 1;
     if (threat.alive && d < SARDINE.fleeRadius) {
       tx = f.x + (dx / d) * 50;
       ty = f.y + (dy / d) * 50;
-      sp = SARDINE.fleeSpeed;
+      sp = SARDINE.fleeSpeed * mult;
     }
     const ex = tx - f.x;
     const ey = ty - f.y;

@@ -20,6 +20,7 @@ export interface BarInfo {
   color: number;
   notch: boolean;
   tired: boolean;
+  stunned: boolean;
 }
 
 const COLORS = { wild: '#ffe08a', team: '#ff8a70', diver: '#ff6a5a' };
@@ -86,6 +87,13 @@ export class CombatView {
       if (b.notch) {
         g.fillStyle(0x5ff3d6, 1);
         g.fillRect(x0 + w * TAMING.exhaustionThresholdFraction - px / 2, y0 - 3 * px, px * 1.5, h + 6 * px);
+      }
+      if (b.stunned) {
+        g.fillStyle(0xffe08a, 1);
+        for (let k = 0; k < 3; k++) {
+          const a = time * 5 + k * 2.094;
+          g.fillCircle(sx + Math.cos(a) * 12 * px, y0 - 12 * px + Math.sin(a) * 4 * px, 2 * px);
+        }
       }
       if (b.tired) {
         const a = 0.5 + 0.5 * Math.sin(time * 6);

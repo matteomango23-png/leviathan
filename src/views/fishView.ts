@@ -1,6 +1,7 @@
 // Small, realistic silver fish: body + wagging tail, glinting as they turn.
 import Phaser from 'phaser';
 import { SARDINE } from '../data/diver';
+import { FISH_LOOK } from '../data/economy';
 import type { FishState } from '../systems/fish';
 import { SARDINE_TEX, TEX } from './textures';
 
@@ -24,9 +25,12 @@ export class FishView {
   }
 
   update(state: FishState, view: Phaser.Geom.Rectangle, time: number, dt: number): void {
-    const scale = SARDINE.lengthUnits / SARDINE_TEX.w;
     for (let i = 0; i < state.fish.length; i++) {
       const f = state.fish[i]!;
+      const look = FISH_LOOK[f.kind];
+      const length = look?.length ?? SARDINE.lengthUnits;
+      const scale = length / SARDINE_TEX.w;
+      const tint = look?.tint ?? 0xffffff;
       const s = this.sprites[i]!;
       const on =
         (f.alive || f.hooked) &&
@@ -54,8 +58,14 @@ export class FishView {
         .setPosition(f.x, f.y)
         .setRotation(s.angle)
         .setScale(scale, flip ? -scale : scale)
-        .setTint(Phaser.Display.Color.GetColor(shade, Math.min(255, shade + 8), Math.min(255, shade + 14)));
-      const back = SARDINE.lengthUnits * 0.44;
+        .setTint(
+          Phaser.Display.Color.GetColor(
+            (shade * ((tint >> 16) & 255)) / 255,
+            (Math.min(255, shade + 8) * ((tint >> 8) & 255)) / 255,
+            (Math.min(255, shade + 14) * (tint & 255)) / 255,
+          ),
+        );
+      const back = length * 0.44;
       s.tail
         .setPosition(f.x - Math.cos(s.angle) * back, f.y - Math.sin(s.angle) * back)
         .setRotation(s.angle + wag * (flip ? -1 : 1))

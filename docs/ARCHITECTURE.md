@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
@@ -33,7 +33,15 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
-| `beasts/wild.ts` | Bestie selvatiche: passaggi senza mai girarsi in vista, fuga se seguite, affondo con segnale, sfinimento. |
+| `beasts/wild.ts` | Bestie selvatiche: passaggi senza mai girarsi in vista, fuga se seguite, affondo con segnale. |
+| `beasts/wildState.ts`, `beasts/wildStatus.ts` | Stato delle bestie selvatiche; colpi, sfinimento, stordimento, umore. |
+| `beastState.ts`, `beastFights.ts` | Stato condiviso delle bestie; morsi, colpi delle armi, domatura, comparse, compagno. |
+| `economy/gear.ts` | Denti, sacca dei pesci, mute e potenziamenti, armi, oggetti, zaino. |
+| `economy/backpack.ts` | Uso dello zaino in immersione: armi, oggetti, sciami; legame con lo sciame di sardine. |
+| `economy/missions.ts` | Bacheca: accettare, avanzare, riscuotere. |
+| `economy/places.ts` | Molo di Portofosco, relitti e forzieri. |
+| `weapons.ts` | Fiocine e rete. |
+| `save/convert.ts`, `save/gearSave.ts` | Da partita a salvataggio e ritorno; controllo dell'equipaggiamento. |
 | `beasts/combat.ts` | Danno delle mosse (tipi e moltiplicatori) e forma del corpo per i colpi. |
 | `beasts/taming.ts` | Minigioco della domatura (fasce e velocità legate alla differenza di livello). |
 | `beasts/team.ts` | Squadra e riserva, sblocco delle mosse, KO, ricarica del richiamo. |
@@ -48,14 +56,14 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 - **Boot**: carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
 - **World**: fa girare il gioco e lo disegna con tre telecamere: sfondo (schermo), mondo (zoom, segue il sub), sovrapposizione (buio e luce).
 - **UI**: HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
-- **Menus**: menu di pausa (squadra e riserva, esporta/importa, pannello di prova con `?prove`). Più avanti bestiario, scheda bestia, porto, zaino.
+- **Menus**: menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Più avanti bestiario e scheda bestia.
 - Le scene si passano un oggetto `Session` (stato, input, messaggi): niente variabili globali.
 
 ## Come si disegna il mare
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 256×256 unità dipinti al volo attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
-3. **Mondo**: santuari, alghe, sardine, bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione, sub (anche in groppa), bolle, linea della superficie; alcune alghe davanti al sub.
+3. **Mondo**: santuari, molo e case di Portofosco, relitti e forzieri (`placesView`), alghe, pesci, dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione, sub (anche in groppa), bolle, linea della superficie; alcune alghe davanti al sub.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
 5. **Sopra il buio** (`combatView`): barre della vita con la tacca di sfinimento, numeri dei danni, segnale "domabile".
 

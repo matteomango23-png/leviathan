@@ -1,14 +1,20 @@
-// Test panel (only with ?prove in the link): show any white shark version, get a level 15 shark, heal.
-import { WHITE_SHARK_FORMS, formName } from '../systems/beasts/forms';
+// Test panel (only with ?prove in the link): show any beast version, get strong beasts, teeth, heal.
+import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
 import { giveTestBeast, healAll, spawnTestBeast } from '../systems/testTools';
 import { el } from './dom';
+
+const OTHERS: BeastForm[] = [
+  { speciesId: 'barracuda', variant: 'comune' },
+  { speciesId: 'tartaruga_marina', variant: 'comune' },
+  { speciesId: 'torpedine', variant: 'comune' },
+];
 
 export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: string) => void): void {
   const box = el('div', 'test-panel', parent);
   el('h3', '', box, 'Prove (link con ?prove)');
   const grid = el('div', 'test-grid', box);
-  for (const form of WHITE_SHARK_FORMS) {
+  for (const form of [...WHITE_SHARK_FORMS, ...OTHERS]) {
     const b = el('button', 'menu-btn small', grid, `Fai apparire: ${formName(form)}`);
     b.addEventListener('click', () => {
       spawnTestBeast(g, form);
@@ -19,6 +25,18 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
   give.addEventListener('click', () => {
     giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 15);
     done('Squalo bianco liv. 15 aggiunto. Chiamalo dalla barra in alto.');
+  });
+  for (const form of OTHERS) {
+    const b = el('button', 'menu-btn small', grid, `${formName(form)} liv. 15 in squadra`);
+    b.addEventListener('click', () => {
+      giveTestBeast(g, form, 15);
+      done(`${formName(form)} liv. 15 aggiunto (se la squadra è piena va in riserva).`);
+    });
+  }
+  const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
+  teeth.addEventListener('click', () => {
+    g.gear.teeth += 2000;
+    done('2000 denti aggiunti: prova il mercato al porto.');
   });
   const heal = el('button', 'menu-btn small', grid, 'Cura tutto');
   heal.addEventListener('click', () => {

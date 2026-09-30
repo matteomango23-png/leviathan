@@ -3,7 +3,8 @@ import Phaser from 'phaser';
 import { SANCTUARY_RULES } from '../data/beasts';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import type { GameEvent } from '../systems/events';
-import { applySave, createGame, stepGame, toSave, type GameState } from '../systems/game';
+import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
+import { diverModifiers } from '../systems/economy/gear';
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { backupBrokenSave, loadFromStorage, writeToStorage } from '../systems/save/storage';
@@ -15,6 +16,8 @@ import { CombatView } from '../views/combatView';
 import { DiverView } from '../views/diverView';
 import { EffectsView } from '../views/effectsView';
 import { FishView } from '../views/fishView';
+import { GearFxView } from '../views/gearFxView';
+import { PlacesView } from '../views/placesView';
 import { KelpView } from '../views/kelpView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
@@ -31,6 +34,8 @@ export class WorldScene extends Phaser.Scene {
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private sanctuaries!: SanctuaryView;
+  private places!: PlacesView;
+  private gearFx!: GearFxView;
   private diverView!: DiverView;
   private effects!: EffectsView;
   private combat!: CombatView;
@@ -66,11 +71,13 @@ export class WorldScene extends Phaser.Scene {
     this.bg = new BackgroundView(this, L.bg);
     this.terrain = new TerrainView(this, L.world, map);
     this.sanctuaries = new SanctuaryView(this, L.world, g.sanctuaries);
+    this.places = new PlacesView(this, L.world, g.wrecks);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.diverView = new DiverView(this, L.world);
     this.effects = new EffectsView(this, L.world);
+    this.gearFx = new GearFxView(this, L.world);
     this.light = new LightView(this, L.overlay);
     this.combat = new CombatView(this, L.overlay);
     this.lampAngle = d.aim;
@@ -140,8 +147,15 @@ export class WorldScene extends Phaser.Scene {
       )
         this.save();
       else if (e.type === 'respawned') this.rig.follow(g.diver.x, g.diver.y, 0, true);
+      else if (e.type === 'portArrived') {
+        enterPort(g);
+        this.save();
+        this.session.emit('openPort');
+      } else if (e.type === 'wreckOpened' || e.type === 'swarmBound' || e.type === 'missionComplete')
+        this.save();
     }
     this.combat.onEvents(events, this.rig.zoom);
+    this.gearFx.onEvents(events);
     if (events.length) this.session.emit('gameEvents', events);
   }
 
@@ -179,6 +193,8 @@ export class WorldScene extends Phaser.Scene {
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.effects.update(view, g.time, dt);
+    this.places.update(g.gear, g.time);
+    this.gearFx.update(g, rider ?? d, dt, g.time);
 
     let da = d.aim - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
@@ -189,10 +205,21 @@ export class WorldScene extends Phaser.Scene {
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
     const lamp = rider ?? d;
-    const glows = g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 }));
+    const glows = [
+      ...g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 })),
+      ...this.places.glowSpots(g.gear),
+    ];
+    const mods = diverModifiers(g.gear);
     this.light.update(
       info,
-      { x: lamp.x, y: lamp.y, angle: this.lampAngle, face: d.face },
+      {
+        x: lamp.x,
+        y: lamp.y,
+        angle: this.lampAngle,
+        face: d.face,
+        lengthMult: mods.coneMult,
+        widthMult: mods.coneWidthMult,
+      },
       Math.max(this.hurtFlash, lowO2),
       fade,
       glows,

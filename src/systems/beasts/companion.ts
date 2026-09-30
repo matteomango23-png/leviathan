@@ -26,6 +26,8 @@ export interface Companion extends BodyPose {
   turn: number;
   frenzy: number;
   frenzyTick: number;
+  /** Seconds of doubled attack speed (buff:attackSpeed). */
+  haste: number;
   charge: number;
   chargeHits: number[];
 }
@@ -69,6 +71,7 @@ export function summonCompanion(
     turn: 0,
     frenzy: 0,
     frenzyTick: 0,
+    haste: 0,
     charge: 0,
     chargeHits: [],
   };
@@ -145,7 +148,7 @@ export function stepCompanion(c: Companion, b: TeamBeast, ctx: CompanionContext)
   const { dt, diver, map } = ctx;
   c.flash = Math.max(0, c.flash - dt);
   c.jaw = Math.max(0, c.jaw - dt);
-  c.attackCooldown -= dt;
+  c.attackCooldown -= c.haste > 0 ? dt * 2 : dt;
   const speed = formStats(b.form, b.level).speed;
   const r = c.length * BEAST_COMBAT.collideRadiusFrac;
 

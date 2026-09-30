@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { MOVES } from '../src/data/moves';
 import { TAMING } from '../src/data/rules';
 import { WILD_SPAWNS } from '../src/data/beasts';
+import { SPECIES } from '../src/data/species';
 import { moveDamage, moveTypeMult } from '../src/systems/beasts/combat';
 import {
   WHITE_SHARK_FORMS,
@@ -167,7 +168,13 @@ describe('team', () => {
 });
 
 describe('wild spawns data', () => {
-  it('only spawns beasts that exist, in the bay', () => {
-    expect(WILD_SPAWNS.map((s) => s.speciesId)).toEqual(['squalo_bianco']);
+  it('only spawns beasts of the bay that exist', () => {
+    for (const s of WILD_SPAWNS) expect(SPECIES.find((sp) => sp.id === s.speciesId)?.region).toBe('baia');
+    expect(WILD_SPAWNS.map((s) => s.speciesId).sort()).toEqual([
+      'barracuda',
+      'squalo_bianco',
+      'tartaruga_marina',
+      'torpedine',
+    ]);
   });
 });

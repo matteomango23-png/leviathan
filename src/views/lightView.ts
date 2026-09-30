@@ -12,6 +12,9 @@ export interface LampInfo {
   y: number;
   angle: number; // radians
   face: 1 | -1;
+  /** Lamp upgrades: longer and wider cone. */
+  lengthMult?: number;
+  widthMult?: number;
 }
 
 export class LightView {
@@ -75,7 +78,8 @@ export class LightView {
     const diverPx = DIVER.lengthUnits * v.zoom;
     const lx = sx + Math.cos(lamp.angle) * diverPx * LIGHT.coneOffsetDiver;
     const ly = sy + Math.sin(lamp.angle) * diverPx * LIGHT.coneOffsetDiver;
-    const coneLen = v.w * LIGHT.coneLengthView;
+    const coneLen = v.w * LIGHT.coneLengthView * (lamp.lengthMult ?? 1);
+    const coneScale = (coneLen * s) / CONE_TEX.length;
 
     const dark = LightView.darknessAt(v.cy);
     const rt = this.mask;
@@ -100,7 +104,8 @@ export class LightView {
       originX: 0,
       originY: 0.5,
       rotation: lamp.angle,
-      scale: (coneLen * s) / CONE_TEX.length,
+      scaleX: coneScale,
+      scaleY: coneScale * (lamp.widthMult ?? 1),
       blendMode: Phaser.BlendModes.ERASE,
     });
     rt.render();
@@ -108,7 +113,10 @@ export class LightView {
     this.warm
       .setPosition(lx, ly)
       .setRotation(lamp.angle)
-      .setScale((coneLen * 0.95) / CONE_TEX.length);
+      .setScale(
+        (coneLen * 0.95) / CONE_TEX.length,
+        ((coneLen * 0.95) / CONE_TEX.length) * (lamp.widthMult ?? 1),
+      );
     this.vignette.setDisplaySize(v.w, v.h);
     this.flash.setSize(v.w, v.h);
     if (fade > 0) this.flash.setFillStyle(0x000000, fade);

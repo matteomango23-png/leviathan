@@ -3,6 +3,7 @@
 // each strip follows one spine segment (rotated and shortened in perspective as the tail swings).
 import Phaser from 'phaser';
 import { BEAST_SPRITE } from '../data/beasts';
+import { OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -11,9 +12,16 @@ const OVERLAP = 1.07; // strips overlap a little so no seams show on the outside
 export const spriteUrl = (key: string, open: boolean): string => `sprites/${key}${open ? '_open' : ''}.webp`;
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
 
-/** Queues the closed and open profile of a beast form for loading. */
+/** The sprite to use for a form: its own if it exists, otherwise the species' one (e.g. a barracuda alfa). */
+export function resolveSpriteKey(key: string, speciesId: string): string | null {
+  if (SPRITE_KEYS.includes(key)) return key;
+  return SPRITE_KEYS.includes(speciesId) ? speciesId : null;
+}
+
+/** Queues the closed (and, if it exists, open) profile of a sprite key for loading. */
 export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
-  for (const open of [false, true]) {
+  if (!SPRITE_KEYS.includes(key)) return;
+  for (const open of OPEN_SPRITE_KEYS.includes(key) ? [false, true] : [false]) {
     const tk = textureKey(key, open);
     if (!scene.textures.exists(tk)) scene.load.image(tk, spriteUrl(key, open));
   }
@@ -78,7 +86,8 @@ export class BeastSprite {
     this.root.setVisible(false);
   }
 
-  private setTextures(key: string, open: boolean): boolean {
+  private setTextures(key: string, wantOpen: boolean): boolean {
+    const open = wantOpen && this.scene.textures.exists(textureKey(key, true));
     if (key === this.key && open === this.open) return true;
     const tk = textureKey(key, open);
     if (!this.scene.textures.exists(tk)) return false;

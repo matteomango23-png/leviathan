@@ -38,7 +38,26 @@ export interface WildSpawnDef {
 }
 export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'squalo_bianco', area: [80, 60, 1900, 380], respawnSeconds: [45, 90] },
+  { speciesId: 'barracuda', area: [80, 60, 1900, 340], respawnSeconds: [15, 35] },
+  { speciesId: 'tartaruga_marina', area: [200, 60, 1800, 320], respawnSeconds: [30, 60] },
+  { speciesId: 'torpedine', area: [100, 180, 1900, 380], respawnSeconds: [25, 50] },
 ];
+
+/** At most this many wild beasts are around you at the same time (tuning). */
+export const WILD_RULES = { maxPresent: 2 };
+
+/** How eager each species is to attack on a pass (default BEAST_COMBAT.attackChance). */
+export const BEAST_TEMPER: Record<string, { attackChance: number }> = {
+  tartaruga_marina: { attackChance: 0 }, // only defends itself when hit
+  barracuda: { attackChance: 0.5 },
+  torpedine: { attackChance: 0.25 },
+};
+
+/** Status effects on wild beasts. */
+export const STATUS_RULES = {
+  areaRadius: { vicini: 60, ampia: 140 }, // 'area:vicini', 'area:ampia' in moves.ts
+  stunSlowdown: 0.1, // speed multiplier while stunned
+};
 
 /** Fighting (tuning). Beast damage comes from statsAt().bite × POWER_MULT of the move × type multiplier. */
 export const BEAST_COMBAT = {

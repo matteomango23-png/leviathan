@@ -4,8 +4,11 @@
 
 import { PROGRESSION } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
+import { validateGear, type SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 2;
+export type { SavedGear } from './gearSave';
+
+export const SAVE_VERSION = 3;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -29,6 +32,7 @@ export interface SaveData {
   team: SavedBeast[]; // team and reserve (v2)
   sanctuary: number | null; // respawn sanctuary index (v2)
   brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
+  gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -43,6 +47,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     team: [],
     sanctuary: null,
     brokenTiles: [],
+    gear: null,
   };
 }
 
@@ -56,6 +61,8 @@ export interface Migration {
 export const MIGRATIONS: Migration[] = [
   // v1 → v2 (tappa 2): tamed beasts, respawn sanctuary, broken tiles
   { from: 1, migrate: (o) => ({ ...o, team: [], sanctuary: null, brokenTiles: [] }) },
+  // v2 → v3 (tappa 3): equipment and economy start empty (the game fills in defaults)
+  { from: 2, migrate: (o) => ({ ...o, gear: null }) },
 ];
 
 export class SaveError extends Error {}
@@ -118,7 +125,16 @@ export function validate(data: Record<string, unknown>): SaveData {
     team,
     sanctuary: sanctuary as number | null,
     brokenTiles: [...new Set(data.brokenTiles as number[])],
+    gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
   };
+}
+
+function checkedGear(raw: unknown): SavedGear {
+  try {
+    return validateGear(raw);
+  } catch {
+    throw new SaveError('Equipaggiamento non valido.');
+  }
 }
 
 function validateBeast(raw: unknown): SavedBeast {

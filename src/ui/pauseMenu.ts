@@ -29,12 +29,12 @@ export class PauseMenu {
     const panel = el('div', 'menu-panel', this.root);
     el('h2', '', panel, 'Pausa');
     const caught = game.fishCaught.sardina ?? 0;
-    el('p', '', panel, `Tempo di gioco: ${formatTime(game.playTime)} · Sardine catturate: ${caught}`);
+    el('p', '', panel, `Tempo di gioco: ${formatTime(game.playTime)} Â· Sardine catturate: ${caught}`);
     const resume = el('button', 'menu-btn primary', panel, 'Riprendi');
     const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
     const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');
     this.msg = el('p', 'menu-msg', panel);
-    renderTeamPanel(panel, game);
+    renderTeamPanel(panel, game, false);
     if (testMode())
       renderTestPanel(panel, game, (m) => {
         this.say(m);

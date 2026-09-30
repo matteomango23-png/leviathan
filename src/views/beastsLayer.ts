@@ -2,11 +2,14 @@
 import Phaser from 'phaser';
 import { TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { formKey } from '../systems/beasts/forms';
+import { formKey, type BeastForm } from '../systems/beasts/forms';
 import { maxHpOf } from '../systems/beasts/team';
 import { isInWater } from '../systems/beasts/wild';
 import type { GameState } from '../systems/game';
-import { BeastSprite } from './beastView';
+import { BeastSprite, resolveSpriteKey } from './beastView';
+
+const spriteOf = (form: BeastForm): string =>
+  resolveSpriteKey(formKey(form), form.speciesId) ?? formKey(form);
 import type { BarInfo } from './combatView';
 
 export class BeastsLayer {
@@ -39,7 +42,7 @@ export class BeastsLayer {
         return;
       }
       s.update({
-        key: formKey(w.form),
+        key: spriteOf(w.form),
         x: w.x,
         y: w.y,
         face: w.face,
@@ -60,6 +63,7 @@ export class BeastsLayer {
           color: w.mood === 'tired' || w.mood === 'taming' ? 0x5ff3d6 : 0xd94a3f,
           notch: true,
           tired: w.mood === 'tired',
+          stunned: w.stun > 0,
         });
       }
     });
@@ -67,7 +71,7 @@ export class BeastsLayer {
     const b = activeBeast(g);
     if (c && b) {
       this.companion.update({
-        key: formKey(b.form),
+        key: spriteOf(b.form),
         x: c.x,
         y: c.y,
         face: c.face,
@@ -90,6 +94,7 @@ export class BeastsLayer {
           color: 0x86d89a,
           notch: false,
           tired: false,
+          stunned: false,
         });
     } else this.companion.hide();
     return bars;

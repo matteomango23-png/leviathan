@@ -1,13 +1,21 @@
 // Hearts, oxygen, depth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
-import { FISH } from '../data/world';
+import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
+import { SPECIES } from '../data/species';
+import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
 import { depthMetres } from '../systems/world/zones';
 import { el } from './dom';
 
-const fishName = (id: string): string => FISH.find((f) => f.id === id)?.name ?? id;
+const fishName = (id: string): string =>
+  FISH.find((f) => f.id === id)?.name ??
+  SPECIES.find((s) => s.id === id)?.name ??
+  SWARMS.find((s) => s.id === id)?.name ??
+  id;
+const itemName = (id: string): string => ITEMS.find((i) => i.id === id)?.name ?? id;
+const weaponName = (id: string): string => WEAPONS.find((w) => w.id === id)?.name ?? id;
 
 export class Hud {
   private readonly hearts: HTMLDivElement;
@@ -51,7 +59,7 @@ export class Hud {
         this.toast(
           e.healed
             ? `${fishName(e.fishId)}. Un cuore recuperato.`
-            : `${fishName(e.fishId)} catturata (${e.count})`,
+            : `${fishName(e.fishId)} nella sacca (${g.gear.bag[e.fishId] ?? 0})`,
           1.6,
         );
       else if (e.type === 'oxygenLow') this.toast('Ossigeno basso. Risali in superficie!');
@@ -96,6 +104,24 @@ export class Hud {
       } else if (e.type === 'sanctuaryReached')
         this.toast('Santuario raggiunto: rinascerai qui. Resta fermo per curarti.', 3);
       else if (e.type === 'bonesBroken') this.toast('Le ossa antiche cedono!', 1.5);
+      else if (e.type === 'swarmBound')
+        this.toast('Lo sciame di sardine ti segue! Mettilo nello zaino al porto per chiamarlo.', 4);
+      else if (e.type === 'swarmSummoned') this.toast('Un muro di sardine ti circonda.', 1.8);
+      else if (e.type === 'swarmAbsorbed') this.toast('Le sardine hanno preso il morso al posto tuo.', 1.4);
+      else if (e.type === 'shieldBlocked') this.toast('Il guscio ha parato il colpo.', 1.4);
+      else if (e.type === 'itemUsed') this.toast(`${itemName(e.id)} usato.`, 1.4);
+      else if (e.type === 'tooDeep')
+        this.toast('La muta non regge questa profondità: serve una muta migliore.', 3);
+      else if (e.type === 'missionComplete')
+        this.toast(`Missione compiuta: ${missionById(e.id)?.title ?? ''}. Riscuoti i denti al porto.`, 3.5);
+      else if (e.type === 'wreckOpened') {
+        const parts = [
+          e.weapon ? `hai trovato: ${weaponName(e.weapon)}` : '',
+          e.teeth ? `${e.teeth} denti` : '',
+          e.item ? itemName(e.item) : '',
+        ].filter(Boolean);
+        this.toast(`Tesoro! ${parts.join(', ')}.${e.weapon ? ' Mettila nello zaino al porto.' : ''}`, 4);
+      }
     }
   }
 
@@ -113,7 +139,8 @@ export class Hud {
       this.o2Fill.style.width = `${o2}%`;
       this.o2.classList.toggle('low', o2 < DIVER.oxygen.lowFraction * 100);
     }
-    const info = `${Math.round(depthMetres(d.y))} m · sardine ${g.fishCaught.sardina ?? 0}`;
+    const bag = Object.values(g.gear.bag).reduce((a, b) => a + b, 0);
+    const info = `${Math.round(depthMetres(d.y))} m · 🦷 ${g.gear.teeth} · sacca ${bag}`;
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;

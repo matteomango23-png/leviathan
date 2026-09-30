@@ -20,6 +20,8 @@ export interface InputState {
   summon: number;
   /** Tap during the taming minigame. */
   tameTap: boolean;
+  /** Backpack slot (0..2) tapped this frame, or -1. */
+  slot: number;
 }
 
 export const emptyInput = (): InputState => ({
@@ -33,6 +35,7 @@ export const emptyInput = (): InputState => ({
   move: 0,
   summon: -1,
   tameTap: false,
+  slot: -1,
 });
 
 /** Clears the one-frame presses after a game step. */
@@ -43,4 +46,5 @@ export function consumePresses(input: InputState): void {
   input.move = 0;
   input.summon = -1;
   input.tameTap = false;
+  input.slot = -1;
 }
