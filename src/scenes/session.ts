@@ -5,6 +5,7 @@ import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { emptyInput, type InputState } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
+import { SoundEngine } from '../audio/soundEngine';
 
 export interface SessionEvents {
   /** Game events of the last step (World → UI). */
@@ -35,6 +36,12 @@ export class Session {
   paused = false;
   /** A battle is on (the World scene is paused under it). */
   inBattle = false;
+  /** The sea ambience and the battle music. */
+  readonly sound = new SoundEngine();
+
+  constructor() {
+    this.on('battle', (on) => this.sound.setBattle(on));
+  }
 
   emit<K extends keyof SessionEvents>(event: K, ...args: Parameters<SessionEvents[K]>): void {
     this.bus.emit(event, ...args);

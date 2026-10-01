@@ -33,6 +33,8 @@
 
 **Correzione (v0.9.4):** le immagini di profilo si caricavano solo per le specie di `WILD_SPAWNS`: le linee iniziali erano invisibili nel mare. Ora `views/neededSprites.ts` include le linee iniziali; un test controlla che ogni bestia selvatica e ogni stadio iniziale abbia un profilo caricato. Pesce palla, murena e manta (solo immagini di battaglia) tolti dalle comparse. **v0.9.5:** profili e card di pesce palla (morso = versione gonfia), murena e manta presi da `asset animali ai/` (c’erano già); tornati nella Barriera.
 
+**Suoni (v0.9.6):** primo passaggio, tutto sintetizzato con Web Audio (niente file): `src/audio/` (soundEngine nella Session, seaAmbience, battleMusic), numeri e note in `data/audio.ts`. Interruttore nel menu di pausa (localStorage). Da fare più avanti: suoni di colpi, mosse, domatura, porto, musiche per zona.
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0

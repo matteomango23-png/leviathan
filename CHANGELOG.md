@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.6 — Primi suoni (1 ottobre 2026)
+
+- **Il mare si sente:** un rombo basso e ovattato che respira piano e diventa più cupo in profondità; bollicine mentre nuoti, una raffica quando scatti.
+- **Musica di battaglia** in stile Pokémon: veloce, in minore, con basso, arpeggio, melodia e batteria. Parte quando si apre la battaglia e torna il mare quando finisce.
+- Nel menu di pausa: **Suono sì/no** (ricordato sul telefono).
+- Su iPhone il suono parte al primo tocco; con l’interruttore silenzioso attivo potrebbe non sentirsi.
+
 ## v0.9.5 — La Barriera popolata (1 ottobre 2026)
 
 - **Pesce palla, murena e manta nuotano nella Barriera** con le loro immagini di profilo e la loro card. Il pesce palla quando morde si gonfia.

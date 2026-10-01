@@ -239,3 +239,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** ogni bestia si chiama dalla barra; chi non è cavalcatura nuota dietro al sub e mangia i pesci (stesso oggetto `Mount` con stato `follow`). Le seconde forme delle linee iniziali hanno `rideSpeedMult` 0,75: si cavalcano più lente. Nuovo campo `girth` (spessore dell'immagine di profilo) per Folgore, il cui disegno è un serpente sottile.
 - **Motivo:** con un iniziale piccolo il proprietario non vedeva mai la sua bestia nel mare fino al livello 36; le forme finali devono essere mastodontiche rispetto agli squali (bianco 6 m, megalodonte 18 m).
+
+## 2026-10-01 — Suoni sintetizzati nel codice (v0.9.6)
+
+- **Decisione:** primi suoni generati con Web Audio (rumore filtrato, oscillatori, batteria sintetica), note e volumi in `data/audio.ts`; nessuna libreria e nessun file audio. Il motore vive nella `Session` e si sblocca al primo tocco (obbligo di iOS).
+- **Motivo:** il proprietario vuole "un minimo" di suono subito; così niente licenze, niente peso in più per l’app offline, e si potrà sostituire con musiche vere più avanti.
