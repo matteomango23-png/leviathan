@@ -146,7 +146,7 @@ I prompt pronti sono in `docs/PROMPT-BATTAGLIA.md`. Salva i file in `art-inbox/`
 | `conchiglia.jpg`, `conchiglia_aperta.jpg` | `public/items/`: la conchiglia di cattura, senza il fondo nero |
 | `icona_<comando>.jpg`, `tipo_<tipo>.jpg` | `public/ui/`: icone bianche che il gioco colora |
 
-Gemini di solito colora di verde solo l'acqua aperta: lo script se la cava lo stesso (dal primo piano tiene le rocce ai lati e quelle che pendono dall'alto, la pedana la ritaglia a ellisse). Un file che inizia con `_` (es. `_scarto_bg_baia_front_alternativo.jpg`) viene ignorato.
+Quando il verde è fatto bene (come per Delta e tana) basta togliere il verde, e della pedana resta solo il pezzo più grande. Se invece Gemini colora di verde solo l'acqua aperta: lo script se la cava lo stesso (dal primo piano tiene le rocce ai lati e quelle che pendono dall'alto, la pedana la ritaglia a ellisse). Un file che inizia con `_` (es. `_scarto_bg_baia_front_alternativo.jpg`) viene ignorato.
 
 Un luogo senza i suoi dipinti usa quelli della Baia con la sua tinta. Finché uno strato manca anche lì, lo disegna il codice (`views/battle/backdropArt.ts`) con i colori del luogo (`BATTLE_PALETTES` in `data/battle.ts`); appena arriva quello dipinto, il gioco usa quello.
 

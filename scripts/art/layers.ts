@@ -119,3 +119,44 @@ export function ellipseMask(w: number, h: number, e: Ellipse, feather = 0.06): F
     }
   return m;
 }
+
+/** Share of green pixels in a vertical band of the picture (x from x0 to x1, as shares of the width). */
+export function greenShare(img: Raw, x0 = 0.4, x1 = 0.6): number {
+  const { width: w, height: h, data } = img;
+  let green = 0;
+  let all = 0;
+  for (let y = 0; y < h; y += 2)
+    for (let x = Math.round(w * x0); x < Math.round(w * x1); x += 2) {
+      all++;
+      if (isGreen(data, (y * w + x) * 4)) green++;
+    }
+  return all ? green / all : 0;
+}
+
+/** Keeps only the biggest connected visible piece of a cut-out (drops stray bits such as a second slab). */
+export function keepLargest(px: Uint8ClampedArray, w: number, h: number, minAlpha = 20): void {
+  const label = new Int32Array(w * h);
+  const sizes = [0];
+  const stack: number[] = [];
+  for (let i = 0; i < w * h; i++) {
+    if (label[i] || px[i * 4 + 3]! <= minAlpha) continue;
+    const id = sizes.length;
+    let size = 0;
+    label[i] = id;
+    stack.push(i);
+    while (stack.length) {
+      const j = stack.pop()!;
+      size++;
+      const x = j % w;
+      for (const k of [x > 0 ? j - 1 : -1, x < w - 1 ? j + 1 : -1, j - w, j + w])
+        if (k >= 0 && k < w * h && !label[k] && px[k * 4 + 3]! > minAlpha) {
+          label[k] = id;
+          stack.push(k);
+        }
+    }
+    sizes.push(size);
+  }
+  let best = 1;
+  for (let id = 2; id < sizes.length; id++) if (sizes[id]! > sizes[best]!) best = id;
+  for (let i = 0; i < w * h; i++) if (label[i] !== best) px[i * 4 + 3] = 0;
+}

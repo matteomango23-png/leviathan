@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ellipseMask, fitStage, frameMask } from '../scripts/art/layers.ts';
+import { ellipseMask, fitStage, frameMask, greenShare, keepLargest } from '../scripts/art/layers.ts';
 
 const G = [0, 255, 0, 255];
 const ROCK = [20, 30, 34, 255];
@@ -45,5 +45,24 @@ describe('painted background layers', () => {
     const m = ellipseMask(100, 60, e);
     expect(m[40 * 100 + 50]).toBe(1); // middle of the stage
     expect(m[10 * 100 + 50]).toBe(0); // water far above
+  });
+});
+
+describe('painted layers with a clean green', () => {
+  it('measures how green the middle is', () => {
+    const img = picture(20, 10, (x) => (x >= 8 && x < 12 ? G : ROCK));
+    expect(greenShare(img)).toBe(1);
+    expect(greenShare(img, 0, 0.3)).toBe(0);
+  });
+
+  it('keeps only the biggest piece of a ground (drops a stray second slab)', () => {
+    const w = 30;
+    const h = 20;
+    const px = new Uint8ClampedArray(w * h * 4);
+    for (let y = 1; y < 3; y++) for (let x = 10; x < 20; x++) px[(y * w + x) * 4 + 3] = 255; // small slab
+    for (let y = 8; y < 18; y++) for (let x = 2; x < 28; x++) px[(y * w + x) * 4 + 3] = 255; // the stage
+    keepLargest(px, w, h);
+    expect(px[(2 * w + 15) * 4 + 3]).toBe(0);
+    expect(px[(12 * w + 15) * 4 + 3]).toBe(255);
   });
 });

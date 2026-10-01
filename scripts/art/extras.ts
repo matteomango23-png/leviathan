@@ -15,7 +15,7 @@ import {
   type ExtraName,
   type Raw,
 } from './cutout.ts';
-import { blurMask, ellipseMask, fitStage, frameMask } from './layers.ts';
+import { blurMask, ellipseMask, fitStage, frameMask, greenShare, keepLargest } from './layers.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -70,15 +70,20 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
   if (e.kind === 'bg') {
     const img = await raw(src, 1920);
     const cut = removeGreenBackground(img);
-    // the front keeps only what frames the scene; the ground only its stone stage (scripts/art/layers.ts)
-    const shape =
-      e.layer === 'front'
+    // When Gemini painted the open middle instead of leaving it green (scripts/art/layers.ts): the front keeps
+    // only what frames the scene, the ground only its stone stage. With a clean green the key is enough
+    // (the ground keeps its biggest piece, dropping a stray second slab).
+    const cleanGreen = e.layer === 'ground' ? greenShare(img, 0, 1) > 0.45 : greenShare(img) > 0.5;
+    const shape = cleanGreen
+      ? null
+      : e.layer === 'front'
         ? blurMask(frameMask(img), img.width, img.height, 10)
         : e.layer === 'ground'
           ? stageMask(img)
           : null;
     if (shape)
       for (let i = 0; i < shape.length; i++) cut[i * 4 + 3] = Math.round(cut[i * 4 + 3]! * shape[i]!);
+    if (cleanGreen && e.layer === 'ground') keepLargest(cut, img.width, img.height);
     if (e.layer === 'ground') {
       const c = await cropped(cut, img);
       await sharp(c.png).webp(webp).toFile(dest);
