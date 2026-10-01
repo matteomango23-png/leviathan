@@ -465,3 +465,49 @@ export function fadeCutEdges(px: Uint8ClampedArray, w: number, h: number, frac =
       if (k < 1) px[(y * w + x) * 4 + 3] = Math.round(px[(y * w + x) * 4 + 3]! * k * k * (3 - 2 * k));
     }
 }
+
+/**
+ * Background shut inside a coiled body (a serpent's loops): dark areas that do not touch the border but are as
+ * dark as the background and at least `minShare` of the picture become transparent too. Only for pictures that
+ * need it: on others it would hole a dark open mouth.
+ */
+export function clearEnclosedBackground(
+  img: Raw,
+  out: Uint8ClampedArray,
+  bg: Rgb,
+  maxDist = 14,
+  minShare = 0.002,
+): void {
+  const { width: w, height: h, data } = img;
+  const n = w * h;
+  const dark = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    const d = Math.max(
+      Math.abs(data[o]! - bg[0]),
+      Math.abs(data[o + 1]! - bg[1]),
+      Math.abs(data[o + 2]! - bg[2]),
+    );
+    dark[i] = d < maxDist && out[o + 3]! > 0 ? 1 : 0;
+  }
+  const seen = new Uint8Array(n);
+  const stack: number[] = [];
+  const region: number[] = [];
+  for (let s = 0; s < n; s++) {
+    if (!dark[s] || seen[s]) continue;
+    region.length = 0;
+    stack.push(s);
+    seen[s] = 1;
+    while (stack.length) {
+      const i = stack.pop()!;
+      region.push(i);
+      const x = i % w;
+      for (const k of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w])
+        if (k >= 0 && k < n && dark[k] && !seen[k]) {
+          seen[k] = 1;
+          stack.push(k);
+        }
+    }
+    if (region.length >= n * minShare) for (const i of region) out[i * 4 + 3] = 0;
+  }
+}
