@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.5 — La Barriera popolata (1 ottobre 2026)
+
+- **Pesce palla, murena e manta nuotano nella Barriera** con le loro immagini di profilo e la loro card. Il pesce palla quando morde si gonfia.
+- Murene anche nella Foresta.
+
 ## v0.9.4 — Il compagno si vede (1 ottobre 2026)
 
 - **Correzione:** le bestie iniziali (Zanna, Guscio, Scintilla e le loro evoluzioni) chiamate nel mare non comparivano: il gioco non caricava le loro immagini di profilo. Ora arrivano e ti seguono.
