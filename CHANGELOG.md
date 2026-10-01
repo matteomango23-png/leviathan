@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.6.2 — Prova della battaglia a turni (1 ottobre 2026)
+
+- **Prova della nuova battaglia a turni**, separata dal gioco: apri il link del gioco aggiungendo `?battaglia` (https://matteomango23-png.github.io/leviathan/?battaglia). Squalo bianco (liv. 8), tartaruga e torpedine contro una bestia a caso di Baia e Delta (a volte albina o alfa).
+- Menu come Pokémon: Lotta (3 mosse con tipo, forza e ricarica), Zaino (Alga curativa, Arpione mitico), Squadra (cambio bestia), Doma (la conchiglia scuote 3 volte), Fuggi.
+- Quando il nemico attacca, un cerchio rosso si chiude sulla tua bestia: tocca lo schermo nel momento esatto in cui la tocca per schivare. È difficile apposta, e a volte il cerchio si ferma per ingannarti.
+- Il gioco normale non cambia.
+
 ## v0.6.1 — Correzioni dopo la prova completa (1 ottobre 2026)
 
 - **Fucile subacqueo** al posto dell'arpione: colpo molto più veloce, la sagola torna subito. Si spara solo con il pulsante Fucile (trascinalo per mirare): toccare lo schermo non spara più.

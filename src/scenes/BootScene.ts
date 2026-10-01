@@ -30,6 +30,11 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     createTextures(this);
     for (const key of neededKeys()) addStripFrames(this, key);
+    // the battle prototype (link with ?battaglia): a turn-based fight on its own
+    if (new URLSearchParams(window.location.search).has('battaglia')) {
+      this.scene.start('Battle');
+      return;
+    }
     const session = new Session();
     this.scene.start('World', { session });
     this.scene.launch('UI', { session });
