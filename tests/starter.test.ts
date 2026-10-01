@@ -2,7 +2,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { STARTER } from '../src/data/story';
 import { emptyInput } from '../src/systems/input';
-import { raiseLevel } from '../src/systems/beasts/growth';
+import { fishXp, raiseLevel, xpReward } from '../src/systems/beasts/growth';
+import { PROGRESSION } from '../src/data/rules';
 import { movesFor } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave } from '../src/systems/game';
@@ -64,15 +65,54 @@ describe('evolutions', () => {
     const events: GameEvent[] = [];
     raiseLevel(b, 16 - b.level, events);
     expect(b.form.speciesId).toBe('squarcio');
-    expect(events).toContainEqual({ type: 'evolved', uid: b.uid, from: 'Zanna' });
+    expect(events).toContainEqual({ type: 'evolved', uid: b.uid, from: 'Zanna', fromId: 'zanna' });
     expect(movesFor(b).map((m) => m.move.id)).toEqual(moves);
     raiseLevel(b, 36 - b.level, events);
     expect(b.form.speciesId).toBe('zannarossa');
   });
 
-  it('uses the pictures of a similar beast until its own arrive', () => {
-    const art = battleArt({ speciesId: 'guscio', variant: 'comune' }, 'foe');
-    expect(art.own).toBe(true);
-    expect(art.url).toContain('sprites/tartaruga_marina_front.webp');
+  it('every stage of the three lines has its own pictures', () => {
+    for (const id of [
+      'zanna',
+      'squarcio',
+      'zannarossa',
+      'guscio',
+      'rocciaguscio',
+      'archelon',
+      'scintilla',
+      'saetta',
+      'folgore',
+    ]) {
+      const art = battleArt({ speciesId: id, variant: 'comune' }, 'foe');
+      expect(art.own, id).toBe(true);
+      expect(art.url).toContain(`sprites/${id}_front.webp`);
+    }
+  });
+});
+
+describe('pace of the levels (Pokémon style)', () => {
+  const fightsTo = (from: number, to: number, foeLevel: (l: number) => number): number => {
+    let n = 0;
+    for (let l = from; l < to; l++) {
+      let need = PROGRESSION.xpCurve(l);
+      while (need > 0) {
+        need -= xpReward({ speciesId: 'barracuda', variant: 'comune' }, foeLevel(l));
+        n++;
+      }
+    }
+    return n;
+  };
+
+  it('the first evolution comes quickly, the second takes longer', () => {
+    const toFirst = fightsTo(STARTER.level, 16, (l) => Math.max(3, l - 2));
+    const toSecond = fightsTo(16, 36, (l) => l - 2);
+    expect(toFirst).toBeLessThan(30);
+    expect(toSecond).toBeGreaterThan(toFirst);
+    expect(toSecond).toBeLessThan(60);
+  });
+
+  it('a fish is worth some experience, a fight much more', () => {
+    expect(fishXp(10)).toBeGreaterThan(0);
+    expect(xpReward({ speciesId: 'barracuda', variant: 'comune' }, 10)).toBeGreaterThan(fishXp(10) * 10);
   });
 });

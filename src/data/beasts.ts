@@ -3,7 +3,7 @@
 // Speeds marked "U/s" are in diver lengths per second (DIVER.lengthUnits).
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
-import { bay, delta, LAYOUT } from './worldLayout';
+import { bay, delta, east, LAYOUT } from './worldLayout';
 
 /** How wild beasts swim around you (they are seen, like in recent Pokémon games). */
 export const ROAM = {
@@ -32,18 +32,43 @@ export interface WildSpawnDef {
   speciesId: string;
   area: [number, number, number, number]; // x0, y0, x1, y1: present while the diver is inside
   respawnSeconds: [number, number];
+  /** A visitor outside its home region: its levels here (otherwise the species' wildLevel). */
+  level?: [number, number];
 }
+
+// Each entry is one beast that comes and goes; a species listed twice can be met two at a time.
+// The sea is full of common beasts (barracudas, turtles, rays), some sharks, the white shark rarer (tuning).
+const BAY: [number, number, number, number] = [LAYOUT.bay.x0, 60, bay(1900), 380];
+const BAY_HIGH: [number, number, number, number] = [LAYOUT.shoreX + 200, 40, bay(1800), 320]; // also over the beach
+const REEF: [number, number, number, number] = [east(2480), 40, east(4000), 420];
+const FOREST: [number, number, number, number] = [east(4040), 40, east(5200), 520];
 export const WILD_SPAWNS: WildSpawnDef[] = [
-  // the white shark keeps to the bay; barracudas and turtles also come over the beach
-  { speciesId: 'squalo_bianco', area: [LAYOUT.bay.x0, 60, bay(1900), 380], respawnSeconds: [45, 90] },
-  { speciesId: 'barracuda', area: [LAYOUT.shoreX + 300, 50, bay(1900), 340], respawnSeconds: [15, 35] },
-  { speciesId: 'tartaruga_marina', area: [LAYOUT.shoreX + 200, 40, bay(1800), 320], respawnSeconds: [30, 60] },
-  { speciesId: 'torpedine', area: [LAYOUT.bay.x0, 180, bay(1900), 380], respawnSeconds: [25, 50] },
+  { speciesId: 'barracuda', area: [LAYOUT.shoreX + 300, 50, bay(1900), 340], respawnSeconds: [12, 30] },
+  { speciesId: 'barracuda', area: BAY, respawnSeconds: [15, 35] },
+  { speciesId: 'tartaruga_marina', area: BAY_HIGH, respawnSeconds: [20, 45] },
+  { speciesId: 'tartaruga_marina', area: BAY, respawnSeconds: [25, 50] },
+  { speciesId: 'torpedine', area: [LAYOUT.bay.x0, 180, bay(1900), 380], respawnSeconds: [20, 40] },
+  { speciesId: 'torpedine', area: BAY, respawnSeconds: [25, 50] },
+  { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120], level: [5, 7] }, // visitors from the reef
+  { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150], level: [6, 8] },
+  { speciesId: 'squalo_bianco', area: BAY, respawnSeconds: [120, 220] }, // rarer
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
+  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
+  // the open sea east: the reef and the kelp forest
+  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [15, 35] },
+  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'murena', area: REEF, respawnSeconds: [25, 50] },
+  { speciesId: 'torpedine', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
+  { speciesId: 'tartaruga_marina', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
+  { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [50, 100] },
+  { speciesId: 'manta', area: REEF, respawnSeconds: [70, 140] },
+  { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
+  { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
+  { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
 ];
 
 /** At most this many wild beasts are around you at the same time (tuning). */
-export const WILD_RULES = { maxPresent: 3 };
+export const WILD_RULES = { maxPresent: 5 };
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';
@@ -53,6 +78,11 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   tartaruga_marina: { temper: 'calm', speedMult: 0.6 },
   torpedine: { temper: 'shy', speedMult: 0.7 },
   coccodrillo_marino: { temper: 'aggressive', speedMult: 0.8, surface: true }, // cruises just under the surface
+  squalo_tigre: { temper: 'aggressive' },
+  squalo_martello: { temper: 'aggressive', speedMult: 0.9 },
+  pesce_palla: { temper: 'shy', speedMult: 0.5 },
+  murena: { temper: 'aggressive', speedMult: 0.8 },
+  manta: { temper: 'calm', speedMult: 0.8 },
 };
 
 /** Big beasts you ride eat the small fish they swim through (food chain): into your bag. */

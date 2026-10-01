@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.2 — Iniziali dipinti e mare pieno (1 ottobre 2026)
+
+- **Le tre linee hanno le loro immagini:** Zanna, Squarcio, Zannarossa, Guscio, Rocciaguscio, Archelon, Scintilla, Saetta e Folgore, in battaglia, nel mare e nelle schede.
+- **Animazione di evoluzione:** la carta della bestia si illumina sempre di più, un lampo bianco, e appare la nuova forma. Il mare si ferma finché non tocchi lo schermo.
+- **Scheda della bestia:** mostra la sua linea (es. Zanna → Squarcio Lv 16 → Zannarossa Lv 36) con lo stadio attuale evidenziato.
+- **Esperienza:** ogni pesce pescato o mangiato dà un po' di esperienza alla bestia in acqua (o alla prima della squadra); i combattimenti ne danno molta di più. Livelli più rapidi all'inizio: la prima evoluzione arriva dopo una quindicina di combattimenti, la seconda dopo una ventina in più, il 50 resta lungo.
+- **Mare più vivo:** sardine quasi ovunque (17 banchi, ricrescono prima), più barracuda, tartarughe e torpedini, ogni tanto uno squalo martello o tigre nella Baia, lo squalo bianco più raro. Nella Barriera pesci palla, murene, squali martello e mante; nella Foresta squali tigre. Fino a 5 bestie intorno a te.
+- Con `?prove`, "+5 livelli alla squadra" mostra anche le evoluzioni.
+
 ## v0.9.1 — La prima bestia (1 ottobre 2026)
 
 - **Scegli il tuo compagno:** subito dopo l'inizio Aurelio ti fa scegliere tra tre creature preistoriche uniche: **Zanna** (Predatore), **Guscio** (Corazzato), **Scintilla** (Tempesta). Se la tua partita non ha nessuna bestia, la scelta compare appena la apri: niente più blocco.

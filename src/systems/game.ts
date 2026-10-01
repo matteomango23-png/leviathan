@@ -17,7 +17,7 @@ import { createDiver, stepDiver } from './diver';
 import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers, newGear, sellBag } from './economy/gear';
-import { feedBeast, isHungry } from './beasts/growth';
+import { feedBeast, fishXp, gainXp, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
 import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
@@ -197,6 +197,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (!held) fire(g, input, events);
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
     hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, events);
+  const fishMark = events.length; // fish caught from here on are experience (below)
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
     hitBeast(x, y, BASE_HARPOON.damage),
   );
@@ -216,6 +217,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const eater = activeBeast(g);
   const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
   // a growing beast (levels 31–50) keeps the fish for its nourishment bar
+  // every fish caught or eaten is experience for the beast in the water (or the first of the team)
+  const fed = eater ?? g.beasts.team[0];
+  const fishCaught = events.slice(fishMark).filter((e) => e.type === 'fishCaught').length + (eaten ? 1 : 0);
+  if (fed && fishCaught > 0) gainXp(fed, fishXp(fed.level) * fishCaught, events);
   if (eaten && eater && isHungry(eater)) {
     takeFish(eaten);
     feedBeast(eater, events);

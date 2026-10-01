@@ -66,6 +66,15 @@ export function openBeastSheet(
   el('span', 'tag', tags, s.levelLabel);
   if (extra.count && extra.count > 1) el('span', 'tag', tags, `×${extra.count}`);
   if (extra.beast) growthBars(info, extra.beast);
+  if (s.evolution.length) {
+    // the line, like a Pokédex: Zanna → Squarcio (Lv 16) → Zannarossa (Lv 36), the current stage lit
+    const evo = el('div', 'sheet-evo', info);
+    s.evolution.forEach((st, i) => {
+      if (i) el('span', 'evo-arrow', evo, '→');
+      const step = el('span', `evo-step${st.current ? ' current' : ''}`, evo, st.name);
+      if (st.level) el('span', 'evo-level', step, ` Lv ${st.level}`);
+    });
+  }
 
   const stats = el('div', 'sheet-stats', info);
   const stat = (label: string, value: string, iconName?: Parameters<typeof icon>[0]): void => {

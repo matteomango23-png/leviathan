@@ -119,10 +119,10 @@ export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
   return { speciesId, variant: 'comune' };
 }
 
-export function rollWildLevel(form: BeastForm, rng: Rng): number {
+export function rollWildLevel(form: BeastForm, rng: Rng, levels?: [number, number]): number {
   const u = uniqueOf(form);
   if (u) return u.level;
-  const [a, b] = speciesOf(form).wildLevel;
+  const [a, b] = levels ?? speciesOf(form).wildLevel;
   return a + Math.floor(rng() * (b - a + 1));
 }
 

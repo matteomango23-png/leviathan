@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DELTA } from '../src/data/worldLayout';
+import { CORALS, DELTA, KELP } from '../src/data/worldLayout';
 import { MOVES } from '../src/data/moves';
 import { WILD_SPAWNS } from '../src/data/beasts';
 import { SPECIES } from '../src/data/species';
@@ -116,9 +116,15 @@ describe('team', () => {
 });
 
 describe('wild spawns data', () => {
-  it('only spawns beasts of the regions already in the game, inside their region', () => {
-    const regions: Record<string, [number, number]> = { baia: [0, DELTA.x0], delta: [DELTA.x0, DELTA.x1] };
+  it('only spawns beasts inside their region (visitors elsewhere have their own levels)', () => {
+    const regions: Record<string, [number, number]> = {
+      baia: [0, DELTA.x0],
+      delta: [DELTA.x0, DELTA.x1],
+      barriera: [CORALS.reef.xMin, CORALS.reef.xMax],
+      foresta: [KELP.forest.xMin, KELP.forest.xMax],
+    };
     for (const sp of WILD_SPAWNS) {
+      if (sp.level) continue;
       const region = SPECIES.find((x) => x.id === sp.speciesId)?.region ?? '';
       const range = regions[region];
       expect(range, sp.speciesId).toBeDefined();

@@ -40,7 +40,7 @@ export const HARPOON = {
 };
 
 export const SARDINE = {
-  perSchool: 12,
+  perSchool: 14,
   lengthUnits: 5,
   schoolSpread: [16, 9] as [number, number], // offset of each fish around the school centre
   schoolSpeed: 20,
@@ -51,7 +51,7 @@ export const SARDINE = {
   fleeDistance: 50, // how far ahead of the threat a fleeing sardine aims
   steer: 3,
   radius: 2,
-  respawnSeconds: 30,
+  respawnSeconds: 20,
   seenRadius: 80, // first time a sardine is this close it is added to the bestiary
 };
 

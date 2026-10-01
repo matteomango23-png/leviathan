@@ -1,10 +1,11 @@
 // Everything shown on a beast's card sheet: rarity, type, role, stats, moves with unlock levels
 // and damage now / at the next level, size, habitat. Pure data, rendered by ui/beastSheet.ts.
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
+import { SPECIES } from '../../data/species';
 import { MOVES } from '../../data/moves';
 import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
-import type { Stats } from '../../data/species';
+import type { SpeciesDef, Stats } from '../../data/species';
 import { moveDamage } from './combat';
 import {
   formLengthM,
@@ -46,6 +47,27 @@ export interface Sheet {
   habitat: string;
   trait: string;
   moves: SheetMove[];
+  /** A starter line: its stages, with the level each is reached at (empty for other beasts). */
+  evolution: { name: string; level: number | null; current: boolean }[];
+}
+
+/** The stages of the line a species belongs to, first to last. */
+export function evolutionLine(speciesId: string): { id: string; name: string; level: number | null }[] {
+  const byId = (id: string | undefined): SpeciesDef | undefined => SPECIES.find((x) => x.id === id);
+  let first = byId(speciesId);
+  // walk back to the first stage
+  let prev = first && SPECIES.find((x) => x.evolvesTo === first!.id);
+  while (prev) {
+    first = prev;
+    prev = SPECIES.find((x) => x.evolvesTo === first!.id);
+  }
+  const line: { id: string; name: string; level: number | null }[] = [];
+  let level: number | null = null;
+  for (let st = first; st; st = byId(st.evolvesTo)) {
+    line.push({ id: st.id, name: st.name, level });
+    level = st.evolveLevel ?? null;
+  }
+  return line.length > 1 ? line : [];
 }
 
 function specialOf(form: BeastForm): Sheet['special'] {
@@ -103,5 +125,10 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
     habitat: REGIONS.find((r) => r.id === s.region)?.name ?? s.region,
     trait: s.trait,
     moves,
+    evolution: evolutionLine(form.speciesId).map((x) => ({
+      name: x.name,
+      level: x.level,
+      current: x.id === form.speciesId,
+    })),
   };
 }

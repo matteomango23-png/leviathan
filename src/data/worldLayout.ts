@@ -266,15 +266,25 @@ export interface SchoolDef {
 }
 const BAY_ROAM: [number, number, number, number] = [LAYOUT.shoreX + 60, 40, bay(1850), 290];
 const SEA_ROAM: [number, number, number, number] = [east(2480), 48, east(5120), 300];
+// tappa 10c: sardines everywhere, like the common Pokémon in the grass
 export const SARDINE_SCHOOLS: SchoolDef[] = [
   { x: 900, y: 70, roam: BAY_ROAM }, // over the beach
+  { x: 1300, y: 90, roam: BAY_ROAM },
+  { x: bay(200), y: 120, roam: BAY_ROAM },
   { x: bay(420), y: 170, roam: BAY_ROAM },
+  { x: bay(650), y: 110, roam: BAY_ROAM },
   { x: bay(900), y: 230, roam: BAY_ROAM },
+  { x: bay(1100), y: 140, roam: BAY_ROAM },
   { x: bay(1300), y: 150, roam: BAY_ROAM },
+  { x: bay(1600), y: 200, roam: BAY_ROAM },
   { x: east(2720), y: 150, roam: SEA_ROAM },
+  { x: east(3000), y: 100, roam: SEA_ROAM },
   { x: east(3270), y: 200, roam: SEA_ROAM },
+  { x: east(3550), y: 120, roam: SEA_ROAM },
   { x: east(3820), y: 170, roam: SEA_ROAM },
+  { x: east(4200), y: 130, roam: SEA_ROAM },
   { x: east(4620), y: 260, roam: SEA_ROAM },
+  { x: east(4950), y: 160, roam: SEA_ROAM },
 ];
 
 /** Kelp grows on rock tops above these depths (tuning). */

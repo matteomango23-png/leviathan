@@ -15,6 +15,7 @@ import {
   type CutoutOptions,
   borderColor,
   coverCrop,
+  clearEnclosedBackground,
   eraseRects,
   fadeCutEdges,
   opaqueBox,
@@ -47,6 +48,8 @@ const BATTLE_CROP_BOTTOM: Record<string, number> = {
 const BATTLE_ERASE: Record<string, number[][]> = {
   squalo_bianco_back: [[0.82, 0.25, 1, 0.5]], // a blurred far fin that looked like a blood splash by the snout
 };
+// Coiled bodies with background shut between the loops (systems: clearEnclosedBackground).
+const BATTLE_ENCLOSED = ['folgore_front', 'folgore_back', 'scintilla_front', 'scintilla_back'];
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
 const args = process.argv.slice(2);
@@ -124,6 +127,7 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
   const cut = removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
   eraseRects(cut, info.width, info.height, BATTLE_ERASE[name] ?? []);
+  if (BATTLE_ENCLOSED.includes(name)) clearEnclosedBackground(raw, cut, borderColor(raw));
   fadeCutEdges(cut, info.width, info.height); // a fin out of frame fades instead of ending in a straight cut
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');

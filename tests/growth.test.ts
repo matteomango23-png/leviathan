@@ -108,7 +108,7 @@ describe('growth 31–50 and final form', () => {
 describe('experience in play', () => {
   const battle = (over: 'won' | 'caught' | 'fled' | 'lost') => {
     const g = createGame(generateWorld(), null, 4);
-    giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 5);
+    giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 10);
     giveTestBeast(g, { speciesId: 'barracuda', variant: 'comune' }, 3);
     const w = g.beasts.wilds[0]!;
     spawnWild(w, { speciesId: 'squalo_bianco', variant: 'comune' }, 4, 900, 200, 1);

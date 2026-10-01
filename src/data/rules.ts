@@ -47,7 +47,7 @@ export const PROGRESSION = {
   finalFormLevel: 50,                         // iconic species reach their final form
   teamSize: 5,                                // beasts in the team; reserve is unlimited
   sanctuaryHealSeconds: 5,                    // gradual heal of HP and oxygen while standing still
-  xpCurve: (level: number) => Math.round(20 * Math.pow(level, 1.6)), // tuning: XP needed to go from level to level+1
+  xpCurve: (level: number) => Math.round(12 * Math.pow(level, 1.5)), // tuning: XP needed to go from level to level+1
   nourishmentPerGrowthLevel: 8,              // tuning: fish to eat for each level from 31 upward
 };
 
