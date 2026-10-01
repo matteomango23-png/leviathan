@@ -125,6 +125,15 @@ function drawProp(c: Ctx, rng: Rng, pal: BattlePalette): void {
 }
 
 /** Rock walls at the sides, the place's props and a low seabed line, with light on the edges. */
+/** Only the place's props (arches, roots, ribs), to lay over a borrowed painted middle layer. */
+export function propTexture(scene: Phaser.Scene, place: BattlePlace, pal: BattlePalette): string {
+  return canvas(scene, `bt-prop-${place}`, 1024, 512, (c) => {
+    const rng = makeRng(place.length * 131 + 5);
+    drawProp(c, rng, pal);
+    grain(c, 1024, 512, rng, 0.45);
+  });
+}
+
 export function midTexture(scene: Phaser.Scene, place: BattlePlace, pal: BattlePalette): string {
   return canvas(scene, `bt-mid-${place}`, 1024, 512, (c) => {
     const rng = makeRng(place.length * 131 + 5);

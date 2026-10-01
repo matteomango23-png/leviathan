@@ -1,5 +1,5 @@
 /* Battle screen, in the style of the recent Pokémon games (rounded bold font, slanted glassy panels,
-   vivid colour pills) on a dark sea. Landscape iPhone, inside the safe area. */
+   deep jewel-toned pills with bronze edges, for a dark fantasy sea). Rare beasts' boxes shimmer. Landscape iPhone, inside the safe area. */
 .battle {
   position: fixed;
   inset: 0;
@@ -12,8 +12,11 @@
   --sr: env(safe-area-inset-right, 0px);
   --st: env(safe-area-inset-top, 0px);
   --sb: env(safe-area-inset-bottom, 0px);
-  --glass: linear-gradient(160deg, rgba(22, 40, 52, 0.88), rgba(6, 14, 22, 0.9));
-  --edge: rgba(190, 240, 245, 0.22);
+  --glass: linear-gradient(160deg, rgba(20, 28, 34, 0.9), rgba(5, 9, 13, 0.92));
+  --edge: rgba(201, 168, 106, 0.32);
+  --bronze: #c9a86a;
+  --ink: #f1e9da;
+  color: var(--ink);
   -webkit-user-select: none;
   user-select: none;
 }
@@ -56,7 +59,7 @@
   top: -1px;
   height: 3px;
   border-radius: 0 0 3px 3px;
-  background: linear-gradient(90deg, #5ff3d6, rgba(95, 243, 214, 0));
+  background: linear-gradient(90deg, #7fb8b0, rgba(127, 184, 176, 0));
 }
 .binfo.foe {
   top: calc(var(--st) + var(--bpad));
@@ -67,7 +70,57 @@
   left: calc(var(--sl) + var(--bpad) + 6px);
 }
 .binfo.you::before {
-  background: linear-gradient(90deg, #ffd25f, rgba(255, 210, 95, 0));
+  background: linear-gradient(90deg, var(--bronze), rgba(201, 168, 106, 0));
+}
+/* rare beasts: a silver shimmer; giants and legendaries: gold, glowing */
+.binfo.rare {
+  border-color: rgba(220, 222, 255, 0.5);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 14px rgba(200, 210, 255, 0.2);
+}
+.binfo.legend {
+  border-color: rgba(232, 196, 110, 0.8);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(232, 180, 80, 0.35),
+    inset 0 0 14px rgba(232, 180, 80, 0.14);
+  animation: blegend 2.6s ease-in-out infinite alternate;
+}
+.binfo.legend::before {
+  background: linear-gradient(90deg, #f3d38a, rgba(243, 211, 138, 0));
+}
+.binfo.rare::after,
+.binfo.legend::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.16) 47%, transparent 60%);
+  background-size: 260% 100%;
+  animation: bsheen 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.binfo.legend::after {
+  background-image: linear-gradient(110deg, transparent 35%, rgba(255, 224, 150, 0.32) 47%, transparent 60%);
+  animation-duration: 2.4s;
+}
+@keyframes bsheen {
+  0% {
+    background-position: 130% 0;
+  }
+  60%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+@keyframes blegend {
+  to {
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.45),
+      0 0 30px rgba(240, 190, 90, 0.5),
+      inset 0 0 18px rgba(232, 180, 80, 0.2);
+  }
 }
 .binfo-top {
   display: flex;
@@ -76,18 +129,36 @@
   gap: 8px;
 }
 .binfo-name {
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 19px;
   font-weight: 800;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+.binfo-name-text {
+  display: inline-block;
+}
+/* a long name scrolls to its end and back, with a pause at each end */
+.binfo-name.scroll .binfo-name-text {
+  animation: bname var(--dur, 5s) ease-in-out infinite alternate;
+}
+@keyframes bname {
+  0%,
+  18% {
+    transform: translateX(0);
+  }
+  82%,
+  100% {
+    transform: translateX(var(--shift, 0));
+  }
 }
 .binfo-lv {
   font-size: 14px;
   font-weight: 800;
-  color: #ffe08a;
+  color: #e8c987;
   white-space: nowrap;
 }
 .binfo-tags {
@@ -102,8 +173,13 @@
   gap: 4px;
   padding: 0 9px 0 5px;
   border-radius: 999px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 85%, #fff), var(--tc));
-  color: #fff;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--tc) 62%, #1a1410),
+    color-mix(in srgb, var(--tc) 45%, #000)
+  );
+  border: 1px solid color-mix(in srgb, var(--tc) 55%, transparent);
+  color: var(--ink);
   font-size: 12px;
   font-weight: 800;
   line-height: 20px;
@@ -143,17 +219,17 @@
 .binfo-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(180deg, #8dffb0, #2fcf68);
-  box-shadow: 0 0 8px rgba(80, 240, 140, 0.45);
+  background: linear-gradient(180deg, #8fd6a0, #3a9259);
+  box-shadow: 0 0 6px rgba(90, 200, 130, 0.3);
   transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .binfo-fill.mid {
-  background: linear-gradient(180deg, #ffe680, #f0b020);
-  box-shadow: 0 0 8px rgba(240, 190, 40, 0.45);
+  background: linear-gradient(180deg, #e6c66e, #b0852a);
+  box-shadow: 0 0 6px rgba(220, 170, 60, 0.3);
 }
 .binfo-fill.low {
-  background: linear-gradient(180deg, #ff9a80, #e0402c);
-  box-shadow: 0 0 8px rgba(240, 70, 40, 0.5);
+  background: linear-gradient(180deg, #e2836c, #a2372a);
+  box-shadow: 0 0 8px rgba(220, 70, 40, 0.4);
   animation: blow 0.8s ease-in-out infinite alternate;
 }
 @keyframes blow {
@@ -168,7 +244,7 @@
   font-weight: 700;
   text-align: right;
   font-variant-numeric: tabular-nums;
-  color: #d8eef0;
+  color: #d9d2c4;
 }
 
 /* ── message ────────────────────────────────────────────────── */
@@ -206,7 +282,7 @@
   width: 0;
   height: 0;
   border: 7px solid transparent;
-  border-top: 9px solid #ffd25f;
+  border-top: 9px solid var(--bronze);
   border-bottom: 0;
   animation: bnext 0.7s ease-in-out infinite alternate;
 }
@@ -233,14 +309,15 @@
   margin: 0 6px 2px 0;
   padding: 2px 14px;
   border-radius: 999px;
-  background: rgba(3, 10, 16, 0.7);
+  background: rgba(5, 9, 13, 0.75);
+  border: 1px solid var(--edge);
   font-size: 15px;
   font-weight: 700;
-  color: #e4f6f6;
+  color: var(--ink);
 }
 .bbtn {
   border: 0;
-  color: #fff;
+  color: var(--ink);
   cursor: pointer;
   transition:
     transform 0.12s,
@@ -285,8 +362,8 @@
   padding: 0 14px 0 5px;
   border-radius: 999px;
   background:
-    linear-gradient(100deg, color-mix(in srgb, var(--c) 40%, transparent) 0%, transparent 55%), var(--glass);
-  border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+    linear-gradient(100deg, color-mix(in srgb, var(--c) 34%, transparent) 0%, transparent 62%), var(--glass);
+  border: 1px solid color-mix(in srgb, var(--c) 40%, rgba(201, 168, 106, 0.35));
   box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -300,9 +377,15 @@
   height: 32px;
   padding: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 60%, #fff), var(--c));
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22);
-  color: #fff;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--c) 78%, #e8d9b8),
+    color-mix(in srgb, var(--c) 72%, #000)
+  );
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(201, 168, 106, 0.5);
+  color: var(--ink);
 }
 .bbtn-label {
   font-size: 18px;
@@ -311,7 +394,7 @@
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
 }
 .bcmd.c-fight {
-  --c: #ef4e38;
+  --c: #9b2f25;
   width: min(240px, 31vw);
   height: 52px;
 }
@@ -323,16 +406,16 @@
   font-size: 25px;
 }
 .bcmd.c-bag {
-  --c: #e9a52c;
+  --c: #94702f;
 }
 .bcmd.c-team {
-  --c: #3dbb63;
+  --c: #2f6a4c;
 }
 .bcmd.c-tame {
-  --c: #1fc4b0;
+  --c: #22766d;
 }
 .bcmd.c-flee {
-  --c: #4a86d8;
+  --c: #3d5a82;
 }
 /* the main menu: Lotta wide on top, the other four in pairs */
 .bmenu.main {
@@ -367,11 +450,16 @@
   padding: 6px 14px 6px 8px;
   border-radius: 16px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 50%),
-    linear-gradient(120deg, color-mix(in srgb, var(--tc) 92%, #fff), color-mix(in srgb, var(--tc) 70%, #000));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 50%),
+    linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--tc) 52%, #120d0a),
+      color-mix(in srgb, var(--tc) 22%, #05080b)
+    );
+  border: 1px solid color-mix(in srgb, var(--tc) 55%, rgba(201, 168, 106, 0.3));
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.4),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3);
   text-align: left;
 }
 .bmove > .bicon {
@@ -379,7 +467,8 @@
   height: 34px;
   padding: 6px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.22);
+  background: color-mix(in srgb, var(--tc) 65%, #000);
+  box-shadow: 0 0 0 1px rgba(201, 168, 106, 0.4);
 }
 .bmove-text {
   display: flex;
@@ -395,7 +484,7 @@
 .bmove-info {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(241, 233, 218, 0.8);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -480,7 +569,7 @@
   margin: 0 0 6px;
   font-size: 26px;
   font-weight: 800;
-  color: #ffe08a;
+  color: #e8c987;
 }
 .bresult p {
   margin: 0 0 4px;
@@ -555,9 +644,9 @@
 .bdodge-btn {
   width: 124px;
   height: 124px;
-  border: 4px solid #fff;
+  border: 3px solid #e8c987;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ff8a6a, #d92f1c 60%, #8a140a);
+  background: radial-gradient(circle at 35% 30%, #c95a43, #8f2318 60%, #4a0a05);
   color: #fff;
   font-family: inherit;
   font-size: 24px;

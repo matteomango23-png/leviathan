@@ -67,18 +67,19 @@ export const BATTLE_PROTOTYPE = {
 };
 
 /**
- * How the battle looks (owner's choices of 1 ottobre 2026): beasts drawn in proportion to their real length,
- * with the difference squeezed a little so a small beast is still readable (a 9 m legendary shark is about
- * three times a 2 m turtle), the wild one a bit smaller because it is farther away.
+ * How the battle looks (owner's choices of 1 ottobre 2026). Sizes are relative, like Pokémon: the bigger of
+ * the two beasts is drawn at a standard size and the other in proportion to it (squeezed a little, so a small
+ * one stays readable): two turtles are both normal-sized, a shark next to a torpedo ray is clearly bigger.
+ * Giants (legendaries, final forms, Guardians and named beasts, colossal species) are always huge.
  */
 export const BATTLE_STAGE = {
   size: {
-    refLengthM: 6, // a 6 m beast (the great white)…
-    refScreen: 0.58, // …is this share of the screen height when it is yours (tuning)
-    exponent: 0.73, // real ratio ^ this: 2 m vs 9 m → about ×3 instead of ×4.5 (tuning)
-    min: 0.3, // never smaller than this share of the screen height…
-    max: 1.05, // …nor bigger
-    foeDistance: 0.8, // the wild beast is farther away: × this
+    standard: 0.58, // the bigger beast of the pair, as a share of the screen height (tuning)
+    exponent: 0.73, // real length ratio ^ this: 2 m vs 6 m → ×2.2 instead of ×3 (tuning)
+    min: 0.26, // never smaller than this share of the screen height…
+    giant: 0.82, // …a giant is at least this big…
+    max: 1.05, // …and nothing is bigger than this
+    foeDistance: 0.82, // the wild beast is farther away: × this
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
@@ -86,6 +87,8 @@ export const BATTLE_STAGE = {
     you: { x: 0.3, y: 0.9 },
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
+  /** A wild beast taller than half the screen stands lower, by this share of the extra, so its head stays in. */
+  bigFoeDrop: 0.45,
   /** Places with their own background; any other region uses the bay. */
   places: ['baia', 'delta', 'tana'] as const,
 };
@@ -102,6 +105,8 @@ export interface BattlePalette {
   ground: string; // the patch of seabed each beast stands on
   plant: string; // foreground plants or roots
   prop: 'arches' | 'roots' | 'ribs'; // what the middle layer shows: stone arches, mangrove roots, whale ribs
+  /** A place without its own painted background borrows the bay's, tinted with this colour (and its props on top). */
+  borrowTint: string;
 }
 
 export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
@@ -115,6 +120,7 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     ground: '#3b4a42',
     plant: '#06221c',
     prop: 'arches',
+    borrowTint: '#ffffff',
   },
   delta: {
     top: '#3f5130',
@@ -126,6 +132,7 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     ground: '#3a3424',
     plant: '#14110a',
     prop: 'roots',
+    borrowTint: '#9aa877',
   },
   tana: {
     top: '#10303a',
@@ -137,5 +144,6 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     ground: '#2c2f2c',
     plant: '#050d0e',
     prop: 'ribs',
+    borrowTint: '#6f818c',
   },
 };

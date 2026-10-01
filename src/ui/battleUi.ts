@@ -9,6 +9,7 @@ import { ITEMS } from '../data/world';
 import type { Action, BattleState } from '../systems/battle/battle';
 import { canUse, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
+import { rarityTier } from '../systems/battle/stage';
 import './battle.css';
 import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
@@ -32,9 +33,10 @@ class InfoBox {
   private readonly tags: HTMLDivElement;
   private readonly fill: HTMLDivElement;
   private readonly hpText: HTMLSpanElement | null;
+  private readonly box: HTMLDivElement;
 
   constructor(parent: HTMLElement, side: 'foe' | 'you') {
-    const box = el('div', `binfo ${side}`, parent);
+    const box = (this.box = el('div', `binfo ${side}`, parent));
     const top = el('div', 'binfo-top', box);
     this.name = el('div', 'binfo-name', top);
     this.level = el('span', 'binfo-lv', top);
@@ -49,7 +51,21 @@ class InfoBox {
   show(f: Fighter): void {
     const stars = formStars(f.form);
     const type = formType(f.form);
-    this.name.textContent = formName(f.form);
+    const tier = rarityTier(f.form);
+    this.box.classList.toggle('rare', tier === 1);
+    this.box.classList.toggle('legend', tier === 2);
+    // a long name scrolls slowly instead of being cut with dots
+    const text = el('span', 'binfo-name-text', undefined, formName(f.form));
+    this.name.replaceChildren(text);
+    this.name.classList.remove('scroll');
+    requestAnimationFrame(() => {
+      const over = text.scrollWidth - this.name.clientWidth;
+      if (over > 2) {
+        this.name.style.setProperty('--shift', `-${over + 6}px`);
+        this.name.style.setProperty('--dur', `${Math.max(4, over / 12)}s`);
+        this.name.classList.add('scroll');
+      }
+    });
     this.level.textContent = `Lv. ${f.level}`;
     const pill = el('span', 'btype');
     pill.style.setProperty('--tc', typeColor(type));

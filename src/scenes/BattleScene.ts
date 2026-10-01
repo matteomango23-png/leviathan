@@ -106,8 +106,9 @@ export class BattleScene extends Phaser.Scene {
     const s = this.s;
     this.view = new BattleView(this, place, paintedLayers(place));
     this.view.setFighter('foe', s.foe.form, s.foe.level);
+    this.view.setFighter('you', you(s).form, you(s).level, true); // known from the start: sizes are relative
     this.ui.show(s);
-    await this.ui.say(BATTLE_TEXT.appears(this.name('foe')));
+    await Promise.all([this.view.emerge(), this.ui.say(BATTLE_TEXT.appears(this.name('foe')), 1.9)]);
     await this.view!.swimIn('you', you(s).form, you(s).level);
     await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
     if (this.setupInGame?.first === 'foe') {

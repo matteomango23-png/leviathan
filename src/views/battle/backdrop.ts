@@ -13,6 +13,7 @@ import {
   farTexture,
   groundTexture,
   midTexture,
+  propTexture,
   rayTexture,
   vignetteTexture,
   waterTexture,
@@ -24,6 +25,8 @@ export interface PaintedLayers {
   mid?: string;
   front?: string;
   ground?: string;
+  /** Borrowed from the bay (tinted with the place's colour, its props drawn on top). */
+  borrowed?: boolean;
 }
 
 /** Depth of each layer: how much it follows the camera (0 = fixed, 1 = with the beasts). */
@@ -44,6 +47,7 @@ export class BattleBackdrop {
   private readonly water: Phaser.GameObjects.Image | null;
   private readonly far: Phaser.GameObjects.Image;
   private readonly mid: Phaser.GameObjects.Image;
+  private readonly props: Phaser.GameObjects.Image | null;
   private readonly rays: Drifter[] = [];
   private readonly fog: Drifter[] = [];
   private readonly grounds: Record<Side, Phaser.GameObjects.Image>;
@@ -77,7 +81,7 @@ export class BattleBackdrop {
         y: 0,
         v: 0.004 + Math.random() * 0.006,
         phase: Math.random() * 7,
-        base: 0.12 + Math.random() * 0.12,
+        base: (0.12 + Math.random() * 0.12) * (painted.far ? 0.6 : 1), // a painted far has its own rays
       });
     const blob = blobTexture(scene);
     for (let i = 0; i < 7; i++)
@@ -90,6 +94,7 @@ export class BattleBackdrop {
         base: 0.03 + Math.random() * 0.045,
       });
     this.mid = add(painted.mid ?? midTexture(scene, place, pal), 4);
+    this.props = painted.borrowed && painted.mid ? add(propTexture(scene, place, pal), 4.5) : null;
     const ground = painted.ground ?? groundTexture(scene, place, pal);
     this.grounds = { foe: add(ground, 5), you: add(ground, 5) };
     const caustic = [causticTexture(scene, 1), causticTexture(scene, 2)];
@@ -107,7 +112,16 @@ export class BattleBackdrop {
       this.corners = [add(corner, 31), add(corner, 31).setFlipX(true)];
     }
     this.vignette = add(vignetteTexture(scene), 40);
+    if (painted.borrowed) {
+      const tint = color(pal.borrowTint);
+      for (const im of [this.far, this.mid, this.front, this.grounds.foe, this.grounds.you])
+        im?.setTint(tint);
+    }
+    this.drawRoots = !painted.front || (!!painted.borrowed && pal.prop === 'roots');
   }
+
+  /** Plants or roots drawn right in front of the camera (when there is no painted front, or in the Delta). */
+  private readonly drawRoots: boolean;
 
   private get w(): number {
     return this.scene.scale.width;
@@ -140,6 +154,7 @@ export class BattleBackdrop {
     if (this.water) this.cover(this.water, 0);
     this.cover(this.far, DEPTH.far);
     this.cover(this.mid, DEPTH.mid);
+    if (this.props) this.cover(this.props, DEPTH.mid * 1.2);
     for (const r of this.rays) {
       const sway = Math.sin(time * 0.25 + r.phase) * 0.03;
       r.im
@@ -210,7 +225,7 @@ export class BattleBackdrop {
   private drawNear(time: number): void {
     const { w, h } = this;
     const g = this.near.clear();
-    if (this.front) return;
+    if (!this.drawRoots) return;
     const d = this.shift(DEPTH.front);
     const fromTop = this.pal.prop === 'roots';
     const strands = fromTop ? [0.04, 0.12, 0.85, 0.95] : [0.02, 0.07, 0.11, 0.9, 0.95, 0.985];
@@ -237,7 +252,16 @@ export class BattleBackdrop {
   }
 
   destroy(): void {
-    for (const o of [this.water, this.far, this.mid, this.front, this.near, this.snow, this.vignette])
+    for (const o of [
+      this.water,
+      this.far,
+      this.mid,
+      this.props,
+      this.front,
+      this.near,
+      this.snow,
+      this.vignette,
+    ])
       o?.destroy();
     for (const r of [...this.rays, ...this.fog]) r.im.destroy();
     for (const s of ['foe', 'you'] as Side[]) {

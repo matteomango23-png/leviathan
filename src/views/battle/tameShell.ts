@@ -2,6 +2,7 @@
 // into light and is drawn in, the shell falls on the ground and shakes; it holds with a golden flash or
 // breaks open. Uses the painted shell (`item-conchiglia`) when it exists, otherwise a drawn spiral shell.
 import Phaser from 'phaser';
+import { tweenTo } from './tween';
 
 export const SHELL_KEY = 'item-conchiglia';
 export const SHELL_OPEN_KEY = 'item-conchiglia-aperta';
@@ -27,9 +28,7 @@ export class TameShell {
   }
 
   private tween(props: Record<string, number>, ms: number, ease = 'Sine.easeInOut'): Promise<void> {
-    return new Promise((done) =>
-      this.scene.tweens.add({ targets: this.s, ...props, duration: ms, ease, onComplete: () => done() }),
-    );
+    return tweenTo(this.scene, this.s!, props, ms, false, ease);
   }
 
   /** Throws from `from` to `to` (screen pixels); `onOpen` runs when it opens over the beast. */

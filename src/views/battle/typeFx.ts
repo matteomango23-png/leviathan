@@ -127,6 +127,16 @@ export class TypeFx {
     this.spray(x, y, 18 * n, size * 1.6, { color, size: Math.max(2, s * 0.025), life: 0.45 });
   }
 
+  /** A glint rising slowly around a rare beast (gold for legendaries, pale for albinos, red for alphas). */
+  sparkle(x: number, y: number, size: number, color: number): void {
+    this.spray(x, y, 1, size * 0.04, {
+      color,
+      size: Math.max(1.5, size * 0.009),
+      life: 1.6,
+      gravity: -size * 0.06,
+    });
+  }
+
   /** A little trail of bubbles behind a beast that lunges. */
   trail(x: number, y: number, size: number): void {
     this.spray(x, y, 6, size * 0.3, { color: 0xdff8ff, size: Math.max(1.5, size * 0.012), life: 0.5 });
