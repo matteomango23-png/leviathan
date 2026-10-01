@@ -31,11 +31,15 @@ import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
 import type { Session } from './session';
-import { BattleView, battleArt } from '../views/battleView';
+import { BattleView } from '../views/battleView';
+import { loadBattleArt, paintedLayers } from '../views/battle/battleAssets';
+import { speciesOf } from '../systems/beasts/forms';
+import { battlePlace } from '../systems/battle/stage';
 
 export class BattleScene extends Phaser.Scene {
   private ui!: BattleUi;
-  private view!: BattleView;
+  /** Made once the battle is set up (its background depends on the place). */
+  private view?: BattleView;
   private s!: BattleState;
   private rng: Rng = makeRng(Date.now());
   private items: Record<string, number> = {};
@@ -53,7 +57,6 @@ export class BattleScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.view = new BattleView(this);
     this.ui = new BattleUi(document.body);
     this.events.once('shutdown', () => this.ui.destroy());
     void this.run();
@@ -76,6 +79,15 @@ export class BattleScene extends Phaser.Scene {
     const roll = this.rng();
     const variant = roll < P.variantChance / 2 ? 'albino' : roll < P.variantChance ? 'alfa' : 'comune';
     const form: BeastForm = { speciesId: pick.speciesId, variant };
+    // for trying sizes and pictures: ?battaglia&nemico=tartaruga_marina&variante=albino&finale&unico=sfregiato
+    const q = new URLSearchParams(window.location.search);
+    const asked = q.get('nemico');
+    if (asked) {
+      form.speciesId = asked;
+      form.variant = (['albino', 'alfa'] as const).find((v) => v === q.get('variante')) ?? 'comune';
+      if (q.has('finale')) form.final = true;
+      if (q.get('unico')) form.unique = q.get('unico')!;
+    }
     this.s = createBattle(team, makeFighter(form, a + Math.floor(this.rng() * (b - a + 1))));
     this.items = { ...P.items };
   }
@@ -86,12 +98,17 @@ export class BattleScene extends Phaser.Scene {
 
   private async run(): Promise<void> {
     this.setup();
-    await this.loadArt();
+    const askedPlace = new URLSearchParams(window.location.search).get('luogo'); // prototype: ?battaglia&luogo=tana
+    const place =
+      this.setupInGame?.place ??
+      battlePlace(askedPlace ?? speciesOf(this.s.foe.form).region, askedPlace === 'tana');
+    await loadBattleArt(this, this.s, place);
     const s = this.s;
-    this.view.setFighter('foe', s.foe.form);
+    this.view = new BattleView(this, place, paintedLayers(place));
+    this.view.setFighter('foe', s.foe.form, s.foe.level);
     this.ui.show(s);
     await this.ui.say(BATTLE_TEXT.appears(this.name('foe')));
-    await this.view.swimIn('you', you(s).form);
+    await this.view!.swimIn('you', you(s).form, you(s).level);
     await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
     if (this.setupInGame?.first === 'foe') {
       await this.ui.say(BATTLE_TEXT.ambushed(this.name('foe')), 1.2);
@@ -120,7 +137,7 @@ export class BattleScene extends Phaser.Scene {
         const i = await this.ui.chooseNext(s);
         switchTo(s, i);
         this.ui.show(s);
-        await this.view.swimIn('you', you(s).form);
+        await this.view!.swimIn('you', you(s).form, you(s).level);
         await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
       }
     }
@@ -131,10 +148,10 @@ export class BattleScene extends Phaser.Scene {
     if (action.kind === 'move') await this.play(useMove(s, 'you', action.index, this.rng));
     else if (action.kind === 'switch') {
       const from = this.name('you');
-      await this.view.swimOut('you');
+      await this.view!.swimOut('you');
       switchTo(s, action.index);
       this.ui.show(s);
-      await this.view.swimIn('you', you(s).form);
+      await this.view!.swimIn('you', you(s).form, you(s).level);
       await this.ui.say(BATTLE_TEXT.switched(from, this.name('you')));
     } else if (action.kind === 'item') await this.useItem(action.id);
     else if (action.kind === 'tame') {
@@ -142,7 +159,7 @@ export class BattleScene extends Phaser.Scene {
       const step = tryTame(s, this.rng, Math.max(...s.team.map((f) => f.level)), this.tameBonus);
       this.tameBonus = 1;
       if (step.kind !== 'tame') return;
-      await this.view.tame(step.shakes, step.caught);
+      await this.view!.tame(step.shakes, step.caught);
       if (step.caught) await this.ui.say(BATTLE_TEXT.tamed(this.name('foe')), 2);
       else await this.ui.say(BATTLE_TEXT.tameBroke[Math.min(step.shakes, 2)]!);
     } else if (action.kind === 'flee') {
@@ -188,19 +205,6 @@ export class BattleScene extends Phaser.Scene {
     return judgeDodge(r, await this.ui.dodge.run(r));
   }
 
-  /** The pictures of the beasts that may appear (your team and the wild one), loaded before the battle. */
-  private loadArt(): Promise<void> {
-    const s = this.s;
-    const wanted = [battleArt(s.foe.form, 'foe'), ...s.team.map((f) => battleArt(f.form, 'you'))];
-    for (const a of wanted)
-      if (a.url && !this.textures.exists(a.textureKey)) this.load.image(a.textureKey, a.url);
-    if (!this.load.list.size) return Promise.resolve();
-    return new Promise((done) => {
-      this.load.once('complete', () => done());
-      this.load.start();
-    });
-  }
-
   /** Shows the steps of a turn. `announced`: the wild beast's move name was already said. */
   private async play(steps: Step[], announced = false): Promise<void> {
     for (const st of steps) {
@@ -214,10 +218,10 @@ export class BattleScene extends Phaser.Scene {
             0.7,
           );
         const target: Side = st.side === 'you' ? 'foe' : 'you';
-        await this.view.lunge(st.side);
-        if (st.dodge === 'perfect') await this.view.dodgeAside();
+        await this.view!.lunge(st.side);
+        if (st.dodge === 'perfect') await this.view!.dodgeAside();
         for (const dmg of st.hits) {
-          await this.view.hit(target, dmg, st.crit, st.type);
+          await this.view!.hit(target, dmg, st.crit, st.type, st.effect === 'super');
           this.ui.setHp(this.s);
         }
         if (st.dodge === 'perfect') await this.ui.say(BATTLE_TEXT.dodged, 0.9);
@@ -230,7 +234,7 @@ export class BattleScene extends Phaser.Scene {
         this.ui.setHp(this.s);
         await this.ui.say(BATTLE_TEXT.healed(this.name(st.side), st.amount));
       } else if (st.kind === 'faint') {
-        await this.view.faint(st.side);
+        await this.view!.faint(st.side);
         await this.ui.say(
           st.side === 'foe'
             ? BATTLE_TEXT.foeFainted(this.name('foe'))
@@ -270,6 +274,6 @@ export class BattleScene extends Phaser.Scene {
 
   override update(_time: number, delta: number): void {
     const dt = Math.min(0.05, delta / 1000);
-    this.view.update(dt, this.time.now / 1000);
+    this.view?.update(dt, this.time.now / 1000);
   }
 }

@@ -1,90 +1,85 @@
-// What the battle looks like: a dark sea with light from above, the wild beast up on the right and yours
-// closer, bottom left, seen from behind (like Pokémon). Each beast is a picture: its three-quarter image when
-// it exists (`<id>_front` for the wild one, `<id>_back` for yours, docs/ART.md), otherwise its card
-// illustration with dark soft edges. Breathing, wind-up and lunge, claw marks and a burst in the colour of the
-// move's type, flash and shake, fainting, the taming shell with its three shakes.
+// What the battle looks like: a layered, moving sea (views/battle/backdrop.ts), the wild beast on its patch of
+// seabed up on the right and yours closer, bottom left, seen from behind (like Pokémon). Each beast is its
+// three-quarter picture (`<id>_front` / `<id>_back`, docs/ART.md) or, until it exists, its card with soft
+// edges; it is drawn in proportion to its real length (systems/battle/stage.ts). Beasts float and sway,
+// wind up and lunge leaving bubbles, flash and recoil when hit, sink when they faint.
 import Phaser from 'phaser';
-import { TYPES, type TypeId } from '../data/rules';
-import { ART_KEYS, BATTLE_ART_KEYS } from '../data/sprites.generated';
-import { formKey, type BeastForm } from '../systems/beasts/forms';
+import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
+import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
+import { battleSize } from '../systems/battle/stage';
+import { formLengthM, type BeastForm } from '../systems/beasts/forms';
+import { battleArt, fadedCard } from './battle/beastArt';
+import { damageNumber } from './battle/damageNumber';
+
+import { BattleBackdrop, DEPTH, type PaintedLayers } from './battle/backdrop';
+import { TameShell } from './battle/tameShell';
+import { TypeFx } from './battle/typeFx';
+
+/** Battle pictures are 800×800 with the beast's longest side 760 px, its lowest point at y = 780. */
+const PIC = { box: 760, foot: 780 / 800 };
 
 interface Pose {
   key: string | null;
+  own: boolean; // a real three-quarter picture (true) or the card (false)
+  size: number; // share of the screen height
   dx: number;
   dy: number;
   scale: number;
   alpha: number;
   tint: number;
+  flash: number; // 0..1: white flash when hit
   white: number; // 0..1: turning into light (taming)
-  breath: number;
+  rot: number;
+  t: number; // own clock, for idle motion
 }
 
 const newPose = (): Pose => ({
   key: null,
+  own: false,
+  size: 0.4,
   dx: 0,
   dy: 0,
   scale: 1,
   alpha: 1,
   tint: 0xffffff,
+  flash: 0,
   white: 0,
-  breath: Math.random() * 6,
+  rot: 0,
+  t: Math.random() * 10,
 });
 
-/** The picture of a form in battle and whether it is a three-quarter image (true) or the card (false). */
-export function battleArt(form: BeastForm, side: Side): { url: string; textureKey: string; own: boolean } {
-  const key = formKey(form);
-  const suffix = side === 'foe' ? '_front' : '_back';
-  for (const k of [key, form.speciesId])
-    if (BATTLE_ART_KEYS.includes(`${k}${suffix}`))
-      return { url: `sprites/${k}${suffix}.webp`, textureKey: `battle-${k}${suffix}`, own: true };
-  const card = ART_KEYS.includes(key) ? key : form.speciesId; // a variant without its own card uses the species'
-  return { url: `art/${card}.webp`, textureKey: `card-${card}`, own: false };
-}
+const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
 
 export class BattleView {
-  private readonly bg: Phaser.GameObjects.Graphics;
-  private readonly fx: Phaser.GameObjects.Graphics;
+  private readonly backdrop: BattleBackdrop;
+  private readonly fx: TypeFx;
+  private readonly shell: TameShell;
   private readonly images: Record<Side, Phaser.GameObjects.Image>;
+  private readonly shadows: Record<Side, Phaser.GameObjects.Image>;
+  /** A soft light behind each beast, so dark bodies stand out from the dark water. */
+  private readonly backlights: Record<Side, Phaser.GameObjects.Image>;
   private readonly poses: Record<Side, Pose> = { you: newPose(), foe: newPose() };
-  private readonly own: Record<Side, boolean> = { you: false, foe: false };
-  private readonly motes: { x: number; y: number; s: number }[] = [];
-  private shell: { x: number; y: number; wiggle: number; glow: number; spin: number } | null = null;
-  private sparks: { x: number; y: number; vx: number; vy: number; t: number; color: number }[] = [];
-  private claws: { x: number; y: number; t: number; color: number }[] = [];
 
-  constructor(private readonly scene: Phaser.Scene) {
-    this.bg = scene.add.graphics();
+  constructor(
+    private readonly scene: Phaser.Scene,
+    place: BattlePlace,
+    painted: PaintedLayers,
+  ) {
+    this.backdrop = new BattleBackdrop(scene, place, painted);
+    const shadow = (): Phaser.GameObjects.Image =>
+      scene.add.image(0, 0, 'bt-blob').setTint(0x000000).setDepth(7);
+    this.shadows = { foe: shadow(), you: shadow() };
+    const ray = Phaser.Display.Color.HexStringToColor(BATTLE_PALETTES[place].ray).color;
+    const backlight = (depth: number): Phaser.GameObjects.Image =>
+      scene.add.image(0, 0, 'bt-blob').setTint(ray).setBlendMode(Phaser.BlendModes.ADD).setDepth(depth);
+    this.backlights = { foe: backlight(9), you: backlight(11) };
     this.images = {
-      foe: scene.add.image(0, 0, '__WHITE').setVisible(false),
-      you: scene.add.image(0, 0, '__WHITE').setVisible(false),
+      foe: scene.add.image(0, 0, '__WHITE').setVisible(false).setDepth(10),
+      you: scene.add.image(0, 0, '__WHITE').setVisible(false).setDepth(12),
     };
-    this.fx = scene.add.graphics();
-    for (let i = 0; i < 40; i++)
-      this.motes.push({ x: Math.random(), y: Math.random(), s: 0.5 + Math.random() });
-  }
-
-  /** A card illustration with its edges faded to transparent (an ellipse), made once per card. */
-  private faded(key: string): string {
-    const fk = `${key}-faded`;
-    if (this.scene.textures.exists(fk)) return fk;
-    const src = this.scene.textures.get(key).getSourceImage() as HTMLImageElement;
-    const w = src.width;
-    const h = src.height;
-    const tex = this.scene.textures.createCanvas(fk, w, h)!;
-    const ctx = tex.getContext();
-    ctx.drawImage(src, 0, 0);
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.translate(w / 2, h / 2);
-    ctx.scale(1, h / w);
-    const g = ctx.createRadialGradient(0, 0, w * 0.18, 0, 0, w * 0.5);
-    g.addColorStop(0, 'rgba(0,0,0,1)');
-    g.addColorStop(0.65, 'rgba(0,0,0,0.9)');
-    g.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(-w / 2, -w / 2, w, w);
-    tex.refresh();
-    return fk;
+    this.fx = new TypeFx(scene);
+    this.shell = new TameShell(scene);
   }
 
   private get w(): number {
@@ -94,131 +89,81 @@ export class BattleView {
     return this.scene.scale.height;
   }
 
-  /** Where each beast is (screen pixels) and how tall it is drawn. */
-  anchor(side: Side): { x: number; y: number; size: number } {
-    return side === 'foe'
-      ? { x: this.w * 0.68, y: this.h * 0.33, size: this.h * 0.5 }
-      : { x: this.w * 0.27, y: this.h * 0.7, size: this.h * 0.72 };
+  /** The ground under each beast (screen pixels), moving with the camera drift. */
+  private ground(side: Side): { x: number; y: number } {
+    const a = BATTLE_STAGE.anchors[side];
+    const d = this.backdrop.shift(DEPTH.ground);
+    return { x: a.x * this.w + d.x, y: a.y * this.h + d.y };
   }
 
-  setFighter(side: Side, form: BeastForm): void {
+  /** The centre of a beast's body and its height in pixels (for effects, numbers, the shell). */
+  centre(side: Side): { x: number; y: number; size: number } {
+    const g = this.ground(side);
+    const size = this.poses[side].size * this.h;
+    return { x: g.x + this.poses[side].dx, y: g.y - size * 0.5 + this.poses[side].dy, size };
+  }
+
+  setFighter(side: Side, form: BeastForm, level: number): void {
     const art = battleArt(form, side);
-    Object.assign(this.poses[side], newPose(), { key: art.textureKey });
-    this.own[side] = art.own;
-  }
-
-  private drawSea(time: number): void {
-    const g = this.bg.clear();
-    const { w, h } = this;
-    const bands = 18;
-    for (let i = 0; i < bands; i++) {
-      const t = i / (bands - 1);
-      const c = Phaser.Display.Color.Interpolate.ColorWithColor(
-        Phaser.Display.Color.ValueToColor(0x0d3540),
-        Phaser.Display.Color.ValueToColor(0x02080d),
-        100,
-        t * 100,
-      );
-      g.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b), 1);
-      g.fillRect(0, (h * i) / bands, w, h / bands + 1);
-    }
-    for (let i = 0; i < 5; i++) {
-      const x = w * (0.1 + i * 0.22) + Math.sin(time * 0.3 + i) * w * 0.03;
-      g.fillStyle(0x9fd6dc, 0.035);
-      g.fillTriangle(x - w * 0.03, 0, x + w * 0.05, 0, x + w * 0.12, h * 0.9);
-    }
-    g.fillStyle(0x040b10, 1);
-    g.fillEllipse(w * 0.68, h * 0.55, w * 0.42, h * 0.1); // the rock the wild beast hovers over
-    g.fillStyle(0xcfe6e8, 0.35);
-    for (const m of this.motes) {
-      const y = (m.y + time * 0.012 * m.s) % 1;
-      g.fillCircle(m.x * w + Math.sin(time * 0.5 + m.x * 9) * 6, y * h, m.s * 1.4);
-    }
+    Object.assign(this.poses[side], newPose(), {
+      key: art.textureKey,
+      own: art.own,
+      size: battleSize(formLengthM(form, level), side),
+    });
   }
 
   update(dt: number, time: number): void {
-    this.drawSea(time);
+    const grounds = { foe: this.ground('foe'), you: this.ground('you') };
     for (const side of ['foe', 'you'] as Side[]) {
       const p = this.poses[side];
+      const px = p.size * this.h;
+      this.backdrop.setGroundWidth(side, Math.min(this.w * 0.75, Math.max(this.w * 0.2, px * 1.25)));
       const im = this.images[side];
+      const sh = this.shadows[side];
+      const bl = this.backlights[side];
       if (!p.key || !this.scene.textures.exists(p.key)) {
         im.setVisible(false);
+        sh.setVisible(false);
+        bl.setVisible(false);
         continue;
       }
-      // cards fade into the sea; real three-quarter pictures are cut out already
-      const key = this.own[side] ? p.key : this.faded(p.key);
+      const key = p.own ? p.key : fadedCard(this.scene, p.key);
       if (im.texture.key !== key) im.setTexture(key);
-      const a = this.anchor(side);
-      p.breath += dt;
-      const breathe = 1 + Math.sin(p.breath * 1.6) * 0.012;
-      const s = (a.size / im.height) * p.scale;
-      const x = a.x + p.dx;
-      const y = a.y + p.dy + Math.sin(p.breath * 0.9) * this.h * 0.008;
+      p.t += dt;
+      // big beasts move slower and heavier
+      const slow = 1 / (0.7 + p.size);
+      const bob = Math.sin(p.t * 1.1 * slow) * this.h * 0.012;
+      const sway = Math.sin(p.t * 0.7 * slow) * 0.025;
+      const breathe = 1 + Math.sin(p.t * 1.6 * slow) * 0.015;
+      const hover = BATTLE_STAGE.hover * this.h;
+      const g = grounds[side];
+      const s = (px / (p.own ? PIC.box : im.height)) * p.scale;
+      const mirror = side === 'you' && !p.own ? -1 : 1; // the card of your beast, mirrored
       im.setVisible(true)
-        .setPosition(x, y)
-        .setScale(s * (side === 'you' && !this.own.you ? -1 : 1), s * breathe) // the card of your beast, mirrored
+        .setOrigin(0.5, p.own ? PIC.foot : 0.9)
+        .setPosition(g.x + p.dx, g.y - hover + bob + p.dy)
+        .setRotation(sway + p.rot)
+        .setScale(s * mirror * breathe, s / breathe)
         .setAlpha(p.alpha);
-      if (p.white > 0)
+      if (p.white > 0 || p.flash > 0)
         im.setTintMode(Phaser.TintModes.FILL)
-          .setTint(0xfff6dc)
-          .setAlpha(p.alpha * (0.4 + 0.6 * p.white));
+          .setTint(p.white > 0 ? 0xfff6dc : 0xffffff)
+          .setAlpha(p.alpha * (p.white > 0 ? 0.4 + 0.6 * p.white : 0.5 + 0.5 * p.flash));
       else im.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.tint);
+      // the shadow on the seabed shrinks when the beast rises
+      const lift = Math.max(0, -p.dy) / this.h;
+      sh.setVisible(true)
+        .setPosition(g.x + p.dx * 0.8, g.y)
+        .setScale((px * 1.0) / 256 / (1 + lift * 3), (px * 0.16) / 256)
+        .setAlpha(0.5 * p.alpha * (1 - Math.min(0.7, lift * 2)));
+      bl.setVisible(true)
+        .setPosition(g.x + p.dx, g.y - hover - px * 0.5 + p.dy)
+        .setScale((px * 1.5) / 256, (px * 1.2) / 256)
+        .setAlpha((0.13 + 0.03 * Math.sin(p.t * 0.8)) * p.alpha);
     }
-    this.drawFx(dt);
-  }
-
-  private drawFx(dt: number): void {
-    const g = this.fx.clear();
-    this.claws = this.claws.filter((c) => (c.t -= dt) > 0);
-    for (const c of this.claws) {
-      const k = 1 - c.t / 0.35;
-      const len = this.h * 0.18;
-      g.lineStyle(Math.max(3, this.h * 0.012) * (1 - k), c.color, 1 - k * 0.6);
-      for (let i = -1; i <= 1; i++) {
-        const ox = i * this.h * 0.04;
-        g.lineBetween(
-          c.x + ox - len * 0.5,
-          c.y - len * 0.5 + len * k * 0.2,
-          c.x + ox + len * 0.5 * k,
-          c.y + len * 0.5 * k,
-        );
-      }
-    }
-    this.sparks = this.sparks.filter((p) => (p.t -= dt) > 0);
-    for (const p of this.sparks) {
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      g.fillStyle(p.color, Math.min(1, p.t * 2));
-      g.fillCircle(p.x, p.y, Math.max(2, this.h * 0.008) * Math.min(1, p.t * 2));
-    }
-    if (this.shell) {
-      const sh = this.shell;
-      const r = this.h * 0.035;
-      const x = sh.x + Math.sin(sh.wiggle) * r * 0.7;
-      g.fillStyle(0xffe6b0, 0.15 + 0.5 * sh.glow);
-      g.fillCircle(x, sh.y, r * (1.8 + sh.glow * 1.5));
-      // a spiral shell: a pale cone with a few turns
-      g.fillStyle(0xf2dcb4, 1);
-      g.fillEllipse(x, sh.y, r * 1.8, r * 1.3);
-      g.lineStyle(Math.max(1.5, r * 0.12), 0xb08a5a, 1);
-      for (let k = 1; k <= 3; k++)
-        g.strokeCircle(x + Math.cos(sh.spin + k) * r * 0.2, sh.y, r * (0.75 - k * 0.18));
-    }
-  }
-
-  private burst(x: number, y: number, color: number, n = 18): void {
-    for (let i = 0; i < n; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const v = this.h * (0.3 + Math.random() * 0.6);
-      this.sparks.push({
-        x,
-        y,
-        vx: Math.cos(a) * v,
-        vy: Math.sin(a) * v,
-        t: 0.35 + Math.random() * 0.35,
-        color,
-      });
-    }
+    this.backdrop.update(dt, time, grounds);
+    this.fx.update(dt);
+    this.shell.update();
   }
 
   private tween(
@@ -240,120 +185,107 @@ export class BattleView {
     );
   }
 
-  /** Wind-up, then the attacker lunges at the other one. */
+  /** Wind-up (pulls back, coils), then the attacker shoots at the other one leaving bubbles, and comes back. */
   async lunge(side: Side): Promise<void> {
     const p = this.poses[side];
     const dir = side === 'you' ? 1 : -1;
-    await this.tween(p, { dx: -dir * this.w * 0.03, scale: 0.95 }, 120);
     await this.tween(
       p,
-      { dx: dir * this.w * 0.22, dy: -dir * this.h * 0.18, scale: 1.08 },
-      140,
+      { dx: -dir * this.w * 0.035, dy: dir * this.h * 0.02, scale: 0.94, rot: -dir * 0.06 },
+      220,
+    );
+    const from = this.centre(side);
+    this.fx.trail(from.x, from.y, from.size);
+    await this.tween(
+      p,
+      {
+        dx: dir * this.w * 0.26,
+        dy: -dir * this.h * 0.24,
+        scale: side === 'you' ? 0.9 : 1.12,
+        rot: dir * 0.08,
+      },
+      150,
       false,
       'Quad.easeIn',
     );
-    void this.tween(p, { dx: 0, dy: 0, scale: 1 }, 260);
+    const mid = this.centre(side);
+    this.fx.trail(mid.x, mid.y, mid.size);
+    void this.tween(p, { dx: 0, dy: 0, scale: 1, rot: 0 }, 380, false, 'Back.easeOut');
   }
 
-  /** A hit: claw marks and a burst in the move's type colour, a flash, a shake, the number floating up. */
-  async hit(side: Side, damage: number, crit: boolean, type: TypeId | 'variabile'): Promise<void> {
+  /** A hit: the type's effect, a white flash and a recoil, a shake, the number floating up. */
+  async hit(side: Side, damage: number, crit: boolean, type: MoveTypeId, strong = false): Promise<void> {
     const p = this.poses[side];
-    const a = this.anchor(side);
-    const color =
-      type === 'variabile' ? 0xffffff : Phaser.Display.Color.HexStringToColor(TYPES[type].color).color;
+    const c = this.centre(side);
     if (damage > 0) {
-      this.claws.push({ x: a.x, y: a.y, t: 0.35, color: 0xffffff });
-      this.burst(a.x, a.y, color, crit ? 30 : 16);
-      this.scene.cameras.main.shake(crit ? 220 : 120, crit ? 0.01 : 0.005);
+      this.fx.impact(type, c.x, c.y, c.size, crit);
+      const cam = this.scene.cameras.main;
+      cam.shake(crit || strong ? 260 : 140, crit || strong ? 0.012 : 0.006);
+      if (crit || strong) {
+        cam.zoomTo(1.06, 90, 'Quad.easeOut');
+        window.setTimeout(() => cam.zoomTo(1, 260, 'Sine.easeInOut'), 160);
+      }
     }
-    const txt = this.scene.add
-      .text(a.x, a.y - a.size * 0.3, damage > 0 ? `-${damage}` : 'Schivato!', {
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: `${Math.round(this.h * (crit ? 0.075 : 0.06))}px`,
-        fontStyle: 'bold',
-        color: damage <= 0 ? '#c8fff4' : crit ? '#ffd278' : '#ff8a70',
-        stroke: '#000',
-        strokeThickness: 5,
-      })
-      .setOrigin(0.5);
-    this.scene.tweens.add({
-      targets: txt,
-      y: txt.y - this.h * 0.1,
-      alpha: 0,
-      duration: 900,
-      onComplete: () => txt.destroy(),
-    });
+    damageNumber(this.scene, c, damage, crit);
     if (damage <= 0) return;
-    p.tint = 0xff9a8a;
-    await this.tween(p, { dx: (side === 'you' ? -1 : 1) * this.w * 0.015 }, 50, true);
-    await this.tween(p, { dx: (side === 'you' ? -1 : 1) * this.w * 0.01 }, 50, true);
+    const away = side === 'you' ? -1 : 1;
+    p.flash = 1;
+    p.tint = 0xff8f80;
+    void this.tween(p, { flash: 0 }, 220);
+    await this.tween(p, { dx: away * this.w * 0.03, rot: away * 0.08 }, 70, true);
+    await this.tween(p, { dx: away * this.w * 0.012 }, 60, true);
     p.tint = 0xffffff;
   }
 
   /** A perfect dodge: your beast slips aside. */
   async dodgeAside(): Promise<void> {
-    await this.tween(this.poses.you, { dx: -this.w * 0.08, dy: this.h * 0.06 }, 120, true);
+    await this.tween(this.poses.you, { dx: -this.w * 0.08, dy: this.h * 0.06, rot: -0.1 }, 130, true);
   }
 
   async faint(side: Side): Promise<void> {
     const p = this.poses[side];
-    p.tint = 0x777777;
-    await this.tween(p, { dy: this.h * 0.2, alpha: 0, scale: 0.9 }, 700);
+    p.tint = 0x666666;
+    await this.tween(
+      p,
+      { dy: this.h * 0.18, alpha: 0, scale: 0.92, rot: (side === 'you' ? -1 : 1) * 0.3 },
+      900,
+    );
   }
 
   async swimOut(side: Side): Promise<void> {
-    await this.tween(this.poses[side], { dx: (side === 'you' ? -1 : 1) * this.w * 0.5, alpha: 0 }, 350);
+    await this.tween(this.poses[side], { dx: (side === 'you' ? -1 : 1) * this.w * 0.55, alpha: 0 }, 380);
   }
 
-  async swimIn(side: Side, form: BeastForm): Promise<void> {
-    this.setFighter(side, form);
+  async swimIn(side: Side, form: BeastForm, level: number): Promise<void> {
+    this.setFighter(side, form, level);
     const p = this.poses[side];
-    p.dx = (side === 'you' ? -1 : 1) * this.w * 0.5;
+    p.dx = (side === 'you' ? -1 : 1) * this.w * 0.55;
     p.alpha = 0;
-    await this.tween(p, { dx: 0, alpha: 1 }, 450);
+    await this.tween(p, { dx: 0, alpha: 1 }, 520, false, 'Cubic.easeOut');
   }
 
   /** Taming: the shell flies in an arc, the beast turns into light and is drawn in, the shell shakes. */
   async tame(shakes: number, caught: boolean): Promise<void> {
-    const from = this.anchor('you');
-    const to = this.anchor('foe');
+    const from = this.centre('you');
+    const to = this.centre('foe');
     const foe = this.poses.foe;
-    this.shell = { x: from.x, y: from.y - from.size * 0.3, wiggle: 0, glow: 0, spin: 0 };
-    const arc = { k: 0 };
-    const sx = this.shell.x;
-    const sy = this.shell.y;
-    await new Promise<void>((done) =>
-      this.scene.tweens.add({
-        targets: arc,
-        k: 1,
-        duration: 600,
-        ease: 'Sine.easeOut',
-        onUpdate: () => {
-          const s = this.shell!;
-          s.x = sx + (to.x - sx) * arc.k;
-          s.y = sy + (to.y - sy) * arc.k - Math.sin(arc.k * Math.PI) * this.h * 0.25;
-          s.spin = arc.k * 12;
-        },
-        onComplete: () => done(),
-      }),
-    );
-    await this.tween(foe, { white: 1 }, 200);
-    await this.tween(foe, { scale: 0.05, alpha: 0 }, 300, false, 'Quad.easeIn');
-    await this.tween(this.shell, { y: to.y + to.size * 0.25 }, 300, false, 'Bounce.easeOut');
+    const ground = this.ground('foe').y - this.h * 0.03;
+    await this.shell.throw({ x: from.x, y: from.y - from.size * 0.2 }, to, ground, async () => {
+      await this.tween(foe, { white: 1 }, 220);
+      await this.tween(foe, { scale: 0.05, alpha: 0 }, 300, false, 'Quad.easeIn');
+    });
     for (let i = 0; i < shakes; i++) {
-      await new Promise((r) => window.setTimeout(r, 350));
-      await this.tween(this.shell, { wiggle: Math.PI * 2 }, 380);
-      this.shell.wiggle = 0;
+      await wait(380);
+      await this.shell.shake();
     }
-    await new Promise((r) => window.setTimeout(r, 250));
-    if (caught) {
-      this.burst(this.shell.x, this.shell.y, 0xffe6a0, 30);
-      await this.tween(this.shell, { glow: 1 }, 300, true);
-    } else {
-      this.burst(this.shell.x, this.shell.y, 0xffffff, 20);
+    await wait(250);
+    const at = { x: to.x, y: ground };
+    if (caught) this.fx.impact('corazzato', at.x, at.y, this.h * 0.3, true);
+    else {
+      this.fx.impact('variabile', at.x, at.y, this.h * 0.3, false);
       Object.assign(foe, { scale: 1, white: 0 });
-      await this.tween(foe, { alpha: 1 }, 200);
+      void this.tween(foe, { alpha: 1 }, 220);
     }
-    this.shell = null;
+    await this.shell.end(caught);
   }
 }

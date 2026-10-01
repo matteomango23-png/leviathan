@@ -5,7 +5,7 @@ import { ROAM } from '../data/beasts';
 import { XP_RULES } from '../data/progression';
 import { range } from './math';
 import { activeBeast } from './beastState';
-import { formLengthUnits, formKey, type BeastForm } from './beasts/forms';
+import { formLengthUnits, formKey, speciesOf, type BeastForm } from './beasts/forms';
 import { gainXp, xpReward } from './beasts/growth';
 import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { removeWild } from './beasts/wildState';
@@ -14,6 +14,8 @@ import type { GameEvent } from './events';
 import { guardianDefeated, type GuardianWorld } from './guardian';
 import { createBattle, type BattleState } from './battle/battle';
 import { fighterFromTeam, makeFighter } from './battle/fighter';
+import { battlePlace } from './battle/stage';
+import type { BattlePlace } from '../data/battle';
 
 export interface BattleOutcome {
   wildId: number;
@@ -87,6 +89,8 @@ export interface BattleSetup {
   noFlee: boolean;
   /** Its title, if it has one (a Guardian, the Vedova's crocodile). */
   title?: string;
+  /** Which background the battle uses. */
+  place: BattlePlace;
 }
 
 export function battleSetup(g: GuardianWorld): BattleSetup | null {
@@ -95,7 +99,14 @@ export function battleSetup(g: GuardianWorld): BattleSetup | null {
   if (!req || !w) return null;
   const team = battleTeam(g).map(fighterFromTeam);
   const state = createBattle(team, makeFighter({ ...w.form }, w.level));
-  return { state, wildId: w.id, first: req.first, noFlee: !!w.boss, title: w.boss };
+  return {
+    state,
+    wildId: w.id,
+    first: req.first,
+    noFlee: !!w.boss,
+    title: w.boss,
+    place: battlePlace(speciesOf(w.form).region, !!w.arena),
+  };
 }
 
 /** What the battle left behind, for finishBattle. */
