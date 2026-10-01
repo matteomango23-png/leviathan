@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.6 — Inquadrature controllate (1 ottobre 2026)
+
+- I giganti selvatici (Sfregiato, squalo albino leggendario, Titano, megattera, orche leggendarie, coccodrillo albino) stanno un po' più in basso: la testa entra sempre nello schermo.
+- Un test automatico controlla ogni bestia, come tua e come selvatica, alla misura più grande che può avere: almeno l'85% del corpo sullo schermo e la testa mai tagliata in alto.
+
 ## v0.8.5 — Immagini sempre aggiornate (1 ottobre 2026)
 
 - Ogni immagine ha un'impronta nel suo indirizzo: quando cambia, il telefono non può più mostrare la copia vecchia (era il caso della macchia accanto al muso dello squalo bianco, già tolta ma ancora visibile sul telefono).

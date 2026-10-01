@@ -99,7 +99,9 @@ export const BATTLE_STAGE = {
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
   /** A wild beast taller than half the screen stands lower, by this share of the extra, so its head stays in. */
-  bigFoeDrop: 0.45,
+  bigFoeDrop: 0.9,
+  /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
+  picture: { square: 800, box: 760, foot: 780 },
   /** Places with their own background; any other region uses the bay. */
   places: ['baia', 'delta', 'tana'] as const,
 };

@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
 import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
-import { battleSizes, isGiant, type StageBeast } from '../systems/battle/stage';
+import { battleSizes, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
 import { formLengthM, type BeastForm } from '../systems/beasts/forms';
 import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
@@ -19,7 +19,7 @@ import { TypeFx } from './battle/typeFx';
 import { tweenTo } from './battle/tween';
 
 /** Battle pictures are 800×800 with the beast's longest side 760 px, its lowest point at y = 780. */
-const PIC = { box: 760, foot: 780 / 800 };
+const PIC = { box: BATTLE_STAGE.picture.box, foot: BATTLE_STAGE.picture.foot / BATTLE_STAGE.picture.square };
 
 const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
 
@@ -66,10 +66,9 @@ export class BattleView {
 
   /** The ground under each beast (screen pixels), moving with the camera drift. */
   private ground(side: Side): { x: number; y: number } {
-    const a = BATTLE_STAGE.anchors[side];
     const d = this.backdrop.shift(DEPTH.ground);
-    const drop = side === 'foe' ? Math.max(0, this.poses.foe.size - 0.5) * BATTLE_STAGE.bigFoeDrop : 0;
-    return { x: a.x * this.w + d.x, y: (a.y + drop) * this.h + d.y };
+    const p = placePicture(side, this.poses[side].size, this.w, this.h); // the same rule the framing test checks
+    return { x: p.x + d.x, y: p.y + BATTLE_STAGE.hover * this.h + d.y };
   }
 
   /** The centre of a beast's body and its height in pixels (for effects, numbers, the shell). */

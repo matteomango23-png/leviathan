@@ -37,3 +37,20 @@ export function rarityTier(form: BeastForm): 0 | 1 | 2 {
   if (isGiant(form)) return 2;
   return form.variant !== 'comune' || formStars(form) >= 4 ? 1 : 0;
 }
+
+/**
+ * Where a beast's picture goes on a screen of w × h pixels when its height is `size` of the screen: the
+ * point under the middle of its picture's bottom (its ground, minus the hover) and the picture's scale.
+ * A wild beast taller than half the screen stands lower, so its head stays in.
+ */
+export function placePicture(
+  side: Side,
+  size: number,
+  w: number,
+  h: number,
+): { x: number; y: number; scale: number } {
+  const a = BATTLE_STAGE.anchors[side];
+  const drop = side === 'foe' ? Math.max(0, size - 0.5) * BATTLE_STAGE.bigFoeDrop : 0;
+  const groundY = (a.y + drop) * h;
+  return { x: a.x * w, y: groundY - BATTLE_STAGE.hover * h, scale: (size * h) / BATTLE_STAGE.picture.box };
+}
