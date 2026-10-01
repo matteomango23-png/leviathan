@@ -14,53 +14,36 @@ export type GameEvent =
   | { type: 'fishCaught'; fishId: string; count: number; healed: boolean }
   | { type: 'creatureSeen'; id: string }
   | { type: 'zoneEntered'; name: string }
-  // beasts
-  | { type: 'wildAppeared'; id: number }
-  | { type: 'wildBite'; id: number }
-  | { type: 'wildRecovered'; id: number }
-  | { type: 'wildExhausted'; id: number }
-  | { type: 'wildFled'; id: number }
+  // wild beasts and battles
+  | { type: 'wildAppeared'; id: number; rare: boolean }
+  | { type: 'battleStart'; id: number; first: 'you' | 'foe' | 'normal' }
+  | { type: 'battleWon'; speciesId: string }
+  | { type: 'battleLost' }
+  | { type: 'battleFled' }
+  | { type: 'noTeam' }
   // story
   | { type: 'storyStep'; step: StoryStep }
   | { type: 'dialogueOpened'; id: DialogueId }
   | { type: 'storyNote'; text: string }
   // Guardians
-  | { type: 'tailSwipe'; id: number; dir: 1 | -1 }
   | { type: 'guardianAppeared'; id: number }
-  | { type: 'guardianRage' }
-  | { type: 'guardianCalls' }
   | { type: 'guardianBeaten'; teeth: number }
-  | { type: 'guardianEscaped' }
   | { type: 'guardianLeft' }
-  | {
-      type: 'damage';
-      x: number;
-      y: number;
-      amount: number;
-      target: 'wild' | 'team' | 'diver';
-      blocked?: boolean;
-    }
-  | { type: 'tamingStarted'; id: number }
-  | { type: 'tamingHit' }
-  | { type: 'tamingMiss' }
+  // your team
   | { type: 'tamed'; uid: string; toTeam: boolean }
-  | { type: 'tamingFailed' }
   | { type: 'summoned'; uid: string }
-  | { type: 'recalled'; uid: string }
+  | { type: 'cannotRide'; uid: string; ko: boolean }
   | { type: 'mounted' }
   | { type: 'dismounted' }
   | { type: 'beastKo'; uid: string }
   | { type: 'levelUp'; uid: string; level: number; move?: string }
   | { type: 'finalForm'; uid: string }
   | { type: 'beastFed'; uid: string; food: number }
-  | { type: 'moveUsed'; uid: string; slot: number; x: number; y: number }
   | { type: 'bonesBroken'; tiles: number[] }
-  | { type: 'areaPulse'; x: number; y: number; radius: number }
-  | { type: 'shieldBlocked' }
+  // equipment and places
   | { type: 'weaponFired'; weapon: string }
   | { type: 'swarmBound'; id: string }
   | { type: 'swarmSummoned'; id: string }
-  | { type: 'swarmAbsorbed' }
   | { type: 'itemUsed'; id: string }
   | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string }
   | { type: 'portArrived' }

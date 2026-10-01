@@ -1,59 +1,38 @@
-// Wild beasts: their state, how they (re)appear, and simple queries. Movement is in wild.ts.
-import { BEAST_COMBAT, BEAST_TEMPER, BIG_BEAST_MOTION as M, type WildSpawnDef } from '../../data/beasts';
-import type { Stats } from '../../data/species';
-import { range, type Rng } from '../math';
-import type { TileMap } from '../world/tileMap';
+// Wild beasts in the open sea: their state, how they (re)appear, and simple queries. Movement is in roam.ts.
+// They do not fight in the water: touching them, or hitting them with a weapon, starts a turn-based battle.
+import { BEAST_BODY, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
-import { formLengthUnits, formStats, type BeastForm } from './forms';
-
-export type Mood = 'calm' | 'angry' | 'tired' | 'taming' | 'fleeing';
-export type Motion = 'gone' | 'away' | 'hidden' | 'enter' | 'cruise' | 'exit' | 'bolt' | 'attack';
+import { formLengthUnits, type BeastForm } from './forms';
 
 export interface WildBeast extends BodyPose {
   id: number;
   spawn: WildSpawnDef;
   form: BeastForm;
   level: number;
-  stats: Stats;
-  hp: number;
-  maxHp: number;
   vx: number;
   vy: number;
   pitchV: number;
   phase: number;
   jaw: number;
   flash: number;
-  barTime: number;
-  motion: Motion;
-  mood: Mood;
-  t: number;
-  dy: number;
-  onScreenTime: number;
-  followTime: number;
-  angryTime: number;
-  tiredTime: number;
-  attackPlanned: boolean;
-  telegraph: number;
-  biteCooldown: number;
-  bit: boolean;
+  /** 'gone': out of the world, waiting to come back · 'roam': in the water. */
+  motion: 'gone' | 'roam';
+  /** What it is doing: wandering, coming at you, slipping away. */
+  mood: 'wander' | 'chase' | 'flee';
+  /** Where it is swimming to while wandering. */
+  target: { x: number; y: number } | null;
+  /** Seconds it still ignores you (after a battle you fled from, or while the sardine swarm hides you). */
+  calm: number;
   respawn: number;
-  leaving: boolean;
-  announced: boolean;
-  /** Seconds left stunned (no attacks, almost still). */
-  stun: number;
-  /** Seconds left slowed (e.g. caught in a net). */
-  slow: number;
-  /** 0 = normal; 0..1 while turning around against a wall (animated), from turnFrom. */
+  /** 0 = normal; 0..1 while turning around, from turnFrom. */
   turn: number;
   turnFrom: 1 | -1;
-  /** Experience already given for this appearance (exhausting it again gives none). */
-  xpGiven: boolean;
-  /** Guardian id (e.g. 'sfregiato') when this beast is a region's Guardian or one of its escorts. */
-  guardian?: string;
-  /** Lives in a Guardian's lair (the Guardian and its escort): moved by beasts/arena.ts, never respawns. */
-  arena?: boolean;
-  /** Title under its name in the big health bar at the top (Guardians, the Vedova's crocodile). */
+  /** Title in the battle for named beasts (a Guardian, the Vedova's crocodile). */
   boss?: string;
+  /** Guardian id (e.g. 'sfregiato') when this beast is a region's Guardian. */
+  guardian?: string;
+  /** Lives in a Guardian's lair: moved by guardian.ts, never respawns on its own. */
+  arena?: boolean;
 }
 
 export interface Rect {
@@ -63,14 +42,6 @@ export interface Rect {
   h: number;
 }
 
-export interface WildContext {
-  diver: { x: number; y: number; vx: number; vy: number; dead: boolean };
-  view: Rect;
-  map: TileMap;
-  rng: Rng;
-  dt: number;
-}
-
 export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
   const form: BeastForm = { speciesId: spawn.speciesId, variant: 'comune' };
   return {
@@ -78,9 +49,6 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     spawn,
     form,
     level: 1,
-    stats: formStats(form, 1),
-    hp: 1,
-    maxHp: 1,
     x: -1000,
     y: 0,
     face: 1,
@@ -92,72 +60,56 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     phase: 0,
     jaw: 0,
     flash: 0,
-    barTime: 0,
     motion: 'gone',
-    mood: 'calm',
-    t: 0,
-    dy: 0,
-    onScreenTime: 0,
-    followTime: 0,
-    angryTime: 0,
-    tiredTime: 0,
-    attackPlanned: false,
-    telegraph: 0,
-    biteCooldown: 0,
-    bit: false,
+    mood: 'wander',
+    target: null,
+    calm: 0,
     respawn: 0,
-    leaving: false,
-    announced: false,
-    stun: 0,
-    slow: 0,
     turn: 0,
     turnFrom: 1,
-    xpGiven: false,
   };
 }
 
-/** Brings a beast (back) into the world as a given form and level; it waits off screen. */
+/** Brings a beast into the world as a given form and level, at a point. */
 export function spawnWild(
   b: WildBeast,
   form: BeastForm,
   level: number,
-  rng: Rng,
-  waitSeconds?: number,
+  x: number,
+  y: number,
+  face: 1 | -1,
 ): void {
-  b.form = form;
-  b.level = level;
-  b.stats = formStats(form, level);
-  b.maxHp = b.stats.hp;
-  b.hp = b.maxHp;
-  b.length = formLengthUnits(form, level);
-  b.mood = 'calm';
-  b.motion = 'hidden';
-  b.t = waitSeconds ?? range(rng, M.waitCalm[0], M.waitCalm[1]);
-  b.face = rng() < 0.5 ? 1 : -1;
-  b.vx = 0;
-  b.vy = 0;
-  b.attackPlanned = false;
-  b.leaving = false;
-  b.announced = false;
-  b.biteCooldown = 0;
-  b.stun = 0;
-  b.slow = 0;
-  b.xpGiven = false;
+  Object.assign(b, {
+    form,
+    level,
+    length: formLengthUnits(form, level),
+    x,
+    y,
+    face,
+    vx: 0,
+    vy: 0,
+    motion: 'roam',
+    mood: 'wander',
+    target: null,
+    calm: 0,
+    turn: 0,
+    jaw: 0,
+    flash: 0,
+    boss: undefined,
+  });
+}
+
+/** Out of the world until it comes back. */
+export function removeWild(b: WildBeast, respawnSeconds: number): void {
+  b.motion = 'gone';
+  b.respawn = respawnSeconds;
   b.boss = undefined;
 }
 
-/** Chance that a calm beast of this species attacks on a pass. */
-export function attackChanceOf(b: WildBeast): number {
-  return BEAST_TEMPER[b.form.speciesId]?.attackChance ?? BEAST_COMBAT.attackChance;
-}
+export const isInWater = (b: WildBeast): boolean => b.motion !== 'gone';
 
-/** Stuns (and interrupts an attack). */
-export function stunWild(b: WildBeast, seconds: number): void {
-  if (!isInWater(b) || b.mood === 'taming') return;
-  b.stun = Math.max(b.stun, seconds);
-  if (b.motion === 'attack') b.motion = 'exit';
-  b.attackPlanned = false;
-}
+/** A rare find: albino, alfa, a legendary or a Guardian (they shine and slip away). */
+export const isRare = (b: WildBeast): boolean => b.form.variant !== 'comune' || !!b.form.unique;
 
-export const isInWater = (b: WildBeast): boolean =>
-  b.motion !== 'gone' && b.motion !== 'away' && b.motion !== 'hidden';
+/** The radius used against rock. */
+export const bodyRadius = (b: WildBeast): number => b.length * BEAST_BODY.collideRadiusFrac;

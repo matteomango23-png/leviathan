@@ -20,6 +20,8 @@ export interface SessionEvents {
   saveNow: () => void;
   /** Leave this game: 'new' starts over (the current one becomes the previous game), 'previous' swaps back. */
   switchGame: (to: 'new' | 'previous') => void;
+  /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
+  battle: (on: boolean) => void;
   /** The diver reached the pier: open the port menu. */
   openPort: () => void;
 }
@@ -31,6 +33,8 @@ export class Session {
   tapScreen: { x: number; y: number } | null = null;
   game: GameState | null = null;
   paused = false;
+  /** A battle is on (the World scene is paused under it). */
+  inBattle = false;
 
   emit<K extends keyof SessionEvents>(event: K, ...args: Parameters<SessionEvents[K]>): void {
     this.bus.emit(event, ...args);

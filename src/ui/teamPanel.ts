@@ -54,7 +54,7 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
           draw();
         });
       }
-      const inWater = g.beasts.companion?.uid === b.uid;
+      const inWater = g.beasts.mount?.uid === b.uid;
       const btn = el('button', 'menu-btn small', row, b.inTeam ? 'In riserva' : 'In squadra');
       btn.disabled = inWater;
       if (inWater) btn.title = 'È in acqua: richiamala prima';

@@ -62,7 +62,6 @@ export class BackpackBar {
     if (this.harpoonLabel) {
       const name = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
       if (this.harpoonLabel.textContent !== name) this.harpoonLabel.textContent = name;
-      this.harpoonLabel.classList.toggle('mythic', g.beasts.mythic > 0);
     }
   }
 }

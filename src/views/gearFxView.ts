@@ -1,16 +1,13 @@
-// Effects of weapons and backpack: darts and net in flight, net bursts, electric pulses,
-// the sardine swarm circling the diver and the turtle's shield.
+// Effects of weapons and backpack: darts and net in flight, net bursts, the sardine swarm circling the diver.
 import Phaser from 'phaser';
 import { SWARM_RULES } from '../data/economy';
 import { SARDINE } from '../data/diver';
-import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { SARDINE_TEX, TEX } from './textures';
 
 export class GearFxView {
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly ring: Phaser.GameObjects.Image[] = [];
-  private pulses: { x: number; y: number; r: number; t: number }[] = [];
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.g = scene.add.graphics();
@@ -23,12 +20,7 @@ export class GearFxView {
     layer.add(this.ring);
   }
 
-  onEvents(events: GameEvent[]): void {
-    for (const e of events)
-      if (e.type === 'areaPulse') this.pulses.push({ x: e.x, y: e.y, r: e.radius, t: 0.5 });
-  }
-
-  update(gs: GameState, pos: { x: number; y: number }, dt: number, time: number): void {
+  update(gs: GameState, pos: { x: number; y: number }, time: number): void {
     const g = this.g;
     g.clear();
     for (const p of gs.weapons.projectiles) {
@@ -54,22 +46,6 @@ export class GearFxView {
           b.x + Math.cos(a) * r,
           b.y + Math.sin(a) * r,
         );
-    }
-    this.pulses = this.pulses.filter((p) => (p.t -= dt) > 0);
-    for (const p of this.pulses) {
-      g.lineStyle(1.2, 0xb07bff, p.t * 1.6);
-      g.strokeCircle(p.x, p.y, p.r * (1 - p.t));
-      g.lineStyle(0.6, 0xffe08a, p.t * 1.4);
-      g.strokeCircle(p.x, p.y, p.r * (1 - p.t) * 0.8);
-    }
-    // turtle shield
-    if (gs.beasts.effects.shield > 0) {
-      g.lineStyle(0.8, 0xd9a24a, 0.5 + 0.2 * Math.sin(time * 5));
-      g.strokeCircle(pos.x, pos.y, 10);
-    }
-    if (gs.beasts.effects.guardTime > 0 && gs.beasts.companion) {
-      g.fillStyle(0xd9a24a, 0.08);
-      g.fillCircle(pos.x, pos.y, 40);
     }
     // sardine swarm around the diver
     const decoy = gs.beasts.decoy;

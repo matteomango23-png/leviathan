@@ -13,13 +13,13 @@ import {
   xpToNext,
 } from '../src/systems/beasts/growth';
 import { makeTeamBeast, maxHpOf, movesFor } from '../src/systems/beasts/team';
-import { createGame, stepGame } from '../src/systems/game';
+import { createGame } from '../src/systems/game';
 import { generateWorld } from '../src/systems/world/worldGen';
-import { emptyInput } from '../src/systems/input';
 import { giveTestBeast } from '../src/systems/testTools';
 import { parseSave, serializeSave } from '../src/systems/save/saveData';
 import { toSave } from '../src/systems/game';
-import { stepProgress } from '../src/systems/progress';
+import { finishBattle } from '../src/systems/battleResult';
+import { spawnWild } from '../src/systems/beasts/wildState';
 
 const shark = (level: number) =>
   makeTeamBeast('b1', { speciesId: 'squalo_bianco', variant: 'comune' }, level, true);
@@ -106,21 +106,56 @@ describe('growth 31–50 and final form', () => {
 });
 
 describe('experience in play', () => {
-  it('the beast in the water gets it all, the bench a share, once per appearance', () => {
+  const battle = (over: 'won' | 'caught' | 'fled' | 'lost') => {
     const g = createGame(generateWorld(), null, 4);
     giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 5);
     giveTestBeast(g, { speciesId: 'barracuda', variant: 'comune' }, 3);
-    const [a, bench] = g.beasts.team;
-    stepGame(g, { ...emptyInput(), summon: 0 }, 0.016);
-    expect(g.beasts.companion?.uid).toBe(a!.uid);
     const w = g.beasts.wilds[0]!;
-    w.level = 4;
+    spawnWild(w, { speciesId: 'squalo_bianco', variant: 'comune' }, 4, 900, 200, 1);
+    g.beasts.battle = { wildId: w.id, first: 'normal' };
+    const [a, bench] = g.beasts.team;
+    const events = finishBattle(g, {
+      wildId: w.id,
+      over,
+      team: [
+        { uid: a!.uid, hp: 3 },
+        { uid: bench!.uid, hp: over === 'lost' ? 0 : 5 },
+      ],
+      lastActive: a!.uid,
+      foe: { form: w.form, level: 4, hp: 2 },
+    });
+    return { g, a: a!, bench: bench!, w, events };
+  };
+
+  it('after a battle won: all the experience to the last fighter, a share to the bench', () => {
+    const { g, a, bench, w } = battle('won');
     const xp = xpReward(w.form, 4);
-    stepProgress(g, [{ type: 'wildExhausted', id: w.id }]);
-    expect(a!.xp).toBe(xp);
-    expect(bench!.xp).toBeCloseTo(xp * XP_RULES.benchShare);
-    stepProgress(g, [{ type: 'wildExhausted', id: w.id }]);
-    expect(a!.xp).toBe(xp);
+    expect(a.xp).toBe(xp);
+    expect(bench.xp).toBeCloseTo(xp * XP_RULES.benchShare);
+    expect(a.hp).toBe(3);
+    expect(w.motion).toBe('gone');
+    expect(g.beasts.battle).toBeNull();
+  });
+
+  it('tamed: it joins the team with the health it had left', () => {
+    const { g } = battle('caught');
+    const t = g.beasts.team[2]!;
+    expect(t.form.speciesId).toBe('squalo_bianco');
+    expect(t.level).toBe(4);
+    expect(t.hp).toBe(2);
+  });
+
+  it('fled: no experience, the beast leaves you alone for a while', () => {
+    const { a, w } = battle('fled');
+    expect(a.xp).toBe(0);
+    expect(w.motion).toBe('roam');
+    expect(w.calm).toBeGreaterThan(2);
+  });
+
+  it('lost: worn-out beasts are KO and the sea pushes you back', () => {
+    const { bench, events } = battle('lost');
+    expect(bench.ko).toBe(true);
+    expect(events.some((e) => e.type === 'died')).toBe(true);
   });
 
   it('experience and nourishment are saved', () => {

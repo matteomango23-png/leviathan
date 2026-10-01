@@ -1,7 +1,7 @@
 // Damage and hit shapes for beasts.
 // Damage of a move = attacker bite × POWER_MULT[power] × type multiplier (× bonuses) × (1 − target defence).
 // The bite stat already grows 4% per level (PROGRESSION.statGrowthPerLevel), so moves grow with it.
-import { BEAST_COMBAT, MOVE_RULES } from '../../data/beasts';
+import { BEAST_BODY, MOVE_RULES } from '../../data/beasts';
 import { POWER_MULT, type MoveDef } from '../../data/moves';
 import { counterTypeOf, typeMultiplier, type TypeId } from '../../data/rules';
 
@@ -62,7 +62,7 @@ export function distanceToBody(p: BodyPose, x: number, y: number): number {
   const cy = p.y + a.dy * along;
   // the body is thicker in the middle and thin at the tail
   const t = along / half; // -1 tail … 1 head
-  const thickness = p.length * BEAST_COMBAT.bodyThicknessFrac * (t < 0 ? 1 + t * 0.7 : 1 - t * 0.3);
+  const thickness = p.length * BEAST_BODY.bodyThicknessFrac * (t < 0 ? 1 + t * 0.7 : 1 - t * 0.3);
   return Math.max(0, Math.hypot(x - cx, y - cy) - thickness);
 }
 
@@ -71,7 +71,7 @@ export function inBiteReach(
   p: BodyPose,
   x: number,
   y: number,
-  reachFrac = BEAST_COMBAT.headRadiusFrac,
+  reachFrac = BEAST_BODY.headRadiusFrac,
 ): boolean {
   const h = headOf(p);
   return Math.hypot(x - h.x, y - h.y) <= p.length * reachFrac;

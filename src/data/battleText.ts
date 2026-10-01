@@ -27,4 +27,9 @@ export const BATTLE_TEXT = {
   won: 'Vittoria!',
   lost: 'Tutta la squadra è sfinita… il mare ti respinge in superficie.',
   xp: (name: string, xp: number): string => `${name} guadagna ${xp} punti esperienza.`,
+  ambushed: (foe: string): string => `${foe} ti ha preso di sorpresa!`,
+  surprise: (foe: string): string => `Attacco a sorpresa! ${foe} è stordito.`,
+  noFlee: 'Non puoi fuggire da questa battaglia!',
+  again: 'Nuova battaglia',
+  back: 'Torna in acqua',
 };

@@ -57,7 +57,6 @@ export const SARDINE = {
 
 export const CAMERA = {
   viewHeightUnits: 160, // how much sea is visible vertically: "telecamera lontana" (tuning)
-  defaultAspect: 2.16, // screen width / height assumed when no real screen is known (tests)
   lookAhead: 20, // looks ahead in the direction the diver faces
   follow: 5, // how fast the camera catches up
   minY: -60, // can peek above the surface

@@ -1,5 +1,6 @@
 // The battle interface, like Pokémon: the wild beast's box at the top left, yours at the right, the message
 // box at the bottom and the menu (Lotta, Zaino, Squadra, Doma, Fuggi) with its sub-menus.
+import { BATTLE } from '../data/battle';
 import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { TYPES } from '../data/rules';
@@ -163,7 +164,7 @@ export class BattleUi {
         const m = this.menu;
         m.replaceChildren();
         m.className = 'bmenu list';
-        for (const id of Object.keys(items).filter((k) => (items[k] ?? 0) > 0)) {
+        for (const id of Object.keys(items).filter((k) => (items[k] ?? 0) > 0 && k in BATTLE.items)) {
           const name = ITEMS.find((it) => it.id === id)?.name ?? id;
           this.button(m, `${name} ×${items[id]}`, () => done({ kind: 'item', id }));
         }
@@ -204,12 +205,12 @@ export class BattleUi {
     });
   }
 
-  /** The end: a title, some lines and a button to fight again. */
-  result(title: string, lines: string[], again: () => void): void {
+  /** The end: a title, some lines and a button (fight again, or back to the sea). */
+  result(title: string, lines: string[], label: string, onClick: () => void): void {
     const box = el('div', 'bresult', this.root);
     el('h2', '', box, title);
     for (const l of lines) el('p', '', box, l);
-    this.button(box, 'Nuova battaglia', again, 'bbtn-fight');
+    this.button(box, label, onClick, 'bbtn-fight');
   }
 
   destroy(): void {

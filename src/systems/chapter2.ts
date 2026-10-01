@@ -4,9 +4,9 @@
 // The anchors and the crocodile are not saved: after reloading, the fight in the Delta starts again.
 import { VEDOVA } from '../data/chapter2';
 import { OBJECTIVES, STORY_NOTES, type DialogueId } from '../data/story';
-import { spawnWild, type WildBeast } from './beasts/wildState';
+import { appearPoint } from './beasts/roam';
+import { removeWild, spawnWild, type WildBeast } from './beasts/wildState';
 import { addTamed, makeTeamBeast } from './beasts/team';
-import { summonCompanion } from './beasts/companion';
 import type { GameEvent } from './events';
 import { openDialogue, setStep, type StoryWorld } from './story';
 import type { TileMap } from './world/tileMap';
@@ -55,10 +55,10 @@ function letCrocLoose(g: Chapter2World): void {
   const w = g.beasts.wilds.find((x) => !x.arena && x.spawn.speciesId === VEDOVA.croc.speciesId);
   if (!w) return;
   const { speciesId, variant, level, title } = VEDOVA.croc;
-  spawnWild(w, { speciesId, variant }, level, g.rng, 1);
-  w.boss = title;
-  w.mood = 'angry';
-  w.angryTime = 999;
+  const p = appearPoint(w, g.map, g.rng, g.diver);
+  if (!p) return;
+  spawnWild(w, { speciesId, variant }, level, p.x, p.y, p.x < g.diver.x ? 1 : -1);
+  w.boss = title; // it comes at you (named beasts are aggressive)
 }
 
 const nearShip = (x: number, y: number, surfaceY: number): boolean =>
@@ -75,20 +75,15 @@ export function stepChapter2(g: Chapter2World, events: GameEvent[]): void {
   if (anchorsBroken(g.chapter2) >= g.chapter2.anchors.length) openDialogue(s, 'whaleFree', events);
 }
 
-/** The whale, freed, swims to you: in your team (or reserve), and in the water with you if there is room. */
+/** The whale, freed, joins your team (or the reserve if the team is full). */
 function whaleJoins(g: Chapter2World, events: GameEvent[]): void {
-  const { speciesId, level, x, y } = VEDOVA.whale;
+  const { speciesId, level } = VEDOVA.whale;
   const b = addTamed(
     g.beasts.team,
     makeTeamBeast(`b${g.beasts.nextUid++}`, { speciesId, variant: 'comune' }, level, true),
   );
   g.seen.add(speciesId);
   events.push({ type: 'tamed', uid: b.uid, toTeam: b.inTeam });
-  if (b.inTeam && !g.beasts.companion) {
-    const c = summonCompanion(b, g.diver, g.map);
-    Object.assign(c, { x, y, face: -1, state: 'follow' });
-    g.beasts.companion = c;
-  }
 }
 
 /** The last line of a chapter 2 dialogue was read. */
@@ -100,10 +95,7 @@ export function closeChapter2Dialogue(g: Chapter2World, id: DialogueId, events: 
     // the Vedova sails east, her crocodile goes with her (unless you tamed it)
     s.ship = { x: VEDOVA.shipX, untilX: VEDOVA.shipX + VEDOVA.shipLeaveDistance, whale: false };
     const croc = g.beasts.wilds.find((w: WildBeast) => w.boss === VEDOVA.croc.title);
-    if (croc && croc.mood !== 'taming') {
-      croc.mood = 'fleeing';
-      croc.motion = 'bolt';
-    }
+    if (croc && !g.beasts.battle) removeWild(croc, 30);
     events.push({ type: 'storyNote', text: STORY_NOTES.chapter2Done });
     setStep(s, 'chapter2Done', events);
   }

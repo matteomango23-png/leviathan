@@ -8,7 +8,7 @@ import type { Stats } from '../../data/species';
 import type { Rng } from '../math';
 import { moveDamage, moveTypeMult } from '../beasts/combat';
 import { formStats, formType, type BeastForm } from '../beasts/forms';
-import { movesFor, type TeamBeast } from '../beasts/team';
+import { makeTeamBeast, movesFor, type TeamBeast } from '../beasts/team';
 
 export interface BattleMove {
   move: MoveDef;
@@ -39,19 +39,7 @@ export const rechargeTurnsOf = (m: MoveDef): number => Math.round(m.cooldown / B
 
 export function makeFighter(form: BeastForm, level: number, hp?: number, uid?: string): Fighter {
   const stats = formStats(form, level);
-  const probe: TeamBeast = {
-    uid: '',
-    form,
-    level,
-    xp: 0,
-    food: 0,
-    hp: 0,
-    ko: false,
-    inTeam: true,
-    cooldown: 0,
-    moveCooldowns: [0, 0, 0],
-  };
-  const moves = movesFor(probe).map(({ move, unlocked, unlockLevel }) => ({
+  const moves = movesFor(makeTeamBeast('', form, level, true)).map(({ move, unlocked, unlockLevel }) => ({
     move,
     unlocked,
     unlockLevel,

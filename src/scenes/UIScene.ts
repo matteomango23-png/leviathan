@@ -43,11 +43,13 @@ export class UIScene extends Phaser.Scene {
     this.session.on('toast', this.onToast, this);
     this.session.on('resume', this.onResume, this);
     this.session.on('openPort', this.openPort, this);
+    this.session.on('battle', this.onBattle, this);
     this.events.once('shutdown', () => {
       this.session.off('gameEvents', this.onGameEvents, this);
       this.session.off('toast', this.onToast, this);
       this.session.off('resume', this.onResume, this);
       this.session.off('openPort', this.openPort, this);
+      this.session.off('battle', this.onBattle, this);
       this.controls.destroy();
       this.dialogue.destroy();
       this.root.remove();
@@ -63,15 +65,20 @@ export class UIScene extends Phaser.Scene {
 
   private onGameEvents(events: GameEvent[]): void {
     if (this.session.game) this.hud.onEvents(events, this.session.game);
-    this.beastUi.onEvents(events);
   }
 
   private onToast(text: string): void {
     this.hud.toast(text, 4);
   }
 
+  /** During a battle the sea's interface hides (the battle has its own). */
+  private onBattle(on: boolean): void {
+    this.controls.releaseAll();
+    this.root.style.display = on ? 'none' : '';
+  }
+
   private openMenus(mode: 'pause' | 'port'): void {
-    if (this.session.paused || !this.session.game) return;
+    if (this.session.paused || this.session.inBattle || !this.session.game) return;
     this.session.paused = true;
     this.controls.releaseAll();
     this.scene.pause('World');

@@ -73,8 +73,6 @@ export interface ProjectileHooks {
   catchFish: (f: Fish) => void;
   /** A dart touched a beast at (x, y): apply damage, return true if it hit. */
   hitBeast: (x: number, y: number, dmg: number) => boolean;
-  /** The net burst at (x, y) with this radius: slow the beasts inside. */
-  netBurst: (x: number, y: number, radius: number) => void;
 }
 
 function burstNet(s: WeaponState, p: Projectile, fish: FishState, hooks: ProjectileHooks): void {
@@ -87,7 +85,6 @@ function burstNet(s: WeaponState, p: Projectile, fish: FishState, hooks: Project
       caught++;
     }
   }
-  hooks.netBurst(p.x, p.y, r.radius);
   s.bursts.push({ x: p.x, y: p.y, t: 0.5 });
   p.done = true;
 }
