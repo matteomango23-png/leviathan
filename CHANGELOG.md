@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.6.1 — Correzioni dopo la prova completa (1 ottobre 2026)
+
+- **Fucile subacqueo** al posto dell'arpione: colpo molto più veloce, la sagola torna subito. Si spara solo con il pulsante Fucile (trascinalo per mirare): toccare lo schermo non spara più.
+- **In sella non si spara:** combatte la cavalcatura. Il pulsante Fucile sparisce e le 3 mosse non stanno più sotto lo Scatto.
+- **Doma e Apri vengono prima di Cavalca:** vicino a una bestia sfinita o a uno scrigno il pulsante non ti fa più risalire in sella per sbaglio (e si può domare o aprire anche stando in sella).
+- **Mai più incastrati nel fondale:** se il sub finisce dentro la roccia viene spostato nell'acqua libera più vicina.
+- **Gli albini si riconoscono:** finché non hanno un'immagine propria sono disegnati pallidi, in acqua e nelle schede.
+- **Nuova partita** e **Torna alla partita precedente** nel menu di pausa (sezione "Partite"); la partita lasciata resta da parte come copia.
+
 ## v0.6.0 — Capitolo 2: il Delta delle Mangrovie (1 ottobre 2026)
 
 - **Nuova regione, il Delta delle Mangrovie**, a est della Baia: acqua bassa (circa 30 m) e torbida, si vede meno e la lampada arriva meno lontano; isolotti di mangrovie con le radici che scendono in acqua; cefali e pesci arciere. La Barriera Rossa e il resto del mondo ora sono più a est.
