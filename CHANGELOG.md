@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.3 — Ritocchi alle immagini (1 ottobre 2026)
+
+- Tolto lo "schizzo di sangue" accanto al muso del tuo squalo bianco (era una pinna sfocata staccata dal corpo).
+- I primi piani di Baia, Delta e tana lasciano sempre libero il centro: nella tana le ossa non coprono più il muso dello Sfregiato.
+- Bordi delle bestie più morbidi, senza scalini chiari.
+
 ## v0.8.2 — Delta e tana dipinti (1 ottobre 2026)
 
 - **Sfondi dipinti per il Delta** (acqua torbida, radici di mangrovia, pedana di sabbia e muschio) **e per la tana dello Sfregiato** (tunnel di costole di balena, pedana di pietra grigia).
