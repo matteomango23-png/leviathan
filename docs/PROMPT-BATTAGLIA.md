@@ -55,7 +55,4 @@ Consigli che hanno funzionato col coccodrillo: allega la card della bestia (`art
 | Cosa | Vista | Prompt (dopo aver allegato la card) |
 |---|---|---|
 | Coccodrillo albino leggendario | davanti | `Use the attached illustration as style reference. The same legendary albino saltwater crocodile swimming underwater, three-quarter front view, head toward the viewer turned slightly to the LEFT, jaws slightly open. [regole sopra]. Square image.` |
-| Manta | davanti | `Use the attached illustration as style reference. The same giant manta ray swimming toward the viewer, three-quarter front view, turned slightly to the LEFT, wings spread. [regole sopra]. Square image.` |
-| Manta | da dietro | `The same manta ray seen from behind and slightly above, swimming away toward the upper RIGHT, wings spread. [regole sopra]. Square image.` |
-| Pesce palla | da dietro | `The same pufferfish seen from behind, three-quarter rear view, swimming away toward the upper RIGHT, spines raised. [regole sopra]. Square image.` |
 | Sfondi Delta e tana | 4 strati ciascuno | come nella sezione 1 di questo file (`delta`, `tana`) |

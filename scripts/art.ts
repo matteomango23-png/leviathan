@@ -36,6 +36,11 @@ const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   coccodrillo_marino_leggendario_back: { low: 12, high: 50, soft: 70 },
   megattera_back: { low: 8, high: 44, soft: 60 }, // a teal glow around it
 };
+// Pictures with something under the creature (a rock stand): this share of the height is cut from the bottom
+// (the cut then fades like any fin out of frame).
+const BATTLE_CROP_BOTTOM: Record<string, number> = {
+  manta_front: 0.16,
+};
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
 const args = process.argv.slice(2);
@@ -103,7 +108,7 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
     left: inset,
     top: inset,
     width: meta.width! - inset * 2,
-    height: meta.height! - inset * 2,
+    height: meta.height! - inset * 2 - Math.round(meta.height! * (BATTLE_CROP_BOTTOM[name] ?? 0)),
   });
   const { data, info } = await (mirror ? trimmed.flop() : trimmed)
     .ensureAlpha()
