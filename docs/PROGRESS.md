@@ -29,7 +29,9 @@
 
 **Dopo la tua prova (v0.8.1):** tua bestia più grande e non coperta, schivata più difficile, fuga in base alla forza, pinne tagliate sfumate. Coccodrillo marino rigenerato (davanti e da dietro). Manta e pesce palla da dietro aggiunti (erano già in "asset animali ai": li avevo scambiati per viste di lato). v0.8.2: sfondi dipinti di Delta e tana, pesce palla davanti nuovo (gli originali sono in "asset animali ai/sfondi battaglia" e nelle cartelle delle bestie). Manca solo il coccodrillo albino davanti su fondo nero pulito. v0.8.3: tolta la pinna-schizzo dello squalo bianco da dietro (`BATTLE_ERASE`), primi piani con il centro sempre libero (`clearCentre`), bordi senza scalini.
 
-**Prossima sessione:** se la battaglia ti piace, si continua con la storia (capitolo 3, la Barriera Rossa); restano in lista "Potenzia" con i doppioni e il ribilanciamento per zone.
+**Dopo (v0.8.3-v0.8.6):** macchia dello squalo bianco tolta, primi piani col centro libero, aggiornamento immediato all'apertura, impronta negli indirizzi delle immagini, test delle inquadrature (212 test). La battaglia è approvata dal proprietario.
+
+**Prossima sessione:** prima l'esplorazione, poi la storia (scelte in DECISIONS, "Prima finire l'esplorazione"). Tappa 10 sul ramo `tappa-10-costa`: costa disegnata a mano (porto su spiaggia in pendenza, Baia, isola con passaggio sotto e secondo porto, Delta alla foce attaccato alla terraferma) e cavalcature più lente. Proporre il piano breve al proprietario prima di scrivere codice. Poi: oceano infinito con biomi e ossigeno lungo, barca, bestie uniche.
 
 ## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
 
