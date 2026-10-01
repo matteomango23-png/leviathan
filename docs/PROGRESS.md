@@ -29,6 +29,8 @@
 
 **Da provare (v0.9.2):** scegli l'iniziale, combatti e pesca sardine fino al 16: arriva in tempi giusti? Vedi l'animazione? Il mare è abbastanza pieno o troppo (troppe battaglie)?
 
+**Aggiunta (v0.9.3):** ogni bestia della squadra si chiama dalla barra: le cavalcature (e le seconde forme con `rideSpeedMult`) ti portano in sella, le altre ti seguono (`Mount.state 'follow'`, `TEAM_RULES.follow`) e mangiano i pesci; Folgore 18 m con `girth` 1,6 (immagine allargata in verticale), Zannarossa 15 m, Archelon 8 m. Da fare se piace: il compagno che avvisa delle bestie vicine (promesso, non ancora fatto). 246 test.
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0

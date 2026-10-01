@@ -18,8 +18,10 @@ export function beastEats(
   dt: number,
 ): Fish | null {
   timer.feed = Math.max(0, timer.feed - dt);
-  if (!c || !b || c.state !== 'ride' || timer.feed > 0) return null;
-  if (!FEEDING.sizes.includes(speciesOf(b.form).size)) return null;
+  if (!c || !b || timer.feed > 0) return null;
+  if (c.state !== 'ride' && c.state !== 'follow') return null;
+  // a companion eats any small fish it meets; in the saddle only the big beasts eat
+  if (c.state === 'ride' && !FEEDING.sizes.includes(speciesOf(b.form).size)) return null;
   const h = headOf(c);
   const reach = c.length * FEEDING.reachFrac;
   const f = fish.fish.find((x) => x.alive && !x.hooked && Math.hypot(x.x - h.x, x.y - h.y) < reach);

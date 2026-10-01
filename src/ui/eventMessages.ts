@@ -6,6 +6,7 @@ import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
+import { canRide } from '../systems/beastPlay';
 
 const fishName = (id: string): string =>
   FISH.find((f) => f.id === id)?.name ??
@@ -74,7 +75,9 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'summoned': {
       const b = tamed(e.uid);
-      return b ? [`${formName(b.form)} arriva dal buio.`, 1.8] : null;
+      if (!b) return null;
+      const how = canRide(b) ? 'arriva dal buio: sali in sella.' : 'arriva e nuota con te.';
+      return [`${formName(b.form)} ${how}`, 1.8];
     }
     case 'beastKo': {
       const b = tamed(e.uid);

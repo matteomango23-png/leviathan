@@ -5,7 +5,7 @@ import { TEAM_RULES } from '../data/beasts';
 import { canBreakBones, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
-import { formStats, speciesOf } from './beasts/forms';
+import { formLengthUnits, formStats, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
 import { teamMembers, type TeamBeast } from './beasts/team';
 import { stepWildSpawns } from './encounters';
@@ -29,13 +29,17 @@ export function contextAction(g: BeastWorld): ContextAction {
 /** Speed of the beast you ride (u/s), or undefined on foot. */
 export function mountSpeed(g: BeastWorld): number | undefined {
   const b = activeBeast(g);
-  return g.beasts.riding && b ? formStats(b.form, b.level).speed * TEAM_RULES.rideSpeedMult : undefined;
+  if (!g.beasts.riding || !b) return undefined;
+  return formStats(b.form, b.level).speed * TEAM_RULES.rideSpeedMult * (speciesOf(b.form).rideSpeedMult ?? 1);
 }
 
-/** Only mounts (GDD "cavalcatura") can be ridden, and not while worn out. */
-export const canRide = (b: TeamBeast): boolean => !b.ko && speciesOf(b.form).role === 'cavalcatura';
+/** Mounts (GDD "cavalcatura") and the second stages that can carry you; not while worn out. */
+export const canRide = (b: TeamBeast): boolean => {
+  const sp = speciesOf(b.form);
+  return !b.ko && (sp.role === 'cavalcatura' || sp.rideSpeedMult !== undefined);
+};
 
-/** A tap on a team slot: call that mount to ride it, or climb down if you are on it. */
+/** A tap on a team slot: call that beast (to ride it, or to swim with you), or send it away if it is out. */
 function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
   const b = teamMembers(g.beasts.team)[slot];
   if (!b || g.diver.dead) return;
@@ -44,15 +48,15 @@ function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
     dismount(g, events);
     return;
   }
-  if (!canRide(b)) {
-    events.push({ type: 'cannotRide', uid: b.uid, ko: b.ko });
+  if (b.ko) {
+    events.push({ type: 'cannotRide', uid: b.uid, ko: true });
     return;
   }
   if (m) {
     dismount(g, events);
     g.beasts.mount = null;
   }
-  g.beasts.mount = callMount(b, g.diver, g.map);
+  g.beasts.mount = callMount(b, g.diver, g.map, canRide(b));
   events.push({ type: 'summoned', uid: b.uid });
 }
 
@@ -78,12 +82,15 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
   stepWildSpawns(g, dt, events);
   const m = bs.mount;
   if (m) {
+    // it grows (levels, evolutions) while it is out
+    const b = activeBeast(g);
+    if (b && m.state !== 'leaving') m.length = formLengthUnits(b.form, b.level);
     const reached = stepMount(m, d, dt);
-    if (reached && m.state === 'in') {
+    if (reached && m.state === 'in' && m.rider) {
       m.state = 'ride';
       bs.riding = true;
       events.push({ type: 'mounted' });
-    }
+    } else if (reached && m.state === 'in') m.state = 'follow';
     if (m.state === 'leaving' && m.t <= 0) bs.mount = null;
   }
   g.sanctuaries.healing = stepSanctuaries(g.sanctuaries, d, bs.team, dt, events);

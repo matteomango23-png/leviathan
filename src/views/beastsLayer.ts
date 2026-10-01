@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { artKeysOf, formKey, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, formKey, speciesOf, type BeastForm } from '../systems/beasts/forms';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
@@ -37,7 +37,8 @@ export class BeastsLayer {
     const cos = Math.cos(c.pitch);
     const sin = Math.sin(c.pitch);
     const lx = fwd * c.length;
-    const ly = up * c.length;
+    const b = activeBeast(g);
+    const ly = up * c.length * (b ? (speciesOf(b.form).girth ?? 1) : 1);
     return { x: c.x + (lx * cos - ly * sin) * c.face, y: c.y + lx * sin + ly * cos, pitch: c.pitch };
   }
 
@@ -81,6 +82,7 @@ export class BeastsLayer {
         phase: w.phase,
         jaw: w.jaw,
         length: w.length,
+        girth: speciesOf(w.form).girth,
         flash: w.flash,
         alpha: 1,
         turn: w.turn,
@@ -101,6 +103,7 @@ export class BeastsLayer {
         phase: c.phase,
         jaw: c.jaw,
         length: c.length,
+        girth: speciesOf(b.form).girth,
         flash: c.flash,
         alpha: c.alpha,
         turn: c.turn,

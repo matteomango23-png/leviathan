@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.3 — Compagni che ti seguono (1 ottobre 2026)
+
+- **Ogni bestia si può chiamare:** toccala nella barra in alto. Se non è una cavalcatura arriva e nuota dietro di te, mangia le sardine che incontra (e prende esperienza). Toccala di nuovo e se ne va.
+- **Si cavalca dalla seconda forma:** Squarcio, Saetta e Rocciaguscio ti portano in sella, un po' più lenti di una vera cavalcatura. Dal livello 36 (Zannarossa, Folgore, Archelon) sono cavalcature piene.
+- **Forme finali più grandi:** Folgore 18 m e molto più spessa, Zannarossa 15 m, Archelon 8 m (e crescono ancora dopo il livello 30).
+
 ## v0.9.2 — Iniziali dipinti e mare pieno (1 ottobre 2026)
 
 - **Le tre linee hanno le loro immagini:** Zanna, Squarcio, Zannarossa, Guscio, Rocciaguscio, Archelon, Scintilla, Saetta e Folgore, in battaglia, nel mare e nelle schede.
