@@ -102,8 +102,14 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
 | `systems/battle/dodge.ts` | L'anello della schivata (tempi, finte, giudizio del tocco). |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi, fa partire la schivata. |
-| `views/battleView.ts` | Il disegno: mare, le due bestie (immagini a tre quarti o card sfumate), affondi, graffi e scintille, svenimenti, conchiglia. |
-| `ui/battleUi.ts`, `ui/battle.css` | Riquadri di vita, messaggi e menu (Lotta, Zaino, Squadra, Doma, Fuggi). |
+| `systems/battle/stage.ts` | Quanto è grande ogni bestia sullo schermo (dalla lunghezza reale) e quale sfondo usa la battaglia. |
+| `views/battleView.ts` | Le due bestie: grandezza, respiro e ondeggio, rincorsa e affondo, colpi, svenimenti, ombra e luce dietro; mette insieme sfondo, effetti e conchiglia. |
+| `views/battle/backdrop.ts` | Lo sfondo a strati che si muove (acqua, rocce lontane, raggi, foschia, rocce medie, pedane con riflessi, neve marina e bolle, piante in primo piano, vignetta); usa gli strati dipinti quando ci sono. |
+| `views/battle/backdropArt.ts`, `paint.ts` | I pezzi dello sfondo disegnati dal codice (in attesa di quelli dipinti) e i loro aiuti (colori, creste, grana). |
+| `views/battle/typeFx.ts` | Gli effetti dei colpi per tipo: graffi, fulmini, schegge di ghiaccio, inchiostro, onde d'urto e sassi. |
+| `views/battle/tameShell.ts`, `damageNumber.ts` | La conchiglia di cattura (dipinta o disegnata) e il numero del danno. |
+| `views/battle/beastArt.ts`, `battleAssets.ts` | Quale immagine usa ogni bestia e cosa si carica prima della battaglia. |
+| `ui/battleUi.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri, messaggi, comandi e mosse nello stile dei Pokémon recenti; icone dei comandi e dei tipi; il carattere Baloo 2. |
 
 ## Come si disegna il mare
 

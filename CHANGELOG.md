@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.0 — Battaglia più bella (1 ottobre 2026)
+
+- **Le bestie in battaglia sono le immagini vere a tre quarti**: davanti la selvatica, da dietro la tua. Ci sono quasi tutte: squali (anche albino, alfa, Sfregiato, Titano, albino leggendario), coccodrilli, orche, megattera, barracuda, tartaruga, torpedine, murena, Re Corallo.
+- **Grandezza in proporzione alla bestia vera**: lo squalo albino leggendario sovrasta tutto, la tartaruga e la torpedine sono piccole ma si vedono bene.
+- **Il mare si muove**: raggi di luce che ondeggiano, foschia che scorre, riflessi sul fondale, neve marina, bolle, piante in primo piano, una lenta deriva della telecamera che dà profondità.
+- **Tre ambienti**: la Baia (archi di pietra), il Delta (acqua verde e radici di mangrovia), la tana dello Sfregiato (costole di balena nel buio).
+- **Le bestie sono vive**: respirano, ondeggiano (le grandi più lente e pesanti), prendono la rincorsa e si lanciano lasciando bolle, lampeggiano e rinculano quando vengono colpite, affondano quando svengono.
+- **Ogni tipo ha il suo colpo**: graffi (Predatore), fulmini (Tempesta), schegge di ghiaccio (Glaciale), inchiostro con scintille (Abissale), onde d'urto e sassi (Corazzato). Sui colpi forti la telecamera si avvicina un attimo.
+- **Nuovi comandi e riquadri** nello stile dei Pokémon recenti, con un carattere arrotondato: Lotta grande, Zaino, Squadra, Doma, Fuggi colorati con le loro icone; mosse del colore del tipo; barre della vita "PS".
+- **La conchiglia di cattura** vola girando, si apre in un lampo, scuote e brilla d'oro se tiene.
+- Per provare: `?battaglia&nemico=tartaruga_marina`, `&variante=albino`, `&finale`, `&unico=sfregiato`, `&luogo=tana`.
+
 ## v0.7.0 — Battaglie a turni nel gioco (1 ottobre 2026)
 
 - **Niente più combattimento in tempo reale.** Le bestie si vedono mentre esplori: nuotano piano nel buio e la lampada le rivela. Si girano solo fuori dalla luce.

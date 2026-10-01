@@ -1,5 +1,35 @@
 # Progressi
 
+## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
+
+**Fatto**
+
+- 41 immagini a tre quarti dalla cartella "asset animali ai" smistate, orientate (`_flip`), scontornate e messe nel gioco (`npm run art`, scontorno nuovo che non buca le bestie scure).
+- Grandezza dalla lunghezza reale (`systems/battle/stage.ts`, `BATTLE_STAGE`).
+- Sfondo a strati animato per Baia, Delta e tana (`views/battle/`), pronto a usare gli strati dipinti appena arrivano.
+- Bestie animate, effetti per tipo, conchiglia nuova, numero del danno, telecamera che si avvicina sui colpi forti.
+- Interfaccia nuova stile Pokémon recenti, carattere Baloo 2 (dentro il gioco, offline).
+- `npm run art` prepara anche sfondi (fondo verde), conchiglia e icone.
+- Prova: `?battaglia&nemico=<id>&variante=albino|alfa&finale&unico=sfregiato&luogo=baia|delta|tana`.
+- 157 test automatici.
+
+**Mancante / da sapere**
+
+- **In attesa delle tue immagini** (`docs/PROMPT-BATTAGLIA.md`): sfondi a strati di Baia, Delta e tana, conchiglia, icone. Finché mancano, li disegna il codice.
+- Manta (davanti e da dietro) e pesce palla da dietro: mancano; servono per il capitolo 3.
+- Le bestie molto grandi (megattera, albino leggendario) escono un po' dal bordo in alto: è voluto, per dare l'idea della mole.
+- Nel pannello del browser l'ho provata a 844×390 (iPhone in orizzontale): Baia, Delta, tana, attacchi, nessun errore. Non l'ho provata dentro il gioco vero (al contatto con una bestia), solo con `?battaglia`: la parte nuova è la stessa.
+
+**Da provare sull'iPhone**
+
+1. https://matteomango23-png.github.io/leviathan/?battaglia&nemico=squalo_bianco&variante=albino&finale → guarda la differenza di grandezza col tuo squalo.
+2. `?battaglia&nemico=tartaruga_marina` e `?battaglia&nemico=torpedine`: piccole ma leggibili?
+3. `?battaglia&nemico=squalo_bianco&unico=sfregiato&luogo=tana` e `?battaglia&nemico=coccodrillo_marino` (Delta).
+4. Usa Lotta con mosse di tipi diversi, poi Doma: guarda gli effetti e la conchiglia.
+5. Dimmi se va fluida (60 fps) e se il testo si legge bene.
+
+**Prossima sessione:** se la battaglia ti piace, si continua con la storia (capitolo 3, la Barriera Rossa); restano in lista "Potenzia" con i doppioni e il ribilanciamento per zone. Quando arrivano gli sfondi dipinti: `npm run art` e si controllano.
+
 ## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
 
 **Fatto**
