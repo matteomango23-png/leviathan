@@ -132,7 +132,7 @@ Del pesce palla c'è solo la vista davanti. Mancano la manta (davanti e dietro),
 
 Due immagini con il fondo difficile hanno soglie proprie in `scripts/art.ts` (`BATTLE_CUTOUT_LOOSE`).
 
-**Grandezza:** la applica il gioco partendo dalla lunghezza reale (`lengthM`), con la differenza un po' ridotta (`BATTLE_STAGE` in `data/battle.ts`). Uno squalo di 9 m è circa tre volte una tartaruga di 2 m; la bestia selvatica è un po' più piccola perché è più lontana.
+**Grandezza:** la applica il gioco, relativa tra le due bestie (`BATTLE_STAGE` in `data/battle.ts`): la più grande ha la misura standard, l'altra in proporzione; i giganti (leggendari, forme finali, Guardiani, specie colossali) sono sempre enormi.
 
 ## Sfondi a strati, conchiglia e icone della battaglia
 
@@ -146,6 +146,8 @@ I prompt pronti sono in `docs/PROMPT-BATTAGLIA.md`. Salva i file in `art-inbox/`
 | `conchiglia.jpg`, `conchiglia_aperta.jpg` | `public/items/`: la conchiglia di cattura, senza il fondo nero |
 | `icona_<comando>.jpg`, `tipo_<tipo>.jpg` | `public/ui/`: icone bianche che il gioco colora |
 
-Finché uno strato manca, lo disegna il codice (`views/battle/backdropArt.ts`) con i colori del luogo (`BATTLE_PALETTES` in `data/battle.ts`); appena arriva quello dipinto, il gioco usa quello.
+Gemini di solito colora di verde solo l'acqua aperta: lo script se la cava lo stesso (dal primo piano tiene le rocce ai lati e quelle che pendono dall'alto, la pedana la ritaglia a ellisse). Un file che inizia con `_` (es. `_scarto_bg_baia_front_alternativo.jpg`) viene ignorato.
+
+Un luogo senza i suoi dipinti usa quelli della Baia con la sua tinta. Finché uno strato manca anche lì, lo disegna il codice (`views/battle/backdropArt.ts`) con i colori del luogo (`BATTLE_PALETTES` in `data/battle.ts`); appena arriva quello dipinto, il gioco usa quello.
 
 I ritratti per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`) non sono ancora collegati.
