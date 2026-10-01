@@ -214,3 +214,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Mondo:** costa disegnata a mano a sinistra (porto su una spiaggia in pendenza, Baia, isola che esce dall'acqua con un passaggio sotto e un secondo porto, Delta attaccato alla terraferma alla foce di un fiume) + **oceano aperto infinito a destra**, generato a pezzi da un seme, con biomi (barriera, foresta, ghiaccio, fosse, tunnel) più rari man mano che ti allontani; i luoghi della storia a distanze fisse dalla costa. Si salvano solo seme e modifiche.
 - **Bestie uniche** (es. squalo albino leggendario): una sola nel mondo; se scappa la ritrovi con l'1% ogni volta che compare la sua specie; **se la sconfiggi sparisce per sempre**. Varianti rare comuni intorno al 5% delle comparse della specie.
 - **Ordine delle tappe:** 1) costa vera + cavalcature più lente; 2) oceano infinito con biomi, mute per immersioni di 4-5 minuti e punti di ricarica dell'ossigeno; 3) barca propria (viaggi in superficie, pesca dalla barca, indicatore "metri dalla costa"); 4) bestie uniche. Poi templi con percorso e rompicapo, e la storia (capitolo 3).
+
+## 2026-10-01 — Tappa 10: come è fatta la costa
+
+- Il disegno a mano già esistente (Baia, Delta, mare aperto) non è stato riscritto: i dati lo usano attraverso tre trasformazioni (`bay()` allarga ×1,6 da x 1700, `delta()` ×1,6 da x 5000, `east()` sposta di 3372), così le posizioni restano leggibili e la conversione dei salvataggi usa la stessa regola (scritta con numeri fissi, come le altre migrazioni). La tana dello Sfregiato si sposta ma non si allarga (la sua grotta è precisa).
+- La spiaggia ha uno scalino sotto il molo (6 m in 43 unità) e poi una pendenza di 4,6 unità per unità di profondità (circa 12°): con la sola pendenza dolce il sub toccava la sabbia sotto il molo.
+- L'isola è roccia sopra e sotto l'acqua fino a ~27 m; la terra emersa e la roccia hanno la stessa larghezza (altrimenti la roccia veniva tagliata dal bordo della zona e diventava un muro dritto).
+- Porto Fango è un porto completo (scelta del proprietario); si rinasce nell'ultimo porto in cui si è entrati.
+- Velocità (scelta del proprietario): sub 7 m/s, squalo in sella circa 1,3 volte il sub.

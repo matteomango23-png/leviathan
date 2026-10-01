@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma dell'oceano, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porto, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma della costa e dell'oceano con `LAYOUT` e le trasformazioni `bay()`, `delta()`, `east()`, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porti Portofosco e Porto Fango, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
@@ -22,7 +22,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | File | Cosa fa |
 |---|---|
-| `world/worldGen.ts` | Genera la mappa a tile (720×200, tile da 8) dalle forme di `worldLayout.ts`. Sempre lo stesso mondo. |
+| `world/worldGen.ts` | Genera la mappa a tile (1207×200, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
 | `diver.ts` | Nuoto, scatto, ossigeno, cuori, morte e rinascita in superficie. |
