@@ -7,7 +7,6 @@ import { SPECIES } from '../data/species';
 import type { GameState } from './game';
 import { formLengthUnits, type BeastForm } from './beasts/forms';
 import { raiseLevel } from './beasts/growth';
-import type { GameEvent } from './events';
 import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { spawnWild } from './beasts/wildState';
 
@@ -47,8 +46,8 @@ export const testMode = (): boolean => {
 
 /** Every team beast gains levels (for trying moves, growth and final forms). */
 export function raiseTeam(g: GameState, levels: number): void {
-  const events: GameEvent[] = [];
-  for (const b of teamMembers(g.beasts.team)) raiseLevel(b, levels, events);
+  // the level-ups (and evolutions) are shown in the sea, like in play
+  for (const b of teamMembers(g.beasts.team)) raiseLevel(b, levels, g.story.pending);
   const c = g.beasts.mount;
   const b = g.beasts.team.find((x) => x.uid === c?.uid);
   if (c && b) c.length = formLengthUnits(b.form, b.level);

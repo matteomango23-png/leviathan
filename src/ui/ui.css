@@ -1329,3 +1329,25 @@
 img.albino-art {
   filter: grayscale(1) brightness(1.55) contrast(0.9) sepia(0.12);
 }
+
+/* the evolution line of a starter on its sheet */
+.sheet-evo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 6px 0 2px;
+  font-size: 13px;
+  color: #b9c6c9;
+}
+.sheet-evo .evo-step.current {
+  color: #ffd9a0;
+  font-weight: 700;
+}
+.sheet-evo .evo-level {
+  font-size: 11px;
+  opacity: 0.8;
+}
+.sheet-evo .evo-arrow {
+  opacity: 0.6;
+}

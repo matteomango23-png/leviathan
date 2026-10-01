@@ -26,6 +26,10 @@ export function xpReward(form: BeastForm, level: number, guardian = false): numb
   return Math.round(xp);
 }
 
+/** XP for a small fish caught or eaten, for a beast of this level. */
+export const fishXp = (level: number): number =>
+  Math.round(XP_RULES.fishXpBase + XP_RULES.fishXpPerLevel * level);
+
 /** Level 50 of an iconic species: its final form (none for the alfa, the albino only where defined). */
 export function finalFormAt(form: BeastForm, level: number): BeastForm | null {
   if (level < PROGRESSION.finalFormLevel || form.final || form.unique) return null;
@@ -51,7 +55,7 @@ function levelUp(b: TeamBeast, events: GameEvent[]): void {
   b.hp = Math.min(maxHpOf(b), b.hp + (maxHpOf(b) - before));
   events.push({ type: 'levelUp', uid: b.uid, level: b.level, move });
   if (final) events.push({ type: 'finalForm', uid: b.uid });
-  if (evolves) events.push({ type: 'evolved', uid: b.uid, from });
+  if (evolves) events.push({ type: 'evolved', uid: b.uid, from, fromId: sp.id });
 }
 
 /** Adds experience; levels up as many times as it can. Returns the levels gained. */

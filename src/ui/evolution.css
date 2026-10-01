@@ -1,0 +1,111 @@
+/* The evolution: the card glows brighter and brighter, a white flash, the new stage. */
+.evo {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: radial-gradient(ellipse at center, rgba(10, 20, 26, 0.92), rgba(0, 0, 0, 0.97));
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  color: #f1e9da;
+}
+.evo[hidden] {
+  display: none;
+}
+.evo-stage {
+  position: relative;
+  height: min(62vh, 420px);
+  aspect-ratio: 2 / 3;
+}
+.evo-art {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+.evo-glow {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 240, 200, 0.75), rgba(255, 220, 150, 0) 65%);
+  opacity: 0;
+}
+.evo-text {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+/* glowing: the card pulses faster and brighter until it turns white */
+.evo.glowing .evo-art {
+  animation: evo-pulse 2.8s ease-in forwards;
+}
+.evo.glowing .evo-glow {
+  animation: evo-glow 2.8s ease-in forwards;
+}
+@keyframes evo-pulse {
+  0% {
+    filter: brightness(1);
+  }
+  20% {
+    filter: brightness(1.6);
+  }
+  30% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(2.2);
+  }
+  58% {
+    filter: brightness(1.2);
+  }
+  75% {
+    filter: brightness(3.5);
+  }
+  82% {
+    filter: brightness(2);
+  }
+  100% {
+    filter: brightness(8) saturate(0);
+  }
+}
+@keyframes evo-glow {
+  to {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+/* revealed: a flash, then the new stage settles */
+.evo.revealed .evo-art {
+  animation: evo-reveal 1.2s ease-out;
+}
+.evo.revealed .evo-glow {
+  opacity: 0.35;
+  transition: opacity 1.2s;
+}
+.evo.revealed .evo-text {
+  color: #e8c987;
+  animation: evo-title 0.6s ease-out;
+}
+@keyframes evo-reveal {
+  from {
+    filter: brightness(8) saturate(0);
+    transform: scale(1.08);
+  }
+  to {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+@keyframes evo-title {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
