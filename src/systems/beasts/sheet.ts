@@ -6,7 +6,16 @@ import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { Stats } from '../../data/species';
 import { moveDamage } from './combat';
-import { formLengthM, formName, formStars, formStats, formType, speciesOf, type BeastForm } from './forms';
+import {
+  formLengthM,
+  formName,
+  formStars,
+  formStats,
+  formType,
+  speciesOf,
+  type BeastForm,
+  moveSpeciesOf,
+} from './forms';
 
 export interface SheetMove {
   slot: number;
@@ -60,7 +69,7 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
   const stats = formStats(form, lv);
   const next = formStats(form, Math.min(PROGRESSION.maxLevel, lv + 1));
   const neutral = { type: 'variabile' as const, defense: 0, hp: 1, maxHp: 1 };
-  const moves = MOVES.filter((m) => m.species === form.speciesId)
+  const moves = MOVES.filter((m) => m.species === moveSpeciesOf(form))
     .sort((a, b) => a.slot - b.slot)
     .map((m) => {
       const unlockLevel = PROGRESSION.moveUnlockLevels[m.slot - 1] ?? 1;

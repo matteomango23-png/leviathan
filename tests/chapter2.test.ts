@@ -19,6 +19,7 @@ const mid = (DELTA.x0 + DELTA.x1) / 2;
 function chapter2Game(): GameState {
   const g = createGame(map, null, 9);
   g.story.step = 'chapter1Done';
+  g.story.seen.push('starter'); // the first beast was chosen (no beast is needed here)
   return g;
 }
 

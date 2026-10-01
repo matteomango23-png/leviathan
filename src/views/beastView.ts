@@ -15,12 +15,6 @@ export const spriteUrl = (key: string, open: boolean): string =>
   assetUrl(`sprites/${key}${open ? '_open' : ''}.webp`);
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
 
-/** The sprite to use for a form: its own if it exists, otherwise the species' one (e.g. a barracuda alfa). */
-export function resolveSpriteKey(key: string, speciesId: string): string | null {
-  if (SPRITE_KEYS.includes(key)) return key;
-  return SPRITE_KEYS.includes(speciesId) ? speciesId : null;
-}
-
 /** Queues the closed (and, if it exists, open) profile of a sprite key for loading. */
 export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
   if (!SPRITE_KEYS.includes(key)) return;

@@ -24,6 +24,8 @@ import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from '
 import { createStory, stepStory, storyHoldsDiver } from './story';
 import { createChapter2, hitAnchor, stepChapter2, type Chapter2World } from './chapter2';
 import { stepProgress } from './progress';
+import { needsStarter } from './starter';
+import { BLACKOUT } from '../data/battle';
 import { atPort, nearWreck, openWreck, placeWrecks, portAt, portStart, type Wreck } from './economy/places';
 import { PORT, PORTS, type PortDef } from '../data/economy';
 import type { GameEvent } from './events';
@@ -123,7 +125,7 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
 /** What the context button does right now. */
 export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri';
 export function currentAction(g: GameState): Action {
-  if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle) return null;
+  if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
@@ -161,8 +163,8 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
 
 export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);
-  // the sea waits while a dialogue is on screen or a battle is on
-  if (g.story.dialogue || g.beasts.battle) return events;
+  // the sea waits while a dialogue is on screen, a battle is on or you are choosing your first beast
+  if (g.story.dialogue || g.beasts.battle || needsStarter(g)) return events;
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;
@@ -208,6 +210,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepBeasts(g, input, dt, beastEvents);
   events.push(...beastEvents);
   for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
+  if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepGuardian(g, dt, events);
 
   const eater = activeBeast(g);
@@ -236,6 +239,31 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     events.push({ type: 'zoneEntered', name: zone });
   }
   return events;
+}
+
+/**
+ * Like Pokémon: a beast touched you with every beast of yours KO. You black out and wake up at your sanctuary
+ * (or your harbour) with everyone healed, a few teeth lost on the way.
+ */
+export function blackout(g: GameState, events: GameEvent[]): void {
+  const at = respawnPoint(g);
+  const d = g.diver;
+  Object.assign(d, { x: at.x, y: at.y, vx: 0, vy: 0, hp: d.maxHp, o2: d.maxO2 });
+  d.invulnerable = DIVER.invulnerableAfterRespawn;
+  for (const b of g.beasts.team) {
+    b.hp = maxHpOf(b);
+    b.ko = false;
+  }
+  if (g.beasts.riding) g.beasts.riding = false;
+  const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
+  g.gear.teeth -= teethLost;
+  const i = g.sanctuaries.current;
+  // "al santuario della Baia" / "a Portofosco"
+  const place =
+    i !== null
+      ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
+      : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
+  events.push({ type: 'blackout', teethLost, place });
 }
 
 /** Arriving at a harbour: its sanctuary heals everyone, the market restocks, you wake up here. */

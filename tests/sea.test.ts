@@ -110,14 +110,21 @@ describe('wild beasts in the open sea', () => {
     expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'you' });
   });
 
-  it('with no beast able to fight there is no battle: it bites you and swims off', () => {
-    const g = createGame(map, null, 3);
-    Object.assign(g.diver, { x: X, y: 200 });
+  it('with every beast of yours KO you black out, like Pokémon: you wake up healed, a few teeth lost', () => {
+    const g = bay();
+    for (const b of g.beasts.team) {
+      b.hp = 0;
+      b.ko = true;
+    }
+    g.gear.teeth = 100;
     place(g, 'squalo_bianco', X + 60, 200, -1);
     const ev = run(g, 4);
-    expect(ev.some((e) => e.type === 'noTeam')).toBe(true);
+    expect(ev.some((e) => e.type === 'blackout')).toBe(true);
     expect(g.beasts.battle).toBeNull();
-    expect(g.diver.hp).toBeLessThan(g.diver.maxHp);
+    expect(g.gear.teeth).toBe(90);
+    expect(g.beasts.team.every((b) => !b.ko && b.hp > 0)).toBe(true);
+    const out = ev.find((e) => e.type === 'blackout');
+    expect(out && out.type === 'blackout' && out.place).toBe('a Portofosco'); // no sanctuary yet: the harbour
   });
 
   it('the sea waits while a battle is on', () => {

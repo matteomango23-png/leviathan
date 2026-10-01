@@ -43,9 +43,15 @@ function levelUp(b: TeamBeast, events: GameEvent[]): void {
   const move = fresh.length > unlockedBefore ? fresh[fresh.length - 1]!.move.name : undefined;
   const final = finalFormAt(b.form, b.level);
   if (final) b.form = final;
+  // a starter line evolves, like Pokémon: same beast, new species (it keeps its moves)
+  const sp = speciesOf(b.form);
+  const from = sp.name;
+  const evolves = sp.evolvesTo && sp.evolveLevel !== undefined && b.level >= sp.evolveLevel;
+  if (evolves) b.form = { ...b.form, speciesId: sp.evolvesTo! };
   b.hp = Math.min(maxHpOf(b), b.hp + (maxHpOf(b) - before));
   events.push({ type: 'levelUp', uid: b.uid, level: b.level, move });
   if (final) events.push({ type: 'finalForm', uid: b.uid });
+  if (evolves) events.push({ type: 'evolved', uid: b.uid, from });
 }
 
 /** Adds experience; levels up as many times as it can. Returns the levels gained. */

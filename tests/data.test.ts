@@ -1,3 +1,4 @@
+import { BATTLE_ART_KEYS } from '../src/data/sprites.generated';
 import { describe, expect, it } from 'vitest';
 import { SPECIES, UNIQUE_VARIANTS, statsAt } from '../src/data/species';
 import { MOVES, movesOf } from '../src/data/moves';
@@ -7,16 +8,16 @@ import { PROGRESSION, TYPES, typeMultiplier } from '../src/data/rules';
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
 
 describe('kit data integrity', () => {
-  it('has 34 beasts with unique ids', () => {
-    expect(SPECIES).toHaveLength(34);
+  it('has 43 beasts with unique ids (34 of the kit + 3 starter lines of 3 stages)', () => {
+    expect(SPECIES).toHaveLength(43);
     expect(unique(SPECIES.map((s) => s.id))).toBe(true);
   });
 
-  it('has 102 moves, exactly 3 per beast, one per unlock slot', () => {
-    expect(MOVES).toHaveLength(102);
+  it('has 111 moves, exactly 3 per beast (an evolved stage uses its first stage moves), one per unlock slot', () => {
+    expect(MOVES).toHaveLength(111);
     expect(unique(MOVES.map((m) => m.id))).toBe(true);
     for (const s of SPECIES) {
-      expect(movesOf(s.id).map((m) => m.slot)).toEqual([1, 2, 3]);
+      expect(movesOf(s.movesFrom ?? s.id).map((m) => m.slot)).toEqual([1, 2, 3]);
     }
   });
 
@@ -59,5 +60,21 @@ describe('kit data integrity', () => {
     const lv1 = statsAt(shark!, 1);
     const lvMax = statsAt(shark!, PROGRESSION.maxLevel);
     expect(lvMax.hp).toBeGreaterThan(lv1.hp);
+  });
+});
+
+describe('starters and evolutions', () => {
+  it('has three starters of three types, each a line of 3 stages evolving at 16 and 36', () => {
+    const starters = SPECIES.filter((x) => x.starter);
+    expect(starters).toHaveLength(3);
+    expect(new Set(starters.map((x) => x.type)).size).toBe(3);
+    for (const one of starters) {
+      const two = SPECIES.find((x) => x.id === one.evolvesTo)!;
+      const three = SPECIES.find((x) => x.id === two.evolvesTo)!;
+      expect([one.evolveLevel, two.evolveLevel]).toEqual([16, 36]);
+      expect(three.evolvesTo).toBeUndefined();
+      expect([two.movesFrom, three.movesFrom]).toEqual([one.id, one.id]);
+      for (const x of [one, two, three]) expect(BATTLE_ART_KEYS).toContain(`${x.artFrom}_front`);
+    }
   });
 });

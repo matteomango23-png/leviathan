@@ -8,6 +8,8 @@ import { el } from '../ui/dom';
 import { Hud } from '../ui/hud';
 import type { GameEvent } from '../systems/events';
 import { storyHoldsDiver } from '../systems/story';
+import { needsStarter } from '../systems/starter';
+import { StarterPicker } from '../ui/starterPicker';
 import type { SceneData, Session } from './session';
 
 export class UIScene extends Phaser.Scene {
@@ -18,6 +20,7 @@ export class UIScene extends Phaser.Scene {
   private beastUi!: BeastUi;
   private backpack!: BackpackBar;
   private dialogue!: DialogueBox;
+  private starter!: StarterPicker;
 
   constructor() {
     super('UI');
@@ -35,6 +38,7 @@ export class UIScene extends Phaser.Scene {
     this.beastUi = new BeastUi(this.root, this.session);
     this.backpack = new BackpackBar(this.root, this.session);
     this.dialogue = new DialogueBox(this.root);
+    this.starter = new StarterPicker(this.root, () => this.session.game);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -107,6 +111,7 @@ export class UIScene extends Phaser.Scene {
     const dt = Math.min(0.1, deltaMs / 1000);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);
+    this.starter.setVisible(needsStarter(g) && !g.story.dialogue);
     // story scenes: only the story on screen (the controls do nothing then)
     this.root.classList.toggle('in-scene', !!g.story.dialogue || storyHoldsDiver(g));
     this.beastUi.update(g);
