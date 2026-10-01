@@ -102,8 +102,9 @@ describe('the suit sets the maximum depth', () => {
     const drainAt = (extraM: number): number => {
       const g = fresh();
       const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
-      g.diver.x = 900;
+      g.diver.x = 340; // the open shaft down to the abyss (the test needs open water at every depth)
       g.diver.y = limitY + extraM * WORLD.unitsPerMetre;
+      expect(g.map.hitCircle(g.diver.x, g.diver.y, 5)).toBe(false);
       const y0 = g.diver.y;
       const ev = run(g, 0.5);
       expect(g.diver.y).toBeGreaterThanOrEqual(y0 - 1); // not pushed back up
@@ -112,7 +113,7 @@ describe('the suit sets the maximum depth', () => {
     };
     const inside = drainAt(-5);
     const just = drainAt(1);
-    const deep = drainAt(20);
+    const deep = drainAt(25);
     expect(just).toBeGreaterThan(inside * 2.5);
     expect(deep).toBeGreaterThan(just);
   });
