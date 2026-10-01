@@ -55,15 +55,14 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
   // the open sea east: the reef and the kelp forest
-  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [15, 35] },
-  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [20, 40] },
-  { speciesId: 'murena', area: REEF, respawnSeconds: [25, 50] },
+  // pesce palla, murena and manta join when their side pictures exist (only battle pictures so far)
+  { speciesId: 'barracuda', area: REEF, respawnSeconds: [15, 35], level: [6, 8] },
+  { speciesId: 'barracuda', area: REEF, respawnSeconds: [20, 40], level: [6, 8] },
+  { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [60, 110] },
   { speciesId: 'torpedine', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
   { speciesId: 'tartaruga_marina', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
   { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [50, 100] },
-  { speciesId: 'manta', area: REEF, respawnSeconds: [70, 140] },
   { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
-  { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
   { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
 ];
 
@@ -106,7 +105,7 @@ export const TEAM_RULES = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty (taming difficulty)
   summonDistance: 90, // the mount arrives from this far behind you
   arriveSeconds: 1.2, // at most this long to reach you
-  follow: { behind: 0.6, gap: 14, below: 6, speed: 3 }, // a companion swims behind you: × its length + gap units, spring rate
+  follow: { behind: 0.5, gap: 4, below: 5, speed: 3 }, // a companion swims just behind you, inside the lamp halo: × its length + gap units, spring rate
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   turnSeconds: 0.6, // your mount turns around (animated from the head)
