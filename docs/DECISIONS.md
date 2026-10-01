@@ -234,3 +234,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** ogni pesce catturato o mangiato dà `3 + livello` XP alla bestia in acqua (o alla prima della squadra); curva `12·L^1,5`, premio di battaglia `18·L^1,5`. Le comparse possono essere "visitatrici" fuori dalla loro regione con un campo `level` proprio (squalo martello 5-7 e tigre 6-8 nella Baia).
 - **Motivo:** il proprietario vuole un ritmo Pokémon (prima evoluzione presto, seconda un po' dopo, 50 lungo) e un mare pieno di bestie comuni con qualche squalo; i livelli propri evitano che uno squalo tigre di livello 12 distrugga un iniziale di livello 5. Un test controlla il ritmo (meno di 30 combattimenti al 16, meno di 60 dal 16 al 36).
+
+## 2026-10-01 — Compagni che seguono, seconde forme cavalcabili (v0.9.3, scelta del proprietario)
+
+- **Decisione:** ogni bestia si chiama dalla barra; chi non è cavalcatura nuota dietro al sub e mangia i pesci (stesso oggetto `Mount` con stato `follow`). Le seconde forme delle linee iniziali hanno `rideSpeedMult` 0,75: si cavalcano più lente. Nuovo campo `girth` (spessore dell'immagine di profilo) per Folgore, il cui disegno è un serpente sottile.
+- **Motivo:** con un iniziale piccolo il proprietario non vedeva mai la sua bestia nel mare fino al livello 36; le forme finali devono essere mastodontiche rispetto agli squali (bianco 6 m, megalodonte 18 m).

@@ -40,7 +40,7 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 ## Bestie
 
 - **Squadra:** 5 bestie, una in acqua alla volta; riserva al recinto senza limite.
-- **Ruoli:** cavalcatura (grande, carica, spesso chiave di un passaggio), compagno (combatte con te), supporto (cura, luce, scudo, inchiostro).
+- **Ruoli:** cavalcatura (grande, carica, spesso chiave di un passaggio), compagno (combatte con te), supporto (cura, luce, scudo, inchiostro). Nel mare ogni bestia si chiama dalla barra: le cavalcature ti portano in sella, le altre ti seguono e mangiano i pesci. Le seconde forme delle linee iniziali si cavalcano già, più lente.
 - **Tipi:** cinque in cerchio, ognuno batte il successivo: Predatore → Abissale → Glaciale → Tempesta → Corazzato → Predatore. +50% di danno contro chi batti, un terzo in meno contro chi ti batte. Anche mosse, alcune armi e Guardiani hanno un tipo.
 - **Livelli:** 1-50, esperienza combattendo; le statistiche crescono col livello. Le bestie selvatiche hanno livelli legati alla zona.
 - **Mosse:** 3 per bestia, sbloccate ai livelli 1, 7 e 15 (una bestia domata oltre il 15 le ha tutte). Il danno delle mosse cresce del 4% per livello. In sella stanno su 3 pulsanti; compagno e branco le usano da soli. Le mosse firma hanno un'animazione dedicata (`anim` in `data/moves.ts`).
