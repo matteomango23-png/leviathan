@@ -154,3 +154,19 @@ describe('beast sheet', () => {
     expect(wild.levelLabel).toContain('in natura');
   });
 });
+
+describe('beasts in the sea are drawn', () => {
+  it('every wild beast and every starter stage has a side picture (otherwise it would be invisible)', async () => {
+    const { SPRITE_KEYS } = await import('../src/data/sprites.generated');
+    const { neededSpriteKeys } = await import('../src/views/neededSprites');
+    const loaded = neededSpriteKeys();
+    const ids = [
+      ...WILD_SPAWNS.map((s) => s.speciesId),
+      ...SPECIES.filter((s) => s.starter || s.movesFrom).map((s) => s.id),
+    ];
+    for (const id of ids) {
+      expect(SPRITE_KEYS, id).toContain(id);
+      expect(loaded, id).toContain(id);
+    }
+  });
+});

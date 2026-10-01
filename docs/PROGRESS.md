@@ -31,6 +31,8 @@
 
 **Aggiunta (v0.9.3):** ogni bestia della squadra si chiama dalla barra: le cavalcature (e le seconde forme con `rideSpeedMult`) ti portano in sella, le altre ti seguono (`Mount.state 'follow'`, `TEAM_RULES.follow`) e mangiano i pesci; Folgore 18 m con `girth` 1,6 (immagine allargata in verticale), Zannarossa 15 m, Archelon 8 m. Da fare se piace: il compagno che avvisa delle bestie vicine (promesso, non ancora fatto). 246 test.
 
+**Correzione (v0.9.4):** le immagini di profilo si caricavano solo per le specie di `WILD_SPAWNS`: le linee iniziali erano invisibili nel mare. Ora `views/neededSprites.ts` include le linee iniziali; un test controlla che ogni bestia selvatica e ogni stadio iniziale abbia un profilo caricato. Pesce palla, murena e manta (solo immagini di battaglia) tolti dalle comparse. **Immagini mancanti:** profilo (`_side`, `_side_open`) di pesce palla, murena e manta.
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0

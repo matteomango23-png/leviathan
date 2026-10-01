@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.4 — Il compagno si vede (1 ottobre 2026)
+
+- **Correzione:** le bestie iniziali (Zanna, Guscio, Scintilla e le loro evoluzioni) chiamate nel mare non comparivano: il gioco non caricava le loro immagini di profilo. Ora arrivano e ti seguono.
+- Il compagno nuota più vicino, dentro la luce della lampada.
+- Pesce palla, murena e manta tolti dalla Barriera finché non hanno l’immagine di profilo (sarebbero stati invisibili); al loro posto barracuda e un altro squalo martello.
+
 ## v0.9.3 — Compagni che ti seguono (1 ottobre 2026)
 
 - **Ogni bestia si può chiamare:** toccala nella barra in alto. Se non è una cavalcatura arriva e nuota dietro di te, mangia le sardine che incontra (e prende esperienza). Toccala di nuovo e se ne va.

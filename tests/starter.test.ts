@@ -116,3 +116,22 @@ describe('pace of the levels (Pokémon style)', () => {
     expect(xpReward({ speciesId: 'barracuda', variant: 'comune' }, 10)).toBeGreaterThan(fishXp(10) * 10);
   });
 });
+
+describe('pictures loaded at start', () => {
+  it('include every stage of the three lines, so a called starter is drawn in the sea', async () => {
+    const { neededSpriteKeys } = await import('../src/views/neededSprites');
+    const keys = neededSpriteKeys();
+    for (const id of [
+      'zanna',
+      'squarcio',
+      'zannarossa',
+      'guscio',
+      'rocciaguscio',
+      'archelon',
+      'scintilla',
+      'saetta',
+      'folgore',
+    ])
+      expect(keys, id).toContain(id);
+  });
+});
