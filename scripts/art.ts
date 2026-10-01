@@ -31,8 +31,9 @@ const BATTLE_PIC = 800; // three-quarter battle pictures: a square
 const BATTLE_CUTOUT: CutoutOptions = { low: 3, high: 16, soft: 34 };
 // Pictures with a lit floor or a coloured glow in the background need a looser threshold.
 const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
-  coccodrillo_marino_leggendario_front: { low: 8, high: 36, soft: 48 },
-  megattera_back: { low: 6, high: 36, soft: 44 },
+  coccodrillo_marino_leggendario_front: { low: 14, high: 60, soft: 80 }, // a lit grey floor under it
+  coccodrillo_marino_leggendario_back: { low: 12, high: 50, soft: 70 },
+  megattera_back: { low: 8, high: 44, soft: 60 }, // a teal glow around it
 };
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
@@ -195,6 +196,7 @@ async function main(): Promise<void> {
   let skipped = 0;
   let errors = 0;
   for (const file of files) {
+    if (file.startsWith('_')) continue; // set aside by hand (e.g. a discarded alternative)
     const extra = parseExtraName(file);
     if (extra) {
       const dest = extraDest(outRoot, extra);

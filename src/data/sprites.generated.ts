@@ -110,13 +110,26 @@ export const BATTLE_ART_KEYS: readonly string[] = [
 
 // Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).
 export const BG_KEYS: readonly string[] = [
-
+  'baia_far',
+  'baia_front',
+  'baia_ground',
+  'baia_mid',
 ];
 
 export const ITEM_ART_KEYS: readonly string[] = [
-
+  'conchiglia',
+  'conchiglia_aperta',
 ];
 
 export const UI_ICON_KEYS: readonly string[] = [
-
+  'icona_doma',
+  'icona_fuggi',
+  'icona_lotta',
+  'icona_squadra',
+  'icona_zaino',
+  'tipo_abissale',
+  'tipo_corazzato',
+  'tipo_glaciale',
+  'tipo_predatore',
+  'tipo_tempesta',
 ];

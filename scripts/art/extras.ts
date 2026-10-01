@@ -15,6 +15,12 @@ import {
   type ExtraName,
   type Raw,
 } from './cutout.ts';
+import { blurMask, ellipseMask, fitStage, frameMask } from './layers.ts';
+
+function stageMask(img: Raw): Float32Array | null {
+  const e = fitStage(img);
+  return e && ellipseMask(img.width, img.height, e);
+}
 
 export function extraDest(outRoot: string, e: ExtraName): string {
   if (e.kind === 'bg') return join(outRoot, 'bg', `${e.place}_${e.layer}.webp`);
@@ -22,8 +28,12 @@ export function extraDest(outRoot: string, e: ExtraName): string {
   return join(outRoot, 'ui', `${e.id}.webp`);
 }
 
-async function raw(src: string, maxW: number): Promise<Raw> {
+/** Pixels of a picture, at most maxW wide, with inset (a share of the shorter side) trimmed all around. */
+async function raw(src: string, maxW: number, inset = 0): Promise<Raw> {
+  const meta = await sharp(src).metadata();
+  const t = Math.round(Math.min(meta.width!, meta.height!) * inset);
   const { data, info } = await sharp(src)
+    .extract({ left: t, top: t, width: meta.width! - 2 * t, height: meta.height! - 2 * t })
     .resize({ width: maxW, withoutEnlargement: true })
     .ensureAlpha()
     .raw()
@@ -60,6 +70,15 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
   if (e.kind === 'bg') {
     const img = await raw(src, 1920);
     const cut = removeGreenBackground(img);
+    // the front keeps only what frames the scene; the ground only its stone stage (scripts/art/layers.ts)
+    const shape =
+      e.layer === 'front'
+        ? blurMask(frameMask(img), img.width, img.height, 10)
+        : e.layer === 'ground'
+          ? stageMask(img)
+          : null;
+    if (shape)
+      for (let i = 0; i < shape.length; i++) cut[i * 4 + 3] = Math.round(cut[i * 4 + 3]! * shape[i]!);
     if (e.layer === 'ground') {
       const c = await cropped(cut, img);
       await sharp(c.png).webp(webp).toFile(dest);
@@ -71,7 +90,7 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     return `strato ${img.width}×${img.height}, verde tolto`;
   }
   if (e.kind === 'item') {
-    const img = await raw(src, 1400);
+    const img = await raw(src, 1400, 0.02); // screenshots: trim the frame
     const cut = removeDarkBackground(img, borderColor(img), 4, { low: 4, high: 18, soft: 34 });
     const c = await cropped(cut, img);
     const s = 480 / Math.max(c.w, c.h);
@@ -86,7 +105,7 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
       .toFile(dest);
     return 'oggetto 512×512';
   }
-  const img = await raw(src, 800);
+  const img = await raw(src, 800, 0.03); // screenshots often have a thin frame: trimmed
   const c = await cropped(iconFromBlack(img), img);
   await sharp(c.png)
     .resize(144, 144, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
