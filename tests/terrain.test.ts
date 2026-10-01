@@ -16,12 +16,13 @@ describe('chunk painting', () => {
   const S = TERRAIN.chunkUnits;
 
   it('paints the rocky shore of the coast (a chunk must be stepped before use)', () => {
-    const job = new ChunkPaintJob(map, 0, 0, S);
+    const x0 = Math.floor(COAST.shoreX / S) * S; // the chunk with the shore in it
+    const job = new ChunkPaintJob(map, x0, 0, S);
     expect(opaque(job.data)).toBe(0); // nothing until painted: installing it unpainted was the v0.3.1 bug
     job.step(Infinity);
     expect(job.done).toBe(true);
     expect(opaque(job.data)).toBeGreaterThan(job.px * job.px * 0.2);
-    expect(COAST.shoreX).toBeLessThan(S); // the shore is inside this chunk
+    expect(COAST.shoreX - x0).toBeLessThan(S); // the shore is inside this chunk
     expect(WORLD.surfaceY).toBeLessThan(S);
   });
 

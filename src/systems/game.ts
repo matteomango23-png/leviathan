@@ -24,7 +24,8 @@ import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from '
 import { createStory, stepStory, storyHoldsDiver } from './story';
 import { createChapter2, hitAnchor, stepChapter2, type Chapter2World } from './chapter2';
 import { stepProgress } from './progress';
-import { atPort, nearWreck, openWreck, placeWrecks, type Wreck } from './economy/places';
+import { atPort, nearWreck, openWreck, placeWrecks, portAt, portStart, type Wreck } from './economy/places';
+import { PORT, PORTS, type PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createFish, stepFish, takeFish, type FishState } from './fish';
 import { BASE_HARPOON, createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
@@ -49,8 +50,11 @@ export interface GameState extends Chapter2World {
   fish: FishState;
   fishCaught: Record<string, number>;
   wrecks: Wreck[];
-  /** True while the diver floats at the pier of Portofosco. */
+  /** True while the diver floats at a pier; `port` says which. */
   atPort: boolean;
+  port: PortDef | null;
+  /** The last harbour you came into: you wake up there when there is no sanctuary to return to (saved). */
+  homePort: PortDef['id'];
   /** Seconds before your big beast can eat the next fish (not saved). */
   timers: { feed: number };
 }
@@ -101,6 +105,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     swarmCooldowns: {},
     wrecks: placeWrecks(map),
     atPort: false,
+    port: null,
+    homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
     timers: { feed: 0 },
     chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
@@ -111,7 +117,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
 export function respawnPoint(g: GameState): { x: number; y: number } {
   const i = g.sanctuaries.current;
   const s = i === null ? undefined : g.sanctuaries.list[i];
-  return s ? { x: s.x, y: s.y - 6 } : START;
+  return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
 }
 
 /** What the context button does right now. */
@@ -219,7 +225,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     }
   }
 
-  g.atPort = atPort(d, g.map);
+  g.port = portAt(d, g.map);
+  g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
   stepChapter2(g, events);
@@ -231,9 +238,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   return events;
 }
 
-/** Arriving at Portofosco: its sanctuary heals everyone, the market restocks, you wake up here. */
+/** Arriving at a harbour: its sanctuary heals everyone, the market restocks, you wake up here. */
 export function enterPort(g: GameState): void {
   const d = g.diver;
+  if (g.port) g.homePort = g.port.id;
   d.hp = d.maxHp;
   d.o2 = d.maxO2;
   for (const b of g.beasts.team) {

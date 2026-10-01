@@ -1,4 +1,4 @@
-// Portofosco (full screen): tabs with icons on the left, cards on the right.
+// A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
 import { MARKET } from '../data/economy';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
@@ -42,11 +42,14 @@ export class PortMenu {
     parent.classList.add('in-port'); // the diving HUD hides while the port is open
     const top = el('div', 'port-top', this.root);
     const title = el('div', 'port-title', top);
-    el('span', '', title, 'Portofosco');
+    el('span', '', title, g.port?.name ?? 'Portofosco');
     this.teeth = el('span', 'port-teeth', top);
-    const aurelio = el('button', 'pbtn', top);
-    aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
-    aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));
+    if (!g.port || g.port.id === 'portofosco') {
+      // Aurelio lives in Portofosco
+      const aurelio = el('button', 'pbtn', top);
+      aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
+      aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));
+    }
     const dive = el('button', 'pbtn primary', top);
     dive.append(icon('dive'), document.createTextNode(' Tuffati'));
     dive.addEventListener('click', () => {

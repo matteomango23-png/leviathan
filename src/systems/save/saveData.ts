@@ -9,7 +9,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -37,6 +37,7 @@ export interface SaveData {
   brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
   story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
+  homePort: string; // the last harbour you came into: you wake up there (v7)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -53,6 +54,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     brokenTiles: [],
     gear: null,
     story: null,
+    homePort: 'portofosco',
   };
 }
 
@@ -95,6 +97,33 @@ export const MIGRATIONS: Migration[] = [
       const d = o.diver;
       const diver = isObject(d) && isFiniteNumber(d.x) && d.x >= at ? { ...d, x: d.x + add } : d;
       return { ...o, brokenTiles, diver };
+    },
+  },
+  // v6 → v7 (tappa 10): the coast. The world grew from 785 to 1207 columns: the land and the pier moved 150 east,
+  // a beach came before the bay, the bay was stretched ×1.6 from x 1700, the Isola delle Mangrovie came before the
+  // Delta (also ×1.6, from x 5000) and the open sea moved 3372 east. The bone wall and the bones closing the lair
+  // got new tiles: if they were broken, they stay broken.
+  {
+    from: 6,
+    migrate: (o) => {
+      const moveX = (x: number): number =>
+        x < 300 ? x + 150 : x < 1940 ? 1700 + (x - 110) * 1.6 : x < 2460 ? 5000 + (x - 1940) * 1.6 : x + 3372;
+      const [oldCols, newCols] = [785, 1207];
+      const old = new Set(Array.isArray(o.brokenTiles) ? o.brokenTiles : []);
+      const wasBroken = (tx0: number, tx1: number, rows: number[]): boolean =>
+        rows.some((ty) => {
+          for (let tx = tx0; tx <= tx1; tx++) if (old.has(ty * oldCols + tx)) return true;
+          return false;
+        });
+      const brokenTiles: number[] = [];
+      const breakAll = (tx0: number, tx1: number, rows: number[]): void => {
+        for (const ty of rows) for (let tx = tx0; tx <= tx1; tx++) brokenTiles.push(ty * newCols + tx);
+      };
+      if (wasBroken(25, 60, [125, 126, 127, 128])) breakAll(230, 288, [125, 126, 127, 128]); // the bone wall
+      if (wasBroken(94, 101, [45, 46])) breakAll(343, 350, [45, 46]); // the bones over the lair
+      const d = o.diver;
+      const diver = isObject(d) && isFiniteNumber(d.x) ? { ...d, x: Math.round(moveX(d.x)) } : d;
+      return { ...o, brokenTiles, diver, homePort: 'portofosco' };
     },
   },
 ];
@@ -161,6 +190,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     brokenTiles: [...new Set(data.brokenTiles as number[])],
     gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
     story: validateStory(data.story),
+    homePort: typeof data.homePort === 'string' ? data.homePort : 'portofosco',
   };
 }
 

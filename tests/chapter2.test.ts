@@ -135,13 +135,12 @@ describe('saves from before the Delta', () => {
     const { toSave } = await import('../src/systems/game');
     const v5 = JSON.parse(JSON.stringify(toSave(g, new Date()))) as Record<string, unknown>;
     v5.version = 5;
-    // a tile of the ancient bone wall, numbered with the old 720 columns
-    const tx = BONE_WALL.tx0 + 2;
-    const ty = BONE_WALL.ty0;
-    v5.brokenTiles = [ty * 720 + tx];
-    v5.diver = { x: 2400, y: 150 }; // the reef, before the Delta moved it east
+    // a tile of the ancient bone wall as it was numbered then (720 columns, the wall at columns 25…60)
+    v5.brokenTiles = [125 * 720 + 27];
+    v5.diver = { x: 2400, y: 150 }; // the reef: moved east by the Delta (+520), then by the coast (+3372)
     const save = parseSave(JSON.stringify(v5));
-    expect(save.brokenTiles).toEqual([ty * WORLD.cols + tx]);
-    expect(save.diver.x).toBe(2400 + (DELTA.x1 - DELTA.x0));
+    expect(save.brokenTiles).toContain(BONE_WALL.ty0 * WORLD.cols + BONE_WALL.tx0); // the whole wall stays broken
+    expect(save.diver.x).toBe(2400 + 520 + 3372);
+    expect(DELTA.x1).toBeGreaterThan(DELTA.x0);
   });
 });

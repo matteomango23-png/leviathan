@@ -1,7 +1,15 @@
 // Test panel (only with ?prove in the link): show any beast version, get strong beasts, teeth, heal.
 import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/forms';
 import type { GameState } from '../systems/game';
-import { giveTestBeast, goToDelta, goToLair, healAll, raiseTeam, spawnTestBeast } from '../systems/testTools';
+import {
+  giveTestBeast,
+  goToDelta,
+  goToLair,
+  goToPortoFango,
+  healAll,
+  raiseTeam,
+  spawnTestBeast,
+} from '../systems/testTools';
 import { el } from './dom';
 
 const OTHERS: BeastForm[] = [
@@ -52,6 +60,11 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
   delta.addEventListener('click', () => {
     goToDelta(g);
     done('Sei nel Delta delle Mangrovie.');
+  });
+  const fango = el('button', 'menu-btn small', grid, 'Portami a Porto Fango');
+  fango.addEventListener('click', () => {
+    goToPortoFango(g);
+    done("Sei a Porto Fango, sull'Isola delle Mangrovie.");
   });
   const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
   teeth.addEventListener('click', () => {

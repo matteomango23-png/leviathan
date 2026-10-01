@@ -5,6 +5,8 @@ import {
   COAST,
   DELTA,
   ICE,
+  ISLAND_X,
+  LAYOUT,
   TILE,
   WORLD,
   WORLD_SHAPE,
@@ -52,10 +54,21 @@ function zoneFor(x: number): ZoneShapeDef {
 /** Height of the land above the water line at x (0 in the sea). */
 export function landHeight(x: number): number {
   if (x < COAST.shoreX) return Math.min(COAST.landHeight, 2 + (COAST.shoreX - x) * COAST.landRise);
+  // the Isola delle Mangrovie: a rocky hump rising out of the water (cliffs at both ends)
+  const isl = LAYOUT.island;
+  const t = (x - (ISLAND_X - isl.halfWidth)) / (2 * isl.halfWidth);
+  if (t > 0 && t < 1) return isl.landHeight * Math.pow(Math.sin(Math.PI * t), 0.35);
   // mangrove islands in the Delta: a low rounded mound
   for (const [x0, x1, h] of DELTA.islands)
     if (x > x0 && x < x1) return h * Math.sqrt(Math.sin((Math.PI * (x - x0)) / (x1 - x0)));
   return 0;
+}
+
+/** How far out the shore reaches at depth y: a quick drop under the pier, then a long gentle beach. */
+export function coastX(y: number): number {
+  const d = Math.max(0, y - WORLD.surfaceY);
+  const drop = Math.min(d, COAST.dropDepth);
+  return COAST.shoreX + drop * COAST.dropSlope + Math.max(0, d - COAST.dropDepth) * COAST.slope;
 }
 
 /** True where the sea (or air) is open, false where there is rock or land. */
@@ -68,7 +81,7 @@ export function isOpen(x: number, y: number): boolean {
   if (inLairCave(x, y) || inLairShaft(x, y)) return true;
   if (inLairShell(x, y)) return false;
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
-  if (y < COAST.maxY && x < COAST.shoreX + (y - WORLD.surfaceY) * COAST.slope + n * COAST.noise) return false;
+  if (y < COAST.maxY && x < coastX(y) + n * COAST.noise) return false;
   const z = zoneFor(x);
   for (const s of z.solids) if (inside(s, x, y, n)) return false;
   if (y < floorHeight(z.floor, x, n)) return true;

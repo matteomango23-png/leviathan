@@ -1,31 +1,31 @@
-// Portofosco's pier and houses at the surface, and the wrecks/chests on the sea floor.
+// The harbours at the surface (Portofosco's pier and houses on the mainland, Porto Fango's pier and huts on the
+// Isola delle Mangrovie) and the wrecks/chests on the sea floor.
 import Phaser from 'phaser';
-import { PORT } from '../data/economy';
+import { PORT, PORTO_FANGO, type PortDef } from '../data/economy';
 import { COAST, WORLD } from '../data/worldLayout';
 import { landHeight } from '../systems/world/worldGen';
 import type { Wreck } from '../systems/economy/places';
 import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
 
-/** Houses of Portofosco on the land: x, width, height (world units). The story sets them on fire. */
+/** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
 export const PORT_HOUSES: [number, number, number][] = [
-  [26, 20, 20],
-  [50, 18, 26],
-  [72, 22, 18],
-  [94, 14, 14],
+  [COAST.shoreX - 84, 20, 20],
+  [COAST.shoreX - 60, 18, 26],
+  [COAST.shoreX - 38, 22, 18],
+  [COAST.shoreX - 16, 14, 14],
 ];
 
-function drawPort(g: Phaser.GameObjects.Graphics): void {
+/** Fishermen's huts of Porto Fango, on the island by its east shore. */
+const FANGO_HUTS: [number, number, number][] = [
+  [PORTO_FANGO.shoreX - 62, 16, 14],
+  [PORTO_FANGO.shoreX - 40, 20, 18],
+  [PORTO_FANGO.shoreX - 18, 12, 11],
+];
+
+function drawHouses(g: Phaser.GameObjects.Graphics, houses: [number, number, number][]): void {
   const s = WORLD.surfaceY;
-  const x = PORT.x;
-  const shore = COAST.shoreX;
-  // the pier: from the shore out over the water, on stilts
-  g.fillStyle(0x1b1612, 1);
-  for (let px = shore; px <= x + 30; px += 13) g.fillRect(px - 1, s - 6, 2.2, 24);
-  g.fillStyle(0x3a2c20, 1);
-  g.fillRect(shore - 8, s - 8, x + 38 - shore, 3.5);
-  // houses of Portofosco on the land (dark silhouettes against the storm sky, lit windows)
-  for (const [hx, w, h] of PORT_HOUSES) {
+  for (const [hx, w, h] of houses) {
     const base = s - landHeight(hx + w / 2) + 1;
     g.fillStyle(0x0d1216, 1);
     g.fillRect(hx, base - h, w, h + 2);
@@ -33,6 +33,19 @@ function drawPort(g: Phaser.GameObjects.Graphics): void {
     g.fillStyle(0xffc878, 0.85);
     g.fillRect(hx + w * 0.35, base - h * 0.6, 3, 3);
   }
+}
+
+function drawPort(g: Phaser.GameObjects.Graphics, port: PortDef): void {
+  const s = WORLD.surfaceY;
+  const x = port.x;
+  const shore = port.shoreX;
+  // the pier: from the shore out over the water, on stilts
+  g.fillStyle(0x1b1612, 1);
+  for (let px = shore; px <= x + 30; px += 13) g.fillRect(px - 1, s - 6, 2.2, 24);
+  g.fillStyle(0x3a2c20, 1);
+  g.fillRect(shore - 8, s - 8, x + 38 - shore, 3.5);
+  // houses on the land (dark silhouettes against the storm sky, lit windows)
+  drawHouses(g, port.id === 'portofosco' ? PORT_HOUSES : FANGO_HUTS);
   // a small boat moored at the end of the pier
   g.fillStyle(0x141b20, 1);
   g.fillTriangle(x + 8, s - 5, x + 32, s - 5, x + 26, s + 1);
@@ -76,7 +89,8 @@ export class PlacesView {
     private readonly wrecks: Wreck[],
   ) {
     const g = scene.add.graphics();
-    drawPort(g);
+    drawPort(g, PORT);
+    drawPort(g, PORTO_FANGO);
     for (const w of wrecks) drawWreck(g, w);
     layer.add(g);
     this.glows = wrecks.map(() =>
