@@ -65,9 +65,22 @@
   top: calc(var(--st) + var(--bpad));
   left: calc(var(--sl) + var(--bpad) + 6px);
 }
+/* yours: compact (no type row), so your beast above it stays in view */
 .binfo.you {
   bottom: calc(var(--sb) + var(--bpad));
   left: calc(var(--sl) + var(--bpad) + 6px);
+  width: min(210px, 26vw);
+  padding: 3px 12px 5px 14px;
+}
+.binfo.you .binfo-tags {
+  display: none;
+}
+.binfo.you .binfo-name {
+  font-size: 16px;
+}
+.binfo.you .binfo-hp {
+  font-size: 12px;
+  line-height: 1.1;
 }
 .binfo.you::before {
   background: linear-gradient(90deg, var(--bronze), rgba(201, 168, 106, 0));
@@ -250,7 +263,7 @@
 /* ── message ────────────────────────────────────────────────── */
 .bmsg {
   position: absolute;
-  left: calc(var(--sl) + var(--bpad) + min(250px, 31vw) + 26px);
+  left: calc(var(--sl) + var(--bpad) + min(210px, 26vw) + 26px);
   right: calc(var(--sr) + var(--bpad));
   bottom: calc(var(--sb) + var(--bpad));
   min-height: 62px;

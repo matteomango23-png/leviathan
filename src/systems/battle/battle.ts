@@ -3,7 +3,7 @@
 // scene animates the steps it returns and asks for the dodge when the wild beast attacks.
 import { BATTLE } from '../../data/battle';
 import { BATTLE_TEXT } from '../../data/battleText';
-import { speciesOf } from '../beasts/forms';
+import { formStars, isGiant, speciesOf } from '../beasts/forms';
 import type { MoveDef } from '../../data/moves';
 import type { Rng } from '../math';
 import { canUse, effectiveness, hasFx, hitDamage, hitsOf, named, type Fighter } from './fighter';
@@ -174,9 +174,25 @@ export function tryTame(s: BattleState, rng: Rng, strongestLevel: number, bonus 
   return { kind: 'tame', shakes, caught };
 }
 
-export function tryFlee(s: BattleState, rng: Rng): boolean {
+/**
+ * The chance to get away: harder from a stronger beast (levels above yours, rarity) and much harder from a
+ * giant; easier if you are faster, and a little easier at each new try.
+ */
+export function fleeChance(s: BattleState): number {
   const f = BATTLE.flee;
-  const p = f.base + (you(s).stats.speed > s.foe.stats.speed ? f.fasterBonus : 0) + f.perTry * s.fleeTries;
+  const me = you(s);
+  const p =
+    f.base +
+    (me.stats.speed > s.foe.stats.speed ? f.fasterBonus : 0) +
+    f.perTry * s.fleeTries -
+    f.perLevelAbove * Math.max(0, s.foe.level - me.level) -
+    f.perStar * (formStars(s.foe.form) - 1) -
+    (isGiant(s.foe.form) ? f.giant : 0);
+  return Math.min(f.max, Math.max(f.min, p));
+}
+
+export function tryFlee(s: BattleState, rng: Rng): boolean {
+  const p = fleeChance(s);
   s.fleeTries++;
   const ok = rng() < p;
   if (ok) s.over = 'fled';
