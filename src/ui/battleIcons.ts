@@ -1,6 +1,7 @@
 // Icons of the battle commands and of the types: the painted ones (public/ui/<name>.webp, white shapes the
 // game colours) when they exist, otherwise these drawn ones (24×24, filled, currentColor).
 import type { MoveTypeId } from '../data/rules';
+import { assetUrl } from '../data/assets';
 import { UI_ICON_KEYS } from '../data/sprites.generated';
 import { el } from './dom';
 
@@ -47,8 +48,9 @@ export function battleIcon(name: string, color = 'currentColor'): HTMLSpanElemen
   span.style.color = color;
   if (UI_ICON_KEYS.includes(name)) {
     const painted = el('span', 'bicon-painted', span);
-    painted.style.maskImage = `url(ui/${name}.webp)`;
-    painted.style.webkitMaskImage = `url(ui/${name}.webp)`;
+    const url = `url(${assetUrl(`ui/${name}.webp`)})`;
+    painted.style.maskImage = url;
+    painted.style.webkitMaskImage = url;
   } else span.innerHTML = DRAWN[name] ?? '';
   return span;
 }

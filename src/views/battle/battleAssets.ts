@@ -1,6 +1,7 @@
 // What a battle loads before it starts: the pictures of the beasts that may appear (your team and the wild
 // one), the painted background layers of the place and the taming shell, when they exist.
 import type Phaser from 'phaser';
+import { assetUrl } from '../../data/assets';
 import type { BattlePlace } from '../../data/battle';
 import { BG_KEYS, ITEM_ART_KEYS } from '../../data/sprites.generated';
 import type { BattleState } from '../../systems/battle/battle';
@@ -33,13 +34,15 @@ export function loadBattleArt(scene: Phaser.Scene, s: BattleState, place: Battle
   const painted = paintedLayers(place);
   for (const layer of LAYERS) {
     const key = painted[layer]; // bgp-<place>-<layer>
-    if (key) wanted.push({ url: `bg/${key.split('-')[1]}_${layer}.webp`, textureKey: key, own: true });
+    if (key)
+      wanted.push({ url: assetUrl(`bg/${key.split('-')[1]}_${layer}.webp`), textureKey: key, own: true });
   }
   for (const [file, key] of [
     ['conchiglia', SHELL_KEY],
     ['conchiglia_aperta', SHELL_OPEN_KEY],
   ] as const)
-    if (ITEM_ART_KEYS.includes(file)) wanted.push({ url: `items/${file}.webp`, textureKey: key, own: true });
+    if (ITEM_ART_KEYS.includes(file))
+      wanted.push({ url: assetUrl(`items/${file}.webp`), textureKey: key, own: true });
   for (const a of wanted) if (!scene.textures.exists(a.textureKey)) scene.load.image(a.textureKey, a.url);
   if (!scene.load.list.size) return Promise.resolve();
   return new Promise((done) => {

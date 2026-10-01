@@ -2,6 +2,7 @@
 // prototype/prova-realistica.html). Phaser 4 has no Rope/Mesh, so the image is cut into vertical strips:
 // each strip follows one spine segment (rotated and shortened in perspective as the tail swings).
 import Phaser from 'phaser';
+import { assetUrl } from '../data/assets';
 import { BEAST_SPRITE } from '../data/beasts';
 import { OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
@@ -10,7 +11,8 @@ const SEG = IW / N;
 const OVERLAP = 1.07;
 const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
 
-export const spriteUrl = (key: string, open: boolean): string => `sprites/${key}${open ? '_open' : ''}.webp`;
+export const spriteUrl = (key: string, open: boolean): string =>
+  assetUrl(`sprites/${key}${open ? '_open' : ''}.webp`);
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
 
 /** The sprite to use for a form: its own if it exists, otherwise the species' one (e.g. a barracuda alfa). */

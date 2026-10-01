@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.5 — Immagini sempre aggiornate (1 ottobre 2026)
+
+- Ogni immagine ha un'impronta nel suo indirizzo: quando cambia, il telefono non può più mostrare la copia vecchia (era il caso della macchia accanto al muso dello squalo bianco, già tolta ma ancora visibile sul telefono).
+
 ## v0.8.4 — Aggiornamento immediato (1 ottobre 2026)
 
 - Se apri il gioco e c'è una versione nuova, il gioco si ricarica subito con quella (prima la prendeva solo dopo essere andato in secondo piano, e vedevi ancora la versione vecchia).
