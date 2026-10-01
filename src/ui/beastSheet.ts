@@ -7,7 +7,7 @@ import type { TeamBeast } from '../systems/beasts/team';
 import { growthBars } from './growthBars';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
-import { artUrl } from './art';
+import { setArt } from './art';
 
 export interface SheetExtra {
   hp?: number;
@@ -39,7 +39,7 @@ export function openBeastSheet(
 
   const art = el('div', 'sheet-art', card);
   const img = el('img', '', art);
-  img.src = artUrl(form);
+  setArt(img, form);
   img.alt = s.name;
   const banner = el('div', 'sheet-banner', art);
   el('span', 'sheet-stars', banner).innerHTML = ICONS.star.repeat(s.stars);

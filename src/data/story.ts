@@ -120,7 +120,7 @@ export const STORY_NOTES = {
 /** The guided first dive, in order. */
 export const TUTORIAL = [
   { id: 'swim', text: 'Nuota: joystick a sinistra (sul computer WASD o frecce)' },
-  { id: 'fish', text: 'Cattura una sardina: tieni premuto Arpione e mira (sul computer clic o Spazio)' },
+  { id: 'fish', text: 'Cattura una sardina: trascina il pulsante Fucile verso il pesce per mirare e sparare (sul computer clic o Spazio)' },
   { id: 'dash', text: 'Scatta: pulsante Scatto (sul computer Maiusc)' },
   { id: 'surface', text: 'Torna in superficie al molo di Portofosco' },
 ] as const;

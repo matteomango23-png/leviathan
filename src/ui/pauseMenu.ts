@@ -8,6 +8,7 @@ import { testMode } from '../systems/testTools';
 import { el } from './dom';
 import { openBestiary } from './bestiary';
 import { icon } from './icons';
+import { hasPreviousGame } from '../systems/save/storage';
 import { exportSave, pickSaveFile } from './saveTransfer';
 import { renderTeamPanel } from './teamPanel';
 import { renderTestPanel } from './testPanel';
@@ -42,8 +43,26 @@ export class PauseMenu {
       replayIntro(game);
       onResume();
     });
+    el('h3', '', panel, 'Partite');
     const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
     const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');
+    const fresh = el('button', 'menu-btn', panel, 'Nuova partita');
+    fresh.addEventListener('click', () => {
+      const ok = window.confirm(
+        'Iniziare una nuova partita dall’inizio?\n\nQuella attuale resta da parte come “partita precedente” (una sola copia): ' +
+          'potrai tornarci da qui. Per sicurezza puoi anche esportarla prima.',
+      );
+      if (ok) this.session.emit('switchGame', 'new');
+    });
+    if (hasPreviousGame()) {
+      const prev = el('button', 'menu-btn', panel, 'Torna alla partita precedente');
+      prev.addEventListener('click', () => {
+        const ok = window.confirm(
+          'Tornare alla partita precedente? Quella attuale diventa la partita precedente.',
+        );
+        if (ok) this.session.emit('switchGame', 'previous');
+      });
+    }
     this.msg = el('p', 'menu-msg', panel);
     renderTeamPanel(panel, game, false);
     if (testMode())

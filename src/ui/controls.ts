@@ -34,7 +34,7 @@ export class Controls {
     this.stick.hidden = true;
     const row = el('div', 'act-row touch-only', root);
     this.dashBtn = el('button', 'act act-dash', row, 'Scatto');
-    this.harpoonBtn = el('button', 'act act-harpoon', row, 'Arpione');
+    this.harpoonBtn = el('button', 'act act-harpoon', row, 'Fucile');
     const pause = el('button', 'pause-btn', root, 'II');
     pause.setAttribute('aria-label', 'Pausa');
 
@@ -118,9 +118,10 @@ export class Controls {
     this.stick.hidden = true;
   }
 
+  /** A mouse click shoots there (PC tests). On a phone only the weapon button shoots: a touch does nothing. */
   private tap(e: PointerEvent): void {
     if (this.session.paused) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
     e.preventDefault();
     this.session.tapScreen = { x: e.clientX, y: e.clientY };
   }

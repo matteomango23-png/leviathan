@@ -64,7 +64,7 @@ export const SUIT_UPGRADES: SuitUpgradeDef[] = [
 /** Weapons: the base harpoon is always equipped; others go in backpack slots. */
 export interface WeaponDef { id: string; name: string; type?: TypeId; damage: number; cooldown: number; source: string; text: string; singleUse?: boolean; price?: number; }
 export const WEAPONS: WeaponDef[] = [
-  { id: 'arpione', name: 'Arpione', damage: 1, cooldown: 0.4, source: 'Iniziale', text: 'Cattura i pesci e sfianca le bestie' },
+  { id: 'arpione', name: 'Fucile subacqueo', damage: 1, cooldown: 0.4, source: 'Iniziale', text: 'Fucile ad arpione: cattura i pesci e sfianca le bestie' },
   { id: 'fiocine', name: 'Fiocine a ventaglio', damage: 1, cooldown: 0.9, source: 'Relitto, Baia di Portofosco', text: '3 dardi a corto raggio, 1 danno ciascuno; catturano i pesci' },
   { id: 'rete', name: 'Rete zavorrata', damage: 0, cooldown: 3, source: 'Relitto, Barriera Rossa', text: 'Imprigiona i nemici 3 s, rallenta le bestie, raccoglie fino a 5 pesci' },
   { id: 'folgore', name: 'Lancia folgore', type: 'tempesta', damage: 2, cooldown: 2.5, source: 'Relitto, Fossa del Capodoglio', text: 'Colpisce i 3 bersagli più vicini: 2 danni e stordimento' },

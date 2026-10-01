@@ -28,9 +28,9 @@ export const DIVER = {
 };
 
 export const HARPOON = {
-  speed: 260,
-  returnSpeed: 340,
-  range: 135,
+  speed: 540, // a speargun: fast and straight (tuning)
+  returnSpeed: 800, // the line reels back quickly
+  range: 150,
   catchRadius: 6,
   backInHandRadius: 9, // the shot is back in the diver's hand within this distance
   muzzleOffset: 6,

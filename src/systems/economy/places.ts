@@ -17,10 +17,14 @@ export function atPort(d: { x: number; y: number; dead: boolean }, map: TileMap)
   return !d.dead && Math.abs(d.x - PORT.x) < PORT.reach && d.y < map.surfaceY + PORT.surfaceBand;
 }
 
-export function nearWreck(wrecks: Wreck[], gear: GearState, x: number, y: number): Wreck | undefined {
-  return wrecks.find(
-    (w) => !gear.wrecks.includes(w.def.id) && Math.hypot(w.x - x, w.y - 6 - y) < WRECK_REACH,
-  );
+export function nearWreck(
+  wrecks: Wreck[],
+  gear: GearState,
+  x: number,
+  y: number,
+  reach = WRECK_REACH,
+): Wreck | undefined {
+  return wrecks.find((w) => !gear.wrecks.includes(w.def.id) && Math.hypot(w.x - x, w.y - 6 - y) < reach);
 }
 
 export interface WreckLoot {

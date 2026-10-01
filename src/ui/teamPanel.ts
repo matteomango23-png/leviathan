@@ -5,7 +5,7 @@ import { maxHpOf, teamMembers, toggleInTeam } from '../systems/beasts/team';
 import type { GameState } from '../systems/game';
 import { isHungry } from '../systems/beasts/growth';
 import { feedFromBag } from '../systems/feeding';
-import { artUrl } from './art';
+import { setArt } from './art';
 import { growthBars } from './growthBars';
 import { el } from './dom';
 import { openBeastSheet } from './beastSheet';
@@ -33,7 +33,7 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         });
       });
       const img = el('img', '', row);
-      img.src = artUrl(b.form);
+      setArt(img, b.form);
       img.alt = '';
       const info = el('div', 'team-info', row);
       el('div', 'team-name', info, `${formName(b.form)} ${'★'.repeat(formStars(b.form))}`);

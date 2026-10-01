@@ -88,7 +88,8 @@ export const BEAST_COMBAT = {
 /** Taming flow around the minigame (TAMING in rules.ts sets the minigame itself). */
 export const TAMING_FLOW = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty
-  reachFrac: 0.25, // how close to its body (× body length) you must be to start taming
+  reachFrac: 0.4, // how close to its body (× body length) you must be to start taming
+  noMountFrac: 0.9, // with a tired beast this close (× its length), the button never offers to ride
   tiredSeconds: 20, // how long it stays exhausted
   tiredSpeed: 0.6, // U/s drifting while exhausted
   failHpFraction: 0.45, // after a failed taming it recovers to this share of its health

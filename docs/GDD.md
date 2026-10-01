@@ -33,6 +33,7 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 - **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
 - **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
 - **Capitolo 2 (deciso il 1 ottobre 2026):** nel Delta delle Mangrovie la nave della Vedova Nera (prima comandante della Compagnia) tiene incatenata la megattera dell'apertura. Spezzi i tre ancoraggi mentre il suo coccodrillo ti attacca; la balena liberata si unisce a te e la Vedova fugge verso la Barriera Rossa.
+- **Capitolo 3 (deciso il 1 ottobre 2026, da fare):** nella Barriera Rossa la Vedova Nera sta strappando il Re Corallo con catene e argani; impazzito dal dolore ti attacca in un anfiteatro di corallo sul fondale. Sfinito, rompi le catene e lo domi; la Vedova fugge verso la Foresta Sommersa.
 - **Personaggi:** Nonno Aurelio (mentore), il mercante di denti, la Compagnia (un comandante per regione con una bestia incatenata da liberare), il Leviatano (finale).
 - **Dopo il finale:** Fossa Nera coi leggendari; il Leviatano diventa domabile.
 

@@ -54,3 +54,42 @@ export function backupBrokenSave(store = defaultStore()): void {
     // nothing else we can do
   }
 }
+
+const previousKey = (): string => `${SAVE.storageKey}-precedente`;
+
+/** "Nuova partita": the current save is kept aside as the previous game (one copy), then removed. */
+export function startOverInStorage(store = defaultStore()): boolean {
+  if (!store) return false;
+  try {
+    const text = store.getItem(SAVE.storageKey);
+    if (text !== null) store.setItem(previousKey(), text);
+    store.removeItem(SAVE.storageKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function hasPreviousGame(store = defaultStore()): boolean {
+  try {
+    return !!store && store.getItem(previousKey()) !== null;
+  } catch {
+    return false;
+  }
+}
+
+/** Swaps the current game and the previous one (so going back is never a loss either). */
+export function swapWithPreviousGame(store = defaultStore()): boolean {
+  if (!store) return false;
+  try {
+    const prev = store.getItem(previousKey());
+    if (prev === null) return false;
+    const cur = store.getItem(SAVE.storageKey);
+    store.setItem(SAVE.storageKey, prev);
+    if (cur !== null) store.setItem(previousKey(), cur);
+    else store.removeItem(previousKey());
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -359,7 +359,7 @@
 }
 .move-row {
   position: absolute;
-  right: calc(110px + var(--safe-r));
+  right: calc(96px + var(--safe-r)); /* to the left of Scatto (the gun is hidden while riding) */
   bottom: calc(18px + var(--safe-b));
   display: flex;
   gap: 10px;
@@ -1320,4 +1320,12 @@
 }
 #ui.in-scene > :not(.dialogue):not(.hud):not(.toast):not(.zone-name):not(.port):not(.sheet) {
   visibility: hidden;
+}
+/* riding: the mount fights, the diver does not shoot */
+#ui.riding .act-harpoon {
+  display: none;
+}
+/* an albino without its own illustration yet: the species' art, pale */
+img.albino-art {
+  filter: grayscale(1) brightness(1.55) contrast(0.9) sepia(0.12);
 }

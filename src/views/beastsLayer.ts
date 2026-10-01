@@ -12,6 +12,10 @@ const spriteOf = (form: BeastForm): string =>
   resolveSpriteKey(formKey(form), form.speciesId) ?? formKey(form);
 import type { BarInfo } from './combatView';
 
+/** An albino without its own sprite yet is drawn with the species' one, lightened. */
+const isPaleSprite = (form: BeastForm): boolean =>
+  form.variant === 'albino' && !form.unique && spriteOf(form) !== formKey(form);
+
 export class BeastsLayer {
   private readonly wild: BeastSprite[];
   private readonly companion: BeastSprite;
@@ -43,6 +47,7 @@ export class BeastsLayer {
       }
       s.update({
         key: spriteOf(w.form),
+        pale: isPaleSprite(w.form),
         x: w.x,
         y: w.y,
         face: w.face,
@@ -76,6 +81,7 @@ export class BeastsLayer {
     if (c && b) {
       this.companion.update({
         key: spriteOf(b.form),
+        pale: isPaleSprite(b.form),
         x: c.x,
         y: c.y,
         face: c.face,

@@ -9,7 +9,7 @@ import type { GameState } from '../systems/game';
 import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
-import { artUrl } from './art';
+import { setArt } from './art';
 
 export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   const root = el('div', 'sheet bestiary', parent);
@@ -45,7 +45,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     card.style.setProperty('--rarity', RARITY[stars].color);
     if (ART_KEYS.includes(s.id)) {
       const img = el('img', '', card);
-      img.src = artUrl(form);
+      setArt(img, form);
       img.alt = '';
     } else card.append(icon('paw'));
     el('span', 'tile-num', card, `#${String(i + 1).padStart(2, '0')}`);
@@ -73,7 +73,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
       const card = el('button', 'beast-tile tamed special', sg);
       card.style.setProperty('--rarity', RARITY[stars].color);
       const img = el('img', '', card);
-      img.src = artUrl(b.form);
+      setArt(img, b.form);
       img.alt = '';
       el('span', 'tile-name', card, formName(b.form));
       card.addEventListener('click', () => openBeastSheet(parent, b.form, b.level, { hp: b.hp, ko: b.ko }));

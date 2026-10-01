@@ -38,7 +38,7 @@ import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState 
 import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
 import { stunWild, isInWater } from './beasts/wild';
-import { WEAPON_RULES } from '../data/economy';
+import { WEAPON_RULES, WRECK_REACH } from '../data/economy';
 
 export { toSave } from './save/convert';
 
@@ -130,10 +130,12 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
 export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue) return null;
-  const beast = contextAction(g);
-  if (beast === 'doma' || beast === 'scendi') return beast;
   const d = g.diver;
+  // a chest first, even while riding; near one, never "Cavalca"
   if (!d.dead && !g.tamingLock && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
+  const beast = contextAction(g);
+  if (beast === 'cavalca' && nearWreck(g.wrecks, g.gear, d.x, d.y, WRECK_REACH * 2.5)) return null;
+  if (beast === 'doma' || beast === 'scendi') return beast;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
   return beast;
 }
@@ -151,7 +153,7 @@ function doAction(g: GameState, events: GameEvent[]): void {
 
 function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   const d = g.diver;
-  if (d.dead || g.tamingLock) return;
+  if (d.dead || g.tamingLock || g.beasts.riding) return; // riding, your mount fights for you
   let angle: number | null = null;
   if (input.shotAt) angle = Math.atan2(input.shotAt.y - d.y, input.shotAt.x - d.x);
   else if (input.fireHeld) angle = input.aim ?? d.aim;
@@ -198,6 +200,9 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
     });
   }
+  // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
+  if (!held && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
+    Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
   if (!held) fire(g, input, events);
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
     hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, dmg, events);
