@@ -1,16 +1,16 @@
-// Draws wild beasts and your companion, and works out where the rider sits and which health bars to show.
+// Draws the wild beasts and the mount you ride, and works out where the rider sits. Rare beasts (albino,
+// alfa, legendary, Guardians) shimmer with a pale glow so you notice them in the dark. Health is shown in
+// battle, not in the open sea.
 import Phaser from 'phaser';
 import { TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { formKey, type BeastForm } from '../systems/beasts/forms';
-import { maxHpOf } from '../systems/beasts/team';
-import { isInWater } from '../systems/beasts/wild';
+import { isInWater, isRare } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
 import { BeastSprite, resolveSpriteKey } from './beastView';
 
 const spriteOf = (form: BeastForm): string =>
   resolveSpriteKey(formKey(form), form.speciesId) ?? formKey(form);
-import type { BarInfo } from './combatView';
 
 /** An albino without its own sprite yet is drawn with the species' one, lightened. */
 const isPaleSprite = (form: BeastForm): boolean =>
@@ -18,16 +18,19 @@ const isPaleSprite = (form: BeastForm): boolean =>
 
 export class BeastsLayer {
   private readonly wild: BeastSprite[];
-  private readonly companion: BeastSprite;
+  private readonly mount: BeastSprite;
+  private readonly glow: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
+    this.glow = scene.add.graphics();
+    layer.add(this.glow);
     this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
-    this.companion = new BeastSprite(scene, layer);
+    this.mount = new BeastSprite(scene, layer);
   }
 
   /** Where the diver sits on the ridden beast (world), or null on foot. */
   riderPose(g: GameState): { x: number; y: number; pitch: number } | null {
-    const c = g.beasts.companion;
+    const c = g.beasts.mount;
     if (!g.beasts.riding || !c) return null;
     const [fwd, up] = TEAM_RULES.riderOffset;
     const cos = Math.cos(c.pitch);
@@ -37,13 +40,34 @@ export class BeastsLayer {
     return { x: c.x + (lx * cos - ly * sin) * c.face, y: c.y + lx * sin + ly * cos, pitch: c.pitch };
   }
 
-  update(g: GameState): BarInfo[] {
-    const bars: BarInfo[] = [];
+  /** Rare beasts in the water: they light up the dark a little (for the light mask). */
+  glowSpots(g: GameState): { x: number; y: number; r: number }[] {
+    return g.beasts.wilds
+      .filter((w) => isInWater(w) && isRare(w))
+      .map((w) => ({ x: w.x, y: w.y, r: w.length * 0.5 }));
+  }
+
+  update(g: GameState, time: number): void {
+    this.glow.clear();
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
       if (!isInWater(w)) {
         s.hide();
         return;
+      }
+      if (isRare(w)) {
+        const pulse = 0.5 + 0.5 * Math.sin(time * 2.4 + w.id);
+        this.glow.fillStyle(0xdff6ff, 0.05 + 0.05 * pulse);
+        this.glow.fillEllipse(w.x, w.y, w.length * 1.3, w.length * 0.5);
+        this.glow.fillStyle(0xffffff, 0.5 * pulse);
+        for (let k = 0; k < 4; k++) {
+          const a = time * 0.8 + k * 1.6 + w.id;
+          this.glow.fillCircle(
+            w.x + Math.cos(a) * w.length * 0.45,
+            w.y + Math.sin(a * 1.3) * w.length * 0.14,
+            0.9,
+          );
+        }
       }
       s.update({
         key: spriteOf(w.form),
@@ -61,25 +85,11 @@ export class BeastsLayer {
         turn: w.turn,
         turnFrom: w.turnFrom,
       });
-      // the Guardian's health is the big bar at the top of the screen (ui/bossBar.ts)
-      const wantsBar = w.barTime > 0 || w.mood === 'tired' || w.mood === 'angry' || w.mood === 'taming';
-      if (wantsBar && !w.boss) {
-        bars.push({
-          x: w.x,
-          y: w.y - w.length * 0.2,
-          width: w.length * 0.5,
-          frac: w.hp / w.maxHp,
-          color: w.mood === 'tired' || w.mood === 'taming' ? 0x5ff3d6 : 0xd94a3f,
-          notch: true,
-          tired: w.mood === 'tired',
-          stunned: w.stun > 0,
-        });
-      }
     });
-    const c = g.beasts.companion;
+    const c = g.beasts.mount;
     const b = activeBeast(g);
-    if (c && b) {
-      this.companion.update({
+    if (c && b)
+      this.mount.update({
         key: spriteOf(b.form),
         pale: isPaleSprite(b.form),
         x: c.x,
@@ -94,20 +104,7 @@ export class BeastsLayer {
         alpha: c.alpha,
         turn: c.turn,
         turnFrom: c.turnFrom,
-        rage: c.frenzy > 0,
       });
-      if (c.state !== 'leaving' && (b.hp < maxHpOf(b) || c.flash > 0))
-        bars.push({
-          x: c.x,
-          y: c.y - c.length * 0.2,
-          width: c.length * 0.4,
-          frac: b.hp / maxHpOf(b),
-          color: 0x86d89a,
-          notch: false,
-          tired: false,
-          stunned: false,
-        });
-    } else this.companion.hide();
-    return bars;
+    else this.mount.hide();
   }
 }

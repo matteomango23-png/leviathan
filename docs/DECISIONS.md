@@ -175,3 +175,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Effetti delle mosse:** più colpi, danno doppio sui feriti, colpo di grazia, stordimento (perde il turno), cura, scudo (metà danno per 2 colpi), presa (la tua può stordire; quella nemica non si può schivare).
 - **Schivata difficile:** un anello si chiude sulla tua bestia in 0,55-1,05 s, a volte si ferma un attimo (finta). Tocco entro ±0,09 s = nessun danno, entro ±0,2 s = metà, altrimenti colpo pieno.
 - **Domare come una Poké Ball:** probabilità per stelle (85% → 12%), × 0,6 per albini e alfa, × 0,35 per varianti uniche, cresce quando la bestia è sfinita, cala di 15% per ogni livello sopra la tua bestia più forte. Tre scosse della conchiglia. Arpione mitico = tentativo ×3.
+
+## 2026-10-01 — La battaglia a turni entra nel gioco (dopo la prova del proprietario)
+
+- **Il combattimento in tempo reale si elimina del tutto.** Resta solo la battaglia a turni, da migliorare molto (immagini, animazioni, interfaccia).
+- **Innesco: bestie visibili**, come nei Pokémon recenti. Nuotano lente nel buio come sagome che la lampada illumina, si girano solo fuori dal cono di luce; se ti toccano attaccano per prime; se le colpisci col fucile alle spalle parti tu con vantaggio. Ognuna ha un carattere (chi ti ignora, chi ti punta, chi si allontana piano ma senza mai sparire di colpo). Le rare e leggendarie brillano, hanno un suono e vanno raggiunte. Guardiani e comandanti fissi nelle tane e sulle navi.
+- **Schivata:** quando il nemico attacca compare un grande pulsante SCHIVA con una barra che scorre; si tocca quando passa nella zona stretta. Rallentatore e spiegazione la prima volta. Difficile ma chiaro.
+- **Cavalcature fuori dalla battaglia: viaggio e abilità** della specie (sfondare ossa, respirare senza ossigeno, vincere correnti, rompere ghiaccio) per aprire zone; niente più compagno che ti segue combattendo.
+- **Immagini per la battaglia** (le genera il proprietario con Gemini): per ogni bestia tre quarti davanti (`<id>_front`, il nemico) e tre quarti da dietro (`<id>_back`, la tua), più le versioni a fauci aperte; sfondi di battaglia per regione, ritratti dei personaggi, la Conchiglia del domatore. Finché mancano, le card ritagliate fanno da segnaposto. Effetti degli attacchi da asset gratuiti con licenza libera.

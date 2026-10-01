@@ -30,7 +30,7 @@
   left: calc(env(safe-area-inset-left, 0px) + var(--bpad));
 }
 .binfo.you {
-  top: 44%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bpad) + 118px); /* above the menu */
   right: calc(env(safe-area-inset-right, 0px) + var(--bpad));
 }
 .binfo-name {
@@ -208,4 +208,73 @@
   margin: 0 0 8px;
   font-size: 20px;
   color: #ffd9a0;
+}
+
+/* the dodge: a big SCHIVA button and a bar with a narrow bright zone */
+.bdodge {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.6));
+  z-index: 5;
+}
+.bdodge.show {
+  display: flex;
+}
+.bdodge-tip {
+  max-width: min(520px, 80vw);
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 217, 160, 0.5);
+  border-radius: 10px;
+  background: rgba(3, 8, 12, 0.92);
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: center;
+}
+.bdodge-bar {
+  position: relative;
+  width: min(460px, 60vw);
+  height: 22px;
+  border: 2px solid rgba(255, 217, 160, 0.7);
+  border-radius: 12px;
+  background: rgba(10, 18, 24, 0.9);
+  overflow: hidden;
+}
+.bdodge-graze {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(95, 243, 214, 0.25);
+}
+.bdodge-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #5ff3d6;
+  box-shadow: 0 0 10px #5ff3d6;
+}
+.bdodge-marker {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 4px;
+  margin-left: -2px;
+  background: #fff;
+  box-shadow: 0 0 6px #fff;
+}
+.bdodge-btn {
+  width: 120px;
+  height: 120px;
+  border: 3px solid #ff8a70;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(160, 40, 30, 0.95), rgba(60, 10, 8, 0.95));
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 0 24px rgba(255, 90, 60, 0.6);
 }

@@ -1,36 +1,39 @@
-// Shared state of everything about beasts, and the small actions used by several systems.
+// Shared state of everything about beasts in the open sea, and the small actions used by several systems.
 import { WILD_SPAWNS } from '../data/beasts';
 import type { DiverState } from './diver';
 import type { GameEvent } from './events';
 import type { Rng } from './math';
-import { sendAway, type Companion } from './beasts/companion';
-import type { MoveEffects } from './beasts/moves';
-import type { TamingState } from './beasts/taming';
-import { startRecallCooldown, type TeamBeast } from './beasts/team';
-import { createWild, type WildBeast } from './beasts/wild';
+import { sendAway, type Mount } from './beasts/mount';
+import type { TeamBeast } from './beasts/team';
+import { createWild, type WildBeast } from './beasts/wildState';
 import type { SanctuaryState } from './sanctuary';
 import type { TileMap } from './world/tileMap';
 
 export interface Decoy {
   id: string; // swarm id
-  t: number; // seconds left
-  absorb: number; // hits it can still take
+  t: number; // seconds left: while it lasts, the swarm hides you and no beast comes at you
+}
+
+/** A battle about to start: which wild beast, and who strikes first. */
+export interface BattleRequest {
+  wildId: number;
+  /** 'you': you hit it from behind (it loses its first turn) · 'foe': it touched you (a free attack). */
+  first: 'you' | 'foe' | 'normal';
 }
 
 export interface BeastState {
   wilds: WildBeast[];
   team: TeamBeast[];
-  companion: Companion | null;
+  /** The beast you called to ride (swimming to you, carrying you, or leaving). */
+  mount: Mount | null;
   riding: boolean;
-  taming: TamingState | null;
   nextUid: number;
-  effects: MoveEffects;
   /** A swarm summoned from the backpack around the diver. */
   decoy: Decoy | null;
-  /** Seconds the mythic harpoon stays armed after using it. */
-  mythic: number;
   /** A Guardian fight is on: no other wild beast comes. */
   arena: boolean;
+  /** Set when a battle must start (the World scene opens it and pauses the sea). */
+  battle: BattleRequest | null;
 }
 
 export interface BeastWorld {
@@ -46,43 +49,33 @@ export interface BeastWorld {
 export function createBeasts(team: TeamBeast[]): BeastState {
   const wilds = WILD_SPAWNS.map((s, i) => {
     const w = createWild(i + 1, s);
-    w.respawn = 2 + i * 3;
+    w.respawn = 1 + i * 2;
     return w;
   });
   const maxUid = team.reduce((m, b) => Math.max(m, Number(b.uid.replace(/\D/g, '')) || 0), 0);
   return {
     wilds,
     team,
-    companion: null,
+    mount: null,
     riding: false,
-    taming: null,
     nextUid: maxUid + 1,
-    effects: { shield: 0, guardTime: 0, guardMult: 1 },
     decoy: null,
-    mythic: 0,
     arena: false,
+    battle: null,
   };
 }
 
 export const activeBeast = (g: BeastWorld): TeamBeast | undefined =>
-  g.beasts.companion ? g.beasts.team.find((b) => b.uid === g.beasts.companion!.uid) : undefined;
+  g.beasts.mount ? g.beasts.team.find((b) => b.uid === g.beasts.mount!.uid) : undefined;
 
+/** You climb down: the mount swims back into the dark. */
 export function dismount(g: BeastWorld, events: GameEvent[]): void {
-  if (!g.beasts.riding) return;
-  g.beasts.riding = false;
-  g.diver.y -= 10;
-  g.diver.vy = -30;
-  events.push({ type: 'dismounted' });
-}
-
-export function recall(g: BeastWorld, events: GameEvent[]): void {
-  const c = g.beasts.companion;
-  if (!c || c.state === 'leaving') return;
-  dismount(g, events);
-  sendAway(c, g.diver.x);
-  const b = activeBeast(g);
-  if (b) {
-    startRecallCooldown(b);
-    events.push({ type: 'recalled', uid: b.uid });
+  const m = g.beasts.mount;
+  if (g.beasts.riding) {
+    g.beasts.riding = false;
+    g.diver.y -= 6;
+    g.diver.vy = -30;
+    events.push({ type: 'dismounted' });
   }
+  if (m && m.state !== 'leaving') sendAway(m, g.diver.x);
 }

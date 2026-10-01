@@ -100,3 +100,18 @@ Servono prima di iniziare il capitolo 3. Salva tutto in `art-inbox/`, poi chiedi
 | Zampa | `re_corallo_leg.jpg` | una sola zampa, staccata, dritta, verticale (il gioco la ripete e la muove) |
 
 Prompt suggerito per i pezzi (dopo la card, nella stessa chat): `Same style and colors as the previous image. Now only the [PEZZO] of the same creature, isolated on a pure black background, flat side view facing right, no perspective, no other parts, no text.`
+
+## Immagini per la battaglia a turni (1 ottobre 2026) — priorità
+
+La battaglia usa immagini **a tre quarti**: davanti per la bestia selvatica, da dietro per la tua (come Pokémon). Finché mancano, il gioco usa la card sfumata (e specchiata per la tua). Salva in `art-inbox/`, poi `npm run art`: il fondo nero viene tolto e la bestia messa al centro di un quadrato 800×800.
+
+| File | Cosa | Prompt (nella chat della card, per avere lo stesso stile) |
+|---|---|---|
+| `<id>_front.jpg` | Tre quarti davanti (il nemico) | `Same creature, same style and colors. Three-quarter front view, facing the viewer and slightly to the left, whole body including the tail, centered, isolated on a pure black background, no text.` |
+| `<id>_front_open.jpg` | Lo stesso, fauci aperte | `Edit this image: same exact pose and position, jaws wide open showing the teeth.` |
+| `<id>_back.jpg` | Tre quarti da dietro (la tua): schiena, pinna dorsale, muso girato verso il nemico | `Same creature, same style and colors. Three-quarter rear view from slightly above, swimming away from the viewer toward the upper right, back and dorsal fin visible, head slightly turned, whole body, isolated on a pure black background, no text.` |
+| `<id>_back_open.jpg` | Lo stesso da dietro, fauci aperte | come sopra, `jaws wide open` |
+
+Ordine: `squalo_bianco`, `barracuda`, `tartaruga_marina` (aperta = becco aperto), `torpedine`, `coccodrillo_marino`, `megattera`; poi `sfregiato`, `squalo_bianco_albino`, `squalo_bianco_alfa`, `coccodrillo_marino_leggendario`.
+
+Altre, quando puoi: sfondi di battaglia 16:9 (`sfondo_baia.jpg`, `sfondo_delta.jpg`: fondale dipinto con spazio per una bestia in alto a destra e una in basso a sinistra), ritratti a mezzo busto su fondo nero per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`), la Conchiglia del domatore (`conchiglia.jpg`). Questi ultimi non li elabora ancora `npm run art`: li collego io quando arrivano.

@@ -3,7 +3,8 @@ import { RARE_UNIQUES, VEDOVA } from '../src/data/chapter2';
 import { WRECKS } from '../src/data/economy';
 import { DELTA, TILE, WORLD } from '../src/data/worldLayout';
 import { rollWildForm } from '../src/systems/beasts/forms';
-import { spawnWild, stepWild } from '../src/systems/beasts/wild';
+import { stepRoam } from '../src/systems/beasts/roam';
+import { spawnWild } from '../src/systems/beasts/wildState';
 import { anchorsBroken, hitAnchor } from '../src/systems/chapter2';
 import { currentObjective, finishDialogue } from '../src/systems/chapters';
 import type { GameEvent } from '../src/systems/events';
@@ -56,16 +57,23 @@ describe('the Delta delle Mangrovie', () => {
 });
 
 describe('crocodiles', () => {
-  it('cruise just under the surface', () => {
+  it('wander just under the surface', () => {
     const g = createGame(map, null, 3);
     Object.assign(g.diver, { x: mid, y: 150 });
     const w = g.beasts.wilds.find((x) => x.spawn.speciesId === 'coccodrillo_marino')!;
-    spawnWild(w, { speciesId: 'coccodrillo_marino', variant: 'comune' }, 10, g.rng, 0.01);
-    const view = { x: mid - 170, y: 70, w: 340, h: 160 };
+    spawnWild(
+      w,
+      { speciesId: 'coccodrillo_marino', variant: 'comune' },
+      10,
+      mid + 200,
+      WORLD.surfaceY + 8,
+      -1,
+    );
+    w.calm = 999; // just wandering
     let maxDepth = 0;
-    for (let i = 0; i < 90; i++) {
-      stepWild(w, { diver: g.diver, view, map, rng: g.rng, dt: 1 / 30 }, []);
-      if (w.motion === 'cruise' || w.motion === 'enter') maxDepth = Math.max(maxDepth, w.y - WORLD.surfaceY);
+    for (let i = 0; i < 150; i++) {
+      stepRoam(w, { diver: g.diver, map, rng: g.rng, dt: 1 / 30, hidden: false });
+      if (i > 60) maxDepth = Math.max(maxDepth, w.y - WORLD.surfaceY);
     }
     expect(maxDepth).toBeLessThan(w.length * 0.3);
   });

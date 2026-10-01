@@ -56,11 +56,8 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
       // the beasts of the zone come now (if they are not around already)
       for (const w of g.beasts.wilds)
         if (w.motion === 'gone') w.respawn = Math.min(w.respawn, ITEM_RULES.lureSeconds);
-        else if (w.motion === 'hidden') w.t = Math.min(w.t, ITEM_RULES.lureSeconds);
       break;
-    case 'arpione_mitico':
-      g.beasts.mythic = ITEM_RULES.mythicWindowSeconds;
-      break;
+    // the mythic harpoon is used in battle (Zaino), not in the open sea
     default:
       return false;
   }
@@ -73,8 +70,7 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
 function callSwarm(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
   const s = SWARMS.find((x) => x.id === id);
   if (!s || !g.gear.swarms.includes(id) || (g.swarmCooldowns[id] ?? 0) > 0 || g.diver.dead) return false;
-  const absorb = Number(s.fx.find((f) => f.startsWith('absorbHits:'))?.split(':')[1] ?? 0);
-  g.beasts.decoy = { id, t: s.duration, absorb };
+  g.beasts.decoy = { id, t: s.duration }; // the swarm hides you: no beast comes at you meanwhile
   g.swarmCooldowns[id] = s.cooldown;
   events.push({ type: 'swarmSummoned', id });
   return true;

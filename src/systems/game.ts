@@ -1,9 +1,8 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { TEAM_RULES } from '../data/beasts';
-import { CAMERA, DIVER, SARDINE } from '../data/diver';
+import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
-import type { Rect } from './beasts/wild';
 import { beastEats } from './feeding';
 import {
   activeBeast,
@@ -37,8 +36,7 @@ import { restoreGear, restoreTeam } from './save/convert';
 import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
 import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
-import { stunWild, isInWater } from './beasts/wild';
-import { WEAPON_RULES, WRECK_REACH } from '../data/economy';
+import { rideO2Mult } from './abilities';
 
 export { toSave } from './save/convert';
 
@@ -51,8 +49,6 @@ export interface GameState extends Chapter2World {
   fish: FishState;
   fishCaught: Record<string, number>;
   wrecks: Wreck[];
-  /** True while the taming minigame holds the diver. */
-  tamingLock: boolean;
   /** True while the diver floats at the pier of Portofosco. */
   atPort: boolean;
   /** Seconds before your big beast can eat the next fish (not saved). */
@@ -104,20 +100,12 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     gear,
     swarmCooldowns: {},
     wrecks: placeWrecks(map),
-    tamingLock: false,
     atPort: false,
     timers: { feed: 0 },
     chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
   return g;
-}
-
-/** The world rectangle on screen when the game runs without a real screen (tests). */
-function defaultView(x: number, y: number): Rect {
-  const h = CAMERA.viewHeightUnits;
-  const w = h * CAMERA.defaultAspect;
-  return { x: x - w / 2, y: y - h / 2, w, h };
 }
 
 export function respawnPoint(g: GameState): { x: number; y: number } {
@@ -129,13 +117,12 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
 /** What the context button does right now. */
 export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri';
 export function currentAction(g: GameState): Action {
-  if (storyHoldsDiver(g) || g.story.dialogue) return null;
+  if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle) return null;
   const d = g.diver;
-  // a chest first, even while riding; near one, never "Cavalca"
-  if (!d.dead && !g.tamingLock && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
+  // a chest first, even while riding
+  if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
-  if (beast === 'cavalca' && nearWreck(g.wrecks, g.gear, d.x, d.y, WRECK_REACH * 2.5)) return null;
-  if (beast === 'doma' || beast === 'scendi') return beast;
+  if (beast === 'sfonda') return beast;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
   return beast;
 }
@@ -153,7 +140,7 @@ function doAction(g: GameState, events: GameEvent[]): void {
 
 function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   const d = g.diver;
-  if (d.dead || g.tamingLock || g.beasts.riding) return; // riding, your mount fights for you
+  if (d.dead || g.beasts.riding) return; // in the saddle you do not shoot
   let angle: number | null = null;
   if (input.shotAt) angle = Math.atan2(input.shotAt.y - d.y, input.shotAt.x - d.x);
   else if (input.fireHeld) angle = input.aim ?? d.aim;
@@ -166,36 +153,32 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
 }
 
-/**
- * @param view the world rectangle on screen (beasts use it to stay out of sight when turning)
- */
-export function stepGame(g: GameState, input: InputState, dt: number, view?: Rect): GameEvent[] {
+export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);
-  if (g.story.dialogue) return events; // the game waits while a dialogue is on screen
+  // the sea waits while a dialogue is on screen or a battle is on
+  if (g.story.dialogue || g.beasts.battle) return events;
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;
-  const screen: Rect = view ?? defaultView(d.x, d.y);
   const mods = diverModifiers(g.gear);
   if (d.maxHp !== mods.maxHp) {
     d.maxHp = mods.maxHp;
     d.hp = Math.min(d.hp, d.maxHp);
   }
 
-  const wasTaming = !!g.beasts.taming;
-  if (input.action && !wasTaming) doAction(g, events);
-  if (input.slot >= 0 && !g.tamingLock) useSlot(g, input.slot, events);
+  if (input.action) doAction(g, events);
+  if (input.slot >= 0) useSlot(g, input.slot, events);
   stepSwarmCooldowns(g, dt);
 
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
-  if (!g.tamingLock && !held) {
+  if (!held) {
     stepDiver(d, input, g.map, dt, g.rng, events, {
       respawnAt: respawnPoint(g),
       mountSpeed: mountSpeed(g),
       mountAccelMult: TEAM_RULES.accelMult,
       mountDash: TEAM_RULES.rideDash,
       speedMult: mods.speedMult,
-      o2DrainMult: mods.o2DrainMult,
+      o2DrainMult: mods.o2DrainMult * rideO2Mult(g),
       canDash: mods.canDash,
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
     });
@@ -205,7 +188,7 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
   if (!held) fire(g, input, events);
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
-    hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, dmg, events);
+    hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, events);
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
     hitBeast(x, y, BASE_HARPOON.damage),
   );
@@ -213,23 +196,16 @@ export function stepGame(g: GameState, input: InputState, dt: number, view?: Rec
   stepProjectiles(g.weapons, g.fish, g.map, dt, {
     catchFish: (f) => catchFish(g, f, events),
     hitBeast,
-    netBurst: (x, y, r) => {
-      for (const w of g.beasts.wilds)
-        if (isInWater(w) && Math.hypot(w.x - x, w.y - y) < r + w.length * 0.3) {
-          w.slow = WEAPON_RULES.rete.slowSeconds;
-          if (w.length < WEAPON_RULES.rete.trapMaxLength) stunWild(w, WEAPON_RULES.rete.slowSeconds);
-        }
-    },
   });
 
   const beastEvents: GameEvent[] = [];
-  g.tamingLock = stepBeasts(g, { ...input, action: input.action && wasTaming }, screen, dt, beastEvents);
+  stepBeasts(g, input, dt, beastEvents);
   events.push(...beastEvents);
   for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
   stepGuardian(g, dt, events);
 
   const eater = activeBeast(g);
-  const eaten = beastEats(g.beasts.companion, eater, g.fish, g.timers, dt);
+  const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
   // a growing beast (levels 31–50) keeps the fish for its nourishment bar
   if (eaten && eater && isHungry(eater)) {
     takeFish(eaten);

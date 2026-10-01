@@ -1,8 +1,8 @@
-// Food chain: your big beast (companion or mount) eats the small fish it swims through;
+// Food chain: the big beast you ride eats the small fish it swims through;
 // at the port a growing beast eats from the fish bag.
 import { FEEDING } from '../data/beasts';
 import { headOf } from './beasts/combat';
-import type { Companion } from './beasts/companion';
+import type { Mount } from './beasts/mount';
 import { feedBeast, isHungry } from './beasts/growth';
 import { speciesOf } from './beasts/forms';
 import type { TeamBeast } from './beasts/team';
@@ -11,14 +11,14 @@ import type { Fish, FishState } from './fish';
 
 /** Returns the fish eaten this frame (the caller puts it in the bag or heals), or null. */
 export function beastEats(
-  c: Companion | null,
+  c: Mount | null,
   b: TeamBeast | undefined,
   fish: FishState,
   timer: { feed: number },
   dt: number,
 ): Fish | null {
   timer.feed = Math.max(0, timer.feed - dt);
-  if (!c || !b || c.state === 'leaving' || timer.feed > 0) return null;
+  if (!c || !b || c.state !== 'ride' || timer.feed > 0) return null;
   if (!FEEDING.sizes.includes(speciesOf(b.form).size)) return null;
   const h = headOf(c);
   const reach = c.length * FEEDING.reachFrac;

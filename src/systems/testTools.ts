@@ -7,15 +7,16 @@ import { formLengthUnits, type BeastForm } from './beasts/forms';
 import { raiseLevel } from './beasts/growth';
 import type { GameEvent } from './events';
 import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
-import { spawnWild } from './beasts/wild';
+import { spawnWild } from './beasts/wildState';
 
-/** Makes a wild beast of this form appear near the diver, wherever the diver is. */
+/** Makes a wild beast of this form appear a little ahead of the diver, wherever the diver is. */
 export function spawnTestBeast(g: GameState, form: BeastForm, level = 5): void {
-  const w = g.beasts.wilds.find((x) => x.spawn.speciesId === form.speciesId) ?? g.beasts.wilds[0];
+  const w = g.beasts.wilds.find((x) => !x.arena && x.spawn.speciesId === form.speciesId) ?? g.beasts.wilds[0];
   if (!w) return;
-  w.spawn = { ...w.spawn, area: [0, 0, g.map.width, g.map.height] };
-  spawnWild(w, form, level, g.rng, 0.3);
-  g.beasts.taming = null;
+  const d = g.diver;
+  w.spawn = { ...w.spawn, area: [d.x - 600, d.y - 300, d.x + 600, d.y + 300] };
+  const p = g.map.nearestOpen(d.x + d.face * 160, d.y, 10);
+  spawnWild(w, form, level, p.x, p.y, d.face > 0 ? -1 : 1);
 }
 
 /** Adds a tamed beast to your team (or reserve) directly. */
@@ -46,7 +47,7 @@ export const testMode = (): boolean => {
 export function raiseTeam(g: GameState, levels: number): void {
   const events: GameEvent[] = [];
   for (const b of teamMembers(g.beasts.team)) raiseLevel(b, levels, events);
-  const c = g.beasts.companion;
+  const c = g.beasts.mount;
   const b = g.beasts.team.find((x) => x.uid === c?.uid);
   if (c && b) c.length = formLengthUnits(b.form, b.level);
 }

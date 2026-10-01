@@ -187,7 +187,7 @@ describe('sardine swarm', () => {
     const ev2: GameEvent[] = [];
     useSlot(g, 2, ev2);
     expect(ev2.some((e) => e.type === 'swarmSummoned')).toBe(true);
-    expect(g.beasts.decoy?.absorb).toBe(6);
+    expect(g.beasts.decoy?.t).toBeGreaterThan(0); // the swarm hides you for a while
   });
 });
 

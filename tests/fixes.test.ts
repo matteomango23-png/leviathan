@@ -2,9 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { DIVER, SAVE } from '../src/data/diver';
 import { WRECKS } from '../src/data/economy';
-import { TAMING } from '../src/data/rules';
-import { summonCompanion } from '../src/systems/beasts/companion';
-import { spawnWild } from '../src/systems/beasts/wild';
+import { callMount } from '../src/systems/beasts/mount';
 import { createGame, currentAction, stepGame, type GameState } from '../src/systems/game';
 import { emptyInput } from '../src/systems/input';
 import {
@@ -37,9 +35,9 @@ function withMount(x: number, y: number): GameState {
   const g = createGame(map, null, 2);
   giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 8);
   Object.assign(g.diver, { x, y, vx: 0, vy: 0 });
-  const c = summonCompanion(g.beasts.team[0]!, g.diver, map);
-  Object.assign(c, { x: x + 20, y, state: 'follow' });
-  g.beasts.companion = c;
+  const c = callMount(g.beasts.team[0]!, g.diver, map);
+  Object.assign(c, { x: x + 20, y, state: 'ride' });
+  g.beasts.mount = c;
   return g;
 }
 
@@ -58,20 +56,7 @@ describe('new game and previous game', () => {
   });
 });
 
-describe('the context button (bug: it offered "Cavalca" instead of taming or opening)', () => {
-  it('a tired beast nearby: Doma, never Cavalca', () => {
-    const g = withMount(900, 200);
-    const w = g.beasts.wilds.find((x) => x.spawn.speciesId === 'barracuda')!;
-    spawnWild(w, { speciesId: 'barracuda', variant: 'comune' }, 3, g.rng);
-    Object.assign(w, { x: 900 + w.length * 0.6, y: 200, motion: 'cruise', mood: 'tired', tiredTime: 10 });
-    w.hp = w.maxHp * TAMING.exhaustionThresholdFraction;
-    expect(currentAction(g)).not.toBe('cavalca');
-    w.x = 900 + w.length * 0.3;
-    expect(currentAction(g)).toBe('doma');
-    g.beasts.riding = true;
-    expect(currentAction(g)).toBe('doma');
-  });
-
+describe('the context button (bug: it offered to ride instead of opening)', () => {
   it('a chest nearby: Apri, even while riding', () => {
     const chest = g0chest();
     const g = withMount(chest.x, chest.y - 6);

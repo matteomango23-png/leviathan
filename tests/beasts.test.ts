@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DELTA } from '../src/data/worldLayout';
 import { MOVES } from '../src/data/moves';
-import { TAMING } from '../src/data/rules';
 import { WILD_SPAWNS } from '../src/data/beasts';
 import { SPECIES } from '../src/data/species';
 import { moveDamage, moveTypeMult } from '../src/systems/beasts/combat';
@@ -13,17 +12,14 @@ import {
   formStars,
   type BeastForm,
 } from '../src/systems/beasts/forms';
-import { attemptTaming, gapFactor, startTaming, type TamingState } from '../src/systems/beasts/taming';
 import {
   addTamed,
-  isTameable,
   makeTeamBeast,
   movesFor,
   strongestLevel,
   toggleInTeam,
   type TeamBeast,
 } from '../src/systems/beasts/team';
-import { makeRng } from '../src/systems/math';
 
 const shark = (over: Partial<BeastForm> = {}): BeastForm => ({
   speciesId: 'squalo_bianco',
@@ -86,47 +82,6 @@ describe('damage and types', () => {
   });
 });
 
-describe('taming minigame', () => {
-  const hitNow = (s: TamingState) => {
-    s.t = s.centre / s.speed; // needle exactly on the zone centre
-  };
-  const missNow = (s: TamingState) => {
-    const far = s.centre > 0.5 ? 0 : 1;
-    s.t = far / s.speed;
-  };
-
-  it('wins with three hits', () => {
-    const rng = makeRng(1);
-    const s = startTaming(1, 5, 5, rng);
-    hitNow(s);
-    expect(attemptTaming(s, rng)).toBe('hit');
-    hitNow(s);
-    expect(attemptTaming(s, rng)).toBe('hit');
-    hitNow(s);
-    expect(attemptTaming(s, rng)).toBe('win');
-  });
-
-  it('forgives three misses and loses on the fourth', () => {
-    const rng = makeRng(2);
-    const s = startTaming(1, 5, 5, rng);
-    for (let i = 0; i < TAMING.missesAllowed; i++) {
-      missNow(s);
-      expect(attemptTaming(s, rng)).toBe('miss');
-    }
-    missNow(s);
-    expect(attemptTaming(s, rng)).toBe('lose');
-  });
-
-  it('gets harder when the wild beast out-levels your strongest beast', () => {
-    const rng = makeRng(3);
-    const easy = startTaming(1, 5, 5, rng);
-    const hard = startTaming(1, 20, 5, rng);
-    expect(hard.width).toBeLessThan(easy.width);
-    expect(hard.speed).toBeGreaterThan(easy.speed);
-    expect(gapFactor(-10)).toBe(1);
-  });
-});
-
 describe('team', () => {
   const tame = (all: TeamBeast[], form: BeastForm, level = 5) =>
     addTamed(all, makeTeamBeast(`b${all.length + 1}`, form, level, true));
@@ -147,14 +102,6 @@ describe('team', () => {
     tame(all, shark(), 4);
     tame(all, shark({ variant: 'albino' }), 9);
     expect(strongestLevel(all)).toBe(9);
-  });
-
-  it('a duplicate of the common version is not tameable (it flees)', () => {
-    const all: TeamBeast[] = [];
-    expect(isTameable(all, shark())).toBe(true);
-    tame(all, shark());
-    expect(isTameable(all, shark())).toBe(false);
-    expect(isTameable(all, shark({ variant: 'albino' }))).toBe(true);
   });
 
   it('unlocks moves at levels 1, 7 and 15', () => {

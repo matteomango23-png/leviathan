@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.7.0 — Battaglie a turni nel gioco (1 ottobre 2026)
+
+- **Niente più combattimento in tempo reale.** Le bestie si vedono mentre esplori: nuotano piano nel buio e la lampada le rivela. Si girano solo fuori dalla luce.
+- **La battaglia parte quando una bestia ti tocca** (attacca prima lei) **o quando la colpisci col fucile** (se la prendi alle spalle è stordita e attacchi tu per primo).
+- **Carattere:** squali, barracuda e coccodrilli ti puntano; la tartaruga ti ignora; la torpedine scivola via piano (la raggiungi). Le **rare** (albine, alfa, leggendarie) **brillano** nel buio, compare un messaggio e si allontanano piano: inseguile.
+- **Battaglia come Pokémon**, 1 contro 1: Lotta (3 mosse con tipo, forza e ricarica), Zaino (i tuoi oggetti: Alga curativa, Arpione mitico), Squadra (cambio bestia), Doma (la conchiglia scuote 3 volte: più è rara la bestia, più è difficile), Fuggi. I livelli contano molto nei danni.
+- **SCHIVA:** quando il nemico attacca compare un grande pulsante con una barra: tocca quando la lancetta passa sulla zona chiara. Spiegazione la prima volta. È difficile.
+- **Nuova schermata di battaglia:** le bestie a tre quarti (per ora le illustrazioni delle card sfumate nel mare, la tua più vicina e di spalle), affondi, graffi, scintille del colore del tipo, conchiglia che vola ad arco.
+- **Cavalcature:** tocca una bestia cavalcabile nella barra in alto: arriva dal buio e ci sali. In sella vai veloce e usi la sua abilità: lo **squalo bianco sfonda le ossa** (pulsante "Sfonda"), la megattera ti fa respirare. Le bestie non ti seguono più combattendo.
+- **Lo Sfregiato** e il **coccodrillo della Vedova** sono battaglie da cui non si fugge.
+- Senza bestie in grado di combattere, una bestia che ti tocca ti morde (un cuore) e se ne va.
+- Lo sciame di sardine ora ti **nasconde**: per 8 secondi nessuna bestia ti viene incontro.
+
 ## v0.6.2 — Prova della battaglia a turni (1 ottobre 2026)
 
 - **Prova della nuova battaglia a turni**, separata dal gioco: apri il link del gioco aggiungendo `?battaglia` (https://matteomango23-png.github.io/leviathan/?battaglia). Squalo bianco (liv. 8), tartaruga e torpedine contro una bestia a caso di Baia e Delta (a volte albina o alfa).

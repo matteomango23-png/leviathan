@@ -2,9 +2,11 @@
 // taming, fleeing), the wild beast picks a move, and they happen in order of speed. Pure logic: the battle
 // scene animates the steps it returns and asks for the dodge when the wild beast attacks.
 import { BATTLE } from '../../data/battle';
+import { BATTLE_TEXT } from '../../data/battleText';
 import { speciesOf } from '../beasts/forms';
+import type { MoveDef } from '../../data/moves';
 import type { Rng } from '../math';
-import { canUse, effectiveness, hasFx, hitDamage, hitsOf, type Fighter } from './fighter';
+import { canUse, effectiveness, hasFx, hitDamage, hitsOf, named, type Fighter } from './fighter';
 
 export type Side = 'you' | 'foe';
 export type Dodge = 'perfect' | 'graze' | 'none';
@@ -23,6 +25,8 @@ export type Step =
       kind: 'attack';
       side: Side;
       move: string;
+      /** The move's type (the colour of its effect). */
+      type: MoveDef['type'];
       hits: number[];
       crit: boolean;
       dodge: Dodge;
@@ -52,8 +56,6 @@ export function createBattle(team: Fighter[], foe: Fighter): BattleState {
   );
   return { team, active, foe, fleeTries: 0, over: null, foeMove: 0 };
 }
-
-const nameOf = (f: Fighter): string => speciesOf(f.form).name;
 
 /** The wild beast's choice: its best ready move against you, sometimes a random ready one. */
 export function chooseFoeMove(s: BattleState, rng: Rng): number {
@@ -96,7 +98,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, dod
   if (att.hp <= 0) return steps;
   if (att.stunned) {
     att.stunned = false;
-    return [{ kind: 'text', text: `${nameOf(att)} è stordito e non riesce a muoversi!` }];
+    return [{ kind: 'text', text: BATTLE_TEXT.stunnedSkip(named(att)) }];
   }
   const bm = att.moves[index];
   if (!bm || !canUse(bm)) return steps;
@@ -122,6 +124,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, dod
     kind: 'attack',
     side,
     move: move.name,
+    type: move.type,
     hits,
     crit,
     dodge: side === 'foe' ? dodge : 'none',
@@ -135,7 +138,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, dod
   }
   if (hasFx(move, 'shield') || hasFx(move, 'dmgReduce') || hasFx(move, 'taunt')) {
     att.guard = BATTLE.fx.guardTurns;
-    steps.push({ kind: 'text', text: `${nameOf(att)} si protegge: i prossimi colpi faranno metà danno.` });
+    steps.push({ kind: 'text', text: BATTLE_TEXT.guarding(named(att)) });
   }
   // effects on the target, if the move landed
   const landed = hits.some((h) => h > 0);
@@ -143,7 +146,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, dod
   const grabChance = side === 'you' && hasFx(move, 'grab') ? BATTLE.fx.grabSkipChance : 0;
   if (landed && def.hp > 0 && rng() < Math.max(stunChance, grabChance)) {
     def.stunned = true;
-    steps.push({ kind: 'text', text: `${nameOf(def)} è stordito!` });
+    steps.push({ kind: 'text', text: BATTLE_TEXT.stunned(named(def)) });
   }
   if (def.hp <= 0) steps.push({ kind: 'faint', side: side === 'you' ? 'foe' : 'you' });
   return steps;

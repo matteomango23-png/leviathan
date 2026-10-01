@@ -3,7 +3,7 @@
 // beast attacks. For now it starts on its own with the test team (link with ?battaglia).
 import Phaser from 'phaser';
 import { BATTLE, BATTLE_PROTOTYPE } from '../data/battle';
-import { BATTLE_TEXT } from '../data/battleText';
+import { BATTLE_TEXT, type Named } from '../data/battleText';
 import { ITEMS } from '../data/world';
 import {
   chooseFoeMove,
@@ -23,15 +23,15 @@ import {
   type Side,
   type Step,
 } from '../systems/battle/battle';
-import { judgeDodge, makeDodgeRing, ringEnd, type DodgeRing } from '../systems/battle/dodge';
-import { makeFighter } from '../systems/battle/fighter';
-import { speciesOf, type BeastForm } from '../systems/beasts/forms';
+import { judgeDodge, makeDodgeRing } from '../systems/battle/dodge';
+import { makeFighter, named } from '../systems/battle/fighter';
+import type { BeastForm } from '../systems/beasts/forms';
 import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
+import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
-import { BattleView } from '../views/battleView';
-
-const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
+import type { Session } from './session';
+import { BattleView, battleArt } from '../views/battleView';
 
 export class BattleScene extends Phaser.Scene {
   private ui!: BattleUi;
@@ -40,33 +40,35 @@ export class BattleScene extends Phaser.Scene {
   private rng: Rng = makeRng(Date.now());
   private items: Record<string, number> = {};
   private tameBonus = 1;
-  private ring: { r: DodgeRing; t: number; tapAt: number | null } | null = null;
-  private readonly onTap = (e: Event): void => {
-    if (!this.ring || this.ring.tapAt !== null) return;
-    if (e instanceof KeyboardEvent && ![' ', 'enter'].includes(e.key.toLowerCase())) return;
-    e.preventDefault();
-    this.ring.tapAt = this.ring.t;
-  };
+  /** In the game (not the ?battaglia prototype): the session and what the battle is about. */
+  private session: Session | null = null;
+  private setupInGame: BattleSetup | null = null;
 
   constructor() {
     super('Battle');
   }
 
+  init(data?: { session?: Session }): void {
+    this.session = data?.session ?? null;
+  }
+
   create(): void {
     this.view = new BattleView(this);
     this.ui = new BattleUi(document.body);
-    window.addEventListener('pointerdown', this.onTap, true);
-    window.addEventListener('keydown', this.onTap, true);
-    this.events.once('shutdown', () => {
-      window.removeEventListener('pointerdown', this.onTap, true);
-      window.removeEventListener('keydown', this.onTap, true);
-      this.ui.destroy();
-    });
+    this.events.once('shutdown', () => this.ui.destroy());
     void this.run();
   }
 
-  /** The prototype: the test team against a random wild beast of the bay or the delta. */
   private setup(): void {
+    const g = this.session?.game;
+    this.setupInGame = g ? battleSetup(g) : null;
+    this.tameBonus = 1;
+    if (g && this.setupInGame) {
+      this.s = this.setupInGame.state;
+      this.items = g.gear.inventory; // the real backpack: what you use is gone
+      return;
+    }
+    // the prototype (?battaglia): the test team against a random wild beast of the bay or the delta
     const P = BATTLE_PROTOTYPE;
     const team = P.team.map((t) => makeFighter({ speciesId: t.speciesId, variant: 'comune' }, t.level));
     const pick = P.foes[Math.floor(this.rng() * P.foes.length)]!;
@@ -76,21 +78,28 @@ export class BattleScene extends Phaser.Scene {
     const form: BeastForm = { speciesId: pick.speciesId, variant };
     this.s = createBattle(team, makeFighter(form, a + Math.floor(this.rng() * (b - a + 1))));
     this.items = { ...P.items };
-    this.tameBonus = 1;
   }
 
-  private name(side: Side): string {
-    return speciesOf(side === 'you' ? you(this.s).form : this.s.foe.form).name;
+  private name(side: Side): Named {
+    return named(side === 'you' ? you(this.s) : this.s.foe);
   }
 
   private async run(): Promise<void> {
     this.setup();
+    await this.loadArt();
     const s = this.s;
     this.view.setFighter('foe', s.foe.form);
     this.ui.show(s);
     await this.ui.say(BATTLE_TEXT.appears(this.name('foe')));
     await this.view.swimIn('you', you(s).form);
     await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
+    if (this.setupInGame?.first === 'foe') {
+      await this.ui.say(BATTLE_TEXT.ambushed(this.name('foe')), 1.2);
+      await this.foeTurn(); // it touched you: a free attack
+    } else if (this.setupInGame?.first === 'you') {
+      s.foe.stunned = true; // you hit it from behind: it loses its first turn
+      await this.ui.say(BATTLE_TEXT.surprise(this.name('foe')), 1.2);
+    }
     while (!s.over) await this.round(await this.ui.chooseAction(s, this.items));
     this.finish();
   }
@@ -137,6 +146,10 @@ export class BattleScene extends Phaser.Scene {
       if (step.caught) await this.ui.say(BATTLE_TEXT.tamed(this.name('foe')), 2);
       else await this.ui.say(BATTLE_TEXT.tameBroke[Math.min(step.shakes, 2)]!);
     } else if (action.kind === 'flee') {
+      if (this.setupInGame?.noFlee) {
+        await this.ui.say(BATTLE_TEXT.noFlee);
+        return;
+      }
       const ok = tryFlee(s, this.rng);
       await this.ui.say(ok ? BATTLE_TEXT.fleeOk : BATTLE_TEXT.fleeFail);
     }
@@ -169,16 +182,23 @@ export class BattleScene extends Phaser.Scene {
     await this.play(useMove(s, 'foe', s.foeMove, this.rng, dodge), true);
   }
 
-  /** The ring closes on your beast; resolves with how well you tapped. */
+  /** The SCHIVA bar; resolves with how well you tapped. */
   private async runDodge(): Promise<Dodge> {
     const r = makeDodgeRing(this.rng);
-    this.ring = { r, t: 0, tapAt: null };
-    this.ui.dodgeHint(true);
-    while (this.ring.tapAt === null && this.ring.t < ringEnd(r)) await wait(16);
-    const result = judgeDodge(r, this.ring.tapAt);
-    this.ring = null;
-    this.ui.dodgeHint(false);
-    return result;
+    return judgeDodge(r, await this.ui.dodge.run(r));
+  }
+
+  /** The pictures of the beasts that may appear (your team and the wild one), loaded before the battle. */
+  private loadArt(): Promise<void> {
+    const s = this.s;
+    const wanted = [battleArt(s.foe.form, 'foe'), ...s.team.map((f) => battleArt(f.form, 'you'))];
+    for (const a of wanted)
+      if (a.url && !this.textures.exists(a.textureKey)) this.load.image(a.textureKey, a.url);
+    if (!this.load.list.size) return Promise.resolve();
+    return new Promise((done) => {
+      this.load.once('complete', () => done());
+      this.load.start();
+    });
   }
 
   /** Shows the steps of a turn. `announced`: the wild beast's move name was already said. */
@@ -197,7 +217,7 @@ export class BattleScene extends Phaser.Scene {
         await this.view.lunge(st.side);
         if (st.dodge === 'perfect') await this.view.dodgeAside();
         for (const dmg of st.hits) {
-          await this.view.hit(target, dmg, st.crit);
+          await this.view.hit(target, dmg, st.crit, st.type);
           this.ui.setHp(this.s);
         }
         if (st.dodge === 'perfect') await this.ui.say(BATTLE_TEXT.dodged, 0.9);
@@ -230,12 +250,26 @@ export class BattleScene extends Phaser.Scene {
     if (s.over === 'caught') title = BATTLE_TEXT.tamed(this.name('foe'));
     if (s.over === 'lost') title = BATTLE_TEXT.lost;
     if (s.over === 'fled') title = BATTLE_TEXT.fleeOk;
-    this.ui.result(title, lines, () => this.scene.restart());
+    const g = this.session?.game;
+    if (!g || !this.setupInGame) {
+      this.ui.result(title, lines, BATTLE_TEXT.again, () => this.scene.restart());
+      return;
+    }
+    // back to the sea: the results go into the game with its next step
+    g.story.pending.push(...finishBattle(g, battleOutcome(s, this.setupInGame.wildId)));
+    this.ui.result(title, lines, BATTLE_TEXT.back, () => this.backToSea());
+  }
+
+  private backToSea(): void {
+    const session = this.session!;
+    session.inBattle = false;
+    this.scene.stop();
+    this.scene.resume('World');
+    session.emit('battle', false);
   }
 
   override update(_time: number, delta: number): void {
     const dt = Math.min(0.05, delta / 1000);
-    if (this.ring) this.ring.t += dt;
-    this.view.update(dt, this.time.now / 1000, this.ring);
+    this.view.update(dt, this.time.now / 1000);
   }
 }

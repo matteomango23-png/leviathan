@@ -66,7 +66,7 @@ export interface WeaponDef { id: string; name: string; type?: TypeId; damage: nu
 export const WEAPONS: WeaponDef[] = [
   { id: 'arpione', name: 'Fucile subacqueo', damage: 1, cooldown: 0.4, source: 'Iniziale', text: 'Fucile ad arpione: cattura i pesci e sfianca le bestie' },
   { id: 'fiocine', name: 'Fiocine a ventaglio', damage: 1, cooldown: 0.9, source: 'Relitto, Baia di Portofosco', text: '3 dardi a corto raggio, 1 danno ciascuno; catturano i pesci' },
-  { id: 'rete', name: 'Rete zavorrata', damage: 0, cooldown: 3, source: 'Relitto, Barriera Rossa', text: 'Imprigiona i nemici 3 s, rallenta le bestie, raccoglie fino a 5 pesci' },
+  { id: 'rete', name: 'Rete zavorrata', damage: 0, cooldown: 3, source: 'Relitto, Barriera Rossa', text: 'Si apre in acqua e raccoglie fino a 5 pesci in un colpo' },
   { id: 'folgore', name: 'Lancia folgore', type: 'tempesta', damage: 2, cooldown: 2.5, source: 'Relitto, Fossa del Capodoglio', text: 'Colpisce i 3 bersagli più vicini: 2 danni e stordimento' },
   { id: 'runico', name: 'Arpione runico', damage: 3, cooldown: 0.7, source: 'Ricompensa del tempio', text: 'Dardo di luce che trapassa tutto' },
 ];
@@ -112,7 +112,7 @@ export interface SwarmDef {
 }
 export const SWARMS: SwarmDef[] = [
   { id: 'sciame_sardine', name: 'Sciame di sardine', region: 'baia', bindCount: 10, bindWith: ['arpione', 'fiocine', 'rete'], duration: 8, cooldown: 45,
-    fx: ['decoy', 'ring:diver', 'absorbHits:6'], text: 'Un muro di sardine ti circonda: i predatori attaccano loro invece di te',
+    fx: ['decoy', 'ring:diver'], text: 'Un muro di sardine ti nasconde: per 8 s nessuna bestia viene verso di te',
     artPrompt: 'a dense silver school of sardines swirling into a protective sphere around a small diver' },
   { id: 'sciame_meduse', name: 'Sciame di meduse spettrali', region: 'barriera', bindCount: 5, bindWith: ['rete'], duration: 6, cooldown: 50,
     fx: ['barrier:ring', 'stunOnContact:1.5'], text: 'Barriera urticante intorno a te: chi la attraversa resta stordito',

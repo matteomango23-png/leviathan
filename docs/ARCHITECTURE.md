@@ -33,9 +33,12 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
-| `beasts/wild.ts` | Bestie selvatiche: passaggi senza mai girarsi in vista, fuga se seguite, affondo con segnale. |
-| `beasts/wildState.ts`, `beasts/wildStatus.ts` | Stato delle bestie selvatiche; colpi, sfinimento, stordimento, umore. |
-| `beastState.ts`, `beastFights.ts` | Stato condiviso delle bestie; morsi, colpi delle armi, domatura, comparse, compagno. |
+| `beasts/roam.ts` | Bestie selvatiche in esplorazione: nuotano piano nel buio, si girano solo fuori dalla luce; ti puntano, ti ignorano o scivolano via secondo il carattere. |
+| `encounters.ts` | Comparse delle bestie selvatiche e inizio della battaglia (al tocco, o al colpo di fucile: alle spalle attacchi tu per primo). |
+| `beasts/wildState.ts` | Stato delle bestie selvatiche, comparsa e uscita. |
+| `beastState.ts` | Stato condiviso delle bestie: selvatiche, squadra, cavalcatura, battaglia richiesta. |
+| `battleResult.ts` | Prepara la battaglia dal gioco e ne applica il risultato (vita, esperienza, domate, sconfitta, Guardiano). |
+| `abilities.ts` | Abilità delle cavalcature: lo squalo bianco sfonda le ossa, la megattera fa respirare. |
 | `economy/gear.ts` | Denti, sacca dei pesci, mute e potenziamenti, armi, oggetti, zaino. |
 | `economy/backpack.ts` | Uso dello zaino in immersione: armi, oggetti, sciami; legame con lo sciame di sardine. |
 | `economy/missions.ts` | Bacheca: accettare, avanzare, riscuotere. |
@@ -43,10 +46,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `weapons.ts` | Fiocine e rete. |
 | `save/convert.ts`, `save/gearSave.ts` | Da partita a salvataggio e ritorno; controllo dell'equipaggiamento. |
 | `beasts/combat.ts` | Danno delle mosse (tipi e moltiplicatori) e forma del corpo per i colpi. |
-| `beasts/taming.ts` | Minigioco della domatura (fasce e velocità legate alla differenza di livello). |
 | `beasts/team.ts` | Squadra e riserva, sblocco delle mosse, KO, ricarica del richiamo. |
-| `beasts/companion.ts` | La bestia in acqua: arriva dal buio, segue, difende, si cavalca. |
-| `beasts/moves.ts` | Mosse: morso, carica (rompe le ossa antiche), frenesia; attacchi automatici del compagno. |
+| `beasts/mount.ts` | La cavalcatura: chiamata dalla barra, arriva dal buio, ti porta, se ne va quando scendi. |
 | `beastPlay.ts` | Collega tutto quello che riguarda le bestie in un passo di gioco (azione contestuale, domatura, morsi). |
 | `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca, o per crescere); al porto "Nutri" dalla sacca. |
 | `beasts/growth.ts` | Esperienza, livelli, barra del cibo (31-50), forme finali. |
@@ -56,8 +57,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `catching.ts` | Pesci catturati: cuore, ossigeno o sacca; nuove creature nel bestiario. |
 | `save/storySave.ts` | Controllo della storia salvata. |
 | `progress.ts` | Dopo ogni passo: esperienza alla squadra, missioni, profondità massima. |
-| `guardian.ts` | Lo scontro col Guardiano: inizio nella tana, fasi, scorta, ricompensa, fuga e ritorno. |
-| `beasts/arena.ts` | Come si muovono le bestie dentro la tana (giri, affondi, raffiche, coda, fuga dal pozzo). |
+| `guardian.ts` | Il Guardiano nella tana: appare quando entri, ti punta; battaglia senza fuga; ricompensa e ritorno dopo il porto. |
 | `world/lair.ts` | Forma della tana: grotta, pozzo, guscio di roccia. |
 | `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse con livello e danno. |
 | `sanctuary.ts` | Santuari: cura graduale di sub e squadra, punto di rinascita. |
@@ -90,9 +90,10 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `teamPanel.ts`, `pauseMenu.ts` | Squadra (con "Nutri" al porto) e menu di pausa. |
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |
 | `growthBars.ts` | Barre di esperienza e cibo. |
-| `bossBar.ts` | Barra del Guardiano in alto. |
+| `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
+| `dodgeBar.ts` | Il pulsante SCHIVA con la barra, in battaglia. |
 
-## Battaglia a turni (in prova, link con `?battaglia`)
+## Battaglia a turni (parte al contatto con una bestia; prova separata col link `?battaglia`)
 
 | File | Cosa fa |
 |---|---|
@@ -101,7 +102,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
 | `systems/battle/dodge.ts` | L'anello della schivata (tempi, finte, giudizio del tocco). |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi, fa partire la schivata. |
-| `views/battleView.ts` | Il disegno: mare, le due bestie animate, affondi, colpi, svenimenti, anello, conchiglia. |
+| `views/battleView.ts` | Il disegno: mare, le due bestie (immagini a tre quarti o card sfumate), affondi, graffi e scintille, svenimenti, conchiglia. |
 | `ui/battleUi.ts`, `ui/battle.css` | Riquadri di vita, messaggi e menu (Lotta, Zaino, Squadra, Doma, Fuggi). |
 
 ## Come si disegna il mare
@@ -110,7 +111,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
 3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), bolle e linea della superficie (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
-5. **Sopra il buio** (`combatView`): barre della vita con la tacca di sfinimento, numeri dei danni, segnale "domabile".
+5. Le bestie rare brillano un poco nel buio (`beastsLayer`). La vita e i danni si vedono solo in battaglia.
 
 ## Comandi
 

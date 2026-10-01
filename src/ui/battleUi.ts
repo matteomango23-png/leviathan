@@ -1,14 +1,16 @@
 // The battle interface, like Pokémon: the wild beast's box at the top left, yours at the right, the message
 // box at the bottom and the menu (Lotta, Zaino, Squadra, Doma, Fuggi) with its sub-menus.
+import { BATTLE } from '../data/battle';
 import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { TYPES } from '../data/rules';
 import { ITEMS } from '../data/world';
 import type { Action, BattleState } from '../systems/battle/battle';
-import { canUse, type Fighter } from '../systems/battle/fighter';
+import { canUse, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
 import './battle.css';
 import { el } from './dom';
+import { DodgeBar } from './dodgeBar';
 import { ICONS } from './icons';
 
 const POWER_NAMES: Record<string, string> = {
@@ -69,7 +71,8 @@ export class BattleUi {
   private readonly youBox: InfoBox;
   private readonly msg: HTMLDivElement;
   private readonly menu: HTMLDivElement;
-  private readonly hint: HTMLDivElement;
+  /** The SCHIVA bar, shown when the wild beast attacks. */
+  readonly dodge: DodgeBar;
   private advance: (() => void) | null = null;
 
   constructor(parent: HTMLElement) {
@@ -78,7 +81,7 @@ export class BattleUi {
     this.youBox = new InfoBox(this.root, 'you');
     this.msg = el('div', 'bmsg', this.root);
     this.menu = el('div', 'bmenu', this.root);
-    this.hint = el('div', 'bhint', this.root, BATTLE_TEXT.dodgeHint);
+    this.dodge = new DodgeBar(this.root);
     this.msg.addEventListener('pointerdown', () => this.advance?.());
   }
 
@@ -108,10 +111,6 @@ export class BattleUi {
     });
   }
 
-  dodgeHint(on: boolean): void {
-    this.hint.classList.toggle('show', on);
-  }
-
   private button(parent: HTMLElement, label: string, onClick: () => void, cls = ''): HTMLButtonElement {
     const b = el('button', `bbtn ${cls}`, parent, label);
     b.addEventListener('click', (e) => {
@@ -126,7 +125,7 @@ export class BattleUi {
     return new Promise((done) => {
       const me = s.team[s.active]!;
       const main = (): void => {
-        this.msg.textContent = BATTLE_TEXT.whatNext(formName(me.form));
+        this.msg.textContent = BATTLE_TEXT.whatNext(named(me));
         const m = this.menu;
         m.replaceChildren();
         m.className = 'bmenu main';
@@ -163,7 +162,7 @@ export class BattleUi {
         const m = this.menu;
         m.replaceChildren();
         m.className = 'bmenu list';
-        for (const id of Object.keys(items).filter((k) => (items[k] ?? 0) > 0)) {
+        for (const id of Object.keys(items).filter((k) => (items[k] ?? 0) > 0 && k in BATTLE.items)) {
           const name = ITEMS.find((it) => it.id === id)?.name ?? id;
           this.button(m, `${name} ×${items[id]}`, () => done({ kind: 'item', id }));
         }
@@ -204,12 +203,12 @@ export class BattleUi {
     });
   }
 
-  /** The end: a title, some lines and a button to fight again. */
-  result(title: string, lines: string[], again: () => void): void {
+  /** The end: a title, some lines and a button (fight again, or back to the sea). */
+  result(title: string, lines: string[], label: string, onClick: () => void): void {
     const box = el('div', 'bresult', this.root);
     el('h2', '', box, title);
     for (const l of lines) el('p', '', box, l);
-    this.button(box, 'Nuova battaglia', again, 'bbtn-fight');
+    this.button(box, label, onClick, 'bbtn-fight');
   }
 
   destroy(): void {

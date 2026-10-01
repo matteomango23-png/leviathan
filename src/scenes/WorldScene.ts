@@ -21,7 +21,6 @@ import { DELTA } from '../data/worldLayout';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
 import { CameraRig } from '../views/cameraRig';
-import { CombatView } from '../views/combatView';
 import { DiverView } from '../views/diverView';
 import { EffectsView } from '../views/effectsView';
 import { FishView } from '../views/fishView';
@@ -50,7 +49,6 @@ export class WorldScene extends Phaser.Scene {
   private gearFx!: GearFxView;
   private diverView!: DiverView;
   private effects!: EffectsView;
-  private combat!: CombatView;
   private light!: LightView;
   private saveTimer = 0;
   private hurtFlash = 0;
@@ -94,7 +92,6 @@ export class WorldScene extends Phaser.Scene {
     this.effects = new EffectsView(this, L.world);
     this.gearFx = new GearFxView(this, L.world);
     this.light = new LightView(this, L.overlay);
-    this.combat = new CombatView(this, L.overlay);
     this.lampAngle = d.aim;
 
     this.rig.follow(d.x + d.face * CAMERA.lookAhead, d.y, 0, true);
@@ -154,6 +151,16 @@ export class WorldScene extends Phaser.Scene {
     this.session.emit('toast', 'Salvataggio caricato.');
   }
 
+  /** A wild beast touched you or your weapon hit it: the sea stops and the battle opens. */
+  private openBattle(): void {
+    if (!this.state.beasts.battle || this.session.inBattle) return;
+    this.save();
+    this.session.inBattle = true;
+    this.session.emit('battle', true);
+    this.scene.pause();
+    this.scene.launch('Battle', { session: this.session });
+  }
+
   private handleEvents(events: GameEvent[]): void {
     const g = this.state;
     for (const e of events) {
@@ -164,15 +171,13 @@ export class WorldScene extends Phaser.Scene {
         this.hurtFlash = 0.5;
         this.rig.shake();
       } else if (e.type === 'harpoonHitRock') this.effects.puff(e.x, e.y, 3, 0x9aaaaa, 30);
-      else if (e.type === 'damage') this.effects.puff(e.x, e.y, e.target === 'wild' ? 6 : 8, 0xaa3333, 40);
-      else if (e.type === 'wildBite' || e.type === 'tamingFailed') this.rig.shake();
+      else if (e.type === 'battleStart') this.openBattle();
       else if (e.type === 'bonesBroken') {
         this.terrain.invalidateTiles(e.tiles);
         for (const i of e.tiles.slice(0, 6))
           this.effects.puff((i % g.map.cols) * 8 + 4, Math.floor(i / g.map.cols) * 8 + 4, 3, 0xd8ccb0, 60);
         this.rig.shake();
-      } else if (e.type === 'moveUsed') this.effects.puff(e.x, e.y, 4, 0xcfeff5, 30);
-      else if (
+      } else if (
         e.type === 'fishCaught' ||
         e.type === 'tamed' ||
         e.type === 'sanctuaryReached' ||
@@ -187,8 +192,6 @@ export class WorldScene extends Phaser.Scene {
       } else if (e.type === 'wreckOpened' || e.type === 'swarmBound' || e.type === 'missionComplete')
         this.save();
     }
-    this.combat.onEvents(events, this.rig.zoom);
-    this.gearFx.onEvents(events);
     if (events.length) this.session.emit('gameEvents', events);
   }
 
@@ -201,15 +204,14 @@ export class WorldScene extends Phaser.Scene {
       input.shotAt = this.rig.toWorld(this.session.tapScreen.x * dpr, this.session.tapScreen.y * dpr);
       this.session.tapScreen = null;
     }
-    const before = this.rig.worldView();
-    const events = stepGame(g, input, dt, { x: before.x, y: before.y, w: before.width, h: before.height });
+    const events = stepGame(g, input, dt);
     consumePresses(input);
     this.handleEvents(events);
 
     this.saveTimer += dt;
     if (this.saveTimer >= SAVE.autosaveSeconds) {
       this.saveTimer = 0;
-      if (!g.diver.dead && !g.tamingLock) this.save();
+      if (!g.diver.dead && !g.beasts.battle) this.save();
     }
 
     const d = g.diver;
@@ -222,14 +224,14 @@ export class WorldScene extends Phaser.Scene {
     this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
-    const bars = this.beasts.update(g);
+    this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.effects.update(view, g.time, dt);
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
     this.diverView.setHidden(storyHoldsDiver(g));
-    this.gearFx.update(g, rider ?? d, dt, g.time);
+    this.gearFx.update(g, rider ?? d, g.time);
 
     let da = d.aim - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
@@ -244,6 +246,7 @@ export class WorldScene extends Phaser.Scene {
       ...g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 })),
       ...this.places.glowSpots(g.gear),
       ...this.story.glowSpots(g.story, g.chapter2.anchors),
+      ...this.beasts.glowSpots(g),
     ];
     const mods = diverModifiers(g.gear);
     const murk = murkAt(info.cx, info.cy);
@@ -263,6 +266,5 @@ export class WorldScene extends Phaser.Scene {
       glows,
       murk,
     );
-    this.combat.update(info, bars, dt, g.time);
   }
 }
