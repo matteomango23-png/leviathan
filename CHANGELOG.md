@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.2 — Delta e tana dipinti (1 ottobre 2026)
+
+- **Sfondi dipinti per il Delta** (acqua torbida, radici di mangrovia, pedana di sabbia e muschio) **e per la tana dello Sfregiato** (tunnel di costole di balena, pedana di pietra grigia).
+- **Pesce palla selvatico rifatto:** ora ti guarda in faccia (prima si vedeva da dietro, come quando è tuo).
+
 ## v0.8.1 — Ritocchi della battaglia (1 ottobre 2026)
 
 - **La tua bestia è più grande e al centro**, e il suo riquadro è più piccolo: non la copre più.
