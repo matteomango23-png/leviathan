@@ -200,3 +200,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Schivata più difficile:** finestra perfetta ±0,065 s (era 0,09), mezzo danno ±0,15 s (era 0,2), anello più rapido (0,45-0,95 s) e finte più frequenti (45%).
 - **Fuga in base alla forza della bestia:** 60% di base, +20% se sei più veloce, +10% a ogni tentativo, −6% per ogni livello sopra il tuo, −8% per ogni stella di rarità oltre la prima, −25% contro un gigante; sempre tra 5% e 95% (`fleeChance` con test).
 - **Pinne tagliate dal bordo dell'immagine:** lo script sfuma la bestia dove tocca il bordo, invece di lasciare un taglio dritto (`fadeCutEdges`).
+
+## 2026-10-01 — Aggiornamento all'apertura
+
+- Una versione nuova trovata nei primi 8 secondi dopo l'apertura (schermata iniziale, nessuna immersione in corso) si applica subito, con un ricaricamento. Le altre come prima: quando l'app va in secondo piano. Motivo: il proprietario riapriva i link di prova e vedeva ancora le immagini vecchie.

@@ -3,13 +3,19 @@
 // the game saves, reloads silently, and the next time you open it you have the update.
 import { registerSW } from 'virtual:pwa-register';
 
+/** A new version found this soon after opening is applied at once (the title screen is still up). */
+const APPLY_AT_OPEN_MS = 8000;
+
 export function registerOffline(): void {
   if (!('serviceWorker' in navigator) || import.meta.env.DEV) return;
   let updateReady = false;
   const updateSW = registerSW({
     immediate: true,
     onNeedRefresh() {
-      updateReady = true;
+      // found right after opening (nothing played yet): take the new version at once, so a fresh open always
+      // shows the latest game instead of the copy stored on the phone
+      if (performance.now() < APPLY_AT_OPEN_MS) void updateSW(true);
+      else updateReady = true;
     },
   });
   document.addEventListener('visibilitychange', () => {
