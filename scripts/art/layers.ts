@@ -160,3 +160,17 @@ export function keepLargest(px: Uint8ClampedArray, w: number, h: number, minAlph
   for (let id = 2; id < sizes.length; id++) if (sizes[id]! > sizes[best]!) best = id;
   for (let i = 0; i < w * h; i++) if (label[i] !== best) px[i * 4 + 3] = 0;
 }
+
+/**
+ * Where the beasts are, a foreground must be clear: 0 inside a soft oval in the middle of the screen, 1 near
+ * the edges, so rocks and bones only frame the scene (a hanging bone once hid the Sfregiato's face).
+ */
+export function clearCentre(w: number, h: number, feather = 0.18): Float32Array {
+  const m = new Float32Array(w * h);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const d = Math.hypot((x / w - 0.5) / 0.42, (y / h - 0.45) / 0.46);
+      m[y * w + x] = d >= 1 ? 1 : d <= 1 - feather ? 0 : (d - (1 - feather)) / feather;
+    }
+  return m;
+}

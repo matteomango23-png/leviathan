@@ -15,7 +15,15 @@ import {
   type ExtraName,
   type Raw,
 } from './cutout.ts';
-import { blurMask, ellipseMask, fitStage, frameMask, greenShare, keepLargest } from './layers.ts';
+import {
+  blurMask,
+  clearCentre,
+  ellipseMask,
+  fitStage,
+  frameMask,
+  greenShare,
+  keepLargest,
+} from './layers.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -84,6 +92,10 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     if (shape)
       for (let i = 0; i < shape.length; i++) cut[i * 4 + 3] = Math.round(cut[i * 4 + 3]! * shape[i]!);
     if (cleanGreen && e.layer === 'ground') keepLargest(cut, img.width, img.height);
+    if (e.layer === 'front') {
+      const clear = clearCentre(img.width, img.height);
+      for (let i = 0; i < clear.length; i++) cut[i * 4 + 3] = Math.round(cut[i * 4 + 3]! * clear[i]!);
+    }
     if (e.layer === 'ground') {
       const c = await cropped(cut, img);
       await sharp(c.png).webp(webp).toFile(dest);

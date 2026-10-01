@@ -208,19 +208,69 @@ export function removeDarkBackground(img: Raw, bg: Rgb, r: number, opt: CutoutOp
   const band = soft > opt.high ? boxCount(isBg, w, h, 2 * r) : null;
   const out = new Uint8ClampedArray(src.length);
   out.set(src);
+  const edge = new Uint8Array(n); // pixels whose transparency was set here (the outline zone)
   for (let i = 0; i < n; i++) {
     const d = dist[i]!;
     let a: number;
     if (isBg[i]) a = d <= opt.low ? 0 : (d - opt.low) / (opt.high - opt.low);
     else if (band && band[i]! > 0 && d < soft) a = d <= opt.low ? 0 : (d - opt.low) / (soft - opt.low);
     else continue;
+    edge[i] = 1;
     const o = i * 4;
     out[o + 3] = Math.round(a * 255);
+    // un-premultiply against the background, but never brighten a faint edge too much (pale fringes)
     if (a > 0)
       for (let c = 0; c < 3; c++)
-        out[o + c] = Math.max(0, Math.min(255, bg[c]! + (src[o + c]! - bg[c]!) / a));
+        out[o + c] = Math.max(0, Math.min(255, bg[c]! + (src[o + c]! - bg[c]!) / Math.max(a, 0.6)));
   }
+  smoothEdgeAlpha(out, edge, w, h, Math.max(1, Math.round(r / 2)));
   return out;
+}
+
+/**
+ * The square erosion leaves stair-steps along the outline: inside the outline zone the transparency is
+ * averaged over a small square, so the edge becomes a soft gradient.
+ */
+function smoothEdgeAlpha(px: Uint8ClampedArray, edge: Uint8Array, w: number, h: number, r: number): void {
+  const n = w * h;
+  const a = new Float32Array(n);
+  for (let i = 0; i < n; i++) a[i] = px[i * 4 + 3]!;
+  const tmp = new Float32Array(n);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      let s = 0;
+      let k = 0;
+      for (let dx = -r; dx <= r; dx++) {
+        const xx = x + dx;
+        if (xx >= 0 && xx < w) {
+          s += a[y * w + xx]!;
+          k++;
+        }
+      }
+      tmp[y * w + x] = s / k;
+    }
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (!edge[i]) continue;
+      let s = 0;
+      let k = 0;
+      for (let dy = -r; dy <= r; dy++) {
+        const yy = y + dy;
+        if (yy >= 0 && yy < h) {
+          s += tmp[yy * w + x]!;
+          k++;
+        }
+      }
+      px[i * 4 + 3] = Math.min(px[i * 4 + 3]!, Math.round(s / k));
+    }
+}
+
+/** Clears rectangles of a picture (shares of its width and height): stray bits like a blurred far fin. */
+export function eraseRects(px: Uint8ClampedArray, w: number, h: number, rects: readonly number[][]): void {
+  for (const [x0, y0, x1, y1] of rects)
+    for (let y = Math.round(y0! * h); y < Math.round(y1! * h); y++)
+      for (let x = Math.round(x0! * w); x < Math.round(x1! * w); x++) px[(y * w + x) * 4 + 3] = 0;
 }
 
 export interface Box {
