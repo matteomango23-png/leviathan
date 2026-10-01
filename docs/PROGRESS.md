@@ -1,5 +1,30 @@
 # Progressi
 
+## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
+
+**Fatto**
+
+- Costa disegnata a mano (`LAYOUT` in `data/worldLayout.ts`): spiaggia lunga in pendenza dolce con uno scalino sotto il molo, Baia allargata ×1,6, Isola delle Mangrovie (scogliera sopra e sotto l'acqua, passaggio sotto), Porto Fango sulla sua riva est, Delta alla foce del fiume dell'isola, mare aperto spostato di 3372 unità. Il vecchio disegno è conservato con le trasformazioni `bay()`, `delta()`, `east()`.
+- Porti: `PORTS` (Portofosco e Porto Fango, completo); si rinasce nell'ultimo porto visitato (`homePort`, salvato). Aurelio solo a Portofosco.
+- Velocità: sub 42 u/s (7 m/s), scatto 105, squalo in sella ≈55 u/s (`rideSpeedMult` 0,48), inseguimento 2,9 U/s.
+- Salvataggio v7: diver spostato, muro di ossa e botola della tana restano rotti, `homePort`.
+- Test della costa (pendenza, isola, si arriva nuotando dalla spiaggia al Delta passando sotto l'isola, Porto Fango, conversione). 217 test.
+- Visto nel browser: spiaggia e molo, Porto Fango con capanne e menu, scogliera dell'isola, Delta.
+
+**Mancante / da sapere**
+
+- La storia non dice ancora niente di Porto Fango: arriverà col capitolo 3.
+- Il fondale della spiaggia è scuro come il resto: più avanti sabbia più chiara e qualche dettaglio da spiaggia.
+
+**Da provare sull'iPhone**
+
+1. Parti da Portofosco e nuota verso est: senti la spiaggia lunga prima della Baia? La velocità ti piace (a nuoto e in sella)?
+2. Arriva all'isola: in superficie non passi, tuffati sotto.
+3. Riemergi dall'altra parte, a Porto Fango: apri il porto, compra o vendi qualcosa.
+4. Con `?prove` c'è "Portami a Porto Fango".
+
+**Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
+
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
 
 **Fatto**
@@ -29,7 +54,9 @@
 
 **Dopo la tua prova (v0.8.1):** tua bestia più grande e non coperta, schivata più difficile, fuga in base alla forza, pinne tagliate sfumate. Coccodrillo marino rigenerato (davanti e da dietro). Manta e pesce palla da dietro aggiunti (erano già in "asset animali ai": li avevo scambiati per viste di lato). v0.8.2: sfondi dipinti di Delta e tana, pesce palla davanti nuovo (gli originali sono in "asset animali ai/sfondi battaglia" e nelle cartelle delle bestie). Manca solo il coccodrillo albino davanti su fondo nero pulito. v0.8.3: tolta la pinna-schizzo dello squalo bianco da dietro (`BATTLE_ERASE`), primi piani con il centro sempre libero (`clearCentre`), bordi senza scalini.
 
-**Prossima sessione:** se la battaglia ti piace, si continua con la storia (capitolo 3, la Barriera Rossa); restano in lista "Potenzia" con i doppioni e il ribilanciamento per zone.
+**Dopo (v0.8.3-v0.8.6):** macchia dello squalo bianco tolta, primi piani col centro libero, aggiornamento immediato all'apertura, impronta negli indirizzi delle immagini, test delle inquadrature (212 test). La battaglia è approvata dal proprietario.
+
+**Prossima sessione:** prima l'esplorazione, poi la storia (scelte in DECISIONS, "Prima finire l'esplorazione"). Tappa 10 sul ramo `tappa-10-costa`: costa disegnata a mano (porto su spiaggia in pendenza, Baia, isola con passaggio sotto e secondo porto, Delta alla foce attaccato alla terraferma) e cavalcature più lente. Proporre il piano breve al proprietario prima di scrivere codice. Poi: oceano infinito con biomi e ossigeno lungo, barca, bestie uniche.
 
 ## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
 

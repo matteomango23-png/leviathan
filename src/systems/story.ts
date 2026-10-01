@@ -18,7 +18,7 @@ import {
 } from '../data/story';
 import { LAIR } from '../data/guardians';
 import { TILE, WORLD } from '../data/worldLayout';
-import { atPort } from './economy/places';
+import { portAt } from './economy/places';
 import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
 import { guardianOwned, type GuardianWorld } from './guardian';
@@ -144,7 +144,7 @@ function stepTutorial(g: StoryWorld, events: GameEvent[]): void {
       Math.hypot(d.x - from.x, d.y - from.y) > TUTORIAL_SWIM_DISTANCE) ||
     (task.id === 'fish' && events.some((e) => e.type === 'fishCaught')) ||
     (task.id === 'dash' && events.some((e) => e.type === 'dash')) ||
-    (task.id === 'surface' && atPort(d, g.map));
+    (task.id === 'surface' && portAt(d, g.map)?.id === 'portofosco');
   if (!done) return;
   s.tutorial++;
   if (task.id === 'surface') setStep(s, 'pier', events);
@@ -197,7 +197,7 @@ export function stepStory(g: StoryWorld, dt: number, events: GameEvent[]): void 
       stepFindShark(g, events);
       break;
     case 'returnToAurelio':
-      if (atPort(d, g.map)) openDialogue(s, 'end', events);
+      if (portAt(d, g.map)?.id === 'portofosco') openDialogue(s, 'end', events);
       break;
     default:
       break;

@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { ROAM, TEAM_RULES } from '../src/data/beasts';
 import { DIVER } from '../src/data/diver';
-import { TILE } from '../src/data/worldLayout';
+import { bay as bayX, TILE } from '../src/data/worldLayout';
 import { canBreakBones } from '../src/systems/abilities';
 import { contextAction } from '../src/systems/beastPlay';
 import { stepRoam } from '../src/systems/beasts/roam';
@@ -16,6 +16,7 @@ import { SAVE_VERSION, migrate, parseSave, validate } from '../src/systems/save/
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+const X = bayX(900); // a spot in the middle of the bay, in open water
 
 let map: TileMap;
 beforeAll(() => {
@@ -27,7 +28,7 @@ const U = DIVER.lengthUnits;
 
 function bay(seed = 3): GameState {
   const g = createGame(map, null, seed);
-  Object.assign(g.diver, { x: 900, y: 200, vx: 0, vy: 0 });
+  Object.assign(g.diver, { x: X, y: 200, vx: 0, vy: 0 });
   giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 8);
   return g;
 }
@@ -36,7 +37,7 @@ function run(g: GameState, seconds: number, input: InputState = emptyInput(), st
   const all: GameEvent[] = [];
   for (let t = 0; t < seconds; t += DT) {
     g.diver.o2 = g.diver.maxO2;
-    if (still) Object.assign(g.diver, { x: 900, y: 200, vx: 0, vy: 0 });
+    if (still) Object.assign(g.diver, { x: X, y: 200, vx: 0, vy: 0 });
     all.push(...stepGame(g, input, DT));
     consumePresses(input);
   }
@@ -68,8 +69,8 @@ describe('wild beasts in the open sea', () => {
 
   it('never turn around in the light of your lamp', () => {
     const g = bay();
-    const w = place(g, 'tartaruga_marina', 900 + 40, 200, 1); // swimming away from you, in the light
-    w.target = { x: 600, y: 200 }; // it wants to go back past you
+    const w = place(g, 'tartaruga_marina', X + 40, 200, 1); // swimming away from you, in the light
+    w.target = { x: X - 300, y: 200 }; // it wants to go back past you
     const ctx = { diver: g.diver, map, rng: g.rng, dt: DT, hidden: false };
     let turnedInLight = false;
     for (let i = 0; i < 120; i++) {
@@ -84,7 +85,7 @@ describe('wild beasts in the open sea', () => {
 
   it('an aggressive one comes at you: when it touches you a battle starts, it strikes first', () => {
     const g = bay();
-    place(g, 'squalo_bianco', 900 + 70, 200, -1);
+    place(g, 'squalo_bianco', X + 70, 200, -1);
     const ev = run(g, 6);
     const start = ev.find((e) => e.type === 'battleStart');
     expect(start).toBeDefined();
@@ -94,7 +95,7 @@ describe('wild beasts in the open sea', () => {
 
   it('a shy one slips away, but slower than you', () => {
     const g = bay();
-    const w = place(g, 'torpedine', 900 + 50, 200, 1);
+    const w = place(g, 'torpedine', X + 50, 200, 1);
     const d0 = Math.hypot(w.x - 900, w.y - 200);
     run(g, 2);
     expect(Math.hypot(w.x - 900, w.y - 200)).toBeGreaterThan(d0);
@@ -103,7 +104,7 @@ describe('wild beasts in the open sea', () => {
 
   it('hitting one from behind with the gun starts a battle where you strike first', () => {
     const g = bay();
-    const w = place(g, 'tartaruga_marina', 1000, 200, 1); // facing away from you
+    const w = place(g, 'tartaruga_marina', X + 100, 200, 1); // facing away from you
     const ev: GameEvent[] = [];
     expect(weaponHitsBeast(g, w.x, w.y, ev)).toBe(true);
     expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'you' });
@@ -111,8 +112,8 @@ describe('wild beasts in the open sea', () => {
 
   it('with no beast able to fight there is no battle: it bites you and swims off', () => {
     const g = createGame(map, null, 3);
-    Object.assign(g.diver, { x: 900, y: 200 });
-    place(g, 'squalo_bianco', 900 + 60, 200, -1);
+    Object.assign(g.diver, { x: X, y: 200 });
+    place(g, 'squalo_bianco', X + 60, 200, -1);
     const ev = run(g, 4);
     expect(ev.some((e) => e.type === 'noTeam')).toBe(true);
     expect(g.beasts.battle).toBeNull();

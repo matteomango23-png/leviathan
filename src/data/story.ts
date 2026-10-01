@@ -4,7 +4,7 @@
 // Values marked "tuning" are a first pass: change them here, never in systems.
 import { PORT } from './economy';
 import { LAIR } from './guardians';
-import { WORLD } from './worldLayout';
+import { bay, WORLD } from './worldLayout';
 
 /** Where the story is. 'off' = no story (games created by tests or tools). */
 export type StoryStep =
@@ -128,8 +128,8 @@ export const TUTORIAL_SWIM_DISTANCE = 60; // units swum under water to complete 
 
 /** Clues on the sea floor from the port to the lair: chain links, black oil, bones. */
 export const CLUES = [
-  { id: 'catena', x: 380, text: 'Un anello di catena arrugginita, spezzato. Le tracce vanno verso il centro della Baia.' },
-  { id: 'olio', x: 560, text: 'Olio nero sul fondale. E segni di denti enormi sulla roccia.' },
+  { id: 'catena', x: bay(380), text: 'Un anello di catena arrugginita, spezzato. Le tracce vanno verso il centro della Baia.' },
+  { id: 'olio', x: bay(560), text: 'Olio nero sul fondale. E segni di denti enormi sulla roccia.' },
   { id: 'ossa', x: LAIR.x + 70, text: 'Catene spezzate intorno a una botola di ossa. Sotto, qualcosa respira.' },
 ];
 export const CLUE_REACH = 34; // how close you must swim to notice a clue (tuning)

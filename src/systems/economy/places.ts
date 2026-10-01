@@ -1,5 +1,5 @@
-// Places you interact with: the pier of Portofosco and the wrecks/chests on the sea floor.
-import { PORT, WRECKS, WRECK_REACH, type WreckDef } from '../../data/economy';
+// Places you interact with: the piers of Portofosco and Porto Fango, and the wrecks/chests on the sea floor.
+import { PORTS, WRECKS, WRECK_REACH, type PortDef, type WreckDef } from '../../data/economy';
 import type { TileMap } from '../world/tileMap';
 import type { GearState } from './gear';
 
@@ -13,8 +13,19 @@ export function placeWrecks(map: TileMap): Wreck[] {
   return WRECKS.map((def) => ({ def, x: def.x, y: map.floorBelow(def.x, def.y) - 4 }));
 }
 
+/** The harbour whose pier you float at, or null. */
+export function portAt(d: { x: number; y: number; dead: boolean }, map: TileMap): PortDef | null {
+  if (d.dead) return null;
+  return PORTS.find((p) => Math.abs(d.x - p.x) < p.reach && d.y < map.surfaceY + p.surfaceBand) ?? null;
+}
+
 export function atPort(d: { x: number; y: number; dead: boolean }, map: TileMap): boolean {
-  return !d.dead && Math.abs(d.x - PORT.x) < PORT.reach && d.y < map.surfaceY + PORT.surfaceBand;
+  return portAt(d, map) !== null;
+}
+
+/** Where you wake up at a harbour (in the water, by its pier). */
+export function portStart(p: PortDef): { x: number; y: number } {
+  return { x: p.x + 25, y: 38 };
 }
 
 export function nearWreck(

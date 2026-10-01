@@ -1,5 +1,7 @@
 // Game state ⇄ save file.
 import { START } from '../../data/worldLayout';
+import { PORTS, type PortDef } from '../../data/economy';
+import { portStart } from '../economy/places';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
 import type { BackpackWorld } from '../economy/backpack';
@@ -14,6 +16,7 @@ export interface SaveSource extends Pick<
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
+  homePort: PortDef['id'];
 }
 
 export function restoreTeam(save: SaveData): TeamBeast[] {
@@ -59,11 +62,13 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.playTime = Math.round(g.playTime);
   const i = g.sanctuaries.current;
   const sanct = i === null ? undefined : g.sanctuaries.list[i];
+  const home = PORTS.find((p) => p.id === g.homePort) ?? PORTS[0]!;
   s.diver = d.dead
     ? sanct
       ? { x: sanct.x, y: sanct.y - 6 }
-      : START
+      : portStart(home)
     : { x: Math.round(d.x), y: Math.round(d.y) };
+  s.homePort = g.homePort;
   s.fishCaught = { ...g.fishCaught };
   s.seen = [...g.seen];
   s.team = g.beasts.team.map((b) => ({

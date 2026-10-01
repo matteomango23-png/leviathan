@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { MAX_ACTIVE_MISSIONS, PORT, WEAPON_RULES } from '../src/data/economy';
 import { SUITS, SWARMS } from '../src/data/world';
-import { START, WORLD } from '../src/data/worldLayout';
+import { bay, START, WORLD } from '../src/data/worldLayout';
 import {
   createGame,
   currentAction,
@@ -43,6 +43,7 @@ function fishAhead(g: GameState, kind: string, dx: number): void {
     f.alive = false;
     f.respawn = 999;
   }
+  g.diver.x = bay(900); // open water in the bay (the start is over the shallow beach)
   const f = g.fish.fish.find((x) => x.kind === kind)!;
   f.alive = true;
   f.x = g.diver.x + dx;
@@ -102,7 +103,7 @@ describe('the suit sets the maximum depth', () => {
     const drainAt = (extraM: number): number => {
       const g = fresh();
       const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
-      g.diver.x = 340; // the open shaft down to the abyss (the test needs open water at every depth)
+      g.diver.x = bay(340); // the open shaft down to the abyss (the test needs open water at every depth)
       g.diver.y = limitY + extraM * WORLD.unitsPerMetre;
       expect(g.map.hitCircle(g.diver.x, g.diver.y, 5)).toBe(false);
       const y0 = g.diver.y;
@@ -151,7 +152,7 @@ describe('wrecks, weapons and the backpack', () => {
     const g = fresh();
     g.gear.weapons.push('rete');
     g.gear.activeWeapon = 'rete';
-    g.diver.x = 900;
+    g.diver.x = bay(900);
     g.diver.y = 150;
     const dist = WEAPON_RULES.rete.speed * WEAPON_RULES.rete.life;
     const sardines = g.fish.fish.filter((f) => f.kind === 'sardina').slice(0, 8);

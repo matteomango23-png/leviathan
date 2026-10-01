@@ -1,13 +1,39 @@
 // Leviatano — port, teeth economy, wrecks, missions, backpack and swarms (tappa 3).
 // Prices of suits, upgrades, weapons and items are in world.ts. Values marked "tuning" are a first pass.
 
-/** Portofosco: the only base, at the surface where a new game starts. */
-export const PORT = {
+import { bay, delta, east, ISLAND_X, LAYOUT } from './worldLayout';
+
+/** A harbour at the surface: its pier runs from the shore out over the water. */
+export interface PortDef {
+  id: 'portofosco' | 'fango';
+  name: string;
+  x: number; // end of the pier, on the surface (world units)
+  shoreX: number; // where the pier starts, on the land
+  reach: number; // how close (horizontally) to the pier you must be, at the surface
+  surfaceBand: number; // up to this far below the surface still counts as "at the pier"
+}
+
+/** Portofosco, on the mainland beach, where a new game starts. */
+export const PORT: PortDef = {
+  id: 'portofosco',
   name: 'Portofosco',
-  x: 160, // pier position on the surface, just off the west coast (world units)
-  reach: 60, // how close (horizontally) to the pier you must be, at the surface
-  surfaceBand: 48, // up to 8 m below the surface still counts as "at the pier"
+  x: LAYOUT.shoreX + 70,
+  shoreX: LAYOUT.shoreX,
+  reach: 60,
+  surfaceBand: 48, // 8 m
 };
+
+/** Porto Fango (tappa 10): a full harbour on the east shore of the Isola delle Mangrovie, by the Delta. */
+export const PORTO_FANGO: PortDef = {
+  id: 'fango',
+  name: 'Porto Fango',
+  x: LAYOUT.island.x1 + 60,
+  shoreX: ISLAND_X + LAYOUT.island.halfWidth - 4,
+  reach: 60,
+  surfaceBand: 48,
+};
+
+export const PORTS: PortDef[] = [PORT, PORTO_FANGO];
 
 /** Things that open with the context button: wrecks hold a weapon, chests hold teeth. */
 export interface WreckDef {
@@ -18,11 +44,11 @@ export interface WreckDef {
   reward: { weapon?: string; teeth?: number; item?: string };
 }
 export const WRECKS: WreckDef[] = [
-  { id: 'relitto_baia', name: 'Relitto della Baia', x: 1250, y: 200, reward: { weapon: 'fiocine', teeth: 20 } },
-  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: 3420, y: 330, reward: { weapon: 'rete', teeth: 30 } },
-  { id: 'forziere_baia', name: 'Forziere', x: 560, y: 200, reward: { teeth: 60, item: 'bolla_aria' } },
-  { id: 'forziere_reef', name: 'Forziere', x: 3820, y: 200, reward: { teeth: 80 } },
-  { id: 'forziere_crepuscolo', name: 'Forziere', x: 900, y: 640, reward: { teeth: 150, item: 'alga_curativa' } },
+  { id: 'relitto_baia', name: 'Relitto della Baia', x: bay(1250), y: 200, reward: { weapon: 'fiocine', teeth: 20 } },
+  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: east(3420), y: 330, reward: { weapon: 'rete', teeth: 30 } },
+  { id: 'forziere_baia', name: 'Forziere', x: bay(560), y: 200, reward: { teeth: 60, item: 'bolla_aria' } },
+  { id: 'forziere_reef', name: 'Forziere', x: east(3820), y: 200, reward: { teeth: 80 } },
+  { id: 'forziere_crepuscolo', name: 'Forziere', x: bay(900), y: 640, reward: { teeth: 150, item: 'alga_curativa' } },
 ];
 export const WRECK_REACH = 26; // how close you must be to open one
 
@@ -152,11 +178,11 @@ export interface FishSchoolDef {
   roam: [number, number, number, number];
 }
 export const OTHER_FISH_SCHOOLS: FishSchoolDef[] = [
-  { kind: 'sgombro', x: 700, y: 260, roam: [80, 120, 1850, 330] },
-  { kind: 'sgombro', x: 1600, y: 220, roam: [80, 120, 1850, 330] },
-  { kind: 'cefalo', x: 2100, y: 150, roam: [1980, 60, 2420, 200] }, // the Delta
-  { kind: 'cefalo', x: 2320, y: 170, roam: [1980, 60, 2420, 200] },
-  { kind: 'pesce_arciere', x: 2250, y: 40, roam: [1980, 30, 2420, 70] }, // just under the surface
+  { kind: 'sgombro', x: bay(700), y: 260, roam: [LAYOUT.bay.x0, 120, bay(1850), 330] },
+  { kind: 'sgombro', x: bay(1600), y: 220, roam: [LAYOUT.bay.x0, 120, bay(1850), 330] },
+  { kind: 'cefalo', x: delta(2100), y: 150, roam: [delta(1980), 60, delta(2420), 200] }, // the Delta
+  { kind: 'cefalo', x: delta(2320), y: 170, roam: [delta(1980), 60, delta(2420), 200] },
+  { kind: 'pesce_arciere', x: delta(2250), y: 40, roam: [delta(1980), 30, delta(2420), 70] }, // just under the surface
 ];
 export const FISH_LOOK: Record<string, { length: number; tint: number; perSchool: number; speedMult: number }> = {
   sardina: { length: 5, tint: 0xffffff, perSchool: 12, speedMult: 1 },

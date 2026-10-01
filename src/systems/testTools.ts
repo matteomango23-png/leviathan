@@ -1,6 +1,8 @@
 // Tools for the test panel (open the game with ?prove in the link). Not part of normal play.
 import { LAIR } from '../data/guardians';
 import { DELTA } from '../data/worldLayout';
+import { PORTO_FANGO } from '../data/economy';
+import { portStart } from './economy/places';
 import { SPECIES } from '../data/species';
 import type { GameState } from './game';
 import { formLengthUnits, type BeastForm } from './beasts/forms';
@@ -62,4 +64,9 @@ export function goToLair(g: GameState): void {
 export function goToDelta(g: GameState): void {
   const x = (DELTA.x0 + DELTA.x1) / 2;
   Object.assign(g.diver, { x, y: g.map.surfaceY + 50, vx: 0, vy: 0 });
+}
+
+/** At the pier of Porto Fango, on the east shore of the Isola delle Mangrovie. */
+export function goToPortoFango(g: GameState): void {
+  Object.assign(g.diver, { ...portStart(PORTO_FANGO), vx: 0, vy: 0 });
 }

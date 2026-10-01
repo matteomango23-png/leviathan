@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.0 — La Costa (1 ottobre 2026)
+
+- **Spiaggia:** da Portofosco il fondale scende piano per oltre 200 metri prima di arrivare alla Baia (sotto il molo c'è abbastanza acqua per tuffarti).
+- **Baia più grande:** circa una volta e mezza più larga, con tutto quello che c'era (tana dello Sfregiato, muro di ossa, grotte, abisso, relitti, santuari) al suo posto.
+- **Isola delle Mangrovie:** una scogliera che esce dall'acqua tra la Baia e il Delta. In superficie non si passa: ci si tuffa sotto.
+- **Porto Fango:** un porto completo sulla riva est dell'isola (mercato, mute, zaino, bacheca, recinto). Se ci entri, quando perdi rinasci lì.
+- **Delta:** ora è la foce del fiume dell'isola, subito dopo Porto Fango. La nave della Vedova e la balena sono lì.
+- **Più lento e più grande:** il sub nuota a circa 7 m/s (prima 10), lo squalo in sella a circa 9 m/s (prima 30). Le bestie che ti inseguono restano un po' più lente di te.
+- Le partite salvate vengono spostate nel mondo nuovo: le ossa rotte restano rotte.
+- Con `?prove`: nuovo pulsante "Portami a Porto Fango".
+
 ## v0.8.6 — Inquadrature controllate (1 ottobre 2026)
 
 - I giganti selvatici (Sfregiato, squalo albino leggendario, Titano, megattera, orche leggendarie, coccodrillo albino) stanno un po' più in basso: la testa entra sempre nello schermo.

@@ -3,10 +3,12 @@
 // Speeds marked "U/s" are in diver lengths per second (DIVER.lengthUnits).
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
+import { bay, delta, LAYOUT } from './worldLayout';
+
 /** How wild beasts swim around you (they are seen, like in recent Pokémon games). */
 export const ROAM = {
   cruiseSpeed: 1.2, // U/s, wandering slowly
-  chaseSpeed: 3.2, // U/s, an aggressive beast swimming at you (slower than you: you can get away)
+  chaseSpeed: 2.9, // U/s, an aggressive beast swimming at you (slower than you: you can get away; tappa 10: was 3.2)
   shySpeed: 2.2, // U/s, a shy beast slipping away (you can catch it)
   sightRange: 9, // U: it notices you this close
   loseRange: 16, // U: it gives up beyond this
@@ -25,17 +27,19 @@ export const ROAM = {
 };
 
 /** Wild beasts: where they live (world units) and when they come back. */
+
 export interface WildSpawnDef {
   speciesId: string;
   area: [number, number, number, number]; // x0, y0, x1, y1: present while the diver is inside
   respawnSeconds: [number, number];
 }
 export const WILD_SPAWNS: WildSpawnDef[] = [
-  { speciesId: 'squalo_bianco', area: [80, 60, 1900, 380], respawnSeconds: [45, 90] },
-  { speciesId: 'barracuda', area: [80, 60, 1900, 340], respawnSeconds: [15, 35] },
-  { speciesId: 'tartaruga_marina', area: [200, 60, 1800, 320], respawnSeconds: [30, 60] },
-  { speciesId: 'torpedine', area: [100, 180, 1900, 380], respawnSeconds: [25, 50] },
-  { speciesId: 'coccodrillo_marino', area: [1960, 30, 2440, 215], respawnSeconds: [40, 80] }, // the Delta
+  // the white shark keeps to the bay; barracudas and turtles also come over the beach
+  { speciesId: 'squalo_bianco', area: [LAYOUT.bay.x0, 60, bay(1900), 380], respawnSeconds: [45, 90] },
+  { speciesId: 'barracuda', area: [LAYOUT.shoreX + 300, 50, bay(1900), 340], respawnSeconds: [15, 35] },
+  { speciesId: 'tartaruga_marina', area: [LAYOUT.shoreX + 200, 40, bay(1800), 320], respawnSeconds: [30, 60] },
+  { speciesId: 'torpedine', area: [LAYOUT.bay.x0, 180, bay(1900), 380], respawnSeconds: [25, 50] },
+  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
 ];
 
 /** At most this many wild beasts are around you at the same time (tuning). */
@@ -76,7 +80,7 @@ export const TEAM_RULES = {
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   turnSeconds: 0.6, // your mount turns around (animated from the head)
   accelMult: 1.7, // riding: acceleration × the beast's speed
-  rideSpeedMult: 1.6, // tuning: riding speed × the beast's speed stat
+  rideSpeedMult: 0.48, // tuning: riding speed × the beast's speed stat (tappa 10: a white shark ~55 u/s, 1.3× the diver; was 1.6)
   rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // the dash button while riding
 };
 

@@ -7,14 +7,14 @@ export const DIVER = {
   maxHp: 5, // hearts (suits add SuitDef.hpBonus later)
   maxO2: 60, // seconds of air at the surface rate
   accel: 270,
-  maxSpeed: 64, // tuning (× SuitDef.speedMult)
+  maxSpeed: 42, // tuning (× SuitDef.speedMult): 7 m/s (tappa 10, was 64: the world went by too fast)
   drag: 3.2,
   sinkWhenIdle: 10, // slow sinking when not swimming
   aimTurnRate: 10,
   invulnerableAfterHit: 1.2,
   invulnerableAfterRespawn: 1.5,
   respawnDelay: 2,
-  dash: { speed: 150, duration: 0.25, cooldown: 0.8, drag: 0.6 },
+  dash: { speed: 105, duration: 0.25, cooldown: 0.8, drag: 0.6 }, // tappa 10: was 150, slowed with the swim
   oxygen: {
     drainBase: 1, // per second near the surface
     drainDepthExtra: 0.9, // extra per second at full depth
