@@ -65,7 +65,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
         const form = rollWildForm(w.spawn.speciesId, g.rng);
         const p = appearPoint(w, g.map, g.rng, d);
         if (!p) continue;
-        spawnWild(w, form, rollWildLevel(form, g.rng), p.x, p.y, p.x < d.x ? 1 : -1);
+        spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
         present++;
         g.seen.add(w.spawn.speciesId);
         g.seen.add(formKey(form));
