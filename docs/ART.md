@@ -123,7 +123,7 @@ Ordine: `squalo_bianco`, `barracuda`, `tartaruga_marina` (aperta = becco aperto)
 - squalo bianco, con albino, albino leggendario, alfa, Sfregiato e Titano;
 - squalo martello, squalo tigre, tartaruga marina e torpedine.
 
-Del pesce palla c'è solo la vista davanti. Mancano la manta (davanti e dietro), il pesce palla da dietro e tutte le versioni a fauci aperte (facoltative).
+Ci sono anche manta e pesce palla (davanti e dietro). Mancano solo le versioni a fauci aperte (facoltative).
 
 **Orientamento e scontorno li gestisce lo script.** Il nemico guarda a sinistra, la tua bestia va verso destra; se un'immagine guarda dall'altra parte, il file si chiama `<id>_front_flip.jpg` (o `_back_flip`) e viene specchiato. Lo scontorno:
 - legge il colore del fondo dai bordi, quindi va bene anche il blu scuro degli screenshot;
