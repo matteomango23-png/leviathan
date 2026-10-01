@@ -27,6 +27,8 @@
 4. Usa Lotta con mosse di tipi diversi, poi Doma: guarda gli effetti e la conchiglia dipinta.
 5. Dimmi se va fluida (60 fps) e se il testo si legge bene.
 
+**Dopo la tua prova (v0.8.1):** tua bestia più grande e non coperta, schivata più difficile, fuga in base alla forza, pinne tagliate sfumate. Da rigenerare con Gemini (quando Claude in Chrome è collegato): coccodrillo marino (fa schifo), coccodrillo albino davanti su fondo nero pulito, sfondi propri di Delta e tana, manta e pesce palla da dietro.
+
 **Prossima sessione:** se la battaglia ti piace, si continua con la storia (capitolo 3, la Barriera Rossa); restano in lista "Potenzia" con i doppioni e il ribilanciamento per zone.
 
 ## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
