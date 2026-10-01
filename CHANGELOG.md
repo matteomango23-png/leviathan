@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.4 — Aggiornamento immediato (1 ottobre 2026)
+
+- Se apri il gioco e c'è una versione nuova, il gioco si ricarica subito con quella (prima la prendeva solo dopo essere andato in secondo piano, e vedevi ancora la versione vecchia).
+
 ## v0.8.3 — Ritocchi alle immagini (1 ottobre 2026)
 
 - Tolto lo "schizzo di sangue" accanto al muso del tuo squalo bianco (era una pinna sfocata staccata dal corpo).
