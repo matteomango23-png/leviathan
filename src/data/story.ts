@@ -92,7 +92,7 @@ export const DIALOGUES = {
   hintTutorial: [{ who: 'aurelio', text: 'Prendi confidenza col mare: nuota, pesca una sardina, prova lo scatto. Poi torna qui.' }],
   hintFindShark: [
     { who: 'aurelio', text: 'Il mio squalo è nella Baia, lo sento. Segui le catene spezzate verso il centro.' },
-    { who: 'aurelio', text: 'Se trovi ossa antiche, serve una bestia che carichi: uno squalo al livello 7 impara la Carica.' },
+    { who: 'aurelio', text: 'Se trovi ossa antiche, serve uno squalo bianco: domane uno, cavalcalo e sfondale.' },
   ],
   hintDone: [
     { who: 'aurelio', text: 'La nave è andata a est, verso il Delta. Rinforza la squadra: laggiù l’acqua è torbida e piena di denti.' },
@@ -110,7 +110,7 @@ export type DialogueId = keyof typeof DIALOGUES;
 
 /** Short thoughts shown as messages, without stopping the game. */
 export const STORY_NOTES = {
-  gate: 'Ossa antiche, dure come ferro. Solo una bestia che carica può sfondarle (Carica, livello 7).',
+  gate: 'Ossa antiche, dure come ferro. Uno squalo bianco cavalcato può sfondarle (pulsante Sfonda).',
   freed: 'Il collare si spezza e cade nel buio. Lo Sfregiato è libero. Portalo da Aurelio.',
   chapterDone: 'Capitolo 1 completato.',
   anchorBroken: (n: number, total: number): string => `Un ancoraggio cede (${n}/${total}). La balena tira più forte.`,

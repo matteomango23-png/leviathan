@@ -7,7 +7,8 @@ import type { MoveDef } from '../../data/moves';
 import type { Stats } from '../../data/species';
 import type { Rng } from '../math';
 import { moveDamage, moveTypeMult } from '../beasts/combat';
-import { formStats, formType, type BeastForm } from '../beasts/forms';
+import { FEMININE_SPECIES, type Named } from '../../data/battleText';
+import { formName, formStats, formType, type BeastForm } from '../beasts/forms';
 import { makeTeamBeast, movesFor, type TeamBeast } from '../beasts/team';
 
 export interface BattleMove {
@@ -107,3 +108,9 @@ export function hitDamage(att: Fighter, def: Fighter, move: MoveDef, rng: Rng, m
 /** "Superefficace" / "poco efficace" for the battle text. */
 export const effectiveness = (move: MoveDef, def: Fighter): number =>
   moveTypeMult(move.type, formType(def.form));
+
+/** How the battle talks about a fighter: its name, and whether the word is feminine. */
+export const named = (f: Fighter): Named => ({
+  name: formName(f.form),
+  f: FEMININE_SPECIES.includes(f.form.speciesId),
+});

@@ -3,7 +3,7 @@
 // beast attacks. For now it starts on its own with the test team (link with ?battaglia).
 import Phaser from 'phaser';
 import { BATTLE, BATTLE_PROTOTYPE } from '../data/battle';
-import { BATTLE_TEXT } from '../data/battleText';
+import { BATTLE_TEXT, type Named } from '../data/battleText';
 import { ITEMS } from '../data/world';
 import {
   chooseFoeMove,
@@ -23,17 +23,15 @@ import {
   type Side,
   type Step,
 } from '../systems/battle/battle';
-import { judgeDodge, makeDodgeRing, ringEnd, type DodgeRing } from '../systems/battle/dodge';
-import { makeFighter } from '../systems/battle/fighter';
-import { speciesOf, type BeastForm } from '../systems/beasts/forms';
+import { judgeDodge, makeDodgeRing } from '../systems/battle/dodge';
+import { makeFighter, named } from '../systems/battle/fighter';
+import type { BeastForm } from '../systems/beasts/forms';
 import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
 import type { Session } from './session';
-import { BattleView } from '../views/battleView';
-
-const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
+import { BattleView, battleArt } from '../views/battleView';
 
 export class BattleScene extends Phaser.Scene {
   private ui!: BattleUi;
@@ -45,13 +43,6 @@ export class BattleScene extends Phaser.Scene {
   /** In the game (not the ?battaglia prototype): the session and what the battle is about. */
   private session: Session | null = null;
   private setupInGame: BattleSetup | null = null;
-  private ring: { r: DodgeRing; t: number; tapAt: number | null } | null = null;
-  private readonly onTap = (e: Event): void => {
-    if (!this.ring || this.ring.tapAt !== null) return;
-    if (e instanceof KeyboardEvent && ![' ', 'enter'].includes(e.key.toLowerCase())) return;
-    e.preventDefault();
-    this.ring.tapAt = this.ring.t;
-  };
 
   constructor() {
     super('Battle');
@@ -64,13 +55,7 @@ export class BattleScene extends Phaser.Scene {
   create(): void {
     this.view = new BattleView(this);
     this.ui = new BattleUi(document.body);
-    window.addEventListener('pointerdown', this.onTap, true);
-    window.addEventListener('keydown', this.onTap, true);
-    this.events.once('shutdown', () => {
-      window.removeEventListener('pointerdown', this.onTap, true);
-      window.removeEventListener('keydown', this.onTap, true);
-      this.ui.destroy();
-    });
+    this.events.once('shutdown', () => this.ui.destroy());
     void this.run();
   }
 
@@ -95,12 +80,13 @@ export class BattleScene extends Phaser.Scene {
     this.items = { ...P.items };
   }
 
-  private name(side: Side): string {
-    return speciesOf(side === 'you' ? you(this.s).form : this.s.foe.form).name;
+  private name(side: Side): Named {
+    return named(side === 'you' ? you(this.s) : this.s.foe);
   }
 
   private async run(): Promise<void> {
     this.setup();
+    await this.loadArt();
     const s = this.s;
     this.view.setFighter('foe', s.foe.form);
     this.ui.show(s);
@@ -196,16 +182,23 @@ export class BattleScene extends Phaser.Scene {
     await this.play(useMove(s, 'foe', s.foeMove, this.rng, dodge), true);
   }
 
-  /** The ring closes on your beast; resolves with how well you tapped. */
+  /** The SCHIVA bar; resolves with how well you tapped. */
   private async runDodge(): Promise<Dodge> {
     const r = makeDodgeRing(this.rng);
-    this.ring = { r, t: 0, tapAt: null };
-    this.ui.dodgeHint(true);
-    while (this.ring.tapAt === null && this.ring.t < ringEnd(r)) await wait(16);
-    const result = judgeDodge(r, this.ring.tapAt);
-    this.ring = null;
-    this.ui.dodgeHint(false);
-    return result;
+    return judgeDodge(r, await this.ui.dodge.run(r));
+  }
+
+  /** The pictures of the beasts that may appear (your team and the wild one), loaded before the battle. */
+  private loadArt(): Promise<void> {
+    const s = this.s;
+    const wanted = [battleArt(s.foe.form, 'foe'), ...s.team.map((f) => battleArt(f.form, 'you'))];
+    for (const a of wanted)
+      if (a.url && !this.textures.exists(a.textureKey)) this.load.image(a.textureKey, a.url);
+    if (!this.load.list.size) return Promise.resolve();
+    return new Promise((done) => {
+      this.load.once('complete', () => done());
+      this.load.start();
+    });
   }
 
   /** Shows the steps of a turn. `announced`: the wild beast's move name was already said. */
@@ -224,7 +217,7 @@ export class BattleScene extends Phaser.Scene {
         await this.view.lunge(st.side);
         if (st.dodge === 'perfect') await this.view.dodgeAside();
         for (const dmg of st.hits) {
-          await this.view.hit(target, dmg, st.crit);
+          await this.view.hit(target, dmg, st.crit, st.type);
           this.ui.setHp(this.s);
         }
         if (st.dodge === 'perfect') await this.ui.say(BATTLE_TEXT.dodged, 0.9);
@@ -277,7 +270,6 @@ export class BattleScene extends Phaser.Scene {
 
   override update(_time: number, delta: number): void {
     const dt = Math.min(0.05, delta / 1000);
-    if (this.ring) this.ring.t += dt;
-    this.view.update(dt, this.time.now / 1000, this.ring);
+    this.view.update(dt, this.time.now / 1000);
   }
 }

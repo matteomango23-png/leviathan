@@ -171,16 +171,19 @@ export function coverCrop(
   return { left: 0, top: Math.round((h - ch) / 2), width: w, height: ch };
 }
 
+/** card: illustration · side: profile for the open sea · front/back: three-quarter pictures for battle. */
+export type InboxKind = 'card' | 'side' | 'side_open' | 'front' | 'front_open' | 'back' | 'back_open';
+
 /**
  * Splits an inbox file name into the beast id and its kind.
  * A profile that faces left can be named `<id>_side_left.jpg` / `<id>_side_open_left.jpg`: it is mirrored.
  */
-export function parseInboxName(
-  file: string,
-): { id: string; kind: 'card' | 'side' | 'side_open'; mirror: boolean } | null {
-  const m = /^(.+?)_(card|side_open|side)(_left)?\.(jpe?g|png|webp)$/i.exec(file);
+export function parseInboxName(file: string): { id: string; kind: InboxKind; mirror: boolean } | null {
+  const m = /^(.+?)_(card|side_open|side|front_open|front|back_open|back)(_left)?\.(jpe?g|png|webp)$/i.exec(
+    file,
+  );
   if (!m) return null;
-  const kind = m[2]!.toLowerCase() as 'card' | 'side' | 'side_open';
+  const kind = m[2]!.toLowerCase() as InboxKind;
   if (kind === 'card' && m[3]) return null;
   return { id: m[1]!.toLowerCase(), kind, mirror: !!m[3] };
 }

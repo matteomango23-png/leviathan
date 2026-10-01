@@ -62,3 +62,6 @@ export const ART_KEYS: readonly string[] = [
   'tartaruga_marina',
   'torpedine',
 ];
+
+// Three-quarter battle pictures (<id>_front for the wild one, <id>_back for yours, + _open).
+export const BATTLE_ART_KEYS: readonly string[] = [];

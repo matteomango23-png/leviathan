@@ -6,10 +6,11 @@ import { RARITY } from '../data/cards';
 import { TYPES } from '../data/rules';
 import { ITEMS } from '../data/world';
 import type { Action, BattleState } from '../systems/battle/battle';
-import { canUse, type Fighter } from '../systems/battle/fighter';
+import { canUse, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
 import './battle.css';
 import { el } from './dom';
+import { DodgeBar } from './dodgeBar';
 import { ICONS } from './icons';
 
 const POWER_NAMES: Record<string, string> = {
@@ -70,7 +71,8 @@ export class BattleUi {
   private readonly youBox: InfoBox;
   private readonly msg: HTMLDivElement;
   private readonly menu: HTMLDivElement;
-  private readonly hint: HTMLDivElement;
+  /** The SCHIVA bar, shown when the wild beast attacks. */
+  readonly dodge: DodgeBar;
   private advance: (() => void) | null = null;
 
   constructor(parent: HTMLElement) {
@@ -79,7 +81,7 @@ export class BattleUi {
     this.youBox = new InfoBox(this.root, 'you');
     this.msg = el('div', 'bmsg', this.root);
     this.menu = el('div', 'bmenu', this.root);
-    this.hint = el('div', 'bhint', this.root, BATTLE_TEXT.dodgeHint);
+    this.dodge = new DodgeBar(this.root);
     this.msg.addEventListener('pointerdown', () => this.advance?.());
   }
 
@@ -109,10 +111,6 @@ export class BattleUi {
     });
   }
 
-  dodgeHint(on: boolean): void {
-    this.hint.classList.toggle('show', on);
-  }
-
   private button(parent: HTMLElement, label: string, onClick: () => void, cls = ''): HTMLButtonElement {
     const b = el('button', `bbtn ${cls}`, parent, label);
     b.addEventListener('click', (e) => {
@@ -127,7 +125,7 @@ export class BattleUi {
     return new Promise((done) => {
       const me = s.team[s.active]!;
       const main = (): void => {
-        this.msg.textContent = BATTLE_TEXT.whatNext(formName(me.form));
+        this.msg.textContent = BATTLE_TEXT.whatNext(named(me));
         const m = this.menu;
         m.replaceChildren();
         m.className = 'bmenu main';

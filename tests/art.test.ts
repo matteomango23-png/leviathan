@@ -89,3 +89,28 @@ describe('art: inbox names', () => {
     expect(parseInboxName('foto.jpg')).toBeNull();
   });
 });
+
+describe('battle pictures', () => {
+  it('recognises the three-quarter pictures for battle', () => {
+    expect(parseInboxName('squalo_bianco_front.jpg')).toEqual({
+      id: 'squalo_bianco',
+      kind: 'front',
+      mirror: false,
+    });
+    expect(parseInboxName('squalo_bianco_front_open.jpg')).toEqual({
+      id: 'squalo_bianco',
+      kind: 'front_open',
+      mirror: false,
+    });
+    expect(parseInboxName('tartaruga_marina_back.png')).toEqual({
+      id: 'tartaruga_marina',
+      kind: 'back',
+      mirror: false,
+    });
+    expect(parseInboxName('sfregiato_back_open.jpeg')).toEqual({
+      id: 'sfregiato',
+      kind: 'back_open',
+      mirror: false,
+    });
+  });
+});

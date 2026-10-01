@@ -12,6 +12,6 @@ export const LAIR = {
   ry: 56,
   wall: 26, // solid rock around the cave, so no other cave ever opens into it
   shaft: { x0: 752, x1: 808, yTop: 300 }, // the way in, from the sea floor down to the cave
-  gateRows: [45, 46], // tile rows of ancient bones across the shaft (broken by a charge, level 7)
+  gateRows: [45, 46], // tile rows of ancient bones across the shaft (a white shark you ride breaks them)
 };
 
