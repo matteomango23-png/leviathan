@@ -47,3 +47,15 @@ Tutte con lo stesso inizio, cambia solo l'oggetto: `Simple bold game icon, a sin
 | `tipo_corazzato.jpg` | `a turtle shell seen from above` |
 
 Le icone le colora il gioco (bianco → colore del tipo). Finché mancano, uso le mie disegnate.
+
+## 4. Da generare adesso (1 ottobre 2026)
+
+Consigli che hanno funzionato col coccodrillo: allega la card della bestia (`art-inbox/<id>_card.jpeg`) come riferimento di stile e chiedi sempre **"the WHOLE body fully inside the picture with a wide empty margin all around, nothing touches the edges, pure flat black background, no floor, no shadow, no haze, no particles, no light rays"**. Salva direttamente in `art-inbox/`: i nomi li sistemo io.
+
+| Cosa | Vista | Prompt (dopo aver allegato la card) |
+|---|---|---|
+| Coccodrillo albino leggendario | davanti | `Use the attached illustration as style reference. The same legendary albino saltwater crocodile swimming underwater, three-quarter front view, head toward the viewer turned slightly to the LEFT, jaws slightly open. [regole sopra]. Square image.` |
+| Manta | davanti | `Use the attached illustration as style reference. The same giant manta ray swimming toward the viewer, three-quarter front view, turned slightly to the LEFT, wings spread. [regole sopra]. Square image.` |
+| Manta | da dietro | `The same manta ray seen from behind and slightly above, swimming away toward the upper RIGHT, wings spread. [regole sopra]. Square image.` |
+| Pesce palla | da dietro | `The same pufferfish seen from behind, three-quarter rear view, swimming away toward the upper RIGHT, spines raised. [regole sopra]. Square image.` |
+| Sfondi Delta e tana | 4 strati ciascuno | come nella sezione 1 di questo file (`delta`, `tana`) |
