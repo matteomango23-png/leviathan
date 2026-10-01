@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.1 — Ritocchi della battaglia (1 ottobre 2026)
+
+- **La tua bestia è più grande e al centro**, e il suo riquadro è più piccolo: non la copre più.
+- **Schivare è più difficile.**
+- **Fuggire dipende dalla bestia:** facile da una comune del tuo livello, difficile da una più forte o rara, quasi impossibile da un leggendario (ma ogni tentativo aiuta un po').
+- Le pinne che uscivano dall'immagine (squalo albino leggendario, coda del coccodrillo albino) ora sfumano invece di essere tagliate.
+- **Coccodrillo marino nuovo** (davanti e da dietro), rigenerato con Gemini.
+
 ## v0.8.0 — Battaglia più bella (1 ottobre 2026)
 
 - **Le bestie in battaglia sono le immagini vere a tre quarti**: davanti la selvatica, da dietro la tua. Ci sono quasi tutte: squali (anche albino, alfa, Sfregiato, Titano, albino leggendario), coccodrilli, orche, megattera, barracuda, tartaruga, torpedine, murena, Re Corallo.

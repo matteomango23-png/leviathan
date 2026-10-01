@@ -193,3 +193,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Nuova dipendenza `@fontsource/baloo-2`** (SIL Open Font License): il carattere è dentro il gioco, quindi funziona offline. Si caricano solo le lettere latine nei pesi 600, 700 e 800 (`ui/fonts.ts`).
 - **Effetti per tipo disegnati dal codice** (graffi, fulmini, ghiaccio, inchiostro, onde d'urto), senza librerie né file esterni: leggeri sull'iPhone e coerenti coi colori dei tipi.
 - **Immagini a tre quarti scontornate dallo script**: il colore del fondo si legge dai bordi, si toglie una cornice sottile, e lo sfondo arriva solo attraverso zone scure *larghe*, così le ombre del corpo di uno squalo scuro non vengono bucate. Il suffisso `_flip` specchia un'immagine rivolta dalla parte sbagliata.
+
+## 2026-10-01 — Ritocchi dopo la prova della v0.8.0 sull'iPhone
+
+- **La tua bestia è più grande e più al centro** (× 1,22, è vicina alla telecamera; pedana al bordo in basso, come in Pokémon) e il suo riquadro è compatto (senza la riga del tipo), così non la copre più.
+- **Schivata più difficile:** finestra perfetta ±0,065 s (era 0,09), mezzo danno ±0,15 s (era 0,2), anello più rapido (0,45-0,95 s) e finte più frequenti (45%).
+- **Fuga in base alla forza della bestia:** 60% di base, +20% se sei più veloce, +10% a ogni tentativo, −6% per ogni livello sopra il tuo, −8% per ogni stella di rarità oltre la prima, −25% contro un gigante; sempre tra 5% e 95% (`fleeChance` con test).
+- **Pinne tagliate dal bordo dell'immagine:** lo script sfuma la bestia dove tocca il bordo, invece di lasciare un taglio dritto (`fadeCutEdges`).

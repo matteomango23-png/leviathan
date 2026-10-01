@@ -82,6 +82,12 @@ export function formStars(form: BeastForm): number {
   return Math.min(5, s.rarity + extra);
 }
 
+/** Legendaries, final forms, Guardians and named beasts, colossal species: drawn huge, hard to flee from. */
+export function isGiant(form: BeastForm): boolean {
+  const s = speciesOf(form);
+  return !!form.final || !!form.unique || !!s.legendary || s.size === 'colossale';
+}
+
 export function formType(form: BeastForm): TypeId | 'variabile' {
   return speciesOf(form).type;
 }

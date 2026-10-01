@@ -23,11 +23,11 @@ export const BATTLE = {
   },
   /** The dodge: a ring closes on your beast; tap when it touches it. */
   dodge: {
-    closeSeconds: [0.55, 1.05] as [number, number], // tuning: how long the ring takes to close (random each time)
-    perfectSeconds: 0.09, // tuning: ± this around the moment it closes = no damage (hard on purpose)
-    grazeSeconds: 0.2, // ± this = half damage
+    closeSeconds: [0.45, 0.95] as [number, number], // tuning: how long the ring takes to close (random each time)
+    perfectSeconds: 0.065, // tuning: ± this around the moment it closes = no damage (hard on purpose; was 0.09)
+    grazeSeconds: 0.15, // ± this = half damage (was 0.2)
     grazeMult: 0.5,
-    pauseChance: 0.35, // the ring sometimes stops for a moment (a feint) before closing
+    pauseChance: 0.45, // the ring sometimes stops for a moment (a feint) before closing
     pauseSeconds: [0.15, 0.35] as [number, number],
   },
   /** Taming (like a Poké Ball): the chance falls with rarity and level, rises when it is worn out. */
@@ -39,7 +39,17 @@ export const BATTLE = {
     levelPenalty: 0.85, // × this for every level the beast is above your strongest
     shakes: 3, // the shell shakes this many times before it holds
   },
-  flee: { base: 0.5, fasterBonus: 0.3, perTry: 0.15 }, // tuning
+  /** Fleeing: harder from stronger, rarer and giant beasts (owner, 1 ottobre 2026). Tuning. */
+  flee: {
+    base: 0.6,
+    fasterBonus: 0.2,
+    perTry: 0.1, // each new try is a little easier
+    perLevelAbove: 0.06, // for each level the wild beast is above yours
+    perStar: 0.08, // for each star of rarity above one
+    giant: 0.25, // legendaries, final forms, Guardians, colossal species
+    min: 0.05,
+    max: 0.95,
+  },
   ai: { randomChoice: 0.2 }, // the wild beast picks its best move, or a random one this often
   /** Backpack items usable in battle (ITEMS in world.ts). */
   items: {
@@ -80,11 +90,12 @@ export const BATTLE_STAGE = {
     giant: 0.82, // …a giant is at least this big…
     max: 1.05, // …and nothing is bigger than this
     foeDistance: 0.82, // the wild beast is farther away: × this
+    youCloser: 1.22, // yours is close to the camera, seen from behind: × this (owner: "looked like a wren")
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
     foe: { x: 0.64, y: 0.5 },
-    you: { x: 0.3, y: 0.9 },
+    you: { x: 0.35, y: 1.0 },
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
   /** A wild beast taller than half the screen stands lower, by this share of the extra, so its head stays in. */
