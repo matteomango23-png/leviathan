@@ -222,3 +222,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - L'isola è roccia sopra e sotto l'acqua fino a ~27 m; la terra emersa e la roccia hanno la stessa larghezza (altrimenti la roccia veniva tagliata dal bordo della zona e diventava un muro dritto).
 - Porto Fango è un porto completo (scelta del proprietario); si rinasce nell'ultimo porto in cui si è entrati.
 - Velocità (scelta del proprietario): sub 7 m/s, squalo in sella circa 1,3 volte il sub.
+
+## 2026-10-01 — La prima bestia, le evoluzioni, il KO (dopo la prova della v0.9.0)
+
+- **Problema:** con le battaglie a turni senza bestie non si poteva né combattere né domare, e il capitolo 1 (lo Sfregiato) era bloccato.
+- **Tre bestie iniziali uniche** (scelta del proprietario: cuccioli leggendari di tre tipi): Zanna (Predatore), Guscio (Corazzato), Scintilla (Tempesta), livello 5. Con il cerchio dei cinque tipi un triangolo perfetto non esiste: Corazzato batte Predatore, Tempesta batte Corazzato, Predatore e Tempesta sono pari. La scelta compare dopo l'apertura, o al caricamento di una partita senza bestie; il gioco aspetta (`systems/starter.ts`, salvata come `starter` in `story.seen`).
+- **Evoluzioni** ai livelli 16 e 36 (`evolvesTo`, `evolveLevel` in `species.ts`): la bestia cambia specie e tiene le mosse del primo stadio (`movesFrom`). Immagini provvisorie da una bestia simile (`artFrom`) finché arrivano quelle del proprietario (`docs/PROMPT-INIZIALI.md`). Gli altri due iniziali torneranno come bestie uniche rare, adulte, nell'oceano (tappa delle bestie uniche).
+- **Squadra tutta KO:** come Pokémon, se una bestia selvatica ti tocca perdi i sensi e ti risvegli al santuario o al porto di casa con tutti curati, perdendo il 10% dei denti (`BLACKOUT`).

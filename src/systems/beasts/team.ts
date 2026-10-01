@@ -2,7 +2,7 @@
 import { TEAM_RULES } from '../../data/beasts';
 import { movesOf, type MoveDef } from '../../data/moves';
 import { PROGRESSION } from '../../data/rules';
-import { formStats, type BeastForm } from './forms';
+import { formStats, type BeastForm, moveSpeciesOf } from './forms';
 
 export interface TeamBeast {
   uid: string;
@@ -53,7 +53,7 @@ export function strongestLevel(all: TeamBeast[]): number {
 
 /** Moves in slot order, with their unlock level and whether this beast has unlocked them. */
 export function movesFor(b: TeamBeast): { move: MoveDef; unlockLevel: number; unlocked: boolean }[] {
-  return movesOf(b.form.speciesId).map((move) => {
+  return movesOf(moveSpeciesOf(b.form)).map((move) => {
     const unlockLevel = PROGRESSION.moveUnlockLevels[move.slot - 1] ?? 1;
     return { move, unlockLevel, unlocked: b.level >= unlockLevel };
   });

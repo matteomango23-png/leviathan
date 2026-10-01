@@ -160,3 +160,8 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     borrowTint: '#6f818c',
   },
 };
+
+/** Every beast of yours KO and a wild one touches you: you black out, like Pokémon (owner, 1 ottobre 2026). */
+export const BLACKOUT = {
+  teethLoss: 0.1, // tuning: share of your teeth lost
+};

@@ -22,6 +22,17 @@ const m = (species: string, slot: 1 | 2 | 3, name: string, type: MoveTypeId, coo
   ({ id: `${species}_${slot}`, species, slot, name, type, cooldown, power, fx, text, anim });
 
 export const MOVES: MoveDef[] = [
+  // ---- The starters (a line keeps the moves of its first stage)
+  m('zanna', 1, 'Zannata', 'predatore', 1.2, 'medio', [], 'Un morso profondo'),
+  m('zanna', 2, 'Squarcio', 'predatore', 6, 'alto', ['x2vsWounded'], 'Danno doppio su chi è già ferito'),
+  m('zanna', 3, 'Frenesia preistorica', 'predatore', 18, 'alto', ['frenzy:3'], 'Tre morsi furiosi di fila'),
+  m('guscio', 1, 'Testata di pietra', 'corazzato', 1.5, 'basso', ['stunChance:0.15:1'], 'Danno basso, piccola probabilità di stordire'),
+  m('guscio', 2, 'Corazza viva', 'corazzato', 8, 'nessuno', ['shield:diver:next'], 'Per due colpi subisce metà danni'),
+  m('guscio', 3, 'Frana', 'corazzato', 18, 'altissimo', [], 'Un colpo che fa tremare il fondale'),
+  m('scintilla', 1, 'Scintilla', 'tempesta', 1.2, 'basso', ['stunChance:0.2:1'], 'Danno basso, può stordire'),
+  m('scintilla', 2, 'Frusta elettrica', 'tempesta', 6, 'medio', ['hits:2'], 'Due frustate elettriche'),
+  m('scintilla', 3, 'Tempesta', 'tempesta', 18, 'alto', ['stun:2'], 'Una scarica che stordisce'),
+
   // ---- Baia di Portofosco
   m('barracuda', 1, 'Morso rapido', 'predatore', 1, 'basso', ['hits:2'], 'Due morsi veloci'),
   m('barracuda', 2, 'Affondo', 'predatore', 5, 'medio', ['dash', 'ranged'], 'Scatta sul bersaglio da lontano'),

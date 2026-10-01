@@ -43,7 +43,12 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
     }
     case 'noTeam':
-      return ['Nessuna bestia in grado di combattere: curale a un santuario o al porto.', 3.5];
+      return null; // the blackout message says it all
+    case 'blackout':
+      return [
+        `La tua squadra è tutta KO: perdi i sensi. Ti risvegli ${e.place} con le bestie curate${e.teethLost ? `. Hai perso ${e.teethLost} denti` : ''}.`,
+        5,
+      ];
     case 'battleLost':
       return ['La tua squadra è sfinita. Curala a un santuario.', 3.5];
     case 'tamed': {
@@ -79,6 +84,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       const b = tamed(e.uid);
       const move = e.move ? ` Nuova mossa: ${e.move}.` : '';
       return b ? [`${formName(b.form)} sale al livello ${e.level}!${move}`, e.move ? 4 : 2.4] : null;
+    }
+    case 'evolved': {
+      const b = tamed(e.uid);
+      return b ? [`${e.from} si evolve in ${formName(b.form)}!`, 4.5] : null;
     }
     case 'finalForm': {
       const b = tamed(e.uid);

@@ -33,6 +33,22 @@ export function formKey(form: BeastForm): string {
   return `${form.speciesId}${variant}${form.final ? '_finale' : ''}`;
 }
 
+/** Whose moves a form uses: an evolved stage keeps the moves of the first stage of its line. */
+export function moveSpeciesOf(form: BeastForm): string {
+  return speciesOf(form).movesFrom ?? form.speciesId;
+}
+
+/**
+ * Picture keys to try for a form, best first: its own, its species', then the stand-in pictures of a species
+ * that has none yet (a starter until its own images arrive).
+ */
+export function artKeysOf(form: BeastForm): string[] {
+  const keys = [formKey(form), form.speciesId];
+  const stand = speciesOf(form).artFrom;
+  if (stand) keys.push(stand);
+  return keys;
+}
+
 /** Italian name shown to the player. */
 export function formName(form: BeastForm): string {
   const s = speciesOf(form);

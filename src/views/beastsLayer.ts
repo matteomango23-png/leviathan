@@ -4,13 +4,14 @@
 import Phaser from 'phaser';
 import { TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { formKey, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, formKey, type BeastForm } from '../systems/beasts/forms';
+import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
-import { BeastSprite, resolveSpriteKey } from './beastView';
+import { BeastSprite } from './beastView';
 
 const spriteOf = (form: BeastForm): string =>
-  resolveSpriteKey(formKey(form), form.speciesId) ?? formKey(form);
+  artKeysOf(form).find((k) => SPRITE_KEYS.includes(k)) ?? formKey(form);
 
 /** An albino without its own sprite yet is drawn with the species' one, lightened. */
 const isPaleSprite = (form: BeastForm): boolean =>

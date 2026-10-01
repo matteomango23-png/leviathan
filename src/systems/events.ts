@@ -20,7 +20,8 @@ export type GameEvent =
   | { type: 'battleWon'; speciesId: string }
   | { type: 'battleLost' }
   | { type: 'battleFled' }
-  | { type: 'noTeam' }
+  | { type: 'noTeam' } // a beast touched you with every beast of yours KO: you black out (blackout)
+  | { type: 'blackout'; teethLost: number; place: string }
   // story
   | { type: 'storyStep'; step: StoryStep }
   | { type: 'dialogueOpened'; id: DialogueId }
@@ -37,6 +38,7 @@ export type GameEvent =
   | { type: 'dismounted' }
   | { type: 'beastKo'; uid: string }
   | { type: 'levelUp'; uid: string; level: number; move?: string }
+  | { type: 'evolved'; uid: string; from: string } // a starter became its next stage
   | { type: 'finalForm'; uid: string }
   | { type: 'beastFed'; uid: string; food: number }
   | { type: 'bonesBroken'; tiles: number[] }

@@ -162,3 +162,13 @@ export const SCENES = {
     length: 90,
   },
 };
+
+/** The first beast, chosen right after the opening (systems/starter.ts). */
+export const STARTER = {
+  level: 5, // tuning
+  title: 'Scegli il tuo compagno',
+  aurelio:
+    "«Il mare non perdona chi nuota da solo. Ho cresciuto tre creature antiche, nate prima dei nostri nonni: scegline una. Crescerà con te.»",
+  evolves: (name: string, level: number): string => `Al livello ${level} diventa ${name}`,
+  choose: 'Scegli',
+};

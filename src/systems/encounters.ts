@@ -2,7 +2,6 @@
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { BEAST_BODY, ROAM, WILD_RULES } from '../data/beasts';
-import { hurtDiver } from './diver';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
@@ -14,7 +13,7 @@ import type { BattleRequest, BeastWorld } from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
- * battle: it bites you (a heart) and swims off for a while.
+ * battle: like Pokémon you black out (game.ts wakes you at your sanctuary or harbour with the team healed).
  */
 export function requestBattle(
   g: BeastWorld,
@@ -25,8 +24,6 @@ export function requestBattle(
   if (g.beasts.battle || g.diver.dead) return;
   if (!teamMembers(g.beasts.team).some((b) => !b.ko && b.hp > 0)) {
     w.calm = ROAM.calmAfterBattle;
-    g.diver.vx = (g.diver.x - w.x >= 0 ? 1 : -1) * ROAM.noTeamKnock;
-    hurtDiver(g.diver, 1, events);
     events.push({ type: 'noTeam' });
     return;
   }

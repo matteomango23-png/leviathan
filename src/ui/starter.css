@@ -1,0 +1,99 @@
+/* The choice of the first beast: a dark veil, Aurelio's words, three cards (landscape iPhone). */
+.starter {
+  position: fixed;
+  inset: 0;
+  z-index: 60; /* above the touch zones of the controls */
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) calc(env(safe-area-inset-right, 0px) + 12px)
+    calc(env(safe-area-inset-bottom, 0px) + 8px) calc(env(safe-area-inset-left, 0px) + 12px);
+  background: radial-gradient(ellipse at center, rgba(4, 12, 18, 0.88), rgba(0, 0, 0, 0.96));
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  color: #f1e9da;
+}
+.starter[hidden] {
+  display: none;
+}
+.starter-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #e8c987;
+}
+.starter-aurelio {
+  max-width: min(720px, 90vw);
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  font-style: italic;
+  text-align: center;
+  color: #d9d2c4;
+}
+.starter-row {
+  display: flex;
+  gap: 12px;
+  max-height: calc(100vh - 110px);
+}
+.starter-card {
+  --tc: #888;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(220px, 29vw);
+  padding: 8px 10px 10px;
+  border: 1px solid color-mix(in srgb, var(--tc) 55%, rgba(201, 168, 106, 0.4));
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(20, 28, 34, 0.95), rgba(5, 9, 13, 0.95));
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 18px color-mix(in srgb, var(--tc) 25%, transparent);
+}
+.starter-art {
+  width: 100%;
+  max-height: 38vh;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.starter-name {
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.starter-type {
+  padding: 0 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tc) 55%, #120d0a);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+}
+.starter-trait,
+.starter-evolves {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+}
+.starter-evolves {
+  color: #e8c987;
+}
+.starter-btn {
+  margin-top: 8px;
+  padding: 6px 26px;
+  border: 1px solid rgba(201, 168, 106, 0.6);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tc) 45%, #0b0e10);
+  color: #f1e9da;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.starter-btn:active {
+  transform: scale(0.96);
+}

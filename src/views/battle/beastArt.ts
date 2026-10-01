@@ -4,17 +4,17 @@ import type Phaser from 'phaser';
 import { assetUrl } from '../../data/assets';
 import { ART_KEYS, BATTLE_ART_KEYS } from '../../data/sprites.generated';
 import type { Side } from '../../systems/battle/battle';
-import { formKey, type BeastForm } from '../../systems/beasts/forms';
+import { artKeysOf, type BeastForm } from '../../systems/beasts/forms';
 import { rarityTier } from '../../systems/battle/stage';
 
 /** The picture of a form in battle and whether it is a three-quarter image (true) or the card (false). */
 export function battleArt(form: BeastForm, side: Side): { url: string; textureKey: string; own: boolean } {
-  const key = formKey(form);
   const suffix = side === 'foe' ? '_front' : '_back';
-  for (const k of [key, form.speciesId])
+  const keys = artKeysOf(form);
+  for (const k of keys)
     if (BATTLE_ART_KEYS.includes(`${k}${suffix}`))
       return { url: assetUrl(`sprites/${k}${suffix}.webp`), textureKey: `battle-${k}${suffix}`, own: true };
-  const card = ART_KEYS.includes(key) ? key : form.speciesId; // a variant without its own card uses the species'
+  const card = keys.find((k) => ART_KEYS.includes(k)) ?? form.speciesId; // own card, the species', or a stand-in
   return { url: assetUrl(`art/${card}.webp`), textureKey: `card-${card}`, own: false };
 }
 

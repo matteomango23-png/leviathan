@@ -24,6 +24,6 @@ export function validateStory(raw: unknown): SavedStory | null {
       raw.clues,
       CLUES.map((c) => c.id),
     ),
-    seen: known(raw.seen, [...Object.keys(DIALOGUES), 'gate', 'freed']),
+    seen: known(raw.seen, [...Object.keys(DIALOGUES), 'gate', 'freed', 'starter']),
   };
 }
