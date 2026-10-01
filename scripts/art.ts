@@ -8,6 +8,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import {
   bodyLine,
@@ -166,6 +167,22 @@ async function makeCard(src: string, dest: string): Promise<string> {
 }
 
 /** Writes src/data/sprites.generated.ts: which beast sprites exist (so the game never asks for a missing one). */
+/** "  'sprites/x.webp': 'ab12cd34'," lines for every picture in the folders the game loads from. */
+async function hashes(): Promise<string> {
+  const lines: string[] = [];
+  for (const dir of ['sprites', 'art', 'bg', 'items', 'ui']) {
+    if (!existsSync(join('public', dir))) continue;
+    for (const f of (await readdir(join('public', dir))).filter((x) => x.endsWith('.webp')).sort()) {
+      const h = createHash('md5')
+        .update(await readFile(join('public', dir, f)))
+        .digest('hex')
+        .slice(0, 8);
+      lines.push(`  '${dir}/${f}': '${h}',`);
+    }
+  }
+  return lines.join('\n');
+}
+
 async function writeSpriteList(): Promise<void> {
   const files = (await readdir('public/sprites')).filter((f) => f.endsWith('.webp'));
   const battle = files.filter((f) => /_(front|back)(_open)?\.webp$/.test(f)).map((f) => f.slice(0, -5));
@@ -192,7 +209,9 @@ async function writeSpriteList(): Promise<void> {
     `// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).\n` +
     `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
     `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +
-    `export const UI_ICON_KEYS: readonly string[] = [\n${list(await names('public/ui'))}\n];\n`;
+    `export const UI_ICON_KEYS: readonly string[] = [\n${list(await names('public/ui'))}\n];\n\n` +
+    `// A fingerprint of each picture: added to its address, so a phone never shows an old copy (data/assets.ts).\n` +
+    `export const ASSET_HASHES: Readonly<Record<string, string>> = {\n${await hashes()}\n};\n`;
   await writeFile('src/data/sprites.generated.ts', text, 'utf8');
 }
 

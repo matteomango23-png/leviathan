@@ -1,6 +1,7 @@
 // The picture of a beast in battle: its three-quarter image (`<id>_front` for the wild one, `<id>_back` for
 // yours, docs/ART.md) or, until it exists, its card illustration with soft faded edges.
 import type Phaser from 'phaser';
+import { assetUrl } from '../../data/assets';
 import { ART_KEYS, BATTLE_ART_KEYS } from '../../data/sprites.generated';
 import type { Side } from '../../systems/battle/battle';
 import { formKey, type BeastForm } from '../../systems/beasts/forms';
@@ -12,9 +13,9 @@ export function battleArt(form: BeastForm, side: Side): { url: string; textureKe
   const suffix = side === 'foe' ? '_front' : '_back';
   for (const k of [key, form.speciesId])
     if (BATTLE_ART_KEYS.includes(`${k}${suffix}`))
-      return { url: `sprites/${k}${suffix}.webp`, textureKey: `battle-${k}${suffix}`, own: true };
+      return { url: assetUrl(`sprites/${k}${suffix}.webp`), textureKey: `battle-${k}${suffix}`, own: true };
   const card = ART_KEYS.includes(key) ? key : form.speciesId; // a variant without its own card uses the species'
-  return { url: `art/${card}.webp`, textureKey: `card-${card}`, own: false };
+  return { url: assetUrl(`art/${card}.webp`), textureKey: `card-${card}`, own: false };
 }
 
 /** A card illustration with its edges faded to transparent (an ellipse), made once per card. */

@@ -204,3 +204,5 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 2026-10-01 — Aggiornamento all'apertura
 
 - Una versione nuova trovata nei primi 8 secondi dopo l'apertura (schermata iniziale, nessuna immersione in corso) si applica subito, con un ricaricamento. Le altre come prima: quando l'app va in secondo piano. Motivo: il proprietario riapriva i link di prova e vedeva ancora le immagini vecchie.
+
+- **Impronta nell'indirizzo delle immagini** (`?h=` + 8 caratteri dell'MD5, scritti da `npm run art` in `ASSET_HASHES`, usati da `data/assets.ts`): anche dopo l'aggiornamento, il browser dentro l'app del telefono mostrava ancora una vecchia immagine dello squalo bianco con lo stesso nome. La copia offline ignora il parametro `h`, quindi funziona anche senza rete. Un test controlla che le impronte corrispondano ai file.

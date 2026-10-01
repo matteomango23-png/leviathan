@@ -34,6 +34,8 @@ export default defineConfig(({ command }) => ({
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         navigateFallback: 'index.html',
+        // pictures are asked with ?h=<fingerprint> (data/assets.ts): the stored copy still answers offline
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^h$/],
       },
     }),
   ],

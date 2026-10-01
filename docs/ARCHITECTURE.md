@@ -110,6 +110,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `views/battle/tameShell.ts`, `damageNumber.ts` | La conchiglia di cattura (dipinta o disegnata) e il numero del danno. |
 | `views/battle/pose.ts`, `tween.ts` | La posa di una bestia (spostamenti, luce, buio, aura) e le animazioni come promesse. |
 | `views/battle/beastArt.ts`, `battleAssets.ts` | Quale immagine usa ogni bestia e cosa si carica prima della battaglia. |
+| `data/assets.ts` | Indirizzi delle immagini con la loro impronta, così il telefono non mostra copie vecchie. |
 | `ui/battleUi.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri, messaggi, comandi e mosse nello stile dei Pokémon recenti; icone dei comandi e dei tipi; il carattere Baloo 2. |
 
 ## Come si disegna il mare
