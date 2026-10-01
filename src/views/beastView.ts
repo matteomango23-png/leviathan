@@ -7,7 +7,8 @@ import { OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
-const OVERLAP = 1.07; // strips overlap a little so no seams show on the outside of a bend
+const OVERLAP = 1.07;
+const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
 
 export const spriteUrl = (key: string, open: boolean): string => `sprites/${key}${open ? '_open' : ''}.webp`;
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
@@ -65,6 +66,8 @@ export interface BeastPoseView {
   turnFrom?: 1 | -1;
   /** Frenzy: red eyes and shaking. */
   rage?: boolean;
+  /** An albino drawn with the normal sprite (no albino one yet): lightened to look pale. */
+  pale?: boolean;
 }
 
 export class BeastSprite {
@@ -157,6 +160,13 @@ export class BeastSprite {
         .setRotation(a)
         .setScale(w, 1);
       const shade = turning ? 0.45 + 0.55 * Math.abs(fm) : 1;
+      if (p.pale && p.flash <= 0) {
+        // screen tint: lightens the dark sprite towards bone white
+        const k = Math.round(ALBINO_SCREEN * shade);
+        s.setTintMode(Phaser.TintModes.SCREEN).setTint((k << 16) | (k << 8) | Math.round(k * 0.96));
+        continue;
+      }
+      s.setTintMode(Phaser.TintModes.MULTIPLY);
       const base = p.flash > 0 ? [255, 154, 138] : p.rage ? [255, 208, 200] : [255, 255, 255];
       if (shade < 1 || p.flash > 0 || p.rage)
         s.setTint(((base[0]! * shade) << 16) | ((base[1]! * shade) << 8) | (base[2]! * shade));

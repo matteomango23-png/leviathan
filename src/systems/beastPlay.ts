@@ -19,11 +19,10 @@ export { weaponHitsBeast } from './beastFights';
 
 export type ContextAction = 'doma' | 'cavalca' | 'scendi' | null;
 
-function tiredWildInReach(g: BeastWorld): WildBeast | undefined {
+function tiredWildInReach(g: BeastWorld, frac = TAMING_FLOW.reachFrac): WildBeast | undefined {
   const d = g.diver;
   return g.beasts.wilds.find(
-    (w) =>
-      isInWater(w) && w.mood === 'tired' && distanceToBody(w, d.x, d.y) < w.length * TAMING_FLOW.reachFrac,
+    (w) => isInWater(w) && w.mood === 'tired' && distanceToBody(w, d.x, d.y) < w.length * frac,
   );
 }
 
@@ -31,8 +30,10 @@ function tiredWildInReach(g: BeastWorld): WildBeast | undefined {
 export function contextAction(g: BeastWorld): ContextAction {
   const b = g.beasts;
   if (g.diver.dead || b.taming) return null;
-  if (b.riding) return 'scendi';
+  // taming first, even while riding (taming makes you climb down)
   if (tiredWildInReach(g)) return 'doma';
+  if (b.riding) return 'scendi';
+  if (tiredWildInReach(g, TAMING_FLOW.noMountFrac)) return null; // close to a tired beast: never "Cavalca"
   const c = b.companion;
   const mount = activeBeast(g);
   // only mounts (GDD "cavalcatura") can be ridden; companions and support beasts act by themselves

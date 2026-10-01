@@ -8,7 +8,13 @@ import { diverModifiers } from '../systems/economy/gear';
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { startNewGame, storyHoldsDiver } from '../systems/story';
-import { backupBrokenSave, loadFromStorage, writeToStorage } from '../systems/save/storage';
+import {
+  backupBrokenSave,
+  loadFromStorage,
+  startOverInStorage,
+  swapWithPreviousGame,
+  writeToStorage,
+} from '../systems/save/storage';
 import { generateWorld } from '../systems/world/worldGen';
 import { murkAt } from '../systems/world/zones';
 import { DELTA } from '../data/worldLayout';
@@ -97,6 +103,7 @@ export class WorldScene extends Phaser.Scene {
     this.scale.on('resize', this.onResize, this);
     this.session.on('importSave', this.onImport, this);
     this.session.on('saveNow', this.save, this);
+    this.session.on('switchGame', this.onSwitchGame, this);
     const onHide = (): void => {
       if (document.visibilityState === 'hidden') this.save();
     };
@@ -106,6 +113,7 @@ export class WorldScene extends Phaser.Scene {
       this.scale.off('resize', this.onResize, this);
       this.session.off('importSave', this.onImport, this);
       this.session.off('saveNow', this.save, this);
+      this.session.off('switchGame', this.onSwitchGame, this);
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', this.save);
     });
@@ -116,9 +124,25 @@ export class WorldScene extends Phaser.Scene {
     this.terrain.update(this.rig.worldView(), true);
   }
 
+  /** Set when leaving this game: nothing may be saved over the new choice any more. */
+  private switching = false;
+
   private readonly save = (): void => {
+    if (this.switching) return;
     writeToStorage(toSave(this.state, new Date()));
   };
+
+  /** New game or back to the previous one: the storage is switched, then the game starts again from it. */
+  private onSwitchGame(to: 'new' | 'previous'): void {
+    this.save();
+    const ok = to === 'new' ? startOverInStorage() : swapWithPreviousGame();
+    if (!ok) {
+      this.session.emit('toast', 'Non riesco a cambiare partita: la memoria del browser è bloccata.');
+      return;
+    }
+    this.switching = true;
+    window.location.reload();
+  }
 
   private onImport(save: SaveData): void {
     applySave(this.state, save);

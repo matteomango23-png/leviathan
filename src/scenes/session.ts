@@ -18,6 +18,8 @@ export interface SessionEvents {
   importSave: (save: SaveData) => void;
   /** Save now (e.g. before exporting). */
   saveNow: () => void;
+  /** Leave this game: 'new' starts over (the current one becomes the previous game), 'previous' swaps back. */
+  switchGame: (to: 'new' | 'previous') => void;
   /** The diver reached the pier: open the port menu. */
   openPort: () => void;
 }

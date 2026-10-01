@@ -156,3 +156,14 @@ Decisioni del proprietario sulle orche matriarche, la Madre delle madri, l'orca 
 - **La Vedova Nera:** la sua nave è all'ancora al centro del Delta con la balena incatenata a 3 ancoraggi sul fondale. Avvicinandoti parla lei; poi il coccodrillo del Delta diventa il suo (alfa, livello 12, barra grande in alto). Gli ancoraggi si rompono con le armi (8 colpi d'arpione ciascuno). Liberata, la megattera (livello 10) si unisce alla squadra e nuota con te; la nave salpa verso la Barriera Rossa e il coccodrillo la segue, a meno che tu non l'abbia domato.
 - **Non si salva** lo stato degli ancoraggi: se ricarichi a metà, lo scontro nel Delta riparte (come per i Guardiani).
 - **Due capitoli, un solo stato della storia:** `systems/story.ts` è il capitolo 1 e la parte comune; `systems/chapter2.ts` il capitolo 2; `systems/chapters.ts` li unisce (chiusura dei dialoghi, obiettivo) senza dipendenze circolari.
+
+## 2026-10-01 — Svolta dopo la prova completa del proprietario
+
+Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare era lento, il combattimento in tempo reale poco divertente (le bestie a immagine piatta non possono girarsi, quindi passano e scappano e non si possono inseguire), i compagni inutili, le missioni senza peso. Decisioni:
+
+- **Tutto quello che non è il combattimento copia Pokémon:** progressione per zone con livelli crescenti e boss di poco sopra, cattura più difficile per le bestie rare, squadra sempre accessibile, zaino con gli oggetti, schermate e flusso alla Pokémon.
+- **Combattimento a turni 1 contro 1, come Pokémon**, aperto quando tocchi o colpisci una bestia durante l'esplorazione (che resta in tempo reale). In più: quando il nemico attacca, un tocco al momento giusto fa schivare, **e deve essere difficile**.
+- **Doppioni:** nella scheda della bestia un pulsante "Potenzia" (solo se hai doppioni di quella specie) apre un sottomenu dove scegli i doppioni da sacrificare e vedi quanta esperienza guadagna.
+- **Tipi sempre visibili** su scheda e bestiario, con forte contro / debole contro.
+- **Arma:** fucile subacqueo; si mira e si spara solo con lo stick destro (un tocco sullo schermo non spara più); quando cavalchi non spari.
+- **Ordine dei lavori:** 1) correzioni veloci (salvataggi e nuova partita, fucile, pulsanti, albini riconoscibili, sub incastrato nel fondale, pulsante contestuale); 2) prova di una battaglia a turni da provare sull'iPhone; 3) se piace, nuovo design di battaglia, cattura, progressione e doppioni, e si riadattano Baia e Delta; 4) storia con ritratti, mondo più grande, grafica degli ambienti. Il capitolo 3 aspetta.

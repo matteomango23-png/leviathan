@@ -114,6 +114,22 @@ export class TileMap {
     return { x: (x0 + x1) / 2, y: (y0 + y1) / 2 };
   }
 
+  /** The nearest point to (x, y) where a circle of radius r fits in open water (rings of growing size). */
+  nearestOpen(x: number, y: number, r: number): { x: number; y: number } {
+    if (!this.hitCircle(x, y, r)) return { x, y };
+    const step = this.tileSize / 2;
+    for (let ring = 1; ring < 60; ring++) {
+      const n = ring * 8;
+      for (let k = 0; k < n; k++) {
+        const a = (k / n) * Math.PI * 2 - Math.PI / 2; // upwards first: usually the way out of the floor
+        const px = x + Math.cos(a) * ring * step;
+        const py = y + Math.sin(a) * ring * step;
+        if (!this.hitCircle(px, py, r)) return { x: px, y: py };
+      }
+    }
+    return { x, y };
+  }
+
   /** First rock surface straight below a point. */
   floorBelow(x: number, y: number): number {
     let yy = y;

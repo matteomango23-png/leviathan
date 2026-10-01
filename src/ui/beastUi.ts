@@ -7,7 +7,7 @@ import { needle } from '../systems/beasts/taming';
 import { maxHpOf, movesFor, teamMembers } from '../systems/beasts/team';
 import type { GameEvent } from '../systems/events';
 import { currentAction, type GameState } from '../systems/game';
-import { artUrl } from './art';
+import { setArt } from './art';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 
@@ -106,7 +106,7 @@ export class BeastUi {
       const key = formKey(b.form);
       if (s.img.dataset.key !== key) {
         s.img.dataset.key = key;
-        s.img.src = artUrl(b.form);
+        setArt(s.img, b.form);
       }
       s.root.title = `${formName(b.form)} · liv. ${b.level}`;
       s.fill.style.width = `${Math.round((b.hp / maxHpOf(b)) * 100)}%`;
