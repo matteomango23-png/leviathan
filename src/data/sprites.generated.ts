@@ -117,6 +117,14 @@ export const BG_KEYS: readonly string[] = [
   'baia_front',
   'baia_ground',
   'baia_mid',
+  'delta_far',
+  'delta_front',
+  'delta_ground',
+  'delta_mid',
+  'tana_far',
+  'tana_front',
+  'tana_ground',
+  'tana_mid',
 ];
 
 export const ITEM_ART_KEYS: readonly string[] = [
