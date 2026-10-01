@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.1 — La prima bestia (1 ottobre 2026)
+
+- **Scegli il tuo compagno:** subito dopo l'inizio Aurelio ti fa scegliere tra tre creature preistoriche uniche: **Zanna** (Predatore), **Guscio** (Corazzato), **Scintilla** (Tempesta). Se la tua partita non ha nessuna bestia, la scelta compare appena la apri: niente più blocco.
+- **Evoluzioni come Pokémon:** al livello 16 e al 36 la tua bestia cambia nome e diventa più grande (Zanna → Squarcio → Zannarossa, Guscio → Rocciaguscio → Archelon, Scintilla → Saetta → Folgore) e tiene le sue mosse. Finché non ci sono le loro immagini usano quelle di squalo, tartaruga e torpedine.
+- **Squadra tutta KO:** se una bestia ti tocca perdi i sensi e ti risvegli al santuario (o al porto) con la squadra curata; perdi il 10% dei denti.
+
 ## v0.9.0 — La Costa (1 ottobre 2026)
 
 - **Spiaggia:** da Portofosco il fondale scende piano per oltre 200 metri prima di arrivare alla Baia (sotto il molo c'è abbastanza acqua per tuffarti).

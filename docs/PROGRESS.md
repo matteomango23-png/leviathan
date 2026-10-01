@@ -23,6 +23,8 @@
 3. Riemergi dall'altra parte, a Porto Fango: apri il porto, compra o vendi qualcosa.
 4. Con `?prove` c'è "Portami a Porto Fango".
 
+**Aggiunta (v0.9.1, dopo la tua prova):** scelta della prima bestia (Zanna, Guscio, Scintilla) appena finita l'apertura o al caricamento di una partita senza bestie; evoluzioni ai livelli 16 e 36; squadra tutta KO = perdi i sensi e ti risvegli curato (−10% denti). Visto nel browser: la schermata di scelta e "Scintilla entra nella tua squadra!". Immagini dei 9 stadi: prompt in `docs/PROMPT-INIZIALI.md`. 224 test.
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
