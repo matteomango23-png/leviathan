@@ -25,6 +25,10 @@
 
 **Aggiunta (v0.9.1, dopo la tua prova):** scelta della prima bestia (Zanna, Guscio, Scintilla) appena finita l'apertura o al caricamento di una partita senza bestie; evoluzioni ai livelli 16 e 36; squadra tutta KO = perdi i sensi e ti risvegli curato (−10% denti). Visto nel browser: la schermata di scelta e "Scintilla entra nella tua squadra!". Immagini dei 9 stadi: prompt in `docs/PROMPT-INIZIALI.md`. 224 test.
 
+**Aggiunta (v0.9.2):** immagini dei 9 stadi elaborate (45 file, `BATTLE_ENCLOSED` per i buchi chiusi di Scintilla e Folgore); animazione di evoluzione (`ui/evolutionShow.ts`, mette in pausa il mondo); linea evolutiva nella scheda; esperienza dai pesci (`XP_RULES.fishXp*`), curva più dolce (`12·L^1,5`) e premi più alti (`rewardBase` 18); mare pieno (`WILD_SPAWNS` con visitatori a livelli propri, `maxPresent` 5, 17 banchi di sardine). Vista l'animazione nel browser (Zanna → Squarcio). 244 test.
+
+**Da provare (v0.9.2):** scegli l'iniziale, combatti e pesca sardine fino al 16: arriva in tempi giusti? Vedi l'animazione? Il mare è abbastanza pieno o troppo (troppe battaglie)?
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
