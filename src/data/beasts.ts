@@ -55,15 +55,17 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
   // the open sea east: the reef and the kelp forest
-  // pesce palla, murena and manta join when their side pictures exist (only battle pictures so far)
+  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [15, 35] }, // its bite picture is the puffed-up one
+  { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'murena', area: REEF, respawnSeconds: [25, 50] },
   { speciesId: 'barracuda', area: REEF, respawnSeconds: [15, 35], level: [6, 8] },
-  { speciesId: 'barracuda', area: REEF, respawnSeconds: [20, 40], level: [6, 8] },
-  { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [60, 110] },
+  { speciesId: 'manta', area: REEF, respawnSeconds: [70, 140] },
   { speciesId: 'torpedine', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
   { speciesId: 'tartaruga_marina', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
   { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [50, 100] },
   { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
   { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
+  { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
 ];
 
 /** At most this many wild beasts are around you at the same time (tuning). */
