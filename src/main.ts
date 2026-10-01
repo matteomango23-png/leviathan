@@ -8,6 +8,7 @@ import { MenusScene } from './scenes/MenusScene';
 import { UIScene } from './scenes/UIScene';
 import { WorldScene } from './scenes/WorldScene';
 import { registerOffline } from './pwa';
+import { loadGameFont } from './ui/fonts';
 
 const dpr = (): number => Math.min(CAMERA.maxDpr, window.devicePixelRatio || 1);
 // The page can start with no size (e.g. opened in the background): fall back, then resize when shown.
@@ -16,6 +17,7 @@ const size = (): { w: number; h: number } => ({
   h: Math.max(64, Math.round((window.innerHeight || 720) * dpr())),
 });
 
+void loadGameFont();
 const { w, h } = size();
 const game = new Phaser.Game({
   type: Phaser.WEBGL,

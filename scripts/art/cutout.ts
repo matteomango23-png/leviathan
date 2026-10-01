@@ -12,21 +12,59 @@ export interface CutoutOptions {
   low: number;
   /** Pixels between low and high fade out; the flood fill stops at high. */
   high: number;
+  /** Optional: just outside the background, pixels up to this far from it fade too (soft glow halos). */
+  soft?: number;
 }
 
 export const DEFAULT_CUTOUT: CutoutOptions = { low: 10, high: 34 };
+
+/** An RGB colour. */
+export type Rgb = readonly [number, number, number];
+
+/**
+ * The background colour of a picture: the median of its border pixels, channel by channel
+ * (screenshots of AI images often have a dark navy background instead of pure black).
+ */
+export function borderColor(img: Raw): Rgb {
+  const { width: w, height: h, data } = img;
+  const ch: number[][] = [[], [], []];
+  const take = (x: number, y: number): void => {
+    const o = (y * w + x) * 4;
+    for (let c = 0; c < 3; c++) ch[c]!.push(data[o + c]!);
+  };
+  for (let x = 0; x < w; x += 2) {
+    take(x, 0);
+    take(x, h - 1);
+  }
+  for (let y = 0; y < h; y += 2) {
+    take(0, y);
+    take(w - 1, y);
+  }
+  const med = (a: number[]): number => a.sort((p, q) => p - q)[a.length >> 1]!;
+  return [med(ch[0]!), med(ch[1]!), med(ch[2]!)];
+}
 
 /**
  * Removes the black background: flood fill from the image border through dark pixels only,
  * so dark parts inside the creature (eyes, mouth) are kept. Edges get a soft alpha ramp
  * and their colour is "un-darkened" so no black halo remains.
  */
-export function removeBlackBackground(img: Raw, opt: CutoutOptions = DEFAULT_CUTOUT): Uint8ClampedArray {
+export function removeBlackBackground(
+  img: Raw,
+  opt: CutoutOptions = DEFAULT_CUTOUT,
+  bg: Rgb = [0, 0, 0],
+): Uint8ClampedArray {
   const { width: w, height: h } = img;
   const src = img.data;
   const out = new Uint8ClampedArray(src.length);
   out.set(src);
-  const bright = (i: number): number => Math.max(src[i * 4]!, src[i * 4 + 1]!, src[i * 4 + 2]!);
+  // how far a pixel is from the background colour (for black: its brightest channel)
+  const bright = (i: number): number =>
+    Math.max(
+      Math.abs(src[i * 4]! - bg[0]),
+      Math.abs(src[i * 4 + 1]! - bg[1]),
+      Math.abs(src[i * 4 + 2]! - bg[2]),
+    );
   const seen = new Uint8Array(w * h);
   const queue = new Int32Array(w * h);
   let head = 0;
@@ -53,10 +91,9 @@ export function removeBlackBackground(img: Raw, opt: CutoutOptions = DEFAULT_CUT
     const o = i * 4;
     out[o + 3] = Math.round(a * 255);
     if (a > 0) {
-      // un-premultiply against black: the faint edge keeps the creature's colour, not black
-      out[o] = Math.min(255, src[o]! / a);
-      out[o + 1] = Math.min(255, src[o + 1]! / a);
-      out[o + 2] = Math.min(255, src[o + 2]! / a);
+      // un-premultiply against the background: the faint edge keeps the creature's colour, not black
+      for (let c = 0; c < 3; c++)
+        out[o + c] = Math.max(0, Math.min(255, bg[c]! + (src[o + c]! - bg[c]!) / a));
     }
     if (x > 0) push(i - 1);
     if (x < w - 1) push(i + 1);
@@ -72,6 +109,116 @@ export function removeBlackBackground(img: Raw, opt: CutoutOptions = DEFAULT_CUT
       for (const d of [-1, 1, -w, w]) if (out[(i + d) * 4 + 3]! > 0) n++;
       if (n === 0) out[i * 4 + 3] = 0;
     }
+  }
+  return out;
+}
+
+/** Flood fill from the image border through the pixels where `open` is 1. */
+function floodFromBorder(open: Uint8Array, w: number, h: number): Uint8Array {
+  const seen = new Uint8Array(w * h);
+  const queue = new Int32Array(w * h);
+  let head = 0;
+  let tail = 0;
+  const push = (i: number): void => {
+    if (seen[i] || !open[i]) return;
+    seen[i] = 1;
+    queue[tail++] = i;
+  };
+  for (let x = 0; x < w; x++) {
+    push(x);
+    push((h - 1) * w + x);
+  }
+  for (let y = 0; y < h; y++) {
+    push(y * w);
+    push(y * w + w - 1);
+  }
+  while (head < tail) {
+    const i = queue[head++]!;
+    const x = i % w;
+    if (x > 0) push(i - 1);
+    if (x < w - 1) push(i + 1);
+    if (i >= w) push(i - w);
+    if (i < w * (h - 1)) push(i + w);
+  }
+  return seen;
+}
+
+/** How many set pixels are in the (2r+1)² square around each pixel (summed-area table). */
+function boxCount(mask: Uint8Array, w: number, h: number, r: number): Int32Array {
+  const sat = new Int32Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) {
+    let row = 0;
+    for (let x = 0; x < w; x++) {
+      row += mask[y * w + x]!;
+      sat[(y + 1) * (w + 1) + x + 1] = sat[y * (w + 1) + x + 1]! + row;
+    }
+  }
+  const out = new Int32Array(w * h);
+  for (let y = 0; y < h; y++) {
+    const y0 = Math.max(0, y - r);
+    const y1 = Math.min(h, y + r + 1);
+    for (let x = 0; x < w; x++) {
+      const x0 = Math.max(0, x - r);
+      const x1 = Math.min(w, x + r + 1);
+      out[y * w + x] =
+        sat[y1 * (w + 1) + x1]! - sat[y0 * (w + 1) + x1]! - sat[y1 * (w + 1) + x0]! + sat[y0 * (w + 1) + x0]!;
+    }
+  }
+  return out;
+}
+
+/**
+ * Like removeBlackBackground, for creatures with very dark parts (a dark shark on black): the background is
+ * only what can be reached from the border through *wide* dark areas. Thin dark paths (shadows along a fin,
+ * the gap of the mouth) are closed by a morphological opening of radius `r`, so the body is never holed.
+ */
+export function removeDarkBackground(img: Raw, bg: Rgb, r: number, opt: CutoutOptions): Uint8ClampedArray {
+  const { width: w, height: h, data: src } = img;
+  const n = w * h;
+  const dist = new Uint8Array(n);
+  const dark = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    dist[i] = Math.max(
+      Math.abs(src[o]! - bg[0]),
+      Math.abs(src[o + 1]! - bg[1]),
+      Math.abs(src[o + 2]! - bg[2]),
+    );
+    dark[i] = dist[i]! < opt.high ? 1 : 0;
+  }
+  const reach = floodFromBorder(dark, w, h);
+  // erode: keep only pixels whose whole square is background (outside the image counts as background),
+  // then keep what still touches the border
+  const cnt = boxCount(reach, w, h, r);
+  const core = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = i % w;
+    const y = (i - x) / w;
+    const area =
+      (Math.min(w, x + r + 1) - Math.max(0, x - r)) * (Math.min(h, y + r + 1) - Math.max(0, y - r));
+    core[i] = cnt[i] === area ? 1 : 0;
+  }
+  const wide = floodFromBorder(core, w, h);
+  // dilate back by the same radius, inside the dark area reached from the border
+  const grow = boxCount(wide, w, h, r);
+  const isBg = new Uint8Array(n);
+  for (let i = 0; i < n; i++) isBg[i] = grow[i]! > 0 && reach[i] ? 1 : 0;
+  // a band just inside the outline where dark glow fades out too
+  const soft = opt.soft ?? opt.high;
+  const band = soft > opt.high ? boxCount(isBg, w, h, 2 * r) : null;
+  const out = new Uint8ClampedArray(src.length);
+  out.set(src);
+  for (let i = 0; i < n; i++) {
+    const d = dist[i]!;
+    let a: number;
+    if (isBg[i]) a = d <= opt.low ? 0 : (d - opt.low) / (opt.high - opt.low);
+    else if (band && band[i]! > 0 && d < soft) a = d <= opt.low ? 0 : (d - opt.low) / (soft - opt.low);
+    else continue;
+    const o = i * 4;
+    out[o + 3] = Math.round(a * 255);
+    if (a > 0)
+      for (let c = 0; c < 3; c++)
+        out[o + c] = Math.max(0, Math.min(255, bg[c]! + (src[o + c]! - bg[c]!) / a));
   }
   return out;
 }
@@ -177,13 +324,65 @@ export type InboxKind = 'card' | 'side' | 'side_open' | 'front' | 'front_open' |
 /**
  * Splits an inbox file name into the beast id and its kind.
  * A profile that faces left can be named `<id>_side_left.jpg` / `<id>_side_open_left.jpg`: it is mirrored.
+ * Any picture but a card can end in `_flip` instead (e.g. `<id>_front_flip.jpg`) to be mirrored too:
+ * in battle the wild beast faces left and yours swims away towards the upper right.
  */
 export function parseInboxName(file: string): { id: string; kind: InboxKind; mirror: boolean } | null {
-  const m = /^(.+?)_(card|side_open|side|front_open|front|back_open|back)(_left)?\.(jpe?g|png|webp)$/i.exec(
-    file,
-  );
+  const m =
+    /^(.+?)_(card|side_open|side|front_open|front|back_open|back)(_left|_flip)?\.(jpe?g|png|webp)$/i.exec(
+      file,
+    );
   if (!m) return null;
   const kind = m[2]!.toLowerCase() as InboxKind;
   if (kind === 'card' && m[3]) return null;
   return { id: m[1]!.toLowerCase(), kind, mirror: !!m[3] };
+}
+
+/** Battle extras in art-inbox/: background layers, the taming shell, button and type icons. */
+export type ExtraName =
+  | { kind: 'bg'; place: string; layer: 'far' | 'mid' | 'front' | 'ground' }
+  | { kind: 'item'; id: string }
+  | { kind: 'icon'; id: string };
+
+/** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
+export function parseExtraName(file: string): ExtraName | null {
+  const base = /^(.+)\.(jpe?g|png|webp)$/i.exec(file)?.[1]?.toLowerCase();
+  if (!base) return null;
+  const bg = /^bg_([a-z]+)_(far|mid|front|ground)$/.exec(base);
+  if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
+  if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
+  if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
+  return null;
+}
+
+/**
+ * Removes a flat green background (#00FF00): the greener a pixel is than its red and blue, the more
+ * transparent; the green tint left on the edges is taken out ("despill").
+ */
+export function removeGreenBackground(img: Raw, low = 30, high = 90): Uint8ClampedArray {
+  const src = img.data;
+  const out = new Uint8ClampedArray(src.length);
+  out.set(src);
+  for (let o = 0; o < src.length; o += 4) {
+    const r = src[o]!;
+    const g = src[o + 1]!;
+    const b = src[o + 2]!;
+    const excess = g - Math.max(r, b);
+    const a = excess <= low ? 1 : excess >= high ? 0 : 1 - (excess - low) / (high - low);
+    out[o + 3] = Math.round(a * (src[o + 3] ?? 255));
+    if (excess > 0) out[o + 1] = Math.max(r, b);
+  }
+  return out;
+}
+
+/** A white-on-black icon becomes white with its brightness as transparency (the game tints it). */
+export function iconFromBlack(img: Raw): Uint8ClampedArray {
+  const src = img.data;
+  const out = new Uint8ClampedArray(src.length);
+  for (let o = 0; o < src.length; o += 4) {
+    const v = Math.max(src[o]!, src[o + 1]!, src[o + 2]!);
+    out[o] = out[o + 1] = out[o + 2] = 255;
+    out[o + 3] = v < 40 ? 0 : v > 200 ? 255 : Math.round(((v - 40) / 160) * 255);
+  }
+  return out;
 }

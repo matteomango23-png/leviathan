@@ -114,4 +114,40 @@ La battaglia usa immagini **a tre quarti**: davanti per la bestia selvatica, da 
 
 Ordine: `squalo_bianco`, `barracuda`, `tartaruga_marina` (aperta = becco aperto), `torpedine`, `coccodrillo_marino`, `megattera`; poi `sfregiato`, `squalo_bianco_albino`, `squalo_bianco_alfa`, `coccodrillo_marino_leggendario`.
 
-Altre, quando puoi: sfondi di battaglia 16:9 (`sfondo_baia.jpg`, `sfondo_delta.jpg`: fondale dipinto con spazio per una bestia in alto a destra e una in basso a sinistra), ritratti a mezzo busto su fondo nero per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`), la Conchiglia del domatore (`conchiglia.jpg`). Questi ultimi non li elabora ancora `npm run art`: li collego io quando arrivano.
+**Stato (1 ottobre 2026):** nel gioco ci sono già le viste davanti e da dietro di:
+- barracuda;
+- coccodrillo marino e coccodrillo leggendario;
+- megattera e murena;
+- orca, con matriarca, madre delle madri e preistorica albina;
+- Re Corallo;
+- squalo bianco, con albino, albino leggendario, alfa, Sfregiato e Titano;
+- squalo martello, squalo tigre, tartaruga marina e torpedine.
+
+Del pesce palla c'è solo la vista davanti. Mancano la manta (davanti e dietro), il pesce palla da dietro e tutte le versioni a fauci aperte (facoltative).
+
+**Orientamento e scontorno li gestisce lo script.** Il nemico guarda a sinistra, la tua bestia va verso destra; se un'immagine guarda dall'altra parte, il file si chiama `<id>_front_flip.jpg` (o `_back_flip`) e viene specchiato. Lo scontorno:
+- legge il colore del fondo dai bordi, quindi va bene anche il blu scuro degli screenshot;
+- toglie una cornice sottile;
+- non buca le bestie scure nelle zone d'ombra.
+
+Due immagini con il fondo difficile hanno soglie proprie in `scripts/art.ts` (`BATTLE_CUTOUT_LOOSE`).
+
+**Grandezza:** la applica il gioco, relativa tra le due bestie (`BATTLE_STAGE` in `data/battle.ts`): la più grande ha la misura standard, l'altra in proporzione; i giganti (leggendari, forme finali, Guardiani, specie colossali) sono sempre enormi.
+
+## Sfondi a strati, conchiglia e icone della battaglia
+
+I prompt pronti sono in `docs/PROMPT-BATTAGLIA.md`. Salva i file in `art-inbox/` con questi nomi, poi lancia `npm run art`:
+
+| File | Diventa |
+|---|---|
+| `bg_<luogo>_far.jpg` (`baia`, `delta`, `tana`) | `public/bg/<luogo>_far.webp`: lo sfondo intero (acqua e rocce lontane) |
+| `bg_<luogo>_mid.jpg`, `bg_<luogo>_front.jpg` | rocce a metà distanza e primo piano, senza il fondo verde |
+| `bg_<luogo>_ground.jpg` | la pedana sotto ogni bestia, ritagliata |
+| `conchiglia.jpg`, `conchiglia_aperta.jpg` | `public/items/`: la conchiglia di cattura, senza il fondo nero |
+| `icona_<comando>.jpg`, `tipo_<tipo>.jpg` | `public/ui/`: icone bianche che il gioco colora |
+
+Gemini di solito colora di verde solo l'acqua aperta: lo script se la cava lo stesso (dal primo piano tiene le rocce ai lati e quelle che pendono dall'alto, la pedana la ritaglia a ellisse). Un file che inizia con `_` (es. `_scarto_bg_baia_front_alternativo.jpg`) viene ignorato.
+
+Un luogo senza i suoi dipinti usa quelli della Baia con la sua tinta. Finché uno strato manca anche lì, lo disegna il codice (`views/battle/backdropArt.ts`) con i colori del luogo (`BATTLE_PALETTES` in `data/battle.ts`); appena arriva quello dipinto, il gioco usa quello.
+
+I ritratti per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`) non sono ancora collegati.

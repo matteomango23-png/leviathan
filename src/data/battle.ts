@@ -65,3 +65,85 @@ export const BATTLE_PROTOTYPE = {
   items: { alga_curativa: 2, arpione_mitico: 1 } as Record<string, number>,
   variantChance: 0.15, // a test foe is sometimes albino or alfa, to try harder taming
 };
+
+/**
+ * How the battle looks (owner's choices of 1 ottobre 2026). Sizes are relative, like Pokémon: the bigger of
+ * the two beasts is drawn at a standard size and the other in proportion to it (squeezed a little, so a small
+ * one stays readable): two turtles are both normal-sized, a shark next to a torpedo ray is clearly bigger.
+ * Giants (legendaries, final forms, Guardians and named beasts, colossal species) are always huge.
+ */
+export const BATTLE_STAGE = {
+  size: {
+    standard: 0.58, // the bigger beast of the pair, as a share of the screen height (tuning)
+    exponent: 0.73, // real length ratio ^ this: 2 m vs 6 m → ×2.2 instead of ×3 (tuning)
+    min: 0.26, // never smaller than this share of the screen height…
+    giant: 0.82, // …a giant is at least this big…
+    max: 1.05, // …and nothing is bigger than this
+    foeDistance: 0.82, // the wild beast is farther away: × this
+  },
+  /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
+  anchors: {
+    foe: { x: 0.64, y: 0.5 },
+    you: { x: 0.3, y: 0.9 },
+  },
+  hover: 0.03, // swimming beasts float this share of the screen height above their ground
+  /** A wild beast taller than half the screen stands lower, by this share of the extra, so its head stays in. */
+  bigFoeDrop: 0.45,
+  /** Places with their own background; any other region uses the bay. */
+  places: ['baia', 'delta', 'tana'] as const,
+};
+export type BattlePlace = (typeof BATTLE_STAGE.places)[number];
+
+/** Colours of the drawn backgrounds, used until the painted layers of each place arrive (docs/PROMPT-BATTAGLIA.md). */
+export interface BattlePalette {
+  top: string; // water at the top of the screen
+  bottom: string; // water at the bottom
+  ray: string; // light from the surface
+  fog: string; // drifting haze
+  rock: string; // rock silhouettes
+  rim: string; // light on the rock edges
+  ground: string; // the patch of seabed each beast stands on
+  plant: string; // foreground plants or roots
+  prop: 'arches' | 'roots' | 'ribs'; // what the middle layer shows: stone arches, mangrove roots, whale ribs
+  /** A place without its own painted background borrows the bay's, tinted with this colour (and its props on top). */
+  borrowTint: string;
+}
+
+export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
+  baia: {
+    top: '#1b5966',
+    bottom: '#020b12',
+    ray: '#c8f4f2',
+    fog: '#5a9ca2',
+    rock: '#0b252d',
+    rim: '#4fa2a6',
+    ground: '#3b4a42',
+    plant: '#06221c',
+    prop: 'arches',
+    borrowTint: '#ffffff',
+  },
+  delta: {
+    top: '#3f5130',
+    bottom: '#080b06',
+    ray: '#e6edb0',
+    fog: '#5c6c3c',
+    rock: '#141a0d',
+    rim: '#7a8a44',
+    ground: '#3a3424',
+    plant: '#14110a',
+    prop: 'roots',
+    borrowTint: '#9aa877',
+  },
+  tana: {
+    top: '#10303a',
+    bottom: '#010507',
+    ray: '#a8e2ee',
+    fog: '#2f5660',
+    rock: '#0a1418',
+    rim: '#6a9298',
+    ground: '#2c2f2c',
+    plant: '#050d0e',
+    prop: 'ribs',
+    borrowTint: '#6f818c',
+  },
+};

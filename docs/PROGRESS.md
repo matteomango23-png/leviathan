@@ -1,5 +1,34 @@
 # Progressi
 
+## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
+
+**Fatto**
+
+- 41 immagini a tre quarti dalla cartella "asset animali ai" smistate, orientate (`_flip`), scontornate e messe nel gioco (`npm run art`, scontorno nuovo che non buca le bestie scure). La tua bestia guarda sempre a destra, il nemico a sinistra (lo squalo bianco da dietro era girato: corretto).
+- Grandezze relative come Pokémon, giganti sempre enormi (`systems/battle/stage.ts`, `BATTLE_STAGE`).
+- I tuoi sfondi dipinti della Baia, la conchiglia e le 10 icone sono nel gioco. `npm run art` si arrangia anche se il verde di Gemini è solo parziale (primo piano solo con le rocce ai lati e in alto, pedana ritagliata a ellisse). Delta e tana usano i dipinti della Baia con la loro tinta, più radici e costole disegnate.
+- Bestie animate, il nemico esce dal buio (i giganti fanno tremare il mare), le rare luccicano, effetti per tipo, conchiglia, numero del danno.
+- Interfaccia stile Pokémon recenti con colori cupi da dark fantasy, carattere Baloo 2, nomi lunghi che scorrono, riquadri che brillano per le rare (argento) e i giganti (oro).
+- Prova: `?battaglia&nemico=<id>&variante=albino|alfa&finale&unico=sfregiato&luogo=baia|delta|tana`.
+- 160 test automatici.
+
+**Mancante / da sapere**
+
+- Sfondi dipinti propri del Delta e della tana: per ora prendono quelli della Baia con un'altra tinta.
+- Il coccodrillo albino leggendario visto davanti ha un po' di pavimento grigio sotto (è nell'immagine originale): conviene rigenerarlo su fondo nero pulito.
+- Manta (davanti e da dietro) e pesce palla da dietro: mancano, servono per il capitolo 3.
+- Verificato nel pannello del browser: sfondo dipinto, grandezze, luccichio e nome che scorre. Verso la fine il pannello era nascosto e non ho potuto vedere a schermo l'ingresso dal buio e le scintille, né il formato iPhone: il gioco girava senza errori, ma va guardato sull'iPhone. Non l'ho provata nel gioco vero (al contatto con una bestia), solo con `?battaglia`: la parte nuova è la stessa.
+
+**Da provare sull'iPhone**
+
+1. `https://matteomango23-png.github.io/leviathan/?battaglia&nemico=squalo_bianco&variante=albino&finale`: il nemico esce dal buio, il mare trema, il riquadro brilla d'oro, il nome scorre.
+2. `?battaglia&nemico=torpedine` (lo squalo deve essere molto più grande) e `?battaglia&nemico=tartaruga_marina`.
+3. `?battaglia&nemico=squalo_bianco&unico=sfregiato&luogo=tana` e `?battaglia&nemico=coccodrillo_marino` (Delta).
+4. Usa Lotta con mosse di tipi diversi, poi Doma: guarda gli effetti e la conchiglia dipinta.
+5. Dimmi se va fluida (60 fps) e se il testo si legge bene.
+
+**Prossima sessione:** se la battaglia ti piace, si continua con la storia (capitolo 3, la Barriera Rossa); restano in lista "Potenzia" con i doppioni e il ribilanciamento per zone.
+
 ## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
 
 **Fatto**

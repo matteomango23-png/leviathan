@@ -4,9 +4,9 @@ Asset esterni usati nel gioco, con fonte e licenza. Solo licenze libere (preferi
 
 | Asset | Fonte | Licenza |
 |---|---|---|
-| — | — | — |
+| Carattere Baloo 2 (battaglia) | [Ek Type](https://github.com/EkType/Baloo2), pacchetto `@fontsource/baloo-2` | SIL Open Font License 1.1 |
 
-Al momento il gioco non usa asset esterni: fondali, sub e pesci sono disegnati dal codice; illustrazioni e sprite dello squalo bianco sono del proprietario (generati con AI, `docs/ART.md`).
+A parte il carattere, il gioco non usa asset esterni: fondali, sub e pesci sono disegnati dal codice; illustrazioni e sprite dello squalo bianco sono del proprietario (generati con AI, `docs/ART.md`).
 
 ## Librerie
 

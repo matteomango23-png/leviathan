@@ -64,4 +64,72 @@ export const ART_KEYS: readonly string[] = [
 ];
 
 // Three-quarter battle pictures (<id>_front for the wild one, <id>_back for yours, + _open).
-export const BATTLE_ART_KEYS: readonly string[] = [];
+export const BATTLE_ART_KEYS: readonly string[] = [
+  'barracuda_back',
+  'barracuda_front',
+  'coccodrillo_marino_back',
+  'coccodrillo_marino_front',
+  'coccodrillo_marino_leggendario_back',
+  'coccodrillo_marino_leggendario_front',
+  'megattera_back',
+  'megattera_front',
+  'murena_back',
+  'murena_front',
+  'orca_back',
+  'orca_front',
+  'orca_matriarca_back',
+  'orca_matriarca_finale_back',
+  'orca_matriarca_finale_front',
+  'orca_matriarca_front',
+  'orca_preistorica_albina_back',
+  'orca_preistorica_albina_front',
+  'pesce_palla_front',
+  're_corallo_back',
+  're_corallo_front',
+  'sfregiato_back',
+  'sfregiato_front',
+  'squalo_bianco_albino_back',
+  'squalo_bianco_albino_finale_back',
+  'squalo_bianco_albino_finale_front',
+  'squalo_bianco_albino_front',
+  'squalo_bianco_alfa_back',
+  'squalo_bianco_alfa_front',
+  'squalo_bianco_back',
+  'squalo_bianco_finale_back',
+  'squalo_bianco_finale_front',
+  'squalo_bianco_front',
+  'squalo_martello_back',
+  'squalo_martello_front',
+  'squalo_tigre_back',
+  'squalo_tigre_front',
+  'tartaruga_marina_back',
+  'tartaruga_marina_front',
+  'torpedine_back',
+  'torpedine_front',
+];
+
+// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).
+export const BG_KEYS: readonly string[] = [
+  'baia_far',
+  'baia_front',
+  'baia_ground',
+  'baia_mid',
+];
+
+export const ITEM_ART_KEYS: readonly string[] = [
+  'conchiglia',
+  'conchiglia_aperta',
+];
+
+export const UI_ICON_KEYS: readonly string[] = [
+  'icona_doma',
+  'icona_fuggi',
+  'icona_lotta',
+  'icona_squadra',
+  'icona_zaino',
+  'tipo_abissale',
+  'tipo_corazzato',
+  'tipo_glaciale',
+  'tipo_predatore',
+  'tipo_tempesta',
+];

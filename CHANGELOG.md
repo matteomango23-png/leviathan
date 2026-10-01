@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.8.0 — Battaglia più bella (1 ottobre 2026)
+
+- **Le bestie in battaglia sono le immagini vere a tre quarti**: davanti la selvatica, da dietro la tua. Ci sono quasi tutte: squali (anche albino, alfa, Sfregiato, Titano, albino leggendario), coccodrilli, orche, megattera, barracuda, tartaruga, torpedine, murena, Re Corallo.
+- **Grandezze come in Pokémon**: la più grande delle due ha sempre una bella misura, l'altra in proporzione (squalo contro torpedine: lo squalo è più del doppio; due tartarughe: entrambe normali). **I giganti** (leggendari, forme finali, Guardiani, megattera) **sono sempre enormi**.
+- **Le bestie guardano sempre verso il centro**: la tua verso destra, il nemico verso sinistra.
+- **Il nemico esce dal buio** come una sagoma nera che prende colore; i giganti fanno tremare il mare. **Le rare luccicano**: scintille attorno e riquadro che brilla (argento, oro per i leggendari).
+- **Il mare si muove**: raggi di luce che ondeggiano, foschia che scorre, riflessi sul fondale, neve marina, bolle, piante in primo piano, una lenta deriva della telecamera che dà profondità.
+- **Sfondo dipinto** (fondale, rocce, primo piano, pedane di pietra) con luce e foschia che si muovono. Il Delta lo vede verde e torbido con le radici di mangrovia, la tana più buia con le costole di balena.
+- **Le bestie sono vive**: respirano, ondeggiano (le grandi più lente e pesanti), prendono la rincorsa e si lanciano lasciando bolle, lampeggiano e rinculano quando vengono colpite, affondano quando svengono.
+- **Ogni tipo ha il suo colpo**: graffi (Predatore), fulmini (Tempesta), schegge di ghiaccio (Glaciale), inchiostro con scintille (Abissale), onde d'urto e sassi (Corazzato). Sui colpi forti la telecamera si avvicina un attimo.
+- **Nuovi comandi e riquadri** nello stile dei Pokémon recenti ma cupi, con un carattere arrotondato e le icone dipinte: Lotta grande, Zaino, Squadra, Doma, Fuggi; mosse del colore del tipo; barre della vita "PS"; i nomi lunghi scorrono.
+- **La conchiglia di cattura** vola girando, si apre in un lampo, scuote e brilla d'oro se tiene.
+- Per provare: `?battaglia&nemico=tartaruga_marina`, `&variante=albino`, `&finale`, `&unico=sfregiato`, `&luogo=tana`.
+
 ## v0.7.0 — Battaglie a turni nel gioco (1 ottobre 2026)
 
 - **Niente più combattimento in tempo reale.** Le bestie si vedono mentre esplori: nuotano piano nel buio e la lampada le rivela. Si girano solo fuori dalla luce.
