@@ -2,6 +2,7 @@
 import Phaser from 'phaser';
 import './ui/ui.css';
 import { CAMERA } from './data/diver';
+import { BattleScene } from './scenes/BattleScene';
 import { BootScene } from './scenes/BootScene';
 import { MenusScene } from './scenes/MenusScene';
 import { UIScene } from './scenes/UIScene';
@@ -25,7 +26,7 @@ const game = new Phaser.Game({
   input: { keyboard: false, mouse: false, touch: false, gamepad: false },
   disableContextMenu: true,
   banner: false,
-  scene: [BootScene, WorldScene, UIScene, MenusScene],
+  scene: [BootScene, WorldScene, UIScene, MenusScene, BattleScene],
 });
 
 let resizeTimer = 0;

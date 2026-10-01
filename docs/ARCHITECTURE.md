@@ -92,6 +92,18 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `growthBars.ts` | Barre di esperienza e cibo. |
 | `bossBar.ts` | Barra del Guardiano in alto. |
 
+## Battaglia a turni (in prova, link con `?battaglia`)
+
+| File | Cosa fa |
+|---|---|
+| `data/battle.ts`, `data/battleText.ts` | Numeri della battaglia (danni, livelli, schivata, domatura, fuga, oggetti, squadra di prova) e testi. |
+| `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con turni di ricarica, danno di un colpo. |
+| `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
+| `systems/battle/dodge.ts` | L'anello della schivata (tempi, finte, giudizio del tocco). |
+| `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi, fa partire la schivata. |
+| `views/battleView.ts` | Il disegno: mare, le due bestie animate, affondi, colpi, svenimenti, anello, conchiglia. |
+| `ui/battleUi.ts`, `ui/battle.css` | Riquadri di vita, messaggi e menu (Lotta, Zaino, Squadra, Doma, Fuggi). |
+
 ## Come si disegna il mare
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.

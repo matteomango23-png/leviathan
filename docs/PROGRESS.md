@@ -1,5 +1,23 @@
 # Progressi
 
+## Sessione 8 — Svolta: correzioni e prova della battaglia a turni (1 ottobre 2026) → v0.6.1, v0.6.2
+
+**Fatto**
+
+- Il proprietario ha provato tutto e ha deciso la svolta (vedi DECISIONS, "Svolta dopo la prova completa"): tutto alla Pokémon, battaglia a turni 1 contro 1 con schivata difficile, "Potenzia" con i doppioni.
+- v0.6.1: fucile subacqueo (solo dal pulsante, mai in sella), pulsanti mossa non sotto lo scatto, Doma/Apri prima di Cavalca, mai incastrati nel fondale, albini pallidi, Nuova partita e partita precedente.
+- v0.6.2: prova della battaglia a turni col link `?battaglia` (il gioco normale non cambia).
+- 159 test automatici.
+
+**Da provare sull'iPhone**
+
+1. Apri https://matteomango23-png.github.io/leviathan/?battaglia e fai qualche battaglia ("Nuova battaglia" alla fine).
+2. Prova a schivare: tocca quando il cerchio rosso tocca la tua bestia. Dimmi se è troppo difficile o troppo facile.
+3. Prova a domare: più è sfinita, più è facile; albini e alfa sono più difficili.
+4. Dimmi cosa ti piace e cosa no (velocità dei messaggi, grandezza delle bestie, menu, schivata).
+
+**Prossima sessione:** se la prova piace, nuovo design (battaglia nel gioco al contatto con le bestie, progressione per zone, cattura, Potenzia con i doppioni, tipi nelle schede), poi si riadattano Baia e Delta. Il capitolo 3 aspetta.
+
 ## Sessione 7 — Capitolo 2: il Delta delle Mangrovie (1 ottobre 2026) → v0.6.0
 
 **Fatto**

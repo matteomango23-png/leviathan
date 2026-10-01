@@ -1,0 +1,211 @@
+/* Battle screen (Pokémon layout, dark fantasy look). Landscape iPhone, inside the safe area. */
+.battle {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: #e6ede8;
+  --bpad: 12px;
+}
+.battle > * {
+  pointer-events: auto;
+}
+
+/* the two info boxes */
+.binfo {
+  position: absolute;
+  width: min(300px, 38vw);
+  padding: 8px 12px 10px;
+  border: 1px solid rgba(255, 217, 160, 0.4);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(10, 18, 24, 0.92), rgba(3, 8, 12, 0.92));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+.binfo.foe {
+  top: calc(env(safe-area-inset-top, 0px) + var(--bpad));
+  left: calc(env(safe-area-inset-left, 0px) + var(--bpad));
+}
+.binfo.you {
+  top: 44%;
+  right: calc(env(safe-area-inset-right, 0px) + var(--bpad));
+}
+.binfo-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+.binfo-lv {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffd9a0;
+}
+.binfo-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 6px;
+}
+.btag {
+  padding: 1px 7px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.binfo-stars svg {
+  width: 11px;
+  height: 11px;
+}
+.binfo-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.binfo-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3fae6a, #6fdc8c);
+  transition: width 0.45s;
+}
+.binfo-fill.mid {
+  background: linear-gradient(90deg, #c8a030, #f0cc50);
+}
+.binfo-fill.low {
+  background: linear-gradient(90deg, #a52a20, #e0503c);
+}
+.binfo-hp {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #b9c6c9;
+}
+
+/* message box (left) and menu (right), at the bottom */
+.bmsg {
+  position: absolute;
+  left: calc(env(safe-area-inset-left, 0px) + var(--bpad));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bpad));
+  width: calc(50vw - 2 * var(--bpad));
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 217, 160, 0.4);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(10, 18, 24, 0.94), rgba(3, 8, 12, 0.96));
+  font-size: 16px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.bmenu {
+  position: absolute;
+  right: calc(env(safe-area-inset-right, 0px) + var(--bpad));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bpad));
+  width: calc(50vw - 2 * var(--bpad));
+  display: grid;
+  gap: 8px;
+}
+.bmenu:empty {
+  display: none;
+}
+.bmenu.main {
+  grid-template-columns: repeat(3, 1fr);
+}
+.bmenu.moves {
+  grid-template-columns: repeat(2, 1fr);
+}
+.bmenu.list {
+  grid-template-columns: 1fr;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.bbtn {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 217, 160, 0.45);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(30, 44, 52, 0.95), rgba(8, 16, 22, 0.95));
+  color: #e6ede8;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+.bbtn:disabled {
+  opacity: 0.4;
+}
+.bbtn.bbtn-fight {
+  border-color: #ff8a70;
+  color: #ffd2c6;
+}
+.bbtn.bbtn-tame {
+  border-color: #5ff3d6;
+  color: #c8fff4;
+}
+.bbtn.bbtn-back {
+  color: #b9c6c9;
+  font-weight: 600;
+}
+.bbtn.bbtn-move {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  border-width: 2px;
+}
+.bm-name {
+  font-size: 15px;
+}
+.bm-type {
+  font-size: 11px;
+  font-weight: 700;
+}
+.bm-info {
+  font-size: 11px;
+  font-weight: 500;
+  color: #b9c6c9;
+}
+.bempty {
+  padding: 8px;
+  color: #b9c6c9;
+}
+
+/* the dodge hint and the result */
+.bhint {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(120, 30, 20, 0.85);
+  color: #ffe6d8;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.bhint.show {
+  opacity: 1;
+}
+.bresult {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: min(380px, 80vw);
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 217, 160, 0.6);
+  border-radius: 12px;
+  background: rgba(3, 8, 12, 0.96);
+  text-align: center;
+}
+.bresult h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #ffd9a0;
+}
