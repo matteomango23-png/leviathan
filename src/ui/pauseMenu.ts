@@ -43,6 +43,13 @@ export class PauseMenu {
       replayIntro(game);
       onResume();
     });
+    const sound = el('button', 'menu-btn', panel);
+    const soundLabel = (): string => `Suono: ${this.session.sound.enabled ? 'sì' : 'no'}`;
+    sound.textContent = soundLabel();
+    sound.addEventListener('click', () => {
+      this.session.sound.setEnabled(!this.session.sound.enabled);
+      sound.textContent = soundLabel();
+    });
     el('h3', '', panel, 'Partite');
     const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
     const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');

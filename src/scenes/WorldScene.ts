@@ -16,7 +16,7 @@ import {
   writeToStorage,
 } from '../systems/save/storage';
 import { generateWorld } from '../systems/world/worldGen';
-import { murkAt } from '../systems/world/zones';
+import { depthMetres, murkAt } from '../systems/world/zones';
 import { DELTA } from '../data/worldLayout';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
@@ -204,9 +204,19 @@ export class WorldScene extends Phaser.Scene {
       input.shotAt = this.rig.toWorld(this.session.tapScreen.x * dpr, this.session.tapScreen.y * dpr);
       this.session.tapScreen = null;
     }
+    const dashBefore = g.diver.dashTime;
     const events = stepGame(g, input, dt);
     consumePresses(input);
     this.handleEvents(events);
+    const d0 = g.diver;
+    this.session.sound.updateSea(
+      {
+        speed: d0.dead ? 0 : Math.min(1, Math.hypot(d0.vx, d0.vy) / DIVER.maxSpeed),
+        depthM: depthMetres(d0.y),
+        dash: d0.dashTime > 0 && dashBefore <= 0,
+      },
+      dt,
+    );
 
     this.saveTimer += dt;
     if (this.saveTimer >= SAVE.autosaveSeconds) {
