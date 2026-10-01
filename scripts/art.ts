@@ -14,6 +14,7 @@ import {
   type CutoutOptions,
   borderColor,
   coverCrop,
+  fadeCutEdges,
   opaqueBox,
   parseExtraName,
   parseInboxName,
@@ -111,6 +112,7 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
   const raw = { data, width: info.width, height: info.height };
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
   const cut = removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
+  fadeCutEdges(cut, info.width, info.height); // a fin out of frame fades instead of ending in a straight cut
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');
   const x0 = Math.max(0, box.x0 - MARGIN);

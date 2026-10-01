@@ -386,3 +386,32 @@ export function iconFromBlack(img: Raw): Uint8ClampedArray {
   }
   return out;
 }
+
+/**
+ * A creature cut by the edge of the picture (a fin out of frame) ends with a hard straight line. On each side
+ * the creature touches, its transparency fades in over `frac` of the picture's shorter side, so the cut
+ * melts into the water instead.
+ */
+export function fadeCutEdges(px: Uint8ClampedArray, w: number, h: number, frac = 0.06): void {
+  const fw = Math.max(2, Math.round(Math.min(w, h) * frac));
+  const touches = (side: 'l' | 'r' | 't' | 'b'): boolean => {
+    for (let k = 0; k < (side === 'l' || side === 'r' ? h : w); k++)
+      for (let d = 0; d < 2; d++) {
+        const x = side === 'l' ? d : side === 'r' ? w - 1 - d : k;
+        const y = side === 't' ? d : side === 'b' ? h - 1 - d : k;
+        if (px[(y * w + x) * 4 + 3]! > 40) return true;
+      }
+    return false;
+  };
+  const sides = { l: touches('l'), r: touches('r'), t: touches('t'), b: touches('b') };
+  if (!sides.l && !sides.r && !sides.t && !sides.b) return;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      let k = 1;
+      if (sides.l) k = Math.min(k, x / fw);
+      if (sides.r) k = Math.min(k, (w - 1 - x) / fw);
+      if (sides.t) k = Math.min(k, y / fw);
+      if (sides.b) k = Math.min(k, (h - 1 - y) / fw);
+      if (k < 1) px[(y * w + x) * 4 + 3] = Math.round(px[(y * w + x) * 4 + 3]! * k * k * (3 - 2 * k));
+    }
+}

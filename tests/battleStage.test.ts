@@ -8,21 +8,21 @@ const beast = (lengthM: number, giant = false) => ({ lengthM, giant });
 describe('battle stage', () => {
   it('draws two beasts of the same size at the standard size, whatever their length', () => {
     const turtles = battleSizes(beast(2), beast(2));
-    expect(turtles.you).toBeCloseTo(S.standard);
+    expect(turtles.you).toBeCloseTo(S.standard * S.youCloser);
     expect(turtles.foe).toBeCloseTo(S.standard * S.foeDistance);
   });
 
   it('draws a shark clearly bigger than a torpedo ray, but the ray still readable', () => {
     const s = battleSizes(beast(6), beast(1.5));
-    expect(s.you).toBeCloseTo(S.standard);
-    expect(s.foe / S.foeDistance).toBeLessThan(s.you / 2);
+    expect(s.you).toBeCloseTo(S.standard * S.youCloser);
+    expect(s.foe / S.foeDistance).toBeLessThan(s.you / S.youCloser / 2);
     expect(s.foe / S.foeDistance).toBeGreaterThanOrEqual(S.min);
   });
 
   it('always draws giants huge, and the other beast small next to them', () => {
     const s = battleSizes(beast(6), beast(9, true));
     expect(s.foe / S.foeDistance).toBeGreaterThanOrEqual(S.giant);
-    expect(s.you).toBeLessThan(S.standard);
+    expect(s.you / S.youCloser).toBeLessThan(S.standard);
   });
 
   it('knows the giants', () => {

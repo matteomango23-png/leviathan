@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   borderColor,
+  fadeCutEdges,
   iconFromBlack,
   parseExtraName,
   parseInboxName,
@@ -69,5 +70,19 @@ describe('battle extras', () => {
     const data = new Uint8ClampedArray([0, 0, 0, 255, 255, 255, 255, 255]);
     const out = iconFromBlack({ data, width: 2, height: 1 });
     expect([...out]).toEqual([255, 255, 255, 0, 255, 255, 255, 255]);
+  });
+});
+
+describe('battle pictures: fins cut by the frame', () => {
+  it('fades a creature where it touches the edge of the picture, leaves the rest alone', () => {
+    const w = 50;
+    const h = 20;
+    const px = new Uint8ClampedArray(w * h * 4);
+    for (let y = 5; y < 15; y++) for (let x = 0; x < 30; x++) px[(y * w + x) * 4 + 3] = 255; // touches the left
+    fadeCutEdges(px, w, h, 0.5); // fade over 10 px
+    expect(px[(10 * w + 0) * 4 + 3]).toBe(0); // at the cut: transparent
+    expect(px[(10 * w + 5) * 4 + 3]).toBeGreaterThan(0);
+    expect(px[(10 * w + 5) * 4 + 3]).toBeLessThan(255);
+    expect(px[(10 * w + 25) * 4 + 3]).toBe(255); // far from the cut: untouched
   });
 });
