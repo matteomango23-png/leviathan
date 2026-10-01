@@ -1,5 +1,33 @@
 # Progressi
 
+## Sessione 9 — La battaglia a turni entra nel gioco (1 ottobre 2026) → v0.7.0
+
+**Fatto**
+
+- Tolto tutto il combattimento in tempo reale (morsi in acqua, compagno che difende, minigioco della domatura in acqua, scontro nella tana con fasi e coda).
+- Bestie visibili che nuotano piano (`beasts/roam.ts`), comparse e inizio della battaglia (`encounters.ts`), risultati nel gioco (`battleResult.ts`).
+- Cavalcature chiamate dalla barra (`beasts/mount.ts`) con abilità (`abilities.ts`: Sfonda le ossa, respiro della megattera).
+- Guardiano e coccodrillo della Vedova come battaglie senza fuga.
+- Nuova schermata di battaglia (card sfumate come segnaposto delle immagini a tre quarti), SCHIVA con barra, testi al femminile.
+- `npm run art` prepara le immagini `_front` e `_back` (elenco in `docs/ART.md`).
+- 147 test automatici.
+
+**Mancante / da sapere**
+
+- Le immagini a tre quarti le stai generando tu: finché mancano, la battaglia usa le card.
+- Da fare dopo (scelte già prese): "Potenzia" con i doppioni nella scheda; progressione per zone ribilanciata (livelli che salgono, boss di poco sopra); tipi forte/debole ben visibili in scheda e bestiario; storia con ritratti; mondo più grande e ambienti migliori.
+- La schermata di battaglia nel pannello del browser non si vede intera (problema della mia anteprima, non del gioco): provala sull'iPhone.
+
+**Da provare sull'iPhone**
+
+1. Nuota nella Baia: le bestie compaiono piano nel buio. Lascia che uno squalo ti tocchi: parte la battaglia.
+2. In battaglia prova Lotta, Squadra, Zaino, Doma e Fuggi. Prova SCHIVA (difficile apposta).
+3. Colpisci col fucile una tartaruga alle spalle: deve partire la battaglia con "Attacco a sorpresa".
+4. Tocca lo squalo nella barra in alto: arriva e ci sali. Vai alla botola di ossa al centro della Baia e premi "Sfonda".
+5. Nella tana lo Sfregiato ti viene incontro: da questa battaglia non si fugge.
+
+**Prossima sessione:** "Potenzia" con i doppioni e ribilanciamento della progressione per zone; poi tipi in scheda e bestiario. Il capitolo 3 aspetta le immagini.
+
 ## Sessione 8 — Svolta: correzioni e prova della battaglia a turni (1 ottobre 2026) → v0.6.1, v0.6.2
 
 **Fatto**
