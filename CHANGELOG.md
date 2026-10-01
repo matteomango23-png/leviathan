@@ -8,6 +8,7 @@ Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta 
 - **Schivare è più difficile.**
 - **Fuggire dipende dalla bestia:** facile da una comune del tuo livello, difficile da una più forte o rara, quasi impossibile da un leggendario (ma ogni tentativo aiuta un po').
 - Le pinne che uscivano dall'immagine (squalo albino leggendario, coda del coccodrillo albino) ora sfumano invece di essere tagliate.
+- **Coccodrillo marino nuovo** (davanti e da dietro), rigenerato con Gemini.
 
 ## v0.8.0 — Battaglia più bella (1 ottobre 2026)
 
