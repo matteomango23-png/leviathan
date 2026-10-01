@@ -5,7 +5,7 @@ import { ROAM, TEAM_RULES } from '../src/data/beasts';
 import { DIVER } from '../src/data/diver';
 import { bay as bayX, TILE } from '../src/data/worldLayout';
 import { canBreakBones } from '../src/systems/abilities';
-import { contextAction } from '../src/systems/beastPlay';
+import { contextAction, mountSpeed } from '../src/systems/beastPlay';
 import { stepRoam } from '../src/systems/beasts/roam';
 import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
 import { weaponHitsBeast } from '../src/systems/encounters';
@@ -148,12 +148,49 @@ describe('mounts', () => {
     expect(contextAction(g)).toBe('scendi');
   });
 
-  it('a beast that is not a mount cannot be ridden', () => {
+  it('a beast that is not a mount swims with you and eats fish; a second tap sends it away', () => {
     const g = createGame(map, null, 3);
     giveTestBeast(g, { speciesId: 'barracuda', variant: 'comune' }, 5);
+    run(g, 0.1, { ...emptyInput(), summon: 0 });
+    run(g, TEAM_RULES.arriveSeconds + 0.3);
+    const m = g.beasts.mount!;
+    expect(m.state).toBe('follow');
+    expect(g.beasts.riding).toBe(false);
+    // it keeps up when you swim away
+    run(g, 2, { ...emptyInput(), moveX: 1 }, false);
+    expect(Math.abs(m.x - g.diver.x)).toBeLessThan(m.length + 40);
+    // a sardine in front of its mouth: eaten, experience for it
+    for (const f of g.fish.fish) Object.assign(f, { alive: false, respawn: 999 });
+    const fish = g.fish.fish.find((x) => x.kind === 'sardina')!;
+    Object.assign(fish, { alive: true, x: m.x + m.face * m.length * 0.45, y: m.y });
+    const b = g.beasts.team[0]!;
+    const xp = b.xp;
+    stepGame(g, emptyInput(), DT);
+    expect(fish.alive).toBe(false);
+    expect(b.xp).toBeGreaterThan(xp);
+    run(g, 0.1, { ...emptyInput(), summon: 0 });
+    expect(m.state).toBe('leaving');
+  });
+
+  it('a worn-out beast does not come', () => {
+    const g = createGame(map, null, 3);
+    giveTestBeast(g, { speciesId: 'barracuda', variant: 'comune' }, 5);
+    g.beasts.team[0]!.ko = true;
     const ev = run(g, 0.1, { ...emptyInput(), summon: 0 });
     expect(ev.some((e) => e.type === 'cannotRide')).toBe(true);
     expect(g.beasts.mount).toBeNull();
+  });
+
+  it('a starter carries you from its second stage, slower than a true mount', () => {
+    const g = createGame(map, null, 3);
+    giveTestBeast(g, { speciesId: 'saetta', variant: 'comune' }, 16);
+    run(g, 0.1, { ...emptyInput(), summon: 0 });
+    run(g, TEAM_RULES.arriveSeconds + 0.3);
+    expect(g.beasts.riding).toBe(true);
+    const slow = mountSpeed(g)!;
+    const b = g.beasts.team[0]!;
+    b.form = { ...b.form, speciesId: 'folgore' };
+    expect(mountSpeed(g)!).toBeGreaterThan(slow);
   });
 
   it('the white shark breaks the ancient bones ("Sfonda")', () => {

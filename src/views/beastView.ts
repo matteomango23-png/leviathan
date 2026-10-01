@@ -62,6 +62,8 @@ export interface BeastPoseView {
   turnFrom?: 1 | -1;
   /** Frenzy: red eyes and shaking. */
   rage?: boolean;
+  /** Thicker than the picture (species girth). */
+  girth?: number;
   /** An albino drawn with the normal sprite (no albino one yet): lightened to look pale. */
   pale?: boolean;
 }
@@ -173,7 +175,7 @@ export class BeastSprite {
     this.root
       .setVisible(true)
       .setPosition(p.x + shake, p.y + shake)
-      .setScale(baseFace * sc, sc)
+      .setScale(baseFace * sc, sc * (p.girth ?? 1))
       .setAlpha(p.alpha);
   }
 

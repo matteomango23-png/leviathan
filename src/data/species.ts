@@ -34,6 +34,8 @@ export interface SpeciesDef {
   evolveLevel?: number;        // …reached at this level, like Pokémon
   movesFrom?: string;          // the line keeps the moves of its first stage
   artFrom?: string;            // pictures to use until its own exist (a form key with pictures, e.g. squalo_bianco_finale)
+  rideSpeedMult?: number;      // not a mount but you can ride it anyway, at this × its riding speed (second stages)
+  girth?: number;              // the side picture drawn this much thicker (a thin serpent made massive)
 }
 
 export const SPECIES: SpeciesDef[] = [
@@ -52,28 +54,28 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'zanna', name: 'Zanna', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1.5, trait: 'Cucciolo di squalo preistorico: morde più forte di quanto sembri',
     starter: true, evolvesTo: 'squarcio', evolveLevel: 16, artFrom: 'squalo_bianco',
     artPrompt: 'a young prehistoric shark pup, about 1.5 metres long, slender and agile, oversized jagged teeth for its size, dark grey back with faint red scars, curious fierce eyes' },
-  { id: 'squarcio', name: 'Squarcio', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'grande', lengthM: 4, trait: 'Giovane squalo preistorico dalle zanne enormi',
+  { id: 'squarcio', name: 'Squarcio', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'grande', lengthM: 4, rideSpeedMult: 0.75, trait: 'Giovane squalo preistorico dalle zanne enormi',
     evolvesTo: 'zannarossa', evolveLevel: 36, movesFrom: 'zanna', artFrom: 'squalo_bianco',
     artPrompt: 'a juvenile prehistoric predator shark, 4 metres long, muscular, huge serrated teeth jutting out of the jaw, battle scars, dark grey and blood-red marks along the gills' },
-  { id: 'zannarossa', name: 'Zannarossa', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 12, trait: 'Squalo preistorico colossale, una leggenda viva',
+  { id: 'zannarossa', name: 'Zannarossa', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 15, trait: 'Squalo preistorico colossale, una leggenda viva',
     abilities: ['sfondaOssa'], movesFrom: 'zanna', artFrom: 'squalo_bianco_finale', legendary: true,
     artPrompt: 'a colossal prehistoric shark, 12 metres long, a living legend, massive armoured head, rows of enormous serrated teeth, ancient scars, deep red markings like war paint, terrifying and majestic' },
   { id: 'guscio', name: 'Guscio', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1, trait: 'Tartarughina antica dal guscio di pietra',
     starter: true, evolvesTo: 'rocciaguscio', evolveLevel: 16, artFrom: 'tartaruga_marina',
     artPrompt: 'a small ancient sea turtle hatchling, about 1 metre long, its shell made of dark stone plates with bronze veins, big wise eyes, stubby strong flippers' },
-  { id: 'rocciaguscio', name: 'Rocciaguscio', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 3, trait: 'Tartaruga corazzata coperta di spuntoni',
+  { id: 'rocciaguscio', name: 'Rocciaguscio', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 3, rideSpeedMult: 0.75, trait: 'Tartaruga corazzata coperta di spuntoni',
     evolvesTo: 'archelon', evolveLevel: 36, movesFrom: 'guscio', artFrom: 'tartaruga_marina',
     artPrompt: 'a young armoured prehistoric sea turtle, 3 metres long, its stone shell covered in sharp bronze spikes and barnacles, a hooked beak, heavy and stubborn' },
-  { id: 'archelon', name: 'Archelon', type: 'corazzato', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 6, trait: 'Tartaruga titanica preistorica, una fortezza viva',
+  { id: 'archelon', name: 'Archelon', type: 'corazzato', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 8, trait: 'Tartaruga titanica preistorica, una fortezza viva',
     movesFrom: 'guscio', artFrom: 'tartaruga_marina', legendary: true,
     artPrompt: 'a titanic prehistoric sea turtle (Archelon), 6 metres long, an ancient living fortress, a shell like a cliff of stone and bronze with spikes and coral growing on it, a massive hooked beak, slow and unstoppable' },
   { id: 'scintilla', name: 'Scintilla', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1, trait: 'Anguillina che crepita di scintille',
     starter: true, evolvesTo: 'saetta', evolveLevel: 16, artFrom: 'torpedine',
     artPrompt: 'a small glowing eel, about 1 metre long, translucent dark-violet skin with tiny crackling sparks along its body, big luminous eyes, playful' },
-  { id: 'saetta', name: 'Saetta', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 5, trait: 'Anguilla elettrica dalle pinne fulminanti',
+  { id: 'saetta', name: 'Saetta', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 5, rideSpeedMult: 0.75, trait: 'Anguilla elettrica dalle pinne fulminanti',
     evolvesTo: 'folgore', evolveLevel: 36, movesFrom: 'scintilla', artFrom: 'torpedine',
     artPrompt: 'a long electric sea eel, 5 metres long, dark violet body with glowing yellow stripes, lightning crackling along its fins, sharp needle teeth' },
-  { id: 'folgore', name: 'Folgore', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 14, trait: 'Serpente marino della tempesta',
+  { id: 'folgore', name: 'Folgore', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 18, girth: 1.6, trait: 'Serpente marino della tempesta',
     movesFrom: 'scintilla', artFrom: 'torpedine', legendary: true,
     artPrompt: 'a gigantic prehistoric sea serpent of the storm, 14 metres long, coiling body with dark violet scales and glowing yellow runes, a crown of fin-spikes, lightning storms crackling around it' },
 

@@ -66,7 +66,7 @@ export class BeastUi {
         s.img.dataset.key = key;
         setArt(s.img, b.form);
       }
-      s.root.title = `${formName(b.form)} · liv. ${b.level}${canRide(b) ? ' · tocca per cavalcare' : ''}`;
+      s.root.title = `${formName(b.form)} · liv. ${b.level} · tocca per ${canRide(b) ? 'cavalcarlo' : 'farti seguire'}`;
       s.fill.style.width = `${Math.round((b.hp / maxHpOf(b)) * 100)}%`;
       s.root.classList.toggle('out', !!out && out.uid === b.uid && out.state !== 'leaving');
       s.root.classList.toggle('ko', b.ko);

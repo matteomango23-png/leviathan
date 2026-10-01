@@ -106,6 +106,7 @@ export const TEAM_RULES = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty (taming difficulty)
   summonDistance: 90, // the mount arrives from this far behind you
   arriveSeconds: 1.2, // at most this long to reach you
+  follow: { behind: 0.6, gap: 14, below: 6, speed: 3 }, // a companion swims behind you: × its length + gap units, spring rate
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   turnSeconds: 0.6, // your mount turns around (animated from the head)

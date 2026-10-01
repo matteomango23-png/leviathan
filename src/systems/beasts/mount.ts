@@ -1,6 +1,7 @@
-// Your mount in the water: you call it from the team bar, it swims to you from the dark and you climb on;
-// in the saddle you go faster and use its ability. It no longer follows you around or fights in the water
-// (battles are turn-based). Climbing down sends it away.
+// Your beast in the water: you call it from the team bar and it swims to you from the dark. A mount (or a
+// second stage that can carry you) takes you in the saddle: you go faster and use its ability. Any other
+// beast follows you around and eats the small fish it meets. It never fights in the water (battles are
+// turn-based). Climbing down, or a second tap, sends it away.
 import { BEAST_BODY, ROAM, TEAM_RULES } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { clamp } from '../math';
@@ -18,8 +19,10 @@ export interface Mount extends BodyPose {
   jaw: number;
   flash: number;
   alpha: number;
-  /** 'in': swimming to you · 'ride': you are on it · 'leaving': going back into the dark */
-  state: 'in' | 'ride' | 'leaving';
+  /** 'in': swimming to you · 'ride': you are on it · 'follow': swimming with you · 'leaving': going away */
+  state: 'in' | 'ride' | 'follow' | 'leaving';
+  /** You climb on when it reaches you (otherwise it follows you). */
+  rider: boolean;
   t: number;
   /** 0 = normal, rises to 1 while it turns around (animated from the head). */
   turn: number;
@@ -28,7 +31,12 @@ export interface Mount extends BodyPose {
 
 const U = DIVER.lengthUnits;
 
-export function callMount(b: TeamBeast, diver: { x: number; y: number; face: 1 | -1 }, map: TileMap): Mount {
+export function callMount(
+  b: TeamBeast,
+  diver: { x: number; y: number; face: 1 | -1 },
+  map: TileMap,
+  rider = true,
+): Mount {
   const length = formLengthUnits(b.form, b.level);
   const r = length * BEAST_BODY.collideRadiusFrac;
   let x = diver.x - diver.face * TEAM_RULES.summonDistance;
@@ -49,6 +57,7 @@ export function callMount(b: TeamBeast, diver: { x: number; y: number; face: 1 |
     flash: 0,
     alpha: 1,
     state: 'in',
+    rider,
     t: 0,
     turn: 0,
     turnFrom: 1,
@@ -106,6 +115,19 @@ export function stepMount(
   if (m.state === 'ride') {
     Object.assign(m, { x: diver.x, y: diver.y, vx: diver.vx, vy: diver.vy });
     faceTowards(m, diver.face, dt);
+    animate(m, dt);
+    return false;
+  }
+  if (m.state === 'follow') {
+    // behind you, a little lower; it faces where it swims, or your way when it is settled
+    const f = TEAM_RULES.follow;
+    const tx = diver.x - diver.face * (m.length * f.behind + f.gap);
+    const ty = diver.y + f.below;
+    m.vx += ((tx - m.x) * f.speed - m.vx) * Math.min(1, dt * f.speed);
+    m.vy += ((ty - m.y) * f.speed - m.vy) * Math.min(1, dt * f.speed);
+    m.x += m.vx * dt;
+    m.y += m.vy * dt;
+    faceTowards(m, Math.abs(m.vx) > U * 2 ? m.vx : diver.face, dt);
     animate(m, dt);
     return false;
   }
