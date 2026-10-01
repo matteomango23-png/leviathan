@@ -11,17 +11,29 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 import {
   bodyLine,
+  type CutoutOptions,
+  borderColor,
   coverCrop,
   opaqueBox,
+  parseExtraName,
   parseInboxName,
   placeProfile,
   removeBlackBackground,
+  removeDarkBackground,
 } from './art/cutout.ts';
+import { extraDest, makeExtra } from './art/extras.ts';
 
 const INBOX = 'art-inbox';
 const FRAME = { w: 1000, h: 460, lineY: 250 };
 const CARD = { w: 640, h: 960 };
 const BATTLE_PIC = 800; // three-quarter battle pictures: a square
+// Three-quarter pictures: dark creatures, so a tight threshold, and a soft band that fades dark glow halos.
+const BATTLE_CUTOUT: CutoutOptions = { low: 3, high: 16, soft: 34 };
+// Pictures with a lit floor or a coloured glow in the background need a looser threshold.
+const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
+  coccodrillo_marino_leggendario_front: { low: 8, high: 36, soft: 48 },
+  megattera_back: { low: 6, high: 36, soft: 44 },
+};
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
 const args = process.argv.slice(2);
@@ -77,10 +89,27 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
   return `${w}×${h}, linea del corpo a y=${FRAME.lineY}`;
 }
 
-/** A three-quarter picture for battle: black removed, cropped, centred in a square, feet on the bottom. */
-async function makeBattlePicture(src: string, dest: string): Promise<string> {
-  const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const cut = removeBlackBackground({ data, width: info.width, height: info.height });
+/**
+ * A three-quarter picture for battle: background removed, cropped, centred in a square, feet on the bottom.
+ * A thin border is trimmed first (screenshots often have a frame) and the background colour is read from
+ * the edges, so dark navy backgrounds go as well as black ones.
+ */
+async function makeBattlePicture(src: string, dest: string, mirror: boolean, name: string): Promise<string> {
+  const meta = await sharp(src).metadata();
+  const inset = Math.round(Math.min(meta.width!, meta.height!) * 0.012);
+  const trimmed = sharp(src).extract({
+    left: inset,
+    top: inset,
+    width: meta.width! - inset * 2,
+    height: meta.height! - inset * 2,
+  });
+  const { data, info } = await (mirror ? trimmed.flop() : trimmed)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const raw = { data, width: info.width, height: info.height };
+  const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
+  const cut = removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');
   const x0 = Math.max(0, box.x0 - MARGIN);
@@ -130,6 +159,8 @@ async function writeSpriteList(): Promise<void> {
   const keys = profiles.filter((f) => !f.endsWith('_open.webp')).map((f) => f.slice(0, -5));
   const open = profiles.filter((f) => f.endsWith('_open.webp')).map((f) => f.slice(0, -10));
   const art = (await readdir('public/art')).filter((f) => f.endsWith('.webp')).map((f) => f.slice(0, -5));
+  const names = async (dir: string): Promise<string[]> =>
+    existsSync(dir) ? (await readdir(dir)).filter((f) => f.endsWith('.webp')).map((f) => f.slice(0, -5)) : [];
   const list = (a: string[]) =>
     a
       .sort()
@@ -143,7 +174,11 @@ async function writeSpriteList(): Promise<void> {
     `export const OPEN_SPRITE_KEYS: readonly string[] = [\n${list(open)}\n];\n\n` +
     `export const ART_KEYS: readonly string[] = [\n${list(art)}\n];\n\n` +
     `// Three-quarter battle pictures (<id>_front for the wild one, <id>_back for yours, + _open).\n` +
-    `export const BATTLE_ART_KEYS: readonly string[] = [\n${list(battle)}\n];\n`;
+    `export const BATTLE_ART_KEYS: readonly string[] = [\n${list(battle)}\n];\n\n` +
+    `// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).\n` +
+    `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
+    `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +
+    `export const UI_ICON_KEYS: readonly string[] = [\n${list(await names('public/ui'))}\n];\n`;
   await writeFile('src/data/sprites.generated.ts', text, 'utf8');
 }
 
@@ -160,6 +195,23 @@ async function main(): Promise<void> {
   let skipped = 0;
   let errors = 0;
   for (const file of files) {
+    const extra = parseExtraName(file);
+    if (extra) {
+      const dest = extraDest(outRoot, extra);
+      if (only) continue;
+      if (existsSync(dest) && !force) {
+        skipped++;
+        continue;
+      }
+      try {
+        console.log(`✓ ${file} → ${dest} (${await makeExtra(join(INBOX, file), dest, extra)})`);
+        made++;
+      } catch (e) {
+        console.log(`✗ ${file}: ${e instanceof Error ? e.message : String(e)}`);
+        errors++;
+      }
+      continue;
+    }
     const parsed = parseInboxName(file);
     if (!parsed) {
       if (!/\.txt$/i.test(file))
@@ -188,7 +240,7 @@ async function main(): Promise<void> {
           ? await makeCard(src, dest)
           : parsed.kind === 'side' || parsed.kind === 'side_open'
             ? await makeSprite(src, dest, parsed.mirror)
-            : await makeBattlePicture(src, dest);
+            : await makeBattlePicture(src, dest, parsed.mirror, `${parsed.id}_${parsed.kind}`);
       console.log(`✓ ${file} → ${dest} (${note})`);
       made++;
     } catch (e) {
