@@ -8,13 +8,13 @@
 - **Tappa 11 (v0.10.0):** `TileMap` con pezzi infiniti a est (`endless` + `chunks`, numerazione dei tile rotti compatibile: `tileIndex`/`tileOf`); `WORLD.rows` 560 (fosse), `handMadeBottom` per la costa; generatore `systems/world/endless.ts` (tratti da 1800 unità di 5 tipi in `data/endless.ts`, fondale che si raccorda e scende con la distanza, collinette, ghiaccio, fosse, sfiatatoi); nomi delle zone, coralli, alghe a pezzi (`kelpView`), ghiaccio dipinto solo nella Banchisa; 5 posti per bestie del mare aperto (`WILD_SPAWNS` con `endless`, `endlessLife.prepareEndlessSpawn`: specie della zona, livello base + 2 per km); 6 banchi di sardine che seguono il sub; sfiatatoi (`ventsOf`, `stepVents`, `views/ventView`); mute "traversata" e "bombole"; km dalla costa nell'HUD; zone del mare aperto nella mappa. 286 test.
 - Visto nel browser: Fossa abissale e Mare aperto a 2 km, sardine che seguono e vengono mangiate, sfiatatoio che ricarica l'aria.
 - Testi per Gemini delle 21 bestie senza immagini: `docs/PROMPT-BESTIE.md` (in ordine di priorità).
+- **v0.10.1:** pareti e iceberg del proprietario (`asset animali ai/mondo/`): `npm run art` tipo "mondo" (public/world, maschera e linea dell'acqua degli iceberg in `ICEBERG_SHAPES`, striscia della linea tolta); `data/worldArt.ts`; `systems/world/icebergs.ts` (ghiaccio solido dal disegno, nel Mare di Ghiaccio e nei tratti di Banchisa); `views/worldArtView.ts` (pareti sui bordi dritti dei pozzi e delle fosse, iceberg). 288 test.
 
 **Mancante / da sapere**
 
 - Lontano dalla costa (oltre ~15 km) il fondale supera i 300 m: servono mute più profonde; gli sfiatatoi stanno nel punto meno profondo di ogni tratto.
 - Se muori lontano rinasci all'ultimo santuario o porto: la traversata di ritorno è lunga. La barca (tappa 12) risolverà.
 - Le bestie senza immagine di profilo non compaiono (foche, beluga, narvali, calamari…): arrivano con le immagini.
-- Pareti dipinte tra le zone e iceberg: aspettano le immagini (`docs/PROMPT-MONDO.md`).
 
 **Da provare sull'iPhone**
 

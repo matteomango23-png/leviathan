@@ -103,7 +103,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 3, rx: [30, 50], ry: [40, 80] },
     kelp: { chance: 0, minH: 0, maxH: 0 },
     corals: { chance: 0, colors: [] },
-    ice: { ceilingY: 46, holeEvery: 420, holeWidth: 44, pillars: 6 },
+    ice: { ceilingY: 46, holeEvery: 420, holeWidth: 44, pillars: 2 }, // + icebergs (worldArt.ts)
     weight: 1,
     weightPerKm: 0.25,
     beasts: { orca: 2, megattera: 1, squalo_bianco: 0.5 },

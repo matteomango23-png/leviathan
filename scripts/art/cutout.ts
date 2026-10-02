@@ -392,7 +392,8 @@ export function parseInboxName(file: string): { id: string; kind: InboxKind; mir
 export type ExtraName =
   | { kind: 'bg'; place: string; layer: 'far' | 'mid' | 'front' | 'ground' }
   | { kind: 'item'; id: string }
-  | { kind: 'icon'; id: string };
+  | { kind: 'icon'; id: string }
+  | { kind: 'world'; id: string };
 
 /** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
 export function parseExtraName(file: string): ExtraName | null {
@@ -402,6 +403,7 @@ export function parseExtraName(file: string): ExtraName | null {
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
+  if (/^(parete_[a-z]+(_\d)?|iceberg_\d)$/.test(base)) return { kind: 'world', id: base };
   return null;
 }
 

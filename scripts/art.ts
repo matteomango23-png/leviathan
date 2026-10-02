@@ -187,9 +187,18 @@ async function makeCard(src: string, dest: string): Promise<string> {
 
 /** Writes src/data/sprites.generated.ts: which beast sprites exist (so the game never asks for a missing one). */
 /** "  'sprites/x.webp': 'ab12cd34'," lines for every picture in the folders the game loads from. */
+async function icebergShapes(): Promise<string> {
+  const dir = join('public', 'world');
+  if (!existsSync(dir)) return '{}';
+  const out: Record<string, unknown> = {};
+  for (const f of (await readdir(dir)).filter((x) => x.endsWith('.json')).sort())
+    out[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
+  return JSON.stringify(out, null, 1);
+}
+
 async function hashes(): Promise<string> {
   const lines: string[] = [];
-  for (const dir of ['sprites', 'art', 'bg', 'items', 'ui']) {
+  for (const dir of ['sprites', 'art', 'bg', 'items', 'ui', 'world']) {
     if (!existsSync(join('public', dir))) continue;
     for (const f of (await readdir(join('public', dir))).filter((x) => x.endsWith('.webp')).sort()) {
       const h = createHash('md5')
@@ -229,6 +238,9 @@ async function writeSpriteList(): Promise<void> {
     `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
     `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +
     `export const UI_ICON_KEYS: readonly string[] = [\n${list(await names('public/ui'))}\n];\n\n` +
+    `// Painted walls and icebergs of the world (public/world); icebergs with their waterline and solid mask.\n` +
+    `export const WORLD_ART_KEYS: readonly string[] = [\n${list(await names('public/world'))}\n];\n\n` +
+    `export const ICEBERG_SHAPES: Readonly<Record<string, { w: number; h: number; waterline: number; mask: string[] }>> = ${await icebergShapes()};\n\n` +
     `// A fingerprint of each picture: added to its address, so a phone never shows an old copy (data/assets.ts).\n` +
     `export const ASSET_HASHES: Readonly<Record<string, string>> = {\n${await hashes()}\n};\n`;
   await writeFile('src/data/sprites.generated.ts', text, 'utf8');

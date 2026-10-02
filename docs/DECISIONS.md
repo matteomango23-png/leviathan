@@ -273,3 +273,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Tratti:** 5 tipi, 1800 unità (300 m) ciascuno, raccordati sul fondale; fosse e ghiaccio più frequenti lontano. Livello delle bestie = base del tipo + 2 per km (più i minimi per grandezza e rarità e i "fuori scala").
 - **Bestie e sardine "che seguono":** pochi posti (5 bestie, 6 banchi) che si spostano vicino al sub invece di riempire un mondo infinito.
 - **Ossigeno:** sfiatatoi nel punto meno profondo tra alcuni candidati di ogni tratto (un limite fisso di profondità lasciava i tratti lontani senza aria) e due mute da 4-5 minuti.
+
+## 2026-10-02 — Pareti dipinte e iceberg
+
+- **Pareti:** decorazione sopra la roccia che c'è già (le collisioni restano quelle dei tile), solo sui bordi verticali lunghi dei pozzi fatti a mano e delle fosse del mare aperto, per tre quarti dentro la roccia. Materiale secondo il posto (roccia, corallo, ghiaccio).
+- **Iceberg:** il ghiaccio solido viene dal disegno stesso (`npm run art` scrive una maschera 40 colonne e la linea dell'acqua), così si urta il ghiaccio che si vede. La linea dell'acqua disegnata da Gemini viene tolta (ogni striscia orizzontale sottile).

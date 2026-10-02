@@ -23,6 +23,8 @@ import {
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { zoneAt } from '../src/systems/world/zones';
+import { icebergBox, icebergsOfStretch, inIceberg } from '../src/systems/world/icebergs';
+import { ICEBERGS } from '../src/data/worldArt';
 
 let map: TileMap;
 beforeAll(() => {
@@ -65,10 +67,11 @@ describe('the endless sea', () => {
     expect(map.width).toBeGreaterThan(500 * km);
   });
 
-  it('can always be swum through near the surface (no wall across the sea)', () => {
+  it('can always be swum through in the upper sea (under the icebergs too: no wall across the sea)', () => {
     for (let x = S - 400; x < S + 20 * km; x += 40) {
       let open = false;
-      for (let y = 60; y < 220 && !open; y += 8) if (!map.solidAt(x, y)) open = true;
+      // near the surface, or under an iceberg
+      for (let y = 60; y < 400 && !open; y += 8) if (!map.solidAt(x, y)) open = true;
       expect(open, `x ${x}`).toBe(true);
     }
   });
@@ -161,5 +164,36 @@ describe('air in the open sea', () => {
     expect(seconds('traversata')).toBeGreaterThan(200);
     expect(seconds('bombole')).toBeGreaterThan(seconds('traversata'));
     expect(seconds('bombole')).toBeLessThan(360);
+  });
+});
+
+describe('icebergs', () => {
+  it('their ice is solid where the picture shows ice, under the waterline', () => {
+    for (const p of ICEBERGS) {
+      const b = icebergBox(p)!;
+      expect(b, p.id).not.toBeNull();
+      const midY =
+        (Math.floor((WORLD.surfaceY + (b.top + b.h - WORLD.surfaceY) * 0.4) / WORLD.tileSize) + 0.5) *
+        WORLD.tileSize;
+      // somewhere across it (the broken one has a tunnel in the middle)
+      const T = WORLD.tileSize;
+      const xs = Array.from(
+        { length: 21 },
+        (_, i) => (Math.floor((b.left + (b.w * (i + 0.5)) / 21) / T) + 0.5) * T,
+      );
+      const x = xs.find((xx) => inIceberg([b], xx, midY));
+      expect(x, p.id).toBeDefined();
+      expect(map.tileAtPoint(x!, midY), p.id).toBe(TILE.ice);
+      expect(inIceberg([b], b.left - 10, midY)).toBe(false);
+    }
+  });
+
+  it('float in the Banchisa stretches of the endless sea', () => {
+    const k = Array.from({ length: 80 }, (_, i) => i).find((i) => biomeOf(i).ice)!;
+    const bergs = icebergsOfStretch(k);
+    expect(bergs.length).toBeGreaterThan(0);
+    const b = bergs[0]!;
+    const x = b.left + b.w / 2;
+    expect(endlessTile(x, WORLD.surfaceY + (b.top + b.h - WORLD.surfaceY) * 0.4)).toBe(TILE.ice);
   });
 });

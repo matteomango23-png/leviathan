@@ -25,6 +25,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `world/worldGen.ts` | Genera la mappa a tile (1207×560, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
+| `world/icebergs.ts` | Gli iceberg: dove galleggiano e quali punti sono ghiaccio solido (dalla maschera del disegno). |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
@@ -96,6 +97,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
 | `dodgeBar.ts` | Il pulsante SCHIVA con la barra, in battaglia. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
+| `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |
 | `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
 
 ## Battaglia a turni (parte al contatto con una bestia; prova separata col link `?battaglia`)

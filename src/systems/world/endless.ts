@@ -5,6 +5,7 @@
 import { BIOMES, ENDLESS, type BiomeDef } from '../../data/endless';
 import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
 import { clamp, fbm, hash2, smoothstep } from '../math';
+import { icebergsOfStretch, inIceberg } from './icebergs';
 
 /** Index of the stretch at x (0 = the first one past the hand-made world; -1 before it). */
 export const stretchAt = (x: number): number => Math.floor((x - ENDLESS.startX) / ENDLESS.stretch);
@@ -125,6 +126,7 @@ export function endlessTile(x: number, y: number): TileValue {
   const k = stretchAt(x);
   const b = biomeOf(k);
   if (isIce(b, k, x, y)) return TILE.ice;
+  if (b.ice && inIceberg(icebergsOfStretch(k), x, y)) return TILE.ice;
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
   if (y > endlessFloor(x) + n * b.noise) return TILE.rock;
   for (const m of moundsOf(k)) {
@@ -165,7 +167,7 @@ export function ventsOf(k: number): { x: number; y: number }[] {
   // the first rock going down from under the ice (the floor, or a mound standing on it)
   const floorAt = (x: number): number => {
     let y = 120;
-    while (y < ENDLESS.maxFloorY + 200 && endlessTile(x, y) === TILE.water) y += 4;
+    while (y < ENDLESS.maxFloorY + 200 && endlessTile(x, y) !== TILE.rock) y += 4;
     return y - 4;
   };
   for (let i = 0; i < V.perStretch; i++) {
