@@ -109,7 +109,7 @@ export const BATTLE_STAGE = {
    */
   pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
   /** Places with their own background; any other region uses the bay. */
-  places: ['baia', 'delta', 'tana'] as const,
+  places: ['baia', 'delta', 'tana', 'barriera'] as const, // barriera: the coral amphitheatre (3 ottobre)
 };
 export type BattlePlace = (typeof BATTLE_STAGE.places)[number];
 
@@ -152,6 +152,18 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     plant: '#14110a',
     prop: 'roots',
     borrowTint: '#9aa877',
+  },
+  barriera: {
+    top: '#1d4a5a',
+    bottom: '#04090e',
+    ray: '#d6f0f0',
+    fog: '#6a5a62',
+    rock: '#2a1414',
+    rim: '#c8584a',
+    ground: '#4a3a32',
+    plant: '#2a0e10',
+    prop: 'arches',
+    borrowTint: '#e0b0a8',
   },
   tana: {
     top: '#10303a',

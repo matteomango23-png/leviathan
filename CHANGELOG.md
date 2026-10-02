@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.16.1 — Le immagini del lotto Gemini (3 ottobre 2026)
+
+- **Battaglie nella Barriera Rossa** (anche contro il Re Corallo): nuovo sfondo dipinto dell'anfiteatro di corallo.
+- **10 bestie nuove con illustrazione e immagini di battaglia** (si vedono nel bestiario; nel mare arriveranno con il capitolo 4):
+  - anguilla elettrica, polpo gigante, lontra marina;
+  - squalo goblin, rana pescatrice, calamaro gigante, isopode gigante;
+  - megalodonte, Livyatan, Dunkleosteus.
+- Messi da parte per dopo: i pezzi del Re Corallo e del tempio (colonna, porta, leva, mosaico, reliquia).
+
 ## v0.16.0 — I lavori di Aurelio (3 ottobre 2026)
 
 - **Un inizio più graduale:** dopo la prima immersione Aurelio ti affida quattro lavori del porto, prima che il molo bruci e parta la ricerca dello Sfregiato.

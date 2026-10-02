@@ -165,6 +165,16 @@
 2. Falli tutti.
 3. Torna al molo: deve bruciare.
 
+**v0.16.1:**
+
+- Lotto Gemini 1 sistemato (`docs/GEMINI-LOTTO-1.md`).
+- Sfondo di battaglia `barriera` (`BATTLE_STAGE.places`, `BATTLE_PALETTES.barriera`).
+- Profili, battaglia e card di 10 bestie (ancora senza comparse nel mare).
+- **Da sistemare prima di farle comparire:**
+  - polpo gigante, calamaro gigante e isopode gigante hanno buchi neri tra i tentacoli e le zampe (fondo chiuso non tolto nei profili: serve lo stesso trattamento di `BATTLE_ENCLOSED`);
+  - l'anguilla elettrica ha un alone scuro intorno ai fulmini.
+- Mancano ancora (vedi `docs/PROMPT-BESTIE.md`, da fare su fondo verde): Kraken, Mosasauro, Calamaro colossale, Serpente di mare, Piovra, Leviatano, e le viste da dietro di Livyatan e Dunkleosteus.
+
 **Prossima sessione:** capitolo 4, la Foresta Sommersa (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
