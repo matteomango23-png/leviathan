@@ -263,7 +263,8 @@
 /* ── message ────────────────────────────────────────────────── */
 .bmsg {
   position: absolute;
-  left: calc(var(--sl) + var(--bpad) + min(210px, 26vw) + 26px);
+  /* past your info box: its width + padding and border (28px) + the slant and a gap */
+  left: calc(var(--sl) + var(--bpad) + 6px + min(210px, 26vw) + 28px + 16px);
   right: calc(var(--sr) + var(--bpad));
   bottom: calc(var(--sb) + var(--bpad));
   min-height: 62px;
