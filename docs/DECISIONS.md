@@ -244,3 +244,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** primi suoni generati con Web Audio (rumore filtrato, oscillatori, batteria sintetica), note e volumi in `data/audio.ts`; nessuna libreria e nessun file audio. Il motore vive nella `Session` e si sblocca al primo tocco (obbligo di iOS).
 - **Motivo:** il proprietario vuole "un minimo" di suono subito; così niente licenze, niente peso in più per l’app offline, e si potrà sostituire con musiche vere più avanti.
+
+## 2026-10-02 — Sfondamento, livelli minimi, morso per taglia (scelte del proprietario)
+
+- **Sfondamento:** le ossa antiche le rompe ogni Predatore o Corazzato dal livello 16 (o una bestia nata con `sfondaOssa`), cavalcato o che ti segue; vicino alle ossa un avviso spiega cosa serve. Il proprietario: "almeno devi grindare un minimo".
+- **Livelli minimi:** pavimento = grandezza (piccola 0, media 2, grande 6, colossale 12) + rarità (1★ 0 … 5★ 14), albino +3, alfa +5; lo squalo bianco ha `minLevel` 15 (raro di suo). 5% di esemplari "fuori scala" (+5…10). La distanza dalla costa arriverà con l'oceano infinito. Il livello degli animali non segue quello della squadra (si perderebbe la sensazione di crescere).
+- **Morso:** × taglia (piccola 0,75 … colossale 1,45); cavalcature con morso base 2,6 (era 2) perché le forme finali degli iniziali mordevano meno della seconda.
+- **Conchiglia aperta:** l'immagine dipinta aveva il fascio di luce tagliato dal bordo; ora si usa la conchiglia chiusa e la luce (raggi sfumati) la disegna il gioco.
