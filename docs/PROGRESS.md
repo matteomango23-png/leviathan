@@ -1,5 +1,31 @@
 # Progressi
 
+## Sessione 12 — Correzioni dopo la prova e tappa 11: l'oceano infinito (2 ottobre 2026) → v0.9.7 … v0.10.0
+
+**Fatto**
+
+- v0.9.7–v0.9.10: correzioni dopo la prova del proprietario (vedi CHANGELOG): Sfondamento, livelli minimi, morso per taglia, squadra ordinabile, conchiglie limitate, esche, mappa, predatori fuori zona, branchi, scatto tenuto premuto, nuoto verticale e virata ad anello, il compagno che sente il buio.
+- **Tappa 11 (v0.10.0):** `TileMap` con pezzi infiniti a est (`endless` + `chunks`, numerazione dei tile rotti compatibile: `tileIndex`/`tileOf`); `WORLD.rows` 560 (fosse), `handMadeBottom` per la costa; generatore `systems/world/endless.ts` (tratti da 1800 unità di 5 tipi in `data/endless.ts`, fondale che si raccorda e scende con la distanza, collinette, ghiaccio, fosse, sfiatatoi); nomi delle zone, coralli, alghe a pezzi (`kelpView`), ghiaccio dipinto solo nella Banchisa; 5 posti per bestie del mare aperto (`WILD_SPAWNS` con `endless`, `endlessLife.prepareEndlessSpawn`: specie della zona, livello base + 2 per km); 6 banchi di sardine che seguono il sub; sfiatatoi (`ventsOf`, `stepVents`, `views/ventView`); mute "traversata" e "bombole"; km dalla costa nell'HUD; zone del mare aperto nella mappa. 286 test.
+- Visto nel browser: Fossa abissale e Mare aperto a 2 km, sardine che seguono e vengono mangiate, sfiatatoio che ricarica l'aria.
+- Testi per Gemini delle 21 bestie senza immagini: `docs/PROMPT-BESTIE.md` (in ordine di priorità).
+
+**Mancante / da sapere**
+
+- Lontano dalla costa (oltre ~15 km) il fondale supera i 300 m: servono mute più profonde; gli sfiatatoi stanno nel punto meno profondo di ogni tratto.
+- Se muori lontano rinasci all'ultimo santuario o porto: la traversata di ritorno è lunga. La barca (tappa 12) risolverà.
+- Le bestie senza immagine di profilo non compaiono (foche, beluga, narvali, calamari…): arrivano con le immagini.
+- Pareti dipinte tra le zone e iceberg: aspettano le immagini (`docs/PROMPT-MONDO.md`).
+
+**Da provare sull'iPhone**
+
+1. Compra la Muta da traversata, attraversa il Mare di Ghiaccio e continua a est: guarda i km dalla costa e i nomi delle zone.
+2. Trova uno sfiatatoio (colonna di bolle) e respira.
+3. Scendi in una Fossa abissale (attento all'aria e alla profondità della muta).
+4. Apri la mappa: le zone del mare aperto visitate.
+5. Il gioco resta fluido mentre nuoti lontano?
+
+**Prossima sessione:** tappa 12, la barca (viaggi in superficie, pesca dalla barca, ritorno a casa). Proporre il piano prima.
+
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 
 **Fatto**
@@ -45,7 +71,6 @@
 
 **Da fare (piano C):** Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); battaglia contro un branco intero (per ora si combatte il capobranco).
 
-**Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0
 

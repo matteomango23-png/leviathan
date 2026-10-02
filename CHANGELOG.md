@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.10.0 — L'oceano infinito (2 ottobre 2026)
+
+- **Il mare non finisce più:** dopo il Mare di Ghiaccio si va avanti all'infinito verso est. Il mare è fatto a tratti di circa 300 m: Mare aperto, Barriera lontana, Foresta di alghe, Banchisa (ghiaccio con buchi per respirare), Fossa abissale (un precipizio profondissimo). È sempre lo stesso per tutti.
+- **Più lontano, più profondo e più pericoloso:** il fondale scende man mano e le bestie salgono di livello (circa 2 livelli ogni km); le fosse e il ghiaccio diventano più frequenti.
+- **Bestie del mare aperto** in base alla zona: barracuda, tartarughe, mante, squali (martello, tigre, bianco), pesci palla, murene, torpedini, **orche** in branco, **megattere** e **capodogli**.
+- **Sardine** che ti seguono anche in mare aperto.
+- **Sfiatatoi:** colonne di bolle che salgono dal fondale, almeno due per tratto; nuotaci dentro e l'aria si ricarica.
+- **Mute nuove** al porto: Muta da traversata (circa 4 minuti d'aria, 1000 denti) e Muta con bombole (circa 5 minuti e più profondità, 2500 denti).
+- Nell'HUD i **km dalla costa**; nella **mappa** le zone del mare aperto con le loro bestie.
+
 ## v0.9.10 — Il compagno sente il buio (2 ottobre 2026)
 
 - La bestia che ti segue (o che cavalchi) sente le bestie selvatiche nel buio prima che tu le veda e ti avvisa da che parte: «Zanna si agita: Squalo martello nel buio a destra». Nomina solo quelle che conosci già; le rare le sente come «qualcosa di raro».
