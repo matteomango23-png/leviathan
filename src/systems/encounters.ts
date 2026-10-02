@@ -10,6 +10,7 @@ import { range } from './math';
 import { distanceToBody } from './beasts/combat';
 import { formKey, rollWildForm, rollWildLevel } from './beasts/forms';
 import { appearPoint, stepRoam } from './beasts/roam';
+import { isLegend } from './beasts/legends';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
 import type { BattleRequest, BeastWorld } from './beastState';
 
@@ -75,14 +76,20 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
         ? can && prepareEndlessSpawn(w, d, g.rng, g.beasts.lure?.species)
         : inArea(w, d.x, d.y, 0);
       if (can && ready) {
-        const form = rollWildForm(w.spawn.speciesId, g.rng);
+        // a legend may come instead, in its place, if it is still free (not tamed, not gone, not already out)
+        const unavailable = new Set([
+          ...g.beasts.gone,
+          ...g.beasts.team.map((b) => b.form.unique ?? ''),
+          ...g.beasts.wilds.filter((o) => isInWater(o)).map((o) => o.form.unique ?? ''),
+        ]);
+        const form = rollWildForm(w.spawn.speciesId, g.rng, { x: d.x, unavailable });
         const p = appearPoint(w, g.map, g.rng, d);
         if (!p) continue;
         spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
         present++;
         g.seen.add(w.spawn.speciesId);
         g.seen.add(formKey(form));
-        events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w) });
+        events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique) });
       }
       continue;
     }

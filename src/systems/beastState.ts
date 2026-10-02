@@ -34,6 +34,8 @@ export interface BeastState {
   arena: boolean;
   /** Set when a battle must start (the World scene opens it and pauses the sea). */
   battle: BattleRequest | null;
+  /** Legends defeated: gone forever (saved). */
+  gone: string[];
   /** You are on your boat: no wild beast reaches you, no beast can be called. */
   aboard: boolean;
   /** Wild beasts your companion already warned you about (until they go back into the dark). */
@@ -54,7 +56,7 @@ export interface BeastWorld {
   brokenTiles: number[];
 }
 
-export function createBeasts(team: TeamBeast[]): BeastState {
+export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState {
   const wilds = WILD_SPAWNS.map((s, i) => {
     const w = createWild(i + 1, s);
     w.respawn = 1 + i * 2;
@@ -74,6 +76,7 @@ export function createBeasts(team: TeamBeast[]): BeastState {
     lure: null,
     sensed: [],
     aboard: false,
+    gone: [...gone],
   };
 }
 

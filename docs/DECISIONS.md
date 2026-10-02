@@ -290,3 +290,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - A bordo il sub non nuota: la barca lo porta in superficie (aria piena, nessuna bestia selvatica lo raggiunge, nessuna bestia si chiama). Il pulsante dell'arma diventa "Pesca": attesa casuale, poi una finestra di 0,9 s per toccare.
 - **Salvataggio v9:** `boat: { x } | null`. Se si salva a bordo, si riparte in acqua accanto alla barca.
 - Ormeggio a PORT.x + 110, fuori dalla portata del molo: altrimenti il pulsante mostrava "Porto" invece di "Sali".
+
+## 2026-10-02 — Tappa 13: le leggende (scelte del proprietario)
+
+- **Leggende** = unici con `chance` in `UNIQUE_VARIANTS`: compaiono solo nel loro posto (tipo di tratto del mare aperto e distanza minima, o dove vive la loro specie), al posto di una bestia della specie. Non compaiono se sono già tue, già in acqua o sconfitte (salvataggio v10). Sfregiato e Regina bianca restano guardiani ("palestre" della storia) e non sono leggende.
+- **Lista:** coccodrillo albino (Delta, 3%: "non così raro"), squalo martello preistorico e tartaruga preistorica (create dal proprietario, 1%), Madre delle madri (1%), orca preistorica albina (0,4%, livello 45: "uno dei più fighi e tosti"). Lo squalo albino leggendario resta l'evoluzione dello squalo albino. L'Orca matriarca è l'alfa dell'orca.
+- La tartaruga preistorica è lunga 14 m, tranquilla e galleggia in superficie ("quasi un'isoletta").

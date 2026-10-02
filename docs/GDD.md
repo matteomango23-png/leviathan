@@ -107,7 +107,7 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 7. ✅ **La Costa (v0.9.0):** spiaggia, Baia più grande, Isola delle Mangrovie con Porto Fango, Delta alla foce, velocità più realistiche.
 8. ✅ **Oceano aperto infinito (v0.10.0):** tratti generati (mare aperto, barriera, foresta, banchisa, fosse), mute per immersioni lunghe, sfiatatoi per l'ossigeno, livelli che crescono con la distanza.
 8b. ✅ **La barca (v0.11.0):** regalo di Aurelio, navigazione in superficie, santuario mobile, pesca; niente viaggio istantaneo.
-8c. **Le bestie uniche** (vedi DECISIONS, "Prima finire l'esplorazione").
+8c. ✅ **Le leggende (v0.12.0):** una sola nel mondo, solo nel suo posto, rara; domata è tua, sconfitta sparisce per sempre.
 9. **Capitolo 3 e seguenti:** una regione alla volta (prossimo: la Barriera Rossa).
 
 ## Decisioni aperte

@@ -10,6 +10,7 @@ import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
+import { LEGENDS } from '../systems/beasts/legends';
 
 export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   const root = el('div', 'sheet bestiary', parent);
@@ -59,6 +60,27 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
       else openBeastSheet(parent, form);
     });
   });
+  // the legends: one of each in the world; ??? until met, then free, yours, or gone forever
+  el('h3', '', body, 'Leggende');
+  const lg = el('div', 'bestiary-grid', body);
+  for (const u of LEGENDS) {
+    const form: BeastForm = { speciesId: u.speciesId, variant: 'comune', unique: u.id };
+    const mine = team.find((b) => b.form.unique === u.id);
+    const gone = g.beasts.gone.includes(u.id);
+    const met = g.seen.has(u.id) || !!mine || gone;
+    const card = el(
+      'button',
+      `beast-tile legend ${mine ? 'tamed' : met ? 'seen' : 'unknown'}${gone ? ' gone' : ''}`,
+      lg,
+    );
+    card.style.setProperty('--rarity', RARITY[5].color);
+    const img = el('img', '', card);
+    setArt(img, form);
+    img.alt = '';
+    el('span', 'tile-name', card, met ? u.name : '???');
+    el('span', 'tile-sub', card, mine ? 'domata' : gone ? 'sconfitta per sempre' : (u.place ?? ''));
+    if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level ?? u.level));
+  }
   // rare versions you own (albino, alfa, Guardians, final forms)
   const specials = team.filter((b) => b.form.variant !== 'comune' || b.form.unique || b.form.final);
   if (specials.length) {

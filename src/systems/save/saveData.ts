@@ -9,7 +9,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -39,6 +39,7 @@ export interface SaveData {
   story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
   homePort: string; // the last harbour you came into: you wake up there (v7)
   boat: { x: number } | null; // your boat and where it is at anchor (v9); null = not yours yet
+  legendsGone: string[]; // legends defeated: gone forever (v10)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -57,6 +58,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     story: null,
     homePort: 'portofosco',
     boat: null,
+    legendsGone: [],
   };
 }
 
@@ -142,6 +144,8 @@ export const MIGRATIONS: Migration[] = [
   },
   // v8 → v9 (tappa 12): the boat. Not in older saves: the game gives it again if chapter 1 is over.
   { from: 8, migrate: (o) => ({ ...o, boat: null }) },
+  // v9 → v10 (tappa 13): the legends; none defeated yet
+  { from: 9, migrate: (o) => ({ ...o, legendsGone: [] }) },
 ];
 
 export class SaveError extends Error {}
@@ -208,6 +212,9 @@ export function validate(data: Record<string, unknown>): SaveData {
     story: validateStory(data.story),
     homePort: typeof data.homePort === 'string' ? data.homePort : 'portofosco',
     boat: isObject(data.boat) && isFiniteNumber(data.boat.x) ? { x: data.boat.x } : null,
+    legendsGone: Array.isArray(data.legendsGone)
+      ? [...new Set(data.legendsGone.filter((x): x is string => typeof x === 'string'))]
+      : [],
   };
 }
 

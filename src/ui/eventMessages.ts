@@ -42,6 +42,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'wildAppeared': {
       const w = wild(e.id);
       if (!w) return null;
+      if (e.legend)
+        return [
+          `Qualcosa di antico si muove nel buio… ${formName(w.form)}! Ne esiste una sola: se la sconfiggi sparisce per sempre.`,
+          6,
+        ];
       return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
     }
     case 'beastSensed': {
@@ -78,6 +83,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return ['Abbocca! Tocca Pesca, presto!', 1];
     case 'fishEscaped':
       return ['Il pesce è scappato.', 1.6];
+    case 'legendGone':
+      return [`${e.name} è sconfitta: non tornerà mai più nel mare.`, 5];
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':

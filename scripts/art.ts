@@ -40,6 +40,7 @@ const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   coccodrillo_marino_leggendario_front: { low: 14, high: 60, soft: 80 }, // a lit grey floor under it
   coccodrillo_marino_leggendario_back: { low: 12, high: 50, soft: 70 },
   megattera_back: { low: 8, high: 44, soft: 60 }, // a teal glow around it
+  squalo_martello_preistorico_back: { low: 20, high: 34, soft: 24 }, // a navy vignette around it
 };
 // Pictures with something under the creature (a rock stand): this share of the height is cut from the bottom
 // (the cut then fades like any fin out of frame).
@@ -58,6 +59,7 @@ const BATTLE_ERASE: Record<string, number[][]> = {
 const BATTLE_ENCLOSED = ['folgore_front', 'folgore_back', 'scintilla_front', 'scintilla_back'];
 // Side profiles on a textured dark-grey background (not flat black): cut like the battle pictures.
 const TEXTURED_DARK: CutoutOptions = { low: 24, high: 40, soft: 50 };
+const NAVY_VIGNETTE: CutoutOptions = { low: 20, high: 34, soft: 24 };
 // Profiles of dark beasts on a dark, speckled background (the owner's pictures from 2 ottobre on): cut from the
 // border inwards like the battle pictures (the dark body is never eaten into), then keep the beast alone (stray
 // specks and light glows around it go).
@@ -84,10 +86,15 @@ const SIDE_FLOOD_SPECIES = [
   'beluga',
   'coccodrillo_nilo',
   'varano_nilo',
+  'squalo_martello_preistorico',
+  'tartaruga_preistorica',
 ];
 const SIDE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   capodoglio_side: TEXTURED_DARK,
   capodoglio_side_open: TEXTURED_DARK,
+  // a navy vignette behind it, lighter around the beast
+  squalo_martello_preistorico_side_flip: NAVY_VIGNETTE,
+  squalo_martello_preistorico_side_open_flip: NAVY_VIGNETTE,
 };
 // Open mouths with a dark throat that the cut took for background: rectangles (shares of the picture) to refill.
 const SIDE_MOUTH: Record<string, number[]> = {
