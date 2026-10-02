@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.11.0 — La barca (2 ottobre 2026)
+
+- **La barca di Aurelio:** alla fine del capitolo 1 Aurelio ti lascia la sua barca, ormeggiata poco oltre il molo di Portofosco (chi ha già finito il capitolo la trova subito).
+- **Sali** quando sei in superficie (o pochi metri sotto) vicino a lei: navighi in superficie a circa tre volte la velocità a nuoto, senza consumare aria e senza che le bestie selvatiche ti raggiungano. Terra e iceberg la fermano.
+- **Tuffati** per scendere: la barca resta lì all'ancora. Nell'HUD vedi a quanti metri è e da che parte (← →); nella mappa a quanti km dalla costa.
+- **Santuario mobile:** salendo a bordo tu e la squadra vi curate; se perdi i sensi ti risvegli sulla barca (perdendo il 10% dei denti, come prima).
+- **Pesca dalla barca:** a bordo il pulsante dell'arma diventa **Pesca**: butti la lenza, aspetti che il galleggiante vada giù e tocchi subito. I pesci cambiano con la zona e vanno nella sacca.
+- Niente viaggi istantanei: ai porti si torna navigando.
+
 ## v0.10.3 — Il varano del Nilo nero (2 ottobre 2026)
 
 - **Varano del Nilo nero**, predatore del Delta delle Mangrovie: nuota a pelo d'acqua tra le radici, morso velenoso che può stordire, colpo di coda doppio e agguato dalle radici.

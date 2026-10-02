@@ -37,3 +37,11 @@ Stessa chat, formato **orizzontale** 16:9. Vista di lato come in un gioco 2D: la
 ## 3. Retro (vista da dietro) di coccodrillo marino e squalo martello
 
 Usa lo stesso prompt che hai usato per gli altri retro in `docs/PROMPT-BATTAGLIA.md` e salvali come `coccodrillo_marino_back.jpg` e `squalo_martello_back.jpg`.
+
+## 4. La tua barca (tappa 12)
+
+Formato orizzontale 16:9. Oggi la barca è disegnata con forme semplici; con questa immagine diventa dipinta.
+
+`Realistic dark fantasy painting of a small old wooden fishing boat seen exactly from the side, as in a 2D side-scrolling game, facing RIGHT: dark weathered planks, a short mast with a furled patched sail, an oil lantern hanging at the bow, coils of rope and a fishing rod, a few barnacles on the hull. Only the part above the waterline and the top of the hull, the waterline perfectly straight and horizontal. Isolated on a pure black background, no water, no sky, no people, no text.`
+
+Salvala come `barca.jpg`.

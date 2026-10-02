@@ -60,6 +60,24 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
+    case 'boatGiven':
+      return [
+        'Aurelio ti lascia la sua barca: è ormeggiata accanto al molo di Portofosco. Sali quando sei in superficie vicino a lei.',
+        6,
+      ];
+    case 'boarded':
+      return [
+        'Sei sulla tua barca: tu e la squadra riposate. Naviga col joystick, Pesca col pulsante, Tuffati per scendere.',
+        4,
+      ];
+    case 'dove':
+      return ['La barca resta qui all\u2019ancora.', 2];
+    case 'lineCast':
+      return ['Lenza in acqua… aspetta che abbocchi.', 2];
+    case 'fishBite':
+      return ['Abbocca! Tocca Pesca, presto!', 1];
+    case 'fishEscaped':
+      return ['Il pesce è scappato.', 1.6];
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':

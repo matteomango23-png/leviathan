@@ -3,6 +3,7 @@
 import { seaMap } from '../systems/seaMap';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
+import { kmFromCoast } from '../systems/world/endless';
 import { ICONS, icon } from './icons';
 
 export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
@@ -18,7 +19,15 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
 
   const zones = seaMap(g.seen);
   const visited = zones.filter((z) => z.visited).length;
-  el('p', 'bestiary-count', panel, `Zone esplorate ${visited}/${zones.length} · sei in: ${g.zone || '—'}`);
+  const boat = g.boat?.owned
+    ? ` · la tua barca è a ${kmFromCoast(g.boat.x).toFixed(1).replace('.', ',')} km dalla costa`
+    : '';
+  el(
+    'p',
+    'bestiary-count',
+    panel,
+    `Zone esplorate ${visited}/${zones.length} · sei in: ${g.zone || '—'}${boat}`,
+  );
   const body = el('div', 'bestiary-body map-grid', panel);
   for (const z of zones) {
     const card = el('div', `map-zone${z.visited ? '' : ' unknown'}${z.name === g.zone ? ' here' : ''}`, body);

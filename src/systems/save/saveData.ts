@@ -9,7 +9,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -38,6 +38,7 @@ export interface SaveData {
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
   story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
   homePort: string; // the last harbour you came into: you wake up there (v7)
+  boat: { x: number } | null; // your boat and where it is at anchor (v9); null = not yours yet
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -55,6 +56,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     gear: null,
     story: null,
     homePort: 'portofosco',
+    boat: null,
   };
 }
 
@@ -138,6 +140,8 @@ export const MIGRATIONS: Migration[] = [
       return { ...o, gear: { ...gear, inventory: { ...inv, conchiglia: had + 5 } } };
     },
   },
+  // v8 → v9 (tappa 12): the boat. Not in older saves: the game gives it again if chapter 1 is over.
+  { from: 8, migrate: (o) => ({ ...o, boat: null }) },
 ];
 
 export class SaveError extends Error {}
@@ -203,6 +207,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
     story: validateStory(data.story),
     homePort: typeof data.homePort === 'string' ? data.homePort : 'portofosco',
+    boat: isObject(data.boat) && isFiniteNumber(data.boat.x) ? { x: data.boat.x } : null,
   };
 }
 

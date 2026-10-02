@@ -28,7 +28,11 @@
 4. Apri la mappa: le zone del mare aperto visitate.
 5. Il gioco resta fluido mentre nuoti lontano?
 
-**Prossima sessione:** tappa 12, la barca (viaggi in superficie, pesca dalla barca, ritorno a casa). Proporre il piano prima.
+**Tappa 12 (v0.11.0), la barca:** `data/boat.ts`, `systems/boat.ts` (regalo a fine capitolo 1, Sali/Tuffati, navigazione in superficie, cure a bordo, risveglio a bordo dopo un KO o la morte, pesca con attesa e tocco al momento giusto, pesci per zona), `views/boatView.ts` (barca disegnata, lenza e galleggiante), `BeastState.aboard` (nessuna bestia ti raggiunge, nessuna si chiama), salvataggio v9 (`boat: {x} | null`), HUD con distanza della barca, mappa. Scelte del proprietario: si ottiene da Aurelio, si rinasce sulla barca, niente viaggio istantaneo. 324 test. Testo Gemini per una barca dipinta in `docs/PROMPT-MONDO.md`.
+
+**Da provare (v0.11.0):** finisci il capitolo 1 (o usa una partita che l'ha già finito): trova la barca oltre il molo, Sali, naviga verso est, Pesca, Tuffati e controlla la freccia della barca nell'HUD; prova a perdere i sensi lontano.
+
+**Prossima sessione:** bestie uniche (una sola nel mondo, 1% di ritrovarla, sparisce se sconfitta), poi templi e capitolo 3. Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

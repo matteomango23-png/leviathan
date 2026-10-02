@@ -283,3 +283,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - Il proprietario ha generato bestie non previste dal kit (tonno, delfino, pesce luna, scorfano, pesce napoleone, pesce spada, squalo volpe, tricheco, elefante marino): aggiunte ai dati con statistiche e mosse coerenti con il loro tipo e ruolo (comuni o non comuni, bestie del mare aperto). Il coccodrillo della serie è il coccodrillo del Nilo (Delta).
 - I loro profili hanno fondi scuri con particelle e bagliori: per loro lo scontorno parte dal bordo e tiene solo il pezzo più grande; dove una vista ha due animali sovrapposti si usa l'altra (pesce spada e beluga senza bocca aperta per ora).
+
+## 2026-10-02 — Tappa 12: la barca (scelte del proprietario)
+
+- **Si ottiene** da Aurelio alla fine del capitolo 1 (le partite che l'hanno già finito la ricevono al primo passo di gioco); **si rinasce sulla barca** dopo un KO di tutta la squadra o la morte (stessa perdita di denti di prima); **niente viaggio istantaneo**, si naviga sempre.
+- A bordo il sub non nuota: la barca lo porta in superficie (aria piena, nessuna bestia selvatica lo raggiunge, nessuna bestia si chiama). Il pulsante dell'arma diventa "Pesca": attesa casuale, poi una finestra di 0,9 s per toccare.
+- **Salvataggio v9:** `boat: { x } | null`. Se si salva a bordo, si riparte in acqua accanto alla barca.
+- Ormeggio a PORT.x + 110, fuori dalla portata del molo: altrimenti il pulsante mostrava "Porto" invece di "Sali".

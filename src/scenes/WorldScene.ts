@@ -29,6 +29,7 @@ import { PlacesView } from '../views/placesView';
 import { KelpView } from '../views/kelpView';
 import { VentView } from '../views/ventView';
 import { WorldArtView } from '../views/worldArtView';
+import { BoatView } from '../views/boatView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
@@ -45,6 +46,7 @@ export class WorldScene extends Phaser.Scene {
   private kelp!: KelpView;
   private vents!: VentView;
   private worldArt!: WorldArtView;
+  private boat!: BoatView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private sanctuaries!: SanctuaryView;
@@ -92,6 +94,7 @@ export class WorldScene extends Phaser.Scene {
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
+    this.boat = new BoatView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.diverView = new DiverView(this, L.world);
@@ -241,6 +244,7 @@ export class WorldScene extends Phaser.Scene {
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
     this.worldArt.update(view);
+    this.boat.update(g.boat, g.diver.face, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);
@@ -248,7 +252,7 @@ export class WorldScene extends Phaser.Scene {
     this.effects.update(view, g.time, dt);
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
-    this.diverView.setHidden(storyHoldsDiver(g));
+    this.diverView.setHidden(storyHoldsDiver(g) || g.boat.aboard); // aboard, the boat view draws you
     this.gearFx.update(g, rider ?? d, g.time);
 
     let da = d.aim - this.lampAngle;

@@ -63,7 +63,9 @@ export class BackpackBar {
       b.classList.toggle('on', k === 'weapon' && gear.activeWeapon === id);
     });
     if (this.harpoonLabel) {
-      const name = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
+      // on your boat the weapon button fishes
+      const weapon = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
+      const name = g.boat.aboard ? 'Pesca' : weapon;
       if (this.harpoonLabel.textContent !== name) this.harpoonLabel.textContent = name;
     }
   }
