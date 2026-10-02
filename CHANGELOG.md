@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.14.0 — Capitolo 3: la Barriera Rossa (2 ottobre 2026)
+
+- **La storia continua:** dopo il capitolo 2 l'obiettivo ti porta alla Barriera Rossa. Lì la nave della Vedova Nera è ancorata sopra un **anfiteatro di corallo**: una conca a gradoni piena di coralli rossi, scavata nel fondale vicino al santuario della Barriera.
+- **Il Re Corallo:** un granchio enorme (livello 20) tenuto da tre catene, strappato dal suo trono. Quando scendi nella conca si alza e cammina di lato verso di te; se ti tocca parte la battaglia (non si può fuggire).
+- **Sfinito, lo liberi:** se lo batti non scappa. Crolla sul fondo e tu spezzi le tre catene con l'arpione: due agli argani sui gradoni, una che sale fino alla nave. Finché combatte le catene non si spezzano. Se invece lo domi in battaglia, le catene cedono da sole.
+- **Si unisce a te:** il Re Corallo entra in squadra (Corazzato, incassa per tutta la squadra). Prima volta: +800 denti e un Arpione mitico di nuovo al mercato.
+- **La Vedova Nera** cerca nei templi sommersi una reliquia che piega le bestie, e fugge verso la Foresta Sommersa.
+- Aurelio al porto ha nuovi consigli. La card del Re Corallo ora ha la sua illustrazione.
+- Nei dialoghi il testo lungo non finisce più sotto il pulsante "Salta". In battaglia, i boss sfiniti non "fuggono nel buio".
+
 ## v0.13.0 — Il tempio sommerso (2 ottobre 2026)
 
 - **Il primo tempio:** nel Mare aperto, a circa 3,7 km dalla costa, c'è un grande edificio di pietra scolpita mezzo sepolto nel fondale. Si entra da un'apertura nel tetto, e quando entri compare il nome "Tempio sommerso".

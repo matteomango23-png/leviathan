@@ -16,7 +16,9 @@ export type StoryStep =
   | 'returnToAurelio'
   | 'chapter1Done' // …and on the way to the Delta
   | 'freeWhale' // chapter 2: break the chains in the Delta
-  | 'chapter2Done';
+  | 'chapter2Done'
+  | 'freeKing' // chapter 3: the Re Corallo in the amphitheatre of the Barriera Rossa
+  | 'chapter3Done';
 
 export const STORY_STEPS: StoryStep[] = [
   'off',
@@ -28,6 +30,8 @@ export const STORY_STEPS: StoryStep[] = [
   'chapter1Done',
   'freeWhale',
   'chapter2Done',
+  'freeKing',
+  'chapter3Done',
 ];
 
 /** The story as kept in the save (v5). */
@@ -104,6 +108,30 @@ export const DIALOGUES = {
   hintChapter2Done: [
     { who: 'aurelio', text: 'Una megattera che ti segue di sua volontà. Tuo padre non ci avrebbe creduto.' },
     { who: 'aurelio', text: 'La Vedova è andata alla Barriera Rossa. Quando sarai pronto, ci andremo.' },
+    { who: 'aurelio', text: 'Laggiù vive il Re Corallo, il granchio più vecchio del mare. Se lei lo vuole, non è per venderlo.' },
+  ],
+  // chapter 3: the Barriera Rossa
+  reCorallo: [
+    { who: 'narratore', text: 'Sopra la Barriera, la nave nera è all’ancora. Tre catene scendono tese fino al fondale, tirate dagli argani.' },
+    { who: 'narratore', text: 'In fondo a un anfiteatro di corallo, un granchio enorme si dibatte: il Re Corallo, strappato dal suo trono.' },
+    { who: 'vedova', text: 'Ancora tu. Il ragazzino della balena.' },
+    { who: 'vedova', text: 'Nei templi sommersi c’è una reliquia che piega le bestie come giunchi. Per trovarla mi serve una corazza che non si spezza: la sua.' },
+    { who: 'vedova', text: 'Il dolore lo ha reso cieco. Scendi pure: attaccherà chiunque.' },
+    { who: 'narratore', text: 'Sfinisci il Re Corallo nell’anfiteatro, poi spezza le catene degli argani.' },
+  ],
+  kingFree: [
+    { who: 'narratore', text: 'L’ultima catena si spezza e frusta l’acqua. Il Re Corallo si rialza, lento, e ti guarda.' },
+    { who: 'vedova', text: 'Tienitelo, il tuo granchio. La reliquia la troverò lo stesso.' },
+    { who: 'vedova', text: 'Si salpa! Rotta sulla Foresta Sommersa.' },
+    { who: 'narratore', text: 'Il Re Corallo batte le chele due volte sul corallo: ha scelto di seguirti.' },
+  ],
+  hintFreeKing: [
+    { who: 'aurelio', text: 'Un re impazzito dal dolore non riconosce nessuno. Sfinitelo, senza ucciderlo: poi le catene.' },
+    { who: 'aurelio', text: 'È un Corazzato di livello 20: porta bestie forti, e cura la squadra al santuario della Barriera prima di scendere.' },
+  ],
+  hintChapter3Done: [
+    { who: 'aurelio', text: 'Il Re Corallo con noi… Il mare se lo ricorderà.' },
+    { who: 'aurelio', text: 'Una reliquia che piega le bestie, nei templi. Se la Vedova la trova, nessuna catena servirà più. Cerca i templi prima di lei.' },
   ],
 } satisfies Record<string, DialogueLine[]>;
 export type DialogueId = keyof typeof DIALOGUES;
@@ -146,7 +174,7 @@ export const OBJECTIVES = {
   chapter1Done: 'Segui la nave della Compagnia a est, nel Delta delle Mangrovie',
   freeWhale: (broken: number, total: number): string =>
     `Libera la balena: spezza gli ancoraggi delle catene sul fondale (${broken}/${total})`,
-  chapter2Done: 'Capitolo 2 completato · la Vedova Nera fugge verso la Barriera Rossa (capitolo 3 in arrivo)',
+  chapter2Done: 'Raggiungi la Barriera Rossa: la nave della Vedova Nera è ancorata sopra un anfiteatro di corallo',
 };
 
 /** The scripted scenes (tuning). */

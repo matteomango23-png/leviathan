@@ -109,7 +109,8 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 8b. ✅ **La barca (v0.11.0):** regalo di Aurelio, navigazione in superficie, santuario mobile, pesca; niente viaggio istantaneo.
 8c. ✅ **Le leggende (v0.12.0):** una sola nel mondo, solo nel suo posto, rara; domata è tua, sconfitta sparisce per sempre.
 8d. ✅ **Il primo tempio sommerso (v0.13.0):** nel mare aperto a quasi 4 km, mezzo sepolto nel fondale. Quattro sale: una leva, due leve da colpire una subito dopo l'altra, quattro rune nell'ordine del mosaico, un corridoio lungo con sfiatatoi. In fondo una reliquia (Respiro degli Antichi: l'aria dura circa il 50% in più, per sempre). La Compagnia è già passata di lì: la Vedova Nera cerca nei templi una reliquia che piega le bestie (gancio per il capitolo 3). Altri templi: altri rompicapo, con reliquie o leggende come premio.
-9. **Capitolo 3 e seguenti:** una regione alla volta (prossimo: la Barriera Rossa).
+9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa.
+10. **Capitolo 4 e seguenti:** una regione alla volta (prossimo: la Foresta Sommersa).
 
 ## Decisioni aperte
 

@@ -68,7 +68,39 @@
 - Il tempio è disegnato con forme semplici (blocchi, leve, rune). I testi per Gemini dei pezzi dipinti sono in `docs/PROMPT-MONDO.md` (sezione 5).
 - La sala più bassa è a circa 145 m: basta la muta leggera, ma serve aria per arrivarci (barca o muta da traversata).
 
-**Prossima sessione:** capitolo 3: la Barriera Rossa, il Re Corallo nell'anfiteatro di corallo, la Vedova Nera che fugge verso la Foresta Sommersa. Proporre il piano prima.
+**Tappa 15 (v0.14.0), capitolo 3: la Barriera Rossa:**
+
+- `data/chapter3.ts`: l'anfiteatro `ARENA` (conca a 4 gradoni a east(3000)), il re `CORAL_KING` (livello 20, scelto dal proprietario), le catene, i testi e i segni salvati (`CHAPTER3_MARKS`).
+- `systems/world/arena.ts`: la forma della conca, scavata in `isOpen` come la tana.
+- `systems/chapter3.ts`:
+  - la Vedova parla vicino alla nave;
+  - il re è una bestia selvatica a parte (id 901, `storyBoss`): si alza quando scendi nella conca, cammina di lato sul fondo, e se ti tocca parte la battaglia;
+  - dopo la battaglia (`beaten`, scritto da `battleResult`): sfinito, oppure domato (le catene cedono da sole);
+  - le catene si spezzano con le armi (`hitChain`) solo quando è sfinito;
+  - premio da Guardiano una volta sola; si unisce alla squadra; la nave salpa.
+- Lo stato si salva nella lista "seen" della storia (sfinito, premio, catene rotte). Passi nuovi: `freeKing`, `chapter3Done`.
+- `views/beastView.ts`: le bestie senza profilo ma con immagine frontale di battaglia (il Re Corallo) si disegnano intere, di fronte, con un'oscillazione da granchio che cammina di lato.
+- `views/chapter3View.ts`: coralli dei gradoni, argani, catene, il re incatenato o sfinito. La nave della Vedova (in `storyView`) è ancorata sopra la conca.
+- Battaglia: lo sfondo "tana" solo per i Guardiani veri (`w.guardian`); i boss sfiniti non "fuggono".
+- Card del Re Corallo (`public/art/re_corallo.webp`) dalla sua immagine in `asset animali ai/re corallo/`.
+- 348 test.
+- Visto nel browser: dialogo della Vedova, catene dalla nave e dagli argani, conca a gradoni con coralli, il re che si alza e viene verso il sub, battaglia (Re Corallo Lv. 20), il re sfinito con una catena rotta e l'obiettivo 1/3.
+
+**Da provare (v0.14.0):**
+
+1. Con una partita al capitolo 2 finito, vai alla Barriera Rossa (circa 1 km dalla costa) e nuota sotto la nave nera.
+2. Leggi la Vedova, poi scendi nella conca di corallo.
+3. Batti il Re Corallo: serve una squadra intorno al livello 20.
+4. Spezza le tre catene: due argani sui gradoni e una a metà della catena che sale alla nave (c'è un anello).
+5. Controlla che il Re Corallo sia in squadra e che la nave se ne vada.
+
+**Da sapere:**
+
+- Il Re Corallo nel mare è l'immagine frontale intera che si muove. L'animazione a pezzi (chele e zampe separate) arriverà quando ci saranno le immagini dei pezzi senza il corpo.
+- La battaglia usa per ora lo sfondo della Baia: il testo per Gemini dell'anfiteatro è in `docs/PROMPT-BATTAGLIA.md` (sezione 5).
+- Se chiudi il gioco durante lo scontro (prima di batterlo) lo scontro riparte; se è già sfinito, resta sfinito e le catene rotte restano rotte.
+
+**Prossima sessione:** capitolo 4, la Foresta Sommersa (la Vedova e la reliquia dei templi). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

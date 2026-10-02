@@ -56,3 +56,19 @@ Consigli che hanno funzionato col coccodrillo: allega la card della bestia (`art
 |---|---|---|
 | Coccodrillo albino leggendario | davanti | `Use the attached illustration as style reference. The same legendary albino saltwater crocodile swimming underwater, three-quarter front view, head toward the viewer turned slightly to the LEFT, jaws slightly open. [regole sopra]. Square image.` |
 | Sfondi Delta e tana | 4 strati ciascuno | come nella sezione 1 di questo file (`delta`, `tana`) |
+
+## 5. L'anfiteatro del Re Corallo (capitolo 3)
+
+Usa gli stessi quattro testi della sezione 1 mettendo questo al posto di [LUOGO]:
+
+`Realistic dark fantasy underwater amphitheatre carved in a red coral reef, circular stepped terraces like an ancient theatre covered in red and orange corals, rusty chains hanging from above into the centre, a sunken stone throne broken in the middle, faint blue light from the surface, particles in the water, no animals, no people, no text.`
+
+Salvali come per il Delta: `lontano.jpg`, `medio.jpg`, `pedana.jpg` e `primo piano.jpg`, nella cartella `asset animali ai/sfondi battaglia/barriera/`.
+
+**Pezzi del Re Corallo** (per animarlo a pezzi nel mare), ognuno su fondo nero puro:
+
+- solo il corpo senza zampe né chele, visto di fronte: `re_corallo_corpo.jpg`;
+- una chela intera, aperta: c'è già;
+- una zampa intera: `re_corallo_zampa.jpg`.
+
+Mettili in `asset animali ai/re corallo/`.

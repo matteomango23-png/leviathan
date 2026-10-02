@@ -34,6 +34,7 @@ import { BoatView } from '../views/boatView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
+import { Chapter3View } from '../views/chapter3View';
 import { DeltaView } from '../views/deltaView';
 import { TerrainView } from '../views/terrainView';
 import type { SceneData, Session } from './session';
@@ -54,6 +55,7 @@ export class WorldScene extends Phaser.Scene {
   private sanctuaries!: SanctuaryView;
   private places!: PlacesView;
   private story!: StoryView;
+  private chapter3!: Chapter3View;
   private gearFx!: GearFxView;
   private diverView!: DiverView;
   private effects!: EffectsView;
@@ -92,6 +94,7 @@ export class WorldScene extends Phaser.Scene {
     this.sanctuaries = new SanctuaryView(this, L.world, g.sanctuaries);
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
+    this.chapter3 = new Chapter3View(this, L.world);
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
@@ -259,6 +262,7 @@ export class WorldScene extends Phaser.Scene {
     this.effects.update(view, g.time, dt);
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
+    this.chapter3.update(g, g.time);
     this.diverView.setHidden(storyHoldsDiver(g) || g.boat.aboard); // aboard, the boat view draws you
     this.gearFx.update(g, rider ?? d, g.time);
 
@@ -275,6 +279,7 @@ export class WorldScene extends Phaser.Scene {
       ...g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 })),
       ...this.places.glowSpots(g.gear),
       ...this.story.glowSpots(g.story, g.chapter2.anchors),
+      ...this.chapter3.glowSpots(g),
       ...this.beasts.glowSpots(g),
     ];
     const mods = diverModifiers(g.gear);

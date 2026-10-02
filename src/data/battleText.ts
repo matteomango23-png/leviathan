@@ -43,6 +43,8 @@ export const BATTLE_TEXT = {
   healed: (b: Named, n: number): string => `${b.name} recupera ${n} di vita.`,
   fainted: (b: Named): string => `${b.name} è sfinit${o(b)}!`,
   foeFainted: (b: Named): string => `${b.name} selvatic${o(b)} è sfinit${o(b)} e fugge nel buio!`,
+  /** A beast with a title (Guardian, story beast): it does not run away. */
+  bossFainted: (b: Named): string => `${b.name} è sfinit${o(b)}!`,
   chooseNext: 'Chi mandi in acqua?',
   switched: (from: Named, to: Named): string => `Torna, ${from.name}! Vai, ${to.name}!`,
   tameThrow: (b: Named): string => `Suoni la Conchiglia del domatore verso ${b.name}…`,

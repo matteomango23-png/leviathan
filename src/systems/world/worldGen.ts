@@ -17,6 +17,7 @@ import {
 import { fbm, smoothstep } from '../math';
 import { LAIR } from '../../data/guardians';
 import { inLairCave, inLairShaft, inLairShell } from './lair';
+import { inArena, inArenaShell } from './arena';
 import { TileMap } from './tileMap';
 import { generateChunk } from './endless';
 import { icebergBox, inIceberg } from './icebergs';
@@ -83,6 +84,9 @@ export function isOpen(x: number, y: number): boolean {
   // the Guardian's lair is carved exactly, whatever the noise does around it
   if (inLairCave(x, y) || inLairShaft(x, y)) return true;
   if (inLairShell(x, y)) return false;
+  // the Re Corallo's amphitheatre too (chapter 3)
+  if (inArena(x, y)) return true;
+  if (inArenaShell(x, y)) return false;
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
   if (y < COAST.maxY && x < coastX(y) + n * COAST.noise) return false;
   const z = zoneFor(x);

@@ -314,3 +314,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - I vecchi salvataggi non hanno il campo e partono vuoti, quindi non serve una nuova versione del salvataggio.
   - La prima reliquia porta il consumo d'aria a 0,65.
 - **`world/stretches.ts` staccato da `endless.ts`:** il tempio deve conoscere i tratti per trovare il suo posto, e `endless.ts` deve conoscere il tempio per i tile. Senza separarli ci sarebbe un giro di import.
+
+## 2026-10-02 — Tappa 15: capitolo 3, la Barriera Rossa
+
+- **Re Corallo al livello 20** (scelta del proprietario: "anche livello 20"); `wildLevel` del Re Corallo portato a [20, 20].
+- **Battuto non sparisce:** una bestia della storia (`storyBoss`) dopo la battaglia resta lì e decide la storia (`beaten` scritto da `finishBattle`). Così "sfinito, rompi le catene e lo domi" del GDD diventa: battaglia, poi catene, poi si unisce. Se lo domi in battaglia le catene cedono da sole, per non chiedere due volte la stessa cosa.
+- **Catene solo a re sfinito:** prima rimbalzano ("prima calmalo"), così l'ordine della storia è chiaro.
+- **Salvataggio senza nuova versione:** lo stato del capitolo sta nella lista "seen" della storia (`CHAPTER3_MARKS`, accettati da `storySave`).
+- **Granchio di fronte:** in mancanza di un profilo, un granchio visto di fronte che cammina di lato è proprio come si muove un granchio. `BeastSprite` usa l'immagine frontale di battaglia se manca il profilo; l'animazione a pezzi aspetta i pezzi separati.
+- **Lo sfondo "tana"** in battaglia solo per i Guardiani nelle tane (`w.guardian`), non per ogni bestia della storia.

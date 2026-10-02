@@ -124,7 +124,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'megattera', name: 'Megattera', type: 'glaciale', role: 'cavalcatura', region: 'barriera', wildLevel: [9, 14], rarity: 4, size: 'colossale', lengthM: 16, trait: 'Il suo canto cura la squadra; con lei non consumi ossigeno',
     abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Megattera Cantore',
     artPrompt: 'a colossal humpback whale with long white pectoral fins and a knobby head, singing, icy bubbles' },
-  { id: 're_corallo', name: 'Re Corallo', type: 'corazzato', role: 'compagno', region: 'barriera', wildLevel: [12, 12], rarity: 4, size: 'grande', lengthM: 5, trait: 'Incassa per tutta la squadra', guardian: true,
+  { id: 're_corallo', name: 'Re Corallo', type: 'corazzato', role: 'compagno', region: 'barriera', wildLevel: [20, 20], rarity: 4, size: 'grande', lengthM: 5, trait: 'Incassa per tutta la squadra', guardian: true,
     artPrompt: 'a colossal ancient crab whose shell is a living red coral reef, one claw locked in a rusted iron collar' },
 
   // ---- Foresta Sommersa (10-15)
