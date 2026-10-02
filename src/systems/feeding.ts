@@ -1,10 +1,9 @@
-// Food chain: the big beast you ride eats the small fish it swims through;
+// Food chain: the beast you ride (or that swims with you) eats the small fish it meets;
 // at the port a growing beast eats from the fish bag.
 import { FEEDING } from '../data/beasts';
 import { headOf } from './beasts/combat';
 import type { Mount } from './beasts/mount';
 import { feedBeast, isHungry } from './beasts/growth';
-import { speciesOf } from './beasts/forms';
 import type { TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
 import type { Fish, FishState } from './fish';
@@ -20,10 +19,8 @@ export function beastEats(
   timer.feed = Math.max(0, timer.feed - dt);
   if (!c || !b || timer.feed > 0) return null;
   if (c.state !== 'ride' && c.state !== 'follow') return null;
-  // a companion eats any small fish it meets; in the saddle only the big beasts eat
-  if (c.state === 'ride' && !FEEDING.sizes.includes(speciesOf(b.form).size)) return null;
   const h = headOf(c);
-  const reach = c.length * FEEDING.reachFrac;
+  const reach = Math.max(FEEDING.minReach, c.length * FEEDING.reachFrac);
   const f = fish.fish.find((x) => x.alive && !x.hooked && Math.hypot(x.x - h.x, x.y - h.y) < reach);
   if (!f) return null;
   timer.feed = FEEDING.interval;

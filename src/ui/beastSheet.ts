@@ -113,6 +113,17 @@ export function openBeastSheet(
       m.damageNow > 0 ? `${m.text} · danno ${m.damageNow} → ${m.damageNext} al prossimo livello` : m.text,
     );
   }
+  if (s.fieldMove) {
+    // the move used in the sea, not in battle: it breaks ancient bones
+    const f = s.fieldMove;
+    const row = el('div', `sheet-move${f.unlocked ? '' : ' locked'}`, info);
+    const top = el('div', 'move-top', row);
+    if (!f.unlocked) top.append(icon('lock'));
+    el('span', 'move-name', top, f.name);
+    el('span', 'tag small', top, 'Nel mare');
+    el('span', 'move-meta', top, f.unlocked ? 'pronta' : `livello ${f.level}`);
+    el('div', 'move-text', row, 'Rompe le ossa antiche: chiamala vicino alle ossa e premi Sfonda.');
+  }
   el('h3', '', info, 'Habitat e carattere');
   el('p', '', info, `${s.habitat}. ${s.trait}.`);
   return close;

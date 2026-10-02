@@ -49,8 +49,8 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'tartaruga_marina', area: BAY, respawnSeconds: [25, 50] },
   { speciesId: 'torpedine', area: [LAYOUT.bay.x0, 180, bay(1900), 380], respawnSeconds: [20, 40] },
   { speciesId: 'torpedine', area: BAY, respawnSeconds: [25, 50] },
-  { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120], level: [5, 7] }, // visitors from the reef
-  { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150], level: [6, 8] },
+  { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120], level: [11, 13] }, // visitors from the reef
+  { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150], level: [11, 13] },
   { speciesId: 'squalo_bianco', area: BAY, respawnSeconds: [120, 220] }, // rarer
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
@@ -67,6 +67,20 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
   { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
 ];
+
+/**
+ * Wild levels (owner, 2 ottobre): the bigger and rarer a beast, the stronger. A wild beast is never below
+ * size floor + rarity floor (a species can ask for more with `minLevel`); albino and alfa add to it. Now and
+ * then one is far stronger than its waters ("fuori scala"). Distance from the coast joins with the endless ocean.
+ */
+export const WILD_LEVELS = {
+  sizeFloor: { piccola: 0, media: 2, grande: 6, colossale: 12 } as Record<string, number>,
+  starFloor: { 1: 0, 2: 2, 3: 5, 4: 9, 5: 14 } as Record<number, number>,
+  variantExtra: { comune: 0, albino: 3, alfa: 5 } as Record<string, number>,
+  aboveFloor: 2, // a beast lifted to its floor gets 0…this many levels more
+  outlierChance: 0.05,
+  outlierExtra: [5, 10] as [number, number],
+};
 
 /** At most this many wild beasts are around you at the same time (tuning). */
 export const WILD_RULES = { maxPresent: 5 };
@@ -86,10 +100,10 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   manta: { temper: 'calm', speedMult: 0.8 },
 };
 
-/** Big beasts you ride eat the small fish they swim through (food chain): into your bag. */
+/** The beast you ride, or that follows you, eats the small fish it meets (food chain): into your bag. */
 export const FEEDING = {
-  sizes: ['grande', 'colossale'], // species size classes that eat fish
-  reachFrac: 0.22, // × body length, around the head
+  reachFrac: 0.22, // × body length, around the head…
+  minReach: 6, // …but at least this many units (a 1 m beast would never catch anything)
   interval: 0.25, // seconds between bites
 };
 
@@ -118,7 +132,13 @@ export const TEAM_RULES = {
 
 /** What mounts can do while you ride them (abilities in species.ts). */
 export const ABILITIES = {
-  sfondaOssa: { reach: 34, radius: 30 }, // breaks ancient bones this close to the head
+  sfondaOssa: { reach: 34, radius: 30 }, // breaks ancient bones this close to the head (or to you, if it follows you)
+  /**
+   * Sfondamento (owner, 2 ottobre): every Predatore or Corazzato learns it at level 16 and breaks ancient bones
+   * like the white shark, ridden or swimming with you. Near bones you cannot break, a hint says what is needed.
+   */
+  sfondamento: { name: 'Sfondamento', types: ['predatore', 'corazzato'] as string[], level: 16 },
+  boneHint: { reach: 70, everySeconds: 25 },
   staz_ossigeno: { o2DrainMult: 0 }, // you do not use air while riding it
 };
 

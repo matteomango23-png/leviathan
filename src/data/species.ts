@@ -34,6 +34,7 @@ export interface SpeciesDef {
   evolveLevel?: number;        // …reached at this level, like Pokémon
   movesFrom?: string;          // the line keeps the moves of its first stage
   artFrom?: string;            // pictures to use until its own exist (a form key with pictures, e.g. squalo_bianco_finale)
+  minLevel?: number;           // wild ones are never below this level (over the size + rarity floor, WILD_LEVELS)
   rideSpeedMult?: number;      // not a mount but you can ride it anyway, at this × its riding speed (second stages)
   girth?: number;              // the side picture drawn this much thicker (a thin serpent made massive)
 }
@@ -46,7 +47,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'an ancient loggerhead sea turtle with a barnacle-crusted shell like a stone shield and wise heavy eyes' },
   { id: 'torpedine', name: 'Torpedine', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [3, 5], rarity: 2, size: 'piccola', lengthM: 1.5, trait: 'Scarica che stordisce i vicini',
     artPrompt: 'a round dark torpedo ray with electric veins crackling across its disc' },
-  { id: 'squalo_bianco', name: 'Squalo bianco', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [4, 6], rarity: 3, size: 'grande', lengthM: 6, trait: 'Carica che sfonda le ossa antiche',
+  { id: 'squalo_bianco', name: 'Squalo bianco', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [4, 6], rarity: 3, size: 'grande', lengthM: 6, minLevel: 15, trait: 'Carica che sfonda le ossa antiche',
     abilities: ['sfondaOssa'], iconic: true, finalFormName: 'Squalo bianco Titano', albinoFinalFormName: 'Squalo bianco Mega albino',
     artPrompt: 'a massive scarred great white shark with jaws half open showing rows of serrated teeth and a black lifeless eye' },
 
@@ -82,7 +83,7 @@ export const SPECIES: SpeciesDef[] = [
   // ---- Delta delle Mangrovie (6-12): brackish river mouth
   { id: 'coccodrillo_nilo', name: 'Coccodrillo del Nilo', type: 'corazzato', role: 'compagno', region: 'delta', wildLevel: [7, 9], rarity: 3, size: 'grande', lengthM: 5, trait: 'Agguato dalla riva: sparisce sotto la superficie e colpisce di sorpresa',
     artPrompt: 'a Nile crocodile with olive-bronze armored scales lurking half-submerged among mangrove roots, cold eyes glinting just above the waterline' },
-  { id: 'coccodrillo_marino', name: 'Coccodrillo marino', type: 'predatore', role: 'cavalcatura', region: 'delta', wildLevel: [9, 12], rarity: 4, size: 'grande', lengthM: 7, trait: 'Il più grande rettile vivente; rotolo della morte',
+  { id: 'coccodrillo_marino', name: 'Coccodrillo marino', type: 'predatore', role: 'cavalcatura', region: 'delta', wildLevel: [9, 12], rarity: 2, size: 'grande', lengthM: 7, trait: 'Il più grande rettile vivente; rotolo della morte',
     iconic: true, finalFormName: 'Coccodrillo marino Colosso',
     artPrompt: 'a colossal saltwater crocodile with a ridged armored back and jagged interlocking teeth, gliding through murky mangrove water' },
 
@@ -181,12 +182,14 @@ export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
 // ---- Base stats (tuning). Stat at level L = base * (1 + statGrowthPerLevel * (L-1)) * variant mult.
 export interface Stats { hp: number; bite: number; charge: number; defense: number; speed: number; }
 const ROLE_BASE: Record<Role, Stats> = {
-  cavalcatura: { hp: 10, bite: 2, charge: 3, defense: 0.10, speed: 120 },
+  cavalcatura: { hp: 10, bite: 2.6, charge: 3, defense: 0.10, speed: 120 }, // bite 2.6 (was 2): a final form bites harder than its second stage
   compagno:    { hp: 8,  bite: 3, charge: 2, defense: 0.10, speed: 105 },
   supporto:    { hp: 8,  bite: 1, charge: 1, defense: 0.18, speed: 95 },
 };
 const RARITY_MULT: Record<Stars, number> = { 1: 0.8, 2: 0.9, 3: 1.0, 4: 1.15, 5: 1.35 };
 const SIZE_HP: Record<SizeClass, number> = { piccola: 0.8, media: 1.0, grande: 1.3, colossale: 1.7 };
+// the bigger the beast, the harder it bites (owner, 2 ottobre: a barracuda bit harder than a white shark)
+const SIZE_BITE: Record<SizeClass, number> = { piccola: 0.75, media: 0.95, grande: 1.2, colossale: 1.45 };
 const SIZE_SPEED: Record<SizeClass, number> = { piccola: 1.05, media: 1.0, grande: 0.95, colossale: 0.85 };
 
 export function statsAt(species: SpeciesDef, level: number, variant: 'comune' | 'albino' | 'alfa' = 'comune', uniqueMult = 1): Stats {
@@ -195,7 +198,7 @@ export function statsAt(species: SpeciesDef, level: number, variant: 'comune' | 
   const v = (variant === 'comune' ? 1 : VARIANT_RULES[variant].statMult) * uniqueMult;
   return {
     hp: Math.round(b.hp * r * SIZE_HP[species.size] * lv * v),
-    bite: +(b.bite * r * lv * v).toFixed(1),
+    bite: +(b.bite * r * SIZE_BITE[species.size] * lv * v).toFixed(1),
     charge: +(b.charge * r * lv * v).toFixed(1),
     defense: Math.min(0.5, b.defense * (variant === 'comune' ? 1 : 1.2)),
     speed: Math.round(b.speed * SIZE_SPEED[species.size] * (variant === 'albino' ? 1.1 : 1)),

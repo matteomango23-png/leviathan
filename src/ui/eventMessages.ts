@@ -2,6 +2,7 @@
 import { PROGRESSION } from '../data/rules';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
 import { SPECIES } from '../data/species';
+import { STORY_NOTES } from '../data/story';
 import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
@@ -120,6 +121,15 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return ['Lo Sfregiato torna nel buio della sua tana.', 3];
     case 'sanctuaryReached':
       return ['Santuario raggiunto: rinascerai qui. Resta fermo per curarti.', 3];
+    case 'bonesHint': {
+      const b = e.breakerUid ? tamed(e.breakerUid) : undefined;
+      return b
+        ? [
+            `Ossa antiche. ${formName(b.form)} conosce Sfondamento: chiamalo dalla barra in alto e premi Sfonda.`,
+            4.5,
+          ]
+        : [STORY_NOTES.boneHint, 5];
+    }
     case 'bonesBroken':
       return ['Le ossa antiche cedono!', 1.5];
     case 'swarmBound':

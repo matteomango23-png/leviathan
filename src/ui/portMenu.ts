@@ -3,7 +3,7 @@
 import { MARKET } from '../data/economy';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
-import { sellAtPort, type GameState } from '../systems/game';
+import { restAtPort, sellAtPort, type GameState } from '../systems/game';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 import { icon, iconFor, type IconName } from './icons';
@@ -50,6 +50,16 @@ export class PortMenu {
       aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
       aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));
     }
+    // resting is what entering the port already did: the button says it out loud and can be pressed again
+    const rest = el('button', 'pbtn', top);
+    rest.append(icon('heart'), document.createTextNode(' Riposa'));
+    rest.addEventListener('click', () => {
+      restAtPort(this.g);
+      this.session.emit('saveNow');
+      this.say(
+        `Tu e la squadra siete in forze. Se perdi i sensi ti risvegli qui, a ${this.g.port?.name ?? 'Portofosco'}.`,
+      );
+    });
     const dive = el('button', 'pbtn primary', top);
     dive.append(icon('dive'), document.createTextNode(' Tuffati'));
     dive.addEventListener('click', () => {

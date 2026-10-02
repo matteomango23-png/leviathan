@@ -154,22 +154,25 @@ function paintHalo(g: CanvasRenderingContext2D): void {
   g.fillRect(0, 0, r * 2, r * 2);
 }
 
+/** The lamp: a soft beam, bright in the middle and fading to the sides and to its end (no hard edges). */
 function paintCone(g: CanvasRenderingContext2D, h: number): void {
   const L = CONE_TEX.length;
   const a = LIGHT.coneHalfAngle;
-  g.save();
-  g.translate(0, h / 2);
-  const grad = g.createRadialGradient(0, 0, 0, 0, 0, L);
-  grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(0.6, 'rgba(255,255,255,0.7)');
-  grad.addColorStop(1, 'rgba(255,255,255,0)');
-  g.fillStyle = grad;
-  g.beginPath();
-  g.moveTo(0, 0);
-  g.arc(0, 0, L, -a, a);
-  g.closePath();
-  g.fill();
-  g.restore();
+  const img = g.createImageData(L, h);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < L; x++) {
+      const dy = y - h / 2;
+      const r = Math.hypot(x, dy) / L;
+      const side = Math.abs(Math.atan2(dy, Math.max(x, 0.001))) / a; // 0 in the middle, 1 at the edge
+      if (r >= 1 || side >= 1) continue;
+      const along = Math.pow(1 - r, LIGHT.coneFalloff);
+      const across = Math.pow(Math.cos((side * Math.PI) / 2), LIGHT.coneSoftEdge);
+      const o = (y * L + x) * 4;
+      img.data[o] = img.data[o + 1] = img.data[o + 2] = 255;
+      img.data[o + 3] = Math.round(255 * along * across);
+    }
+  }
+  g.putImageData(img, 0, 0);
 }
 
 function paintVignette(g: CanvasRenderingContext2D, s: number): void {

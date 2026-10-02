@@ -1,6 +1,7 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
 import { RARE_UNIQUES } from '../../data/chapter2';
+import { ABILITIES, WILD_LEVELS } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
@@ -122,8 +123,29 @@ export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
 export function rollWildLevel(form: BeastForm, rng: Rng, levels?: [number, number]): number {
   const u = uniqueOf(form);
   if (u) return u.level;
+  const W = WILD_LEVELS;
   const [a, b] = levels ?? speciesOf(form).wildLevel;
-  return a + Math.floor(rng() * (b - a + 1));
+  let lv = a + Math.floor(rng() * (b - a + 1));
+  const floor = wildLevelFloor(form);
+  if (lv < floor) lv = floor + Math.floor(rng() * (W.aboveFloor + 1));
+  if (rng() < W.outlierChance)
+    lv += W.outlierExtra[0] + Math.floor(rng() * (W.outlierExtra[1] - W.outlierExtra[0] + 1));
+  return Math.min(PROGRESSION.maxLevel, lv);
+}
+
+/** The usual levels of a wild beast of this form (its species' range, lifted to its floor), outliers aside. */
+export function wildLevelRange(form: BeastForm): [number, number] {
+  const [a, b] = speciesOf(form).wildLevel;
+  const f = wildLevelFloor(form);
+  return a >= f ? [a, b] : [f, Math.max(b, f + WILD_LEVELS.aboveFloor)];
+}
+
+/** The lowest level a wild beast of this form can have: bigger and rarer means stronger. */
+export function wildLevelFloor(form: BeastForm): number {
+  const s = speciesOf(form);
+  const W = WILD_LEVELS;
+  const base = Math.max(s.minLevel ?? 0, (W.sizeFloor[s.size] ?? 0) + (W.starFloor[s.rarity] ?? 0));
+  return Math.max(1, base + (W.variantExtra[form.variant] ?? 0));
 }
 
 /** The six versions of the white shark (tappa 2), in the order shown in the test panel. */
@@ -135,3 +157,10 @@ export const WHITE_SHARK_FORMS: BeastForm[] = [
   { speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' },
   { speciesId: 'squalo_bianco', variant: 'comune', final: true },
 ];
+
+/** Breaks ancient bones: a bone breaker (the white shark line) or a Predatore/Corazzato with Sfondamento. */
+export function breaksBones(form: BeastForm, level: number): boolean {
+  const s = speciesOf(form);
+  const S = ABILITIES.sfondamento;
+  return !!s.abilities?.includes('sfondaOssa') || (S.types.includes(s.type) && level >= S.level);
+}

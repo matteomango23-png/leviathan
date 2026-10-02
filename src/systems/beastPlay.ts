@@ -2,7 +2,7 @@
 // from the team bar and riding it, its ability, the sardine swarm, sanctuaries. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
 import { TEAM_RULES } from '../data/beasts';
-import { canBreakBones, useBreakBones } from './abilities';
+import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { formLengthUnits, formStats, speciesOf } from './beasts/forms';
@@ -80,6 +80,7 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     if (bs.decoy.t <= 0 || d.dead) bs.decoy = null;
   }
   stepWildSpawns(g, dt, events);
+  stepBoneHint(g, dt, events);
   const m = bs.mount;
   if (m) {
     // it grows (levels, evolutions) while it is out

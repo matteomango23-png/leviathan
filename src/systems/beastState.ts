@@ -34,6 +34,8 @@ export interface BeastState {
   arena: boolean;
   /** Set when a battle must start (the World scene opens it and pauses the sea). */
   battle: BattleRequest | null;
+  /** Seconds before the hint about ancient bones can show again. */
+  boneHintT: number;
 }
 
 export interface BeastWorld {
@@ -62,6 +64,7 @@ export function createBeasts(team: TeamBeast[]): BeastState {
     decoy: null,
     arena: false,
     battle: null,
+    boneHintT: 0,
   };
 }
 
