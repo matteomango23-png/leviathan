@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.10.1 — Pareti dipinte e iceberg (2 ottobre 2026)
+
+- **Pareti dipinte** (le tue immagini) sui bordi dritti dei pozzi verso gli abissi e sulle pareti delle fosse del mare aperto: roccia di solito, corallo vicino alle barriere, ghiaccio nel freddo. Niente più bordi a blocchi in quei punti.
+- **Iceberg** nel Mare di Ghiaccio e nella Banchisa del mare aperto: galleggiano con la punta fuori dall'acqua e la loro parte sommersa è solida, con la forma del disegno (l'iceberg spezzato ha il suo tunnel in mezzo). Si passa sotto.
+
 ## v0.10.0 — L'oceano infinito (2 ottobre 2026)
 
 - **Il mare non finisce più:** dopo il Mare di Ghiaccio si va avanti all'infinito verso est. Il mare è fatto a tratti di circa 300 m: Mare aperto, Barriera lontana, Foresta di alghe, Banchisa (ghiaccio con buchi per respirare), Fossa abissale (un precipizio profondissimo). È sempre lo stesso per tutti.

@@ -19,6 +19,8 @@ import { LAIR } from '../../data/guardians';
 import { inLairCave, inLairShaft, inLairShell } from './lair';
 import { TileMap } from './tileMap';
 import { generateChunk } from './endless';
+import { icebergBox, inIceberg } from './icebergs';
+import { ICEBERGS } from '../../data/worldArt';
 import { ENDLESS } from '../../data/endless';
 
 function floorHeight(f: FloorDef, x: number, n: number): number {
@@ -134,6 +136,16 @@ export function generateWorld(): TileMap {
     for (let tx = 0; tx < map.cols; tx++) {
       if (map.get(tx, ty) === TILE.water && isIce(tx * T + T / 2, ty * T + T / 2)) map.set(tx, ty, TILE.ice);
     }
+  }
+  // the icebergs of the Mare di Ghiaccio: solid where their picture is ice
+  for (const b of ICEBERGS.map(icebergBox)) {
+    if (!b) continue;
+    for (let ty = Math.max(0, Math.floor(b.top / T)); ty <= Math.floor((b.top + b.h) / T); ty++)
+      for (let tx = Math.floor(b.left / T); tx <= Math.floor((b.left + b.w) / T); tx++) {
+        const [x, y] = [tx * T + T / 2, ty * T + T / 2];
+        if (y > WORLD.surfaceY && map.get(tx, ty) === TILE.water && inIceberg([b], x, y))
+          map.set(tx, ty, TILE.ice);
+      }
   }
   return map;
 }

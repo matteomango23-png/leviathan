@@ -28,6 +28,7 @@ import { GearFxView } from '../views/gearFxView';
 import { PlacesView } from '../views/placesView';
 import { KelpView } from '../views/kelpView';
 import { VentView } from '../views/ventView';
+import { WorldArtView } from '../views/worldArtView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
@@ -43,6 +44,7 @@ export class WorldScene extends Phaser.Scene {
   private terrain!: TerrainView;
   private kelp!: KelpView;
   private vents!: VentView;
+  private worldArt!: WorldArtView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private sanctuaries!: SanctuaryView;
@@ -89,6 +91,7 @@ export class WorldScene extends Phaser.Scene {
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
+    this.worldArt = new WorldArtView(this, L.world, map);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.diverView = new DiverView(this, L.world);
@@ -237,6 +240,7 @@ export class WorldScene extends Phaser.Scene {
     this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
+    this.worldArt.update(view);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);

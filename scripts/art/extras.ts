@@ -3,8 +3,10 @@
 //   bg_<place>_mid|front|ground.jpg    → public/bg/<place>_<layer>.webp (green background removed)
 //   conchiglia.jpg, conchiglia_aperta  → public/items/<name>.webp       (black removed, 512×512)
 //   icona_<name>.jpg, tipo_<name>.jpg  → public/ui/<name>.webp          (white icon, 160×160, tinted in game)
-import { mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
+//   parete_<name>.jpg, iceberg_<n>.jpg  → public/world/<name>.webp      (black removed; an iceberg also gets
+//                                          public/world/<name>.json: its waterline and a solid mask for collisions)
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import sharp from 'sharp';
 import {
   borderColor,
@@ -33,6 +35,7 @@ function stageMask(img: Raw): Float32Array | null {
 export function extraDest(outRoot: string, e: ExtraName): string {
   if (e.kind === 'bg') return join(outRoot, 'bg', `${e.place}_${e.layer}.webp`);
   if (e.kind === 'item') return join(outRoot, 'items', `${e.id}.webp`);
+  if (e.kind === 'world') return join(outRoot, 'world', `${e.id}.webp`);
   return join(outRoot, 'ui', `${e.id}.webp`);
 }
 
@@ -106,6 +109,7 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
       .toFile(dest);
     return `strato ${img.width}×${img.height}, verde tolto`;
   }
+  if (e.kind === 'world') return makeWorldPiece(src, dest, e.id);
   if (e.kind === 'item') {
     const img = await raw(src, 1400, 0.02); // screenshots: trim the frame
     const cut = removeDarkBackground(img, borderColor(img), 4, { low: 4, high: 18, soft: 34 });
@@ -130,4 +134,73 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     .webp(webp)
     .toFile(dest);
   return 'icona 160×160';
+}
+
+/** Cells across an iceberg's solid mask (its rows follow the picture's shape). */
+const MASK_COLS = 40;
+
+/**
+ * A rock or ice wall, or an iceberg, cut out of its black background. The opening (radius) also wipes the thin
+ * waterline Gemini draws across the iceberg pictures; that line is found first and kept as the iceberg's
+ * waterline (share of the cut picture's height), with a coarse solid mask for the game's collisions.
+ */
+async function makeWorldPiece(src: string, dest: string, id: string): Promise<string> {
+  const img = await raw(src, 1400);
+  const iceberg = id.startsWith('iceberg');
+  // the waterline: the brightest row in the side margins (only the line reaches them, not the ice or its snow)
+  let line = -1;
+  if (iceberg) {
+    let best = 0;
+    for (let y = 0; y < img.height; y++) {
+      let n = 0;
+      for (let x = 0; x < img.width; x += 2) {
+        if (x > img.width * 0.08 && x < img.width * 0.92) continue;
+        const o = (y * img.width + x) * 4;
+        n += img.data[o]! + img.data[o + 1]! + img.data[o + 2]!;
+      }
+      if (n > best) [best, line] = [n, y];
+    }
+  }
+  const radius = Math.max(3, Math.round(img.width * 0.004));
+  // icebergs are pale: a loose cut; the walls are dark rock: a tight one, or the rock turns see-through
+  const opt = iceberg ? { low: 8, high: 30, soft: 40 } : { low: 2, high: 9, soft: 14 };
+  const cut = removeDarkBackground(img, borderColor(img), radius, opt);
+  if (iceberg) {
+    // the waterline Gemini draws: wipe every thin horizontal strip (a vertical run of solid pixels shorter than
+    // `thin`), wherever it is and even if slanted; the ice itself is always much taller than that
+    const thin = Math.round(img.height * 0.014) + 2;
+    for (let x = 0; x < img.width; x++) {
+      let y = 0;
+      while (y < img.height) {
+        if (cut[(y * img.width + x) * 4 + 3]! < 6) {
+          y++;
+          continue;
+        }
+        const top = y;
+        while (y < img.height && cut[(y * img.width + x) * 4 + 3]! >= 6) y++;
+        if (y - top < thin) for (let yy = top; yy < y; yy++) cut[(yy * img.width + x) * 4 + 3] = 0;
+      }
+    }
+  }
+  const box = opaqueBox(cut, img.width, img.height);
+  if (!box) throw new Error('immagine vuota dopo lo scontorno');
+  const c = await cropped(cut, img);
+  await mkdir(dirname(dest), { recursive: true });
+  await sharp(c.png).webp({ quality: 88 }).toFile(dest);
+  if (!iceberg) return `parete ${c.w}×${c.h}`;
+  const rows = Math.max(4, Math.round((MASK_COLS * c.h) / c.w));
+  const mask: string[] = [];
+  for (let r = 0; r < rows; r++) {
+    let row = '';
+    for (let q = 0; q < MASK_COLS; q++) {
+      // the cell's centre in the cut picture: solid if most of the ice is there
+      const x = box.x0 + Math.floor(((q + 0.5) / MASK_COLS) * c.w);
+      const y = box.y0 + Math.floor(((r + 0.5) / rows) * c.h);
+      row += (cut[(y * img.width + x) * 4 + 3] ?? 0) > 128 ? '1' : '0';
+    }
+    mask.push(row);
+  }
+  const waterline = line >= 0 ? Math.max(0, Math.min(1, (line - box.y0) / c.h)) : 0.2;
+  await writeFile(dest.replace(/\.webp$/, '.json'), JSON.stringify({ w: c.w, h: c.h, waterline, mask }));
+  return `iceberg ${c.w}×${c.h}, linea dell'acqua al ${Math.round(waterline * 100)}%`;
 }
