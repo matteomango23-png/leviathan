@@ -102,6 +102,11 @@ export const BATTLE_STAGE = {
   bigFoeDrop: 0.9,
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
+  /**
+   * Pictures whose longest side is not the body length: a coiled moray looks far bigger than 3 m, a manta seen
+   * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).
+   */
+  pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
   /** Places with their own background; any other region uses the bay. */
   places: ['baia', 'delta', 'tana'] as const,
 };

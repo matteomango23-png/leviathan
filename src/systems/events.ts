@@ -33,6 +33,8 @@ export type GameEvent =
   // your team
   | { type: 'tamed'; uid: string; toTeam: boolean }
   | { type: 'summoned'; uid: string }
+  /** Near ancient bones you cannot break: who in your team could (null: nobody yet). */
+  | { type: 'bonesHint'; breakerUid: string | null }
   | { type: 'cannotRide'; uid: string; ko: boolean }
   | { type: 'mounted' }
   | { type: 'dismounted' }

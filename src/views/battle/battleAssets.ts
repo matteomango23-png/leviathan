@@ -7,7 +7,7 @@ import { BG_KEYS, ITEM_ART_KEYS } from '../../data/sprites.generated';
 import type { BattleState } from '../../systems/battle/battle';
 import type { PaintedLayers } from './backdrop';
 import { battleArt } from './beastArt';
-import { SHELL_KEY, SHELL_OPEN_KEY } from './tameShell';
+import { SHELL_KEY } from './tameShell';
 
 const LAYERS = ['far', 'mid', 'front', 'ground'] as const;
 
@@ -37,12 +37,8 @@ export function loadBattleArt(scene: Phaser.Scene, s: BattleState, place: Battle
     if (key)
       wanted.push({ url: assetUrl(`bg/${key.split('-')[1]}_${layer}.webp`), textureKey: key, own: true });
   }
-  for (const [file, key] of [
-    ['conchiglia', SHELL_KEY],
-    ['conchiglia_aperta', SHELL_OPEN_KEY],
-  ] as const)
-    if (ITEM_ART_KEYS.includes(file))
-      wanted.push({ url: assetUrl(`items/${file}.webp`), textureKey: key, own: true });
+  if (ITEM_ART_KEYS.includes('conchiglia'))
+    wanted.push({ url: assetUrl('items/conchiglia.webp'), textureKey: SHELL_KEY, own: true });
   for (const a of wanted) if (!scene.textures.exists(a.textureKey)) scene.load.image(a.textureKey, a.url);
   if (!scene.load.list.size) return Promise.resolve();
   return new Promise((done) => {

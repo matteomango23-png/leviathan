@@ -74,9 +74,11 @@ export const LIGHT = {
   ] as [number, number][],
   darkColor: 0x000409,
   maskScale: 0.5, // darkness mask drawn at half resolution, then smoothed
-  haloRadiusDiver: 1.1, // soft light around the diver, in diver lengths
+  haloRadiusDiver: 1.9, // soft light around the diver, in diver lengths (owner: softer, less of a cone)
   coneLengthView: 0.42, // lamp reach as a fraction of the view width
-  coneHalfAngle: 0.42, // radians
+  coneHalfAngle: 0.8, // radians: a wide beam…
+  coneSoftEdge: 1.6, // …fading to its sides (higher = narrower bright core)
+  coneFalloff: 0.9, // …and towards its end
   coneOffsetDiver: 0.3, // lamp position ahead of the diver centre, in diver lengths
   warmColor: 0xffc88c,
   warmAlpha: 0.16,

@@ -35,6 +35,10 @@
 
 **Suoni (v0.9.6):** primo passaggio, tutto sintetizzato con Web Audio (niente file): `src/audio/` (soundEngine nella Session, seaAmbience, battleMusic), numeri e note in `data/audio.ts`. Interruttore nel menu di pausa (localStorage). Da fare più avanti: suoni di colpi, mosse, domatura, porto, musiche per zona.
 
+**v0.9.7 (correzioni dopo la prova, 2 ottobre):** Sfondamento (`ABILITIES.sfondamento`, `breaksBones`, avviso `bonesHint`); morso × taglia (`SIZE_BITE`, cavalcatura bite 2,6); livelli minimi (`WILD_LEVELS`, `minLevel` dello squalo bianco 15, fuori scala 5%); curva XP più lenta dopo il 20; KO → subito la bestia successiva (`BattleScene.replaceFainted`); `BATTLE_STAGE.pictureMult` (murena, manta); `restAtPort` e pulsante Riposa; tutte le bestie in acqua mangiano (`FEEDING.minReach`); lampada soffusa; conchiglia con raggi disegnati; script art: `SIDE_MOUTH` (bocca del martello). Testi per Gemini: `docs/PROMPT-MONDO.md` (pareti, iceberg). 263 test.
+
+**Da fare (piano B e C approvati):** squadra ordinabile e cure singole nel menu; esche al porto; conchiglie limitate e in vendita; predatori che escono dalla zona e tornano; barracuda in branco e prudenti con prede più grosse; mappa nel menu; scatto in sella ripensato; nuoto verticale e virata; Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini).
+
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 
 ## Sessione 10 — Battaglia più bella (1 ottobre 2026) → v0.8.0

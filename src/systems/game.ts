@@ -273,6 +273,13 @@ export function blackout(g: GameState, events: GameEvent[]): void {
 
 /** Arriving at a harbour: its sanctuary heals everyone, the market restocks, you wake up here. */
 export function enterPort(g: GameState): void {
+  restAtPort(g);
+  g.gear.shopBought = {};
+  guardianReturns(g);
+}
+
+/** Resting at the port (also the "Riposa" button): you and the team healed, you wake up here next time. */
+export function restAtPort(g: GameState): void {
   const d = g.diver;
   if (g.port) g.homePort = g.port.id;
   d.hp = d.maxHp;
@@ -281,8 +288,6 @@ export function enterPort(g: GameState): void {
     b.hp = maxHpOf(b);
     b.ko = false;
   }
-  g.gear.shopBought = {};
-  guardianReturns(g);
   g.sanctuaries.current = null;
 }
 

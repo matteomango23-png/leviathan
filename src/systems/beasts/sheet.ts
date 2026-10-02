@@ -7,12 +7,15 @@ import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { SpeciesDef, Stats } from '../../data/species';
 import { moveDamage } from './combat';
+import { ABILITIES } from '../../data/beasts';
 import {
+  breaksBones,
   formLengthM,
   formName,
   formStars,
   formStats,
   formType,
+  wildLevelRange,
   speciesOf,
   type BeastForm,
   moveSpeciesOf,
@@ -49,6 +52,8 @@ export interface Sheet {
   moves: SheetMove[];
   /** A starter line: its stages, with the level each is reached at (empty for other beasts). */
   evolution: { name: string; level: number | null; current: boolean }[];
+  /** Sfondamento (breaks ancient bones in the sea), for the beasts that learn it; null for the others. */
+  fieldMove: { name: string; level: number; unlocked: boolean } | null;
 }
 
 /** The stages of the line a species belongs to, first to last. */
@@ -84,7 +89,8 @@ function specialOf(form: BeastForm): Sheet['special'] {
  */
 export function buildSheet(form: BeastForm, level?: number): Sheet {
   const s = speciesOf(form);
-  const lv = level ?? s.wildLevel[0];
+  const range = wildLevelRange(form);
+  const lv = level ?? range[0];
   const stars = formStars(form) as 1 | 2 | 3 | 4 | 5;
   const type = formType(form);
   const typeDef = type === 'variabile' ? null : TYPES[type];
@@ -119,16 +125,25 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
     typeColor: typeDef?.color ?? '#e6ede8',
     roleName: ROLE_NAMES[s.role],
     level: lv,
-    levelLabel: level === undefined ? `Liv. ${s.wildLevel[0]}–${s.wildLevel[1]} in natura` : `Livello ${lv}`,
+    levelLabel: level === undefined ? `Liv. ${range[0]}–${range[1]} in natura` : `Livello ${lv}`,
     stats,
     lengthM: Math.round(formLengthM(form, lv) * 10) / 10,
     habitat: REGIONS.find((r) => r.id === s.region)?.name ?? s.region,
     trait: s.trait,
     moves,
+    fieldMove: fieldMoveOf(form, lv),
     evolution: evolutionLine(form.speciesId).map((x) => ({
       name: x.name,
       level: x.level,
       current: x.id === form.speciesId,
     })),
   };
+}
+
+function fieldMoveOf(form: BeastForm, level: number): Sheet['fieldMove'] {
+  const s = speciesOf(form);
+  const S = ABILITIES.sfondamento;
+  const born = !!s.abilities?.includes('sfondaOssa');
+  if (!born && !S.types.includes(s.type)) return null;
+  return { name: S.name, level: born ? 1 : S.level, unlocked: breaksBones(form, level) };
 }

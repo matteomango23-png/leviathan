@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.7 — Correzioni dopo la prova (2 ottobre 2026)
+
+- **Sfondamento:** ogni bestia Predatore o Corazzato impara dal livello 16 a rompere le ossa antiche (anche quando ti segue, non solo in sella). Vicino alle ossa un avviso dice cosa serve. La storia non richiede più per forza lo squalo bianco.
+- **Più grande = più forte:** il morso cresce con la taglia (lo squalo bianco ora morde più del barracuda) e le forme finali degli iniziali sono le più forti della linea.
+- **Livelli minimi** in base a grandezza e rarità: squalo bianco dal 15 (alfa dal 20), martello e tigre dall'11. Ogni tanto (5%) un esemplare molto più forte della zona.
+- **Livelli più lenti dopo il 20.**
+- **Battaglia:** se la tua bestia va KO (anche per l'attacco a sorpresa) entra subito la successiva; il riquadro del testo non copre più il tuo nome; murena più piccola e manta più grande; la conchiglia si apre in un lampo di raggi sfumati (niente più fascio tagliato).
+- **Porto:** pulsante "Riposa" (cura te e la squadra, e ti risvegli lì).
+- **Cavalcature e compagni** mangiano tutte le sardine che incontrano, con la bocca che si apre.
+- **Immagini:** la manta ha bocca aperta e chiusa al posto giusto; tolto il buco nella bocca aperta dello squalo martello.
+- Coccodrillo marino da 4 a 2 stelle.
+- **Luce della lampada** più soffusa: fascio largo e sfumato, alone più grande.
+- La barra della squadra e i pulsanti dello zaino in alto non si sovrappongono più.
+
 ## v0.9.6 — Primi suoni (1 ottobre 2026)
 
 - **Il mare si sente:** un rombo basso e ovattato che respira piano e diventa più cupo in profondità; bollicine mentre nuoti, una raffica quando scatti.

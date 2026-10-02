@@ -118,7 +118,11 @@ export class BattleScene extends Phaser.Scene {
       s.foe.stunned = true; // you hit it from behind: it loses its first turn
       await this.ui.say(BATTLE_TEXT.surprise(this.name('foe')), 1.2);
     }
-    while (!s.over) await this.round(await this.ui.chooseAction(s, this.items));
+    while (!s.over) {
+      // a beast knocked out (also by the ambush before the first round): the next one comes in first
+      if (you(s).hp <= 0 && !(await this.replaceFainted())) break;
+      await this.round(await this.ui.chooseAction(s, this.items));
+    }
     this.finish();
   }
 
@@ -132,16 +136,21 @@ export class BattleScene extends Phaser.Scene {
       else await this.foeTurn();
     }
     endRound(s);
-    if (!s.over && you(s).hp <= 0) {
-      if (nextStanding(s) < 0) s.over = 'lost';
-      else {
-        const i = await this.ui.chooseNext(s);
-        switchTo(s, i);
-        this.ui.show(s);
-        await this.view!.swimIn('you', you(s).form, you(s).level);
-        await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
-      }
+  }
+
+  /** Your beast is knocked out: pick the next one (no turn lost). False when nobody is left. */
+  private async replaceFainted(): Promise<boolean> {
+    const s = this.s;
+    if (nextStanding(s) < 0) {
+      s.over = 'lost';
+      return false;
     }
+    const i = await this.ui.chooseNext(s);
+    switchTo(s, i);
+    this.ui.show(s);
+    await this.view!.swimIn('you', you(s).form, you(s).level);
+    await this.ui.say(BATTLE_TEXT.go(this.name('you')), 0.9);
+    return true;
   }
 
   private async yourTurn(action: Action): Promise<void> {

@@ -1,10 +1,12 @@
-// What a mount can do while you ride it (abilities in species.ts, numbers in ABILITIES): the white shark
-// breaks ancient bones, the humpback lets you breathe. Other abilities arrive with their regions.
+// What your beasts can do in the sea (abilities in species.ts, numbers in ABILITIES): ancient bones break under
+// a bone breaker or a beast with Sfondamento (ridden or swimming with you), the humpback lets you breathe.
+// Other abilities arrive with their regions.
 import { ABILITIES } from '../data/beasts';
 import { TILE } from '../data/worldLayout';
 import { activeBeast, type BeastWorld } from './beastState';
 import { headOf } from './beasts/combat';
-import { speciesOf } from './beasts/forms';
+import { breaksBones, speciesOf } from './beasts/forms';
+import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
 
@@ -37,21 +39,43 @@ function bonesNear(map: TileMap, x: number, y: number, r: number): boolean {
   return false;
 }
 
-/** Riding a bone breaker next to ancient bones: the context button offers "Sfonda". */
-export function canBreakBones(g: BeastWorld): boolean {
+/** Where the bones are hit from: the head of the beast you ride, or you, with the beast at your side. */
+function breakPoint(g: BeastWorld): { x: number; y: number } | null {
   const m = g.beasts.mount;
-  if (!m || !rideAbilities(g).includes('sfondaOssa')) return false;
+  const b = activeBeast(g);
+  if (!m || !b || (m.state !== 'ride' && m.state !== 'follow') || !breaksBones(b.form, b.level)) return null;
+  const R = ABILITIES.sfondaOssa.reach;
   const h = headOf(m);
-  return bonesNear(g.map, h.x, h.y, ABILITIES.sfondaOssa.reach);
+  if (bonesNear(g.map, h.x, h.y, R)) return h;
+  if (m.state === 'follow' && bonesNear(g.map, g.diver.x, g.diver.y, R)) return g.diver;
+  return null;
+}
+
+/** A bone breaker next to ancient bones: the context button offers "Sfonda". */
+export function canBreakBones(g: BeastWorld): boolean {
+  return breakPoint(g) !== null;
 }
 
 export function useBreakBones(g: BeastWorld, events: GameEvent[]): void {
-  const m = g.beasts.mount;
-  if (!m || !canBreakBones(g)) return;
-  const h = headOf(m);
-  const tiles = breakBones(g.map, h.x, h.y, ABILITIES.sfondaOssa.reach + ABILITIES.sfondaOssa.radius);
-  m.jaw = 0.5;
+  const p = breakPoint(g);
+  if (!p) return;
+  const tiles = breakBones(g.map, p.x, p.y, ABILITIES.sfondaOssa.reach + ABILITIES.sfondaOssa.radius);
+  if (g.beasts.mount) g.beasts.mount.jaw = 0.5;
   if (tiles.length) events.push({ type: 'bonesBroken', tiles });
+}
+
+/**
+ * Near ancient bones you cannot break yet: now and then a hint says what is needed (a beast of your team
+ * that knows Sfondamento to call, or what kind of beast to train).
+ */
+export function stepBoneHint(g: BeastWorld, dt: number, events: GameEvent[]): void {
+  const H = ABILITIES.boneHint;
+  g.beasts.boneHintT = Math.max(0, g.beasts.boneHintT - dt);
+  if (g.beasts.boneHintT > 0 || g.diver.dead || canBreakBones(g)) return;
+  if (!bonesNear(g.map, g.diver.x, g.diver.y, H.reach)) return;
+  g.beasts.boneHintT = H.everySeconds;
+  const breaker = teamMembers(g.beasts.team).find((b) => !b.ko && breaksBones(b.form, b.level));
+  events.push({ type: 'bonesHint', breakerUid: breaker?.uid ?? null });
 }
 
 /** Oxygen use while riding (the humpback lets you breathe). */

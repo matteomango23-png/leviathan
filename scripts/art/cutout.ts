@@ -511,3 +511,50 @@ export function clearEnclosedBackground(
     if (region.length >= n * minShare) for (const i of region) out[i * 4 + 3] = 0;
   }
 }
+
+/**
+ * An open mouth whose dark throat was taken for background: inside the rectangle (shares of the picture),
+ * each column is made solid between its topmost and lowest solid pixel (the jaws), with the original colours,
+ * but only where the row still has something solid further right (the teeth): the open front stays open.
+ */
+export function fillMouth(img: Raw, out: Uint8ClampedArray, rect: number[]): void {
+  // (several rectangles can be given one after another: [x0, y0, x1, y1, x0, y0, …])
+  if (rect.length > 4) {
+    for (let i = 0; i + 3 < rect.length; i += 4) fillMouth(img, out, rect.slice(i, i + 4));
+    return;
+  }
+  const { width: w, height: h, data: src } = img;
+  const [x0, y0, x1, y1] = [rect[0]! * w, rect[1]! * h, rect[2]! * w, rect[3]! * h].map(Math.round) as [
+    number,
+    number,
+    number,
+    number,
+  ];
+  const rightmost: number[] = [];
+  for (let y = Math.max(0, y0); y < Math.min(h, y1); y++) {
+    rightmost[y] = -1;
+    for (let x = Math.min(w, x1 + Math.round(w * 0.03)) - 1; x >= x0; x--)
+      if (out[(y * w + x) * 4 + 3]! > 128) {
+        rightmost[y] = x;
+        break;
+      }
+  }
+  for (let x = Math.max(0, x0); x < Math.min(w, x1); x++) {
+    let top = -1;
+    let bottom = -1;
+    for (let y = Math.max(0, y0); y < Math.min(h, y1); y++) {
+      if (out[(y * w + x) * 4 + 3]! > 128) {
+        if (top < 0) top = y;
+        bottom = y;
+      }
+    }
+    for (let y = top + 1; top >= 0 && y < bottom; y++) {
+      if (x >= rightmost[y]!) continue;
+      const o = (y * w + x) * 4;
+      out[o] = src[o]!;
+      out[o + 1] = src[o + 1]!;
+      out[o + 2] = src[o + 2]!;
+      out[o + 3] = 255;
+    }
+  }
+}
