@@ -46,6 +46,7 @@ export const BATTLE_TEXT = {
   chooseNext: 'Chi mandi in acqua?',
   switched: (from: Named, to: Named): string => `Torna, ${from.name}! Vai, ${to.name}!`,
   tameThrow: (b: Named): string => `Suoni la Conchiglia del domatore verso ${b.name}…`,
+  noShells: 'Non hai più conchiglie del domatore: comprale al mercato del porto.',
   tamed: (b: Named): string => `${b.name} è domat${o(b)}! Entra nella tua squadra.`,
   tameBroke: ['Oh no! Si è liberata dalla conchiglia!', 'Ci mancava poco!', 'Accidenti, quasi!'],
   fleeOk: 'Sei riuscito a fuggire!',

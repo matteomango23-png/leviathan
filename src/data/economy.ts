@@ -132,7 +132,7 @@ export const MAX_ACTIVE_MISSIONS = 3;
 
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */
 export const MARKET = {
-  items: ['bolla_aria', 'alga_curativa', 'esca', 'krill_dorato', 'arpione_mitico'],
+  items: ['conchiglia', 'alga_curativa', 'bolla_aria', 'esca_sangue', 'esca_gamberi', 'esca_viva', 'esca', 'krill_dorato', 'arpione_mitico'],
   /** Upgrades whose effect is not in the game yet are shown but cannot be bought. */
   upgradesReady: ['apnea', 'lampada_1', 'lampada_2'],
   mythicHarpoonStock: 1, // restocked after each Guardian (tappa 4)
@@ -149,6 +149,7 @@ export const UPGRADE_EFFECTS = {
 export const ITEM_RULES = {
   krillLevels: 1,
   lureSeconds: 1, // the lure calls the beasts of the zone within this time
+  bait: { seconds: 90, respawn: 4 }, // a bait: its species come back within `respawn` seconds, for `seconds`
 };
 
 /** Fishing weapons (WEAPONS in world.ts). */

@@ -82,3 +82,15 @@ export function toggleInTeam(all: TeamBeast[], uid: string): boolean {
   b.inTeam = true;
   return true;
 }
+
+/** Moves a team member one place up (-1) or down (+1) in the team order (the first one leads in battle). */
+export function moveInTeam(all: TeamBeast[], uid: string, dir: -1 | 1): boolean {
+  const members = teamMembers(all);
+  const i = members.findIndex((b) => b.uid === uid);
+  const other = members[i + dir];
+  if (i < 0 || !other) return false;
+  const a = all.indexOf(members[i]!);
+  const b = all.indexOf(other);
+  [all[a], all[b]] = [all[b]!, all[a]!];
+  return true;
+}

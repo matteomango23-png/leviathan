@@ -1,7 +1,7 @@
 // Using what is in the backpack during a dive: pick a weapon, use an item, call a swarm.
 import { ITEM_RULES } from '../../data/economy';
 import { PROGRESSION } from '../../data/rules';
-import { SWARMS } from '../../data/world';
+import { ITEMS, SWARMS } from '../../data/world';
 import { activeBeast, type BeastWorld } from '../beastState';
 import type { GameEvent } from '../events';
 import { raiseLevel } from '../beasts/growth';
@@ -31,12 +31,31 @@ export function checkSwarmBinding(
   }
 }
 
-function useItem(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
+/** Uses an item on one beast of yours (the team panel: heal this one, raise this one). */
+export function useItemOn(g: BackpackWorld, id: string, uid: string, events: GameEvent[]): boolean {
+  return useItem(g, id, events, uid);
+}
+
+function useItem(g: BackpackWorld, id: string, events: GameEvent[], uid?: string): boolean {
   const gear = g.gear;
   if ((gear.inventory[id] ?? 0) <= 0) return false;
   const d = g.diver;
   const team = teamMembers(g.beasts.team);
-  const target = activeBeast(g) ?? team.find((b) => b.ko || b.hp < maxHpOf(b)) ?? team[0];
+  const target = uid
+    ? g.beasts.team.find((b) => b.uid === uid)
+    : (activeBeast(g) ?? team.find((b) => b.ko || b.hp < maxHpOf(b)) ?? team[0]);
+  const bait = ITEMS.find((i) => i.id === id)?.lure;
+  if (bait) {
+    // its species come to you: the ones gone into the dark come back soon (encounters.ts keeps them coming)
+    g.beasts.lure = { species: bait, t: ITEM_RULES.bait.seconds };
+    for (const w of g.beasts.wilds)
+      if (w.motion === 'gone' && bait.includes(w.spawn.speciesId))
+        w.respawn = Math.min(w.respawn, ITEM_RULES.bait.respawn);
+    gear.inventory[id] = (gear.inventory[id] ?? 0) - 1;
+    cleanBackpack(gear);
+    events.push({ type: 'itemUsed', id });
+    return true;
+  }
   switch (id) {
     case 'bolla_aria':
       if (d.o2 >= d.maxO2) return false;

@@ -165,6 +165,11 @@ export class BattleScene extends Phaser.Scene {
       await this.ui.say(BATTLE_TEXT.switched(from, this.name('you')));
     } else if (action.kind === 'item') await this.useItem(action.id);
     else if (action.kind === 'tame') {
+      if ((this.items[BATTLE.catch.shellItem] ?? 0) <= 0) {
+        await this.ui.say(BATTLE_TEXT.noShells);
+        return;
+      }
+      this.items[BATTLE.catch.shellItem] = (this.items[BATTLE.catch.shellItem] ?? 0) - 1;
       await this.ui.say(BATTLE_TEXT.tameThrow(this.name('foe')), 0.9);
       const step = tryTame(s, this.rng, Math.max(...s.team.map((f) => f.level)), this.tameBonus);
       this.tameBonus = 1;
