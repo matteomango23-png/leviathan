@@ -21,7 +21,7 @@ import { feedBeast, fishXp, gainXp, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
 import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
-import { createStory, stepStory, storyHoldsDiver } from './story';
+import { createStory, stepShip, stepStory, storyHoldsDiver } from './story';
 import { createChapter2, hitAnchor, stepChapter2, type Chapter2World } from './chapter2';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
@@ -177,7 +177,11 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
 export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);
   // the sea waits while a dialogue is on screen, a battle is on or you are choosing your first beast
-  if (g.story.dialogue || g.beasts.battle || needsStarter(g)) return events;
+  if (g.story.dialogue || g.beasts.battle || needsStarter(g)) {
+    // the ship sails on while Aurelio talks and while you choose your first beast
+    if (g.story.dialogue || needsStarter(g)) stepShip(g, dt);
+    return events;
+  }
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;

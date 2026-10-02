@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.12.1 — Ritocchi dopo la prova (2 ottobre 2026)
+
+- **Scelta del compagno:** le tre card hanno la stessa altezza e il pulsante "Scegli" sta sempre dentro, alla stessa altezza (quello di Zanna usciva); l'immagine di Scintilla è inquadrata più in alto, la testa non è più tagliata.
+- **Bestiario:** le bestie non ancora viste sono tutte uguali (zampetta su fondo scuro); prima quelle con l'illustrazione apparivano come un rettangolo nero.
+- **Apertura:** la nave con la megattera continua ad andare durante il dialogo e mentre scegli il compagno; poi si allontana più veloce di te e sparisce solo quando è fuori vista.
+
 ## v0.12.0 — Le leggende (2 ottobre 2026)
 
 - **Bestie leggendarie:** ognuna esiste una sola volta nel mondo e compare raramente, solo nel suo posto, al posto di una bestia della sua specie. Si annuncia con un messaggio e un alone dorato. Se la domi è tua; **se la sconfiggi sparisce per sempre**; se fuggi resta nel mare.

@@ -44,7 +44,8 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     const stars = formStars(form) as 1 | 2 | 3 | 4 | 5;
     const card = el('button', `beast-tile ${owned.length ? 'tamed' : seen ? 'seen' : 'unknown'}`, grid);
     card.style.setProperty('--rarity', RARITY[stars].color);
-    if (ART_KEYS.includes(s.id)) {
+    // never met: the same dark tile with a paw for every beast (its painting would show as a black block)
+    if (seen && ART_KEYS.includes(s.id)) {
       const img = el('img', '', card);
       setArt(img, form);
       img.alt = '';
@@ -74,9 +75,11 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
       lg,
     );
     card.style.setProperty('--rarity', RARITY[5].color);
-    const img = el('img', '', card);
-    setArt(img, form);
-    img.alt = '';
+    if (met) {
+      const img = el('img', '', card);
+      setArt(img, form);
+      img.alt = '';
+    } else card.append(icon('paw'));
     el('span', 'tile-name', card, met ? u.name : '???');
     el('span', 'tile-sub', card, mine ? 'domata' : gone ? 'sconfitta per sempre' : (u.place ?? ''));
     if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level ?? u.level));

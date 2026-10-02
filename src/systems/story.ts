@@ -172,15 +172,25 @@ function stepFindShark(g: StoryWorld, events: GameEvent[]): void {
   }
 }
 
+/**
+ * The Company ship sails east. It keeps going while Aurelio talks (the scene goes on behind the words); once the
+ * opening is over it hurries off into the dark and is gone when far from you, so you never see it vanish (owner).
+ */
+export function stepShip(g: StoryWorld, dt: number): void {
+  const ship = g.story.ship;
+  if (!ship) return;
+  const away = g.story.step !== 'intro';
+  ship.x += SCENES.ship.speed * (away ? SCENES.ship.awaySpeedMult : 1) * dt;
+  const far = Math.abs(ship.x - g.diver.x) > SCENES.ship.goneDistance;
+  if (ship.x > ship.untilX && far) g.story.ship = null;
+}
+
 /** One step of the story (at the end of stepGame, reading its events). */
 export function stepStory(g: StoryWorld, dt: number, events: GameEvent[]): void {
   const s = g.story;
   const d = g.diver;
   s.t += dt;
-  if (s.ship) {
-    s.ship.x += SCENES.ship.speed * dt;
-    if (s.ship.x > s.ship.untilX) s.ship = null;
-  }
+  stepShip(g, dt);
   if (s.dialogue) return;
   switch (s.step) {
     case 'intro':

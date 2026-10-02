@@ -35,8 +35,10 @@
 }
 .starter-row {
   display: flex;
+  align-items: stretch;
   gap: 12px;
-  max-height: calc(100vh - 110px);
+  height: calc(100vh - 120px);
+  max-height: 520px;
 }
 .starter-card {
   --tc: #888;
@@ -52,10 +54,15 @@
     0 8px 24px rgba(0, 0, 0, 0.5),
     0 0 18px color-mix(in srgb, var(--tc) 25%, transparent);
 }
+/* the picture gives way when the words are longer, so every card keeps its button inside, at the same height;
+   framed a little high: the heads are usually in the upper part of the paintings (Scintilla's was cut) */
 .starter-art {
+  flex: 1 1 0;
+  min-height: 70px;
   width: 100%;
   max-height: 38vh;
   object-fit: cover;
+  object-position: 50% 28%;
   border-radius: 10px;
 }
 .starter-name {
@@ -81,9 +88,11 @@
 }
 .starter-evolves {
   color: #e8c987;
+  margin-bottom: 8px;
 }
 .starter-btn {
-  margin-top: 8px;
+  margin-top: auto;
+  flex-shrink: 0;
   padding: 6px 26px;
   border: 1px solid rgba(201, 168, 106, 0.6);
   border-radius: 999px;
