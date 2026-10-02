@@ -39,7 +39,9 @@
 
 **v0.9.8 (piano B):** `moveInTeam`, `useItemOn`; conchiglie (`BATTLE.catch.shellItem`, `START_INVENTORY`, salvataggio v8 che ne regala 5); esche con `ItemDef.lure` e `BeastState.lure` (encounters ignora il limite di 5 per le specie attirate); `ROAM.chaseLeash`/`homeSeconds`/`fearRatio` e `RoamContext.riderLength`; branco cosmetico (`BEAST_TEMPER.school`, `views/beastsLayer`); mappa (`systems/seaMap.ts`, `ui/seaMapPanel.ts`, zone visitate in `seen` come `zona:<nome>`); `input.dashHeld` e `TEAM_RULES.rideSprintMult`. 271 test.
 
-**Da fare (piano C):** nuoto verticale e virata; Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); il compagno che avvisa delle bestie vicine; battaglia contro un branco intero (per ora si combatte il capobranco).
+**v0.9.9:** inclinazione del sub (`DIVER.tilt`) e della cavalcatura (`TEAM_RULES.pitchMax` 1,25); virata ad anello della cavalcatura (`Mount.loop`, `TEAM_RULES.loopSeconds`; tolto il vecchio `turn`). Visto nel browser: tuffo a testa in giù e virata. 272 test.
+
+**Da fare (piano C):** Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); il compagno che avvisa delle bestie vicine; battaglia contro un branco intero (per ora si combatte il capobranco).
 
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 

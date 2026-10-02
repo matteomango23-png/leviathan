@@ -24,9 +24,10 @@ export interface Mount extends BodyPose {
   /** You climb on when it reaches you (otherwise it follows you). */
   rider: boolean;
   t: number;
-  /** 0 = normal, rises to 1 while it turns around (animated from the head). */
-  turn: number;
-  turnFrom: 1 | -1;
+  /** 0 = normal, rises to 1 while it turns around through the vertical. */
+  loop: number;
+  /** -1: the loop goes nose up, 1: nose down. */
+  loopDir: -1 | 1;
 }
 
 const U = DIVER.lengthUnits;
@@ -59,8 +60,8 @@ export function callMount(
     state: 'in',
     rider,
     t: 0,
-    turn: 0,
-    turnFrom: 1,
+    loop: 0,
+    loopDir: -1,
   };
 }
 
@@ -70,22 +71,34 @@ export function sendAway(m: Mount, diverX: number): void {
   m.face = m.x >= diverX ? 1 : -1;
 }
 
+/**
+ * Turning around: the beast rises (or dives) through the vertical and comes back facing the other way, as a fish
+ * seen from the side does; it flips at the top, where both sides look alike (owner: the flat turn looked bad).
+ */
 function faceTowards(m: Mount, dir: number, dt: number): void {
   const want: 1 | -1 = dir >= 0 ? 1 : -1;
-  if (want !== m.face && m.turn === 0) {
-    m.turn = 0.001;
-    m.turnFrom = m.face;
+  if (want !== m.face && m.loop === 0) {
+    m.loop = 0.001;
+    m.loopDir = m.pitch > 0.2 ? 1 : -1; // already diving: it turns under, otherwise over the top
   }
-  if (m.turn > 0) {
-    m.turn += dt / TEAM_RULES.turnSeconds;
-    if (m.turn >= 0.5 && m.face !== want) m.face = want;
-    if (m.turn >= 1) m.turn = 0;
+  if (m.loop > 0) {
+    m.loop += dt / TEAM_RULES.loopSeconds;
+    if (m.loop >= 0.5 && m.face !== want) m.face = want;
+    if (m.loop >= 1) m.loop = 0;
   }
 }
 
 function animate(m: Mount, dt: number): void {
-  const wp = clamp(Math.atan2(m.vy, Math.abs(m.vx) + U * 1.5), -ROAM.pitchMax, ROAM.pitchMax);
-  const np = m.pitch + (wp - m.pitch) * Math.min(1, dt * ROAM.pitchRate);
+  const P = TEAM_RULES.pitchMax;
+  let wp = clamp(Math.atan2(m.vy, Math.abs(m.vx) + U * 0.4), -P, P);
+  if (m.loop > 0) {
+    // 0 → 1 → 0 across the loop: towards the vertical, then back to the way it swims
+    const k = m.loop < 0.5 ? m.loop * 2 : (1 - m.loop) * 2;
+    const ease = k * k * (3 - 2 * k);
+    wp = wp + (m.loopDir * Math.PI * 0.48 - wp) * ease;
+  }
+  const rate = m.loop > 0 ? 18 : ROAM.pitchRate;
+  const np = m.pitch + (wp - m.pitch) * Math.min(1, dt * rate);
   m.pitchV = (np - m.pitch) / Math.max(dt, 1e-3);
   m.pitch = np;
   m.phase += dt * (ROAM.swimPhaseBase + (Math.hypot(m.vx, m.vy) / U) * ROAM.swimPhasePerSpeed);

@@ -165,3 +165,27 @@ describe('riding', () => {
     expect(U).toBeGreaterThan(0);
   });
 });
+
+describe('your beast turning around', () => {
+  it('rises through the vertical and comes back facing the other way (no flat flip)', () => {
+    const g = game();
+    giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 15);
+    stepGame(g, { ...emptyInput(), summon: 0 }, DT);
+    for (let t = 0; t < TEAM_RULES.arriveSeconds + 0.5; t += DT) {
+      Object.assign(g.diver, { x: bayX(900), y: 200, vx: 0, vy: 0, face: 1 });
+      stepGame(g, { ...emptyInput(), moveX: 1 }, DT);
+    }
+    const m = g.beasts.mount!;
+    expect(m.face).toBe(1);
+    let steepest = 0;
+    for (let t = 0; t < 1.5; t += DT) {
+      g.diver.o2 = g.diver.maxO2;
+      stepGame(g, { ...emptyInput(), moveX: -1 }, DT);
+      g.beasts.battle = null;
+      steepest = Math.max(steepest, Math.abs(m.pitch));
+    }
+    expect(m.face).toBe(-1);
+    expect(steepest).toBeGreaterThan(1.2);
+    expect(m.loop).toBe(0);
+  });
+});
