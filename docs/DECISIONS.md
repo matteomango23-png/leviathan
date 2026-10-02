@@ -251,3 +251,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Livelli minimi:** pavimento = grandezza (piccola 0, media 2, grande 6, colossale 12) + rarità (1★ 0 … 5★ 14), albino +3, alfa +5; lo squalo bianco ha `minLevel` 15 (raro di suo). 5% di esemplari "fuori scala" (+5…10). La distanza dalla costa arriverà con l'oceano infinito. Il livello degli animali non segue quello della squadra (si perderebbe la sensazione di crescere).
 - **Morso:** × taglia (piccola 0,75 … colossale 1,45); cavalcature con morso base 2,6 (era 2) perché le forme finali degli iniziali mordevano meno della seconda.
 - **Conchiglia aperta:** l'immagine dipinta aveva il fascio di luce tagliato dal bordo; ora si usa la conchiglia chiusa e la luce (raggi sfumati) la disegna il gioco.
+
+## 2026-10-02 — Piano B: conchiglie, esche, mappa, branchi (approvato dal proprietario)
+
+- **Conchiglie:** una per tentativo; 5 all'inizio (salvataggio v8 le regala alle partite esistenti, numero scritto nella migrazione perché i dati possono cambiare); non vanno nello zaino rapido (`battleOnly`).
+- **Esche:** per gruppi di specie, non per singola specie, perché le zone hanno poche voci di comparsa; le specie attirate superano il limite di bestie presenti.
+- **Zone visitate:** salvate nell'elenco `seen` come `zona:<nome>` invece di un campo nuovo del salvataggio (nessuna migrazione, il bestiario conta solo gli id delle specie).
+- **Branchi:** per ora solo grafici (il capobranco è l'unico che combatte); la battaglia contro più bestie è da decidere con il proprietario.
+- **Predatori fuori zona:** inseguono fino a `chaseLeash` oltre la loro zona, poi si calmano per `homeSeconds` e tornano; per la regola "mai girarsi in vista" si girano solo fuori dalla luce.
