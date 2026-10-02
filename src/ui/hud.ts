@@ -4,6 +4,8 @@ import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/chapters';
 import { depthMetres } from '../systems/world/zones';
+import { kmFromCoast } from '../systems/world/endless';
+import { LAYOUT, OPEN_SEA_X } from '../data/worldLayout';
 import { el } from './dom';
 import { messageFor } from './eventMessages';
 
@@ -66,7 +68,12 @@ export class Hud {
       this.o2.classList.toggle('low', o2 < DIVER.oxygen.lowFraction * 100);
     }
     const bag = Object.values(g.gear.bag).reduce((a, b) => a + b, 0);
-    const info = `${Math.round(depthMetres(d.y))} m · 🦷 ${g.gear.teeth} · sacca ${bag}`;
+    // out at sea (past the Delta): how far you are from the coast
+    const far =
+      d.x > OPEN_SEA_X
+        ? ` · ${(kmFromCoast(d.x) - kmFromCoast(LAYOUT.shoreX)).toFixed(1).replace('.', ',')} km dalla costa`
+        : '';
+    const info = `${Math.round(depthMetres(d.y))} m${far} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;

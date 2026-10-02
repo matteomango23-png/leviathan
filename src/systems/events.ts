@@ -33,6 +33,8 @@ export type GameEvent =
   // your team
   | { type: 'tamed'; uid: string; toTeam: boolean }
   | { type: 'summoned'; uid: string }
+  /** You breathe in the bubbles of an air vent of the open sea. */
+  | { type: 'ventBreath' }
   /** Your beast feels a wild one in the dark, to the left (-1) or right (1). */
   | { type: 'beastSensed'; uid: string; wildId: number; side: -1 | 1 }
   /** Near ancient bones you cannot break: who in your team could (null: nobody yet). */

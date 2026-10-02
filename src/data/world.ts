@@ -47,6 +47,9 @@ export interface SuitDef { id: string; name: string; price: number; maxDepth: nu
 export const SUITS: SuitDef[] = [
   { id: 'leggera', name: 'Muta leggera', price: 0, maxDepth: 150, o2Mult: 1, speedMult: 1.1, hpBonus: 0, dash: true, note: 'Veloce, doppio scatto; poca profondità' },
   { id: 'rinforzata', name: 'Muta rinforzata', price: 400, maxDepth: 500, o2Mult: 1, speedMult: 1, hpBonus: 2, dash: true, note: 'Più profondità e più vita' },
+  // tappa 11: long dives into the endless sea (owner: 4-5 minutes of air)
+  { id: 'traversata', name: 'Muta da traversata', price: 1000, maxDepth: 300, o2Mult: 0.22, speedMult: 1.05, hpBonus: 1, dash: true, note: 'Circa 4 minuti d’aria: per le traversate in mare aperto' },
+  { id: 'bombole', name: 'Muta con bombole', price: 2500, maxDepth: 700, o2Mult: 0.18, speedMult: 0.95, hpBonus: 2, dash: true, note: 'Circa 5 minuti d’aria e più profondità' },
   { id: 'palombaro', name: 'Scafandro da palombaro', price: 1500, maxDepth: 1200, o2Mult: 0.35, speedMult: 0.75, hpBonus: 3, dash: false, note: 'Ossigeno che cala lentissimo; lento, niente scatto' },
   { id: 'abissale', name: 'Muta abissale', price: 6000, maxDepth: 6000, o2Mult: 0.6, speedMult: 1, hpBonus: 4, dash: true, note: 'Resiste alle fosse più profonde; costosissima' },
 ];

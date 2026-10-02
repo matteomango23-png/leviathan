@@ -124,7 +124,7 @@ describe('wild spawns data', () => {
       foresta: [KELP.forest.xMin, KELP.forest.xMax],
     };
     for (const sp of WILD_SPAWNS) {
-      if (sp.level) continue;
+      if (sp.level || sp.endless) continue;
       const region = SPECIES.find((x) => x.id === sp.speciesId)?.region ?? '';
       const range = regions[region];
       expect(range, sp.speciesId).toBeDefined();

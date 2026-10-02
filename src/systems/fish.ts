@@ -1,4 +1,5 @@
 // Small fish in schools (sardines, mackerel…). Port of initEntities/updateFish from the prototype.
+import { ENDLESS } from '../data/endless';
 import { SARDINE } from '../data/diver';
 import { FISH_LOOK, OTHER_FISH_SCHOOLS } from '../data/economy';
 import { SARDINE_SCHOOLS } from '../data/worldLayout';
@@ -12,6 +13,8 @@ export interface School {
   ty: number;
   t: number;
   roam: [number, number, number, number];
+  /** A school of the endless sea: moved near you when left far behind (endlessLife.ts). */
+  roaming?: boolean;
 }
 
 export interface Fish {
@@ -38,9 +41,32 @@ export function createFish(map: TileMap, rng: Rng): FishState {
   const schools: School[] = [];
   const fish: Fish[] = [];
   const [sx, sy] = SARDINE.schoolSpread;
-  const defs = [...SARDINE_SCHOOLS.map((s) => ({ ...s, kind: 'sardina' })), ...OTHER_FISH_SCHOOLS];
+  // the schools that follow you in the endless sea start at its edge (moved near you when you get out there)
+  const roaming = Array.from({ length: ENDLESS.schools }, (_, i) => {
+    const x = ENDLESS.startX + 200 + i * 260;
+    return {
+      x,
+      y: 90 + (i % 3) * 40,
+      roam: [x - 200, 40, x + 200, 300] as School['roam'],
+      kind: 'sardina',
+      roaming: true,
+    };
+  });
+  const defs = [
+    ...SARDINE_SCHOOLS.map((s) => ({ ...s, kind: 'sardina', roaming: false })),
+    ...OTHER_FISH_SCHOOLS.map((s) => ({ ...s, roaming: false })),
+    ...roaming,
+  ];
   for (const def of defs) {
-    const school: School = { x: def.x, y: def.y, tx: def.x, ty: def.y, t: 0, roam: def.roam };
+    const school: School = {
+      x: def.x,
+      y: def.y,
+      tx: def.x,
+      ty: def.y,
+      t: 0,
+      roam: def.roam,
+      roaming: def.roaming,
+    };
     schools.push(school);
     const count = FISH_LOOK[def.kind]?.perSchool ?? SARDINE.perSchool;
     for (let k = 0; k < count; k++) {

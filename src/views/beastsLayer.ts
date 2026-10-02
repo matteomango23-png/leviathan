@@ -25,6 +25,8 @@ const SCHOOL_PLACES: [number, number][] = [
   [1.4, 0.38],
 ];
 
+const MAX_SCHOOL = Math.max(0, ...Object.values(BEAST_TEMPER).map((t) => t.school ?? 0));
+
 export class BeastsLayer {
   private readonly wild: BeastSprite[];
   /** The rest of a school (barracudas): drawn around the leader, who is the one you fight. */
@@ -38,7 +40,8 @@ export class BeastsLayer {
     this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
     this.school = g.beasts.wilds.map((w) =>
       Array.from(
-        { length: BEAST_TEMPER[w.spawn.speciesId]?.school ?? 0 },
+        // an endless slot can be any species: room for the biggest school
+        { length: w.spawn.endless ? MAX_SCHOOL : (BEAST_TEMPER[w.spawn.speciesId]?.school ?? 0) },
         () => new BeastSprite(scene, layer),
       ),
     );
@@ -107,7 +110,12 @@ export class BeastsLayer {
         turnFrom: w.turnFrom,
       });
       // the school: behind and around the leader, each a little out of step
+      const schoolSize = BEAST_TEMPER[w.form.speciesId]?.school ?? 0;
       mates.forEach((m, k) => {
+        if (k >= schoolSize) {
+          m.hide();
+          return;
+        }
         const [bx, by] = SCHOOL_PLACES[k % SCHOOL_PLACES.length]!;
         const wob = Math.sin(time * 1.3 + k * 2.1) * 0.08;
         m.update({
