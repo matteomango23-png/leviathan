@@ -9,7 +9,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -124,6 +124,18 @@ export const MIGRATIONS: Migration[] = [
       const d = o.diver;
       const diver = isObject(d) && isFiniteNumber(d.x) ? { ...d, x: Math.round(moveX(d.x)) } : d;
       return { ...o, brokenTiles, diver, homePort: 'portofosco' };
+    },
+  },
+  // v7 → v8 (2 ottobre): taming uses a shell from the backpack; old games receive the starting 5 once
+  // (literal, as saved then: data may change later)
+  {
+    from: 7,
+    migrate: (o) => {
+      const gear = isObject(o.gear) ? o.gear : null;
+      if (!gear) return o;
+      const inv = isObject(gear.inventory) ? gear.inventory : {};
+      const had = isFiniteNumber(inv.conchiglia) ? inv.conchiglia : 0;
+      return { ...o, gear: { ...gear, inventory: { ...inv, conchiglia: had + 5 } } };
     },
   },
 ];

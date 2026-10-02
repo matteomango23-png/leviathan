@@ -38,6 +38,7 @@ export const BATTLE = {
     hpWeight: 2 / 3, // at full health the chance is × (1 − hpWeight); nearly worn out, × 1
     levelPenalty: 0.85, // × this for every level the beast is above your strongest
     shakes: 3, // the shell shakes this many times before it holds
+    shellItem: 'conchiglia', // each attempt uses one (owner, 2 ottobre: they were endless)
   },
   /** Fleeing: harder from stronger, rarer and giant beasts (owner, 1 ottobre 2026). Tuning. */
   flee: {
@@ -72,7 +73,7 @@ export const BATTLE_PROTOTYPE = {
     { speciesId: 'torpedine', level: [5, 7] },
     { speciesId: 'coccodrillo_marino', level: [9, 11] },
   ] as { speciesId: string; level: [number, number] }[],
-  items: { alga_curativa: 2, arpione_mitico: 1 } as Record<string, number>,
+  items: { alga_curativa: 2, arpione_mitico: 1, conchiglia: 5 } as Record<string, number>,
   variantChance: 0.15, // a test foe is sometimes albino or alfa, to try harder taming
 };
 

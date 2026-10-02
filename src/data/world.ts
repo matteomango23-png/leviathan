@@ -74,12 +74,20 @@ export const WEAPONS: WeaponDef[] = [
 /** Backpack: base harpoon always equipped + BACKPACK_SLOTS chosen before each dive (weapons or items). */
 export const BACKPACK_SLOTS = 3;
 
-export interface ItemDef { id: string; name: string; price: number; stockPerVisit?: number; restockAfterGuardian?: boolean; text: string; }
+export interface ItemDef { id: string; name: string; price: number; stockPerVisit?: number; restockAfterGuardian?: boolean; text: string;
+  lure?: string[];         // a bait: these species come to you for a while (ITEM_RULES.bait)
+  battleOnly?: boolean;    // used in battle only: never in a backpack slot
+}
 export const ITEMS: ItemDef[] = [
   { id: 'krill_dorato', name: 'Krill dorato', price: 500, stockPerVisit: 2, text: '+1 livello a una bestia' },
   { id: 'alga_curativa', name: 'Alga curativa', price: 60, text: 'Cura una bestia, anche KO' },
   { id: 'bolla_aria', name: 'Bolla d\u2019aria', price: 40, text: 'Ricarica l\u2019ossigeno' },
   { id: 'esca', name: 'Esca', price: 80, text: 'Attira le creature di una zona' },
+  // owner, 2 ottobre: baits for the beasts you are looking for, and shells for taming (no longer endless)
+  { id: 'esca_sangue', name: 'Esca di sangue', price: 180, text: 'Per un minuto e mezzo attira gli squali: bianco, tigre, martello', lure: ['squalo_bianco', 'squalo_tigre', 'squalo_martello'] },
+  { id: 'esca_gamberi', name: 'Esca di gamberi', price: 90, text: 'Attira tartarughe, pesci palla e mante', lure: ['tartaruga_marina', 'pesce_palla', 'manta'] },
+  { id: 'esca_viva', name: 'Esca viva', price: 90, text: 'Attira barracuda, murene, torpedini e coccodrilli', lure: ['barracuda', 'murena', 'torpedine', 'coccodrillo_marino'] },
+  { id: 'conchiglia', name: 'Conchiglia del domatore', price: 30, text: 'Serve per domare: una per ogni tentativo in battaglia', battleOnly: true },
   { id: 'arpione_mitico', name: 'Arpione mitico', price: 5000, stockPerVisit: 1, restockAfterGuardian: true, text: 'Monouso: stordisce all\u2019istante la bestia colpita e porta subito al minigioco' },
 ];
 
@@ -124,3 +132,6 @@ export const SWARMS: SwarmDef[] = [
     fx: ['heal:team:overTime'], text: 'Una nuvola di krill: la tua squadra se lo mangia e si cura lentamente',
     artPrompt: 'a vast pink-orange cloud of krill glowing faintly in icy dark water' },
 ];
+
+/** What a new game starts with in the backpack (and old games receive once, save v8). */
+export const START_INVENTORY: Record<string, number> = { conchiglia: 5 };

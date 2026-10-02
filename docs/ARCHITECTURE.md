@@ -94,6 +94,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
 | `dodgeBar.ts` | Il pulsante SCHIVA con la barra, in battaglia. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
+| `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
 
 ## Battaglia a turni (parte al contatto con una bestia; prova separata col link `?battaglia`)
 

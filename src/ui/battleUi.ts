@@ -179,7 +179,8 @@ export class BattleUi {
         this.command(m, 'Lotta', 'icona_lotta', 'c-fight', moves);
         this.command(m, 'Zaino', 'icona_zaino', 'c-bag', bag);
         this.command(m, 'Squadra', 'icona_squadra', 'c-team', team);
-        this.command(m, 'Doma', 'icona_doma', 'c-tame', () => done({ kind: 'tame' }));
+        const shells = items[BATTLE.catch.shellItem] ?? 0;
+        this.command(m, `Doma ×${shells}`, 'icona_doma', 'c-tame', () => done({ kind: 'tame' }));
         this.command(m, 'Fuggi', 'icona_fuggi', 'c-flee', () => done({ kind: 'flee' }));
       };
       const moves = (): void => {

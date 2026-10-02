@@ -12,6 +12,8 @@ export interface InputState {
   shotAt: { x: number; y: number } | null;
   /** Dash pressed this frame. */
   dash: boolean;
+  /** Dash button held down (riding: a faster pace while held). */
+  dashHeld: boolean;
   /** Context action pressed this frame (tame, ride, get off). */
   action: boolean;
   /** Move button (1..3) pressed this frame while riding, or 0. */
@@ -31,6 +33,7 @@ export const emptyInput = (): InputState => ({
   aim: null,
   shotAt: null,
   dash: false,
+  dashHeld: false,
   action: false,
   move: 0,
   summon: -1,

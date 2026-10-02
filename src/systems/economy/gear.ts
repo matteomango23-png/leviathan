@@ -10,6 +10,7 @@ import {
   SWARMS,
   WEAPONS,
   type SuitDef,
+  START_INVENTORY,
 } from '../../data/world';
 import { DIVER } from '../../data/diver';
 
@@ -47,7 +48,7 @@ export function newGear(): GearState {
     upgrades: [],
     weapons: ['arpione'],
     activeWeapon: 'arpione',
-    inventory: {},
+    inventory: { ...START_INVENTORY },
     backpack: Array.from({ length: BACKPACK_SLOTS }, () => null),
     swarms: [],
     wrecks: [],
@@ -63,7 +64,7 @@ export type SlotKind = 'weapon' | 'swarm' | 'item';
 export function slotKind(id: string): SlotKind | null {
   if (WEAPONS.some((w) => w.id === id)) return 'weapon';
   if (SWARMS.some((s) => s.id === id)) return 'swarm';
-  if (ITEMS.some((i) => i.id === id)) return 'item';
+  if (ITEMS.some((i) => i.id === id && !i.battleOnly)) return 'item';
   return null;
 }
 

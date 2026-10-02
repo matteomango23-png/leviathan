@@ -102,6 +102,8 @@ export interface DiverOptions {
   /** Riding a beast: its speed (u/s) replaces the diver's, and the dash is the beast's. */
   mountSpeed?: number;
   mountDash?: { speedMult: number; duration: number; cooldown: number };
+  /** Riding with the dash button held: × this pace. */
+  mountSprint?: number;
   mountAccelMult?: number;
   /** Suit effects (world.ts SUITS + upgrades). */
   speedMult?: number;
@@ -132,7 +134,9 @@ export function stepDiver(
     return;
   }
   const mounted = opt.mountSpeed !== undefined;
-  const maxSpeed = opt.mountSpeed ?? DIVER.maxSpeed * (opt.speedMult ?? 1);
+  const sprint = opt.mountSpeed !== undefined && input.dashHeld ? (opt.mountSprint ?? 1) : 1;
+  const maxSpeed =
+    opt.mountSpeed !== undefined ? opt.mountSpeed * sprint : DIVER.maxSpeed * (opt.speedMult ?? 1);
   // riding: enough thrust to beat the water drag and reach the beast's top speed quickly
   const accel = mounted ? maxSpeed * (DIVER.drag + (opt.mountAccelMult ?? 1)) : DIVER.accel;
 

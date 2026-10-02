@@ -37,7 +37,9 @@
 
 **v0.9.7 (correzioni dopo la prova, 2 ottobre):** Sfondamento (`ABILITIES.sfondamento`, `breaksBones`, avviso `bonesHint`); morso × taglia (`SIZE_BITE`, cavalcatura bite 2,6); livelli minimi (`WILD_LEVELS`, `minLevel` dello squalo bianco 15, fuori scala 5%); curva XP più lenta dopo il 20; KO → subito la bestia successiva (`BattleScene.replaceFainted`); `BATTLE_STAGE.pictureMult` (murena, manta); `restAtPort` e pulsante Riposa; tutte le bestie in acqua mangiano (`FEEDING.minReach`); lampada soffusa; conchiglia con raggi disegnati; script art: `SIDE_MOUTH` (bocca del martello). Testi per Gemini: `docs/PROMPT-MONDO.md` (pareti, iceberg). 263 test.
 
-**Da fare (piano B e C approvati):** squadra ordinabile e cure singole nel menu; esche al porto; conchiglie limitate e in vendita; predatori che escono dalla zona e tornano; barracuda in branco e prudenti con prede più grosse; mappa nel menu; scatto in sella ripensato; nuoto verticale e virata; Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini).
+**v0.9.8 (piano B):** `moveInTeam`, `useItemOn`; conchiglie (`BATTLE.catch.shellItem`, `START_INVENTORY`, salvataggio v8 che ne regala 5); esche con `ItemDef.lure` e `BeastState.lure` (encounters ignora il limite di 5 per le specie attirate); `ROAM.chaseLeash`/`homeSeconds`/`fearRatio` e `RoamContext.riderLength`; branco cosmetico (`BEAST_TEMPER.school`, `views/beastsLayer`); mappa (`systems/seaMap.ts`, `ui/seaMapPanel.ts`, zone visitate in `seen` come `zona:<nome>`); `input.dashHeld` e `TEAM_RULES.rideSprintMult`. 271 test.
+
+**Da fare (piano C):** nuoto verticale e virata; Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); il compagno che avvisa delle bestie vicine; battaglia contro un branco intero (per ora si combatte il capobranco).
 
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 

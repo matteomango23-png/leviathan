@@ -17,6 +17,8 @@ export interface RoamContext {
   dt: number;
   /** The sardine swarm hides you: nobody comes at you. */
   hidden: boolean;
+  /** Length of the beast you ride (0 on foot): much smaller beasts keep away instead of attacking. */
+  riderLength?: number;
 }
 
 /** Rare beasts are always shy (you have to reach them); named ones always come at you. */
@@ -76,9 +78,12 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   // named beasts (a Guardian in its lair, a commander's beast) always know where you are
   const sight = b.boss ? Infinity : ROAM.sightRange * U;
   const lose = b.boss ? Infinity : ROAM.loseRange * U;
+  // a small predator does not come at a diver riding something far bigger than itself: it keeps away
+  const afraid = !b.boss && (ctx.riderLength ?? 0) * ROAM.fearRatio > b.length;
   if (quiet) b.mood = 'wander';
   else if (b.mood === 'wander' && dist < sight)
-    b.mood = temper === 'aggressive' ? 'chase' : temper === 'shy' ? 'flee' : 'wander';
+    b.mood = temper === 'aggressive' && !afraid ? 'chase' : temper === 'shy' || afraid ? 'flee' : 'wander';
+  else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
 
   const spec = BEAST_TEMPER[b.form.speciesId];
@@ -99,10 +104,16 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
       b.target = wanderPoint(b, map, rng, b);
     [tx, ty, speed] = [b.target.x, b.target.y, ROAM.cruiseSpeed * U * mult];
   }
-  // stay in its own waters
+  // stay in its own waters; a hunter follows you a little way out of them, then gives up and goes back
   const [x0, y0, x1, y1] = b.spawn.area;
-  tx = clamp(tx, x0, x1);
-  ty = clamp(ty, Math.max(y0, top), y1);
+  const leash = b.mood === 'chase' ? ROAM.chaseLeash : 0;
+  const outside = Math.max(x0 - b.x, b.x - x1, y0 - b.y, b.y - y1, 0);
+  if (b.mood === 'chase' && outside > ROAM.chaseLeash) {
+    b.mood = 'wander'; // it gives up and swims home, leaving you alone meanwhile
+    b.calm = ROAM.homeSeconds;
+  }
+  tx = clamp(tx, x0 - leash, x1 + leash);
+  ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
   if (spec?.surface && b.mood !== 'chase') ty = top;
 
   // turn around only out of the light (a visible turn is allowed against a wall)

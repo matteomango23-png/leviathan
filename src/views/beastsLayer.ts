@@ -2,7 +2,7 @@
 // alfa, legendary, Guardians) shimmer with a pale glow so you notice them in the dark. Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
-import { TEAM_RULES } from '../data/beasts';
+import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, formKey, speciesOf, type BeastForm } from '../systems/beasts/forms';
 import { SPRITE_KEYS } from '../data/sprites.generated';
@@ -17,8 +17,18 @@ const spriteOf = (form: BeastForm): string =>
 const isPaleSprite = (form: BeastForm): boolean =>
   form.variant === 'albino' && !form.unique && spriteOf(form) !== formKey(form);
 
+/** Where the rest of a school swims, as shares of the leader's length (behind it, above and below). */
+const SCHOOL_PLACES: [number, number][] = [
+  [0.55, -0.32],
+  [0.7, 0.3],
+  [1.15, -0.05],
+  [1.4, 0.38],
+];
+
 export class BeastsLayer {
   private readonly wild: BeastSprite[];
+  /** The rest of a school (barracudas): drawn around the leader, who is the one you fight. */
+  private readonly school: BeastSprite[][];
   private readonly mount: BeastSprite;
   private readonly glow: Phaser.GameObjects.Graphics;
 
@@ -26,6 +36,12 @@ export class BeastsLayer {
     this.glow = scene.add.graphics();
     layer.add(this.glow);
     this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
+    this.school = g.beasts.wilds.map((w) =>
+      Array.from(
+        { length: BEAST_TEMPER[w.spawn.speciesId]?.school ?? 0 },
+        () => new BeastSprite(scene, layer),
+      ),
+    );
     this.mount = new BeastSprite(scene, layer);
   }
 
@@ -53,8 +69,10 @@ export class BeastsLayer {
     this.glow.clear();
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
+      const mates = this.school[i] ?? [];
       if (!isInWater(w)) {
         s.hide();
+        for (const m of mates) m.hide();
         return;
       }
       if (isRare(w)) {
@@ -87,6 +105,27 @@ export class BeastsLayer {
         alpha: 1,
         turn: w.turn,
         turnFrom: w.turnFrom,
+      });
+      // the school: behind and around the leader, each a little out of step
+      mates.forEach((m, k) => {
+        const [bx, by] = SCHOOL_PLACES[k % SCHOOL_PLACES.length]!;
+        const wob = Math.sin(time * 1.3 + k * 2.1) * 0.08;
+        m.update({
+          key: spriteOf(w.form),
+          pale: isPaleSprite(w.form),
+          x: w.x - w.face * w.length * bx,
+          y: w.y + w.length * (by + wob),
+          face: w.face,
+          pitch: w.pitch,
+          pitchV: w.pitchV,
+          phase: w.phase + 1.3 * (k + 1),
+          jaw: 0,
+          length: w.length * (0.82 + 0.06 * k),
+          flash: w.flash,
+          alpha: 1,
+          turn: w.turn,
+          turnFrom: w.turnFrom,
+        });
       });
     });
     const c = g.beasts.mount;

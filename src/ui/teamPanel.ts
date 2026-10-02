@@ -1,7 +1,9 @@
-// Team list: every tamed beast. At the port (the pen) you can move beasts between team and reserve.
+// Team list: every tamed beast. Anywhere you can put the team in order (the first one leads in battle) and heal
+// one beast with an Alga curativa; at the port (the pen) you can also move beasts between team and reserve.
 import { PROGRESSION } from '../data/rules';
 import { formName, formStars } from '../systems/beasts/forms';
-import { maxHpOf, teamMembers, toggleInTeam } from '../systems/beasts/team';
+import { maxHpOf, moveInTeam, teamMembers, toggleInTeam } from '../systems/beasts/team';
+import { useItemOn } from '../systems/economy/backpack';
 import type { GameState } from '../systems/game';
 import { isHungry } from '../systems/beasts/growth';
 import { feedFromBag } from '../systems/feeding';
@@ -44,6 +46,24 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         `Liv. ${b.level} · Vita ${Math.ceil(b.hp)}/${maxHpOf(b)}${b.ko ? ' · KO' : ''} · ${b.inTeam ? 'in squadra' : 'in riserva'}`,
       );
       growthBars(info, b);
+      if (b.inTeam) {
+        const members = teamMembers(g.beasts.team);
+        const i = members.indexOf(b);
+        const order = el('div', 'team-order', row);
+        const up = el('button', 'menu-btn small', order, '▲');
+        up.title = 'Più avanti nella squadra';
+        up.disabled = i <= 0;
+        up.addEventListener('click', () => moveInTeam(g.beasts.team, b.uid, -1) && draw());
+        const down = el('button', 'menu-btn small', order, '▼');
+        down.title = 'Più indietro nella squadra';
+        down.disabled = i >= members.length - 1;
+        down.addEventListener('click', () => moveInTeam(g.beasts.team, b.uid, 1) && draw());
+      }
+      const algae = g.gear.inventory.alga_curativa ?? 0;
+      if ((b.ko || b.hp < maxHpOf(b)) && algae > 0) {
+        const heal = el('button', 'menu-btn small', row, `Cura (alga ×${algae})`);
+        heal.addEventListener('click', () => useItemOn(g, 'alga_curativa', b.uid, []) && draw());
+      }
       if (!editable) continue;
       if (isHungry(b)) {
         const feed = el('button', 'menu-btn small', row, 'Nutri');

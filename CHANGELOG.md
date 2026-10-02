@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.8 — Squadra, esche e mappa (2 ottobre 2026)
+
+- **Squadra in ordine:** nel menu (pausa e porto) frecce ▲▼ per decidere chi entra per primo in battaglia; pulsante **Cura** per usare un'Alga curativa sulla bestia che scegli.
+- **Conchiglie del domatore limitate:** se ne parte con 5 (le partite già iniziate le ricevono una volta), una per ogni tentativo di domatura; si comprano al mercato (30 denti). In battaglia "Doma ×N" dice quante ne hai.
+- **Esche al mercato:** di sangue (squali bianco, tigre, martello), di gamberi (tartarughe, pesci palla, mante), viva (barracuda, murene, torpedini, coccodrilli). Per un minuto e mezzo quelle bestie arrivano in pochi secondi, anche se intorno ce ne sono già tante.
+- **Predatori:** ti inseguono anche un po' fuori dalla loro zona, poi lasciano perdere e tornano a casa.
+- **Prudenza:** un predatore piccolo non ti attacca se cavalchi una bestia molto più grossa di lui (si tiene alla larga; se lo urti la battaglia parte lo stesso).
+- **Branchi:** i barracuda nuotano in gruppo; combatti contro il capobranco.
+- **Mappa** nel menu di pausa: le zone esplorate, la profondità e le bestie che ci vivono con rarità e quanto spesso si incontrano (quelle mai viste come ???).
+- **Scatto in sella:** tieni premuto il pulsante Scatto per un'andatura più veloce, senza doverlo premere di continuo.
+
 ## v0.9.7 — Correzioni dopo la prova (2 ottobre 2026)
 
 - **Sfondamento:** ogni bestia Predatore o Corazzato impara dal livello 16 a rompere le ossa antiche (anche quando ti segue, non solo in sella). Vicino alle ossa un avviso dice cosa serve. La storia non richiede più per forza lo squalo bianco.

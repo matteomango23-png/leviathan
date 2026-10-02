@@ -17,6 +17,9 @@ const SHORT: Record<string, string> = {
   alga_curativa: 'Alga',
   krill_dorato: 'Krill',
   esca: 'Esca',
+  esca_sangue: 'Sangue',
+  esca_gamberi: 'Gamberi',
+  esca_viva: 'Viva',
   arpione_mitico: 'Mitico',
 };
 
