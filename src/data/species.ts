@@ -99,6 +99,8 @@ export const SPECIES: SpeciesDef[] = [
     abilities: ['vinceCorrenti'], iconic: true, finalFormName: 'Manta Oscura',
     artPrompt: 'a giant oceanic manta ray gliding on enormous wings, lightning flowing along its wing tips' },
   // ---- The open sea (tappa 11, the owner's pictures of 2 ottobre 2026): mostly common beasts of the endless sea
+  { id: 'varano_nilo', name: 'Varano del Nilo nero', type: 'predatore', role: 'compagno', region: 'delta', wildLevel: [8, 11], rarity: 3, size: 'media', lengthM: 2.5, trait: 'Nuota tra le radici a pelo d’acqua, morso velenoso',
+    artPrompt: 'a black Nile monitor lizard, long muscular tail, scaly dark armor with faint pale bands, forked tongue, swimming' },
   { id: 'tonno', name: 'Tonno rosso', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [4, 7], rarity: 1, size: 'media', lengthM: 2.5, trait: 'Velocissimo, caccia in branco',
     artPrompt: 'a muscular bluefin tuna, steel-blue back and silver flanks, sharp finlets' },
   { id: 'delfino', name: 'Delfino', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2.5, trait: 'Intelligente e veloce, stordisce col sonar',

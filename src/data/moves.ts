@@ -75,6 +75,9 @@ export const MOVES: MoveDef[] = [
   m('squalo_martello', 3, 'Martello di tuono', 'tempesta', 18, 'alto', ['dash', 'trail:lightning'], 'Carica che lascia fulmini lungo il percorso',
     'Scia elettrica lungo la carica, fulmini che cadono dietro'),
   // ---- The open sea (tappa 11)
+  m('varano_nilo', 1, 'Morso velenoso', 'predatore', 1.5, 'medio', ['stunChance'], 'Il veleno può stordire'),
+  m('varano_nilo', 2, 'Colpo di coda', 'predatore', 6, 'medio', ['hits:2'], 'Due frustate di coda'),
+  m('varano_nilo', 3, 'Agguato tra le radici', 'abissale', 16, 'alto', ['dash', 'x2vsWounded'], 'Sbuca per primo dalle radici: danno doppio su chi è ferito'),
   m('tonno', 1, 'Morso veloce', 'predatore', 1, 'basso', [], 'Danno basso, sempre pronto'),
   m('tonno', 2, 'Scatto in branco', 'predatore', 5, 'medio', ['dash', 'hits:2'], 'Attacca per primo e colpisce due volte'),
   m('tonno', 3, 'Vortice d\u2019argento', 'tempesta', 14, 'alto', ['stunChance'], 'Il branco gira come un vortice: può stordire'),

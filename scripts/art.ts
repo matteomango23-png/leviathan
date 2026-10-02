@@ -83,6 +83,7 @@ const SIDE_FLOOD_SPECIES = [
   'narvalo',
   'beluga',
   'coccodrillo_nilo',
+  'varano_nilo',
 ];
 const SIDE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   capodoglio_side: TEXTURED_DARK,
