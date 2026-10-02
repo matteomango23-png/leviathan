@@ -8,7 +8,7 @@ import type { InputState } from './input';
 import { formLengthUnits, formStats, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
 import { teamMembers, type TeamBeast } from './beasts/team';
-import { stepWildSpawns } from './encounters';
+import { stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
 import { stepSanctuaries } from './sanctuary';
 
@@ -81,6 +81,7 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
   }
   stepWildSpawns(g, dt, events);
   stepBoneHint(g, dt, events);
+  stepSenses(g, events);
   const m = bs.mount;
   if (m) {
     // it grows (levels, evolutions) while it is out

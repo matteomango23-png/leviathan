@@ -41,7 +41,9 @@
 
 **v0.9.9:** inclinazione del sub (`DIVER.tilt`) e della cavalcatura (`TEAM_RULES.pitchMax` 1,25); virata ad anello della cavalcatura (`Mount.loop`, `TEAM_RULES.loopSeconds`; tolto il vecchio `turn`). Visto nel browser: tuffo a testa in giù e virata. 272 test.
 
-**Da fare (piano C):** Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); il compagno che avvisa delle bestie vicine; battaglia contro un branco intero (per ora si combatte il capobranco).
+**v0.9.10:** il compagno avvisa delle bestie nel buio (`stepSenses` in encounters.ts, `ROAM.senseRange`/`senseMin`, evento `beastSensed`). 273 test.
+
+**Da fare (piano C):** Mare di Ghiaccio e pareti dipinte (quando arrivano le immagini, testi in `docs/PROMPT-MONDO.md`); battaglia contro un branco intero (per ora si combatte il capobranco).
 
 **Prossima sessione:** tappa 11, l'oceano infinito a destra (biomi generati, mute per immersioni lunghe e punti per l'ossigeno). Proporre il piano prima.
 

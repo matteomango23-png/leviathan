@@ -92,3 +92,26 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (touched) requestBattle(g, w, 'foe', events);
   }
 }
+
+/**
+ * The beast swimming with you (or carrying you) feels the wild ones coming in the dark before you see them:
+ * once per beast (the nearest, if several come at once), while it is between ROAM.senseMin and ROAM.senseRange from you.
+ */
+export function stepSenses(g: BeastWorld, events: GameEvent[]): void {
+  const m = g.beasts.mount;
+  const s = g.beasts.sensed;
+  for (let i = s.length - 1; i >= 0; i--)
+    if (!g.beasts.wilds.some((w) => w.id === s[i] && isInWater(w))) s.splice(i, 1);
+  if (!m || (m.state !== 'follow' && m.state !== 'ride') || g.diver.dead) return;
+  const d = g.diver;
+  let nearest: { w: WildBeast; dist: number } | null = null;
+  for (const w of g.beasts.wilds) {
+    if (!isInWater(w) || w.arena || s.includes(w.id)) continue;
+    const dist = Math.hypot(w.x - d.x, w.y - d.y);
+    if (dist > ROAM.senseRange || dist < ROAM.senseMin) continue;
+    s.push(w.id); // several at once: it warns about the nearest one only
+    if (!nearest || dist < nearest.dist) nearest = { w, dist };
+  }
+  if (nearest)
+    events.push({ type: 'beastSensed', uid: m.uid, wildId: nearest.w.id, side: nearest.w.x < d.x ? -1 : 1 });
+}

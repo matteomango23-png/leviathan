@@ -20,7 +20,9 @@ export const ROAM = {
   litRadius: 90, // units: this close to your lamp it is in the light, and never turns around
   chaseLeash: 320, // units: a hunting beast follows you this far out of its waters, then goes back home (owner, 2 ottobre)
   homeSeconds: 10, // …after giving up it swims home, leaving you alone this long
-  fearRatio: 0.6, // a beast shorter than this × the one you ride does not come at you: it keeps away
+  fearRatio: 0.6,
+  senseRange: 380, // units: the beast swimming with you (or carrying you) feels a wild one this close, still in the dark…
+  senseMin: 150, // …but not if it is already near enough to see // a beast shorter than this × the one you ride does not come at you: it keeps away
   steer: 1.6,
   turnSeconds: 0.8, // a turn (only out of the light), animated from the head
   pitchMax: 0.4,

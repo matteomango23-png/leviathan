@@ -44,6 +44,20 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       if (!w) return null;
       return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
     }
+    case 'beastSensed': {
+      const b = tamed(e.uid);
+      const w = wild(e.wildId);
+      if (!b || !w) return null;
+      const side = e.side < 0 ? 'a sinistra' : 'a destra';
+      // it names the beasts you already know; a rare one it feels as "something that shines"
+      const what =
+        w.form.variant !== 'comune' || w.form.unique
+          ? 'qualcosa di raro'
+          : g.seen.has(w.form.speciesId)
+            ? formName(w.form)
+            : 'qualcosa';
+      return [`${formName(b.form)} si agita: ${what} nel buio ${side}.`, 2.6];
+    }
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':
