@@ -39,6 +39,7 @@ import { restoreGear, restoreTeam } from './save/convert';
 import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
 import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
+import { zoneKey } from './seaMap';
 import { rideO2Mult } from './abilities';
 
 export { toSave } from './save/convert';
@@ -185,6 +186,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       mountSpeed: mountSpeed(g),
       mountAccelMult: TEAM_RULES.accelMult,
       mountDash: TEAM_RULES.rideDash,
+      mountSprint: TEAM_RULES.rideSprintMult,
       speedMult: mods.speedMult,
       o2DrainMult: mods.o2DrainMult * rideO2Mult(g),
       canDash: mods.canDash,
@@ -241,6 +243,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const zone = zoneAt(d.x, d.y);
   if (zone && zone !== g.zone) {
     g.zone = zone;
+    g.seen.add(zoneKey(zone)); // for the sea map
     events.push({ type: 'zoneEntered', name: zone });
   }
   return events;

@@ -19,6 +19,7 @@ export class Controls {
   private readonly knob: HTMLDivElement;
   private readonly harpoonBtn: HTMLButtonElement;
   private readonly dashBtn: HTMLButtonElement;
+  private dashHeld = false;
   private readonly cleanup: (() => void)[] = [];
 
   constructor(
@@ -54,7 +55,10 @@ export class Controls {
       e.preventDefault();
       e.stopPropagation();
       this.session.input.dash = true;
+      this.dashHeld = true;
     });
+    for (const t of ['pointerup', 'pointercancel', 'pointerleave'] as const)
+      this.listen(this.dashBtn, t, () => (this.dashHeld = false));
     this.listen(pause, 'click', () => onPause());
 
     this.listen<KeyboardEvent>(window, 'keydown', (e) => {
@@ -165,6 +169,7 @@ export class Controls {
 
   releaseAll(): void {
     this.keys.clear();
+    this.dashHeld = false;
     this.joy = { id: -1, sx: 0, sy: 0, x: 0, y: 0 };
     this.stick.hidden = true;
     this.harpoonId = -1;
@@ -191,6 +196,7 @@ export class Controls {
     input.moveX = mx;
     input.moveY = my;
     input.fireHeld = this.harpoonHeld || k.has(' ') || k.has('j');
+    input.dashHeld = this.dashHeld || k.has('shift') || k.has('k');
     input.aim = this.harpoonHeld ? this.aimAngle : null;
     this.dashBtn.classList.toggle('cooldown', !dashReady);
   }

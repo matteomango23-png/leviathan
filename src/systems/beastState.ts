@@ -34,6 +34,8 @@ export interface BeastState {
   arena: boolean;
   /** Set when a battle must start (the World scene opens it and pauses the sea). */
   battle: BattleRequest | null;
+  /** A bait: these species come to you for a while. */
+  lure: { species: string[]; t: number } | null;
   /** Seconds before the hint about ancient bones can show again. */
   boneHintT: number;
 }
@@ -65,6 +67,7 @@ export function createBeasts(team: TeamBeast[]): BeastState {
     arena: false,
     battle: null,
     boneHintT: 0,
+    lure: null,
   };
 }
 

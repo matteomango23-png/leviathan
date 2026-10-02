@@ -18,6 +18,9 @@ export const ROAM = {
   spawnMinDistance: 230, // units: it appears at least this far from you, in the dark
   targetReach: 24, // units: it reached the point it was swimming to
   litRadius: 90, // units: this close to your lamp it is in the light, and never turns around
+  chaseLeash: 320, // units: a hunting beast follows you this far out of its waters, then goes back home (owner, 2 ottobre)
+  homeSeconds: 10, // …after giving up it swims home, leaving you alone this long
+  fearRatio: 0.6, // a beast shorter than this × the one you ride does not come at you: it keeps away
   steer: 1.6,
   turnSeconds: 0.8, // a turn (only out of the light), animated from the head
   pitchMax: 0.4,
@@ -87,9 +90,9 @@ export const WILD_RULES = { maxPresent: 5 };
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';
-export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; surface?: boolean }> = {
+export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; surface?: boolean; school?: number }> = {
   squalo_bianco: { temper: 'aggressive' },
-  barracuda: { temper: 'aggressive' },
+  barracuda: { temper: 'aggressive', school: 3 }, // swims in a small school (the others follow the leader)
   tartaruga_marina: { temper: 'calm', speedMult: 0.6 },
   torpedine: { temper: 'shy', speedMult: 0.7 },
   coccodrillo_marino: { temper: 'aggressive', speedMult: 0.8, surface: true }, // cruises just under the surface
@@ -127,7 +130,8 @@ export const TEAM_RULES = {
   turnSeconds: 0.6, // your mount turns around (animated from the head)
   accelMult: 1.7, // riding: acceleration × the beast's speed
   rideSpeedMult: 0.48, // tuning: riding speed × the beast's speed stat (tappa 10: a white shark ~55 u/s, 1.3× the diver; was 1.6)
-  rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // the dash button while riding
+  rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // a tap on the dash button while riding…
+  rideSprintMult: 1.45, // …and holding it: the beast keeps a faster pace (owner, 2 ottobre: no more tapping again and again)
 };
 
 /** What mounts can do while you ride them (abilities in species.ts). */

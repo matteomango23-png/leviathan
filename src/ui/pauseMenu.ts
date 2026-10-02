@@ -6,6 +6,7 @@ import type { Session } from '../scenes/session';
 import { replayIntro } from '../systems/story';
 import { testMode } from '../systems/testTools';
 import { el } from './dom';
+import { openSeaMap } from './seaMapPanel';
 import { openBestiary } from './bestiary';
 import { icon } from './icons';
 import { hasPreviousGame } from '../systems/save/storage';
@@ -38,6 +39,9 @@ export class PauseMenu {
     const book = el('button', 'menu-btn', panel);
     book.append(icon('book'), document.createTextNode(' Bestiario'));
     book.addEventListener('click', () => openBestiary(parent, game));
+    const map = el('button', 'menu-btn', panel);
+    map.append(icon('dive'), document.createTextNode(' Mappa'));
+    map.addEventListener('click', () => openSeaMap(parent, game));
     const replay = el('button', 'menu-btn', panel, 'Rivedi l’inizio');
     replay.addEventListener('click', () => {
       replayIntro(game);
