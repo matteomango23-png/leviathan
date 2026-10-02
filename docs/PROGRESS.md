@@ -100,7 +100,34 @@
 - La battaglia usa per ora lo sfondo della Baia: il testo per Gemini dell'anfiteatro è in `docs/PROMPT-BATTAGLIA.md` (sezione 5).
 - Se chiudi il gioco durante lo scontro (prima di batterlo) lo scontro riparte; se è già sfinito, resta sfinito e le catene rotte restano rotte.
 
-**Prossima sessione:** capitolo 4, la Foresta Sommersa (la Vedova e la reliquia dei templi). Proporre il piano prima.
+**v0.14.1 (correzioni dopo la prova del 3 ottobre):**
+
+- Iceberg:
+  - `ICEBERG_MAX_DRAFT` (190 unità): gli iceberg alti si rimpiccioliscono e non toccano il fondale;
+  - niente ghiaccio a blocchi vicino agli iceberg dipinti (`nearIceberg`, `ICEBERG_CLEAR_MARGIN`);
+  - il pittore del fondale non dipinge niente dentro il riquadro di un iceberg.
+- Più vita: `WILD_RULES.maxPresent` 8, `ENDLESS.wildSlots` 8, 9 bestie piccole e medie in più in `WILD_SPAWNS`, 11 banchi in `OTHER_FISH_SCHOOLS`, `ENDLESS.schools` 9.
+- `npm run art` riconosce il fondo verde (`onGreenScreen`) per profili, battaglia e pezzi del mondo. Nomi nuovi per i pezzi del mondo: `molo_<nome>`, `sottomarino_<n>`.
+- Il molo dipinto del proprietario (`PIER_ART`) a Portofosco e Porto Fango.
+- Lotto di immagini generate in Gemini: `docs/GEMINI-LOTTO-1.md` (da sistemare quando il proprietario le scarica).
+- 352 test.
+
+**Decisioni del proprietario (3 ottobre):**
+
+- **Sottomarino al posto della barca:**
+  - va sott'acqua, ogni modello ha una profondità massima;
+  - è lento all'inizio; al porto se ne comprano di migliori;
+  - dentro non si combatte: le bestie normali scappano, quelle enormi lo danneggiano;
+  - resta dove lo lasci; dentro respiri, ti curi e peschi.
+- **Inizio più graduale:** 3 o 4 missioni del porto prima dello Sfregiato.
+
+**Prossima sessione:**
+
+1. Tappa sottomarino (immagine `sottomarino_1` pronta in `public/world`).
+2. Inizio con le missioni del porto.
+3. Capitolo 4, la Foresta Sommersa.
+
+Proporre il piano di ciascuna prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

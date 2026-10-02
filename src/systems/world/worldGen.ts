@@ -20,7 +20,7 @@ import { inLairCave, inLairShaft, inLairShell } from './lair';
 import { inArena, inArenaShell } from './arena';
 import { TileMap } from './tileMap';
 import { generateChunk } from './endless';
-import { icebergBox, inIceberg } from './icebergs';
+import { icebergBox, inIceberg, nearIceberg } from './icebergs';
 import { ICEBERGS } from '../../data/worldArt';
 import { ENDLESS } from '../../data/endless';
 
@@ -96,8 +96,11 @@ export function isOpen(x: number, y: number): boolean {
   return false;
 }
 
+const PAINTED = ICEBERGS.map(icebergBox).filter((b) => b !== null);
+
 function isIce(x: number, y: number): boolean {
   if (x < ICE.xMin || y < WORLD.surfaceY) return false;
+  if (nearIceberg(PAINTED, x) && y < ICE.sheet.y0) return false; // only the painted iceberg shows there
   const inHole = ICE.holes.some(([a, b]) => x > a && x < b);
   if (y < ICE.ceilingY && !inHole) return true;
   for (const [cx, cy, rx, ry] of ICE.pillars) {

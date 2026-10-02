@@ -403,7 +403,8 @@ export function parseExtraName(file: string): ExtraName | null {
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
-  if (/^(parete_[a-z]+(_\d)?|iceberg_\d)$/.test(base)) return { kind: 'world', id: base };
+  if (/^(parete_[a-z]+(_\d)?|iceberg_\d|molo_[a-z]+|sottomarino_\d)$/.test(base))
+    return { kind: 'world', id: base };
   return null;
 }
 
@@ -425,6 +426,30 @@ export function removeGreenBackground(img: Raw, low = 30, high = 90): Uint8Clamp
     if (excess > 0) out[o + 1] = Math.max(r, b);
   }
   return out;
+}
+
+/**
+ * Was the picture made on a green screen (owner, 3 ottobre: "generiamo gli asset con green screen")? True when
+ * most of its border is strongly green.
+ */
+export function onGreenScreen(img: Raw): boolean {
+  const { data, width: w, height: h } = img;
+  let green = 0;
+  let n = 0;
+  const look = (x: number, y: number): void => {
+    const o = (y * w + x) * 4;
+    n++;
+    if (data[o + 1]! > data[o]! + 60 && data[o + 1]! > data[o + 2]! + 60) green++;
+  };
+  for (let x = 0; x < w; x += 4) {
+    look(x, 0);
+    look(x, h - 1);
+  }
+  for (let y = 0; y < h; y += 4) {
+    look(0, y);
+    look(w - 1, y);
+  }
+  return green / n > 0.6;
 }
 
 /** A white-on-black icon becomes white with its brightness as transparency (the game tints it). */

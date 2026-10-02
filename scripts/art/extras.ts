@@ -14,6 +14,7 @@ import {
   opaqueBox,
   removeDarkBackground,
   removeGreenBackground,
+  onGreenScreen,
   type ExtraName,
   type Raw,
 } from './cutout.ts';
@@ -164,7 +165,9 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   const radius = Math.max(3, Math.round(img.width * 0.004));
   // icebergs are pale: a loose cut; the walls are dark rock: a tight one, or the rock turns see-through
   const opt = iceberg ? { low: 8, high: 30, soft: 40 } : { low: 2, high: 9, soft: 14 };
-  const cut = removeDarkBackground(img, borderColor(img), radius, opt);
+  const cut = onGreenScreen(img)
+    ? removeGreenBackground(img)
+    : removeDarkBackground(img, borderColor(img), radius, opt);
   if (iceberg) {
     // the waterline Gemini draws: wipe every thin horizontal strip (a vertical run of solid pixels shorter than
     // `thin`), wherever it is and even if slanted; the ice itself is always much taller than that

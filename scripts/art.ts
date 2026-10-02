@@ -24,6 +24,8 @@ import {
   placeProfile,
   removeBlackBackground,
   removeDarkBackground,
+  removeGreenBackground,
+  onGreenScreen,
   fillMouth,
 } from './art/cutout.ts';
 import { extraDest, makeExtra } from './art/extras.ts';
@@ -130,17 +132,26 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
   const loose = SIDE_CUTOUT_LOOSE[basename(src, extname(src))];
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
   const flood = SIDE_FLOOD_SPECIES.some((id) => basename(src).startsWith(`${id}_side`));
-  let cut = loose
-    ? removeDarkBackground(raw, borderColor(raw), radius, loose)
-    : flood
-      ? removeDarkBackground(raw, borderColor(raw), radius, SIDE_FLOOD)
-      : removeBlackBackground(raw);
+  const green = onGreenScreen(raw);
+  let cut = green
+    ? removeGreenBackground(raw)
+    : loose
+      ? removeDarkBackground(raw, borderColor(raw), radius, loose)
+      : flood
+        ? removeDarkBackground(raw, borderColor(raw), radius, SIDE_FLOOD)
+        : removeBlackBackground(raw);
   eraseRects(cut, info.width, info.height, SIDE_ERASE[basename(src, extname(src))] ?? []);
   if (flood) keepLargest(cut, info.width, info.height);
   // a textured dark-grey background (not flat black) survives the plain cut and fills the whole frame:
   // cut again like those (SIDE_CUTOUT_LOOSE)
   const first = opaqueBox(cut, info.width, info.height);
-  if (!loose && first && first.x1 - first.x0 > info.width * 0.95 && first.y1 - first.y0 > info.height * 0.95)
+  if (
+    !green &&
+    !loose &&
+    first &&
+    first.x1 - first.x0 > info.width * 0.95 &&
+    first.y1 - first.y0 > info.height * 0.95
+  )
     cut = removeDarkBackground(raw, borderColor(raw), radius, TEXTURED_DARK);
   const mouth = SIDE_MOUTH[basename(src, extname(src))];
   if (mouth) fillMouth(raw, cut, mouth);
@@ -192,7 +203,9 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
     .toBuffer({ resolveWithObject: true });
   const raw = { data, width: info.width, height: info.height };
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
-  const cut = removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
+  const cut = onGreenScreen(raw)
+    ? removeGreenBackground(raw)
+    : removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
   eraseRects(cut, info.width, info.height, BATTLE_ERASE[name] ?? []);
   if (BATTLE_ENCLOSED.includes(name)) clearEnclosedBackground(raw, cut, borderColor(raw));
   // the newer pictures have specks and glows around the beast: keep the beast alone

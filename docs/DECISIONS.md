@@ -323,3 +323,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Salvataggio senza nuova versione:** lo stato del capitolo sta nella lista "seen" della storia (`CHAPTER3_MARKS`, accettati da `storySave`).
 - **Granchio di fronte:** in mancanza di un profilo, un granchio visto di fronte che cammina di lato è proprio come si muove un granchio. `BeastSprite` usa l'immagine frontale di battaglia se manca il profilo; l'animazione a pezzi aspetta i pezzi separati.
 - **Lo sfondo "tana"** in battaglia solo per i Guardiani nelle tane (`w.guardian`), non per ogni bestia della storia.
+
+## 2026-10-03 — Iceberg, vita, fondo verde
+
+- **Iceberg mai fino al fondale:** invece di tagliare il disegno, quelli troppo profondi si rimpiccioliscono (`ICEBERG_MAX_DRAFT`). Il disegno resta intero e sotto c'è sempre spazio.
+- **Il disegno è il ghiaccio:** dentro il riquadro di un iceberg il pittore del fondale non dipinge, e il vecchio ghiaccio procedurale lì vicino non c'è. La collisione resta la maschera dell'immagine.
+- **Fondo verde:** da ora le immagini si chiedono su verde #00FF00 (proposta del proprietario). Lo script riconosce il bordo verde e usa lo scontorno a chiave; il fondo nero resta supportato.

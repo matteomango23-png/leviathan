@@ -1,6 +1,8 @@
 // The harbours at the surface (Portofosco's pier and houses on the mainland, Porto Fango's pier and huts on the
 // Isola delle Mangrovie) and the wrecks/chests on the sea floor.
 import Phaser from 'phaser';
+import { PIER_ART } from '../data/worldArt';
+import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { PORT, PORTO_FANGO, type PortDef } from '../data/economy';
 import { COAST, WORLD } from '../data/worldLayout';
 import { landHeight } from '../systems/world/worldGen';
@@ -35,10 +37,15 @@ function drawHouses(g: Phaser.GameObjects.Graphics, houses: [number, number, num
   }
 }
 
-function drawPort(g: Phaser.GameObjects.Graphics, port: PortDef): void {
+function drawPort(g: Phaser.GameObjects.Graphics, port: PortDef, painted: boolean): void {
   const s = WORLD.surfaceY;
   const x = port.x;
   const shore = port.shoreX;
+  if (painted) {
+    // the owner's painted pier is laid by PlacesView: only the houses here
+    drawHouses(g, port.id === 'portofosco' ? PORT_HOUSES : FANGO_HUTS);
+    return;
+  }
   // the pier: from the shore out over the water, on stilts
   g.fillStyle(0x1b1612, 1);
   for (let px = shore; px <= x + 30; px += 13) g.fillRect(px - 1, s - 6, 2.2, 24);
@@ -89,8 +96,18 @@ export class PlacesView {
     private readonly wrecks: Wreck[],
   ) {
     const g = scene.add.graphics();
-    drawPort(g, PORT);
-    drawPort(g, PORTO_FANGO);
+    const painted = WORLD_ART_KEYS.includes(PIER_ART.key);
+    drawPort(g, PORT, painted);
+    drawPort(g, PORTO_FANGO, painted);
+    if (painted)
+      for (const port of [PORT, PORTO_FANGO]) {
+        const im = scene.add
+          .image(port.shoreX + PIER_ART.fromShore, 0, `world-${PIER_ART.key}`)
+          .setOrigin(0, 0);
+        im.setScale(PIER_ART.width / im.width);
+        im.y = WORLD.surfaceY - PIER_ART.deckAbove - PIER_ART.deckAt * im.displayHeight;
+        layer.add(im);
+      }
     for (const w of wrecks) drawWreck(g, w);
     layer.add(g);
     this.glows = wrecks.map(() =>

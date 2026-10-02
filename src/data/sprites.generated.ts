@@ -289,11 +289,13 @@ export const WORLD_ART_KEYS: readonly string[] = [
   'iceberg_2',
   'iceberg_3',
   'iceberg_4',
+  'molo_porto',
   'parete_corallo',
   'parete_ghiaccio',
   'parete_roccia_1',
   'parete_roccia_2',
   'parete_roccia_3',
+  'sottomarino_1',
 ];
 
 export const ICEBERG_SHAPES: Readonly<Record<string, { w: number; h: number; waterline: number; mask: string[] }>> = {
@@ -868,9 +870,11 @@ export const ASSET_HASHES: Readonly<Record<string, string>> = {
   'world/iceberg_2.webp': 'f089b3f4',
   'world/iceberg_3.webp': 'fce2a42d',
   'world/iceberg_4.webp': 'f7d8ef52',
+  'world/molo_porto.webp': 'c70861c5',
   'world/parete_corallo.webp': '24f21312',
   'world/parete_ghiaccio.webp': '955bc888',
   'world/parete_roccia_1.webp': '2474ec1d',
   'world/parete_roccia_2.webp': '1b7fb6da',
   'world/parete_roccia_3.webp': '15062bb1',
+  'world/sottomarino_1.webp': '0086c721',
 };
