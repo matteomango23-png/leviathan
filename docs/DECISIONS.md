@@ -259,3 +259,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Zone visitate:** salvate nell'elenco `seen` come `zona:<nome>` invece di un campo nuovo del salvataggio (nessuna migrazione, il bestiario conta solo gli id delle specie).
 - **Branchi:** per ora solo grafici (il capobranco è l'unico che combatte); la battaglia contro più bestie è da decidere con il proprietario.
 - **Predatori fuori zona:** inseguono fino a `chaseLeash` oltre la loro zona, poi si calmano per `homeSeconds` e tornano; per la regola "mai girarsi in vista" si girano solo fuori dalla luce.
+
+## 2026-10-02 — Virata ad anello della cavalcatura
+
+- **Decisione:** la bestia che cavalchi (o che ti segue) si gira passando per la verticale (muso in su, o in giù se si stava tuffando) e cambia lato in cima, dove le due facce si somigliano; il sub e la cavalcatura si inclinano fino a ~70° nella direzione del nuoto.
+- **Motivo:** il proprietario trovava brutta la virata piatta (la sagoma che si stringe) e lo scivolare orizzontale in discesa. Le bestie selvatiche restano come prima: per regola si girano solo fuori dalla luce.

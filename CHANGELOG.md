@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.9 — Nuoto in verticale e virata (2 ottobre 2026)
+
+- **Nuoto in verticale:** il sub e la bestia che cavalchi si inclinano davvero nella direzione in cui vanno: scendendo dritti in giù vanno a testa in giù (prima scivolavano orizzontali).
+- **Virata della cavalcatura:** quando cambi direzione la bestia sale (o scende, se si stava tuffando) fino in verticale, si gira in cima e riparte dall’altra parte, come un animale vero visto di lato. Niente più giravolta piatta.
+
 ## v0.9.8 — Squadra, esche e mappa (2 ottobre 2026)
 
 - **Squadra in ordine:** nel menu (pausa e porto) frecce ▲▼ per decidere chi entra per primo in battaglia; pulsante **Cura** per usare un'Alga curativa sulla bestia che scegli.
