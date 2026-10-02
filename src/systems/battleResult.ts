@@ -2,10 +2,11 @@
 // the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to the sanctuary if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import { ROAM } from '../data/beasts';
+import { isLegend } from './beasts/legends';
 import { XP_RULES } from '../data/progression';
 import { range } from './math';
 import { activeBeast } from './beastState';
-import { formLengthUnits, formKey, speciesOf, type BeastForm } from './beasts/forms';
+import { formLengthUnits, formKey, formName, speciesOf, type BeastForm } from './beasts/forms';
 import { gainXp, xpReward } from './beasts/growth';
 import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { removeWild } from './beasts/wildState';
@@ -54,6 +55,11 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
     const rode = activeBeast(g);
     if (m && rode) m.length = formLengthUnits(rode.form, rode.level); // it may have grown
     events.push({ type: 'battleWon', speciesId: o.foe.form.speciesId });
+  }
+  // a legend defeated (not tamed) is gone forever
+  if (o.over === 'won' && isLegend(o.foe.form.unique) && !g.beasts.gone.includes(o.foe.form.unique!)) {
+    g.beasts.gone.push(o.foe.form.unique!);
+    events.push({ type: 'legendGone', name: formName(o.foe.form) });
   }
   if (o.over === 'caught') {
     const b = addTamed(

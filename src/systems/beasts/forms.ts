@@ -1,11 +1,11 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
-import { RARE_UNIQUES } from '../../data/chapter2';
 import { ABILITIES, WILD_LEVELS } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
 import type { Rng } from '../math';
+import { rollLegend } from './legends';
 
 export type Variant = 'comune' | 'albino' | 'alfa';
 
@@ -24,7 +24,7 @@ export function speciesOf(form: BeastForm): SpeciesDef {
   return s;
 }
 
-const uniqueOf = (form: BeastForm) =>
+export const uniqueOf = (form: BeastForm) =>
   form.unique ? UNIQUE_VARIANTS.find((u) => u.id === form.unique) : undefined;
 
 /** Sprite / illustration id (docs/ART.md, "Nomi dei file"). */
@@ -44,7 +44,9 @@ export function moveSpeciesOf(form: BeastForm): string {
  * that has none yet (a starter until its own images arrive).
  */
 export function artKeysOf(form: BeastForm): string[] {
-  const keys = [formKey(form), form.speciesId];
+  const keys = [formKey(form)];
+  if (form.variant === 'alfa' && !form.final && speciesOf(form).alfaArt) keys.push(speciesOf(form).alfaArt!);
+  keys.push(form.speciesId);
   const stand = speciesOf(form).artFrom;
   if (stand) keys.push(stand);
   return keys;
@@ -60,7 +62,7 @@ export function formName(form: BeastForm): string {
     if (s.finalFormName) return s.finalFormName;
   }
   if (form.variant === 'albino') return `${s.name} albino`;
-  if (form.variant === 'alfa') return `${s.name} alfa`;
+  if (form.variant === 'alfa') return s.alfaName ?? `${s.name} alfa`;
   return s.name;
 }
 
@@ -109,10 +111,17 @@ export function formType(form: BeastForm): TypeId | 'variabile' {
   return speciesOf(form).type;
 }
 
-/** A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance); a few species have a legendary. */
-export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
-  const rare = RARE_UNIQUES[speciesId];
-  if (rare && rng() < rare.chance) return { speciesId, variant: 'comune', unique: rare.unique };
+/**
+ * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance); in its place a legend of the species may
+ * come instead (`where`: the point where it comes, and the legends not available: tamed, gone, already out).
+ */
+export function rollWildForm(
+  speciesId: string,
+  rng: Rng,
+  where?: { x: number; unavailable: ReadonlySet<string> },
+): BeastForm {
+  const legend = where ? rollLegend(speciesId, rng, where.x, where.unavailable) : null;
+  if (legend) return { speciesId, variant: 'comune', unique: legend };
   const r = rng();
   if (r < VARIANT_RULES.albino.spawnChance) return { speciesId, variant: 'albino' };
   if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance)

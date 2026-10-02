@@ -16,7 +16,3 @@ export const VEDOVA = {
   shipLeaveDistance: 900, // after the whale is freed the ship sails east this far, then it is gone
 };
 
-/** Wild crocodiles: rarely the legendary albino instead of a marine crocodile (GDD, "Orche e bestie leggendarie"). */
-export const RARE_UNIQUES: Record<string, { unique: string; chance: number }> = {
-  coccodrillo_marino: { unique: 'coccodrillo_marino_leggendario', chance: 0.03 }, // tuning
-};

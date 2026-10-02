@@ -6,6 +6,7 @@ import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
 import { distanceToBody } from './combat';
+import { uniqueOf } from './forms';
 import { bodyRadius, isRare, type WildBeast } from './wildState';
 
 const U = DIVER.lengthUnits;
@@ -24,6 +25,8 @@ export interface RoamContext {
 /** Rare beasts are always shy (you have to reach them); named ones always come at you. */
 export function temperOf(b: WildBeast): Temper {
   if (b.boss) return 'aggressive';
+  const legend = uniqueOf(b.form)?.temper;
+  if (legend) return legend;
   if (isRare(b)) return 'shy';
   return BEAST_TEMPER[b.form.speciesId]?.temper ?? 'calm';
 }
@@ -114,7 +117,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   }
   tx = clamp(tx, x0 - leash, x1 + leash);
   ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
-  if (spec?.surface && b.mood !== 'chase') ty = top;
+  if ((spec?.surface || uniqueOf(b.form)?.surface) && b.mood !== 'chase') ty = top;
 
   // turn around only out of the light (a visible turn is allowed against a wall)
   const want = Math.sign(tx - b.x) || b.face;

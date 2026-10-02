@@ -32,7 +32,11 @@
 
 **Da provare (v0.11.0):** finisci il capitolo 1 (o usa una partita che l'ha già finito): trova la barca oltre il molo, Sali, naviga verso est, Pesca, Tuffati e controlla la freccia della barca nell'HUD; prova a perdere i sensi lontano.
 
-**Prossima sessione:** bestie uniche (una sola nel mondo, 1% di ritrovarla, sparisce se sconfitta), poi templi e capitolo 3. Proporre il piano prima.
+**Tappa 13 (v0.12.0), le leggende:** `UNIQUE_VARIANTS` con `chance`, `where` (tipo di tratto, km minimi), `place`, `temper`, `surface`; `systems/beasts/legends.ts` (`LEGENDS`, `rollLegend`, `inLegendPlace`); `rollWildForm` con il punto e le leggende non disponibili (domate, sconfitte, già in acqua); sconfitta = sparisce per sempre (`BeastState.gone`, salvataggio v10 `legendsGone`); pagina Leggende nel bestiario; orca alfa = Orca matriarca (`alfaName`, `alfaArt`). Immagini del proprietario: squalo martello preistorico e tartaruga preistorica (`asset animali ai/`). 334 test.
+
+**Da sapere:** le leggende hanno per ora lo sfondo di battaglia della loro regione; il proprietario vorrebbe per loro un piccolo ecosistema o uno sfondo proprio, e alcune in tane negli abissi (da progettare). In arrivo come leggende delle fosse: Megalodonte, Livyatan, Dunkleosteus, Kraken (servono le immagini).
+
+**Prossima sessione:** templi con percorso e rompicapo, poi capitolo 3 (la Barriera Rossa, la Vedova Nera). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

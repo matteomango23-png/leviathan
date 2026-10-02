@@ -85,7 +85,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
-  const beasts = createBeasts(restoreTeam(s));
+  const beasts = createBeasts(restoreTeam(s), s.legendsGone);
   const g: GameState = {
     map,
     rng,

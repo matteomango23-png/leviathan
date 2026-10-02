@@ -71,6 +71,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     : { x: Math.round(d.x), y: Math.round(d.y) };
   s.homePort = g.homePort;
   s.boat = g.boat.owned ? { x: Math.round(g.boat.x) } : null;
+  s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
   if (g.boat.aboard && !d.dead) s.diver = { x: Math.round(g.boat.x), y: WORLD.surfaceY + 8 };
   s.fishCaught = { ...g.fishCaught };

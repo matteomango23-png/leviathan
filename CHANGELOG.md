@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.12.0 — Le leggende (2 ottobre 2026)
+
+- **Bestie leggendarie:** ognuna esiste una sola volta nel mondo e compare raramente, solo nel suo posto, al posto di una bestia della sua specie. Si annuncia con un messaggio e un alone dorato. Se la domi è tua; **se la sconfiggi sparisce per sempre**; se fuggi resta nel mare.
+  - **Coccodrillo albino leggendario** — Delta delle Mangrovie (3%).
+  - **Squalo martello preistorico** (tuo) — Barriera lontana, oltre 3 km (1%).
+  - **Tartaruga preistorica** (tua) — Mare aperto oltre 4 km: lunga 14 m, galleggia in superficie come un'isoletta, tranquilla (1%).
+  - **Madre delle madri**, la vecchia orca — Banchisa oltre 3 km (1%).
+  - **Orca preistorica albina**, la più rara e la più forte (livello 45) — Banchisa lontana, oltre 8 km (0,4%).
+- **Orca matriarca:** è la versione alfa dell'orca, si trova più spesso (4% delle orche).
+- **Bestiario:** nuova pagina **Leggende** con le sagome ??? finché non le incontri, poi dove vivono e se sono libere, tue o sconfitte per sempre.
+- Lo squalo bianco albino leggendario resta l'evoluzione dello squalo albino al livello 50; Sfregiato e Regina bianca restano i guardiani della storia.
+
 ## v0.11.0 — La barca (2 ottobre 2026)
 
 - **La barca di Aurelio:** alla fine del capitolo 1 Aurelio ti lascia la sua barca, ormeggiata poco oltre il molo di Portofosco (chi ha già finito il capitolo la trova subito).
