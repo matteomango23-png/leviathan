@@ -42,7 +42,7 @@ export const canRide = (b: TeamBeast): boolean => {
 /** A tap on a team slot: call that beast (to ride it, or to swim with you), or send it away if it is out. */
 function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
   const b = teamMembers(g.beasts.team)[slot];
-  if (!b || g.diver.dead) return;
+  if (!b || g.diver.dead || g.beasts.aboard) return;
   const m = g.beasts.mount;
   if (m && m.uid === b.uid && m.state !== 'leaving') {
     dismount(g, events);

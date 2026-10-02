@@ -5,7 +5,7 @@ import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/chapters';
 import { depthMetres } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/endless';
-import { LAYOUT, OPEN_SEA_X } from '../data/worldLayout';
+import { LAYOUT, OPEN_SEA_X, WORLD } from '../data/worldLayout';
 import { el } from './dom';
 import { messageFor } from './eventMessages';
 
@@ -73,7 +73,13 @@ export class Hud {
       d.x > OPEN_SEA_X
         ? ` · ${(kmFromCoast(d.x) - kmFromCoast(LAYOUT.shoreX)).toFixed(1).replace('.', ',')} km dalla costa`
         : '';
-    const info = `${Math.round(depthMetres(d.y))} m${far} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
+    // where your boat waits (when you are not on it)
+    const toBoat = (g.boat.x - d.x) / WORLD.unitsPerMetre;
+    const boat =
+      g.boat.owned && !g.boat.aboard && Math.abs(toBoat) > 15
+        ? ` · barca ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
+        : '';
+    const info = `${Math.round(depthMetres(d.y))} m${far}${boat} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;

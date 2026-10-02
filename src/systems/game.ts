@@ -42,6 +42,8 @@ import { zoneAt } from './world/zones';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
 import { rideO2Mult } from './abilities';
+import { board, boatWakePoint, canBoard, dive, newBoat, stepBoat, type BoatState } from './boat';
+import { dismount } from './beastState';
 
 export { toSave } from './save/convert';
 
@@ -59,6 +61,8 @@ export interface GameState extends Chapter2World {
   port: PortDef | null;
   /** The last harbour you came into: you wake up there when there is no sanctuary to return to (saved). */
   homePort: PortDef['id'];
+  /** Your boat (from the end of chapter 1; saved). */
+  boat: BoatState;
   /** Seconds before your big beast can eat the next fish (not saved). */
   timers: { feed: number; vent: number };
 }
@@ -110,6 +114,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     atPort: false,
     port: null,
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
+    boat: newBoat(s.boat),
     timers: { feed: 0, vent: 0 },
     chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
@@ -118,21 +123,24 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
 }
 
 export function respawnPoint(g: GameState): { x: number; y: number } {
+  if (g.boat.owned) return boatWakePoint(g.boat); // you wake up on your boat
   const i = g.sanctuaries.current;
   const s = i === null ? undefined : g.sanctuaries.list[i];
   return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
 }
 
 /** What the context button does right now. */
-export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri';
+export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri' | 'barca' | 'tuffati';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
+  if (g.boat.aboard) return atPort(d, g.map) ? 'porto' : 'tuffati';
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
   if (beast === 'sfonda') return beast;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
+  if (canBoard(g)) return 'barca';
   return beast;
 }
 
@@ -144,6 +152,10 @@ function doAction(g: GameState, events: GameEvent[]): void {
     const loot = w && openWreck(w, g.gear);
     if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
   } else if (act === 'porto') events.push({ type: 'portArrived' });
+  else if (act === 'barca') {
+    dismount(g, events); // your beast swims off, you climb aboard
+    board(g, events);
+  } else if (act === 'tuffati') dive(g, events);
   else beastAction(g, events);
 }
 
@@ -180,7 +192,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepSwarmCooldowns(g, dt);
 
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
-  if (!held) {
+  const aboard = !held && stepBoat(g, input, dt, events); // your own boat moves you
+  g.beasts.aboard = aboard;
+  if (!held && !aboard) {
     stepDiver(d, input, g.map, dt, g.rng, events, {
       respawnAt: respawnPoint(g),
       mountSpeed: mountSpeed(g),
@@ -193,11 +207,13 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
     });
   }
+  // after losing your senses you wake up on your boat
+  if (g.boat.owned && !g.boat.aboard && events.some((e) => e.type === 'respawned')) board(g, events);
   stepVents(d, dt, g.timers, events);
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
-  if (!held && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
+  if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
-  if (!held) fire(g, input, events);
+  if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
     hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, events);
   const fishMark = events.length; // fish caught from here on are experience (below)
@@ -268,9 +284,11 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
   g.gear.teeth -= teethLost;
   const i = g.sanctuaries.current;
-  // "al santuario della Baia" / "a Portofosco"
-  const place =
-    i !== null
+  if (g.boat.owned) board(g, events);
+  // "sulla tua barca" / "al santuario della Baia" / "a Portofosco"
+  const place = g.boat.owned
+    ? 'sulla tua barca'
+    : i !== null
       ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
       : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
   events.push({ type: 'blackout', teethLost, place });

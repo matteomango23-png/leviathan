@@ -57,7 +57,7 @@ function inArea(w: WildBeast, x: number, y: number, margin: number): boolean {
 export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): void {
   const d = g.diver;
   let present = g.beasts.wilds.filter((w) => !w.arena && isInWater(w)).length;
-  const hidden = !!g.beasts.decoy;
+  const hidden = !!g.beasts.decoy || g.beasts.aboard;
   const lure = g.beasts.lure;
   if (lure) {
     lure.t -= dt;

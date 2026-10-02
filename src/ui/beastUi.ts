@@ -9,7 +9,14 @@ import { setArt } from './art';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 
-const LABELS = { sfonda: 'Sfonda', scendi: 'Scendi', apri: 'Apri', porto: 'Porto' } as const;
+const LABELS = {
+  sfonda: 'Sfonda',
+  scendi: 'Scendi',
+  apri: 'Apri',
+  porto: 'Porto',
+  barca: 'Sali',
+  tuffati: 'Tuffati',
+} as const;
 
 function press(btn: HTMLElement, fn: () => void): void {
   btn.addEventListener('pointerdown', (e) => {
