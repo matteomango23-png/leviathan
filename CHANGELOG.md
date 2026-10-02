@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.9.10 — Il compagno sente il buio (2 ottobre 2026)
+
+- La bestia che ti segue (o che cavalchi) sente le bestie selvatiche nel buio prima che tu le veda e ti avvisa da che parte: «Zanna si agita: Squalo martello nel buio a destra». Nomina solo quelle che conosci già; le rare le sente come «qualcosa di raro».
+
 ## v0.9.9 — Nuoto in verticale e virata (2 ottobre 2026)
 
 - **Nuoto in verticale:** il sub e la bestia che cavalchi si inclinano davvero nella direzione in cui vanno: scendendo dritti in giù vanno a testa in giù (prima scivolavano orizzontali).

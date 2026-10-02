@@ -189,3 +189,37 @@ describe('your beast turning around', () => {
     expect(m.loop).toBe(0);
   });
 });
+
+describe('your beast feels wild ones in the dark', () => {
+  it('warns once about a beast coming, on its side, before you can see it', () => {
+    const g = game();
+    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 5);
+    stepGame(g, { ...emptyInput(), summon: 0 }, DT);
+    for (let t = 0; t < TEAM_RULES.arriveSeconds + 0.5; t += DT) {
+      Object.assign(g.diver, { x: bayX(900), y: 200, vx: 0, vy: 0 });
+      stepGame(g, emptyInput(), DT);
+      g.beasts.battle = null;
+    }
+    for (const w of g.beasts.wilds) {
+      w.motion = 'gone';
+      w.respawn = 999;
+    }
+    const w = g.beasts.wilds.find((x) => x.spawn.speciesId === 'tartaruga_marina')!;
+    spawnWild(
+      w,
+      { speciesId: 'tartaruga_marina', variant: 'comune' },
+      3,
+      bayX(900) + ROAM.senseRange - 40,
+      200,
+      -1,
+    );
+    const events = [] as ReturnType<typeof stepGame>;
+    for (let t = 0; t < 1; t += DT) {
+      Object.assign(g.diver, { x: bayX(900), y: 200, vx: 0, vy: 0 });
+      events.push(...stepGame(g, emptyInput(), DT));
+    }
+    const sensed = events.filter((e) => e.type === 'beastSensed');
+    expect(sensed).toHaveLength(1);
+    expect(sensed[0]).toMatchObject({ wildId: w.id, side: 1 });
+  });
+});
