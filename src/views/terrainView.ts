@@ -47,8 +47,9 @@ export class TerrainView {
     const T = this.map.tileSize;
     const ids = new Set<string>();
     for (const i of tiles) {
-      const x = (i % this.map.cols) * T;
-      const y = Math.floor(i / this.map.cols) * T;
+      const { tx, ty } = this.map.tileOf(i);
+      const x = tx * T;
+      const y = ty * T;
       for (const [dx, dy] of [
         [0, 0],
         [-T, 0],

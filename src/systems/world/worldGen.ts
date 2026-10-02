@@ -18,6 +18,8 @@ import { fbm, smoothstep } from '../math';
 import { LAIR } from '../../data/guardians';
 import { inLairCave, inLairShaft, inLairShell } from './lair';
 import { TileMap } from './tileMap';
+import { generateChunk } from './endless';
+import { ENDLESS } from '../../data/endless';
 
 function floorHeight(f: FloorDef, x: number, n: number): number {
   let y = f.base ?? 0;
@@ -74,9 +76,8 @@ export function coastX(y: number): number {
 /** True where the sea (or air) is open, false where there is rock or land. */
 export function isOpen(x: number, y: number): boolean {
   if (y < WORLD.surfaceY) return y < WORLD.surfaceY - landHeight(x);
-  const worldW = WORLD.cols * WORLD.tileSize;
-  const worldH = WORLD.rows * WORLD.tileSize;
-  if (x < WORLD.edgeMargin || x > worldW - WORLD.edgeMargin || y > worldH - WORLD.edgeMargin) return false;
+  // no wall on the east side: the endless sea goes on from there (systems/world/endless.ts)
+  if (x < WORLD.edgeMargin || y > WORLD.handMadeBottom) return false;
   // the Guardian's lair is carved exactly, whatever the noise does around it
   if (inLairCave(x, y) || inLairShaft(x, y)) return true;
   if (inLairShell(x, y)) return false;
@@ -105,7 +106,11 @@ function isIce(x: number, y: number): boolean {
 /** Builds the whole tile map. Deterministic: same world every time. */
 export function generateWorld(): TileMap {
   const T = WORLD.tileSize;
-  const map = new TileMap(WORLD.cols, WORLD.rows, T, WORLD.surfaceY);
+  const map = new TileMap(WORLD.cols, WORLD.rows, T, WORLD.surfaceY, {
+    make: generateChunk,
+    chunkCols: ENDLESS.chunkCols,
+    maxX: ENDLESS.maxX,
+  });
   for (let ty = 0; ty < map.rows; ty++) {
     for (let tx = 0; tx < map.cols; tx++) {
       const x = tx * T + T / 2;

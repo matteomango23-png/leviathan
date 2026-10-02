@@ -6,7 +6,8 @@
 export const WORLD = {
   tileSize: 8,
   cols: 1207, // tappa 10: the coast (beach, wider bay, Isola delle Mangrovie) widened the world to 9656 units
-  rows: 200,
+  rows: 560, // tappa 11: deep enough for the trenches of the endless sea (was 200)
+  handMadeBottom: 1580, // the hand-made coast is solid rock below this (its old bottom)
   surfaceY: 24, // water surface (world y); above it is air
   unitsPerMetre: 6, // diver 12 u = 2 m
   noiseScale: 0.011, // generator noise frequency

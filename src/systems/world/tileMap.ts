@@ -13,31 +13,78 @@ export interface Body {
 
 const RING = Array.from({ length: 8 }, (_, i) => [Math.cos((i * Math.PI) / 4), Math.sin((i * Math.PI) / 4)]);
 
+/** Makes the tiles of columns tx0 … tx0 + cols - 1 (all rows) past the hand-made world: the endless sea. */
+export type ChunkMaker = (tx0: number, cols: number, rows: number, tileSize: number) => Uint8Array;
+
 export class TileMap {
+  /** The hand-made world (columns 0 … cols - 1). */
   readonly data: Uint8Array;
   readonly width: number;
   readonly height: number;
+  /** Chunks of the endless sea already made, by chunk index (column cols + i × chunkCols). */
+  private readonly chunks = new Map<number, Uint8Array>();
 
   constructor(
     readonly cols: number,
     readonly rows: number,
     readonly tileSize: number,
     readonly surfaceY: number,
+    private readonly endless: { make: ChunkMaker; chunkCols: number; maxX: number } | null = null,
   ) {
     this.data = new Uint8Array(cols * rows);
-    this.width = cols * tileSize;
+    this.width = endless ? endless.maxX : cols * tileSize;
     this.height = rows * tileSize;
+  }
+
+  /** The endless chunk holding column tx (made the first time it is asked for). */
+  private chunk(tx: number): Uint8Array | null {
+    const e = this.endless;
+    if (!e) return null;
+    const i = Math.floor((tx - this.cols) / e.chunkCols);
+    let c = this.chunks.get(i);
+    if (!c) {
+      c = e.make(this.cols + i * e.chunkCols, e.chunkCols, this.rows, this.tileSize);
+      this.chunks.set(i, c);
+    }
+    return c;
   }
 
   get(tx: number, ty: number): TileValue {
     if (ty < 0) return TILE.water; // open sky above the world
-    if (tx < 0 || tx >= this.cols || ty >= this.rows) return TILE.rock;
+    if (tx < 0 || ty >= this.rows) return TILE.rock;
+    if (tx >= this.cols) {
+      const c = this.chunk(tx);
+      if (!c) return TILE.rock;
+      const cols = this.endless!.chunkCols;
+      return c[ty * cols + ((tx - this.cols) % cols)] as TileValue;
+    }
     return this.data[ty * this.cols + tx] as TileValue;
   }
 
   set(tx: number, ty: number, v: TileValue): void {
-    if (tx < 0 || ty < 0 || tx >= this.cols || ty >= this.rows) return;
+    if (tx < 0 || ty < 0 || ty >= this.rows) return;
+    if (tx >= this.cols) {
+      const c = this.chunk(tx);
+      const cols = this.endless?.chunkCols ?? 1;
+      if (c) c[ty * cols + ((tx - this.cols) % cols)] = v;
+      return;
+    }
     this.data[ty * this.cols + tx] = v;
+  }
+
+  /**
+   * A number for a tile, for saving broken tiles: the hand-made world keeps its old numbering (ty × cols + tx),
+   * the endless sea counts on after it, column by column.
+   */
+  tileIndex(tx: number, ty: number): number {
+    return tx < this.cols ? ty * this.cols + tx : this.cols * this.rows + (tx - this.cols) * this.rows + ty;
+  }
+
+  tileOf(i: number): { tx: number; ty: number } {
+    const n = this.cols * this.rows;
+    if (i < n) return { tx: i % this.cols, ty: Math.floor(i / this.cols) };
+    const j = i - n;
+    return { tx: this.cols + Math.floor(j / this.rows), ty: j % this.rows };
   }
 
   /** 1 for solid tiles, 0 for water. */

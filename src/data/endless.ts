@@ -1,0 +1,127 @@
+// Leviatano — the endless open sea east of the Mare di Ghiaccio (tappa 11, owner's decisions of 1-2 ottobre
+// 2026). Past the hand-made coast the sea goes on forever, generated piece by piece from a fixed seed (the same
+// sea every time): stretches ("tratti") of different kinds follow one another, the farther the deeper, the rarer
+// and the more dangerous. Values marked "tuning" are a first pass: change them here, never in systems.
+import { WORLD } from './worldLayout';
+
+export type BiomeId = 'aperto' | 'barriera' | 'foresta' | 'ghiaccio' | 'fossa';
+
+export interface BiomeDef {
+  id: BiomeId;
+  /** The zone's name on screen and on the map. */
+  name: string;
+  /** Sea floor depth (world y) in the middle of a stretch, before it gets deeper with distance. */
+  floorY: number;
+  waves: { amp: number; freq: number }[];
+  noise: number;
+  /** Rock mounds standing on the floor: how many per stretch, their size (units). */
+  mounds: { count: number; rx: [number, number]; ry: [number, number] };
+  /** Kelp on rock tops: chance per top tile and strand heights. */
+  kelp: { chance: number; minH: number; maxH: number };
+  /** Coral colours on rock tops (empty: the usual dim ones). */
+  corals: { chance: number; colors: string[] };
+  /** An ice ceiling under the surface, with breathing holes, and ice pillars hanging from it. */
+  ice?: { ceilingY: number; holeEvery: number; holeWidth: number; pillars: number };
+  /** A deep trench in the middle of the stretch: its floor (world y) and width (share of the stretch). */
+  trench?: { floorY: number; width: number };
+  /** How likely this kind of stretch is near the coast, and how much more likely each km farther out. */
+  weight: number;
+  weightPerKm: number;
+  /** Wild beasts: species and how often each comes (only species with side pictures, see tests). */
+  beasts: Record<string, number>;
+  /** Their level near the coast (distance adds more, ENDLESS.levelsPerKm). */
+  baseLevel: number;
+}
+
+export const ENDLESS = {
+  seed: 7177, // tuning: change it to get another sea
+  startX: WORLD.cols * WORLD.tileSize, // the hand-made world ends here (east of the Mare di Ghiaccio)
+  chunkCols: 64, // tiles generated together
+  maxX: 4_000_000, // units: ~670 km, the camera's right bound ("endless" for a player)
+  stretch: 1800, // units (300 m): the length of a stretch of one kind
+  blend: 320, // units: the floor of one stretch blends into the next over this
+  deepenPerKm: 60, // units of floor depth added per km from the coast (tuning)
+  maxFloorY: 4300, // the floor never goes deeper (WORLD.rows bounds the map)
+  levelsPerKm: 2, // wild levels added per km of distance from the coast (owner: hybrid by zone and distance)
+  firstFloorY: 390, // the hand-made floor at the start (worldLayout, east zone): the first stretch blends from it
+  wildSlots: 5, // wild beasts that can be around you out there at once
+  schools: 6, // sardine schools that follow you out there (moved ahead of you when left far behind)
+  schoolFar: 900, // units: a school this far from you is moved near you again
+  /** Vents on the sea floor breathing out columns of air bubbles: swim into one to refill your air. */
+  vents: { perStretch: 2, tries: 8, height: 240, radius: 22, refill: 25, messageBelow: 0.6 },
+};
+
+export const BIOMES: BiomeDef[] = [
+  {
+    id: 'aperto',
+    name: 'Mare aperto',
+    floorY: 560,
+    waves: [{ amp: 60, freq: 0.0021 }, { amp: 14, freq: 0.013 }],
+    noise: 50,
+    mounds: { count: 2, rx: [30, 70], ry: [30, 90] },
+    kelp: { chance: 0.12, minH: 10, maxH: 40 },
+    corals: { chance: 0.1, colors: [] },
+    weight: 4,
+    weightPerKm: 0,
+    beasts: { barracuda: 3, tartaruga_marina: 2, manta: 1.2, squalo_martello: 1, squalo_tigre: 1, squalo_bianco: 0.5, megattera: 0.4 },
+    baseLevel: 10,
+  },
+  {
+    id: 'barriera',
+    name: 'Barriera lontana',
+    floorY: 330,
+    waves: [{ amp: 20, freq: 0.006 }],
+    noise: 60,
+    mounds: { count: 9, rx: [25, 60], ry: [25, 70] },
+    kelp: { chance: 0.15, minH: 10, maxH: 30 },
+    corals: { chance: 0.6, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
+    weight: 2,
+    weightPerKm: 0,
+    beasts: { pesce_palla: 3, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1 },
+    baseLevel: 8,
+  },
+  {
+    id: 'foresta',
+    name: 'Foresta di alghe',
+    floorY: 440,
+    waves: [{ amp: 30, freq: 0.004 }],
+    noise: 50,
+    mounds: { count: 5, rx: [30, 60], ry: [40, 90] },
+    kelp: { chance: 0.85, minH: 40, maxH: 130 },
+    corals: { chance: 0.05, colors: [] },
+    weight: 2,
+    weightPerKm: 0,
+    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, torpedine: 1 },
+    baseLevel: 12,
+  },
+  {
+    id: 'ghiaccio',
+    name: 'Banchisa',
+    floorY: 500,
+    waves: [{ amp: 40, freq: 0.003 }],
+    noise: 40,
+    mounds: { count: 3, rx: [30, 50], ry: [40, 80] },
+    kelp: { chance: 0, minH: 0, maxH: 0 },
+    corals: { chance: 0, colors: [] },
+    ice: { ceilingY: 46, holeEvery: 420, holeWidth: 44, pillars: 6 },
+    weight: 1,
+    weightPerKm: 0.25,
+    beasts: { orca: 2, megattera: 1, squalo_bianco: 0.5 },
+    baseLevel: 18,
+  },
+  {
+    id: 'fossa',
+    name: 'Fossa abissale',
+    floorY: 520,
+    waves: [{ amp: 30, freq: 0.004 }],
+    noise: 60,
+    mounds: { count: 2, rx: [30, 60], ry: [40, 80] },
+    kelp: { chance: 0, minH: 0, maxH: 0 },
+    corals: { chance: 0.08, colors: ['#3b5f66', '#5a4a6e', '#6e7f7a'] },
+    trench: { floorY: 2600, width: 0.45 },
+    weight: 0.6,
+    weightPerKm: 0.35,
+    beasts: { capodoglio: 1.2, squalo_bianco: 1, orca: 1, murena: 1 },
+    baseLevel: 20,
+  },
+];

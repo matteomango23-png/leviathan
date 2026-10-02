@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { ENDLESS } from '../src/data/endless';
 import { bay, BONE_WALL, COAST, east, START, TILE, WORLD } from '../src/data/worldLayout';
 import { PORT } from '../src/data/economy';
 import { DIVER } from '../src/data/diver';
@@ -15,7 +16,7 @@ describe('world generation', () => {
   it('has the prototype size', () => {
     expect(map.cols).toBe(WORLD.cols);
     expect(map.rows).toBe(WORLD.rows);
-    expect(map.width).toBe(WORLD.cols * WORLD.tileSize);
+    expect(map.width).toBe(ENDLESS.maxX); // the endless sea goes on to the east (tappa 11)
   });
 
   it('is the same every time', () => {
@@ -25,8 +26,10 @@ describe('world generation', () => {
 
   it('has a mix of water and rock', () => {
     let water = 0;
-    for (const v of map.data) if (v === TILE.water) water++;
-    const share = water / map.data.length;
+    const top = WORLD.handMadeBottom / WORLD.tileSize; // below it the hand-made coast is solid rock
+    const n = map.cols * top;
+    for (let i = 0; i < n; i++) if (map.data[i] === TILE.water) water++;
+    const share = water / n;
     expect(share).toBeGreaterThan(0.2);
     expect(share).toBeLessThan(0.8);
   });
@@ -36,9 +39,9 @@ describe('world generation', () => {
     expect(START.y).toBeGreaterThan(WORLD.surfaceY);
   });
 
-  it('is surrounded by rock', () => {
+  it('is closed by rock to the west and at the bottom, open to the east', () => {
     expect(isOpen(5, 300)).toBe(false);
-    expect(map.solidAt(map.width + 10, 300)).toBe(true);
+    expect(map.solidAt(ENDLESS.startX + 200, 200)).toBe(false);
     expect(map.solidAt(300, map.height + 10)).toBe(true);
   });
 

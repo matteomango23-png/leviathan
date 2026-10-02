@@ -19,7 +19,7 @@ export function breakBones(map: TileMap, x: number, y: number, radius: number): 
       if (map.get(tx, ty) !== TILE.bone) continue;
       if (Math.hypot(tx * T + T / 2 - x, ty * T + T / 2 - y) > radius) continue;
       map.set(tx, ty, TILE.water);
-      out.push(ty * map.cols + tx);
+      out.push(map.tileIndex(tx, ty));
     }
   }
   return out;
