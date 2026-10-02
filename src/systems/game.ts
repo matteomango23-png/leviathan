@@ -44,6 +44,7 @@ import { stepEndlessSchools, stepVents } from './endlessLife';
 import { rideO2Mult } from './abilities';
 import { board, boatWakePoint, canBoard, dive, newBoat, stepBoat, type BoatState } from './boat';
 import { dismount } from './beastState';
+import { createTemples, hitLever, stepTemples, type TempleState } from './temple';
 
 export { toSave } from './save/convert';
 
@@ -63,6 +64,8 @@ export interface GameState extends Chapter2World {
   homePort: PortDef['id'];
   /** Your boat (from the end of chapter 1; saved). */
   boat: BoatState;
+  /** The puzzles of the sunken temples in progress (not saved). */
+  temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
   timers: { feed: number; vent: number };
 }
@@ -70,7 +73,8 @@ export interface GameState extends Chapter2World {
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
   for (const i of tiles) {
     const { tx, ty } = map.tileOf(i);
-    if (map.get(tx, ty) === TILE.bone) map.set(tx, ty, TILE.water);
+    const t = map.get(tx, ty);
+    if (t === TILE.bone || t === TILE.gate) map.set(tx, ty, TILE.water); // bones broken, temple gates opened
   }
 }
 
@@ -116,6 +120,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
     boat: newBoat(s.boat),
     timers: { feed: 0, vent: 0 },
+    temples: createTemples(),
     chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
@@ -219,7 +224,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
   if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
-    hitAnchor(g, x, y, dmg, events) || weaponHitsBeast(g, x, y, events);
+    hitAnchor(g, x, y, dmg, events) || hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events);
   const fishMark = events.length; // fish caught from here on are experience (below)
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
     hitBeast(x, y, BASE_HARPOON.damage),
@@ -262,6 +267,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepProgress(g, events);
   stepStory(g, dt, events);
   stepChapter2(g, events);
+  stepTemples(g, events);
+  for (const e of events) if (e.type === 'gateOpened') g.brokenTiles.push(...e.tiles);
   const zone = zoneAt(d.x, d.y);
   if (zone && zone !== g.zone) {
     g.zone = zone;

@@ -39,7 +39,7 @@ export const ISLAND_X = (LAYOUT.island.x0 + LAYOUT.island.x1) / 2;
 export const OPEN_SEA_X = east(2460);
 
 /** Tile values stored in the map. */
-export const TILE = { water: 0, rock: 1, bone: 2, ice: 3 } as const;
+export const TILE = { water: 0, rock: 1, bone: 2, ice: 3, temple: 4, gate: 5 } as const; // temple, gate: tappa 14
 export type TileValue = (typeof TILE)[keyof typeof TILE];
 
 /** Ellipse: (dx/rx)² + (dy/ry)² < 1 + noise × noiseMult. */

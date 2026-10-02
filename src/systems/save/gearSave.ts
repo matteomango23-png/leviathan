@@ -3,6 +3,7 @@ import { MISSIONS } from '../../data/economy';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES, SWARMS, WEAPONS, BACKPACK_SLOTS } from '../../data/world';
 import { WRECKS } from '../../data/economy';
 import { UNIQUE_VARIANTS } from '../../data/species';
+import { RELICS } from '../../data/temples';
 
 export interface SavedGear {
   teeth: number;
@@ -21,6 +22,8 @@ export interface SavedGear {
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
   guardians: string[];
+  /** Relics found in the sunken temples (tappa 14; missing in older saves). */
+  relics: string[];
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> =>
@@ -89,6 +92,10 @@ export function validateGear(raw: unknown): SavedGear {
     guardians: ids(
       raw.guardians,
       UNIQUE_VARIANTS.map((u) => u.id),
+    ),
+    relics: ids(
+      raw.relics,
+      RELICS.map((r) => r.id),
     ),
   };
 }

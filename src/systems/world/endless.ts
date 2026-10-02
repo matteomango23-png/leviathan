@@ -2,76 +2,17 @@
 // of columns at a time. The sea is cut into stretches of one kind each (BIOMES), chosen from a fixed seed: the
 // same sea every time, nothing to save. The floor blends from one stretch to the next and gets deeper with
 // distance; mounds, kelp, corals, ice and trenches depend on the kind of stretch.
-import { BIOMES, ENDLESS, type BiomeDef } from '../../data/endless';
+import { ENDLESS, type BiomeDef } from '../../data/endless';
 import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
-import { clamp, fbm, hash2, smoothstep } from '../math';
+import { fbm, hash2 } from '../math';
 import { icebergsOfStretch, inIceberg } from './icebergs';
+import { biomeOf, naturalFloor, stretchAt } from './stretches';
+import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
 
-/** Index of the stretch at x (0 = the first one past the hand-made world; -1 before it). */
-export const stretchAt = (x: number): number => Math.floor((x - ENDLESS.startX) / ENDLESS.stretch);
+export { biomeAt, biomeOf, kmFromCoast, stretchAt } from './stretches';
 
-/** Distance from the coast in km at x (the beach is at the start of the world). */
-export const kmFromCoast = (x: number): number => Math.max(0, x / WORLD.unitsPerMetre / 1000);
-
-const cache = new Map<number, BiomeDef>();
-
-/** The kind of a stretch: the first one is always open sea (it blends out of the Mare di Ghiaccio). */
-export function biomeOf(k: number): BiomeDef {
-  if (k <= 0) return BIOMES[0]!;
-  const hit = cache.get(k);
-  if (hit) return hit;
-  const km = kmFromCoast(ENDLESS.startX + (k + 0.5) * ENDLESS.stretch);
-  const weights = BIOMES.map((b) => Math.max(0, b.weight + b.weightPerKm * km));
-  const total = weights.reduce((a, b) => a + b, 0);
-  let r = hash2(k * 7.3 + ENDLESS.seed, ENDLESS.seed * 0.37) * total;
-  let pick = BIOMES[0]!;
-  for (let i = 0; i < BIOMES.length; i++) {
-    r -= weights[i]!;
-    if (r <= 0) {
-      pick = BIOMES[i]!;
-      break;
-    }
-  }
-  // never the same kind three times in a row
-  if (k > 1 && biomeOf(k - 1).id === pick.id && biomeOf(k - 2).id === pick.id)
-    pick = BIOMES[(BIOMES.indexOf(pick) + 1) % BIOMES.length]!;
-  cache.set(k, pick);
-  return pick;
-}
-
-/** The kind of sea at a world x (null on the hand-made coast). */
-export const biomeAt = (x: number): BiomeDef | null => (x < ENDLESS.startX ? null : biomeOf(stretchAt(x)));
-
-/** The floor of one stretch at x, before blending. */
-function stretchFloor(k: number, x: number): number {
-  if (k < 0) return ENDLESS.firstFloorY;
-  const b = biomeOf(k);
-  let y = b.floorY + ENDLESS.deepenPerKm * kmFromCoast(x);
-  for (const w of b.waves) y += Math.sin(x * w.freq + k * 1.7) * w.amp;
-  const t = b.trench;
-  if (t) {
-    // a trench in the middle: steep walls down to its floor
-    const u = (x - (ENDLESS.startX + k * ENDLESS.stretch)) / ENDLESS.stretch;
-    const edge = (1 - t.width) / 2;
-    const into = Math.min(u - edge, 1 - edge - u) / 0.06;
-    if (into > 0) y += (t.floorY - y) * smoothstep(clamp(into, 0, 1));
-  }
-  return Math.min(ENDLESS.maxFloorY, y);
-}
-
-/** The sea floor (world y) at x: each stretch blends into the next over ENDLESS.blend. */
-export function endlessFloor(x: number): number {
-  const k = stretchAt(x);
-  const u = x - (ENDLESS.startX + k * ENDLESS.stretch);
-  const h = ENDLESS.blend / 2;
-  // the first stretch starts exactly at the hand-made floor (no step where the coast ends)
-  if (k === 0 && u < ENDLESS.blend) return mix(ENDLESS.firstFloorY, stretchFloor(0, x), u / ENDLESS.blend);
-  if (u < h) return mix(stretchFloor(k - 1, x), stretchFloor(k, x), 0.5 + u / ENDLESS.blend);
-  if (u > ENDLESS.stretch - h)
-    return mix(stretchFloor(k, x), stretchFloor(k + 1, x), (u - (ENDLESS.stretch - h)) / ENDLESS.blend);
-  return stretchFloor(k, x);
-}
-const mix = (a: number, b: number, t: number): number => a + (b - a) * smoothstep(clamp(t, 0, 1));
+/** The sea floor (world y) at x: the natural one, bent to meet a sunken temple near one. */
+export const endlessFloor = (x: number): number => floorNearTemple(x, naturalFloor(x));
 
 interface Mound {
   x: number;
@@ -93,7 +34,7 @@ export function moundsOf(k: number): Mound[] {
     const x = x0 + ENDLESS.blend / 2 + h(1) * (ENDLESS.stretch - ENDLESS.blend);
     const rx = b.mounds.rx[0] + h(2) * (b.mounds.rx[1] - b.mounds.rx[0]);
     const ry = b.mounds.ry[0] + h(3) * (b.mounds.ry[1] - b.mounds.ry[0]);
-    out.push({ x, y: endlessFloor(x) - ry * 0.3, rx, ry });
+    if (!templeAtX(x, rx + 40)) out.push({ x, y: endlessFloor(x) - ry * 0.3, rx, ry }); // not on a temple
   }
   moundCache.set(k, out);
   return out;
@@ -123,6 +64,8 @@ function isIce(b: BiomeDef, k: number, x: number, y: number): boolean {
 /** The tile at a point of the endless sea. */
 export function endlessTile(x: number, y: number): TileValue {
   if (y < WORLD.surfaceY) return TILE.water;
+  const temple = templeTileAt(x, y);
+  if (temple !== null) return temple;
   const k = stretchAt(x);
   const b = biomeOf(k);
   if (isIce(b, k, x, y)) return TILE.ice;
@@ -144,7 +87,7 @@ export function generateChunk(tx0: number, cols: number, rows: number, T: number
   for (let c = 0; c < cols; c++) {
     const x = (tx0 + c) * T + T / 2;
     const k = stretchAt(x);
-    const deepest = endlessFloor(x) + biomeOf(k).noise * WORLD.noiseAmp + T;
+    const deepest = Math.max(endlessFloor(x) + biomeOf(k).noise * WORLD.noiseAmp + T, templeBottomAt(x) ?? 0);
     for (let ty = 0; ty < rows; ty++) {
       const y = ty * T + T / 2;
       out[ty * cols + c] = y > deepest ? TILE.rock : endlessTile(x, y);
@@ -152,6 +95,8 @@ export function generateChunk(tx0: number, cols: number, rows: number, T: number
   }
   return out;
 }
+
+const isGround = (t: TileValue): boolean => t === TILE.rock || t === TILE.temple || t === TILE.gate;
 
 /** The air vents of a stretch: on its floor (or a mound), where it is not too deep to reach. */
 const ventCache = new Map<number, { x: number; y: number }[]>();
@@ -167,7 +112,7 @@ export function ventsOf(k: number): { x: number; y: number }[] {
   // the first rock going down from under the ice (the floor, or a mound standing on it)
   const floorAt = (x: number): number => {
     let y = 120;
-    while (y < ENDLESS.maxFloorY + 200 && endlessTile(x, y) !== TILE.rock) y += 4;
+    while (y < ENDLESS.maxFloorY + 200 && !isGround(endlessTile(x, y))) y += 4;
     return y - 4;
   };
   for (let i = 0; i < V.perStretch; i++) {
@@ -187,6 +132,8 @@ export function ventsOf(k: number): { x: number; y: number }[] {
 /** The vent whose bubble column you are in, if any. */
 export function ventAt(x: number, y: number): { x: number; y: number } | null {
   if (x < ENDLESS.startX) return null;
+  const inTemple = templeVentAt(x, y);
+  if (inTemple) return inTemple;
   const V = ENDLESS.vents;
   const k = stretchAt(x);
   for (const kk of [k - 1, k, k + 1])

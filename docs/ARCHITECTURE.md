@@ -24,6 +24,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | File | Cosa fa |
 |---|---|
 | `world/worldGen.ts` | Genera la mappa a tile (1207×560, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
+| `world/stretches.ts` | I tratti del mare infinito: di che tipo è ciascuno e il fondale naturale. |
+| `world/templeSite.ts` | Dove stanno i templi sommersi e di cosa sono fatti (pianta in `data/temples.ts`), il fondale che li incontra, gli sfiatatoi interni. |
+| `temple.ts` | I rompicapo dei templi: leva, due leve, rune nell'ordine del mosaico, reliquia; le porte aperte si salvano tra i tile rotti. |
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
 | `world/icebergs.ts` | Gli iceberg: dove galleggiano e quali punti sono ghiaccio solido (dalla maschera del disegno). |
 | `beasts/legends.ts` | Le leggende: quali sono, dove vivono, quando una compare al posto di una bestia della sua specie. |

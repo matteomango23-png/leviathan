@@ -38,7 +38,37 @@
 
 **v0.12.1:** scelta del compagno (card alte uguali, pulsante in fondo, immagine inquadrata in alto), bestiario (non viste tutte uguali), nave dell'apertura (`stepShip`: va avanti durante dialogo e scelta, poi si allontana veloce e sparisce lontano dal sub). 335 test.
 
-**Prossima sessione:** templi con percorso e rompicapo, poi capitolo 3 (la Barriera Rossa, la Vedova Nera). Proporre il piano prima.
+**Tappa 14 (v0.13.0), il primo tempio sommerso:**
+
+- `data/temples.ts`: pianta a caratteri di 96×20 celle da 16 unità, ordine delle rune, finestra delle due leve, reliquie (`RELICS`) e testi.
+- `systems/world/stretches.ts`: tipi dei tratti e fondale naturale, staccati da `endless.ts` per evitare un giro di import.
+- `systems/world/templeSite.ts`:
+  - dove sta: il centro del primo tratto "aperto" oltre 3 km, con `rise` di 9 celle sopra il fondale;
+  - il fondale intorno si piega per incontrarlo;
+  - i tile della pianta e gli sfiatatoi interni.
+- Nuovi tile `TILE.temple` e `TILE.gate`: il pittore disegna blocchi sfalsati e porte a lastre.
+- `systems/temple.ts`: leva, due leve, rune, mosaico, catene e reliquia. Le porte aperte si salvano tra i tile rotti con l'evento `gateOpened`.
+- `views/templeView.ts`: disegna leve, rune, mosaico, catene e reliquia.
+- Reliquie in `gear.relics` (campo nuovo: i vecchi salvataggi partono vuoti); riducono il consumo d'aria.
+- Scelte del proprietario: "vedi tu" per i rompicapo; premio reliquia o leggenda.
+- 343 test. Visto nel browser: tetto e catene dall'esterno, nome della zona all'ingresso, leva, pareti scolpite.
+
+**Da provare (v0.13.0):**
+
+1. Con la barca vai a est fino a circa 3,7 km nel Mare aperto (guarda l'HUD).
+2. Cerca un edificio di blocchi sul fondale ed entra dall'apertura nel tetto.
+3. Colpisci la leva, poi le due leve una dopo l'altra.
+4. Guarda il mosaico e tocca le rune in ordine.
+5. Segui il corridoio fino alla conchiglia d'oro.
+6. Esci e controlla che l'aria cali più lentamente.
+7. Chiudi e riapri il gioco: le porte devono restare aperte.
+
+**Da sapere:**
+
+- Il tempio è disegnato con forme semplici (blocchi, leve, rune). I testi per Gemini dei pezzi dipinti sono in `docs/PROMPT-MONDO.md` (sezione 5).
+- La sala più bassa è a circa 145 m: basta la muta leggera, ma serve aria per arrivarci (barca o muta da traversata).
+
+**Prossima sessione:** capitolo 3: la Barriera Rossa, il Re Corallo nell'anfiteatro di corallo, la Vedova Nera che fugge verso la Foresta Sommersa. Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

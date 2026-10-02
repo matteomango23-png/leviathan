@@ -52,6 +52,7 @@ function saveGear(g: GearState): SavedGear {
     mythicStock: g.mythicStock,
     deepestM: Math.floor(g.deepestM),
     guardians: [...g.guardians],
+    relics: [...g.relics],
   };
 }
 

@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.13.0 — Il tempio sommerso (2 ottobre 2026)
+
+- **Il primo tempio:** nel Mare aperto, a circa 3,7 km dalla costa, c'è un grande edificio di pietra scolpita mezzo sepolto nel fondale. Si entra da un'apertura nel tetto, e quando entri compare il nome "Tempio sommerso".
+- **Quattro sale, un rompicapo ciascuna:**
+  1. Una **leva** sulla parete: colpiscila con l'arpione (o un'altra arma) e la prima porta di pietra scivola via.
+  2. **Due leve** lontane: colpiscile una subito dopo l'altra (entro 6 secondi).
+  3. **Quattro rune** negli angoli: il **mosaico** al centro mostra l'ordine. Nuota fino a ciascuna nell'ordine giusto; se sbagli si spengono tutte.
+  4. Un **corridoio lungo** a serpentina, con colonne di bolle per respirare.
+- **La reliquia:** in fondo c'è il **Respiro degli Antichi**, una conchiglia d'oro. Da quel momento l'aria dura circa il 50% in più, per sempre.
+- **La storia:** all'ingresso ci sono catene spezzate e argani: la Compagnia dell'Olio Nero è già stata qui. Cosa cerca la Vedova Nera nei templi?
+- Le porte aperte e la reliquia restano nel salvataggio; un rompicapo lasciato a metà riparte da capo.
+
 ## v0.12.1 — Ritocchi dopo la prova (2 ottobre 2026)
 
 - **Scelta del compagno:** le tre card hanno la stessa altezza e il pulsante "Scegli" sta sempre dentro, alla stessa altezza (quello di Zanna usciva); l'immagine di Scintilla è inquadrata più in alto, la testa non è più tagliata.
