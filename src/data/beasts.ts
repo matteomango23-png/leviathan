@@ -50,6 +50,7 @@ const BAY: [number, number, number, number] = [LAYOUT.bay.x0, 60, bay(1900), 380
 const BAY_HIGH: [number, number, number, number] = [LAYOUT.shoreX + 200, 40, bay(1800), 320]; // also over the beach
 const REEF: [number, number, number, number] = [east(2480), 40, east(4000), 420];
 const FOREST: [number, number, number, number] = [east(4040), 40, east(5200), 520];
+const ICY: [number, number, number, number] = [east(5240), 60, ENDLESS.startX - 40, 420];
 export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'barracuda', area: [LAYOUT.shoreX + 300, 50, bay(1900), 340], respawnSeconds: [12, 30] },
   { speciesId: 'barracuda', area: BAY, respawnSeconds: [15, 35] },
@@ -60,8 +61,17 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120], level: [11, 13] }, // visitors from the reef
   { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150], level: [11, 13] },
   { speciesId: 'squalo_bianco', area: BAY, respawnSeconds: [120, 220] }, // rarer
+  { speciesId: 'tonno', area: BAY_HIGH, respawnSeconds: [20, 45] }, // a school of bluefin tuna
+  { speciesId: 'delfino', area: BAY, respawnSeconds: [40, 80] },
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
+  { speciesId: 'coccodrillo_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [50, 90] },
+  // the Mare di Ghiaccio (hand-made, before the endless sea)
+  { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
+  { speciesId: 'beluga', area: ICY, respawnSeconds: [35, 70] },
+  { speciesId: 'tricheco', area: ICY, respawnSeconds: [35, 70] },
+  { speciesId: 'elefante_marino', area: ICY, respawnSeconds: [45, 90] },
+  { speciesId: 'narvalo', area: ICY, respawnSeconds: [60, 120] },
   // the open sea east: the reef and the kelp forest
   { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [15, 35] }, // its bite picture is the puffed-up one
   { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [20, 40] },
@@ -116,6 +126,19 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   orca: { temper: 'aggressive', speedMult: 1.1, school: 2 }, // a small pod
   megattera: { temper: 'calm', speedMult: 0.7 },
   capodoglio: { temper: 'calm', speedMult: 0.6 },
+  tonno: { temper: 'shy', speedMult: 1.2, school: 4 },
+  delfino: { temper: 'calm', speedMult: 1.2, school: 2 },
+  pesce_luna: { temper: 'calm', speedMult: 0.4 },
+  scorfano: { temper: 'calm', speedMult: 0.3 }, // waits among the rocks
+  pesce_napoleone: { temper: 'calm', speedMult: 0.6 },
+  pesce_spada: { temper: 'aggressive', speedMult: 1.2 },
+  squalo_volpe: { temper: 'aggressive' },
+  foca_leopardo: { temper: 'aggressive', speedMult: 1.05 },
+  beluga: { temper: 'calm', speedMult: 0.8, school: 1 },
+  narvalo: { temper: 'shy', speedMult: 0.9 },
+  tricheco: { temper: 'calm', speedMult: 0.6 },
+  elefante_marino: { temper: 'calm', speedMult: 0.7 },
+  coccodrillo_nilo: { temper: 'aggressive', speedMult: 0.8, surface: true },
 };
 
 /** The beast you ride, or that follows you, eats the small fish it meets (food chain): into your bag. */

@@ -1,18 +1,12 @@
 # Prompt delle bestie che mancano (tappa 11)
 
+**Già fatte (2 ottobre):** foca leopardo, beluga, narvalo, coccodrillo del Nilo, più 9 bestie nuove (tonno, delfino, pesce luna, scorfano, pesce napoleone, pesce spada, squalo volpe, tricheco, elefante marino).
+
 Queste bestie esistono nei dati del gioco ma non hanno ancora immagini: finché manca il **profilo** non possono comparire nel mare (sarebbero invisibili). Salva le immagini dove vuoi: le riconosco e le sistemo io.
 
 **Come lavorare in Gemini:** una chat per bestia. Nella stessa chat: prima la card, poi le 4 viste (A profilo, B profilo a bocca aperta, C davanti, D da dietro) con i **prompt comuni** di `docs/PROMPT-INIZIALI.md` (sezione "Prompt comuni"). Al posto di `[CREATURE]` incolla la descrizione qui sotto; per `[ACCENT]` va bene `cold blue-green bioluminescent highlights`.
 
 **Priorità:** prima il **profilo (A e B)**, che serve per vederle nuotare; poi davanti e dietro (battaglia); la card per ultima. Vai nell'ordine della lista: le prime servono subito nelle zone nuove del mare aperto.
-
-## Mare di Ghiaccio (Banchisa)
-
-| # | Bestia | Lunghezza | [CREATURE] |
-|---|---|---|---|
-| 1 | **Foca leopardo** (`foca_leopardo`) | 3,5 m | `a spotted leopard seal with a reptilian head and a wide grin of teeth, lunging through icy water` |
-| 2 | **Beluga** (`beluga`) | 5 m | `a pale beluga whale with a rounded forehead emitting visible sonar ripples` |
-| 3 | **Narvalo** (`narvalo`) | 5,5 m | `a narwhal with a long spiral tusk like a lance, frost crystals along the tusk` |
 
 ## Foresta di alghe
 
@@ -49,7 +43,6 @@ Queste bestie esistono nei dati del gioco ma non hanno ancora immagini: finché 
 |---|---|---|---|
 | 18 | **La Piovra** (`piovra`) | 15 m | `a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains` |
 | 19 | **Re Corallo** (`re_corallo`) | 5 m | `a colossal ancient crab whose shell is a living red coral reef, one claw locked in a rusted iron collar` |
-| 20 | **Coccodrillo del Nilo** (`coccodrillo_nilo`) | 5 m | `a Nile crocodile with olive-bronze armored scales lurking half-submerged among mangrove roots, cold eyes glinting just above the waterline` |
 | 21 | **Leviatano** (`leviatano`) | 120 m | `the Leviathan, an ancient serpentine sea god larger than a temple, eyes like molten amber, scales shimmering red, cyan, icy blue, violet and bronze` |
 
 Note: per **cefalopodi** (polpo, calamari, Piovra, Kraken) nel profilo chiedi `tentacles trailing straight behind the body`, così il gioco può animarli. Per il **Re Corallo** mancano solo profilo e card (fronte e retro ci sono già).

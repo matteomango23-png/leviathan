@@ -10,6 +10,8 @@
 - Testi per Gemini delle 21 bestie senza immagini: `docs/PROMPT-BESTIE.md` (in ordine di priorità).
 - **v0.10.1:** pareti e iceberg del proprietario (`asset animali ai/mondo/`): `npm run art` tipo "mondo" (public/world, maschera e linea dell'acqua degli iceberg in `ICEBERG_SHAPES`, striscia della linea tolta); `data/worldArt.ts`; `systems/world/icebergs.ts` (ghiaccio solido dal disegno, nel Mare di Ghiaccio e nei tratti di Banchisa); `views/worldArtView.ts` (pareti sui bordi dritti dei pozzi e delle fosse, iceberg). 288 test.
 
+- **v0.10.2:** 13 bestie dalle immagini del proprietario (`asset animali ai/<bestia>/`): 9 nuove nei dati (`tonno`, `delfino`, `pesce_luna`, `scorfano`, `pesce_napoleone`, `pesce_spada`, `squalo_volpe`, `tricheco`, `elefante_marino`, con 27 mosse) e le immagini di `foca_leopardo`, `beluga`, `narvalo`, `coccodrillo_nilo`; comparse nella Baia, nel Delta, nel Mare di Ghiaccio e nelle zone del mare aperto. `npm run art`: profili con scontorno dal bordo e "solo l'animale" (`SIDE_FLOOD_SPECIES`, `keepLargest`), riprova automatica su fondo grigio con trama, `SIDE_ERASE`. 314 test.
+
 **Mancante / da sapere**
 
 - Lontano dalla costa (oltre ~15 km) il fondale supera i 300 m: servono mute più profonde; gli sfiatatoi stanno nel punto meno profondo di ogni tratto.

@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.10.2 — Tredici bestie nuove (2 ottobre 2026)
+
+- **Nuove bestie** (le tue immagini): **tonno rosso** (in branco), **delfino**, **pesce luna**, **scorfano gigante**, **pesce napoleone**, **pesce spada**, **squalo volpe**, **tricheco**, **elefante marino**, ognuna con le sue 3 mosse.
+- **Arrivano le immagini** di **foca leopardo**, **beluga**, **narvalo** e **coccodrillo del Nilo**, che ora compaiono nel mare.
+- **Dove trovarle:** tonni e delfini nella Baia; coccodrilli del Nilo nel Delta; foche, beluga, narvali, trichechi ed elefanti marini nel Mare di Ghiaccio e nella Banchisa; nel mare aperto ognuna nella sua zona (pesci luna, pesci spada e squali volpe in mare aperto, scorfani e pesci napoleone nella barriera…).
+
 ## v0.10.1 — Pareti dipinte e iceberg (2 ottobre 2026)
 
 - **Pareti dipinte** (le tue immagini) sui bordi dritti dei pozzi verso gli abissi e sulle pareti delle fosse del mare aperto: roccia di solito, corallo vicino alle barriere, ghiaccio nel freddo. Niente più bordi a blocchi in quei punti.

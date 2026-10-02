@@ -278,3 +278,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Pareti:** decorazione sopra la roccia che c'è già (le collisioni restano quelle dei tile), solo sui bordi verticali lunghi dei pozzi fatti a mano e delle fosse del mare aperto, per tre quarti dentro la roccia. Materiale secondo il posto (roccia, corallo, ghiaccio).
 - **Iceberg:** il ghiaccio solido viene dal disegno stesso (`npm run art` scrive una maschera 40 colonne e la linea dell'acqua), così si urta il ghiaccio che si vede. La linea dell'acqua disegnata da Gemini viene tolta (ogni striscia orizzontale sottile).
+
+## 2026-10-02 — Bestie nuove dalle immagini del proprietario
+
+- Il proprietario ha generato bestie non previste dal kit (tonno, delfino, pesce luna, scorfano, pesce napoleone, pesce spada, squalo volpe, tricheco, elefante marino): aggiunte ai dati con statistiche e mosse coerenti con il loro tipo e ruolo (comuni o non comuni, bestie del mare aperto). Il coccodrillo della serie è il coccodrillo del Nilo (Delta).
+- I loro profili hanno fondi scuri con particelle e bagliori: per loro lo scontorno parte dal bordo e tiene solo il pezzo più grande; dove una vista ha due animali sovrapposti si usa l'altra (pesce spada e beluga senza bocca aperta per ora).
