@@ -24,6 +24,7 @@ import {
   placeProfile,
   removeBlackBackground,
   removeDarkBackground,
+  fillMouth,
 } from './art/cutout.ts';
 import { extraDest, makeExtra } from './art/extras.ts';
 
@@ -55,6 +56,10 @@ const SIDE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   capodoglio_side: { low: 24, high: 40, soft: 50 },
   capodoglio_side_open: { low: 24, high: 40, soft: 50 },
 };
+// Open mouths with a dark throat that the cut took for background: rectangles (shares of the picture) to refill.
+const SIDE_MOUTH: Record<string, number[]> = {
+  squalo_martello_side_open: [0.76, 0.42, 0.875, 0.88], // the throat
+};
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
 const args = process.argv.slice(2);
@@ -85,6 +90,8 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
   const loose = SIDE_CUTOUT_LOOSE[basename(src, extname(src))];
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
   const cut = loose ? removeDarkBackground(raw, borderColor(raw), radius, loose) : removeBlackBackground(raw);
+  const mouth = SIDE_MOUTH[basename(src, extname(src))];
+  if (mouth) fillMouth(raw, cut, mouth);
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');
   const x0 = Math.max(0, box.x0 - MARGIN);

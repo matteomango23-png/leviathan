@@ -9,6 +9,8 @@ import type { Side } from './battle';
 export interface StageBeast {
   lengthM: number;
   giant: boolean;
+  /** BATTLE_STAGE.pictureMult of its species (1 if none). */
+  pictureMult?: number;
 }
 
 /**
@@ -21,7 +23,7 @@ export function battleSizes(you: StageBeast, foe: StageBeast): Record<Side, numb
   const longest = Math.max(you.lengthM, foe.lengthM, 0.1);
   const one = (b: StageBeast): number => {
     const rel = S.standard * Math.pow(Math.max(0.1, b.lengthM) / longest, S.exponent);
-    return Math.min(S.max, Math.max(b.giant ? S.giant : S.min, rel));
+    return Math.min(S.max, Math.max(b.giant ? S.giant : S.min, rel) * (b.pictureMult ?? 1));
   };
   return { you: Math.min(S.max, one(you) * S.youCloser), foe: one(foe) * S.foeDistance };
 }

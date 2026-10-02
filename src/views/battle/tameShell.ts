@@ -1,11 +1,12 @@
 // The taming shell (like a Poké Ball): flies in an arc spinning, opens in a burst of light, the beast turns
 // into light and is drawn in, the shell falls on the ground and shakes; it holds with a golden flash or
 // breaks open. Uses the painted shell (`item-conchiglia`) when it exists, otherwise a drawn spiral shell.
+// When it opens, the light is drawn here: soft rays all around that grow and fade (the painted open shell had
+// its beam cut off at the picture's edge, owner 2 ottobre).
 import Phaser from 'phaser';
 import { tweenTo } from './tween';
 
 export const SHELL_KEY = 'item-conchiglia';
-export const SHELL_OPEN_KEY = 'item-conchiglia-aperta';
 
 export class TameShell {
   private readonly g: Phaser.GameObjects.Graphics;
@@ -74,6 +75,34 @@ export class TameShell {
     this.s = null;
   }
 
+  /** The burst of light: rays of soft layered wedges, longest in the middle, turning slowly. */
+  private rays(
+    glow: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    r: number,
+    k: number,
+    turn: number,
+  ): void {
+    const n = 9;
+    for (let i = 0; i < n; i++) {
+      const a = turn * 0.15 + (i / n) * Math.PI * 2;
+      const len = r * (3.2 + 1.6 * Math.sin(i * 2.3)) * k;
+      for (let layer = 3; layer >= 1; layer--) {
+        const w = 0.07 * layer;
+        glow.fillStyle(0xbffff2, 0.1 * k);
+        glow.fillTriangle(
+          x,
+          y,
+          x + Math.cos(a - w) * len * (1 - layer * 0.12),
+          y + Math.sin(a - w) * len * (1 - layer * 0.12),
+          x + Math.cos(a + w) * len * (1 - layer * 0.12),
+          y + Math.sin(a + w) * len * (1 - layer * 0.12),
+        );
+      }
+    }
+  }
+
   update(): void {
     const g = this.g.clear();
     const glow = this.glow.clear();
@@ -86,7 +115,8 @@ export class TameShell {
     glow.fillCircle(x, s.y, s.r * (2 + s.glow * 2.5));
     glow.fillStyle(0xffffff, 0.5 * s.open);
     glow.fillCircle(x, s.y, s.r * 1.2 * s.open);
-    const key = s.open > 0.5 && this.scene.textures.exists(SHELL_OPEN_KEY) ? SHELL_OPEN_KEY : SHELL_KEY;
+    if (s.open > 0) this.rays(glow, x, s.y, s.r, s.open, s.spin);
+    const key = SHELL_KEY;
     if (this.scene.textures.exists(key)) {
       this.image
         .setTexture(key)

@@ -82,7 +82,11 @@ export class BattleView {
   setFighter(side: Side, form: BeastForm, level: number, hidden = false): void {
     const art = battleArt(form, side);
     const aura = beastAura(form);
-    this.stage[side] = { lengthM: formLengthM(form, level), giant: isGiant(form) };
+    this.stage[side] = {
+      lengthM: formLengthM(form, level),
+      giant: isGiant(form),
+      pictureMult: BATTLE_STAGE.pictureMult[form.speciesId],
+    };
     Object.assign(this.poses[side], newPose(), {
       key: art.textureKey,
       own: art.own,
