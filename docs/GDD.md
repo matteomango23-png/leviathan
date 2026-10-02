@@ -36,6 +36,7 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 
 - **Premessa:** il Leviatano si è svegliato, le bestie impazziscono. La Compagnia dell'Olio Nero le caccia, le incatena con collari di ferro e ne estrae l'olio; il piano finale è dissanguare il Leviatano.
+- **I lavori di Aurelio** (dal 3 ottobre 2026): dopo la prima immersione, prima che il molo bruci, quattro piccoli lavori del porto. Pescare 5 sardine, vincere 2 battaglie contro i barracuda, domare una bestia, portare il compagno al livello 9. Pagano denti e fanno crescere la squadra.
 - **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
 - **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
 - **Capitolo 2 (deciso il 1 ottobre 2026):** nel Delta delle Mangrovie la nave della Vedova Nera (prima comandante della Compagnia) tiene incatenata la megattera dell'apertura. Spezzi i tre ancoraggi mentre il suo coccodrillo ti attacca; la balena liberata si unisce a te e la Vedova fugge verso la Barriera Rossa.

@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.16.0 — I lavori di Aurelio (3 ottobre 2026)
+
+- **Un inizio più graduale:** dopo la prima immersione Aurelio ti affida quattro lavori del porto, prima che il molo bruci e parta la ricerca dello Sfregiato.
+  1. Pesca 5 sardine per il mercato.
+  2. Vinci 2 battaglie contro i barracuda che rubano dalle reti.
+  3. Doma una bestia selvatica con la Conchiglia del domatore.
+  4. Porta il tuo compagno al livello 9.
+- Li vedi uno alla volta in alto, con quanti ne hai fatti. Ognuno paga denti (25–50).
+- Finiti tutti, torna da Aurelio al molo: lì comincia la storia dello Sfregiato, con una squadra vera.
+- Aurelio al porto ha un consiglio anche per i lavori. Le partite già avanti nella storia non cambiano.
+
 ## v0.15.0 — Il sottomarino (3 ottobre 2026)
 
 - **Il sottomarino prende il posto della barca.** Alla fine del capitolo 1 Aurelio ti lascia il suo vecchio **batiscafo**, ormeggiato oltre il molo di Portofosco. Chi aveva la barca lo trova dov'era la barca.

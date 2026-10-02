@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PORT } from '../src/data/economy';
 import { LAIR } from '../src/data/guardians';
+import { jobMarkIds } from '../src/data/portJobs';
 import { CLUES, SCENES, TUTORIAL } from '../src/data/story';
 import { WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
@@ -8,6 +9,7 @@ import { createGame, currentAction, stepGame, toSave, type GameState } from '../
 import { emptyInput } from '../src/systems/input';
 import { parseSave, serializeSave } from '../src/systems/save/saveData';
 import { askAurelio, closeDialogue, objectiveText, startNewGame, stepStory } from '../src/systems/story';
+import { stepPortJobs } from '../src/systems/portJobs';
 import { giveTestBeast } from '../src/systems/testTools';
 import { generateWorld } from '../src/systems/world/worldGen';
 
@@ -85,7 +87,14 @@ describe('the guided dive and the burning pier', () => {
     stepStory(g, 0.1, [{ type: 'dash', x: 0, y: 0 }]);
     expect(g.story.tutorial).toBe(3);
     atPier(g);
-    stepStory(g, 0.1, []);
+    const jobs: GameEvent[] = [];
+    stepStory(g, 0.1, jobs);
+    // first Aurelio's jobs (tappa 17): done here at once, then back at the pier the story goes on
+    expect(g.story.step).toBe('portJobs');
+    expect(jobs).toContainEqual({ type: 'dialogueOpened', id: 'jobs' });
+    closeDialogue(g, []);
+    g.story.seen.push(...jobMarkIds());
+    stepPortJobs(g, []);
     expect(g.story.step).toBe('pier');
     const ev: GameEvent[] = [];
     stepStory(g, SCENES.collarDelay + 0.1, ev);

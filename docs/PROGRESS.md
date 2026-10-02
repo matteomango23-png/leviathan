@@ -148,12 +148,24 @@
 
 **Da sapere:** i tre modelli usano per ora la stessa immagine. Servono altre due immagini su fondo verde (testi in `docs/PROMPT-MONDO.md`, sezione 6).
 
-**Prossima sessione:**
+**Tappa 17 (v0.16.0), i lavori di Aurelio:**
 
-1. Inizio con le missioni del porto.
-2. Capitolo 4, la Foresta Sommersa.
+- `data/portJobs.ts`: 4 lavori, ricompense, testi.
+- `systems/portJobs.ts`:
+  - il passo di storia `portJobs` tra `tutorial` e `pier`;
+  - i progressi vengono dagli eventi del gioco (pesci, battaglie vinte, domature) e dai livelli;
+  - ogni lavoro si paga una volta (segni `lavoro:<id>` nella lista "seen");
+  - finiti tutti, al molo si passa a `pier`.
+- `StoryState.jobs`, salvati senza cambiare versione (campo facoltativo). Dialoghi `jobs` e `hintJobs`.
+- 356 test.
 
-Proporre il piano di ciascuna prima.
+**Da provare (v0.16.0):** una partita nuova (Pausa, Nuova partita, oppure un altro telefono):
+
+1. Dopo la prima immersione compaiono i lavori.
+2. Falli tutti.
+3. Torna al molo: deve bruciare.
+
+**Prossima sessione:** capitolo 4, la Foresta Sommersa (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

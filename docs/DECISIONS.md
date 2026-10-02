@@ -337,3 +337,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Rotto:** viene rimorchiato a Portofosco, con la stessa perdita di denti del KO. Si ripara a pagamento entrando in un porto. Uno scafo a zero non si muove finché non è riparato.
 - **Resta dove lo lasci** e ti risvegli accanto a lui (come con la barca).
 - **Salvataggio v11:** `sub` sostituisce `boat`. La barca diventa il batiscafo nello stesso punto, appena sotto la superficie.
+
+## 2026-10-03 — Tappa 17: i lavori di Aurelio (proposta del proprietario)
+
+- **Un passo di storia, non missioni della bacheca:** i lavori guidano l'inizio uno alla volta (obiettivo in alto) e si chiudono al molo. Le missioni della bacheca restano facoltative.
+- **Lavori scelti per insegnare** pesca, battaglia, domatura e crescita, così il giocatore arriva alle ossa dello Sfregiato con una squadra. Il livello 9 è un primo valore, da regolare giocando.
+- **Salvataggio:** i progressi in `story.jobs` (facoltativo, i vecchi salvataggi partono da zero) e i lavori pagati nella lista "seen". Nessuna nuova versione.
