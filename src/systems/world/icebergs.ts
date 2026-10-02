@@ -2,7 +2,14 @@
 // from the picture itself (a coarse mask written by `npm run art`), so you bump into the ice you see.
 import { ENDLESS } from '../../data/endless';
 import { ICEBERG_SHAPES } from '../../data/sprites.generated';
-import { ICEBERG_WIDTH, ICEBERGS_PER_STRETCH, type IcebergPlace } from '../../data/worldArt';
+import {
+  ICEBERG_CLEAR_MARGIN,
+  ICEBERG_MAX_DRAFT,
+  ICEBERG_WIDTH,
+  ICEBERGS,
+  ICEBERGS_PER_STRETCH,
+  type IcebergPlace,
+} from '../../data/worldArt';
 import { WORLD } from '../../data/worldLayout';
 import { hash2 } from '../math';
 
@@ -19,8 +26,16 @@ export function icebergBox(p: IcebergPlace): IcebergBox | null {
   const shape = ICEBERG_SHAPES[p.id];
   const w = ICEBERG_WIDTH[p.id];
   if (!shape || !w) return null;
-  const h = (w * shape.h) / shape.w;
-  return { id: p.id, left: p.x - w / 2, top: WORLD.surfaceY - shape.waterline * h, w, h };
+  let h = (w * shape.h) / shape.w;
+  let width = w;
+  // never down to the sea floor: a tall picture is drawn smaller
+  const draft = (1 - shape.waterline) * h;
+  if (draft > ICEBERG_MAX_DRAFT) {
+    const k = ICEBERG_MAX_DRAFT / draft;
+    h *= k;
+    width *= k;
+  }
+  return { id: p.id, left: p.x - width / 2, top: WORLD.surfaceY - shape.waterline * h, w: width, h };
 }
 
 /** Is this point inside the ice of one of these icebergs? */
@@ -32,6 +47,19 @@ export function inIceberg(boxes: IcebergBox[], x: number, y: number): boolean {
     if (row && row[Math.floor(((x - b.left) / b.w) * row.length)] === '1') return true;
   }
   return false;
+}
+
+const HAND_MADE: IcebergBox[] = ICEBERGS.map(icebergBox).filter((b): b is IcebergBox => b !== null);
+
+/** Is x under (or next to) one of these icebergs? There the old blocky ice is left out. */
+export const nearIceberg = (boxes: IcebergBox[], x: number): boolean =>
+  boxes.some((b) => x > b.left - ICEBERG_CLEAR_MARGIN && x < b.left + b.w + ICEBERG_CLEAR_MARGIN);
+
+/** The painted icebergs that may cover x: the Mare di Ghiaccio's, or those of the stretch of the endless sea. */
+export function icebergsNear(x: number): IcebergBox[] {
+  if (x < ENDLESS.startX) return HAND_MADE;
+  const k = Math.floor((x - ENDLESS.startX) / ENDLESS.stretch);
+  return [...icebergsOfStretch(k - 1), ...icebergsOfStretch(k), ...icebergsOfStretch(k + 1)];
 }
 
 const cache = new Map<number, IcebergBox[]>();

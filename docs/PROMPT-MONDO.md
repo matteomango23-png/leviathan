@@ -1,5 +1,7 @@
 # Immagini per il mondo: pareti tra le zone e iceberg
 
+> **Dal 3 ottobre 2026:** nei prompt sostituisci `pure flat black background` (o `pure black background`) con `flat pure green background (#00FF00)`: lo scontorno viene più pulito.
+
 Salvale in `art-inbox/` (o dove ti è comodo: le riconosco io) e dimmelo; poi ci penso io.
 Genera **tutte le pareti nella stessa chat**, così lo stile resta uguale. Usa il formato **verticale** più alto che Gemini permette (9:16).
 

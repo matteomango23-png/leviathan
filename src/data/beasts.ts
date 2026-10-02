@@ -85,6 +85,16 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
   { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
   { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
+  // more small and medium beasts (owner, 3 ottobre: "poca vita, soprattutto animali piccoli/medi")
+  { speciesId: 'pesce_palla', area: BAY, respawnSeconds: [15, 30], level: [4, 6] },
+  { speciesId: 'murena', area: BAY, respawnSeconds: [25, 45], level: [5, 7] },
+  { speciesId: 'barracuda', area: BAY_HIGH, respawnSeconds: [12, 25] },
+  { speciesId: 'scorfano', area: REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'pesce_napoleone', area: REEF, respawnSeconds: [30, 60] },
+  { speciesId: 'tonno', area: REEF, respawnSeconds: [25, 50], level: [7, 9] },
+  { speciesId: 'pesce_luna', area: FOREST, respawnSeconds: [40, 80], level: [10, 12] },
+  { speciesId: 'scorfano', area: FOREST, respawnSeconds: [25, 50], level: [10, 12] },
+  { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
   // the endless sea: a few slots that take the beasts of the stretch you are in
   ...Array.from({ length: ENDLESS.wildSlots }, (_, i) => ({
     speciesId: 'barracuda',
@@ -109,7 +119,7 @@ export const WILD_LEVELS = {
 };
 
 /** At most this many wild beasts are around you at the same time (tuning). */
-export const WILD_RULES = { maxPresent: 5 };
+export const WILD_RULES = { maxPresent: 8 }; // owner, 3 ottobre: more life (was 5)
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';

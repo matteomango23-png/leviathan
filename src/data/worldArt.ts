@@ -11,6 +11,12 @@ export const ICEBERG_WIDTH: Record<string, number> = {
   iceberg_4: 210, // small and round
 };
 
+/**
+ * The owner's painted pier (owner, 3 ottobre), laid at each harbour instead of the drawn one: from a little behind
+ * the shore out over the water; its deck (that share of the picture's height) sits just above the surface.
+ */
+export const PIER_ART = { key: 'molo_porto', fromShore: -12, width: 150, deckAt: 0.41, deckAbove: 8 };
+
 export interface IcebergPlace {
   id: string;
   x: number; // centre
@@ -22,6 +28,11 @@ export const ICEBERGS: IcebergPlace[] = [
   { id: 'iceberg_1', x: east(5800) },
   { id: 'iceberg_3', x: east(6130) },
 ];
+/** How deep an iceberg may reach under the surface (units): taller pictures are drawn smaller, so there is
+ *  always room to swim under them (owner: "sotto non si passa"). The sea floor there is at ~380 or deeper. */
+export const ICEBERG_MAX_DRAFT = 190;
+/** Around a painted iceberg the old blocky ice (ceiling, pillars) is left out, so only the picture shows. */
+export const ICEBERG_CLEAR_MARGIN = 24;
 export const ICEBERGS_PER_STRETCH = 2; // tuning, Banchisa stretches of the endless sea
 
 /** Painted walls: their size, how much of them sits in the rock, and which picture goes where. */

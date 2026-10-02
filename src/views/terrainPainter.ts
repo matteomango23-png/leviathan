@@ -1,9 +1,18 @@
 // Paints one square chunk of rock as a soft, layered painting (not blocky tiles).
 // The outline follows TileMap.field exactly, so what you see is what you bump into.
 import { SEA, TERRAIN } from '../data/diver';
-import { CORALS, ICE, TILE } from '../data/worldLayout';
+import { CORALS, ICE, TILE, WORLD } from '../data/worldLayout';
+import { ICEBERG_MAX_DRAFT } from '../data/worldArt';
+
+const WORLD_SURFACE = WORLD.surfaceY;
 import { ENDLESS } from '../data/endless';
 import { biomeAt } from '../systems/world/endless';
+import { icebergsNear } from '../systems/world/icebergs';
+
+/** Inside the frame of a painted iceberg (a little wider): nothing of the tiles is painted there. */
+const inIcebergBoxAt = (x: number, y: number): boolean =>
+  icebergsNear(x).some((b) => x > b.left - 6 && x < b.left + b.w + 6 && y > b.top - 6 && y < b.top + b.h + 6);
+const ICE_BOX_BOTTOM = WORLD_SURFACE + ICEBERG_MAX_DRAFT + 8;
 
 const ENDLESS_START = ENDLESS.startX;
 import { hash2, noise2, rampColor } from '../systems/math';
@@ -197,6 +206,8 @@ export class ChunkPaintJob {
       const wx = x0 + (pxx + 0.5) / tpu;
 
       const tile = map.tileAtPoint(wx, wy);
+      // an iceberg's ice is its picture (views/worldArtView.ts): its solid tiles are not painted over it
+      if (wx > ICE.xMin && wy < ICE_BOX_BOTTOM && inIcebergBoxAt(wx, wy)) continue;
       let r: number;
       let gg: number;
       let b: number;

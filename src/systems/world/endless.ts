@@ -5,7 +5,7 @@
 import { ENDLESS, type BiomeDef } from '../../data/endless';
 import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
 import { fbm, hash2 } from '../math';
-import { icebergsOfStretch, inIceberg } from './icebergs';
+import { icebergsOfStretch, inIceberg, nearIceberg } from './icebergs';
 import { biomeOf, naturalFloor, stretchAt } from './stretches';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
 
@@ -68,8 +68,8 @@ export function endlessTile(x: number, y: number): TileValue {
   if (temple !== null) return temple;
   const k = stretchAt(x);
   const b = biomeOf(k);
-  if (isIce(b, k, x, y)) return TILE.ice;
   if (b.ice && inIceberg(icebergsOfStretch(k), x, y)) return TILE.ice;
+  if (isIce(b, k, x, y) && !nearIceberg(icebergsOfStretch(k), x)) return TILE.ice; // no old ice by the painted ones
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
   if (y > endlessFloor(x) + n * b.noise) return TILE.rock;
   for (const m of moundsOf(k)) {

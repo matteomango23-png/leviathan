@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.14.1 — Iceberg, più vita, il molo dipinto (3 ottobre 2026)
+
+- **Iceberg:** sotto si passa sempre, perché gli iceberg alti sono disegnati un po' più piccoli e non toccano mai il fondale. Intorno non si vede più il vecchio ghiaccio a blocchi: resta solo il disegno.
+- **Più vita nel mare:**
+  - fino a 8 bestie intorno a te invece di 5, anche nel mare aperto;
+  - più bestie piccole e medie: pesci palla e murene nella Baia, scorfani, pesci napoleone e tonni nella Barriera, pesci luna e scorfani nella Foresta, una foca in più nel Mare di Ghiaccio;
+  - 11 banchi di pesci in più: sgombri, triglie, pesci pagliaccio e chirurgo, merluzzi artici;
+  - 9 banchi di sardine nel mare aperto invece di 6.
+- **Il molo dipinto:** Portofosco e Porto Fango hanno il nuovo pontile con tettoia, lanterne e passerella.
+- Le immagini nuove possono avere il fondo verde: lo script le scontorna da solo.
+
 ## v0.14.0 — Capitolo 3: la Barriera Rossa (2 ottobre 2026)
 
 - **La storia continua:** dopo il capitolo 2 l'obiettivo ti porta alla Barriera Rossa. Lì la nave della Vedova Nera è ancorata sopra un **anfiteatro di corallo**: una conca a gradoni piena di coralli rossi, scavata nel fondale vicino al santuario della Barriera.

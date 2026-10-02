@@ -184,10 +184,26 @@ export const OTHER_FISH_SCHOOLS: FishSchoolDef[] = [
   { kind: 'cefalo', x: delta(2100), y: 150, roam: [delta(1980), 60, delta(2420), 200] }, // the Delta
   { kind: 'cefalo', x: delta(2320), y: 170, roam: [delta(1980), 60, delta(2420), 200] },
   { kind: 'pesce_arciere', x: delta(2250), y: 40, roam: [delta(1980), 30, delta(2420), 70] }, // just under the surface
+  // more life (owner, 3 ottobre: "poca vita"): the bay's floor, the reef's colours, the forest, the ice
+  { kind: 'sgombro', x: bay(300), y: 200, roam: [LAYOUT.bay.x0, 120, bay(1850), 330] },
+  { kind: 'triglia', x: bay(1000), y: 300, roam: [LAYOUT.bay.x0, 230, bay(1850), 360] }, // near the floor
+  { kind: 'triglia', x: bay(1500), y: 320, roam: [LAYOUT.bay.x0, 230, bay(1850), 360] },
+  { kind: 'pesce_pagliaccio', x: east(2700), y: 230, roam: [east(2500), 150, east(3950), 290] },
+  { kind: 'pesce_pagliaccio', x: east(3400), y: 240, roam: [east(2500), 150, east(3950), 290] },
+  { kind: 'pesce_chirurgo', x: east(2900), y: 160, roam: [east(2500), 80, east(3950), 260] },
+  { kind: 'pesce_chirurgo', x: east(3700), y: 180, roam: [east(2500), 80, east(3950), 260] },
+  { kind: 'sgombro', x: east(4400), y: 200, roam: [east(4050), 80, east(5150), 380] }, // the kelp forest
+  { kind: 'triglia', x: east(4800), y: 330, roam: [east(4050), 200, east(5150), 420] },
+  { kind: 'merluzzo_artico', x: east(5500), y: 160, roam: [east(5250), 70, east(6300), 360] }, // the ice sea
+  { kind: 'merluzzo_artico', x: east(6000), y: 220, roam: [east(5250), 70, east(6300), 360] },
 ];
 export const FISH_LOOK: Record<string, { length: number; tint: number; perSchool: number; speedMult: number }> = {
   sardina: { length: 5, tint: 0xffffff, perSchool: 12, speedMult: 1 },
   sgombro: { length: 7, tint: 0xa8d4c8, perSchool: 7, speedMult: 1.2 },
   cefalo: { length: 8, tint: 0xb8b8a0, perSchool: 6, speedMult: 0.9 },
   pesce_arciere: { length: 5, tint: 0xd8e0a0, perSchool: 5, speedMult: 1.1 },
+  triglia: { length: 6, tint: 0xffb8a8, perSchool: 6, speedMult: 0.9 },
+  pesce_pagliaccio: { length: 4, tint: 0xffa860, perSchool: 6, speedMult: 0.8 },
+  pesce_chirurgo: { length: 5, tint: 0x7ab0ff, perSchool: 8, speedMult: 1 },
+  merluzzo_artico: { length: 8, tint: 0xc8d4dc, perSchool: 8, speedMult: 0.9 },
 };

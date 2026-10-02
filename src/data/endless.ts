@@ -44,8 +44,8 @@ export const ENDLESS = {
   maxFloorY: 4300, // the floor never goes deeper (WORLD.rows bounds the map)
   levelsPerKm: 2, // wild levels added per km of distance from the coast (owner: hybrid by zone and distance)
   firstFloorY: 390, // the hand-made floor at the start (worldLayout, east zone): the first stretch blends from it
-  wildSlots: 5, // wild beasts that can be around you out there at once
-  schools: 6, // sardine schools that follow you out there (moved ahead of you when left far behind)
+  wildSlots: 8, // wild beasts that can be around you out there at once (owner, 3 ottobre: more life; was 5)
+  schools: 9, // sardine schools that follow you out there (moved ahead of you when left far behind)
   schoolFar: 900, // units: a school this far from you is moved near you again
   /** Vents on the sea floor breathing out columns of air bubbles: swim into one to refill your air. */
   vents: { perStretch: 2, tries: 8, height: 240, radius: 22, refill: 25, messageBelow: 0.6 },

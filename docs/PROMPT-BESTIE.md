@@ -1,5 +1,7 @@
 # Prompt delle bestie che mancano (tappa 11)
 
+> **Dal 3 ottobre 2026:** nei prompt sostituisci `pure flat black background` (o `pure black background`) con `flat pure green background (#00FF00)`: lo scontorno viene più pulito.
+
 **Già fatte (2 ottobre):** foca leopardo, beluga, narvalo, coccodrillo del Nilo, più 9 bestie nuove (tonno, delfino, pesce luna, scorfano, pesce napoleone, pesce spada, squalo volpe, tricheco, elefante marino).
 
 Queste bestie esistono nei dati del gioco ma non hanno ancora immagini: finché manca il **profilo** non possono comparire nel mare (sarebbero invisibili). Salva le immagini dove vuoi: le riconosco e le sistemo io.
