@@ -36,7 +36,13 @@ export type GameEvent =
   | { type: 'tamed'; uid: string; toTeam: boolean }
   | { type: 'summoned'; uid: string }
   // the boat (tappa 12)
-  | { type: 'boatGiven' }
+  | { type: 'subGiven' }
+  | { type: 'subRammed'; hull: number; max: number }
+  /** From the beasts: one rammed your submarine (game.ts applies it to the hull). */
+  | { type: 'subRammedBy'; lengthM: number }
+  | { type: 'subWrecked'; teeth: number }
+  | { type: 'subRepaired'; cost: number }
+  | { type: 'subTooDeep' }
   | { type: 'boarded' }
   | { type: 'dove' }
   | { type: 'lineCast' }

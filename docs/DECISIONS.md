@@ -329,3 +329,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Iceberg mai fino al fondale:** invece di tagliare il disegno, quelli troppo profondi si rimpiccioliscono (`ICEBERG_MAX_DRAFT`). Il disegno resta intero e sotto c'è sempre spazio.
 - **Il disegno è il ghiaccio:** dentro il riquadro di un iceberg il pittore del fondale non dipinge, e il vecchio ghiaccio procedurale lì vicino non c'è. La collisione resta la maschera dell'immagine.
 - **Fondo verde:** da ora le immagini si chiedono su verde #00FF00 (proposta del proprietario). Lo script riconosce il bordo verde e usa lo scontorno a chiave; il fondo nero resta supportato.
+
+## 2026-10-03 — Tappa 16: il sottomarino al posto della barca (proposta del proprietario)
+
+- **Perché:** con la barca si raggiungevano subito le zone lontane, che hanno livelli alti, e gli iceberg la bloccavano. Il sottomarino va sotto gli iceberg ed è limitato da velocità e profondità del modello: le zone lontane si raggiungono quando hai i denti per un modello migliore.
+- **Dentro non si combatte:** le bestie normali scappano. Quelle aggressive di almeno 7 m (`SUBMARINE.giantLengthM`) lo urtano invece di aprire una battaglia.
+- **Rotto:** viene rimorchiato a Portofosco, con la stessa perdita di denti del KO. Si ripara a pagamento entrando in un porto. Uno scafo a zero non si muove finché non è riparato.
+- **Resta dove lo lasci** e ti risvegli accanto a lui (come con la barca).
+- **Salvataggio v11:** `sub` sostituisce `boat`. La barca diventa il batiscafo nello stesso punto, appena sotto la superficie.

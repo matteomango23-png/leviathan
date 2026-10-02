@@ -1,5 +1,6 @@
 // Hearts, oxygen, depth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
+import { subModel } from '../systems/submarine';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/chapters';
@@ -74,10 +75,11 @@ export class Hud {
         ? ` · ${(kmFromCoast(d.x) - kmFromCoast(LAYOUT.shoreX)).toFixed(1).replace('.', ',')} km dalla costa`
         : '';
     // where your boat waits (when you are not on it)
-    const toBoat = (g.boat.x - d.x) / WORLD.unitsPerMetre;
-    const boat =
-      g.boat.owned && !g.boat.aboard && Math.abs(toBoat) > 15
-        ? ` · barca ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
+    const toBoat = (g.sub.x - d.x) / WORLD.unitsPerMetre;
+    const boat = g.sub.aboard
+      ? ` · scafo ${Math.round(g.sub.hull)}/${subModel(g.sub.model).hull}`
+      : g.sub.owned && Math.abs(toBoat) > 15
+        ? ` · sottomarino ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
         : '';
     const info = `${Math.round(depthMetres(d.y))} m${far}${boat} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
     if (info !== this.cache.info) {

@@ -30,7 +30,7 @@ import { KelpView } from '../views/kelpView';
 import { VentView } from '../views/ventView';
 import { TempleView } from '../views/templeView';
 import { WorldArtView } from '../views/worldArtView';
-import { BoatView } from '../views/boatView';
+import { SubmarineView } from '../views/submarineView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
@@ -49,7 +49,7 @@ export class WorldScene extends Phaser.Scene {
   private vents!: VentView;
   private temple!: TempleView;
   private worldArt!: WorldArtView;
-  private boat!: BoatView;
+  private sub!: SubmarineView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private sanctuaries!: SanctuaryView;
@@ -100,7 +100,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents = new VentView(this, L.world);
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
-    this.boat = new BoatView(this, L.world);
+    this.sub = new SubmarineView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.diverView = new DiverView(this, L.world);
@@ -204,7 +204,9 @@ export class WorldScene extends Phaser.Scene {
         this.save();
       else if (e.type === 'respawned') this.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'portArrived') {
-        enterPort(g);
+        const port: GameEvent[] = [];
+        enterPort(g, port);
+        if (port.length) this.session.emit('gameEvents', port);
         this.save();
         this.session.emit('openPort');
       } else if (e.type === 'wreckOpened' || e.type === 'swarmBound' || e.type === 'missionComplete')
@@ -254,7 +256,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.boat.update(g.boat, g.diver.face, g.time);
+    this.sub.update(g.sub, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);
@@ -263,7 +265,7 @@ export class WorldScene extends Phaser.Scene {
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
     this.chapter3.update(g, g.time);
-    this.diverView.setHidden(storyHoldsDiver(g) || g.boat.aboard); // aboard, the boat view draws you
+    this.diverView.setHidden(storyHoldsDiver(g) || g.sub.aboard); // inside the submarine you are not seen
     this.gearFx.update(g, rider ?? d, g.time);
 
     let da = d.aim - this.lampAngle;

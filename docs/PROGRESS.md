@@ -121,11 +121,37 @@
   - resta dove lo lasci; dentro respiri, ti curi e peschi.
 - **Inizio più graduale:** 3 o 4 missioni del porto prima dello Sfregiato.
 
+**Tappa 16 (v0.15.0), il sottomarino:**
+
+- `data/submarine.ts`: `SUB_MODELS` (3 modelli), `SUBMARINE` (ormeggio, corpo, urti, riparazione, pesca), `SUB_FISH`, `SUB_TEXT`.
+- `systems/submarine.ts` (al posto di `boat.ts`):
+  - Sali/Esci a qualsiasi profondità;
+  - guida in 2D con collisioni (prua, centro, poppa) e profondità massima;
+  - pesca;
+  - `ramSub` (urti, rimorchio), `repairSub` (all'ingresso nel porto), `buySub`.
+- `encounters.ts`: dentro il sottomarino le bestie aggressive di almeno 7 m lo urtano (`ramsSubmarine`, evento `subRammedBy`); le altre scappano (`RoamContext.scared`).
+- `views/submarineView.ts`: l'immagine del proprietario, oblò accesi, bolle, lenza.
+- `ui/portSubs.ts`: sottomarini nella scheda Mute.
+- HUD: scafo, distanza dal sottomarino.
+- Salvataggio v11: `sub` (posizione, modello, modelli, scafo). La barca dei vecchi salvataggi diventa il batiscafo.
+- 352 test.
+- Visto nel browser: il sottomarino ormeggiato oltre il molo dipinto, "Sali", dentro con "scafo 60/60" e il messaggio.
+
+**Da provare (v0.15.0):**
+
+1. Vicino al molo di Portofosco, Sali sul sottomarino e guida sott'acqua.
+2. Passa sotto gli iceberg del Mare di Ghiaccio.
+3. Prova a scendere oltre gli 80 m.
+4. Avvicinati a uno squalo: deve scappare.
+5. Avvicinati a un'orca: deve urtarti.
+6. Al porto compra lo Squalo di ferro.
+
+**Da sapere:** i tre modelli usano per ora la stessa immagine. Servono altre due immagini su fondo verde (testi in `docs/PROMPT-MONDO.md`, sezione 6).
+
 **Prossima sessione:**
 
-1. Tappa sottomarino (immagine `sottomarino_1` pronta in `public/world`).
-2. Inizio con le missioni del porto.
-3. Capitolo 4, la Foresta Sommersa.
+1. Inizio con le missioni del porto.
+2. Capitolo 4, la Foresta Sommersa.
 
 Proporre il piano di ciascuna prima.
 

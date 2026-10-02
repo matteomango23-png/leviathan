@@ -1,5 +1,6 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
 import { PROGRESSION } from '../data/rules';
+import { SUB_TEXT } from '../data/submarine';
 import { TEMPLE_TEXT } from '../data/temples';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
 import { SPECIES } from '../data/species';
@@ -66,18 +67,20 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
-    case 'boatGiven':
-      return [
-        'Aurelio ti lascia la sua barca: è ormeggiata accanto al molo di Portofosco. Sali quando sei in superficie vicino a lei.',
-        6,
-      ];
+    case 'subGiven':
+      return [SUB_TEXT.given, 6];
     case 'boarded':
-      return [
-        'Sei sulla tua barca: tu e la squadra riposate. Naviga col joystick, Pesca col pulsante, Tuffati per scendere.',
-        4,
-      ];
+      return [`${SUB_TEXT.boarded} Joystick per guidare, Pesca col pulsante, Esci per nuotare.`, 4];
     case 'dove':
-      return ['La barca resta qui all\u2019ancora.', 2];
+      return ['Il sottomarino resta qui ad aspettarti.', 2];
+    case 'subRammed':
+      return [SUB_TEXT.rammed(e.hull, e.max), 2];
+    case 'subWrecked':
+      return [SUB_TEXT.wrecked(e.teeth), 6];
+    case 'subRepaired':
+      return [SUB_TEXT.repaired(e.cost), 3];
+    case 'subTooDeep':
+      return [SUB_TEXT.tooDeep, 3];
     case 'lineCast':
       return ['Lenza in acqua… aspetta che abbocchi.', 2];
     case 'fishBite':

@@ -3,13 +3,15 @@
 // from the previous version below. Never edit an existing migration.
 
 import { PROGRESSION } from '../../data/rules';
+import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
+import type { SavedSub } from '../submarine';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
 import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -38,7 +40,7 @@ export interface SaveData {
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
   story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
   homePort: string; // the last harbour you came into: you wake up there (v7)
-  boat: { x: number } | null; // your boat and where it is at anchor (v9); null = not yours yet
+  sub: SavedSub | null; // your submarine: where it waits, its model, the ones you own, its hull (v11); null = not yours yet
   legendsGone: string[]; // legends defeated: gone forever (v10)
 }
 
@@ -57,7 +59,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     gear: null,
     story: null,
     homePort: 'portofosco',
-    boat: null,
+    sub: null,
     legendsGone: [],
   };
 }
@@ -146,6 +148,21 @@ export const MIGRATIONS: Migration[] = [
   { from: 8, migrate: (o) => ({ ...o, boat: null }) },
   // v9 → v10 (tappa 13): the legends; none defeated yet
   { from: 9, migrate: (o) => ({ ...o, legendsGone: [] }) },
+  // v10 → v11 (tappa 16): the boat becomes Aurelio's bathyscaphe, where the boat was
+  {
+    from: 10,
+    migrate: (o) => {
+      const boat = isObject(o.boat) && isFiniteNumber(o.boat.x) ? o.boat.x : null;
+      const rest: Record<string, unknown> = { ...o };
+      delete rest.boat;
+      const first = SUB_MODELS[0]!;
+      const sub =
+        boat === null
+          ? null
+          : { x: boat, y: SUBMARINE.restY, model: first.id, models: [first.id], hull: first.hull };
+      return { ...rest, sub };
+    },
+  },
 ];
 
 export class SaveError extends Error {}
@@ -211,7 +228,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
     story: validateStory(data.story),
     homePort: typeof data.homePort === 'string' ? data.homePort : 'portofosco',
-    boat: isObject(data.boat) && isFiniteNumber(data.boat.x) ? { x: data.boat.x } : null,
+    sub: checkedSub(data.sub),
     legendsGone: Array.isArray(data.legendsGone)
       ? [...new Set(data.legendsGone.filter((x): x is string => typeof x === 'string'))]
       : [],
@@ -274,4 +291,18 @@ export function serializeSave(save: SaveData): string {
 export function exportFileName(date: Date): string {
   const d = date.toISOString().slice(0, 10);
   return `leviatano-salvataggio-${d}.json`;
+}
+
+/** The saved submarine, checked: unknown models dropped, numbers kept in range. */
+function checkedSub(raw: unknown): SavedSub | null {
+  if (!isObject(raw) || !isFiniteNumber(raw.x) || !isFiniteNumber(raw.y)) return null;
+  const known = SUB_MODELS.map((m) => m.id);
+  const models = Array.isArray(raw.models)
+    ? [...new Set(raw.models.filter((m): m is string => typeof m === 'string' && known.includes(m)))]
+    : [];
+  if (!models.length) models.push(SUB_MODELS[0]!.id);
+  const model = typeof raw.model === 'string' && models.includes(raw.model) ? raw.model : models[0]!;
+  const max = SUB_MODELS.find((m) => m.id === model)!.hull;
+  const hull = isFiniteNumber(raw.hull) ? Math.max(0, Math.min(max, raw.hull)) : max;
+  return { x: raw.x, y: raw.y, model, models, hull };
 }

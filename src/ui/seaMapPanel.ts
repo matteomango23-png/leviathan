@@ -19,8 +19,8 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
 
   const zones = seaMap(g.seen);
   const visited = zones.filter((z) => z.visited).length;
-  const boat = g.boat?.owned
-    ? ` · la tua barca è a ${kmFromCoast(g.boat.x).toFixed(1).replace('.', ',')} km dalla costa`
+  const boat = g.sub?.owned
+    ? ` · il tuo sottomarino è a ${kmFromCoast(g.sub.x).toFixed(1).replace('.', ',')} km dalla costa`
     : '';
   el(
     'p',

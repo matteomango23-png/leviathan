@@ -43,7 +43,17 @@ import { zoneAt } from './world/zones';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
 import { rideO2Mult } from './abilities';
-import { board, boatWakePoint, canBoard, dive, newBoat, stepBoat, type BoatState } from './boat';
+import {
+  board,
+  canBoard,
+  leaveSub,
+  newSub,
+  ramSub,
+  repairSub,
+  stepSub,
+  subWakePoint,
+  type SubState,
+} from './submarine';
 import { dismount } from './beastState';
 import { createTemples, hitLever, stepTemples, type TempleState } from './temple';
 
@@ -63,8 +73,8 @@ export interface GameState extends Chapter3World {
   port: PortDef | null;
   /** The last harbour you came into: you wake up there when there is no sanctuary to return to (saved). */
   homePort: PortDef['id'];
-  /** Your boat (from the end of chapter 1; saved). */
-  boat: BoatState;
+  /** Your submarine (from the end of chapter 1; saved). */
+  sub: SubState;
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
@@ -119,7 +129,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     atPort: false,
     port: null,
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
-    boat: newBoat(s.boat),
+    sub: newSub(s.sub),
     timers: { feed: 0, vent: 0 },
     temples: createTemples(),
     chapter2: createChapter2(map),
@@ -130,24 +140,24 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
 }
 
 export function respawnPoint(g: GameState): { x: number; y: number } {
-  if (g.boat.owned) return boatWakePoint(g.boat); // you wake up on your boat
+  if (g.sub.owned) return subWakePoint(g.sub); // you wake up by your submarine
   const i = g.sanctuaries.current;
   const s = i === null ? undefined : g.sanctuaries.list[i];
   return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
 }
 
 /** What the context button does right now. */
-export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri' | 'barca' | 'tuffati';
+export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
-  if (g.boat.aboard) return atPort(d, g.map) ? 'porto' : 'tuffati';
+  if (g.sub.aboard) return atPort(d, g.map) ? 'porto' : 'esci';
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
   if (beast === 'sfonda') return beast;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
-  if (canBoard(g)) return 'barca';
+  if (canBoard(g)) return 'sali';
   return beast;
 }
 
@@ -159,10 +169,10 @@ function doAction(g: GameState, events: GameEvent[]): void {
     const loot = w && openWreck(w, g.gear);
     if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
   } else if (act === 'porto') events.push({ type: 'portArrived' });
-  else if (act === 'barca') {
-    dismount(g, events); // your beast swims off, you climb aboard
+  else if (act === 'sali') {
+    dismount(g, events); // your beast swims off, you climb in
     board(g, events);
-  } else if (act === 'tuffati') dive(g, events);
+  } else if (act === 'esci') leaveSub(g, events);
   else beastAction(g, events);
 }
 
@@ -203,7 +213,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepSwarmCooldowns(g, dt);
 
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
-  const aboard = !held && stepBoat(g, input, dt, events); // your own boat moves you
+  const aboard = !held && stepSub(g, input, dt, events); // your submarine moves you
   g.beasts.aboard = aboard;
   if (!held && !aboard) {
     stepDiver(d, input, g.map, dt, g.rng, events, {
@@ -219,7 +229,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     });
   }
   // after losing your senses you wake up on your boat
-  if (g.boat.owned && !g.boat.aboard && events.some((e) => e.type === 'respawned')) board(g, events);
+  if (g.sub.owned && !g.sub.aboard && events.some((e) => e.type === 'respawned')) board(g, events);
   stepVents(d, dt, g.timers, events);
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
@@ -243,7 +253,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
   events.push(...beastEvents);
-  for (const e of beastEvents) if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
+  for (const e of beastEvents) {
+    if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
+    if (e.type === 'subRammedBy') ramSub(g, e.lengthM, events); // a big beast against the hull
+  }
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepGuardian(g, dt, events);
 
@@ -301,10 +314,10 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
   g.gear.teeth -= teethLost;
   const i = g.sanctuaries.current;
-  if (g.boat.owned) board(g, events);
-  // "sulla tua barca" / "al santuario della Baia" / "a Portofosco"
-  const place = g.boat.owned
-    ? 'sulla tua barca'
+  if (g.sub.owned) board(g, events);
+  // "nel tuo sottomarino" / "al santuario della Baia" / "a Portofosco"
+  const place = g.sub.owned
+    ? 'nel tuo sottomarino'
     : i !== null
       ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
       : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
@@ -312,8 +325,9 @@ export function blackout(g: GameState, events: GameEvent[]): void {
 }
 
 /** Arriving at a harbour: its sanctuary heals everyone, the market restocks, you wake up here. */
-export function enterPort(g: GameState): void {
+export function enterPort(g: GameState, events: GameEvent[] = []): void {
   restAtPort(g);
+  repairSub(g, events);
   g.gear.shopBought = {};
   guardianReturns(g);
 }
