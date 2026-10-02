@@ -296,3 +296,21 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Leggende** = unici con `chance` in `UNIQUE_VARIANTS`: compaiono solo nel loro posto (tipo di tratto del mare aperto e distanza minima, o dove vive la loro specie), al posto di una bestia della specie. Non compaiono se sono già tue, già in acqua o sconfitte (salvataggio v10). Sfregiato e Regina bianca restano guardiani ("palestre" della storia) e non sono leggende.
 - **Lista:** coccodrillo albino (Delta, 3%: "non così raro"), squalo martello preistorico e tartaruga preistorica (create dal proprietario, 1%), Madre delle madri (1%), orca preistorica albina (0,4%, livello 45: "uno dei più fighi e tosti"). Lo squalo albino leggendario resta l'evoluzione dello squalo albino. L'Orca matriarca è l'alfa dell'orca.
 - La tartaruga preistorica è lunga 14 m, tranquilla e galleggia in superficie ("quasi un'isoletta").
+
+## 2026-10-02 — Tappa 14: il primo tempio sommerso
+
+- **Pianta scritta a caratteri nei dati** (`data/temples.ts`), una cella = 16 unità (2 tile).
+  - Si legge e si modifica senza toccare il codice.
+  - Il generatore del mare infinito chiede prima al tempio (`templeTileAt`), poi fa il resto.
+  - Il tempio sta nel centro del primo tratto del suo tipo oltre la distanza minima: è sempre nello stesso posto senza doverlo salvare.
+- **Rompicapo scelti per un telefono in orizzontale:** usano solo azioni che il gioco ha già, cioè sparare e nuotare.
+  - Una leva da colpire.
+  - Due leve da colpire entro 6 s.
+  - Rune da toccare nuotando, nell'ordine del mosaico.
+  - Un corridoio con sfiatatoi.
+  - Scartate le piastre da tenere premute con il compagno: il compagno segue il sub e non resta fermo dove serve.
+- **Porte salvate come tile rotti**, come le ossa di Sfondamento. Hanno un tipo di tile proprio (`TILE.gate`), così non si apre per sbaglio altro. Il rompicapo a metà non si salva: riparte da capo.
+- **Reliquie nell'equipaggiamento** (`gear.relics`).
+  - I vecchi salvataggi non hanno il campo e partono vuoti, quindi non serve una nuova versione del salvataggio.
+  - La prima reliquia porta il consumo d'aria a 0,65.
+- **`world/stretches.ts` staccato da `endless.ts`:** il tempio deve conoscere i tratti per trovare il suo posto, e `endless.ts` deve conoscere il tempio per i tile. Senza separarli ci sarebbe un giro di import.

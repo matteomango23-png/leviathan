@@ -189,7 +189,7 @@ export class TileMap {
   isTop(tx: number, ty: number): boolean {
     return (
       ty * this.tileSize >= this.surfaceY &&
-      this.get(tx, ty) === TILE.rock &&
+      (this.get(tx, ty) === TILE.rock || this.get(tx, ty) === TILE.temple) &&
       this.get(tx, ty - 1) === TILE.water
     );
   }

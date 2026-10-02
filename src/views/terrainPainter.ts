@@ -200,7 +200,19 @@ export class ChunkPaintJob {
       let r: number;
       let gg: number;
       let b: number;
-      if (tile === TILE.bone || tile === TILE.ice) {
+      if (tile === TILE.temple || tile === TILE.gate) {
+        // carved blocks in staggered rows (the gate: tall slabs with bronze bands), darker deep inside
+        const P = SEA.temple;
+        const c = tile === TILE.gate ? P.gate : P.stone;
+        const row = Math.floor(wy / P.block[1]);
+        const bx = (((wx + (row % 2) * (P.block[0] / 2)) % P.block[0]) + P.block[0]) % P.block[0];
+        const by = ((wy % P.block[1]) + P.block[1]) % P.block[1];
+        const mortar = tile === TILE.gate ? by < P.mortar * 2 : bx < P.mortar || by < P.mortar;
+        const shade = (mortar ? 0.45 : 1) * (1 - 0.45 * smooth01((dep - 0.6) * 2)) + (bl - 0.5) * 0.25;
+        r = c[0] * shade;
+        gg = c[1] * shade;
+        b = c[2] * shade;
+      } else if (tile === TILE.bone || tile === TILE.ice) {
         const c = tile === TILE.bone ? SEA.bone : SEA.ice;
         const stripe =
           tile === TILE.bone ? ((wx + wy * 2) % 7 < 2 ? -60 : 0) : (wx * 3 + wy) % 11 < 2 ? 30 : 0;

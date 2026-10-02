@@ -57,6 +57,9 @@ export type GameEvent =
   | { type: 'finalForm'; uid: string }
   | { type: 'beastFed'; uid: string; food: number }
   | { type: 'bonesBroken'; tiles: number[] }
+  // the sunken temples (tappa 14)
+  | { type: 'gateOpened'; tiles: number[] }
+  | { type: 'relicFound'; name: string; text: string }
   // equipment and places
   | { type: 'weaponFired'; weapon: string }
   | { type: 'swarmBound'; id: string }

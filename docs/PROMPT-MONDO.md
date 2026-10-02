@@ -45,3 +45,39 @@ Formato orizzontale 16:9. Oggi la barca è disegnata con forme semplici; con que
 `Realistic dark fantasy painting of a small old wooden fishing boat seen exactly from the side, as in a 2D side-scrolling game, facing RIGHT: dark weathered planks, a short mast with a furled patched sail, an oil lantern hanging at the bow, coils of rope and a fishing rod, a few barnacles on the hull. Only the part above the waterline and the top of the hull, the waterline perfectly straight and horizontal. Isolated on a pure black background, no water, no sky, no people, no text.`
 
 Salvala come `barca.jpg`.
+
+## 5. Il tempio sommerso (tappa 14)
+
+Oggi il tempio è fatto di blocchi disegnati dal gioco; con queste immagini diventa dipinto. Tutte vanno su **fondo nero puro**, senza acqua, senza pesci e senza testo.
+
+**Colonna spezzata** (verticale 9:16):
+
+`Realistic dark fantasy painting of an ancient sunken temple column, seen exactly from the front as in a 2D side-scrolling game: green-grey carved stone, spiral reliefs of sea serpents, broken at the top, barnacles and thin seaweed, faint blue light from above. Isolated on a pure black background, no water, no fish, no text.`
+
+Salvala come `tempio_colonna.jpg`.
+
+**Porta di pietra** (verticale 9:16):
+
+`Realistic dark fantasy painting of a massive ancient stone door of a sunken temple, seen exactly from the front: tall slab of dark stone with bronze bands, a carved eye of a leviathan in the middle, cracks and barnacles. Isolated on a pure black background, no water, no text.`
+
+Salvala come `tempio_porta.jpg`.
+
+**Leva** (quadrata):
+
+`Realistic dark fantasy painting of an ancient bronze lever set in a carved stone wall plate, shaped like a sea serpent's tail, green patina, seen from the side as in a 2D game. Isolated on a pure black background, no text.`
+
+Salvala come `tempio_leva.jpg`.
+
+**Mosaico delle rune** (orizzontale 16:9):
+
+`Realistic dark fantasy painting of an ancient underwater mosaic panel, cracked tiles in teal and gold, showing four glowing symbols in a row: a crescent moon, a star, a triangle, a diamond. Seen straight on. Isolated on a pure black background, no water, no text.`
+
+Salvala come `tempio_mosaico.jpg`.
+
+**La reliquia: Respiro degli Antichi** (quadrata):
+
+`Realistic dark fantasy painting of a small golden seashell relic glowing softly from inside, delicate engravings, floating air bubbles around it. Isolated on a pure black background, no text.`
+
+Salvala come `reliquia_respiro.jpg`.
+
+Metti tutte le immagini in `asset animali ai/mondo/`.

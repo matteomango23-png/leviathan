@@ -112,6 +112,8 @@ export const SEA = {
   iceTint: [0, 6, 16] as [number, number, number], // r, g, b added east of ICE.xMin: colder rock
   bone: [200, 188, 156] as [number, number, number],
   ice: [168, 206, 226] as [number, number, number],
+  // the sunken temples (tappa 14): carved blocks of green-grey stone, gates of darker stone with bronze bands
+  temple: { stone: [92, 104, 96] as [number, number, number], gate: [70, 62, 50] as [number, number, number], block: [32, 16], mortar: 1.4 },
   far: { baseY: 300, parallax: 0.3, top: '#0b2531', bottom: '#04111a' },
   mid: { baseY: 330, parallax: 0.6, top: '#0f2a33', bottom: '#050e13' },
   kelpBack: '#16473a',

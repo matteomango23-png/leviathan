@@ -1,5 +1,6 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
 import { PROGRESSION } from '../data/rules';
+import { TEMPLE_TEXT } from '../data/temples';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
 import { SPECIES } from '../data/species';
 import { STORY_NOTES } from '../data/story';
@@ -173,6 +174,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'bonesBroken':
       return ['Le ossa antiche cedono!', 1.5];
+    case 'gateOpened':
+      return null; // its storyNote says it
+    case 'relicFound':
+      return [`${TEMPLE_TEXT.relic(e.name)} ${e.text}`, 6];
     case 'swarmBound':
       return ['Lo sciame di sardine ti segue! Mettilo nello zaino al porto per chiamarlo.', 4];
     case 'swarmSummoned':

@@ -28,6 +28,7 @@ import { GearFxView } from '../views/gearFxView';
 import { PlacesView } from '../views/placesView';
 import { KelpView } from '../views/kelpView';
 import { VentView } from '../views/ventView';
+import { TempleView } from '../views/templeView';
 import { WorldArtView } from '../views/worldArtView';
 import { BoatView } from '../views/boatView';
 import { LightView } from '../views/lightView';
@@ -45,6 +46,7 @@ export class WorldScene extends Phaser.Scene {
   private terrain!: TerrainView;
   private kelp!: KelpView;
   private vents!: VentView;
+  private temple!: TempleView;
   private worldArt!: WorldArtView;
   private boat!: BoatView;
   private fishView!: FishView;
@@ -93,6 +95,7 @@ export class WorldScene extends Phaser.Scene {
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
+    this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
     this.boat = new BoatView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
@@ -181,14 +184,17 @@ export class WorldScene extends Phaser.Scene {
         this.rig.shake();
       } else if (e.type === 'harpoonHitRock') this.effects.puff(e.x, e.y, 3, 0x9aaaaa, 30);
       else if (e.type === 'battleStart') this.openBattle();
-      else if (e.type === 'bonesBroken') {
+      else if (e.type === 'bonesBroken' || e.type === 'gateOpened') {
         this.terrain.invalidateTiles(e.tiles);
+        const dust = e.type === 'gateOpened' ? 0x8a9488 : 0xd8ccb0;
         for (const i of e.tiles.slice(0, 6))
-          this.effects.puff(g.map.tileOf(i).tx * 8 + 4, g.map.tileOf(i).ty * 8 + 4, 3, 0xd8ccb0, 60);
+          this.effects.puff(g.map.tileOf(i).tx * 8 + 4, g.map.tileOf(i).ty * 8 + 4, 3, dust, 60);
         this.rig.shake();
+        if (e.type === 'gateOpened') this.save();
       } else if (
         e.type === 'fishCaught' ||
         e.type === 'tamed' ||
+        e.type === 'relicFound' ||
         e.type === 'sanctuaryReached' ||
         e.type === 'beastKo'
       )
@@ -243,6 +249,7 @@ export class WorldScene extends Phaser.Scene {
     this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
+    this.temple.update(view, g, g.time);
     this.worldArt.update(view);
     this.boat.update(g.boat, g.diver.face, g.time);
     this.fishView.update(g.fish, view, g.time, dt);

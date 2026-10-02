@@ -1,6 +1,7 @@
 // The diver's side of progress: teeth, the fish bag, suits and upgrades, weapons, items,
 // the backpack (base harpoon + BACKPACK_SLOTS chosen at the port) and bound swarms.
 import { MARKET, UPGRADE_EFFECTS } from '../../data/economy';
+import { RELICS } from '../../data/temples';
 import {
   BACKPACK_SLOTS,
   FISH,
@@ -37,6 +38,7 @@ export interface GearState {
   mythicStock: number;
   deepestM: number;
   guardians: string[]; // Guardians beaten (their reward is given once)
+  relics: string[]; // relics found in the sunken temples (tappa 14): their effect lasts for ever
 }
 
 export function newGear(): GearState {
@@ -57,6 +59,7 @@ export function newGear(): GearState {
     mythicStock: MARKET.mythicHarpoonStock,
     deepestM: 0,
     guardians: [],
+    relics: [],
   };
 }
 
@@ -85,6 +88,7 @@ export function diverModifiers(g: GearState): {
   const s = suitOf(g);
   let o2 = s.o2Mult;
   if (g.upgrades.includes('apnea')) o2 *= UPGRADE_EFFECTS.apnea.o2DrainMult;
+  for (const r of RELICS) if (g.relics.includes(r.id)) o2 *= r.o2DrainMult ?? 1;
   let cone = 1;
   let width = 1;
   if (g.upgrades.includes('lampada_2')) {
