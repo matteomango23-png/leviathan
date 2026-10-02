@@ -63,7 +63,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.1, colors: [] },
     weight: 4,
     weightPerKm: 0,
-    beasts: { barracuda: 3, tartaruga_marina: 2, manta: 1.2, squalo_martello: 1, squalo_tigre: 1, squalo_bianco: 0.5, megattera: 0.4 },
+    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4 },
     baseLevel: 10,
   },
   {
@@ -77,7 +77,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.6, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
     weight: 2,
     weightPerKm: 0,
-    beasts: { pesce_palla: 3, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1 },
+    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5 },
     baseLevel: 8,
   },
   {
@@ -91,7 +91,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.05, colors: [] },
     weight: 2,
     weightPerKm: 0,
-    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, torpedine: 1 },
+    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, scorfano: 1.5, delfino: 1, torpedine: 1 },
     baseLevel: 12,
   },
   {
@@ -106,7 +106,7 @@ export const BIOMES: BiomeDef[] = [
     ice: { ceilingY: 46, holeEvery: 420, holeWidth: 44, pillars: 2 }, // + icebergs (worldArt.ts)
     weight: 1,
     weightPerKm: 0.25,
-    beasts: { orca: 2, megattera: 1, squalo_bianco: 0.5 },
+    beasts: { foca_leopardo: 3, beluga: 2, tricheco: 2, elefante_marino: 2, orca: 2, narvalo: 1.5, megattera: 1, squalo_bianco: 0.5 },
     baseLevel: 18,
   },
   {
@@ -121,7 +121,7 @@ export const BIOMES: BiomeDef[] = [
     trench: { floorY: 2600, width: 0.45 },
     weight: 0.6,
     weightPerKm: 0.35,
-    beasts: { capodoglio: 1.2, squalo_bianco: 1, orca: 1, murena: 1 },
+    beasts: { capodoglio: 1.2, squalo_bianco: 1, squalo_volpe: 1, orca: 1, murena: 1, pesce_spada: 0.6 },
     baseLevel: 20,
   },
 ];

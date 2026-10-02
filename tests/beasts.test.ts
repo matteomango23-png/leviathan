@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CORALS, DELTA, KELP } from '../src/data/worldLayout';
+import { CORALS, DELTA, ICE, KELP } from '../src/data/worldLayout';
+import { ENDLESS } from '../src/data/endless';
 import { MOVES } from '../src/data/moves';
 import { WILD_SPAWNS } from '../src/data/beasts';
 import { SPECIES } from '../src/data/species';
@@ -122,6 +123,7 @@ describe('wild spawns data', () => {
       delta: [DELTA.x0, DELTA.x1],
       barriera: [CORALS.reef.xMin, CORALS.reef.xMax],
       foresta: [KELP.forest.xMin, KELP.forest.xMax],
+      ghiaccio: [ICE.xMin, ENDLESS.startX],
     };
     for (const sp of WILD_SPAWNS) {
       if (sp.level || sp.endless) continue;

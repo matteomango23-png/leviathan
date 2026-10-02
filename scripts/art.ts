@@ -27,6 +27,7 @@ import {
   fillMouth,
 } from './art/cutout.ts';
 import { extraDest, makeExtra } from './art/extras.ts';
+import { keepLargest } from './art/layers.ts';
 
 const INBOX = 'art-inbox';
 const FRAME = { w: 1000, h: 460, lineY: 250 };
@@ -48,13 +49,44 @@ const BATTLE_CROP_BOTTOM: Record<string, number> = {
 // Stray bits to erase, as rectangles [x0, y0, x1, y1] in shares of the (mirrored) source picture.
 const BATTLE_ERASE: Record<string, number[][]> = {
   squalo_bianco_back: [[0.82, 0.25, 1, 0.5]], // a blurred far fin that looked like a blood splash by the snout
+  squalo_volpe_back: [
+    [0.56, 0, 1, 0.43],
+    [0.3, 0, 0.56, 0.3],
+  ], // a cloud of dark specks above it
 };
 // Coiled bodies with background shut between the loops (systems: clearEnclosedBackground).
 const BATTLE_ENCLOSED = ['folgore_front', 'folgore_back', 'scintilla_front', 'scintilla_back'];
 // Side profiles on a textured dark-grey background (not flat black): cut like the battle pictures.
+const TEXTURED_DARK: CutoutOptions = { low: 24, high: 40, soft: 50 };
+// Profiles of dark beasts on a dark, speckled background (the owner's pictures from 2 ottobre on): cut from the
+// border inwards like the battle pictures (the dark body is never eaten into), then keep the beast alone (stray
+// specks and light glows around it go).
+// Stray light in a profile picture, as rectangles [x0, y0, x1, y1] in shares of the picture.
+const SIDE_ERASE: Record<string, number[][]> = {
+  scorfano_side: [
+    [0.7, 0, 1, 0.34],
+    [0.42, 0, 0.7, 0.26],
+  ],
+};
+const SIDE_FLOOD: CutoutOptions = { low: 3, high: 16, soft: 30 };
+const SIDE_FLOOD_SPECIES = [
+  'tonno',
+  'delfino',
+  'pesce_luna',
+  'scorfano',
+  'pesce_napoleone',
+  'pesce_spada',
+  'squalo_volpe',
+  'tricheco',
+  'elefante_marino',
+  'foca_leopardo',
+  'narvalo',
+  'beluga',
+  'coccodrillo_nilo',
+];
 const SIDE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
-  capodoglio_side: { low: 24, high: 40, soft: 50 },
-  capodoglio_side_open: { low: 24, high: 40, soft: 50 },
+  capodoglio_side: TEXTURED_DARK,
+  capodoglio_side_open: TEXTURED_DARK,
 };
 // Open mouths with a dark throat that the cut took for background: rectangles (shares of the picture) to refill.
 const SIDE_MOUTH: Record<string, number[]> = {
@@ -89,7 +121,19 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
   const raw = { data, width: info.width, height: info.height };
   const loose = SIDE_CUTOUT_LOOSE[basename(src, extname(src))];
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
-  const cut = loose ? removeDarkBackground(raw, borderColor(raw), radius, loose) : removeBlackBackground(raw);
+  const flood = SIDE_FLOOD_SPECIES.some((id) => basename(src).startsWith(`${id}_side`));
+  let cut = loose
+    ? removeDarkBackground(raw, borderColor(raw), radius, loose)
+    : flood
+      ? removeDarkBackground(raw, borderColor(raw), radius, SIDE_FLOOD)
+      : removeBlackBackground(raw);
+  eraseRects(cut, info.width, info.height, SIDE_ERASE[basename(src, extname(src))] ?? []);
+  if (flood) keepLargest(cut, info.width, info.height);
+  // a textured dark-grey background (not flat black) survives the plain cut and fills the whole frame:
+  // cut again like those (SIDE_CUTOUT_LOOSE)
+  const first = opaqueBox(cut, info.width, info.height);
+  if (!loose && first && first.x1 - first.x0 > info.width * 0.95 && first.y1 - first.y0 > info.height * 0.95)
+    cut = removeDarkBackground(raw, borderColor(raw), radius, TEXTURED_DARK);
   const mouth = SIDE_MOUTH[basename(src, extname(src))];
   if (mouth) fillMouth(raw, cut, mouth);
   const box = opaqueBox(cut, info.width, info.height);
@@ -143,6 +187,8 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
   const cut = removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
   eraseRects(cut, info.width, info.height, BATTLE_ERASE[name] ?? []);
   if (BATTLE_ENCLOSED.includes(name)) clearEnclosedBackground(raw, cut, borderColor(raw));
+  // the newer pictures have specks and glows around the beast: keep the beast alone
+  if (SIDE_FLOOD_SPECIES.some((id) => name.startsWith(`${id}_`))) keepLargest(cut, info.width, info.height);
   fadeCutEdges(cut, info.width, info.height); // a fin out of frame fades instead of ending in a straight cut
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');
