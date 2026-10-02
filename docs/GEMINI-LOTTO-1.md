@@ -1,5 +1,10 @@
 # Immagini generate in Gemini, lotto 1 (3 ottobre 2026)
 
+**Sistemato il 3 ottobre (v0.16.1):** 58 immagini scaricate, originali in `asset animali ai/<cartella>/` con nomi chiari, copie standard in `art-inbox/`.
+- Non arrivate: Livyatan da dietro (scartata dal proprietario), Dunkleosteus da dietro, polpo gigante e isopode gigante a bocca aperta.
+- I profili di megalodonte e Dunkleosteus guardavano a sinistra: `_flip`.
+- Il profilo del Re Corallo resta solo nella cartella: nel mare lo disegniamo di fronte.
+
 Chat: https://gemini.google.com/app/b0c0fec70d24e837
 
 L'ordine qui sotto è quello della chat (dall'alto in basso). Quando il proprietario le scarica, le riconosco per contenuto e le metto in `asset animali ai/` con i nomi giusti, poi `npm run art`.
