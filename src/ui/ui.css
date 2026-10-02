@@ -806,10 +806,17 @@
   height: 100%;
   object-fit: cover;
 }
-.beast-tile .ico {
+.beast-tile .ico-wrap {
   width: 40%;
-  height: 40%;
+  justify-content: center;
+}
+.beast-tile .ico {
+  width: 100%;
+  height: auto;
   opacity: 0.6;
+}
+.beast-tile.unknown .ico {
+  opacity: 0.25;
 }
 .beast-tile.seen img {
   filter: grayscale(1) brightness(0.45);

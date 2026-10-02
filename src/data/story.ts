@@ -161,6 +161,8 @@ export const SCENES = {
     endFromX: PORT.x + 110, // at the end it sails east from the harbour
     whaleGap: 78, // the chained whale is dragged this far behind
     whaleSpecies: 'megattera',
+    awaySpeedMult: 3.5, // after the opening it sails off faster than you can swim…
+    goneDistance: 520, // …and is gone only this far from you (out of sight)
     length: 90,
   },
 };

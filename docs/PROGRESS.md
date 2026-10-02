@@ -36,6 +36,8 @@
 
 **Da sapere:** le leggende hanno per ora lo sfondo di battaglia della loro regione; il proprietario vorrebbe per loro un piccolo ecosistema o uno sfondo proprio, e alcune in tane negli abissi (da progettare). In arrivo come leggende delle fosse: Megalodonte, Livyatan, Dunkleosteus, Kraken (servono le immagini).
 
+**v0.12.1:** scelta del compagno (card alte uguali, pulsante in fondo, immagine inquadrata in alto), bestiario (non viste tutte uguali), nave dell'apertura (`stepShip`: va avanti durante dialogo e scelta, poi si allontana veloce e sparisce lontano dal sub). 335 test.
+
 **Prossima sessione:** templi con percorso e rompicapo, poi capitolo 3 (la Barriera Rossa, la Vedova Nera). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
