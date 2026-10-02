@@ -1,6 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { TEAM_RULES } from '../data/beasts';
+import { stepPortJobs } from './portJobs';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
@@ -284,6 +285,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
+  if (g.story.step === 'portJobs' && !g.story.dialogue) stepPortJobs(g, events);
   stepChapter2(g, events);
   stepChapter3(g, dt, events);
   stepTemples(g, events);

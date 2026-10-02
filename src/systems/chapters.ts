@@ -1,6 +1,7 @@
 // The chapters together: closing a dialogue and the goal under the hearts, whichever chapter they belong to.
 // (story.ts is chapter 1 and the shared story state; chapter2.ts and chapter3.ts build on it.)
 import { chapter2Objective, closeChapter2Dialogue } from './chapter2';
+import { jobsObjective } from './portJobs';
 import { chapter3Objective, closeChapter3Dialogue, type Chapter3World } from './chapter3';
 import type { GameEvent } from './events';
 import { closeDialogue, objectiveText } from './story';
@@ -16,4 +17,7 @@ export function finishDialogue(g: Chapter3World, events: GameEvent[]): void {
 
 /** The goal shown under the hearts, or null. */
 export const currentObjective = (g: Chapter3World): string | null =>
-  chapter3Objective(g) ?? chapter2Objective(g) ?? objectiveText(g.story);
+  (g.story.step === 'portJobs' ? jobsObjective(g) : null) ??
+  chapter3Objective(g) ??
+  chapter2Objective(g) ??
+  objectiveText(g.story);

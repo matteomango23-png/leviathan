@@ -33,6 +33,8 @@ export interface StoryState {
   clues: string[];
   /** Dialogues and notes already shown once. */
   seen: string[];
+  /** Progress of Aurelio's jobs, by job id. */
+  jobs: Record<string, number>;
   // --- not saved ---
   /** The dialogue on screen (the game waits), or null. */
   dialogue: DialogueId | null;
@@ -72,16 +74,19 @@ export function createStory(
       ...saved,
       clues: [...saved.clues],
       seen: [...saved.seen],
+      jobs: { ...(saved.jobs ?? {}) },
       ...base,
       ship: saved.step === 'intro' ? introShip() : null,
     };
   // an older save without a story: pick up from where the player is (owner's decision)
   const step: StoryStep = !hasSave ? 'off' : tamedGuardian ? 'chapter1Done' : 'findShark';
-  return { step, tutorial: 0, clues: [], seen: [], ...base };
+  return { step, tutorial: 0, clues: [], seen: [], jobs: {}, ...base };
 }
 
 export const saveStory = (s: StoryState): SavedStory | null =>
-  s.step === 'off' ? null : { step: s.step, tutorial: s.tutorial, clues: [...s.clues], seen: [...s.seen] };
+  s.step === 'off'
+    ? null
+    : { step: s.step, tutorial: s.tutorial, clues: [...s.clues], seen: [...s.seen], jobs: { ...s.jobs } };
 
 export function setStep(s: StoryState, step: StoryStep, events: GameEvent[]): void {
   s.step = step;
@@ -147,8 +152,11 @@ function stepTutorial(g: StoryWorld, events: GameEvent[]): void {
     (task.id === 'surface' && portAt(d, g.map)?.id === 'portofosco');
   if (!done) return;
   s.tutorial++;
-  if (task.id === 'surface') setStep(s, 'pier', events);
-  else events.push({ type: 'storyStep', step: s.step });
+  if (task.id === 'surface') {
+    // Aurelio's jobs before the story goes on (tappa 17)
+    setStep(s, 'portJobs', events);
+    openDialogue(s, 'jobs', events);
+  } else events.push({ type: 'storyStep', step: s.step });
 }
 
 function stepFindShark(g: StoryWorld, events: GameEvent[]): void {
@@ -258,7 +266,9 @@ export function askAurelio(g: StoryWorld, events: GameEvent[]): void {
               ? 'hintDone'
               : step === 'findShark' || step === 'off'
                 ? 'hintFindShark'
-                : 'hintTutorial';
+                : step === 'portJobs'
+                  ? 'hintJobs'
+                  : 'hintTutorial';
   openDialogue(g.story, id, events);
 }
 

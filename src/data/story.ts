@@ -11,6 +11,7 @@ export type StoryStep =
   | 'off'
   | 'intro'
   | 'tutorial'
+  | 'portJobs' // Aurelio's jobs at the port (tappa 17), before the pier burns
   | 'pier'
   | 'findShark'
   | 'returnToAurelio'
@@ -24,6 +25,7 @@ export const STORY_STEPS: StoryStep[] = [
   'off',
   'intro',
   'tutorial',
+  'portJobs',
   'pier',
   'findShark',
   'returnToAurelio',
@@ -40,6 +42,8 @@ export interface SavedStory {
   tutorial: number;
   clues: string[];
   seen: string[];
+  /** Progress of Aurelio's jobs (tappa 17; missing in older saves). */
+  jobs?: Record<string, number>;
 }
 
 export type Speaker = 'aurelio' | 'vedova' | 'tu' | 'narratore';
@@ -62,6 +66,11 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Da quando il Leviatano si è svegliato, le bestie impazziscono. E loro ne approfittano.' },
     { who: 'aurelio', text: 'Prendi. L’arpione di tuo padre, e la Conchiglia del domatore: con questa le bestie ti ascoltano.' },
     { who: 'aurelio', text: 'Scendi, prendi confidenza col mare. Ti aspetto al molo.' },
+  ],
+  jobs: [
+    { who: 'aurelio', text: 'Te la cavi, in acqua. Ma prima di scendere sul serio, il porto ha bisogno di una mano.' },
+    { who: 'aurelio', text: 'Quattro lavori: sardine per il mercato, i barracuda che rubano dalle reti, una nuova bestia in squadra, e il tuo compagno più forte.' },
+    { who: 'aurelio', text: 'Li vedi scritti in alto. Quando hai finito, torna qui al molo.' },
   ],
   collar: [
     { who: 'narratore', text: 'Il molo brucia. Nell’aria, l’odore dell’olio nero.' },
@@ -93,6 +102,10 @@ export const DIALOGUES = {
     { who: 'narratore', text: 'La megattera ti gira intorno, lenta. Ha scelto di seguirti.' },
   ],
   // Aurelio at the port (button "Aurelio" in the port menu), one per step
+  hintJobs: [
+    { who: 'aurelio', text: 'I lavori sono scritti in alto: uno alla volta. Le sardine nuotano in banchi vicino alla spiaggia.' },
+    { who: 'aurelio', text: 'Per domare: sfinisci la bestia in battaglia e lancia la Conchiglia. Più è stanca, più è facile.' },
+  ],
   hintTutorial: [{ who: 'aurelio', text: 'Prendi confidenza col mare: nuota, pesca una sardina, prova lo scatto. Poi torna qui.' }],
   hintFindShark: [
     { who: 'aurelio', text: 'Il mio squalo è nella Baia, lo sento. Segui le catene spezzate verso il centro.' },
