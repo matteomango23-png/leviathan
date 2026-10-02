@@ -7,7 +7,7 @@
 // Options: --force (overwrite existing files), --only=<id>, --out=<folder> (write elsewhere, for checks).
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, extname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import {
@@ -50,6 +50,11 @@ const BATTLE_ERASE: Record<string, number[][]> = {
 };
 // Coiled bodies with background shut between the loops (systems: clearEnclosedBackground).
 const BATTLE_ENCLOSED = ['folgore_front', 'folgore_back', 'scintilla_front', 'scintilla_back'];
+// Side profiles on a textured dark-grey background (not flat black): cut like the battle pictures.
+const SIDE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
+  capodoglio_side: { low: 24, high: 40, soft: 50 },
+  capodoglio_side_open: { low: 24, high: 40, soft: 50 },
+};
 const MARGIN = 4; // px of transparent border kept around the cut-out before scaling
 
 const args = process.argv.slice(2);
@@ -76,7 +81,10 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const cut = removeBlackBackground({ data, width: info.width, height: info.height });
+  const raw = { data, width: info.width, height: info.height };
+  const loose = SIDE_CUTOUT_LOOSE[basename(src, extname(src))];
+  const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
+  const cut = loose ? removeDarkBackground(raw, borderColor(raw), radius, loose) : removeBlackBackground(raw);
   const box = opaqueBox(cut, info.width, info.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno (è tutta nera?)');
   const x0 = Math.max(0, box.x0 - MARGIN);
