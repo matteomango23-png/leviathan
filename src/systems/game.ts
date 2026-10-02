@@ -40,6 +40,7 @@ import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState 
 import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
 import { zoneKey } from './seaMap';
+import { stepEndlessSchools, stepVents } from './endlessLife';
 import { rideO2Mult } from './abilities';
 
 export { toSave } from './save/convert';
@@ -59,13 +60,12 @@ export interface GameState extends Chapter2World {
   /** The last harbour you came into: you wake up there when there is no sanctuary to return to (saved). */
   homePort: PortDef['id'];
   /** Seconds before your big beast can eat the next fish (not saved). */
-  timers: { feed: number };
+  timers: { feed: number; vent: number };
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
   for (const i of tiles) {
-    const tx = i % map.cols;
-    const ty = Math.floor(i / map.cols);
+    const { tx, ty } = map.tileOf(i);
     if (map.get(tx, ty) === TILE.bone) map.set(tx, ty, TILE.water);
   }
 }
@@ -110,7 +110,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     atPort: false,
     port: null,
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
-    timers: { feed: 0 },
+    timers: { feed: 0, vent: 0 },
     chapter2: createChapter2(map),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
@@ -193,6 +193,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
     });
   }
+  stepVents(d, dt, g.timers, events);
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
   if (!held && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
@@ -228,6 +229,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     feedBeast(eater, events);
   } else if (eaten) catchFish(g, eaten, events);
   stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
+  stepEndlessSchools(g.fish, g.map, d, g.rng);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {
       markSeen(g, f.kind, events);

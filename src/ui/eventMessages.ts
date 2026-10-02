@@ -58,6 +58,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
             : 'qualcosa';
       return [`${formName(b.form)} si agita: ${what} nel buio ${side}.`, 2.6];
     }
+    case 'ventBreath':
+      return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':

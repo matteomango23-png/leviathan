@@ -27,6 +27,7 @@ import { FishView } from '../views/fishView';
 import { GearFxView } from '../views/gearFxView';
 import { PlacesView } from '../views/placesView';
 import { KelpView } from '../views/kelpView';
+import { VentView } from '../views/ventView';
 import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
@@ -41,6 +42,7 @@ export class WorldScene extends Phaser.Scene {
   private bg!: BackgroundView;
   private terrain!: TerrainView;
   private kelp!: KelpView;
+  private vents!: VentView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private sanctuaries!: SanctuaryView;
@@ -86,6 +88,7 @@ export class WorldScene extends Phaser.Scene {
     this.story = new StoryView(this, L.world);
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
+    this.vents = new VentView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.diverView = new DiverView(this, L.world);
@@ -175,7 +178,7 @@ export class WorldScene extends Phaser.Scene {
       else if (e.type === 'bonesBroken') {
         this.terrain.invalidateTiles(e.tiles);
         for (const i of e.tiles.slice(0, 6))
-          this.effects.puff((i % g.map.cols) * 8 + 4, Math.floor(i / g.map.cols) * 8 + 4, 3, 0xd8ccb0, 60);
+          this.effects.puff(g.map.tileOf(i).tx * 8 + 4, g.map.tileOf(i).ty * 8 + 4, 3, 0xd8ccb0, 60);
         this.rig.shake();
       } else if (
         e.type === 'fishCaught' ||
@@ -233,6 +236,7 @@ export class WorldScene extends Phaser.Scene {
     this.bg.update(info, g.time);
     this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
+    this.vents.update(view, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);

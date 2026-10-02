@@ -3,6 +3,7 @@
 // Speeds marked "U/s" are in diver lengths per second (DIVER.lengthUnits).
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
+import { ENDLESS } from './endless';
 import { bay, delta, east, LAYOUT } from './worldLayout';
 
 /** How wild beasts swim around you (they are seen, like in recent Pokémon games). */
@@ -39,6 +40,8 @@ export interface WildSpawnDef {
   respawnSeconds: [number, number];
   /** A visitor outside its home region: its levels here (otherwise the species' wildLevel). */
   level?: [number, number];
+  /** A slot of the endless sea: species, waters and level are chosen each time it comes (endlessLife.ts). */
+  endless?: boolean;
 }
 
 // Each entry is one beast that comes and goes; a species listed twice can be met two at a time.
@@ -71,6 +74,13 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
   { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
   { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
+  // the endless sea: a few slots that take the beasts of the stretch you are in
+  ...Array.from({ length: ENDLESS.wildSlots }, (_, i) => ({
+    speciesId: 'barracuda',
+    area: [ENDLESS.startX, 0, ENDLESS.startX, 0] as [number, number, number, number],
+    respawnSeconds: [10 + i * 4, 25 + i * 6] as [number, number],
+    endless: true,
+  })),
 ];
 
 /**
@@ -103,6 +113,9 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   pesce_palla: { temper: 'shy', speedMult: 0.5 },
   murena: { temper: 'aggressive', speedMult: 0.8 },
   manta: { temper: 'calm', speedMult: 0.8 },
+  orca: { temper: 'aggressive', speedMult: 1.1, school: 2 }, // a small pod
+  megattera: { temper: 'calm', speedMult: 0.7 },
+  capodoglio: { temper: 'calm', speedMult: 0.6 },
 };
 
 /** The beast you ride, or that follows you, eats the small fish it meets (food chain): into your bag. */

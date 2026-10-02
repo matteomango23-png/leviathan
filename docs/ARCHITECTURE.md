@@ -23,7 +23,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | File | Cosa fa |
 |---|---|
-| `world/worldGen.ts` | Genera la mappa a tile (1207×200, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
+| `world/worldGen.ts` | Genera la mappa a tile (1207×560, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
+| `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
+| `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
 | `diver.ts` | Nuoto, scatto, ossigeno, cuori, morte e rinascita in superficie. |

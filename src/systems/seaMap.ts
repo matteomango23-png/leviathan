@@ -2,6 +2,7 @@
 // that live there with their rarity and how often you meet them. Zones visited are kept in the bestiary's
 // "seen" list as `zona:<name>` (no change to the save file).
 import { WILD_SPAWNS } from '../data/beasts';
+import { BIOMES } from '../data/endless';
 import { RARITY } from '../data/cards';
 import { SPECIES } from '../data/species';
 import { WORLD, ZONES } from '../data/worldLayout';
@@ -30,7 +31,10 @@ const metres = (y: number): number => Math.max(0, Math.round((y - WORLD.surfaceY
 
 export function seaMap(seen: Set<string>): MapZone[] {
   const byZone = new Map<string, Map<string, number>>();
+  // the endless sea: each kind of stretch is a zone of the map, with the beasts it brings
+  for (const b of BIOMES) byZone.set(b.name, new Map(Object.entries(b.beasts)));
   for (const s of WILD_SPAWNS) {
+    if (s.endless) continue;
     const [x0, y0, x1, y1] = s.area;
     const zone = zoneAt((x0 + x1) / 2, (y0 + y1) / 2);
     const weights = byZone.get(zone) ?? new Map<string, number>();
@@ -40,7 +44,8 @@ export function seaMap(seen: Set<string>): MapZone[] {
     );
     byZone.set(zone, weights);
   }
-  return ZONES.map((z) => {
+  const far = BIOMES.map((b) => ({ name: b.name, yMin: WORLD.surfaceY, yMax: Infinity }));
+  return [...ZONES, ...far].map((z) => {
     const weights = byZone.get(z.name) ?? new Map<string, number>();
     const total = [...weights.values()].reduce((a, b) => a + b, 0) || 1;
     const beasts = [...weights.entries()]

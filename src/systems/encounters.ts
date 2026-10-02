@@ -3,6 +3,7 @@
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { BEAST_BODY, ROAM, WILD_RULES } from '../data/beasts';
 import { ITEM_RULES } from '../data/economy';
+import { prepareEndlessSpawn } from './endlessLife';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
@@ -70,7 +71,10 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       w.respawn -= dt;
       const room = present < WILD_RULES.maxPresent || lured(w);
       const can = w.respawn <= 0 && !d.dead && !g.beasts.arena && room;
-      if (can && inArea(w, d.x, d.y, 0)) {
+      const ready = w.spawn.endless
+        ? can && prepareEndlessSpawn(w, d, g.rng, g.beasts.lure?.species)
+        : inArea(w, d.x, d.y, 0);
+      if (can && ready) {
         const form = rollWildForm(w.spawn.speciesId, g.rng);
         const p = appearPoint(w, g.map, g.rng, d);
         if (!p) continue;

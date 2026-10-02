@@ -2,6 +2,13 @@
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { KELP } from '../data/worldLayout';
+import { ENDLESS } from '../data/endless';
+import { biomeAt } from '../systems/world/endless';
+
+/** Kelp grows only this deep (world y): deeper it is dark and nobody sees it. */
+const KELP_DEEPEST = 1200;
+/** Out in the endless sea kelp grows a chunk of columns at a time, near the camera only. */
+const KELP_CHUNK = 64;
 import { hash2 } from '../systems/math';
 import type { TileMap } from '../systems/world/tileMap';
 
@@ -13,17 +20,32 @@ interface Strand {
   width: number;
 }
 
-/** Where kelp grows (port of genKelp from the prototype). */
-export function growKelp(map: TileMap): { back: Strand[]; front: Strand[] } {
+interface KelpDef {
+  maxY: number;
+  chance: number;
+  minH: number;
+  maxH: number;
+}
+
+/** Kelp of the hand-made coast (the forest, or the sparse kind elsewhere) or of a stretch of the endless sea. */
+function kelpDefAt(x: number): KelpDef {
+  const b = biomeAt(x);
+  if (b) return { ...b.kelp, maxY: Infinity };
+  return x > KELP.forest.xMin && x < KELP.forest.xMax ? KELP.forest : KELP.elsewhere;
+}
+
+/** Where kelp grows in columns tx0 … tx1 - 1 (port of genKelp from the prototype). */
+export function growKelp(map: TileMap, tx0 = 0, tx1 = map.cols): { back: Strand[]; front: Strand[] } {
   const back: Strand[] = [];
   const front: Strand[] = [];
   const T = map.tileSize;
-  for (let ty = 1; ty < map.rows; ty++) {
-    for (let tx = 0; tx < map.cols; tx++) {
+  const rows = Math.min(map.rows, Math.ceil(KELP_DEEPEST / T));
+  for (let ty = 1; ty < rows; ty++) {
+    for (let tx = tx0; tx < tx1; tx++) {
       if (!map.isTop(tx, ty)) continue;
       const X = tx * T;
-      const forest = X > KELP.forest.xMin && X < KELP.forest.xMax;
-      const def = forest ? KELP.forest : KELP.elsewhere;
+      const def = kelpDefAt(X);
+      if (def.chance <= 0) continue;
       if (ty * T >= def.maxY || hash2(tx, ty) >= def.chance) continue;
       const x = X + 3;
       let y = ty * T - T;
@@ -47,6 +69,7 @@ export class KelpView {
   private readonly frontG: Phaser.GameObjects.Graphics;
   private readonly back: Strand[];
   private readonly front: Strand[];
+  private readonly far = new Map<number, { back: Strand[]; front: Strand[] }>();
   private readonly backColor = Phaser.Display.Color.HexStringToColor(SEA.kelpBack).color;
   private readonly frontColor = Phaser.Display.Color.HexStringToColor(SEA.kelpFront).color;
 
@@ -54,7 +77,7 @@ export class KelpView {
     scene: Phaser.Scene,
     backLayer: Phaser.GameObjects.Layer,
     frontLayer: Phaser.GameObjects.Layer,
-    map: TileMap,
+    private readonly map: TileMap,
   ) {
     const k = growKelp(map);
     this.back = k.back;
@@ -102,8 +125,30 @@ export class KelpView {
     }
   }
 
+  /** The kelp of the endless sea around the view (grown when first needed, forgotten when far away). */
+  private farKelp(view: Phaser.Geom.Rectangle): { back: Strand[]; front: Strand[] } {
+    const out = { back: [] as Strand[], front: [] as Strand[] };
+    if (view.right < ENDLESS.startX) return out;
+    const T = this.map.tileSize;
+    const c0 = Math.floor((view.x / T - this.map.cols) / KELP_CHUNK) - 1;
+    const c1 = Math.floor((view.right / T - this.map.cols) / KELP_CHUNK) + 1;
+    for (let c = Math.max(0, c0); c <= c1; c++) {
+      let k = this.far.get(c);
+      if (!k) {
+        const tx0 = this.map.cols + c * KELP_CHUNK;
+        k = growKelp(this.map, tx0, tx0 + KELP_CHUNK);
+        this.far.set(c, k);
+      }
+      out.back.push(...k.back);
+      out.front.push(...k.front);
+    }
+    for (const c of this.far.keys()) if (c < c0 - 4 || c > c1 + 4) this.far.delete(c);
+    return out;
+  }
+
   update(view: Phaser.Geom.Rectangle, time: number): void {
-    this.draw(this.backG, this.back, view, time, false);
-    this.draw(this.frontG, this.front, view, time, true);
+    const far = this.farKelp(view);
+    this.draw(this.backG, far.back.length ? [...this.back, ...far.back] : this.back, view, time, false);
+    this.draw(this.frontG, far.front.length ? [...this.front, ...far.front] : this.front, view, time, true);
   }
 }

@@ -2,6 +2,10 @@
 // The outline follows TileMap.field exactly, so what you see is what you bump into.
 import { SEA, TERRAIN } from '../data/diver';
 import { CORALS, ICE, TILE } from '../data/worldLayout';
+import { ENDLESS } from '../data/endless';
+import { biomeAt } from '../systems/world/endless';
+
+const ENDLESS_START = ENDLESS.startX;
 import { hash2, noise2, rampColor } from '../systems/math';
 import type { TileMap } from '../systems/world/tileMap';
 
@@ -61,14 +65,18 @@ function drawCorals(g: CanvasRenderingContext2D, map: TileMap, x0: number, y0: n
       if (!map.isTop(tx, ty)) continue;
       const x = tx * T;
       const y = ty * T;
-      const reef = x > CORALS.reef.xMin && x < CORALS.reef.xMax && y < CORALS.reef.maxY;
-      const set = reef
-        ? CORALS.reef
-        : y < CORALS.shallow.maxY
-          ? CORALS.shallow
-          : y < CORALS.deep.maxY
-            ? CORALS.deep
-            : null;
+      const biome = biomeAt(x);
+      const far = biome && biome.corals.colors.length ? { ...biome.corals, maxY: Infinity } : null;
+      const reef = !!far || (x > CORALS.reef.xMin && x < CORALS.reef.xMax && y < CORALS.reef.maxY);
+      const set = far
+        ? far
+        : reef
+          ? CORALS.reef
+          : y < CORALS.shallow.maxY
+            ? CORALS.shallow
+            : y < CORALS.deep.maxY
+              ? CORALS.deep
+              : null;
       if (!set || hash2(tx, ty * 7) > set.chance) continue;
       const count = 1 + Math.floor(hash2(tx * 3, ty) * (reef ? 3 : 2));
       for (let i = 0; i < count; i++) {
@@ -211,7 +219,7 @@ export class ChunkPaintJob {
         r += (sed[0] - r) * lit * 0.85;
         gg += (sed[1] - gg) * lit * 0.85;
         b += (sed[2] - b) * lit * 0.85;
-        if (wx > ICE.xMin) {
+        if (wx > ICE.xMin && (wx < ENDLESS_START || biomeAt(wx)?.ice)) {
           r += SEA.iceTint[0];
           gg += SEA.iceTint[1];
           b += SEA.iceTint[2];

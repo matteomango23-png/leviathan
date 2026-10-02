@@ -264,3 +264,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** la bestia che cavalchi (o che ti segue) si gira passando per la verticale (muso in su, o in giù se si stava tuffando) e cambia lato in cima, dove le due facce si somigliano; il sub e la cavalcatura si inclinano fino a ~70° nella direzione del nuoto.
 - **Motivo:** il proprietario trovava brutta la virata piatta (la sagoma che si stringe) e lo scivolare orizzontale in discesa. Le bestie selvatiche restano come prima: per regola si girano solo fuori dalla luce.
+
+## 2026-10-02 — Tappa 11: come è fatto l'oceano infinito
+
+- **Seme fisso:** il mare infinito è lo stesso per tutti (seme in `data/endless.ts`): niente da salvare, e la storia potrà mettere i suoi luoghi a distanze fisse.
+- **Mappa a pezzi:** la parte fatta a mano resta un array (1207 colonne); oltre, la `TileMap` chiede al generatore pezzi da 64 colonne e li tiene. I tile rotti si numerano come prima nella parte a mano e dopo di essa colonna per colonna: i salvataggi non cambiano.
+- **Più righe (560):** servono per le fosse; la costa fatta a mano sotto la sua vecchia profondità è roccia (controllo veloce `handMadeBottom`).
+- **Tratti:** 5 tipi, 1800 unità (300 m) ciascuno, raccordati sul fondale; fosse e ghiaccio più frequenti lontano. Livello delle bestie = base del tipo + 2 per km (più i minimi per grandezza e rarità e i "fuori scala").
+- **Bestie e sardine "che seguono":** pochi posti (5 bestie, 6 banchi) che si spostano vicino al sub invece di riempire un mondo infinito.
+- **Ossigeno:** sfiatatoi nel punto meno profondo tra alcuni candidati di ogni tratto (un limite fisso di profondità lasciava i tratti lontani senza aria) e due mute da 4-5 minuti.
