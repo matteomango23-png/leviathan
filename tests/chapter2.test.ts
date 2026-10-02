@@ -120,7 +120,7 @@ describe('chapter 2: freeing the whale', () => {
     const whale = g.beasts.team.find((b) => b.form.speciesId === 'megattera');
     expect(whale?.level).toBe(VEDOVA.whale.level);
     expect(g.story.ship?.whale).toBe(false);
-    expect(currentObjective(g)).toContain('Capitolo 2 completato');
+    expect(currentObjective(g)).toContain('Barriera Rossa'); // on to chapter 3
   });
 
   it('anchors ignore weapons outside the fight', () => {

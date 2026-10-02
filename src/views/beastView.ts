@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { assetUrl } from '../data/assets';
 import { BEAST_SPRITE } from '../data/beasts';
-import { OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
+import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -22,6 +22,19 @@ export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
     const tk = textureKey(key, open);
     if (!scene.textures.exists(tk)) scene.load.image(tk, spriteUrl(key, open));
   }
+}
+
+/**
+ * Beasts that have no side profile yet but a picture from the front (the Re Corallo: a crab walks sideways, so
+ * seen from the front it moves across the screen as crabs do). Drawn whole, with a scuttling sway.
+ */
+export const frontTextureKey = (key: string): string => `beast-front-${key}`;
+export const frontOnlyKeys = (ids: string[]): string[] =>
+  ids.filter((id) => !SPRITE_KEYS.includes(id) && BATTLE_ART_KEYS.includes(`${id}_front`));
+export function loadFrontSprites(scene: Phaser.Scene, ids: string[]): void {
+  for (const id of frontOnlyKeys(ids))
+    if (!scene.textures.exists(frontTextureKey(id)))
+      scene.load.image(frontTextureKey(id), assetUrl(`sprites/${id}_front.webp`));
 }
 
 /** Cuts a loaded profile texture into strip frames s0 (head) … s25 (tail). */
@@ -73,6 +86,7 @@ export class BeastSprite {
   private readonly strips: Phaser.GameObjects.Image[] = [];
   private key = '';
   private open = false;
+  private readonly front: Phaser.GameObjects.Image;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -85,6 +99,8 @@ export class BeastSprite {
     }
     // tail first so the head is drawn on top
     this.root.add([...this.strips].reverse());
+    this.front = scene.add.image(0, 0, '__WHITE').setVisible(false);
+    this.root.add(this.front);
     layer.add(this.root);
     this.root.setVisible(false);
   }
@@ -106,9 +122,11 @@ export class BeastSprite {
 
   update(p: BeastPoseView): void {
     if (!this.setTextures(p.key, p.jaw > 0)) {
-      this.root.setVisible(false);
+      this.updateFront(p);
       return;
     }
+    this.front.setVisible(false);
+    for (const s of this.strips) s.setVisible(true);
     const bend = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
     // Turning around (own beasts, or against a wall): the head turns first and the body follows
     // to the tail, each piece folding through edge-on; mid-turn the body darkens (showing its back)
@@ -177,6 +195,27 @@ export class BeastSprite {
       .setPosition(p.x + shake, p.y + shake)
       .setScale(baseFace * sc, sc * (p.girth ?? 1))
       .setAlpha(p.alpha);
+  }
+
+  /** No side profile: the front picture, whole, scuttling (see frontTextureKey). */
+  private updateFront(p: BeastPoseView): void {
+    const tk = frontTextureKey(p.key);
+    if (!this.scene.textures.exists(tk)) {
+      this.root.setVisible(false);
+      return;
+    }
+    for (const s of this.strips) s.setVisible(false);
+    this.key = '';
+    const im = this.front.setVisible(true);
+    if (im.texture.key !== tk) im.setTexture(tk);
+    const sc = p.length / im.width;
+    im.setOrigin(0.5, 0.55)
+      .setRotation(Math.sin(p.phase) * 0.05 + p.pitch * 0.3)
+      .setScale(sc, sc * (1 + 0.03 * Math.sin(p.phase * 2)));
+    if (p.flash > 0) im.setTint(0xff9a8a);
+    else if (p.rage) im.setTint(0xffd0c8);
+    else im.clearTint();
+    this.root.setVisible(true).setPosition(p.x, p.y).setScale(1, 1).setAlpha(p.alpha);
   }
 
   destroy(): void {

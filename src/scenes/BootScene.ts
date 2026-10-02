@@ -1,6 +1,7 @@
 // Boot: loads the beast sprites, paints the procedural textures, then starts the world and the interface.
 import Phaser from 'phaser';
-import { addStripFrames, loadBeastSprites } from '../views/beastView';
+import { addStripFrames, loadBeastSprites, loadFrontSprites } from '../views/beastView';
+import { SPECIES } from '../data/species';
 import { neededSpriteKeys } from '../views/neededSprites';
 import { createTextures } from '../views/textures';
 import { Session } from './session';
@@ -14,6 +15,11 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     for (const key of neededSpriteKeys()) loadBeastSprites(this, key);
+    // beasts drawn from the front until they have a side profile (the Re Corallo)
+    loadFrontSprites(
+      this,
+      SPECIES.map((s) => s.id),
+    );
     // painted walls and icebergs (views/worldArtView.ts)
     for (const key of WORLD_ART_KEYS) this.load.image(`world-${key}`, assetUrl(`world/${key}.webp`));
     this.load.on('loaderror', (file: Phaser.Loader.File) => console.warn('Immagine mancante:', file.src));

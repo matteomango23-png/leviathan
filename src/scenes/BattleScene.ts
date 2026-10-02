@@ -252,7 +252,9 @@ export class BattleScene extends Phaser.Scene {
         await this.view!.faint(st.side);
         await this.ui.say(
           st.side === 'foe'
-            ? BATTLE_TEXT.foeFainted(this.name('foe'))
+            ? this.setupInGame?.title
+              ? BATTLE_TEXT.bossFainted(this.name('foe'))
+              : BATTLE_TEXT.foeFainted(this.name('foe'))
             : BATTLE_TEXT.fainted(this.name('you')),
           1.6,
         );

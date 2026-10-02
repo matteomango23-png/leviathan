@@ -71,7 +71,8 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
     events.push({ type: 'tamed', uid: b.uid, toTeam: b.inTeam });
   }
   if (w) {
-    if (win && w.guardian) guardianDefeated(g, o.over === 'caught', events);
+    if (win && w.storyBoss) w.beaten = o.over === 'caught' ? 'caught' : 'won';
+    else if (win && w.guardian) guardianDefeated(g, o.over === 'caught', events);
     else if (win) removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
     else w.calm = ROAM.calmAfterBattle;
   }
@@ -111,7 +112,7 @@ export function battleSetup(g: GuardianWorld): BattleSetup | null {
     first: req.first,
     noFlee: !!w.boss,
     title: w.boss,
-    place: battlePlace(speciesOf(w.form).region, !!w.arena),
+    place: battlePlace(speciesOf(w.form).region, !!w.guardian),
   };
 }
 

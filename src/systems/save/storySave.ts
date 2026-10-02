@@ -1,5 +1,6 @@
 // Checking the saved story (v5). Unknown steps or ids (e.g. from a newer game) are dropped.
 import { CLUES, DIALOGUES, STORY_STEPS, TUTORIAL, type SavedStory } from '../../data/story';
+import { chapter3MarkIds } from '../../data/chapter3';
 
 export type { SavedStory } from '../../data/story';
 
@@ -24,6 +25,6 @@ export function validateStory(raw: unknown): SavedStory | null {
       raw.clues,
       CLUES.map((c) => c.id),
     ),
-    seen: known(raw.seen, [...Object.keys(DIALOGUES), 'gate', 'freed', 'starter']),
+    seen: known(raw.seen, [...Object.keys(DIALOGUES), 'gate', 'freed', 'starter', ...chapter3MarkIds()]),
   };
 }

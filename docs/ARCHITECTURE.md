@@ -6,7 +6,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | Cartella | Contenuto |
 |---|---|
-| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma della costa e dell'oceano con `LAYOUT` e le trasformazioni `bay()`, `delta()`, `east()`, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porti Portofosco e Porto Fango, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
+| `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma della costa e dell'oceano con `LAYOUT` e le trasformazioni `bay()`, `delta()`, `east()`, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porti Portofosco e Porto Fango, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `chapter3.ts` (l'anfiteatro, il Re Corallo, le catene) + `temples.ts` (pianta dei templi, reliquie) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
 | `src/audio/` | Suoni sintetizzati con Web Audio: il mare (rombo e bollicine) e la musica di battaglia; il motore sta nella Session, i numeri in `data/audio.ts`. |
@@ -61,6 +61,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `feeding.ts` | Le bestie grandi in acqua mangiano i pesci vicini (nella sacca, o per crescere); al porto "Nutri" dalla sacca. |
 | `beasts/growth.ts` | Esperienza, livelli, barra del cibo (31-50), forme finali. |
 | `chapter2.ts` | Capitolo 2: la Vedova Nera nel Delta, il suo coccodrillo, gli ancoraggi da spezzare, la megattera liberata. |
+| `chapter3.ts` | Capitolo 3: la Vedova sopra la Barriera, il Re Corallo nell'anfiteatro (bestia della storia, battaglia, sfinito), le catene da spezzare, il premio, la fuga della nave. |
+| `world/arena.ts` | La forma dell'anfiteatro di corallo (conca a gradoni scavata nel fondale). |
 | `chapters.ts` | Unisce i capitoli: chiusura dei dialoghi e obiettivo sotto i cuori. |
 | `story.ts` | La storia (capitolo 1 e parte comune): apertura, immersione guidata, molo in fiamme, tracce, finale; apre i dialoghi (il gioco si ferma). |
 | `catching.ts` | Pesci catturati: cuore, ossigeno o sacca; nuove creature nel bestiario. |
