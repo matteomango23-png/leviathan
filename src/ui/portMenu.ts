@@ -1,6 +1,7 @@
 // A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
 import { MARKET } from '../data/economy';
+import { renderSubs } from './portSubs';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
 import { restAtPort, sellAtPort, type GameState } from '../systems/game';
@@ -17,7 +18,7 @@ export { slotName } from './portTabs';
 type Tab = 'mercato' | 'mute' | 'zaino' | 'bacheca' | 'recinto';
 const TABS: [Tab, string, IconName][] = [
   ['mercato', 'Mercato', 'coins'],
-  ['mute', 'Mute', 'suit'],
+  ['mute', 'Mute', 'suit'], // suits, then the submarines (portSubs.ts)
   ['zaino', 'Zaino', 'backpack'],
   ['bacheca', 'Bacheca', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
@@ -105,8 +106,10 @@ export class PortMenu {
     const b = this.body;
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
     if (this.tab === 'mercato') this.renderMarket(b);
-    else if (this.tab === 'mute') this.renderSuits(b);
-    else if (this.tab === 'zaino') renderBackpack(b, ctx);
+    else if (this.tab === 'mute') {
+      this.renderSuits(b);
+      renderSubs(b, ctx);
+    } else if (this.tab === 'zaino') renderBackpack(b, ctx);
     else if (this.tab === 'bacheca') renderBoard(b, ctx);
     else renderTeamPanel(b, this.g, true);
   }

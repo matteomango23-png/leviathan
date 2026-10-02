@@ -30,7 +30,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
 | `world/icebergs.ts` | Gli iceberg: dove galleggiano e quali punti sono ghiaccio solido (dalla maschera del disegno). |
 | `beasts/legends.ts` | Le leggende: quali sono, dove vivono, quando una compare al posto di una bestia della sua specie. |
-| `boat.ts` | La tua barca: regalo a fine capitolo 1, salire e tuffarsi, navigare in superficie, cure e risveglio a bordo, pesca. |
+| `submarine.ts` | Il tuo sottomarino (al posto della barca): regalo a fine capitolo 1, Sali/Esci a qualsiasi profondità, guida sott'acqua fino alla profondità del modello, cure e risveglio accanto, pesca, urti delle bestie grandi, rimorchio e riparazione al porto, modelli in vendita (`data/submarine.ts`). |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |

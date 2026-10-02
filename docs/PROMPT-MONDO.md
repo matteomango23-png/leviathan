@@ -83,3 +83,17 @@ Salvala come `tempio_mosaico.jpg`.
 Salvala come `reliquia_respiro.jpg`.
 
 Metti tutte le immagini in `asset animali ai/mondo/`.
+
+## 6. Altri due sottomarini (tappa 16)
+
+Il primo (`sottomarino_1`, il batiscafo di Aurelio) c'è già. Per gli altri due modelli, **nella stessa chat del primo**, così lo stile resta uguale:
+
+**Squalo di ferro** (orizzontale 16:9):
+`Same style. A sleeker, faster iron submarine shaped like a shark, riveted dark steel, a fin-shaped tower, a toothed bow, twin propellers, seen exactly from the side facing RIGHT, isolated on a flat pure green background (#00FF00), no water, no text.`
+Salvalo come `sottomarino_2.jpg`.
+
+**Leviatano d'ottone** (orizzontale 16:9):
+`Same style. A large ornate brass and black-iron deep-sea submarine shaped like a sea serpent, glowing amber portholes, armored plates, a huge propeller, seen exactly from the side facing RIGHT, isolated on a flat pure green background (#00FF00), no water, no text.`
+Salvalo come `sottomarino_3.jpg`.
+
+Mettili in `asset animali ai/mondo/`.

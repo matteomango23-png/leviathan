@@ -1,5 +1,6 @@
 // Game state ⇄ save file.
-import { START, WORLD } from '../../data/worldLayout';
+import { START } from '../../data/worldLayout';
+import { saveSub, subWakePoint, type SubState } from '../submarine';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
@@ -13,7 +14,7 @@ export interface SaveSource extends Pick<
   BackpackWorld,
   'diver' | 'sanctuaries' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'
 > {
-  boat: { owned: boolean; x: number; aboard: boolean };
+  sub: SubState;
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
@@ -71,10 +72,10 @@ export function toSave(g: SaveSource, now: Date): SaveData {
       : portStart(home)
     : { x: Math.round(d.x), y: Math.round(d.y) };
   s.homePort = g.homePort;
-  s.boat = g.boat.owned ? { x: Math.round(g.boat.x) } : null;
+  s.sub = saveSub(g.sub);
   s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
-  if (g.boat.aboard && !d.dead) s.diver = { x: Math.round(g.boat.x), y: WORLD.surfaceY + 8 };
+  if (g.sub.aboard && !d.dead) s.diver = subWakePoint(g.sub); // saved inside: you start next to it
   s.fishCaught = { ...g.fishCaught };
   s.seen = [...g.seen];
   s.team = g.beasts.team.map((b) => ({

@@ -20,6 +20,8 @@ export interface RoamContext {
   hidden: boolean;
   /** Length of the beast you ride (0 on foot): much smaller beasts keep away instead of attacking. */
   riderLength?: number;
+  /** You are inside your submarine and this beast is not one that rams it: it slips away (submarine.ts). */
+  scared?: boolean;
 }
 
 /** Rare beasts are always shy (you have to reach them); named ones always come at you. */
@@ -88,6 +90,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
     b.mood = temper === 'aggressive' && !afraid ? 'chase' : temper === 'shy' || afraid ? 'flee' : 'wander';
   else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
+  if (ctx.scared && !b.boss && dist < sight) b.mood = 'flee';
 
   const spec = BEAST_TEMPER[b.form.speciesId];
   const mult = spec?.speedMult ?? 1;

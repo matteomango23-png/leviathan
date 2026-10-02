@@ -2,6 +2,22 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.15.0 — Il sottomarino (3 ottobre 2026)
+
+- **Il sottomarino prende il posto della barca.** Alla fine del capitolo 1 Aurelio ti lascia il suo vecchio **batiscafo**, ormeggiato oltre il molo di Portofosco. Chi aveva la barca lo trova dov'era la barca.
+- **Sali** quando gli sei vicino, a qualsiasi profondità; **Esci** per nuotare. Il sottomarino resta dove lo lasci.
+- **Sott'acqua:** si guida con il joystick in tutte le direzioni e passa sotto gli iceberg. Ogni modello scende solo fino alla sua profondità.
+- **Dentro:** respiri, tu e la squadra vi curate, peschi con il pulsante dell'arma. Non si combatte:
+  - le bestie normali scappano;
+  - quelle grandi e aggressive (orche, coccodrilli marini, leggende…) lo urtano e rovinano lo scafo (lo vedi in alto: "scafo 60/60").
+- **Rotto:** ti rimorchiano a Portofosco e perdi il 10% dei denti. Ogni porto lo ripara, quando ci entri, al costo di 2 denti per punto di scafo.
+- **Al porto, scheda Mute:**
+  - Batiscafo di Aurelio: lento, fino a 80 m;
+  - **Squalo di ferro** (1800 denti): più veloce, fino a 250 m;
+  - **Leviatano d'ottone** (6000 denti): il più veloce, fino a 900 m;
+  - puoi tornare a usare quelli che hai già.
+- Così le zone lontane, con bestie di livello alto, si raggiungono quando hai un sottomarino che le regge.
+
 ## v0.14.1 — Iceberg, più vita, il molo dipinto (3 ottobre 2026)
 
 - **Iceberg:** sotto si passa sempre, perché gli iceberg alti sono disegnati un po' più piccoli e non toccano mai il fondale. Intorno non si vede più il vecchio ghiaccio a blocchi: resta solo il disegno.

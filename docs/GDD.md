@@ -20,7 +20,13 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 - **Delta delle Mangrovie:** piccola zona tra la Baia e la Barriera Rossa, dove un fiume sfocia nel mare: acqua salmastra, bassa e torbida, radici di mangrovie e rive. Ci vivono i due coccodrilli, che attaccano dalla superficie.
 - **Abilità delle bestie:** alcuni passaggi si aprono solo con certe bestie (sfondare ossa, spezzare il ghiaccio, vincere le correnti).
 - **Porto di Portofosco:** unica base. Mercato, recinto (riserva), bacheca missioni, santuario.
-- **Barca:** viaggio veloce in superficie; è anche santuario mobile.
+- **Sottomarino** (dal 3 ottobre 2026, al posto della barca):
+  - va sott'acqua, anche sotto gli iceberg, ogni modello fino alla sua profondità;
+  - il primo è lento; al porto se ne comprano di migliori;
+  - è un santuario mobile: dentro respiri, ti curi e peschi;
+  - dentro non si combatte: le bestie normali scappano, quelle grandi e aggressive lo urtano;
+  - rotto, viene rimorchiato al porto, dove si ripara;
+  - resta dove lo lasci.
 - **Santuari:** cura graduale di giocatore e squadra (circa 5 s fermi per riempire vita e ossigeno); punto di rinascita.
 - **Guardiani:** chiudono ogni capitolo; sconfitti danno molti denti e diventano domabili come variante unica.
 - **Sessioni:** immersioni di 10-15 minuti, poi ritorno in porto.
@@ -106,7 +112,7 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 6. ✅ **Capitolo 2 (v0.6.0):** il Delta delle Mangrovie, i coccodrilli, la Vedova Nera e la megattera liberata.
 7. ✅ **La Costa (v0.9.0):** spiaggia, Baia più grande, Isola delle Mangrovie con Porto Fango, Delta alla foce, velocità più realistiche.
 8. ✅ **Oceano aperto infinito (v0.10.0):** tratti generati (mare aperto, barriera, foresta, banchisa, fosse), mute per immersioni lunghe, sfiatatoi per l'ossigeno, livelli che crescono con la distanza.
-8b. ✅ **La barca (v0.11.0):** regalo di Aurelio, navigazione in superficie, santuario mobile, pesca; niente viaggio istantaneo.
+8b. ✅ **La barca (v0.11.0),** diventata **il sottomarino (v0.15.0):** regalo di Aurelio, sott'acqua fino alla profondità del modello, santuario mobile, pesca, modelli migliori al porto; niente viaggio istantaneo.
 8c. ✅ **Le leggende (v0.12.0):** una sola nel mondo, solo nel suo posto, rara; domata è tua, sconfitta sparisce per sempre.
 8d. ✅ **Il primo tempio sommerso (v0.13.0):** nel mare aperto a quasi 4 km, mezzo sepolto nel fondale. Quattro sale: una leva, due leve da colpire una subito dopo l'altra, quattro rune nell'ordine del mosaico, un corridoio lungo con sfiatatoi. In fondo una reliquia (Respiro degli Antichi: l'aria dura circa il 50% in più, per sempre). La Compagnia è già passata di lì: la Vedova Nera cerca nei templi una reliquia che piega le bestie (gancio per il capitolo 3). Altri templi: altri rompicapo, con reliquie o leggende come premio.
 9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa.

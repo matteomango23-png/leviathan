@@ -8,8 +8,9 @@ import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
 import { distanceToBody } from './beasts/combat';
-import { formKey, rollWildForm, rollWildLevel } from './beasts/forms';
-import { appearPoint, stepRoam } from './beasts/roam';
+import { formKey, formLengthM, rollWildForm, rollWildLevel } from './beasts/forms';
+import { appearPoint, stepRoam, temperOf } from './beasts/roam';
+import { SUBMARINE } from '../data/submarine';
 import { isLegend } from './beasts/legends';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
 import type { BattleRequest, BeastWorld } from './beastState';
@@ -54,11 +55,16 @@ function inArea(w: WildBeast, x: number, y: number, margin: number): boolean {
   return x > x0 - margin && x < x1 + margin && y > y0 - margin && y < y1 + margin;
 }
 
+/** Big aggressive beasts come at your submarine and ram it (owner: "quelli enormi te lo rompono"). */
+export const ramsSubmarine = (w: WildBeast): boolean =>
+  temperOf(w) === 'aggressive' && formLengthM(w.form) >= SUBMARINE.giantLengthM;
+
 /** Wild beasts appear, swim, leave when you are far, and touch you. */
 export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): void {
   const d = g.diver;
   let present = g.beasts.wilds.filter((w) => !w.arena && isInWater(w)).length;
-  const hidden = !!g.beasts.decoy || g.beasts.aboard;
+  const hidden = !!g.beasts.decoy;
+  const aboard = g.beasts.aboard; // in the submarine: the big hunters ram it, the others slip away
   const lure = g.beasts.lure;
   if (lure) {
     lure.t -= dt;
@@ -99,8 +105,13 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       continue;
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
-    const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength });
-    if (touched) requestBattle(g, w, 'foe', events);
+    const rams = aboard && ramsSubmarine(w);
+    const scared = aboard && !rams;
+    const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength, scared });
+    if (touched && rams) {
+      events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form) });
+      w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
+    } else if (touched && !aboard) requestBattle(g, w, 'foe', events);
   }
 }
 
