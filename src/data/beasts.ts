@@ -127,7 +127,10 @@ export const TEAM_RULES = {
   follow: { behind: 0.5, gap: 4, below: 5, speed: 3 }, // a companion swims just behind you, inside the lamp halo: × its length + gap units, spring rate
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
-  turnSeconds: 0.6, // your mount turns around (animated from the head)
+  /** Your beast turns around like a real one seen from the side: nose up (or down) through the vertical and back. */
+  loopSeconds: 0.75,
+  /** Your beast leans into the way it swims, up to nearly vertical when you dive straight down (radians). */
+  pitchMax: 1.25,
   accelMult: 1.7, // riding: acceleration × the beast's speed
   rideSpeedMult: 0.48, // tuning: riding speed × the beast's speed stat (tappa 10: a white shark ~55 u/s, 1.3× the diver; was 1.6)
   rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // a tap on the dash button while riding…

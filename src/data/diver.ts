@@ -7,6 +7,7 @@ export const DIVER = {
   maxHp: 5, // hearts (suits add SuitDef.hpBonus later)
   maxO2: 60, // seconds of air at the surface rate
   accel: 270,
+  tilt: { fromSpeed: 12, fullSpeed: 22, max: 1.3 }, // leaning into the swim (u/s, u/s, radians)
   maxSpeed: 42, // tuning (× SuitDef.speedMult): 7 m/s (tappa 10, was 64: the world went by too fast)
   drag: 3.2,
   sinkWhenIdle: 10, // slow sinking when not swimming

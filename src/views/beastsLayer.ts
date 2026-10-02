@@ -145,8 +145,6 @@ export class BeastsLayer {
         girth: speciesOf(b.form).girth,
         flash: c.flash,
         alpha: c.alpha,
-        turn: c.turn,
-        turnFrom: c.turnFrom,
       });
     else this.mount.hide();
   }

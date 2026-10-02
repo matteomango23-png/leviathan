@@ -79,9 +79,12 @@ export class DiverView {
     this.finB.setRotation(-0.25 * k + 0.05);
 
     const scale = DIVER.lengthUnits / LOCAL_LENGTH;
+    // swimming: the diver leans into the way he goes, head down when diving straight down (owner: he just slid
+    // down); drifting slowly he stays level
+    const swimming = Phaser.Math.Clamp((speed - DIVER.tilt.fromSpeed) / DIVER.tilt.fullSpeed, 0, 1);
     const wantTilt = rider
       ? rider.pitch
-      : Phaser.Math.Clamp(Math.atan2(d.vy, Math.abs(d.vx) + 30) * 0.5, -0.35, 0.35);
+      : Phaser.Math.Clamp(Math.atan2(d.vy, Math.abs(d.vx)) * swimming, -DIVER.tilt.max, DIVER.tilt.max);
     this.tilt += (wantTilt - this.tilt) * Math.min(1, dt * 6);
     const blink = d.invulnerable > 0 && !d.dead && Math.floor(time * 12) % 2 === 0;
     this.root
