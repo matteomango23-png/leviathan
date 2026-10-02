@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.10.3 — Il varano del Nilo nero (2 ottobre 2026)
+
+- **Varano del Nilo nero**, predatore del Delta delle Mangrovie: nuota a pelo d'acqua tra le radici, morso velenoso che può stordire, colpo di coda doppio e agguato dalle radici.
+
 ## v0.10.2 — Tredici bestie nuove (2 ottobre 2026)
 
 - **Nuove bestie** (le tue immagini): **tonno rosso** (in branco), **delfino**, **pesce luna**, **scorfano gigante**, **pesce napoleone**, **pesce spada**, **squalo volpe**, **tricheco**, **elefante marino**, ognuna con le sue 3 mosse.

@@ -65,6 +65,7 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'delfino', area: BAY, respawnSeconds: [40, 80] },
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
   { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
+  { speciesId: 'varano_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [35, 70] },
   { speciesId: 'coccodrillo_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [50, 90] },
   // the Mare di Ghiaccio (hand-made, before the endless sea)
   { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
@@ -138,6 +139,7 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   narvalo: { temper: 'shy', speedMult: 0.9 },
   tricheco: { temper: 'calm', speedMult: 0.6 },
   elefante_marino: { temper: 'calm', speedMult: 0.7 },
+  varano_nilo: { temper: 'aggressive', speedMult: 0.9, surface: true },
   coccodrillo_nilo: { temper: 'aggressive', speedMult: 0.8, surface: true },
 };
 
