@@ -88,8 +88,13 @@ export function makeFighter(
   };
 }
 
-export const fighterFromTeam = (b: TeamBeast): Fighter =>
-  makeFighter(b.form, b.level, b.hp, b.uid, b.ppUsed, b.known);
+/** A team beast in battle: its health, PP and condition as it left the last one (like Pokémon). */
+export function fighterFromTeam(b: TeamBeast): Fighter {
+  const f = makeFighter(b.form, b.level, b.hp, b.uid, b.ppUsed, b.known);
+  f.status = b.status ?? null;
+  f.sleepTurns = b.status === 'stordito' ? Math.max(1, b.sleepTurns ?? 2) : 0;
+  return f;
+}
 
 /** The PP each move has spent (to keep on the team beast). */
 export const ppUsedOf = (f: Fighter): number[] => f.moves.map((m) => m.maxPp - m.pp);

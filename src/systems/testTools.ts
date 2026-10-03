@@ -34,6 +34,8 @@ export function healAll(g: GameState): void {
     b.hp = maxHpOf(b);
     b.ko = false;
     b.ppUsed = undefined;
+    b.status = undefined;
+    b.sleepTurns = undefined;
   }
 }
 

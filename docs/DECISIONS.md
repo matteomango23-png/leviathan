@@ -419,6 +419,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
 
+## 2026-10-03 — Oggetti e stati come Pokémon
+
+- Gli stati restano dopo la battaglia (`TeamBeast.status`, `sleepTurns`, salvati); spariscono con la guarigione completa e quando la bestia è sfinita. Niente danno da veleno fuori dalla battaglia (come Pokémon dalla 5ª generazione).
+- Oggetti (`ItemDef.use` in `data/world.ts`, regole in `systems/economy/items.ts`): quelli di Pokémon con nomi di mare e prezzi circa 0,3 × quelli di Pokémon. Le regole di Pokémon: una pozione non serve a una bestia sfinita o in piena salute, il revitalizzante solo a una sfinita, una cura solo al suo stato. Gli X alzano di 2 (dalla 7ª generazione) e solo in battaglia.
+- L'Alga curativa diventa una Pozione (20 PS) e non rianima più.
+- Tasche dello zaino (`ItemDef.pocket`): Cure, Battaglia, Esche, Varie.
+
 ## 2026-10-03 — Scheda in 3 pagine ed evoluzione annullabile
 
 - Scheda come il Riassunto di Pokémon (`ui/sheetPages.ts`): Info, Statistiche, Mosse. Ordine delle mosse modificabile (`swapMoves`: i PP seguono la mossa). Punti esperienza totali = curva del gruppo al livello + resto (`totalXp`).

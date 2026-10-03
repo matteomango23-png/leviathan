@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.29.0 — Squadra e zaino come Pokémon (3 ottobre 2026)
+
+- **Gli stati restano dopo la battaglia**, come in Pokémon: una bestia avvelenata resta avvelenata finché non la curi (oggetto, porto, santuario o sottomarino). Una bestia sfinita perde il suo stato.
+- **Oggetti nuovi presi da Pokémon**, al mercato del porto:
+  - vita: Alga curativa (20 PS, come una Pozione), Alga rossa (60), Alga reale (120), Corallo vitale (tutti), Perla di ristoro (tutti più cura ogni stato);
+  - Ambra del risveglio: rianima una bestia sfinita con metà dei PS;
+  - PP: Muschio luminoso (10 PP a una mossa), Elisir abissale (10 PP a tutte);
+  - stati: Antidoto, Benda d'alga (ferite), Spugna isolante (paralisi), Sale aromatico (sonno), Pietra termale (gelo), Panacea di madreperla (tutti);
+  - in battaglia: Attacco X, Difesa X, Att. Speciale X, Dif. Speciale X, Velocità X, Precisione X.
+- **L'Alga curativa ora è come una Pozione** (20 PS) e non rianima più: per le bestie sfinite c'è l'Ambra del risveglio.
+- **Zaino a tasche** (Cure, Battaglia, Esche, Varie), in Pausa e in battaglia, con la descrizione di ogni oggetto. Le cure chiedono su quale bestia usarle, il Muschio luminoso su quale mossa.
+- **Squadra come Pokémon:** ogni bestia con barra della vita, stato (AVV, PAR…), "EVOLVE" se è pronta a evolversi, e il pulsante **Oggetto** per curarla dallo zaino.
+
 ## v0.28.0 — Scheda come Pokémon ed evoluzione annullabile (3 ottobre 2026)
 
 - **La scheda di una bestia ha 3 pagine**, come il Riassunto di Pokémon:

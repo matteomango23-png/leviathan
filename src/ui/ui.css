@@ -1578,3 +1578,15 @@ img.albino-art {
   color: #ffb3a8;
   border-color: #ffb3a8;
 }
+
+/* the party list: health bar and condition (ui/teamPanel.ts) */
+.team-hp {
+  display: grid;
+  grid-template-columns: minmax(60px, 120px) auto auto auto;
+  align-items: center;
+  gap: 6px;
+  justify-content: start;
+}
+.bagbeast-status.evolve {
+  background: #c9a86a;
+}

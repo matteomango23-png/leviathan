@@ -13,6 +13,7 @@ import { icon } from './icons';
 import { hasPreviousGame } from '../systems/save/storage';
 import { exportSave, pickSaveFile } from './saveTransfer';
 import { renderTeamPanel } from './teamPanel';
+import { openBag } from './bagScreen';
 import { renderTestPanel } from './testPanel';
 
 function formatTime(seconds: number): string {
@@ -40,6 +41,9 @@ export class PauseMenu {
     const book = el('button', 'menu-btn', panel);
     book.append(icon('book'), document.createTextNode(' Bestiario'));
     book.addEventListener('click', () => openBestiary(parent, game));
+    const bag = el('button', 'menu-btn', panel);
+    bag.append(icon('backpack'), document.createTextNode(' Zaino'));
+    bag.addEventListener('click', () => openBag(parent, game));
     const map = el('button', 'menu-btn', panel);
     map.append(icon('dive'), document.createTextNode(' Mappa'));
     map.addEventListener('click', () => openSeaMap(parent, game));

@@ -34,6 +34,8 @@ export interface SavedBeast {
   known?: string[]; // its battle moves (0.24); missing: the last 4 it learned by its level
   pendingMoves?: string[]; // moves waiting for you to choose what to forget
   evolveReady?: boolean; // it evolves after the battle or from its sheet
+  status?: string; // its condition, kept after the battle like Pokémon
+  sleepTurns?: number;
   met?: { level: number; place: string }; // where you tamed it
 }
 
@@ -307,10 +309,13 @@ function validateBeast(raw: unknown): SavedBeast {
     ...(isStringList(raw.known) && raw.known.length ? { known: raw.known } : {}),
     ...(isStringList(raw.pendingMoves) && raw.pendingMoves.length ? { pendingMoves: raw.pendingMoves } : {}),
     ...(raw.evolveReady === true ? { evolveReady: true } : {}),
+    ...(typeof raw.status === 'string' && STATUS_IDS.includes(raw.status) ? { status: raw.status } : {}),
+    ...(Number.isInteger(raw.sleepTurns) ? { sleepTurns: raw.sleepTurns as number } : {}),
     ...(isMet(raw.met) ? { met: { level: raw.met.level, place: raw.met.place } } : {}),
   };
 }
 
+const STATUS_IDS = ['avvelenato', 'ferito', 'paralizzato', 'stordito', 'congelato'];
 const isStringList = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
 const isMet = (v: unknown): v is { level: number; place: string } =>
   !!v &&

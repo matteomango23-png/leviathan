@@ -25,6 +25,8 @@ export interface TeamBeast {
   pendingMoves?: string[];
   /** Its lasting condition: like Pokémon it stays after the battle, until cured (items, port, sanctuary). */
   status?: StatusId;
+  /** Turns of sleep left, with 'stordito'. */
+  sleepTurns?: number;
   /** It reached its evolution level: it evolves after the battle, or from its sheet (you can stop it). */
   evolveReady?: boolean;
   /** Where and at what level you tamed it (shown in its sheet). */

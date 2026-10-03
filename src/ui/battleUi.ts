@@ -4,7 +4,6 @@
 import { BATTLE } from '../data/battle';
 import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
-import { ITEMS } from '../data/world';
 import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
 import type { Action, BattleState } from '../systems/battle/battle';
 import { canUse, effectiveness, named, type Fighter } from '../systems/battle/fighter';
@@ -14,6 +13,7 @@ import './battle.css';
 import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
 import { ICONS } from './icons';
+import { battleBag } from './battleBag';
 import { moveDetail, typeColor, typeName } from './movePanel';
 
 class InfoBox {
@@ -134,7 +134,7 @@ export class BattleUi {
     });
   }
 
-  private button(parent: HTMLElement, label: string, onClick: () => void, cls = ''): HTMLButtonElement {
+  button(parent: HTMLElement, label: string, onClick: () => void, cls = ''): HTMLButtonElement {
     const b = el('button', `bbtn ${cls}`, parent);
     if (label) el('span', 'bbtn-label', b, label);
     b.addEventListener('click', (e) => {
@@ -145,7 +145,7 @@ export class BattleUi {
   }
 
   /** Clears the menu for a new page: the message hides, a short caption may sit on top. */
-  private page(kind: string, caption?: string): HTMLDivElement {
+  page(kind: string, caption?: string): HTMLDivElement {
     this.msg.hidden = true;
     const m = this.menu;
     m.replaceChildren();
@@ -159,7 +159,7 @@ export class BattleUi {
     b.prepend(battleIcon(iconName));
   }
 
-  private back(m: HTMLElement, onClick: () => void): void {
+  back(m: HTMLElement, onClick: () => void): void {
     this.button(m, 'Indietro', onClick, 'bbtn-back');
   }
 
@@ -234,16 +234,7 @@ export class BattleUi {
         );
         this.back(m, main);
       };
-      const bag = (): void => {
-        const m = this.page('list', 'Zaino');
-        for (const id of Object.keys(items).filter((k) => (items[k] ?? 0) > 0 && k in BATTLE.items)) {
-          const name = ITEMS.find((it) => it.id === id)?.name ?? id;
-          const b = this.button(m, name, () => done({ kind: 'item', id }), 'brow');
-          el('span', 'brow-side', b, `×${items[id]}`);
-        }
-        if (m.children.length === 1) el('div', 'bempty', m, 'Lo zaino è vuoto.');
-        this.back(m, main);
-      };
+      const bag = (): void => battleBag(this, s, items, done, main);
       const team = (): void => {
         const m = this.page('list', 'Squadra');
         s.team.forEach((f, i) =>
@@ -255,11 +246,15 @@ export class BattleUi {
     });
   }
 
-  private teamRow(m: HTMLElement, f: Fighter, onClick: () => void, disabled: boolean): void {
+  teamRow(m: HTMLElement, f: Fighter, onClick: () => void, disabled: boolean): void {
     const b = this.button(m, `${formName(f.form)}  Lv. ${f.level}`, onClick, 'brow');
     const bar = el('span', 'brow-bar', b);
     el('span', 'brow-fill', bar).style.width = `${Math.max(0, (f.hp / f.maxHp) * 100)}%`;
     el('span', 'brow-side', b, `${Math.ceil(f.hp)}/${f.maxHp}`);
+    if (f.status) {
+      const st = el('span', 'binfo-status', b, STATUS_NAMES[f.status]);
+      st.dataset.status = f.status;
+    }
     b.disabled = disabled;
   }
 

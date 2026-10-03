@@ -1,6 +1,7 @@
 // After a battle (scenes/BattleScene.ts): health back to the team, experience, a tamed beast into the team,
 // the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to the sanctuary if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
+import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
 import { ROAM } from '../data/beasts';
 import { seedFrom } from '../data/stats';
@@ -24,7 +25,7 @@ export interface BattleOutcome {
   wildId: number;
   over: 'won' | 'lost' | 'caught' | 'fled';
   /** Health of your team beasts after the battle. */
-  team: { uid: string; hp: number; ppUsed?: number[] }[];
+  team: { uid: string; hp: number; ppUsed?: number[]; status?: StatusId | null; sleepTurns?: number }[];
   /** The beast that was fighting at the end (it gets all the experience). */
   lastActive?: string;
   foe: { form: BeastForm; level: number; hp: number };
@@ -41,6 +42,9 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
     if (!b) continue;
     b.hp = Math.max(0, Math.min(maxHpOf(b), t.hp));
     b.ppUsed = t.ppUsed?.some((n) => n > 0) ? t.ppUsed : undefined;
+    // like Pokémon, a condition stays after the battle (a worn-out beast loses it)
+    b.status = b.hp > 0 && t.status ? t.status : undefined;
+    b.sleepTurns = b.status === 'stordito' ? t.sleepTurns : undefined;
     if (b.hp <= 0 && !b.ko) {
       b.ko = true;
       events.push({ type: 'beastKo', uid: b.uid });
@@ -129,7 +133,15 @@ export function battleOutcome(s: BattleState, wildId: number): BattleOutcome {
   return {
     wildId,
     over: s.over ?? 'fled',
-    team: s.team.filter((f) => f.uid).map((f) => ({ uid: f.uid!, hp: f.hp, ppUsed: ppUsedOf(f) })),
+    team: s.team
+      .filter((f) => f.uid)
+      .map((f) => ({
+        uid: f.uid!,
+        hp: f.hp,
+        ppUsed: ppUsedOf(f),
+        status: f.status,
+        sleepTurns: f.sleepTurns,
+      })),
     lastActive: s.team[s.active]?.uid,
     foe: { form: s.foe.form, level: s.foe.level, hp: s.foe.hp },
   };

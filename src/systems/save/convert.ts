@@ -5,7 +5,7 @@ import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
 import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
-import { MOVE_SLOTS } from '../../data/moveBattle';
+import { MOVE_SLOTS, type StatusId } from '../../data/moveBattle';
 import { hasAlbinoArt } from '../beasts/forms';
 import { xpToNext } from '../beasts/growth';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
@@ -46,6 +46,10 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     const pending = (s.pendingMoves ?? []).filter((id) => BATTLE_MOVE_BY_ID[id] && !b.known.includes(id));
     if (pending.length) b.pendingMoves = pending;
     if (s.evolveReady) b.evolveReady = true;
+    if (s.status) {
+      b.status = s.status as StatusId;
+      if (s.sleepTurns) b.sleepTurns = s.sleepTurns;
+    }
     if (s.met) b.met = { ...s.met };
     return b;
   });
@@ -110,6 +114,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     known: [...b.known],
     ...(b.pendingMoves?.length ? { pendingMoves: [...b.pendingMoves] } : {}),
     ...(b.evolveReady ? { evolveReady: true } : {}),
+    ...(b.status ? { status: b.status, ...(b.sleepTurns ? { sleepTurns: b.sleepTurns } : {}) } : {}),
     ...(b.met ? { met: { ...b.met } } : {}),
   }));
   s.sanctuary = g.sanctuaries.current;
