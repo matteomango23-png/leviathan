@@ -378,3 +378,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Ora** ogni bestia ha la sua grandezza: la lunghezza vera su scala logaritmica tra 0,5 e 30 m, portata tra il 40% e il 100% dell'altezza dello schermo (`BATTLE_STAGE.size`). Scala logaritmica perché il proprietario vuole che 25 e 30 m, o 2 e 5 m, sembrino simili, ma il piccolo resti ben visibile.
 - **Sempre dentro lo schermo:** `npm run art` misura dove ogni immagine non è trasparente (`BATTLE_ART_BOX`); `fitSize` calcola la grandezza massima che ci sta (con un margine per il dondolio). La selvatica troppo alta scende fino al 97% dello schermo prima di rimpicciolirsi.
 - Restano: la tua più vicina (×1,22), la selvatica più lontana (×0,82), le immagini piatte un po' più grandi, murena e manta corrette a mano.
+
+## 2026-10-03 — Evoluzioni: niente immagine di riferimento
+
+- Allegare a Gemini la card dell'animale base fa uscire lo stesso animale con piccole modifiche, non un'evoluzione. Le evoluzioni si chiedono **solo a parole**, descrivendo una trasformazione forte (più grande, preistorica, spine, colori, scariche), poi decide il proprietario.
+- Le immagini del lotto 3 non sono andate perse: sono diventate gli **alfa** delle loro specie (`<id>_alfa_*`, già previsti dal gioco), una bestia unica (Beluga spettro) e due evoluzioni vere (Istrice gigante, Napoleone corazzato).
+- Le evoluzioni nuove tengono le mosse della prima forma (`movesFrom`), come i compagni iniziali; la quarta mossa si decide più avanti.

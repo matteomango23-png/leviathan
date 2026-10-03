@@ -236,7 +236,19 @@
 - `tests/battleFraming.test.ts`: ogni forma, in tutti e due i ruoli, su iPhone e iPad, a livello 1 e al massimo.
 - Per provare: `?battaglia&nemico=capodoglio&mio=pesce_leone` (nuovo `mio`).
 
-**Prossima sessione:** proposta sulle evoluzioni (in attesa di risposta del proprietario), poi capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
+**v0.19.0, prime evoluzioni e alfa (3 ottobre):**
+
+- Lotto Gemini 3 (`docs/GEMINI-LOTTO-3.md`): le "evoluzioni" generate allegando la card base sono venute quasi uguali all'animale base. Il proprietario le ha scelte così:
+  - `pesce_palla → istrice_gigante` (Lv 18) e `pesce_napoleone → napoleone_corazzato` (Lv 24) sono evoluzioni (`evolvesTo`, `movesFrom`); non compaiono ancora nel mare;
+  - otto alfa con immagini proprie (`<id>_alfa_*`);
+  - `beluga_spettro` è una bestia unica (`UNIQUE_VARIANTS`, come le leggende).
+- Le bocche aperte le ha fatte il proprietario; dove mancano non si usano.
+- Varano albino (`asset animali ai/varano del nilo nero/varano_nilo_albino_*`): mancano card e vista dietro, si mette nel gioco dopo.
+
+**Prossima sessione:**
+1. Test delle evoluzioni vere: richiesta **senza immagine allegata**, una trasformazione forte (regole in memoria "Stile delle evoluzioni"), una alla volta, decide il proprietario.
+2. Il varano con tre stadi (l'ultimo quasi uno spinosauro marino).
+3. Poi capitolo 5, il Mare di Ghiaccio. Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 

@@ -89,6 +89,7 @@ const SIDE_ERASE: Record<string, number[][]> = {
 const SIDE_FLOOD: CutoutOptions = { low: 3, high: 16, soft: 30 };
 const SIDE_FLOOD_SPECIES = [
   'pastinaca', // lotto Gemini 2: a second small ray in a corner of its back view
+  'torpedine_alfa', // its open-mouth profile has a faded strip of sea above it
   'tonno',
   'delfino',
   'pesce_luna',
