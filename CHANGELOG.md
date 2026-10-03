@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.18.1 — Beluga e pesce spada (3 ottobre 2026)
+
+- Beluga e pesce spada nuotano a bocca chiusa (prima avevano sempre la bocca spalancata) e la aprono quando mordono, con le nuove immagini del proprietario.
+
 ## v0.18.0 — Il mare vivo (3 ottobre 2026)
 
 - **10 bestie nuove**, ognuna con le sue mosse, il suo livello e la sua rarità:
