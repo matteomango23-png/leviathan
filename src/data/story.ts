@@ -19,7 +19,9 @@ export type StoryStep =
   | 'freeWhale' // chapter 2: break the chains in the Delta
   | 'chapter2Done'
   | 'freeKing' // chapter 3: the Re Corallo in the amphitheatre of the Barriera Rossa
-  | 'chapter3Done';
+  | 'chapter3Done'
+  | 'freePiovra' // chapter 4: the Piovra bound by the Horn in the Foresta Sommersa
+  | 'chapter4Done';
 
 export const STORY_STEPS: StoryStep[] = [
   'off',
@@ -34,6 +36,8 @@ export const STORY_STEPS: StoryStep[] = [
   'chapter2Done',
   'freeKing',
   'chapter3Done',
+  'freePiovra',
+  'chapter4Done',
 ];
 
 /** The story as kept in the save (v5). */
@@ -137,6 +141,26 @@ export const DIALOGUES = {
     { who: 'vedova', text: 'Tienitelo, il tuo granchio. La reliquia la troverò lo stesso.' },
     { who: 'vedova', text: 'Si salpa! Rotta sulla Foresta Sommersa.' },
     { who: 'narratore', text: 'Il Re Corallo batte le chele due volte sul corallo: ha scelto di seguirti.' },
+  ],
+  // chapter 4: the Foresta Sommersa
+  piovra: [
+    { who: 'narratore', text: 'Sopra la foresta di alghe la nave nera è all’ancora. Sotto la chiglia pende una campana di bronzo.' },
+    { who: 'vedova', text: 'Sei puntuale, ragazzino. Senti questo suono? È il Corno delle Catene: il primo pezzo della reliquia.' },
+    { who: 'vedova', text: 'Non servono più collari. La Piovra ora fa la guardia a quel galeone per me, e i suoi tentacoli sono ovunque tra le alghe.' },
+    { who: 'narratore', text: 'Il suono passa per la campana sotto la nave. Spezzala, e l’incantesimo si spezza con lei.' },
+  ],
+  piovraFree: [
+    { who: 'narratore', text: 'Il collare della Compagnia cade sul ponte del galeone. La Piovra ti avvolge piano un braccio, senza stringere.' },
+    { who: 'vedova', text: 'Il Corno resta mio. Al nord c’è una regina che non ha bisogno di catene: le basterà sentirlo.' },
+    { who: 'vedova', text: 'Si salpa! Rotta sul Mare di Ghiaccio.' },
+    { who: 'narratore', text: 'La Piovra ha scelto di seguirti.' },
+  ],
+  hintPiovra: [
+    { who: 'aurelio', text: 'Un corno che lega le bestie col suono… Rompi quello che lo fa arrivare in acqua, prima di tutto.' },
+    { who: 'aurelio', text: 'Tra le alghe guarda dove si muovono da sole: lì sotto c’è un tentacolo. Se ti prende, scatta più volte.' },
+  ],
+  hintChapter4Done: [
+    { who: 'aurelio', text: 'La Regina bianca… l’orca più vecchia del Mare di Ghiaccio. Se la Vedova la piega, nessuno al nord sarà al sicuro.' },
   ],
   hintFreeKing: [
     { who: 'aurelio', text: 'Un re impazzito dal dolore non riconosce nessuno. Sfinitelo, senza ucciderlo: poi le catene.' },

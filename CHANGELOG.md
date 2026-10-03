@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.17.0 — Capitolo 4: la Foresta Sommersa (3 ottobre 2026)
+
+- **La storia continua:** dopo il capitolo 3 l'obiettivo ti porta alla Foresta Sommersa. Lì la nave della Vedova Nera è ancorata sopra un **galeone affondato** tra le alghe giganti.
+- **Il Corno delle Catene:** la Vedova ha trovato il primo pezzo della reliquia. Il suono passa da una **campana di bronzo** appesa sotto la sua nave (vedi le onde nell'acqua) e lega la Piovra al galeone.
+- **I tentacoli:** mentre il suono dura, i tentacoli della Piovra escono dalle alghe. Prima la sabbia si muove e salgono bolle, poi il tentacolo si alza. Se ti prende ti trascina giù e perdi aria: **premi Scatto più volte** per liberarti.
+- **Spezza la campana** con 3 colpi: l'incantesimo finisce e i tentacoli si fermano.
+- **La Piovra** (livello 25) ti affronta vicino al galeone, senza possibilità di fuga. Battuta, il collare della Compagnia si spezza e lei si unisce a te: +800 denti e un Arpione mitico al mercato.
+- **La Vedova fugge** verso il Mare di Ghiaccio: vuole usare il Corno sulla Regina bianca.
+- **Bestie nuove nella Foresta Sommersa** (e nei tratti "foresta" del mare aperto): anguilla elettrica, polpo gigante, lontra marina.
+- Per ora la Piovra usa le immagini del polpo gigante, ingrandite: le sue arriveranno presto.
+
 ## v0.16.2 — Ritocchi alle battaglie e alle virate (3 ottobre 2026)
 
 - **Bestie larghe e basse in battaglia** sono più grandi. Una tartaruga vista da dietro o uno squalo martello visto di fronte sembravano minuscoli: la tua tartaruga finiva quasi nascosta in basso, sotto la barra della vita, e sembrava sparita. Ora il gioco misura la forma di ogni immagine e la ingrandisce quanto serve.

@@ -94,6 +94,10 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'tonno', area: REEF, respawnSeconds: [25, 50], level: [7, 9] },
   { speciesId: 'pesce_luna', area: FOREST, respawnSeconds: [40, 80], level: [10, 12] },
   { speciesId: 'scorfano', area: FOREST, respawnSeconds: [25, 50], level: [10, 12] },
+  // the Foresta Sommersa's own beasts (tappa 18, their pictures from lotto Gemini 1)
+  { speciesId: 'anguilla_elettrica', area: FOREST, respawnSeconds: [25, 50] },
+  { speciesId: 'polpo_gigante', area: FOREST, respawnSeconds: [40, 80] },
+  { speciesId: 'lontra_marina', area: FOREST, respawnSeconds: [20, 40] },
   { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
   // the endless sea: a few slots that take the beasts of the stretch you are in
   ...Array.from({ length: ENDLESS.wildSlots }, (_, i) => ({
@@ -132,6 +136,9 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   squalo_tigre: { temper: 'aggressive' },
   squalo_martello: { temper: 'aggressive', speedMult: 0.9 },
   pesce_palla: { temper: 'shy', speedMult: 0.5 },
+  anguilla_elettrica: { temper: 'aggressive', speedMult: 0.9 }, // the forest (tappa 18)
+  polpo_gigante: { temper: 'shy', speedMult: 0.7 },
+  lontra_marina: { temper: 'shy', speedMult: 1.1 },
   murena: { temper: 'aggressive', speedMult: 0.8 },
   manta: { temper: 'calm', speedMult: 0.8 },
   orca: { temper: 'aggressive', speedMult: 1.1, school: 2 }, // a small pod

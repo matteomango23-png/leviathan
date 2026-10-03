@@ -62,6 +62,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beasts/growth.ts` | Esperienza, livelli, barra del cibo (31-50), forme finali. |
 | `chapter2.ts` | Capitolo 2: la Vedova Nera nel Delta, il suo coccodrillo, gli ancoraggi da spezzare, la megattera liberata. |
 | `chapter3.ts` | Capitolo 3: la Vedova sopra la Barriera, il Re Corallo nell'anfiteatro (bestia della storia, battaglia, sfinito), le catene da spezzare, il premio, la fuga della nave. |
+| `chapter4.ts` | Capitolo 4: la Vedova sopra la Foresta Sommersa, la campana del Corno, i tentacoli che afferrano, la Piovra vicino al galeone, la fuga verso il Mare di Ghiaccio. |
 | `world/arena.ts` | La forma dell'anfiteatro di corallo (conca a gradoni scavata nel fondale). |
 | `chapters.ts` | Unisce i capitoli: chiusura dei dialoghi e obiettivo sotto i cuori. |
 | `story.ts` | La storia (capitolo 1 e parte comune): apertura, immersione guidata, molo in fiamme, tracce, finale; apre i dialoghi (il gioco si ferma). |

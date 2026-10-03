@@ -254,21 +254,25 @@ export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
 export function askAurelio(g: StoryWorld, events: GameEvent[]): void {
   const step = g.story.step;
   const id: DialogueId =
-    step === 'chapter3Done'
-      ? 'hintChapter3Done'
-      : step === 'freeKing'
-        ? 'hintFreeKing'
-        : step === 'chapter2Done'
-          ? 'hintChapter2Done'
-          : step === 'freeWhale'
-            ? 'hintFreeWhale'
-            : step === 'chapter1Done'
-              ? 'hintDone'
-              : step === 'findShark' || step === 'off'
-                ? 'hintFindShark'
-                : step === 'portJobs'
-                  ? 'hintJobs'
-                  : 'hintTutorial';
+    step === 'chapter4Done'
+      ? 'hintChapter4Done'
+      : step === 'freePiovra'
+        ? 'hintPiovra'
+        : step === 'chapter3Done'
+          ? 'hintChapter3Done'
+          : step === 'freeKing'
+            ? 'hintFreeKing'
+            : step === 'chapter2Done'
+              ? 'hintChapter2Done'
+              : step === 'freeWhale'
+                ? 'hintFreeWhale'
+                : step === 'chapter1Done'
+                  ? 'hintDone'
+                  : step === 'findShark' || step === 'off'
+                    ? 'hintFindShark'
+                    : step === 'portJobs'
+                      ? 'hintJobs'
+                      : 'hintTutorial';
   openDialogue(g.story, id, events);
 }
 

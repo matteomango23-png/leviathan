@@ -91,7 +91,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.05, colors: [] },
     weight: 2,
     weightPerKm: 0,
-    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, scorfano: 1.5, delfino: 1, torpedine: 1 },
+    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, scorfano: 1.5, delfino: 1, torpedine: 1, anguilla_elettrica: 1.5, polpo_gigante: 1, lontra_marina: 1.5 },
     baseLevel: 12,
   },
   {

@@ -35,6 +35,7 @@ import { LightView } from '../views/lightView';
 import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
 import { Chapter3View } from '../views/chapter3View';
+import { Chapter4View } from '../views/chapter4View';
 import { DeltaView } from '../views/deltaView';
 import { TerrainView } from '../views/terrainView';
 import type { SceneData, Session } from './session';
@@ -56,6 +57,7 @@ export class WorldScene extends Phaser.Scene {
   private places!: PlacesView;
   private story!: StoryView;
   private chapter3!: Chapter3View;
+  private chapter4!: Chapter4View;
   private gearFx!: GearFxView;
   private diverView!: DiverView;
   private effects!: EffectsView;
@@ -95,6 +97,7 @@ export class WorldScene extends Phaser.Scene {
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
     this.chapter3 = new Chapter3View(this, L.world);
+    this.chapter4 = new Chapter4View(this, L.world);
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
@@ -265,6 +268,7 @@ export class WorldScene extends Phaser.Scene {
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
     this.chapter3.update(g, g.time);
+    this.chapter4.update(g, g.time);
     this.diverView.setHidden(storyHoldsDiver(g) || g.sub.aboard); // inside the submarine you are not seen
     this.gearFx.update(g, rider ?? d, g.time);
 

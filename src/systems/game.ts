@@ -24,7 +24,8 @@ import { signalMissions } from './economy/missions';
 import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
 import { createStory, stepShip, stepStory, storyHoldsDiver } from './story';
 import { createChapter2, hitAnchor, stepChapter2 } from './chapter2';
-import { createChapter3, hitChain, stepChapter3, type Chapter3World } from './chapter3';
+import { createChapter3, hitChain, stepChapter3 } from './chapter3';
+import { createChapter4, hitBell, stepChapter4, type Chapter4World } from './chapter4';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
@@ -60,7 +61,7 @@ import { createTemples, hitLever, stepTemples, type TempleState } from './temple
 
 export { toSave } from './save/convert';
 
-export interface GameState extends Chapter3World {
+export interface GameState extends Chapter4World {
   time: number;
   playTime: number;
   zone: string;
@@ -135,6 +136,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     temples: createTemples(),
     chapter2: createChapter2(map),
     chapter3: createChapter3(beasts, s.story?.seen ?? []),
+    chapter4: createChapter4(beasts, s.story?.seen ?? []),
     story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
   };
   return g;
@@ -239,6 +241,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const hitBeast = (x: number, y: number, dmg: number): boolean =>
     hitAnchor(g, x, y, dmg, events) ||
     hitChain(g, x, y, dmg, events) ||
+    hitBell(g, x, y, events) ||
     hitLever(g, x, y, events) ||
     weaponHitsBeast(g, x, y, events);
   const fishMark = events.length; // fish caught from here on are experience (below)
@@ -288,6 +291,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (g.story.step === 'portJobs' && !g.story.dialogue) stepPortJobs(g, events);
   stepChapter2(g, events);
   stepChapter3(g, dt, events);
+  stepChapter4(g, input, dt, events);
   stepTemples(g, events);
   for (const e of events) if (e.type === 'gateOpened') g.brokenTiles.push(...e.tiles);
   const zone = zoneAt(d.x, d.y);

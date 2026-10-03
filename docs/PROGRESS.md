@@ -175,7 +175,37 @@
   - l'anguilla elettrica ha un alone scuro intorno ai fulmini.
 - Mancano ancora (vedi `docs/PROMPT-BESTIE.md`, da fare su fondo verde): Kraken, Mosasauro, Calamaro colossale, Serpente di mare, Piovra, Leviatano, e le viste da dietro di Livyatan e Dunkleosteus.
 
-**Prossima sessione:** capitolo 4, la Foresta Sommersa (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
+**Tappa 18 (v0.17.0), capitolo 4: la Foresta Sommersa:**
+
+- `data/chapter4.ts`: `WRECK`, `PIOVRA` (livello 25), `BELL`, `TENTACLES`, segni e testi.
+- `systems/chapter4.ts`:
+  - dialogo della Vedova sopra la foresta;
+  - campana (`hitBell`, 3 colpi, salvata con il segno `piovra:campana`);
+  - tentacoli a turno (giù, avviso, su), presa con trascinamento e aria che cala, liberazione con 5 tocchi di Scatto;
+  - la Piovra (bestia della storia, id 902) vicino al galeone; dopo la battaglia premio e dialogo finale; si unisce, la nave salpa.
+- `views/chapter4View.ts`: galeone, campana con onde del suono, tentacoli.
+- Passi nuovi `freePiovra` e `chapter4Done`.
+- Specie nuove nel mare: anguilla elettrica, polpo gigante, lontra marina (`WILD_SPAWNS` FOREST, `BIOMES` foresta, `BEAST_TEMPER`).
+- Piovra: `artFrom: 'polpo_gigante'` finché non arrivano le sue immagini.
+- Prima della tappa:
+  - v0.16.2: grandezza in battaglia per forma dell'immagine (`BATTLE_ART_FLAT`), virata della cavalcatura, scontorno dello squalo bianco;
+  - scontorno dei buchi chiusi nei profili di polpo, calamaro e isopode.
+- 380 test.
+- Visto nel browser: dialogo della Vedova, obiettivo della campana, galeone.
+
+**Da provare (v0.17.0):**
+
+1. Dopo il capitolo 3, vai alla Foresta Sommersa (circa 1,3 km) e nuota sotto la nave.
+2. Spezza la campana con l'arpione: è appesa vicino alla superficie.
+3. Prima di spezzarla, prova a farti prendere da un tentacolo, poi liberati con Scatto.
+4. Batti la Piovra vicino al galeone.
+
+**Da sapere:**
+
+- Chrome (Claude in Chrome) non era collegato: le immagini della Piovra sono da generare. Testi su fondo verde in `docs/PROMPT-BESTIE.md`.
+- La campana è a pochi metri sotto la superficie, sotto la nave: si colpisce anche dal basso.
+
+**Prossima sessione:** capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 
