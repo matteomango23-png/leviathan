@@ -1,12 +1,11 @@
 // A beast in a turn-based battle: its health, its moves with turns of recharge, and its short-lived states.
-// Damage = the same formula as in the open sea (combat.ts: bite × power × type × (1 − defence)), plus how
-// many levels apart the two are (so levelling matters, like Pokémon), a little randomness and critical hits.
+// Damage like Pokémon (combat.ts baseDamage, then same-type bonus, type, critical hit and a random roll).
 import { BATTLE } from '../../data/battle';
 import { MOVE_RULES } from '../../data/beasts';
 import type { MoveDef } from '../../data/moves';
-import type { Stats } from '../../data/species';
+import type { Stats } from '../../data/stats';
 import type { Rng } from '../math';
-import { moveDamage, moveTypeMult } from '../beasts/combat';
+import { baseDamage, isPhysical, isWounded, moveTypeMult, powerOf } from '../beasts/combat';
 import { FEMININE_SPECIES, type Named } from '../../data/battleText';
 import { formName, formStats, formType, type BeastForm } from '../beasts/forms';
 import { makeTeamBeast, movesFor, type TeamBeast } from '../beasts/team';
@@ -74,35 +73,27 @@ export interface Hit {
   crit: boolean;
 }
 
-/** The level edge: each level above the target adds BATTLE.levelEdge, clamped. */
-export function levelMult(attacker: number, target: number): number {
-  const [lo, hi] = BATTLE.levelEdgeClamp;
-  return Math.max(lo, Math.min(hi, 1 + BATTLE.levelEdge * (attacker - target)));
-}
-
-/** Damage of one hit (before a dodge), or 0 for a move that does no damage. */
+/** Damage of one hit (before a dodge), or 0 for a move that does no damage: the Pokémon formula. */
 export function hitDamage(att: Fighter, def: Fighter, move: MoveDef, rng: Rng, multi: boolean): Hit {
-  const base = moveDamage(
-    { type: formType(att.form), bite: att.stats.bite, defense: att.stats.defense },
-    move,
-    {
-      type: formType(def.form),
-      defense: def.stats.defense,
-      hp: def.hp,
-      maxHp: def.maxHp,
-    },
-  );
-  if (base <= 0) return { damage: 0, crit: false };
-  let dmg = base * levelMult(att.level, def.level);
+  const power = powerOf(move);
+  if (power <= 0) return { damage: 0, crit: false };
+  const physical = move.type === 'variabile' ? att.stats.atk >= att.stats.spa : isPhysical(move);
+  const attack = physical ? att.stats.atk : att.stats.spa;
+  const defence = physical ? def.stats.def : def.stats.spd;
+  let dmg = baseDamage(att.level, power, attack, defence);
+  if (move.fx.includes('x2vsWounded') && isWounded(def.hp, def.maxHp)) dmg *= BATTLE.fx.woundedMult;
   if (hasFx(move, 'executeLowHp') && def.hp < def.maxHp * MOVE_RULES.executeHpFraction)
     dmg *= BATTLE.fx.executeMult;
   if (multi) dmg *= BATTLE.fx.multiHitShare;
-  const [r0, r1] = BATTLE.randomRange;
-  dmg *= r0 + rng() * (r1 - r0);
   const crit = rng() < BATTLE.critChance;
   if (crit) dmg *= BATTLE.critMult;
+  const [r0, r1] = BATTLE.randomRange;
+  dmg *= r0 + rng() * (r1 - r0);
+  const type = formType(att.form);
+  if (move.type === 'variabile' || move.type === type) dmg *= BATTLE.stab;
+  dmg *= moveTypeMult(move.type, formType(def.form));
   if (def.guard > 0) dmg *= BATTLE.fx.guardMult;
-  return { damage: Math.max(1, Math.round(dmg)), crit };
+  return { damage: Math.max(1, Math.floor(dmg)), crit };
 }
 
 /** "Superefficace" / "poco efficace" for the battle text. */

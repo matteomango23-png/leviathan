@@ -90,10 +90,11 @@ export function openBeastSheet(
       : String(s.stats.hp),
     'heart',
   );
-  stat('Morso', String(s.stats.bite), 'tooth');
-  stat('Carica', String(s.stats.charge), 'bolt');
-  stat('Difesa', `${Math.round(s.stats.defense * 100)}%`, 'shield');
-  stat('Velocità', String(s.stats.speed), 'dive');
+  stat('Attacco', String(s.stats.atk), 'tooth');
+  stat('Difesa', String(s.stats.def), 'shield');
+  stat('Att. Speciale', String(s.stats.spa), 'bolt');
+  stat('Dif. Speciale', String(s.stats.spd), 'shield');
+  stat('Velocità', String(s.stats.spe), 'dive');
   stat('Lunghezza', `${s.lengthM.toString().replace('.', ',')} m`, 'fish');
 
   el('h3', '', info, 'Mosse');
@@ -106,12 +107,7 @@ export function openBeastSheet(
     t.style.color = m.typeColor;
     t.style.borderColor = m.typeColor;
     el('span', 'move-meta', top, m.unlocked ? `ricarica ${m.cooldown} s` : `livello ${m.unlockLevel}`);
-    el(
-      'div',
-      'move-text',
-      row,
-      m.damageNow > 0 ? `${m.text} · danno ${m.damageNow} → ${m.damageNext} al prossimo livello` : m.text,
-    );
+    el('div', 'move-text', row, m.power > 0 ? `${m.text} · potenza ${m.power}` : m.text);
   }
   if (s.fieldMove) {
     // the move used in the sea, not in battle: it breaks ancient bones

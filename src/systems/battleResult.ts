@@ -2,6 +2,7 @@
 // the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to the sanctuary if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import { ROAM } from '../data/beasts';
+import { seedFrom } from '../data/stats';
 import { isLegend } from './beasts/legends';
 import { XP_RULES } from '../data/progression';
 import { range } from './math';
@@ -105,6 +106,8 @@ export function battleSetup(g: GuardianWorld): BattleSetup | null {
   const w = req && g.beasts.wilds.find((x) => x.id === req.wildId);
   if (!req || !w) return null;
   const team = battleTeam(g).map(fighterFromTeam);
+  // a wild beast gets its individual values when you meet it; they stay with it if you tame it
+  w.form.seed ??= seedFrom(`${w.id}:${w.x.toFixed(1)}:${w.y.toFixed(1)}:${w.level}`);
   const state = createBattle(team, makeFighter({ ...w.form }, w.level));
   return {
     state,

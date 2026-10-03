@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.21.0 — Battaglie come Pokémon, fase 1 (3 ottobre 2026)
+
+- **Statistiche come Pokémon:** ogni bestia ha PS, Attacco, Difesa, Attacco Speciale, Difesa Speciale e Velocità, calcolate con la formula di Pokémon. Ogni esemplare ha i suoi valori individuali: due squali dello stesso livello non sono identici, e quello che domi tiene i suoi.
+- **Danno come Pokémon:** livello, potenza della mossa, Attacco contro Difesa (o Speciale contro Speciale), +50% con una mossa del proprio tipo, colpo critico 1 su 24 (×1,5), un po' di caso.
+- **Tipi come Pokémon:** superefficace ×2, poco efficace ×½. Ogni tipo è forte contro due e debole contro due (tabella nella scheda delle regole).
+- Nella scheda di una bestia ci sono le sei statistiche e la potenza di ogni mossa.
+- Le tue bestie tornano in piena salute con le nuove statistiche (il salvataggio si converte da solo).
+
 ## v0.20.4 — Bestie più grandi in battaglia (3 ottobre 2026)
 
 - **La bestia selvatica usa tutta la sua metà dello schermo:** prima restava ferma vicino al centro e piccola, con l'angolo in alto a destra vuoto.

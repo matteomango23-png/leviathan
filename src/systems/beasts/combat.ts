@@ -1,36 +1,34 @@
 // Damage and hit shapes for beasts.
-// Damage of a move = attacker bite × POWER_MULT[power] × type multiplier (× bonuses) × (1 − target defence).
-// The bite stat already grows 4% per level (PROGRESSION.statGrowthPerLevel), so moves grow with it.
+// Damage, like Pokémon (Gen V+): floor(floor(floor(2 × level / 5 + 2) × power × attack / defence) / 50) + 2,
+// then × the modifiers (fighter.ts): same type 1.5, type ×2 / ×½, critical 1.5, random 0.85–1.
 import { BEAST_BODY, MOVE_RULES } from '../../data/beasts';
-import { POWER_MULT, type MoveDef } from '../../data/moves';
+import { MOVE_POWER, type MoveDef } from '../../data/moves';
 import { counterTypeOf, typeMultiplier, type TypeId } from '../../data/rules';
-
-export interface Fighter {
-  type: TypeId | 'variabile';
-  bite: number;
-  defense: number;
-}
-
-export interface Target {
-  type: TypeId | 'variabile';
-  defense: number;
-  hp: number;
-  maxHp: number;
-}
+import { PHYSICAL_TYPES } from '../../data/stats';
 
 /** Type multiplier of a move against a target (Leviatano's 'variabile' takes the winning type). */
-export function moveTypeMult(moveType: MoveDef['type'], target: Target['type']): number {
+export function moveTypeMult(moveType: MoveDef['type'], target: TypeId | 'variabile'): number {
   if (target === 'variabile') return 1;
   const atk: TypeId = moveType === 'variabile' ? counterTypeOf(target) : moveType;
   return typeMultiplier(atk, target);
 }
 
-export function moveDamage(attacker: Fighter, move: MoveDef, target: Target): number {
-  let dmg = attacker.bite * POWER_MULT[move.power] * moveTypeMult(move.type, target.type);
-  if (move.fx.includes('x2vsWounded') && target.hp < target.maxHp * MOVE_RULES.woundedFraction) dmg *= 2;
-  dmg *= 1 - target.defense;
-  return Math.max(dmg > 0 ? 1 : 0, Math.round(dmg * 10) / 10);
+/** A move's power (0 for a move that does no damage). */
+export const powerOf = (move: MoveDef): number => MOVE_POWER[move.power];
+
+/** Physical moves use Attack against Defence, the others Special Attack against Special Defence. */
+export const isPhysical = (move: MoveDef): boolean => PHYSICAL_TYPES.includes(move.type);
+
+/** The core of the Pokémon damage formula, before its modifiers. */
+export function baseDamage(level: number, power: number, attack: number, defence: number): number {
+  if (power <= 0) return 0;
+  return (
+    Math.floor(Math.floor((Math.floor((2 * level) / 5 + 2) * power * attack) / Math.max(1, defence)) / 50) + 2
+  );
 }
+
+/** Below this share of health a target counts as wounded (MOVE_RULES), for 'x2vsWounded'. */
+export const isWounded = (hp: number, maxHp: number): boolean => hp < maxHp * MOVE_RULES.woundedFraction;
 
 /** A beast's body in the world: centre, facing, pitch and length. */
 export interface BodyPose {

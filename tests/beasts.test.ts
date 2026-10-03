@@ -4,7 +4,7 @@ import { ENDLESS } from '../src/data/endless';
 import { MOVES } from '../src/data/moves';
 import { WILD_SPAWNS } from '../src/data/beasts';
 import { SPECIES } from '../src/data/species';
-import { moveDamage, moveTypeMult } from '../src/systems/beasts/combat';
+import { baseDamage, moveTypeMult } from '../src/systems/beasts/combat';
 import {
   WHITE_SHARK_FORMS,
   formKey,
@@ -65,21 +65,20 @@ describe('white shark versions', () => {
 });
 
 describe('damage and types', () => {
-  it('applies the type circle', () => {
-    expect(moveTypeMult('predatore', 'abissale')).toBe(1.5);
-    expect(moveTypeMult('predatore', 'corazzato')).toBeCloseTo(0.66);
+  it('applies the type chart like Pokémon: ×2 on two types, ×½ from two', () => {
+    expect(moveTypeMult('predatore', 'abissale')).toBe(2);
+    expect(moveTypeMult('predatore', 'tempesta')).toBe(2);
+    expect(moveTypeMult('predatore', 'corazzato')).toBe(0.5);
+    expect(moveTypeMult('predatore', 'glaciale')).toBe(0.5);
     expect(moveTypeMult('predatore', 'predatore')).toBe(1);
   });
 
-  it('scales with bite, power, defence and wounded bonus', () => {
-    const bite = move('squalo_bianco_1');
-    const frenzy = move('squalo_bianco_3');
-    const target = { type: 'predatore' as const, defense: 0.1, hp: 10, maxHp: 10 };
-    const a = { type: 'predatore' as const, bite: 2, defense: 0.1 };
-    expect(moveDamage(a, bite, target)).toBeCloseTo(2 * 1.6 * 0.9, 1);
-    const healthy = moveDamage(a, frenzy, target);
-    const wounded = moveDamage(a, frenzy, { ...target, hp: 3 });
-    expect(wounded).toBeCloseTo(healthy * 2, 1);
+  it('uses the Pokémon damage formula', () => {
+    // level 50, power 60, attack = defence: floor(floor(22 × 60) / 50) + 2 = 28
+    expect(baseDamage(50, 60, 100, 100)).toBe(28);
+    expect(baseDamage(50, 60, 200, 100)).toBeGreaterThan(baseDamage(50, 60, 100, 100));
+    expect(baseDamage(50, 0, 100, 100)).toBe(0);
+    expect(move('squalo_bianco_1').type).toBe('predatore');
   });
 });
 
@@ -146,7 +145,7 @@ describe('beast sheet', () => {
     expect(s.typeName).toBe('Predatore');
     expect(s.roleName).toBe('Cavalcatura');
     expect(s.moves.map((m) => m.unlocked)).toEqual([true, true, false]);
-    expect(s.moves[0]!.damageNext).toBeGreaterThanOrEqual(s.moves[0]!.damageNow);
+    expect(s.moves[0]!.power).toBeGreaterThan(0);
     expect(s.lengthM).toBe(6);
     expect(s.habitat).toBe('Baia di Portofosco');
     const albino = buildSheet({ speciesId: 'squalo_bianco', variant: 'albino' }, 5);

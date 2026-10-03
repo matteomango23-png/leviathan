@@ -11,13 +11,19 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 13;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
 export interface SavedBeast {
   uid: string;
-  form: { speciesId: string; variant: 'comune' | 'albino' | 'alfa'; unique?: string; final?: boolean };
+  form: {
+    speciesId: string;
+    variant: 'comune' | 'albino' | 'alfa';
+    unique?: string;
+    final?: boolean;
+    seed?: number;
+  };
   level: number;
   xp: number; // v4
   food: number; // v4
@@ -173,6 +179,17 @@ export const MIGRATIONS: Migration[] = [
         : o.team,
     }),
   },
+  // v12 → v13 (3 ottobre 2026): statistics follow the Pokémon formula (data/stats.ts): the old health means nothing
+  // any more, so every beast comes back healed (restoreTeam caps it at its new maximum)
+  {
+    from: 12,
+    migrate: (o) => ({
+      ...o,
+      team: Array.isArray(o.team)
+        ? o.team.map((b) => (isObject(b) ? { ...b, hp: Number.MAX_SAFE_INTEGER, ko: false } : b))
+        : o.team,
+    }),
+  },
 ];
 
 export class SaveError extends Error {}
@@ -269,6 +286,7 @@ function validateBeast(raw: unknown): SavedBeast {
   const form: SavedBeast['form'] = { speciesId: f.speciesId, variant: f.variant };
   if (typeof f.unique === 'string') form.unique = f.unique;
   if (f.final === true) form.final = true;
+  if (Number.isInteger(f.seed) && (f.seed as number) >= 0) form.seed = f.seed as number; // v13
   return {
     uid: raw.uid,
     form,
