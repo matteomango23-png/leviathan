@@ -5,6 +5,8 @@ import { SPECIES } from '../data/species';
 import { TYPES, type TypeId } from '../data/rules';
 import { chooseStarter, STARTERS } from '../systems/starter';
 import type { GameState } from '../systems/game';
+import { assetUrl } from '../data/assets';
+import { BATTLE_ART_KEYS } from '../data/sprites.generated';
 import { setArt } from './art';
 import { el } from './dom';
 import './starter.css';
@@ -25,8 +27,11 @@ export class StarterPicker {
       const card = el('div', 'starter-card', row);
       const color = s.type === 'variabile' ? '#d9e4e6' : TYPES[s.type as TypeId].color;
       card.style.setProperty('--tc', color);
-      const img = el('img', 'starter-art', card);
-      setArt(img, { speciesId: s.id, variant: 'comune' });
+      // the whole beast, centred, on a patch of sea: its battle picture (the vertical card was cut badly)
+      const frame = el('div', 'starter-frame', card);
+      const img = el('img', 'starter-art', frame);
+      if (BATTLE_ART_KEYS.includes(`${s.id}_front`)) img.src = assetUrl(`sprites/${s.id}_front.webp`);
+      else setArt(img, { speciesId: s.id, variant: 'comune' });
       el('div', 'starter-name', card, s.name);
       el('span', 'starter-type', card, s.type === 'variabile' ? 'Variabile' : TYPES[s.type as TypeId].name);
       el('p', 'starter-trait', card, s.trait);

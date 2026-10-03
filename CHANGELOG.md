@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.19.1 — Porto e scelta del compagno (3 ottobre 2026)
+
+- **Scelta del compagno:** le tre carte sono allineate, con l'animale intero e centrato nello stesso riquadro.
+- **Porto:** Aurelio e tu state in piedi sul molo (prima eravate sospesi in aria, sulla barca che non c'è più); le case di Portofosco sono distanziate e poggiano a terra anche sul pendio.
+
 ## v0.19.0 — Le prime evoluzioni e gli alfa (3 ottobre 2026)
 
 - **Due bestie del mare si evolvono**, come i compagni iniziali:

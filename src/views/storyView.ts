@@ -6,6 +6,7 @@ import { VEDOVA } from '../data/chapter2';
 import { CORAL_KING } from '../data/chapter3';
 import { PIOVRA } from '../data/chapter4';
 import { SCENES } from '../data/story';
+import { PIER_ART } from '../data/worldArt';
 import { COAST, WORLD } from '../data/worldLayout';
 import { formLengthUnits } from '../systems/beasts/forms';
 import type { StoryState } from '../systems/story';
@@ -89,10 +90,13 @@ export class StoryView {
     if (key === this.drawnPeople) return;
     this.drawnPeople = key;
     const g = this.people.clear();
+    // on the deck of the painted pier (the old drawn boat is gone)
+    const deckX = (i: 0 | 1) => PORT.shoreX + PIER_ART.fromShore + PIER_ART.people[i];
+    const deckY = S - PIER_ART.deckAbove;
     if (key === 'boat') {
-      drawPerson(g, SCENES.boat.x + 4, S - 6, true); // Aurelio
-      drawPerson(g, SCENES.boat.x - 3, S - 6, false, true); // you, sitting
-    } else if (key === 'pier') drawPerson(g, PORT.x - 18, S - 8, true);
+      drawPerson(g, deckX(1), deckY, true); // Aurelio
+      drawPerson(g, deckX(0), deckY, false, true); // you, sitting
+    } else if (key === 'pier') drawPerson(g, deckX(1), deckY, true);
   }
 
   private drawClues(s: StoryState): void {

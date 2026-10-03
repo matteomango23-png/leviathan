@@ -15,7 +15,16 @@ export const ICEBERG_WIDTH: Record<string, number> = {
  * The owner's painted pier (owner, 3 ottobre), laid at each harbour instead of the drawn one: from a little behind
  * the shore out over the water; its deck (that share of the picture's height) sits just above the surface.
  */
-export const PIER_ART = { key: 'molo_porto', fromShore: -12, width: 150, deckAt: 0.41, deckAbove: 8 };
+export const PIER_ART = {
+  key: 'molo_porto',
+  fromShore: -12,
+  width: 150,
+  deckAt: 0.41,
+  deckAbove: 8,
+  /** Where Aurelio and you stand on its flat deck, before the ramp (units from its left edge; owner, 3 ottobre:
+   *  "gli omini sono sospesi in aria"). */
+  people: [82, 88] as const,
+};
 
 export interface IcebergPlace {
   id: string;
