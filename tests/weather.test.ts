@@ -157,6 +157,29 @@ describe('uccelli marini', () => {
     }
   });
 
+  it('non ci sono sempre: arrivano ogni tanto, restano un po’ e se ne vanno', () => {
+    let on = 0;
+    let arrivals = 0;
+    let was = false;
+    const seconds = 1200;
+    fly(
+      11,
+      seconds,
+      () => 2000,
+      () => shallow(2000),
+      () => 1,
+      (st) => {
+        const now = st.flocks.some((f) => f.active);
+        if (now) on += 1 / 30;
+        if (now && !was) arrivals++;
+        was = now;
+      },
+    );
+    expect(arrivals).toBeGreaterThan(2);
+    expect(on / seconds).toBeLessThan(0.85);
+    expect(on / seconds).toBeGreaterThan(0.3);
+  });
+
   it('senza pesci vicini alla superficie niente uccelli', () => {
     const { s } = fly(
       3,
@@ -217,7 +240,7 @@ describe('uccelli marini', () => {
         prev = now;
       },
     );
-    expect(checked).toBeGreaterThan(1000); // birds were really seen
+    expect(checked).toBeGreaterThan(300); // birds were really seen
   });
 
   it('in tempesta se ne vanno', () => {

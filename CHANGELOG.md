@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.31.2 — Meno gabbiani (4 ottobre 2026)
+
+- **Ancora meno gabbiani:** al massimo uno stormo da 2–4 uccelli.
+- **Non ci sono sempre:** uno stormo arriva ogni tanto, resta poco più di un minuto sopra i pesci e poi se ne va (sempre fuori dallo schermo).
+
 ## v0.31.1 — Gabbiani più naturali (4 ottobre 2026)
 
 - **I gabbiani sono disegnati meglio:** ali curve e sottili che sfumano nelle punte nere, corpo bianco, becco giallo; non più linee spesse a rettangoli.

@@ -9,8 +9,9 @@ Prima sessione nel cloud (dal telefono del proprietario). Nel cloud non si vede 
 - Meteo che cambia da solo, **solo aspetto** (scelta del proprietario): `data/weather.ts`, `systems/weather.ts`, `views/weatherView.ts`. Sereno, nuvoloso, pioggia, tempesta, nebbia; neve e bufera nel Mare di Ghiaccio e nella Banchisa; nuvole, pioggia con schizzi, onde più alte, lampi, nebbia; sott'acqua raggi più deboli e un po' più buio fino a 60 m.
 - Stormi di gabbiani: `systems/birds.ts`, `views/birdsView.ts`; si tuffano sulle sardine vicine alla superficie, se ne vanno in tempesta.
 - **v0.31.1** (dopo la prova del proprietario: "troppo spessi, compaiono e spariscono"): gabbiani dipinti su canvas in 9 pose del battito; ogni stormo vive sopra un banco di pesci come sardine e sgombri; arrivano e se ne vanno solo fuori dallo schermo (test che lo controlla); 2 stormi da 3–6.
+- **v0.31.2** ("e sono pure troppi"): 1 stormo da 2–4, che arriva ogni tanto, resta 40–90 s e se ne va.
 - Nessun cambio a salvataggi, battaglie o bestie. Pannello `?prove`: "Cambia il meteo".
-- 13 test (`tests/weather.test.ts`). Visto nel browser: sereno, nuvoloso, pioggia, tempesta col lampo, nebbia, neve, gabbiani.
+- 14 test (`tests/weather.test.ts`). Visto nel browser: sereno, nuvoloso, pioggia, tempesta col lampo, nebbia, neve, gabbiani.
 
 **Da provare sull'iPhone**
 

@@ -110,8 +110,11 @@ export const WEATHER = {
  */
 export const BIRDS = {
   seed: 913,
-  flocks: 2, // flocks at most around the camera (owner: few, natural)
-  perFlock: [3, 6] as [number, number], // birds in a flock (random between the two)
+  flocks: 1, // flocks at most around the camera (owner: few, natural; "e sono pure troppi")
+  perFlock: [2, 4] as [number, number], // birds in a flock (random between the two)
+  /** Not always there: a flock comes now and then (chance per second), stays a while, then flies off. */
+  arriveChancePerSec: 0.03,
+  staySeconds: [40, 90] as [number, number],
   /** A school of fish can be home to a flock if its centre is this close under the surface (units)… */
   homeMaxDepth: 170,
   /** …and this near the camera sideways (units); farther homes are given up (off screen only). */
