@@ -3,6 +3,7 @@ import { START } from '../../data/worldLayout';
 import { saveSub, subWakePoint, type SubState } from '../submarine';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
+import { hasAlbinoArt } from '../beasts/forms';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
 import type { BackpackWorld } from '../economy/backpack';
@@ -23,7 +24,10 @@ export interface SaveSource extends Pick<
 
 export function restoreTeam(save: SaveData): TeamBeast[] {
   return save.team.map((s) => {
-    const b = makeTeamBeast(s.uid, { ...s.form }, s.level, s.inTeam);
+    const form = { ...s.form };
+    // an albino without pictures of its own was the species drawn pale: it goes back to the common one
+    if (form.variant === 'albino' && !form.unique && !hasAlbinoArt(form.speciesId)) form.variant = 'comune';
+    const b = makeTeamBeast(s.uid, form, s.level, s.inTeam);
     b.hp = Math.min(s.hp, maxHpOf(b));
     b.ko = s.ko || b.hp <= 0;
     b.xp = s.xp;

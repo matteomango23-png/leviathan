@@ -392,3 +392,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Il supporto morde 1,8 (era 1); la Corazza viva di Guscio fa danno basso oltre allo scudo.
 - In battaglia come Pokémon (`BATTLE_STAGE.fit`): la selvatica intera a destra di `foeLeft`, non sotto il 62% dello schermo; la tua con il bordo destro (la testa, vista da dietro) entro `youRight` e la cima sotto `youTop`, il resto può uscire in basso e a sinistra. Una regola sola per tutti gli animali, niente categorie a mano.
 - Nel mare ogni bestia è disegnata lunga almeno `RENDER.minLengthM` (1,3 m).
+
+## 2026-10-03 — Albini solo con immagini proprie, proporzioni tra le due bestie
+
+- Un albino senza immagini sue era la specie schiarita: il proprietario non lo vuole. `hasAlbinoArt` (card, profilo, davanti e dietro) decide se un albino può comparire; al caricamento quelli senza immagini tornano comuni.
+- Le grandezze in battaglia restano per bestia, ma `battleSizes` confronta le due: se la tua è più corta, la sua presenza (radice dell'area disegnata) non supera `smallerYours` × quella della selvatica × il rapporto delle loro lunghezze.
+- I tre compagni iniziali combattono tutti come "compagno".

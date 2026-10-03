@@ -47,7 +47,7 @@ export const ICEBERGS_PER_STRETCH = 2; // tuning, Banchisa stretches of the endl
 /** Painted walls: their size, how much of them sits in the rock, and which picture goes where. */
 export const WALLS = {
   width: 74, // tuning
-  inRock: 0.75, // share of the width inside the rock (the rest covers the edge and juts a little into the water)
+  inRock: 0.92, // share of the width inside the rock (was 0.75: the part over the water looked solid and was not; owner)
   overlap: 0.18, // walls stacked on a long face overlap by this share of their height
   minFace: 60, // units: shorter straight faces are left as they are
   rock: ['parete_roccia_1', 'parete_roccia_2', 'parete_roccia_3'],

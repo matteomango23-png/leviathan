@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.20.2 — Guscio, rocce, albini (3 ottobre 2026)
+
+- **Guscio combatte come gli altri due compagni:** prima faceva circa metà del danno di Zanna; ora la Testata di pietra è una mossa media e il suo morso è come il loro.
+- **In battaglia le proporzioni tornano:** una bestia tua più corta di quella selvatica non sembra mai più grande (Guscio contro uno squalo martello). Le bestie piccole stanno un po' più in alto, non dietro il riquadro della vita.
+- **Niente più copre le bestie** in battaglia, a parte i riquadri: rocce e piante in primo piano ora stanno dietro.
+- **Rocce degli abissi:** le pareti dipinte non sporgono più sull'acqua e non compaiono dove la roccia è troppo sottile, così non si passa più "dentro" una roccia.
+- **Niente albini finti:** un albino esiste solo se ha le sue immagini (per ora lo squalo bianco). Gli albini finti già domati tornano normali.
+
 ## v0.20.1 — Spazio in mezzo (3 ottobre 2026)
 
 - In battaglia tra le due bestie resta uno spazio vuoto al centro: due bestie grandi non si incontrano più muso contro muso. La tua sta più in basso e più a sinistra.

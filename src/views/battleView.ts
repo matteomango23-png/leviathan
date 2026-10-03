@@ -9,7 +9,7 @@ import { BATTLE_ART_BOX } from '../data/sprites.generated';
 import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
 import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
-import { battleSize, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
+import { battleSize, battleSizes, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
 import { formLengthM, type BeastForm } from '../systems/beasts/forms';
 import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
@@ -96,9 +96,18 @@ export class BattleView {
       aura: aura.level,
       auraColor: aura.color,
     });
-    const size = battleSize(side, this.stage[side]!, this.w / this.h);
-    this.poses[side].target = size;
-    this.poses[side].size = size;
+    const you = this.stage.you;
+    const foe = this.stage.foe;
+    const sizes =
+      you && foe
+        ? battleSizes(you, foe, this.w / this.h)
+        : { [side]: battleSize(side, this.stage[side]!, this.w / this.h) };
+    for (const s of ['you', 'foe'] as Side[]) {
+      const size = sizes[s];
+      if (size === undefined) continue;
+      this.poses[s].target = size;
+      if (s === side) this.poses[s].size = size; // the newcomer starts at its size, the other eases
+    }
   }
 
   /** Whether the wild beast is a giant (its entrance shakes the sea). */
