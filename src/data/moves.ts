@@ -27,7 +27,7 @@ export const MOVES: MoveDef[] = [
   m('zanna', 2, 'Squarcio', 'predatore', 6, 'alto', ['x2vsWounded'], 'Danno doppio su chi è già ferito'),
   m('zanna', 3, 'Frenesia preistorica', 'predatore', 18, 'alto', ['frenzy:3'], 'Tre morsi furiosi di fila'),
   m('guscio', 1, 'Testata di pietra', 'corazzato', 1.5, 'basso', ['stunChance:0.15:1'], 'Danno basso, piccola probabilità di stordire'),
-  m('guscio', 2, 'Corazza viva', 'corazzato', 8, 'nessuno', ['shield:diver:next'], 'Per due colpi subisce metà danni'),
+  m('guscio', 2, 'Corazza viva', 'corazzato', 8, 'basso', ['shield:diver:next'], 'Una spallata di pietra; per due colpi subisce metà danni'),
   m('guscio', 3, 'Frana', 'corazzato', 18, 'altissimo', [], 'Un colpo che fa tremare il fondale'),
   m('scintilla', 1, 'Scintilla', 'tempesta', 1.2, 'basso', ['stunChance:0.2:1'], 'Danno basso, può stordire'),
   m('scintilla', 2, 'Frusta elettrica', 'tempesta', 6, 'medio', ['hits:2'], 'Due frustate elettriche'),

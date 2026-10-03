@@ -384,3 +384,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Allegare a Gemini la card dell'animale base fa uscire lo stesso animale con piccole modifiche, non un'evoluzione. Le evoluzioni si chiedono **solo a parole**, descrivendo una trasformazione forte (più grande, preistorica, spine, colori, scariche), poi decide il proprietario.
 - Le immagini del lotto 3 non sono andate perse: sono diventate gli **alfa** delle loro specie (`<id>_alfa_*`, già previsti dal gioco), una bestia unica (Beluga spettro) e due evoluzioni vere (Istrice gigante, Napoleone corazzato).
 - Le evoluzioni nuove tengono le mosse della prima forma (`movesFrom`), come i compagni iniziali; la quarta mossa si decide più avanti.
+
+## 2026-10-03 — Vita e morso ×10, livelli più pesanti
+
+- Con 10 di vita a livello 11 il danno minimo (1) era un quinto della vita: un livello 1 faceva paura a un livello 11. Vita e morso di base sono ×10 (`ROLE_BASE`), il salvataggio passa alla v12 moltiplicando la vita delle bestie.
+- `BATTLE.levelEdgeClamp` scende a 0,3: chi è molto più basso fa al massimo 0,3 del danno.
+- Il supporto morde 1,8 (era 1); la Corazza viva di Guscio fa danno basso oltre allo scudo.
+- In battaglia come Pokémon (`BATTLE_STAGE.fit`): la selvatica intera a destra di `foeLeft`, non sotto il 62% dello schermo; la tua con il bordo destro (la testa, vista da dietro) entro `youRight` e la cima sotto `youTop`, il resto può uscire in basso e a sinistra. Una regola sola per tutti gli animali, niente categorie a mano.
+- Nel mare ogni bestia è disegnata lunga almeno `RENDER.minLengthM` (1,3 m).

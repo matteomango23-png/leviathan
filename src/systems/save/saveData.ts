@@ -11,7 +11,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -162,6 +162,16 @@ export const MIGRATIONS: Migration[] = [
           : { x: boat, y: SUBMARINE.restY, model: first.id, models: [first.id], hull: first.hull };
       return { ...rest, sub };
     },
+  },
+  // v11 → v12 (3 ottobre 2026): beast health is ×10 (data/species.ts ROLE_BASE)
+  {
+    from: 11,
+    migrate: (o) => ({
+      ...o,
+      team: Array.isArray(o.team)
+        ? o.team.map((b) => (isObject(b) && isFiniteNumber(b.hp) ? { ...b, hp: b.hp * 10 } : b))
+        : o.team,
+    }),
   },
 ];
 

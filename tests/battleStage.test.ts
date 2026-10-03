@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BATTLE_STAGE } from '../src/data/battle';
-import { battlePlace, battleSize, isGiant, lengthSpectrum } from '../src/systems/battle/stage';
+import { battlePlace, battleSize, isGiant, lengthSpectrum, spectrumSize } from '../src/systems/battle/stage';
 
 const S = BATTLE_STAGE.size;
 const WIDE = 3; // a screen so wide that nothing is shrunk to fit
@@ -13,13 +13,13 @@ describe('battle stage', () => {
     expect(lengthSpectrum(S.minM)).toBe(0);
     expect(lengthSpectrum(S.maxM)).toBe(1);
     expect(lengthSpectrum(120)).toBe(1);
-    const own = (m: number) => battleSize('foe', beast(m), WIDE) / S.foeDistance;
+    const own = (m: number) => spectrumSize(beast(m));
     expect(own(0.5)).toBeCloseTo(S.min);
     expect(own(40)).toBeCloseTo(S.max);
   });
 
   it('draws a 25 m and a 30 m beast alike, a 6 m shark clearly bigger than a 1.5 m ray', () => {
-    const own = (m: number) => battleSize('foe', beast(m), WIDE);
+    const own = (m: number) => spectrumSize(beast(m));
     expect(own(30) / own(25)).toBeLessThan(1.05);
     expect(own(6) / own(1.5)).toBeGreaterThan(1.3);
     expect(own(5) / own(2)).toBeLessThan(1.25);
@@ -29,11 +29,13 @@ describe('battle stage', () => {
     expect(battleSize('you', beast(2), WIDE)).toBeGreaterThan(battleSize('foe', beast(2), WIDE));
   });
 
-  it('shrinks a beast that would leave the screen', () => {
+  it('shrinks a wild beast that would leave the screen; yours is only kept from growing too much', () => {
     const tall = { lengthM: 30, giant: true, box: [300, 20, 500, 780] as const };
-    const size = battleSize('you', tall, 2.16);
-    expect(size).toBeLessThan(S.max * S.youCloser);
-    expect(size * (760 / 760)).toBeLessThanOrEqual(1 - BATTLE_STAGE.hover - BATTLE_STAGE.fit.margin + 1e-9);
+    const F = BATTLE_STAGE.fit;
+    expect(battleSize('foe', tall, 2.16)).toBeLessThanOrEqual(
+      F.foeLowest - BATTLE_STAGE.hover - F.margin + 1e-9,
+    );
+    expect(battleSize('you', tall, 2.16)).toBeLessThanOrEqual(F.youMax);
   });
 
   it('knows the giants', () => {
