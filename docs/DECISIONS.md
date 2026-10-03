@@ -419,6 +419,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
 
+## 2026-10-03 — Livello massimo 100
+
+- Il proprietario: "100". La formula delle statistiche (livello / 100), le curve di esperienza e le evoluzioni al 16 e al 36 sono quelle di Pokémon, pensate per 100.
+- Forme finali al 100 (al livello massimo, come prima al 50). Crescita col cibo dal 51, +0,8% a livello (circa +40% in tutto, come prima), 3 pesci a livello.
+- Liste delle mosse: fino al 16 invariate, oltre allungate ×1,5 (finiscono verso il 65, come in Pokémon).
+- I livelli delle bestie nel mondo non cambiano: i capitoli fatti arrivano verso il 27; quelli futuri useranno i livelli oltre il 50.
+
 ## 2026-10-03 — Inquadratura della battaglia come Pokémon gen 5
 
 - Pokémon gen 3–5: ogni Pokémon sta in un riquadro fisso (96×96 in gen 5), la grandezza è "schiacciata" e non realistica (Wailord riempie il riquadro, Pikachu un terzo): come la nostra scala logaritmica, che resta. Il tuo è visto da dietro e ingrandito (×2 in gen 5), tagliato dal bordo basso; il nemico sta intero sulla pedana in alto a destra.

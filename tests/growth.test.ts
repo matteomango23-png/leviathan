@@ -64,15 +64,15 @@ describe('experience and levels', () => {
 });
 
 describe('growth 31–50 and final form', () => {
-  it('from level 31 needs a full nourishment bar as well as experience', () => {
-    const b = shark(30);
+  it('from level 51 needs a full nourishment bar as well as experience', () => {
+    const b = shark(50);
     gainXp(b, xpToNext(b) * 3, []);
-    expect(b.level).toBe(30);
+    expect(b.level).toBe(50);
     expect(b.xp).toBe(xpToNext(b)); // full, waiting
     expect(isHungry(b)).toBe(true);
     const events: GameEvent[] = [];
     for (let i = 0; i < PROGRESSION.nourishmentPerGrowthLevel; i++) feedBeast(b, events);
-    expect(b.level).toBe(31);
+    expect(b.level).toBe(51);
     expect(b.food).toBe(0);
     expect(events.some((e) => e.type === 'levelUp')).toBe(true);
   });
@@ -83,24 +83,24 @@ describe('growth 31–50 and final form', () => {
     expect(b.food).toBe(0);
   });
 
-  it('grows 2% per level from 31', () => {
+  it('grows a little per level from 51', () => {
     const f = { speciesId: 'squalo_bianco', variant: 'comune' } as const;
-    expect(formLengthM(f, 30)).toBe(6);
-    expect(formLengthM(f, 35)).toBeCloseTo(6 * (1 + 5 * PROGRESSION.growthSizePerLevel));
+    expect(formLengthM(f, 50)).toBe(6);
+    expect(formLengthM(f, 55)).toBeCloseTo(6 * (1 + 5 * PROGRESSION.growthSizePerLevel));
   });
 
-  it('reaches the final form at 50: Titano, Mega albino; never for the alfa', () => {
+  it('reaches the final form at 100: Titano, Mega albino; never for the alfa', () => {
     const events: GameEvent[] = [];
-    const b = shark(49);
+    const b = shark(99);
     raiseLevel(b, 1, events);
     expect(b.form.final).toBe(true);
     expect(formLengthM(b.form, b.level)).toBe(9);
     expect(events).toContainEqual({ type: 'finalForm', uid: 'b1' });
-    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'albino' }, 50)?.final).toBe(true);
-    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'alfa' }, 50)).toBeNull();
-    expect(finalFormAt({ speciesId: 'barracuda', variant: 'comune' }, 50)).toBeNull();
+    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'albino' }, 100)?.final).toBe(true);
+    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'alfa' }, 100)).toBeNull();
+    expect(finalFormAt({ speciesId: 'barracuda', variant: 'comune' }, 100)).toBeNull();
     expect(
-      finalFormAt({ speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' }, 50),
+      finalFormAt({ speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' }, 100),
     ).toBeNull();
   });
 });

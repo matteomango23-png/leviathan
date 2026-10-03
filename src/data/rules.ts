@@ -39,16 +39,16 @@ export function counterTypeOf(def: TypeId): TypeId {
 }
 
 export const PROGRESSION = {
-  maxLevel: 50,
+  maxLevel: 100, // like Pokémon (owner, 3 ottobre 2026; was 50)
   moveUnlockLevels: [1, 7, 15] as const,      // slot 1, 2, 3 (absolute levels, Pokémon style)
   moveDamagePerLevel: 0.04,                   // +4% per level → ~3x at level 50
   statGrowthPerLevel: 0.04,                   // tuning: base stats scale the same way
-  growthStartLevel: 31,                       // from here each level also needs nourishment
-  growthSizePerLevel: 0.02,                   // +2% size per level from 31 to 50
-  finalFormLevel: 50,                         // iconic species reach their final form
+  growthStartLevel: 51,                       // from here each level also needs nourishment (was 31 of 50)
+  growthSizePerLevel: 0.008,                  // +0.8% size per level from 51 to 99 (about +40% in all, as before)
+  finalFormLevel: 100,                        // iconic species reach their final form (was 50)
   teamSize: 5,                                // beasts in the team; reserve is unlimited
   sanctuaryHealSeconds: 5,                    // gradual heal of HP and oxygen while standing still
-  nourishmentPerGrowthLevel: 8,              // tuning: fish to eat for each level from 31 upward
+  nourishmentPerGrowthLevel: 3,              // tuning: fish to eat for each level from 51 upward (was 8 for 20 levels)
 };
 
 /** Taming minigame difficulty grows with the level gap between the wild beast and your strongest beast. */
@@ -67,7 +67,7 @@ export const TAMING = {
  * On-screen size. All sprites of a species share the same 1000×460 frame (body midline at y=250) (so closed/open and variants swap cleanly);
  * the real size difference is applied at runtime:
  *   drawn length = species.lengthM × variant/unique sizeMult × growth(level) × RENDER.beastScaleBoost, in "diver metres".
- * growth(level) = 1 for level ≤ 30, then +PROGRESSION.growthSizePerLevel per level up to 49; at level 50 the final form uses FINAL_FORM_SIZE_MULT.
+ * growth(level) = 1 for level ≤ 50, then +PROGRESSION.growthSizePerLevel per level up to 99; at level 100 the final form uses FINAL_FORM_SIZE_MULT.
  * Example: squalo bianco 6 m → alfa 6.9 m → Sfregiato 7.5 m → final form (Titano) 9 m; megalodonte 18 m, final form 27 m. The Titano stays well below the megalodon.
  */
 export const RENDER = {
