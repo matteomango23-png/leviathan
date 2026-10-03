@@ -1,5 +1,5 @@
-// Leviatano — turn-based battles, 1 against 1, like Pokémon (owner's decision of 1 ottobre 2026), with one
-// twist: when the enemy attacks, a tap at the right moment dodges, and it must be hard.
+// Leviatano — turn-based battles, 1 against 1, like Pokémon (owner's decision of 1 ottobre 2026; no more dodging,
+// 3 ottobre: "facciamo uguale a Pokémon").
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
 export const BATTLE = {
@@ -19,22 +19,6 @@ export const BATTLE = {
     thawChance: 0.2, // congelato: chance to thaw each turn
     /** A type that cannot get a condition (like Pokémon: Ice cannot freeze, Electric cannot be paralysed). */
     immune: { congelato: 'glaciale', paralizzato: 'tempesta', avvelenato: 'abissale' } as Partial<Record<string, string>>,
-  },
-  /** Move effects (fx in moves.ts) as they work in a turn-based battle. */
-  fx: {
-    multiHitShare: 0.6, // 'frenzy:N' / 'hits:N': several hits, each this share of the damage…
-    multiHitMax: 4, // …at most this many
-    woundedMult: 2, // 'x2vsWounded': under MOVE_RULES.woundedFraction of health
-    executeMult: 1.5, // 'executeLowHp': under MOVE_RULES.executeHpFraction
-  },
-  /** The dodge: a ring closes on your beast; tap when it touches it. */
-  dodge: {
-    closeSeconds: [0.45, 0.95] as [number, number], // tuning: how long the ring takes to close (random each time)
-    perfectSeconds: 0.065, // tuning: ± this around the moment it closes = no damage (hard on purpose; was 0.09)
-    grazeSeconds: 0.15, // ± this = half damage (was 0.2)
-    grazeMult: 0.5,
-    pauseChance: 0.45, // the ring sometimes stops for a moment (a feint) before closing
-    pauseSeconds: [0.15, 0.35] as [number, number],
   },
   /**
    * Taming, with Pokémon's catch formula (Gen III–IV): a = (3·maxHP − 2·HP) × rate × shell / (3·maxHP) × condition,

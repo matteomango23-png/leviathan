@@ -1453,3 +1453,44 @@ img.albino-art {
 .backpack[hidden] {
   display: none;
 }
+
+/* learning a move with 4 known, and the Ricordamosse (ui/moveChooser.ts) */
+.move-chooser {
+  z-index: 20; /* over the battle too */
+}
+.chooser-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(460px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid rgba(160, 200, 210, 0.3);
+  border-radius: 14px;
+  background: #0b141b;
+  color: #e6ede8;
+}
+.chooser-title {
+  margin: 0;
+  font-weight: 700;
+}
+.chooser-new {
+  margin: 0;
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+.chooser-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+.chooser-meta {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+.sheet-learn {
+  margin: 4px 0;
+}

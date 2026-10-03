@@ -8,13 +8,19 @@ import { growthBars } from './growthBars';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
+import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
+import { chooseForget, openRemember } from './moveChooser';
 
 export interface SheetExtra {
   hp?: number;
   ko?: boolean;
   count?: number; // how many of this form you own
-  /** A tamed beast: shows its experience and nourishment bars. */
+  /** A tamed beast: shows its experience and nourishment bars, and the moves waiting to be learned. */
   beast?: TeamBeast;
+  /** At the port: the Ricordamosse can teach it again a move it forgot. */
+  remember?: boolean;
+  /** Something about the beast changed (its moves). */
+  onChange?: () => void;
 }
 
 /** Opens a sheet over everything; returns a function that closes it. */
@@ -24,7 +30,7 @@ export function openBeastSheet(
   level?: number,
   extra: SheetExtra = {},
 ): () => void {
-  const s = buildSheet(form, level);
+  const s = buildSheet(form, level, extra.beast?.known, extra.beast?.ppUsed);
   const root = el('div', 'sheet', parent);
   const card = el('div', 'sheet-card', root);
   card.style.setProperty('--rarity', s.rarityColor);
@@ -97,19 +103,56 @@ export function openBeastSheet(
   stat('Velocità', String(s.stats.spe), 'dive');
   stat('Lunghezza', `${s.lengthM.toString().replace('.', ',')} m`, 'fish');
 
-  el('h3', '', info, 'Mosse');
+  el('h3', '', info, 'Mosse in battaglia');
+  const b = extra.beast;
+  if (b) {
+    // after a choice the sheet opens again, up to date
+    const again = (): void => {
+      close();
+      extra.onChange?.();
+      openBeastSheet(parent, b.form, b.level, extra);
+    };
+    for (const id of b.pendingMoves ?? []) {
+      const btn = el(
+        'button',
+        'menu-btn sheet-learn',
+        info,
+        `Nuova mossa: ${BATTLE_MOVE_BY_ID[id]?.name ?? id} · scegli`,
+      );
+      btn.addEventListener('click', () => chooseForget(parent, b, id, again));
+    }
+    if (extra.remember) {
+      const btn = el('button', 'menu-btn sheet-learn', info, 'Ricordamosse');
+      btn.addEventListener('click', () => openRemember(parent, b, again));
+    }
+  }
   for (const m of s.moves) {
-    const row = el('div', `sheet-move${m.unlocked ? '' : ' locked'}`, info);
+    const row = el('div', 'sheet-move', info);
     const top = el('div', 'move-top', row);
-    if (!m.unlocked) top.append(icon('lock'));
     el('span', 'move-name', top, m.name);
     const t = el('span', 'tag small', top, m.typeName);
     t.style.color = m.typeColor;
     t.style.borderColor = m.typeColor;
-    el('span', 'move-meta', top, m.unlocked ? `PP ${m.pp}` : `livello ${m.unlockLevel}`);
+    el('span', 'move-meta', top, `PP ${m.pp}/${m.maxPp}`);
     const acc = m.accuracy === null ? '—' : String(m.accuracy);
     const power = m.power > 0 ? ` · potenza ${m.power}` : '';
     el('div', 'move-text', row, `${m.text} · ${m.category}${power} · precisione ${acc}`);
+  }
+  if (s.nextMoves.length) {
+    const row = el('div', 'sheet-move locked', info);
+    const top = el('div', 'move-top', row);
+    top.append(icon('lock'));
+    el('span', 'move-name', top, 'Prossime mosse');
+    el('div', 'move-text', row, s.nextMoves.map((m) => `${m.name} (Lv. ${m.level})`).join(' · '));
+  }
+  el('h3', '', info, 'Mosse in mare');
+  for (const m of s.seaMoves) {
+    const row = el('div', `sheet-move${m.unlocked ? '' : ' locked'}`, info);
+    const top = el('div', 'move-top', row);
+    if (!m.unlocked) top.append(icon('lock'));
+    el('span', 'move-name', top, m.name);
+    el('span', 'move-meta', top, m.unlocked ? 'quando la cavalchi' : `livello ${m.unlockLevel}`);
+    el('div', 'move-text', row, m.text);
   }
   if (s.fieldMove) {
     // the move used in the sea, not in battle: it breaks ancient bones

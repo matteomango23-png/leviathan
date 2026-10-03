@@ -1,15 +1,16 @@
-// Everything shown on a beast's card sheet: rarity, type, role, stats, moves with unlock levels
-// and damage now / at the next level, size, habitat. Pure data, rendered by ui/beastSheet.ts.
+// Everything shown on a beast's card sheet: rarity, type, role, stats, its battle moves (and the next ones it
+// learns), its moves in the open sea, size, habitat. Pure data, rendered by ui/beastSheet.ts.
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
 import { SPECIES } from '../../data/species';
 import { MOVES } from '../../data/moves';
 import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { SpeciesDef, Stats } from '../../data/species';
-import { moveBattleOf } from '../../data/moveBattle';
-import { powerOf } from './combat';
-
-const CATEGORY_NAMES = { fisico: 'fisica', speciale: 'speciale', stato: 'di stato' } as const;
+import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
+import { learnedAt } from '../../data/learnsets';
+import { CATEGORY_NAMES, type BattleMoveDef } from '../../data/moveBattle';
+import type { MoveTypeId } from '../../data/rules';
+import { defaultMoves, evolvedAtOf } from './battleMoves';
 import { ABILITIES } from '../../data/beasts';
 import {
   breaksBones,
@@ -24,19 +25,25 @@ import {
   moveSpeciesOf,
 } from './forms';
 
+/** A battle move, like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
 export interface SheetMove {
-  slot: number;
   name: string;
   typeName: string;
   typeColor: string;
-  unlockLevel: number;
-  unlocked: boolean;
-  cooldown: number;
-  /** Like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
   power: number;
   accuracy: number | null;
+  /** PP left (a tamed beast) and in all. */
   pp: number;
+  maxPp: number;
   category: string;
+  text: string;
+}
+
+/** A move of the open sea (riding), unlocked at 1, 7 and 15. */
+export interface SeaMove {
+  name: string;
+  unlockLevel: number;
+  unlocked: boolean;
   text: string;
 }
 
@@ -56,6 +63,9 @@ export interface Sheet {
   habitat: string;
   trait: string;
   moves: SheetMove[];
+  /** The next moves it learns, with their level. */
+  nextMoves: { level: number; name: string; typeColor: string }[];
+  seaMoves: SeaMove[];
   /** A starter line: its stages, with the level each is reached at (empty for other beasts). */
   evolution: { name: string; level: number | null; current: boolean }[];
   /** Sfondamento (breaks ancient bones in the sea), for the beasts that learn it; null for the others. */
@@ -92,8 +102,9 @@ function specialOf(form: BeastForm): Sheet['special'] {
 /**
  * @param level the beast's level (a tamed beast), or undefined for a species seen in the bestiary
  *   (then the sheet shows it at the bottom of its wild level range)
+ * @param known a tamed beast's battle moves (and the PP they spent); otherwise the ones it knows in the wild
  */
-export function buildSheet(form: BeastForm, level?: number): Sheet {
+export function buildSheet(form: BeastForm, level?: number, known?: string[], ppUsed: number[] = []): Sheet {
   const s = speciesOf(form);
   const range = wildLevelRange(form);
   const lv = level ?? range[0];
@@ -101,25 +112,32 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
   const type = formType(form);
   const typeDef = type === 'variabile' ? null : TYPES[type];
   const stats = formStats(form, lv);
-  const moves = MOVES.filter((m) => m.species === moveSpeciesOf(form))
+  const moves = (known ?? defaultMoves(form, lv))
+    .map((id) => BATTLE_MOVE_BY_ID[id])
+    .filter((m): m is BattleMoveDef => !!m)
+    .map((m, i) => ({
+      name: m.name,
+      typeName: typeNameOf(m.type),
+      typeColor: typeColorOf(m.type),
+      power: m.power,
+      accuracy: m.accuracy,
+      pp: Math.max(0, m.pp - (ppUsed[i] ?? 0)),
+      maxPp: m.pp,
+      category: CATEGORY_NAMES[m.category],
+      text: m.text,
+    }));
+  const evolvedAt = evolvedAtOf(s.id);
+  const nextMoves: Sheet['nextMoves'] = [];
+  for (let l = lv + 1; l <= PROGRESSION.maxLevel && nextMoves.length < 3; l++)
+    for (const id of [...learnedAt(s.id, l), ...(l === evolvedAt ? learnedAt(s.id, 0) : [])]) {
+      const m = BATTLE_MOVE_BY_ID[id];
+      if (m) nextMoves.push({ level: l, name: m.name, typeColor: typeColorOf(m.type) });
+    }
+  const seaMoves = MOVES.filter((m) => m.species === moveSpeciesOf(form))
     .sort((a, b) => a.slot - b.slot)
     .map((m) => {
       const unlockLevel = PROGRESSION.moveUnlockLevels[m.slot - 1] ?? 1;
-      const mt = m.type === 'variabile' ? null : TYPES[m.type];
-      return {
-        slot: m.slot,
-        name: m.name,
-        typeName: mt?.name ?? 'Variabile',
-        typeColor: mt?.color ?? '#e6ede8',
-        unlockLevel,
-        unlocked: lv >= unlockLevel,
-        cooldown: m.cooldown,
-        power: powerOf(m),
-        accuracy: moveBattleOf(m).accuracy,
-        pp: moveBattleOf(m).pp,
-        category: CATEGORY_NAMES[moveBattleOf(m).category],
-        text: m.text,
-      };
+      return { name: m.name, unlockLevel, unlocked: lv >= unlockLevel, text: m.text };
     });
   return {
     name: formName(form),
@@ -137,6 +155,8 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
     habitat: REGIONS.find((r) => r.id === s.region)?.name ?? s.region,
     trait: s.trait,
     moves,
+    nextMoves,
+    seaMoves,
     fieldMove: fieldMoveOf(form, lv),
     evolution: evolutionLine(form.speciesId).map((x) => ({
       name: x.name,
@@ -145,6 +165,9 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
     })),
   };
 }
+
+const typeNameOf = (t: MoveTypeId): string => (t === 'variabile' ? 'Variabile' : TYPES[t].name);
+const typeColorOf = (t: MoveTypeId): string => (t === 'variabile' ? '#e6ede8' : TYPES[t].color);
 
 function fieldMoveOf(form: BeastForm, level: number): Sheet['fieldMove'] {
   const s = speciesOf(form);

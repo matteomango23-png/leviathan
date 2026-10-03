@@ -32,6 +32,8 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
           hp: b.hp,
           ko: b.ko,
           beast: b,
+          remember: editable, // the Ricordamosse is at the port
+          onChange: draw,
         });
       });
       const img = el('img', '', row);

@@ -2,6 +2,7 @@
 import { TEAM_RULES } from '../../data/beasts';
 import { movesOf, type MoveDef } from '../../data/moves';
 import { PROGRESSION } from '../../data/rules';
+import { defaultMoves } from './battleMoves';
 import { formStats, type BeastForm, moveSpeciesOf } from './forms';
 
 export interface TeamBeast {
@@ -15,8 +16,12 @@ export interface TeamBeast {
   hp: number;
   ko: boolean;
   inTeam: boolean;
-  /** PP each move has spent (battle, like Pokémon); back to full when the beast is fully healed. */
+  /** Its battle moves (data/battleMoves.ts), at most 4, like Pokémon. */
+  known: string[];
+  /** PP each of its moves has spent (same order as `known`); back to full when the beast is fully healed. */
   ppUsed?: number[];
+  /** Moves it could learn but has no room for: you choose what to forget (or give them up). */
+  pendingMoves?: string[];
 }
 
 export function maxHpOf(b: TeamBeast): number {
@@ -33,6 +38,7 @@ export function makeTeamBeast(uid: string, form: BeastForm, level: number, inTea
     hp: 0,
     ko: false,
     inTeam,
+    known: defaultMoves(form, level),
   };
   b.hp = maxHpOf(b);
   return b;
@@ -53,7 +59,7 @@ export function strongestLevel(all: TeamBeast[]): number {
   return m.length ? Math.max(...m.map((b) => b.level)) : TEAM_RULES.levelWithoutTeam;
 }
 
-/** Moves in slot order, with their unlock level and whether this beast has unlocked them. */
+/** Its moves in the open sea (riding), in slot order, with their unlock level and whether it has them. */
 export function movesFor(b: TeamBeast): { move: MoveDef; unlockLevel: number; unlocked: boolean }[] {
   return movesOf(moveSpeciesOf(b.form)).map((move) => {
     const unlockLevel = PROGRESSION.moveUnlockLevels[move.slot - 1] ?? 1;

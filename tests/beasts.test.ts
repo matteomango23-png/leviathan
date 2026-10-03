@@ -144,8 +144,10 @@ describe('beast sheet', () => {
     expect(s.rarityName).toBe('Rara');
     expect(s.typeName).toBe('Predatore');
     expect(s.roleName).toBe('Cavalcatura');
-    expect(s.moves.map((m) => m.unlocked)).toEqual([true, true, false]);
-    expect(s.moves[0]!.power).toBeGreaterThan(0);
+    expect(s.moves.map((m) => m.name)).toEqual(['Spinta', 'Sguardo feroce', 'Azzannata']);
+    expect(s.moves[0]!.power).toBe(40);
+    expect(s.seaMoves.map((m) => m.unlocked)).toEqual([true, true, false]);
+    expect(s.nextMoves[0]).toMatchObject({ level: 9, name: 'Guizzo' });
     expect(s.lengthM).toBe(6);
     expect(s.habitat).toBe('Baia di Portofosco');
     const albino = buildSheet({ speciesId: 'squalo_bianco', variant: 'albino' }, 5);
