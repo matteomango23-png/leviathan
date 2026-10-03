@@ -240,11 +240,6 @@ export class BattleView {
     p.tint = 0xffffff;
   }
 
-  /** A perfect dodge: your beast slips aside. */
-  async dodgeAside(): Promise<void> {
-    await this.tween(this.poses.you, { dx: -this.w * 0.08, dy: this.h * 0.06, rot: -0.1 }, 130, true);
-  }
-
   async faint(side: Side): Promise<void> {
     const p = this.poses[side];
     p.tint = 0x666666;

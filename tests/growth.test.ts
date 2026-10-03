@@ -25,12 +25,12 @@ const shark = (level: number) =>
   makeTeamBeast('b1', { speciesId: 'squalo_bianco', variant: 'comune' }, level, true);
 
 describe('experience and levels', () => {
-  it('levels up with enough experience and unlocks moves at 7 and 15', () => {
-    const b = shark(6);
+  it('levels up with enough experience, learns its battle move and unlocks sea moves at 7 and 15', () => {
+    const b = shark(8);
     const events: GameEvent[] = [];
     gainXp(b, xpToNext(b), events);
-    expect(b.level).toBe(7);
-    expect(events).toContainEqual({ type: 'levelUp', uid: 'b1', level: 7, move: 'Carica' });
+    expect(b.level).toBe(9);
+    expect(events).toContainEqual({ type: 'levelUp', uid: 'b1', level: 9, move: 'Guizzo' });
     expect(movesFor(b).filter((m) => m.unlocked)).toHaveLength(2);
   });
 

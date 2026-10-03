@@ -1,19 +1,34 @@
 // A turn-based battle, 1 against 1, like Pokémon: you pick an action (a move, the backpack, another beast,
 // taming, fleeing), the wild beast picks a move, and they happen in order of priority and speed. Moves have PP,
-// accuracy and effects (data/moveBattle.ts), conditions and stages work as in Pokémon (status.ts). Pure logic: the battle
-// scene animates the steps it returns and asks for the dodge when the wild beast attacks.
+// accuracy and effects (data/battleMoves.ts), conditions and stages work as in Pokémon (status.ts). Pure logic: the
+// battle scene animates the steps it returns.
 import { BATTLE } from '../../data/battle';
 import { BATTLE_TEXT } from '../../data/battleText';
 import { formStars, isGiant, speciesOf } from '../beasts/forms';
-import type { MoveDef } from '../../data/moves';
+import type { TypeId } from '../../data/rules';
 import type { Rng } from '../math';
-import { STAGE_NAMES, STRUGGLE } from '../../data/moveBattle';
+import {
+  REST_SLEEP_TURNS,
+  STAGE_NAMES,
+  STRUGGLE,
+  type BattleMoveDef,
+  type StageId,
+} from '../../data/moveBattle';
 import { formType } from '../beasts/forms';
-import { canUse, effectiveness, hasFx, hitDamage, hitsOf, named, type Fighter } from './fighter';
+import {
+  averageHits,
+  canUse,
+  effectiveness,
+  hitDamage,
+  moveTypeAgainst,
+  named,
+  noStages,
+  rollHits,
+  type Fighter,
+} from './fighter';
 import { accuracyMult, changeStage, checkTurn, effectiveStat, giveStatus, residualDamage } from './status';
 
 export type Side = 'you' | 'foe';
-export type Dodge = 'perfect' | 'graze' | 'none';
 
 export type Action =
   | { kind: 'move'; index: number }
@@ -29,11 +44,10 @@ export type Step =
       kind: 'attack';
       side: Side;
       move: string;
-      /** The move's type (the colour of its effect). */
-      type: MoveDef['type'];
+      /** The type it hit with (the colour of its effect). */
+      type: TypeId;
       hits: number[];
       crit: boolean;
-      dodge: Dodge;
       effect: 'super' | 'weak' | null;
     }
   | { kind: 'heal'; side: Side; amount: number }
@@ -70,19 +84,19 @@ export function chooseFoeMove(s: BattleState, rng: Rng): number {
   if (rng() < BATTLE.ai.randomChoice) return ready[Math.floor(rng() * ready.length)]!.i;
   const me = you(s);
   const score = ({ m }: (typeof ready)[number]): number => {
-    const r = m.rules;
+    const r = m.move;
     if (r.power <= 0) {
       // a move without damage is worth it while it can still do something
       const useful = r.effects.some(
         (e) =>
           (e.kind === 'status' && !me.status) ||
-          (e.kind === 'heal' && s.foe.hp < s.foe.maxHp * 0.5) ||
+          ((e.kind === 'heal' || e.kind === 'rest') && s.foe.hp < s.foe.maxHp * 0.5) ||
           (e.kind === 'stage' && (e.who === 'self' ? s.foe.stages[e.stat] < 2 : me.stages[e.stat] > -2)),
       );
       return useful ? 50 : 1;
     }
-    const stab = m.move.type === formType(s.foe.form) || m.move.type === 'variabile' ? BATTLE.stab : 1;
-    return r.power * stab * effectiveness(m.move, me) * hitsOf(m.move) * ((r.accuracy ?? 100) / 100);
+    const stab = moveTypeAgainst(r, me) === formType(s.foe.form) || r.type === 'variabile' ? BATTLE.stab : 1;
+    return r.power * stab * effectiveness(r, me) * averageHits(r) * ((r.accuracy ?? 100) / 100);
   };
   return ready.reduce((a, b) => (score(b) > score(a) ? b : a)).i;
 }
@@ -90,19 +104,13 @@ export function chooseFoeMove(s: BattleState, rng: Rng): number {
 /** Who acts first this round: switching, items, taming and fleeing first; then priority; then speed, like Pokémon. */
 export function firstSide(s: BattleState, action: Action, rng: Rng): Side {
   if (action.kind !== 'move') return 'you';
-  const prio = (f: Fighter, i: number): number => f.moves[i]?.rules.priority ?? 0;
+  const prio = (f: Fighter, i: number): number => f.moves[i]?.move.priority ?? 0;
   const p = prio(you(s), action.index) - prio(s.foe, s.foeMove);
   if (p !== 0) return p > 0 ? 'you' : 'foe';
   const a = effectiveStat(you(s), 'spe');
   const b = effectiveStat(s.foe, 'spe');
   return a === b ? (rng() < 0.5 ? 'you' : 'foe') : a > b ? 'you' : 'foe';
 }
-
-/** The wild beast's attack can be dodged when it does damage and does not grab you. */
-export const foeCanBeDodged = (s: BattleState): boolean => {
-  const bm = s.foe.moves[s.foeMove];
-  return !bm || (bm.rules.power > 0 && !hasFx(bm.move, 'grab'));
-};
 
 const BLOCKED_TEXT = {
   flinch: BATTLE_TEXT.flinched,
@@ -111,18 +119,27 @@ const BLOCKED_TEXT = {
   paralyzed: BATTLE_TEXT.paralyzed,
 };
 
+/** The move Lotta disperata stands on (no PP, no effects but its recoil). */
+const STRUGGLE_MOVE: BattleMoveDef = {
+  id: 'lotta_disperata',
+  name: STRUGGLE.name,
+  type: 'predatore',
+  category: 'fisico',
+  power: STRUGGLE.power,
+  accuracy: null,
+  pp: 1,
+  priority: 0,
+  effects: [],
+  text: '',
+};
+
+const ALL_STATS: StageId[] = ['atk', 'def', 'spa', 'spd', 'spe'];
+
 /**
- * One fighter uses a move (index -1: Lotta disperata, when no move has PP left). `dodge` only matters for the wild
- * beast's attacks on you. `movesFirst`: the target has not acted yet this round (a flinch only works then).
+ * One fighter uses a move (index -1: Lotta disperata, when no move has PP left). `movesFirst`: the target has not
+ * acted yet this round (a flinch only works then).
  */
-export function useMove(
-  s: BattleState,
-  side: Side,
-  index: number,
-  rng: Rng,
-  dodge: Dodge = 'none',
-  movesFirst = false,
-): Step[] {
+export function useMove(s: BattleState, side: Side, index: number, rng: Rng, movesFirst = false): Step[] {
   const att = side === 'you' ? you(s) : s.foe;
   const def = side === 'you' ? s.foe : you(s);
   const other: Side = side === 'you' ? 'foe' : 'you';
@@ -134,12 +151,11 @@ export function useMove(
   const struggle = index < 0 || !att.moves.some(canUse);
   const bm = struggle ? null : att.moves[index];
   if (!struggle && (!bm || !canUse(bm))) return steps;
-  const move = bm ? bm.move : { ...att.moves[0]!.move, name: STRUGGLE.name, fx: [] };
+  const move = bm ? bm.move : STRUGGLE_MOVE;
   if (bm) bm.pp--;
-  const rules = bm ? bm.rules : { power: STRUGGLE.power, accuracy: null, effects: [] };
   // accuracy, like Pokémon: × the user's accuracy stage against the target's evasion
-  if (rules.accuracy !== null) {
-    const chance = (rules.accuracy / 100) * accuracyMult(att.stages.acc - def.stages.eva);
+  if (move.accuracy !== null) {
+    const chance = (move.accuracy / 100) * accuracyMult(att.stages.acc - def.stages.eva);
     if (rng() >= chance)
       return [
         ...steps,
@@ -150,16 +166,13 @@ export function useMove(
         { kind: 'text', text: BATTLE_TEXT.missed(named(att)) },
       ];
   }
-  const n = rules.power > 0 ? hitsOf(move) : 0;
+  const n = move.power > 0 ? rollHits(move, rng) : 0;
   const hits: number[] = [];
   let crit = false;
   for (let i = 0; i < n && def.hp > 0; i++) {
-    const h = hitDamage(att, def, move, rng, n > 1, struggle ? STRUGGLE.power : undefined);
-    let dmg = h.damage;
-    if (side === 'foe' && dodge === 'perfect') dmg = 0;
-    else if (side === 'foe' && dodge === 'graze') dmg = Math.round(dmg * BATTLE.dodge.grazeMult);
-    def.hp = Math.max(0, def.hp - dmg);
-    hits.push(dmg);
+    const h = hitDamage(att, def, move, rng);
+    def.hp = Math.max(0, def.hp - h.damage);
+    hits.push(h.damage);
     crit ||= h.crit;
   }
   const eff = effectiveness(move, def);
@@ -167,38 +180,57 @@ export function useMove(
     kind: 'attack',
     side,
     move: move.name,
-    type: move.type,
+    type: moveTypeAgainst(move, def),
     hits,
     crit,
-    dodge: side === 'foe' ? dodge : 'none',
-    effect: rules.power <= 0 ? null : eff > 1 ? 'super' : eff < 1 ? 'weak' : null,
+    effect: move.power <= 0 ? null : eff > 1 ? 'super' : eff < 1 ? 'weak' : null,
   });
   const dealt = hits.reduce((a, b) => a + b, 0);
-  if (struggle) {
-    const recoil = Math.max(1, Math.floor(att.maxHp * STRUGGLE.recoilShare));
-    att.hp = Math.max(0, att.hp - recoil);
-    steps.push({ kind: 'hurt', side, amount: recoil, text: BATTLE_TEXT.recoil(named(att)) });
-  }
-  const landed = rules.power <= 0 || dealt > 0;
-  for (const e of rules.effects) {
+  const hurt = (amount: number): void => {
+    att.hp = Math.max(0, att.hp - amount);
+    steps.push({ kind: 'hurt', side, amount, text: BATTLE_TEXT.recoil(named(att)) });
+  };
+  if (struggle) hurt(Math.max(1, Math.floor(att.maxHp * STRUGGLE.recoilShare)));
+  const landed = move.power <= 0 || dealt > 0;
+  for (const e of move.effects) {
     if (!landed || rng() >= ('chance' in e ? e.chance : 1)) continue;
     if (e.kind === 'status') {
       if (giveStatus(def, e.status, formType(def.form), rng))
         steps.push({ kind: 'text', text: BATTLE_TEXT.gotStatus[e.status](named(def)) });
-      else if (rules.power <= 0) steps.push({ kind: 'text', text: BATTLE_TEXT.noEffect });
+      else if (move.power <= 0) steps.push({ kind: 'text', text: BATTLE_TEXT.noEffect });
     } else if (e.kind === 'stage') {
       const who = e.who === 'self' ? att : def;
       const moved = who.hp > 0 ? changeStage(who, e.stat, e.by) : 0;
       steps.push({ kind: 'text', text: BATTLE_TEXT.stage(named(who), STAGE_NAMES[e.stat], moved, e.by) });
+    } else if (e.kind === 'boostAll') {
+      for (const st of ALL_STATS) changeStage(att, st, 1);
+      steps.push({ kind: 'text', text: BATTLE_TEXT.boostAll(named(att)) });
+    } else if (e.kind === 'haze') {
+      att.stages = noStages();
+      def.stages = noStages();
+      steps.push({ kind: 'text', text: BATTLE_TEXT.haze });
     } else if (e.kind === 'flinch') {
       if (movesFirst && def.hp > 0) def.flinch = true;
+    } else if (e.kind === 'recoil') {
+      if (dealt > 0) hurt(Math.max(1, Math.floor(dealt * e.share)));
+    } else if (e.kind === 'rest') {
+      if (att.hp >= att.maxHp) {
+        steps.push({ kind: 'text', text: BATTLE_TEXT.noEffect });
+        continue;
+      }
+      const amount = att.maxHp - att.hp;
+      att.hp = att.maxHp;
+      att.status = 'stordito';
+      att.sleepTurns = REST_SLEEP_TURNS;
+      steps.push({ kind: 'heal', side, amount });
+      steps.push({ kind: 'text', text: BATTLE_TEXT.gotStatus.stordito(named(att)) });
     } else if (e.kind === 'heal' || e.kind === 'drain') {
       const want = e.kind === 'heal' ? att.maxHp * e.share : dealt * e.share;
       const amount = Math.min(att.maxHp - att.hp, Math.max(1, Math.floor(want)));
       if (amount > 0 && att.hp > 0) {
         att.hp += amount;
         steps.push({ kind: 'heal', side, amount });
-      }
+      } else if (e.kind === 'heal') steps.push({ kind: 'text', text: BATTLE_TEXT.noEffect });
     }
   }
   if (def.hp <= 0) steps.push({ kind: 'faint', side: other });

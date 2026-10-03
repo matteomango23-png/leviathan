@@ -6,7 +6,7 @@ import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { TYPES, type MoveTypeId } from '../data/rules';
 import { ITEMS } from '../data/world';
-import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
+import { CATEGORY_NAMES, STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
 import type { Action, BattleState } from '../systems/battle/battle';
 import { canUse, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
@@ -14,10 +14,7 @@ import { rarityTier } from '../systems/battle/stage';
 import './battle.css';
 import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
-import { DodgeBar } from './dodgeBar';
 import { ICONS } from './icons';
-
-const CATEGORY_NAMES = { fisico: 'fisica', speciale: 'speciale', stato: 'di stato' };
 
 const typeColor = (type: MoveTypeId): string => (type === 'variabile' ? '#d9e4e6' : TYPES[type].color);
 const typeName = (type: MoveTypeId): string => (type === 'variabile' ? 'Variabile' : TYPES[type].name);
@@ -96,7 +93,6 @@ export class BattleUi {
   private readonly msgText: HTMLSpanElement;
   private readonly menu: HTMLDivElement;
   /** The SCHIVA bar, shown when the wild beast attacks. */
-  readonly dodge: DodgeBar;
   private advance: (() => void) | null = null;
 
   constructor(parent: HTMLElement) {
@@ -107,7 +103,6 @@ export class BattleUi {
     this.msgText = el('span', '', this.msg);
     el('span', 'bmsg-next', this.msg);
     this.menu = el('div', 'bmenu', this.root);
-    this.dodge = new DodgeBar(this.root);
     this.msg.addEventListener('pointerdown', () => this.advance?.());
     this.msg.hidden = true;
   }
@@ -194,10 +189,8 @@ export class BattleUi {
           b.append(typeIcon(bm.move.type, '#fff'));
           const text = el('span', 'bmove-text', b);
           el('span', 'bmove-name', text, bm.move.name);
-          const r = bm.rules;
-          const info = !bm.unlocked
-            ? `dal Lv. ${bm.unlockLevel}`
-            : `${r.power ? `potenza ${r.power}` : CATEGORY_NAMES.stato} · PP ${bm.pp}/${bm.maxPp}`;
+          const r = bm.move;
+          const info = `${r.power ? `potenza ${r.power}` : CATEGORY_NAMES.stato} · PP ${bm.pp}/${bm.maxPp}`;
           el('span', 'bmove-info', text, info);
           b.disabled = !canUse(bm);
         });

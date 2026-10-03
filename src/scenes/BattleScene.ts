@@ -1,6 +1,6 @@
 // Battle: a turn-based fight 1 against 1, like Pokémon (systems/battle). This scene runs the turns: it asks
-// the interface for your action, plays the steps with the battle view, and runs the dodge ring when the wild
-// beast attacks. For now it starts on its own with the test team (link with ?battaglia).
+// the interface for your action and plays the steps with the battle view. Without a game it starts on its own
+// with the test team (link with ?battaglia).
 import Phaser from 'phaser';
 import { BATTLE, BATTLE_PROTOTYPE } from '../data/battle';
 import { BATTLE_TEXT, type Named } from '../data/battleText';
@@ -10,7 +10,6 @@ import {
   createBattle,
   endRound,
   firstSide,
-  foeCanBeDodged,
   nextStanding,
   switchTo,
   tryFlee,
@@ -19,17 +18,16 @@ import {
   you,
   type Action,
   type BattleState,
-  type Dodge,
   type Side,
   type Step,
 } from '../systems/battle/battle';
-import { judgeDodge, makeDodgeRing } from '../systems/battle/dodge';
 import { makeFighter, named } from '../systems/battle/fighter';
 import type { BeastForm } from '../systems/beasts/forms';
 import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
+import { chooseForget } from '../ui/moveChooser';
 import type { Session } from './session';
 import { BattleView } from '../views/battleView';
 import { loadBattleArt, paintedLayers } from '../views/battle/battleAssets';
@@ -126,7 +124,7 @@ export class BattleScene extends Phaser.Scene {
       if (you(s).hp <= 0 && !(await this.replaceFainted())) break;
       await this.round(await this.ui.chooseAction(s, this.items));
     }
-    this.finish();
+    await this.finish();
   }
 
   private async round(action: Action): Promise<void> {
@@ -159,7 +157,7 @@ export class BattleScene extends Phaser.Scene {
 
   private async yourTurn(action: Action, first = false): Promise<void> {
     const s = this.s;
-    if (action.kind === 'move') await this.play(useMove(s, 'you', action.index, this.rng, 'none', first));
+    if (action.kind === 'move') await this.play(useMove(s, 'you', action.index, this.rng, first));
     else if (action.kind === 'switch') {
       const from = this.name('you');
       await this.view!.swimOut('you');
@@ -207,48 +205,28 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private async foeTurn(first = false): Promise<void> {
-    const s = this.s;
-    const f = s.foe;
-    const bm = f.moves[s.foeMove];
-    // no dodge when it will not attack you (it lost its turn, or its move does no damage)
-    if (!bm || f.flinch || f.status === 'stordito' || f.status === 'congelato' || !foeCanBeDodged(s)) {
-      await this.play(useMove(s, 'foe', s.foeMove, this.rng, 'none', first));
-      return;
-    }
-    await this.ui.say(BATTLE_TEXT.foeUses(this.name('foe'), bm.move.name), 0.7);
-    const dodge = await this.runDodge();
-    await this.play(useMove(s, 'foe', s.foeMove, this.rng, dodge, first), true);
+    await this.play(useMove(this.s, 'foe', this.s.foeMove, this.rng, first));
   }
 
-  /** The SCHIVA bar; resolves with how well you tapped. */
-  private async runDodge(): Promise<Dodge> {
-    const r = makeDodgeRing(this.rng);
-    return judgeDodge(r, await this.ui.dodge.run(r));
-  }
-
-  /** Shows the steps of a turn. `announced`: the wild beast's move name was already said. */
-  private async play(steps: Step[], announced = false): Promise<void> {
+  /** Shows the steps of a turn. */
+  private async play(steps: Step[]): Promise<void> {
     for (const st of steps) {
       if (st.kind === 'text') {
         this.ui.setHp(this.s); // a condition or a stage may have changed
         await this.ui.say(st.text);
       } else if (st.kind === 'attack') {
-        if (!(announced && st.side === 'foe'))
-          await this.ui.say(
-            st.side === 'you'
-              ? BATTLE_TEXT.uses(this.name('you'), st.move)
-              : BATTLE_TEXT.foeUses(this.name('foe'), st.move),
-            0.7,
-          );
+        await this.ui.say(
+          st.side === 'you'
+            ? BATTLE_TEXT.uses(this.name('you'), st.move)
+            : BATTLE_TEXT.foeUses(this.name('foe'), st.move),
+          0.7,
+        );
         const target: Side = st.side === 'you' ? 'foe' : 'you';
         await this.view!.lunge(st.side);
-        if (st.dodge === 'perfect') await this.view!.dodgeAside();
         for (const dmg of st.hits) {
           await this.view!.hit(target, dmg, st.crit, st.type, st.effect === 'super');
           this.ui.setHp(this.s);
         }
-        if (st.dodge === 'perfect') await this.ui.say(BATTLE_TEXT.dodged, 0.9);
-        else if (st.dodge === 'graze') await this.ui.say(BATTLE_TEXT.grazed, 0.9);
         if (st.hits.length > 1) await this.ui.say(BATTLE_TEXT.hits(st.hits.length), 0.9);
         if (st.crit) await this.ui.say(BATTLE_TEXT.crit, 0.9);
         if (st.effect === 'super') await this.ui.say(BATTLE_TEXT.super, 1);
@@ -274,7 +252,7 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  private finish(): void {
+  private async finish(): Promise<void> {
     const s = this.s;
     const lines: string[] = [];
     let title: string = BATTLE_TEXT.won;
@@ -290,6 +268,10 @@ export class BattleScene extends Phaser.Scene {
     }
     // back to the sea: the results go into the game with its next step
     g.story.pending.push(...finishBattle(g, battleOutcome(s, this.setupInGame.wildId)));
+    // a beast that grew wants a fifth move: choose now, like Pokémon
+    for (const b of g.beasts.team)
+      for (const id of [...(b.pendingMoves ?? [])])
+        await new Promise<void>((done) => chooseForget(document.body, b, id, done));
     this.ui.result(title, lines, BATTLE_TEXT.back, () => this.backToSea());
   }
 

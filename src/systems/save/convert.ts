@@ -4,6 +4,8 @@ import { saveSub, subWakePoint, type SubState } from '../submarine';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
+import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
+import { MOVE_SLOTS } from '../../data/moveBattle';
 import { hasAlbinoArt } from '../beasts/forms';
 import { xpToNext } from '../beasts/growth';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
@@ -35,7 +37,14 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     b.ko = s.ko || b.hp <= 0;
     b.xp = Math.min(s.xp, xpToNext(b)); // v0.23: the experience needed changed (Pokémon groups)
     b.food = s.food;
-    if (s.ppUsed) b.ppUsed = [...s.ppUsed];
+    // its battle moves (0.24: Pokémon moves); an older save had the sea moves' PP, which no longer match
+    const known = (s.known ?? []).filter((id) => BATTLE_MOVE_BY_ID[id]).slice(0, MOVE_SLOTS);
+    if (known.length) {
+      b.known = known;
+      if (s.ppUsed) b.ppUsed = s.ppUsed.slice(0, known.length);
+    }
+    const pending = (s.pendingMoves ?? []).filter((id) => BATTLE_MOVE_BY_ID[id] && !b.known.includes(id));
+    if (pending.length) b.pendingMoves = pending;
     return b;
   });
 }
@@ -96,6 +105,8 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     ko: b.ko,
     inTeam: b.inTeam,
     ...(b.ppUsed ? { ppUsed: [...b.ppUsed] } : {}),
+    known: [...b.known],
+    ...(b.pendingMoves?.length ? { pendingMoves: [...b.pendingMoves] } : {}),
   }));
   s.sanctuary = g.sanctuaries.current;
   s.brokenTiles = [...new Set(g.brokenTiles)];

@@ -1,4 +1,5 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
+import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { PROGRESSION } from '../data/rules';
 import { SUB_TEXT } from '../data/submarine';
 import { TEMPLE_TEXT } from '../data/temples';
@@ -136,6 +137,14 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       const b = tamed(e.uid);
       const move = e.move ? ` Nuova mossa: ${e.move}.` : '';
       return b ? [`${formName(b.form)} sale al livello ${e.level}!${move}`, e.move ? 4 : 2.4] : null;
+    }
+    case 'moveWaiting': {
+      const b = tamed(e.uid);
+      // already chosen (at the end of the battle): nothing to say
+      const waiting = b?.pendingMoves?.some((id) => BATTLE_MOVE_BY_ID[id]?.name === e.move);
+      return b && waiting
+        ? [`${formName(b.form)} vuole imparare ${e.move}: apri la sua scheda in Squadra per scegliere.`, 4]
+        : null;
     }
     case 'evolved': {
       const b = tamed(e.uid);

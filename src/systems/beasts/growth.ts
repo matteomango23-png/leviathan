@@ -6,7 +6,9 @@ import { GROWTH_BY_STARS, GROWTH_CURVES, XP_RULES, scaledXp, type GrowthGroup } 
 import { PROGRESSION } from '../../data/rules';
 import type { GameEvent } from '../events';
 import { speciesOf, type BeastForm } from './forms';
-import { maxHpOf, movesFor, type TeamBeast } from './team';
+import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
+import { learnMove, movesLearnedAt } from './battleMoves';
+import { maxHpOf, type TeamBeast } from './team';
 
 /** XP needed to go from the beast's level to the next. */
 export const xpToNext = (b: TeamBeast): number => xpBetween(growthOf(b.form), b.level);
@@ -51,10 +53,7 @@ export function finalFormAt(form: BeastForm, level: number): BeastForm | null {
 
 function levelUp(b: TeamBeast, events: GameEvent[]): void {
   const before = maxHpOf(b);
-  const unlockedBefore = movesFor(b).filter((m) => m.unlocked).length;
   b.level++;
-  const fresh = movesFor(b).filter((m) => m.unlocked);
-  const move = fresh.length > unlockedBefore ? fresh[fresh.length - 1]!.move.name : undefined;
   const final = finalFormAt(b.form, b.level);
   if (final) b.form = final;
   // a starter line evolves, like Pokémon: same beast, new species (it keeps its moves)
@@ -63,9 +62,18 @@ function levelUp(b: TeamBeast, events: GameEvent[]): void {
   const evolves = sp.evolvesTo && sp.evolveLevel !== undefined && b.level >= sp.evolveLevel;
   if (evolves) b.form = { ...b.form, speciesId: sp.evolvesTo! };
   b.hp = Math.min(maxHpOf(b), b.hp + (maxHpOf(b) - before));
-  events.push({ type: 'levelUp', uid: b.uid, level: b.level, move });
+  // its new battle moves, like Pokémon: into a free slot, or waiting for you to choose what to forget
+  const learned: string[] = [];
+  for (const id of movesLearnedAt(b.form, b.level, !!evolves)) {
+    if (b.known.includes(id)) continue;
+    if (learnMove(b, id)) learned.push(BATTLE_MOVE_BY_ID[id]!.name);
+    else if (!b.pendingMoves?.includes(id)) (b.pendingMoves ??= []).push(id);
+  }
+  events.push({ type: 'levelUp', uid: b.uid, level: b.level, move: learned.join(', ') || undefined });
   if (final) events.push({ type: 'finalForm', uid: b.uid });
   if (evolves) events.push({ type: 'evolved', uid: b.uid, from, fromId: sp.id });
+  for (const id of b.pendingMoves ?? [])
+    events.push({ type: 'moveWaiting', uid: b.uid, move: BATTLE_MOVE_BY_ID[id]!.name });
 }
 
 /** Adds experience; levels up as many times as it can. Returns the levels gained. */

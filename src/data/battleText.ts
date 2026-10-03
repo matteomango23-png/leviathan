@@ -35,11 +35,6 @@ export const BATTLE_TEXT = {
   weak: 'Non è molto efficace…',
   crit: 'Colpo critico!',
   hits: (n: number): string => `Colpito ${n} volte!`,
-  dodged: 'Schivato!',
-  grazed: 'Schivato a metà!',
-  dodgeButton: 'SCHIVA!',
-  dodgeTutorial:
-    'Quando il nemico attacca compare SCHIVA: tocca nel momento esatto in cui la lancetta bianca passa sulla zona chiara. Preciso: nessun danno. Quasi: metà danno. Attento, a volte si ferma per ingannarti!',
   healed: (b: Named, n: number): string => `${b.name} recupera ${n} di vita.`,
   fainted: (b: Named): string => `${b.name} è sfinit${o(b)}!`,
   foeFainted: (b: Named): string => `${b.name} selvatic${o(b)} è sfinit${o(b)} e fugge nel buio!`,
@@ -69,6 +64,15 @@ export const BATTLE_TEXT = {
   thawed: (b: Named): string => `${b.name} si è scongelat${o(b)}!`,
   missed: (b: Named): string => `L’attacco di ${b.name} va a vuoto!`,
   noEffect: 'Non ha effetto…',
+  boostAll: (b: Named): string => `Tutte le statistiche di ${b.name} aumentano!`,
+  haze: 'L’acqua si calma: tutte le statistiche tornano normali.',
+  // learning moves, like Pokémon
+  learned: (b: Named, move: string): string => `${b.name} impara ${move}!`,
+  wantsToLearn: (b: Named, move: string): string =>
+    `${b.name} vuole imparare ${move}, ma conosce già 4 mosse. Quale deve dimenticare?`,
+  forgot: (b: Named, old: string, move: string): string => `${b.name} dimentica ${old} e impara ${move}!`,
+  gaveUp: (b: Named, move: string): string => `${b.name} non impara ${move}.`,
+  giveUp: 'Non imparare',
   recoil: (b: Named): string => `${b.name} si fa male nello sforzo!`,
   gotStatus: {
     avvelenato: (b: Named): string => `${b.name} è avvelenat${o(b)}!`,
