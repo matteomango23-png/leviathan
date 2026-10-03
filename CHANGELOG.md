@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.31.0 — Meteo che cambia e gabbiani (4 ottobre 2026)
+
+- **Il tempo cambia da solo**, ogni pochi minuti e sfumando piano: sereno, nuvoloso, pioggia, tempesta, nebbia.
+- **In superficie** si vede tutto: nuvole nel cielo, pioggia che cade sull'acqua con gli schizzi, onde più alte, lampi durante la tempesta, nebbia sull'acqua.
+- **Nel Mare di Ghiaccio e nella Banchisa** al posto della pioggia scende la **neve** (e la tempesta diventa una bufera di neve).
+- **Sott'acqua** il brutto tempo si sente poco: raggi di luce più deboli, un po' più buio e i lampi che illuminano l'acqua. Dai 60 m in giù non cambia niente.
+- **Stormi di gabbiani** volano sopra il mare e si tuffano sui banchi di sardine vicini alla superficie. Col brutto tempo se ne vanno, col sereno tornano.
+- Il meteo è **solo aspetto**: non cambia battaglie, bestie, aria né salvataggi.
+
 ## v0.30.0 — Bestiario come il Pokédex e tessera del cacciatore (3 ottobre 2026)
 
 - **Bestiario con i filtri**, come il Pokédex: Tutte, Viste, Domate, Mancanti.

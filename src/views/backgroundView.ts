@@ -2,6 +2,7 @@
 // distant painted ridges with parallax and drifting marine snow (prototype/prova-realistica.html).
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
+import { WEATHER } from '../data/weather';
 import { WORLD } from '../data/worldLayout';
 import { hash2, rampColor } from '../systems/math';
 
@@ -43,6 +44,7 @@ export class BackgroundView {
   private readonly mid: Ridge;
   private readonly flakes: { x: number; y: number; z: number; a: number }[] = [];
   private lastWaterY = NaN;
+  private lastClouds = 0;
   private lastSize = '';
 
   constructor(
@@ -156,12 +158,19 @@ export class BackgroundView {
     r.fill.setVisible(fillTop < v.h);
   }
 
-  private paintWater(v: ViewInfo): void {
+  /** Water by depth and the sky above it, greyer and darker under clouds (0..1). */
+  private paintWater(v: ViewInfo, clouds: number): void {
     const g = this.waterTex.context;
     const top = v.cy - v.h / 2 / v.zoom;
     const span = v.h / v.zoom;
-    const sky0 = Phaser.Display.Color.HexStringToColor(SEA.skyTop);
-    const sky1 = Phaser.Display.Color.HexStringToColor(SEA.skyBottom);
+    const mix = (a: string, b: string): { red: number; green: number; blue: number } => {
+      const ca = Phaser.Display.Color.HexStringToColor(a);
+      const cb = Phaser.Display.Color.HexStringToColor(b);
+      const m = (x: number, y: number): number => x + (y - x) * clouds;
+      return { red: m(ca.red, cb.red), green: m(ca.green, cb.green), blue: m(ca.blue, cb.blue) };
+    };
+    const sky0 = mix(SEA.skyTop, WEATHER.skyStorm.top);
+    const sky1 = mix(SEA.skyBottom, WEATHER.skyStorm.bottom);
     for (let i = 0; i < WATER_ROWS; i++) {
       const wy = top + ((i + 0.5) / WATER_ROWS) * span;
       let c: [number, number, number];
@@ -179,7 +188,12 @@ export class BackgroundView {
     this.waterTex.refresh();
   }
 
-  update(v: ViewInfo, time: number): void {
+  /** @param weather cloud cover (darker sky) and strength of the light rays (WeatherLook) */
+  update(
+    v: ViewInfo,
+    time: number,
+    weather: { clouds: number; rays: number } = { clouds: 0, rays: 1 },
+  ): void {
     const size = `${v.w}x${v.h}`;
     if (size !== this.lastSize) {
       this.lastSize = size;
@@ -187,9 +201,10 @@ export class BackgroundView {
       this.paintRidge(this.mid, 5, v.w, v.h, 'mid');
       this.lastWaterY = NaN;
     }
-    if (!(Math.abs(v.cy - this.lastWaterY) < 0.5)) {
+    if (!(Math.abs(v.cy - this.lastWaterY) < 0.5) || Math.abs(weather.clouds - this.lastClouds) > 0.02) {
       this.lastWaterY = v.cy;
-      this.paintWater(v);
+      this.lastClouds = weather.clouds;
+      this.paintWater(v, weather.clouds);
     }
     this.water.setDisplaySize(v.w, v.h);
     this.placeRidge(this.far, v, 'far');
@@ -198,7 +213,7 @@ export class BackgroundView {
     // light rays from the surface, fading with depth
     const rays = this.rays;
     rays.clear();
-    const fade = 1 - Phaser.Math.Clamp((v.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1);
+    const fade = (1 - Phaser.Math.Clamp((v.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1)) * weather.rays;
     if (fade > 0) {
       const t0 = v.h / 2 + (WORLD.surfaceY - v.cy) * v.zoom;
       const len = v.h * 1.2;

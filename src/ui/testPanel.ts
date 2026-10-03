@@ -18,7 +18,12 @@ const OTHERS: BeastForm[] = [
   { speciesId: 'torpedine', variant: 'comune' },
 ];
 
-export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: string) => void): void {
+export function renderTestPanel(
+  parent: HTMLElement,
+  g: GameState,
+  done: (msg: string) => void,
+  skipWeather?: () => void,
+): void {
   const box = el('div', 'test-panel', parent);
   el('h3', '', box, 'Prove (link con ?prove)');
   const grid = el('div', 'test-grid', box);
@@ -71,6 +76,13 @@ export function renderTestPanel(parent: HTMLElement, g: GameState, done: (msg: s
     g.gear.teeth += 2000;
     done('2000 denti aggiunti: prova il mercato al porto.');
   });
+  if (skipWeather) {
+    const sky = el('button', 'menu-btn small', grid, 'Cambia il meteo');
+    sky.addEventListener('click', () => {
+      skipWeather();
+      done('Il meteo è cambiato: sali in superficie per vederlo.');
+    });
+  }
   const heal = el('button', 'menu-btn small', grid, 'Cura tutto');
   heal.addEventListener('click', () => {
     healAll(g);

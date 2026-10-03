@@ -1,5 +1,30 @@
 # Progressi
 
+## Sessione cloud 1 — Meteo dinamico e gabbiani (4 ottobre 2026) → v0.31.0
+
+Prima sessione nel cloud (dal telefono del proprietario). Nel cloud non si vede il computer: le immagini che stanno solo in `asset animali ai/` (per esempio il varano albino) vanno allegate in chat o caricate in `art-inbox/`.
+
+**Fatto**
+
+- Meteo che cambia da solo, **solo aspetto** (scelta del proprietario): `data/weather.ts`, `systems/weather.ts`, `views/weatherView.ts`. Sereno, nuvoloso, pioggia, tempesta, nebbia; neve e bufera nel Mare di Ghiaccio e nella Banchisa; nuvole, pioggia con schizzi, onde più alte, lampi, nebbia; sott'acqua raggi più deboli e un po' più buio fino a 60 m.
+- Stormi di gabbiani: `systems/birds.ts`, `views/birdsView.ts`; si tuffano sulle sardine vicine alla superficie, se ne vanno in tempesta. Disegnati con linee finché non c'è un'immagine.
+- Nessun cambio a salvataggi, battaglie o bestie. Pannello `?prove`: "Cambia il meteo".
+- 12 test nuovi (`tests/weather.test.ts`), 1123 in tutto. Visto nel browser: sereno, nuvoloso, pioggia, tempesta col lampo, nebbia, neve, gabbiani.
+
+**Da provare sull'iPhone**
+
+1. Risali in superficie e guarda il cielo per qualche minuto: il tempo cambia da solo (per provarlo subito: apri in Safari il link del gioco con `?prove` in fondo, poi Pausa → "Cambia il meteo").
+2. Con pioggia o tempesta: gocce, schizzi sull'acqua, onde più alte, lampi. Scendi: sotto i 60 m non deve cambiare niente.
+3. Vai nel Mare di Ghiaccio con la pioggia: deve nevicare.
+4. Cerca i gabbiani sopra un banco di sardine vicino alla superficie: ogni tanto uno si tuffa.
+5. Il gioco resta fluido quando piove?
+
+**Da sapere / possibili problemi**
+
+- I gabbiani sono disegnati con linee: se vuoi, un'immagine dipinta in Gemini (profilo con ali aperte, fondo verde) li renderebbe realistici.
+- Il meteo riparte dal sereno a ogni apertura del gioco (non si salva).
+- `WorldScene.ts` è a circa 330 righe: alla prossima pulizia si può spostare il collegamento di meteo e uccelli in un file a parte.
+
 ## Stato al 4 ottobre 2026 (v0.30.0) — leggere per primo
 
 Il proprietario lavora qualche giorno con una sessione nel cloud e poi torna su quella del computer: regole per due sessioni in `docs/COME-LAVORIAMO.md`. Chi chiude una sessione aggiunge qui sopra una sezione "Sessione …" con fatto / mancante / cosa provare.

@@ -70,7 +70,8 @@ export class EffectsView {
     }
   }
 
-  update(view: Phaser.Geom.Rectangle, time: number, dt: number): void {
+  /** @param waves height of the surface waves (1: calm; the weather raises it) */
+  update(view: Phaser.Geom.Rectangle, time: number, dt: number, waves = 1): void {
     for (const p of this.parts) {
       if (p.life <= 0) continue;
       p.life -= dt;
@@ -96,7 +97,7 @@ export class EffectsView {
       g.lineStyle(0.8, c.color, c.alphaGL);
       const pts: Phaser.Math.Vector2[] = [];
       for (let x = Math.floor(view.x) - 4; x <= view.right + 4; x += 3) {
-        pts.push(new Phaser.Math.Vector2(x, WORLD.surfaceY + Math.sin(x * 0.09 + time * 2) * 0.8));
+        pts.push(new Phaser.Math.Vector2(x, WORLD.surfaceY + Math.sin(x * 0.09 + time * 2) * 0.8 * waves));
       }
       g.strokePoints(pts);
     }

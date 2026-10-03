@@ -15,6 +15,16 @@ import {
   swapWithPreviousGame,
   writeToStorage,
 } from '../systems/save/storage';
+import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
+import {
+  coldAt,
+  createWeather,
+  skipWeather,
+  stepWeather,
+  weatherLook,
+  weatherName,
+  type WeatherState,
+} from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres, murkAt } from '../systems/world/zones';
 import { DELTA } from '../data/worldLayout';
@@ -38,6 +48,8 @@ import { Chapter3View } from '../views/chapter3View';
 import { Chapter4View } from '../views/chapter4View';
 import { DeltaView } from '../views/deltaView';
 import { TerrainView } from '../views/terrainView';
+import { BirdsView } from '../views/birdsView';
+import { WeatherView, weatherReach } from '../views/weatherView';
 import type { SceneData, Session } from './session';
 
 export class WorldScene extends Phaser.Scene {
@@ -62,6 +74,11 @@ export class WorldScene extends Phaser.Scene {
   private diverView!: DiverView;
   private effects!: EffectsView;
   private light!: LightView;
+  private weatherView!: WeatherView;
+  private birdsView!: BirdsView;
+  /** Weather and sea birds: look only, not part of the game state and not saved. */
+  private readonly weather: WeatherState = createWeather();
+  private readonly birds: BirdsState = createBirds();
   private saveTimer = 0;
   private hurtFlash = 0;
   private lampAngle = 0;
@@ -106,10 +123,12 @@ export class WorldScene extends Phaser.Scene {
     this.sub = new SubmarineView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
+    this.birdsView = new BirdsView(this, L.world);
     this.diverView = new DiverView(this, L.world);
     this.effects = new EffectsView(this, L.world);
     this.gearFx = new GearFxView(this, L.world);
     this.light = new LightView(this, L.overlay);
+    this.weatherView = new WeatherView(this, L.bg, L.overlay);
     this.lampAngle = d.aim;
 
     this.rig.follow(d.x + d.face * CAMERA.lookAhead, d.y, 0, true);
@@ -119,6 +138,7 @@ export class WorldScene extends Phaser.Scene {
     this.session.on('importSave', this.onImport, this);
     this.session.on('saveNow', this.save, this);
     this.session.on('switchGame', this.onSwitchGame, this);
+    this.session.on('skipWeather', this.onSkipWeather, this);
     const onHide = (): void => {
       if (document.visibilityState === 'hidden') this.save();
     };
@@ -129,9 +149,15 @@ export class WorldScene extends Phaser.Scene {
       this.session.off('importSave', this.onImport, this);
       this.session.off('saveNow', this.save, this);
       this.session.off('switchGame', this.onSwitchGame, this);
+      this.session.off('skipWeather', this.onSkipWeather, this);
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', this.save);
     });
+  }
+
+  private onSkipWeather(): void {
+    skipWeather(this.weather);
+    this.session.emit('toast', `Meteo: ${weatherName(this.weather, this.state.diver.x)}`);
   }
 
   private onResize(size: Phaser.Structs.Size): void {
@@ -253,7 +279,11 @@ export class WorldScene extends Phaser.Scene {
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
     this.terrain.update(view);
-    this.bg.update(info, g.time);
+    if (stepWeather(this.weather, dt)) this.weatherView.lightning(info);
+    const sky = weatherLook(this.weather);
+    for (const s of stepBirds(this.birds, dt, info.cx, sky.birds, sky.wind, g.fish.schools))
+      this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
+    this.bg.update(info, g.time, sky);
     this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
@@ -264,7 +294,8 @@ export class WorldScene extends Phaser.Scene {
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
-    this.effects.update(view, g.time, dt);
+    this.birdsView.update(this.birds, view);
+    this.effects.update(view, g.time, dt, sky.waves);
     this.places.update(g.gear, g.time);
     this.story.update(g.story, g.chapter2.anchors, g.time);
     this.chapter3.update(g, g.time);
@@ -305,6 +336,8 @@ export class WorldScene extends Phaser.Scene {
       fade,
       glows,
       murk,
+      sky.dim * weatherReach(info.cy),
     );
+    this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt);
   }
 }
