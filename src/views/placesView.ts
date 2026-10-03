@@ -12,10 +12,10 @@ import { TEX } from './textures';
 
 /** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
 export const PORT_HOUSES: [number, number, number][] = [
-  [COAST.shoreX - 84, 20, 20],
-  [COAST.shoreX - 60, 18, 26],
-  [COAST.shoreX - 38, 22, 18],
-  [COAST.shoreX - 16, 14, 14],
+  [COAST.shoreX - 100, 20, 20],
+  [COAST.shoreX - 74, 18, 24],
+  [COAST.shoreX - 50, 20, 18],
+  [COAST.shoreX - 26, 14, 14],
 ];
 
 /** Fishermen's huts of Porto Fango, on the island by its east shore. */
@@ -28,12 +28,15 @@ const FANGO_HUTS: [number, number, number][] = [
 function drawHouses(g: Phaser.GameObjects.Graphics, houses: [number, number, number][]): void {
   const s = WORLD.surfaceY;
   for (const [hx, w, h] of houses) {
-    const base = s - landHeight(hx + w / 2) + 1;
+    // the uphill corner sets the floor; the walls go down to the ground on the downhill side too
+    const high = s - Math.max(landHeight(hx), landHeight(hx + w)) + 1;
+    const low = s - Math.min(landHeight(hx), landHeight(hx + w)) + 2;
+    const top = high - h;
     g.fillStyle(0x0d1216, 1);
-    g.fillRect(hx, base - h, w, h + 2);
-    g.fillTriangle(hx - 3, base - h, hx + w + 3, base - h, hx + w / 2, base - h - 11);
+    g.fillRect(hx, top, w, low - top);
+    g.fillTriangle(hx - 3, top, hx + w + 3, top, hx + w / 2, top - 11);
     g.fillStyle(0xffc878, 0.85);
-    g.fillRect(hx + w * 0.35, base - h * 0.6, 3, 3);
+    g.fillRect(hx + w * 0.35, top + h * 0.4, 3, 3);
   }
 }
 
