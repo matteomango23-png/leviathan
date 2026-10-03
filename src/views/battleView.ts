@@ -5,6 +5,7 @@
 // the dark, float and sway, wind up and lunge leaving bubbles, flash and recoil when hit, sink when they
 // faint; rare ones sparkle.
 import Phaser from 'phaser';
+import { BATTLE_ART_FLAT } from '../data/sprites.generated';
 import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
 import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
@@ -86,6 +87,7 @@ export class BattleView {
       lengthM: formLengthM(form, level),
       giant: isGiant(form),
       pictureMult: BATTLE_STAGE.pictureMult[form.speciesId],
+      flat: art.own ? BATTLE_ART_FLAT[art.textureKey.replace(/^battle-/, '')] : undefined,
     };
     Object.assign(this.poses[side], newPose(), {
       key: art.textureKey,

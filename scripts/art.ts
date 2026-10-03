@@ -43,6 +43,7 @@ const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
   coccodrillo_marino_leggendario_back: { low: 12, high: 50, soft: 70 },
   megattera_back: { low: 8, high: 44, soft: 60 }, // a teal glow around it
   squalo_martello_preistorico_back: { low: 20, high: 34, soft: 24 }, // a navy vignette around it
+  squalo_bianco_front: { low: 1, high: 4, soft: 8 }, // its belly is almost as dark as the background (owner, 3 ottobre)
 };
 // Pictures with something under the creature (a rock stand): this share of the height is cut from the bottom
 // (the cut then fades like any fin out of frame).
@@ -293,6 +294,27 @@ async function hashes(): Promise<string> {
   return lines.join('\n');
 }
 
+/**
+ * How much a battle picture's shape hides its size: its longest side over sqrt(width × height) of what is drawn.
+ * A turtle seen from behind (wide and flat) or a hammerhead head-on looks small next to a square picture.
+ */
+async function battleShapes(battle: string[]): Promise<string> {
+  const out: string[] = [];
+  for (const k of battle.sort()) {
+    const { data, info } = await sharp(`public/sprites/${k}.webp`)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const box = opaqueBox(data, info.width, info.height);
+    if (!box) continue;
+    const w = box.x1 - box.x0 + 1;
+    const h = box.y1 - box.y0 + 1;
+    const flat = Math.max(w, h) / Math.sqrt(w * h);
+    if (flat > 1.05) out.push(`  '${k}': ${flat.toFixed(2)},`);
+  }
+  return `{\n${out.join('\n')}\n}`;
+}
+
 async function writeSpriteList(): Promise<void> {
   const files = (await readdir('public/sprites')).filter((f) => f.endsWith('.webp'));
   const battle = files.filter((f) => /_(front|back)(_open)?\.webp$/.test(f)).map((f) => f.slice(0, -5));
@@ -316,6 +338,8 @@ async function writeSpriteList(): Promise<void> {
     `export const ART_KEYS: readonly string[] = [\n${list(art)}\n];\n\n` +
     `// Three-quarter battle pictures (<id>_front for the wild one, <id>_back for yours, + _open).\n` +
     `export const BATTLE_ART_KEYS: readonly string[] = [\n${list(battle)}\n];\n\n` +
+    `// Battle pictures much wider than tall (or the other way): longest side / sqrt(width × height).\n` +
+    `export const BATTLE_ART_FLAT: Readonly<Record<string, number>> = ${await battleShapes([...battle])};\n\n` +
     `// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).\n` +
     `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
     `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +

@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.16.2 — Ritocchi alle battaglie e alle virate (3 ottobre 2026)
+
+- **Bestie larghe e basse in battaglia** sono più grandi. Una tartaruga vista da dietro o uno squalo martello visto di fronte sembravano minuscoli: la tua tartaruga finiva quasi nascosta in basso, sotto la barra della vita, e sembrava sparita. Ora il gioco misura la forma di ogni immagine e la ingrandisce quanto serve.
+- **Virata mentre cavalchi:** quando la bestia si gira passando per la verticale, la coda non si piega più fino a capovolgersi. La virata è un po' più lenta e lo scambio di lato avviene esattamente in verticale.
+- **Squalo bianco avversario:** la pancia non è più bucata dallo scontorno.
+
 ## v0.16.1 — Le immagini del lotto Gemini (3 ottobre 2026)
 
 - **Battaglie nella Barriera Rossa** (anche contro il Re Corallo): nuovo sfondo dipinto dell'anfiteatro di corallo.

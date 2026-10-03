@@ -95,11 +95,12 @@ function animate(m: Mount, dt: number): void {
     // 0 → 1 → 0 across the loop: towards the vertical, then back to the way it swims
     const k = m.loop < 0.5 ? m.loop * 2 : (1 - m.loop) * 2;
     const ease = k * k * (3 - 2 * k);
-    wp = wp + (m.loopDir * Math.PI * 0.48 - wp) * ease;
+    wp = wp + ((m.loopDir * Math.PI) / 2 - wp) * ease; // exactly vertical at the flip: both sides look alike
   }
-  const rate = m.loop > 0 ? 18 : ROAM.pitchRate;
+  const rate = m.loop > 0 ? TEAM_RULES.loopPitchRate : ROAM.pitchRate;
   const np = m.pitch + (wp - m.pitch) * Math.min(1, dt * rate);
-  m.pitchV = (np - m.pitch) / Math.max(dt, 1e-3);
+  // in the loop the body stays straight: bending it by the fast turn curled the tail upside down (owner, 3 ottobre)
+  m.pitchV = m.loop > 0 ? 0 : (np - m.pitch) / Math.max(dt, 1e-3);
   m.pitch = np;
   m.phase += dt * (ROAM.swimPhaseBase + (Math.hypot(m.vx, m.vy) / U) * ROAM.swimPhasePerSpeed);
 }

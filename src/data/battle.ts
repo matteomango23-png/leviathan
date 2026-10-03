@@ -108,6 +108,12 @@ export const BATTLE_STAGE = {
    * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).
    */
   pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
+  /**
+   * A picture much wider than tall (a turtle from behind, a hammerhead head-on) looks smaller than a square one
+   * of the same length: it is drawn bigger by (its flatness, BATTLE_ART_FLAT) ^ exponent, up to max (owner, 3 ottobre:
+   * "squalo martello piccolo in battaglia", "la tartaruga è sparita").
+   */
+  flat: { exponent: 0.8, max: 1.55 },
   /** Places with their own background; any other region uses the bay. */
   places: ['baia', 'delta', 'tana', 'barriera'] as const, // barriera: the coral amphitheatre (3 ottobre)
 };
