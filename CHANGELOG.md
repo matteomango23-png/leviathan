@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.25.0 — Battaglia inquadrata come Pokémon (3 ottobre 2026)
+
+- **La tua bestia è più grande e più vicina**, vista da dietro e tagliata dal bordo in basso, come in Pokémon Nero e Bianco: si vedono schiena e testa, il resto esce dallo schermo.
+- **Ingresso delle bestie grandi:** quando compare una bestia di 5 metri o più, la telecamera parte vicina su di lei mentre esce dal buio, si ferma un attimo e poi si allarga su tutta la scena. Le leggende e le bestie colossali fanno anche tremare il mare.
+- La bestia selvatica resta sempre intera nello schermo, come avevi chiesto.
+
 ## v0.24.0 — Mosse di Pokémon, niente schivata (3 ottobre 2026)
 
 - **Niente più schivata:** la battaglia è a turni come in Pokémon.

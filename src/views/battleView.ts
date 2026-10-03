@@ -263,20 +263,30 @@ export class BattleView {
   }
 
   /**
-   * The wild beast comes out of the dark: a black silhouette that drifts in and takes its colours. A giant
-   * makes the sea rumble (a long low shake and the camera leaning in).
+   * The wild beast comes out of the dark: a black silhouette that drifts in and takes its colours. A big one gets
+   * Pokémon's entrance: the camera starts close on it, holds, then pulls back (BATTLE_STAGE.intro); a giant also
+   * makes the sea rumble.
    */
   async emerge(): Promise<void> {
     const p = this.poses.foe;
     Object.assign(p, { dark: 1, alpha: 0, dx: this.w * 0.06 });
-    if (this.foeIsGiant()) {
-      const cam = this.scene.cameras.main;
-      cam.shake(1400, 0.004);
-      cam.zoomTo(1.05, 700, 'Sine.easeOut');
-      window.setTimeout(() => cam.zoomTo(1, 900, 'Sine.easeInOut'), 1300);
+    const I = BATTLE_STAGE.intro;
+    const giant = this.foeIsGiant();
+    const big = giant || (this.stage.foe?.lengthM ?? 0) >= I.bigM;
+    const cam = this.scene.cameras.main;
+    if (big) {
+      const c = this.centre('foe');
+      cam.setZoom(giant ? I.giantZoom : I.zoom);
+      cam.centerOn(c.x, c.y);
+      if (giant) cam.shake(1400 + I.pullMs, 0.004);
     }
     await this.tween(p, { alpha: 1 }, 450);
-    await this.tween(p, { dark: 0, dx: 0 }, this.foeIsGiant() ? 1300 : 900, false, 'Sine.easeOut');
+    await this.tween(p, { dark: 0, dx: 0 }, giant ? 1300 : 900, false, 'Sine.easeOut');
+    if (!big) return;
+    await new Promise((r) => window.setTimeout(r, I.holdMs));
+    cam.pan(this.w / 2, this.h / 2, I.pullMs, 'Sine.easeInOut');
+    cam.zoomTo(1, I.pullMs, 'Sine.easeInOut');
+    await new Promise((r) => window.setTimeout(r, I.pullMs));
   }
 
   /** Taming: the shell flies in an arc, the beast turns into light and is drawn in, the shell shakes. */

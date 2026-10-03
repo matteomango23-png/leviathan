@@ -419,6 +419,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
 
+## 2026-10-03 — Inquadratura della battaglia come Pokémon gen 5
+
+- Pokémon gen 3–5: ogni Pokémon sta in un riquadro fisso (96×96 in gen 5), la grandezza è "schiacciata" e non realistica (Wailord riempie il riquadro, Pikachu un terzo): come la nostra scala logaritmica, che resta. Il tuo è visto da dietro e ingrandito (×2 in gen 5), tagliato dal bordo basso; il nemico sta intero sulla pedana in alto a destra.
+- Da noi: la tua bestia ×1,45 (era 1,22), fino a 1,8 altezze di schermo e 2,4 sotto youTop; larghezza al massimo 1,3 × lo spazio a sinistra (un pesce lungo e sottile restava troppo fuori). La selvatica resta intera (richiesta del proprietario del 3 ottobre).
+- Maestosità: ingresso con la telecamera (`BATTLE_STAGE.intro`): da 5 m in su parte vicina sulla bestia (×1,4, giganti ×1,6), si ferma 0,45 s e si allarga in 1,2 s; i giganti fanno tremare il mare.
+
 ## 2026-10-03 — Mosse di Pokémon e niente schivata
 
 - Il proprietario: "facciamo uguale a Pokémon e togliamo la schivata; prendi la lista delle mosse e le loro statistiche, rinominale e inseriscile allo stesso modo".

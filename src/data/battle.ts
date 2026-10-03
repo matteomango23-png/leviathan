@@ -88,7 +88,7 @@ export const BATTLE_STAGE = {
     min: 0.5, // a small fish stays well visible… (was 0.4)
     max: 1.3, // …and the biggest fill their side (was 1.0; then `fit` keeps them inside)
     foeDistance: 1, // the wild one is not drawn smaller any more (was 0.82: it left its corner half empty; owner, 3 ottobre)
-    youCloser: 1.22, // yours is close to the camera, seen from behind: × this (owner: "looked like a wren")
+    youCloser: 1.45, // yours is close to the camera, seen from behind: × this, like Pokémon gen 5 (back sprites ×2, cut by the bottom; was 1.22)
     /** A shorter beast of yours never looks bigger than the wild one: its presence (√ of its drawn area) is at most
      *  this × the wild one's × the ratio of their sizes by length (owner, 3 ottobre: Guscio bigger than a hammerhead). */
     smallerYours: 1.15,
@@ -116,12 +116,18 @@ export const BATTLE_STAGE = {
      */
     youRight: 0.4, // was 0.46: two big ones met head to head in the middle (owner, 3 ottobre)
     youTop: 0.45,
-    youMax: 1.5, // and it is never drawn bigger than this share of the screen height
-    youWide: 1.5, // …nor wider than this × the width left of youRight…
-    youTall: 2, // …nor taller than this × the height under youTop (half of a whale may be below the screen)
+    youMax: 1.8, // and it is never drawn bigger than this share of the screen height (was 1.5)
+    youWide: 1.3, // …nor wider than this × the width left of youRight… (was 1.5: a long thin one left the screen)
+    youTall: 2.4, // …nor taller than this × the height under youTop (more than half of a whale may be below the screen; was 2)
   },
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
+  /**
+   * The entrance of a big wild beast, like Pokémon gen 5 (owner, 3 ottobre: "la giusta maestosità"): the camera
+   * starts close on it while it comes out of the dark, holds, then pulls back to the whole stage. A giant also
+   * shakes the sea.
+   */
+  intro: { bigM: 5, zoom: 1.4, giantZoom: 1.6, holdMs: 450, pullMs: 1200 },
   /**
    * Pictures whose longest side is not the body length: a coiled moray looks far bigger than 3 m, a manta seen
    * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).
