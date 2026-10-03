@@ -80,10 +80,15 @@ export class PauseMenu {
     this.msg = el('p', 'menu-msg', panel);
     renderTeamPanel(panel, game, false);
     if (testMode())
-      renderTestPanel(panel, game, (m) => {
-        this.say(m);
-        onResume();
-      });
+      renderTestPanel(
+        panel,
+        game,
+        (m) => {
+          this.say(m);
+          onResume();
+        },
+        () => this.session.emit('skipWeather'),
+      );
     el(
       'p',
       '',

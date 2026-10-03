@@ -462,3 +462,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Cattura Gen III–IV**: a = (3·PSmax − 2·PS) × tasso × bonus conchiglia / (3·PSmax) × stato; riesce con probabilità a/255 (le 3 scosse la dividono). Tassi 190/120/75/45/25 per stelle, leggende e Guardiani 15 (in Pokémon 3–45: un po' più gentile perché le conchiglie si consumano). Stato: sonno e congelamento ×2,5, gli altri ×1,5. Resta la penalità se la bestia è sopra la tua più forte (come le medaglie di Spada e Scudo).
 - Si sale più lentamente di prima: è voluto (come Pokémon). Se è troppo, si cambiano le rese in `XP_RULES.yieldByStars`.
 - Fonti: Bulbapedia (Experience, Catch rate).
+
+## 2026-10-04 — Meteo dinamico e gabbiani (solo aspetto)
+
+- **Scelta del proprietario: solo aspetto.** Il meteo non tocca battaglie, bestie, aria, soldi né salvataggi. Il meteo in battaglia (come Pokémon) resta un'idea per dopo.
+- **Stato fuori dal gioco**: meteo e uccelli vivono nella scena del mondo (`WorldScene`), non in `GameState`, e non si salvano: niente nuova versione del salvataggio. Ogni sessione parte col sereno.
+- **Meteo** (`systems/weather.ts`, numeri in `data/weather.ts`): 5 tipi con durata in minuti e un "aspetto" (nuvole, pioggia, nebbia, vento, onde, lampi, raggi, buio, uccelli); il tipo dopo si sceglie coi pesi di `WEATHER_NEXT` (mai tempesta dal sereno) e sfuma in 25 s. Nei mari freddi (Mare di Ghiaccio e Banchisa, `coldAt` sfumato su 240 unità) la pioggia è neve.
+- **Profondità**: il meteo si sente fino a 60 m (`WEATHER.dimDepthM`): raggi più deboli, un po' di buio in più, lampi attenuati. Sotto, niente.
+- **Gabbiani** (`systems/birds.ts`): fino a 3 stormi intorno alla telecamera, a V larga, ogni uccello tenuto al suo posto da una molla smorzata (niente boids completi: costa poco e resta compatto). Si tuffano sulle sardine entro 40 unità sotto la superficie. Disegnati con linee (grigio chiaro, punte nere: si vedono sul cielo scuro) finché non arriva un disegno dipinto.
+- **Prova**: nel pannello `?prove` c'è "Cambia il meteo" (evento `skipWeather` della Session).

@@ -37,6 +37,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `diver.ts` | Nuoto, scatto, ossigeno, cuori, morte e rinascita in superficie. |
 | `harpoon.ts` | Arpione: va, aggancia un pesce o rimbalza sulla roccia, torna. |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
+| `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
+| `birds.ts` | Stormi di gabbiani sopra l'acqua intorno alla telecamera (solo aspetto, non salvati): restano uniti, si tuffano sulle sardine vicine alla superficie, se ne vanno col brutto tempo. |
 | `game.ts` | Un passo di gioco completo + conversione da/verso il salvataggio. |
 | `save/saveData.ts` | Formato del salvataggio con `version`, migrazioni, controllo di validità. |
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
@@ -136,10 +138,11 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 ## Come si disegna il mare
 
-1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo, raggi di luce, creste lontane con parallasse, neve marina.
+1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo (più scuro sotto le nuvole), raggi di luce (più deboli col cielo coperto), creste lontane con parallasse, neve marina; le nuvole del meteo (`weatherView`).
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
-3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), bolle e linea della superficie (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
-4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra.
+3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), gabbiani (`birdsView`), bolle e linea della superficie, più mossa col brutto tempo (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
+4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra. Il cielo coperto scurisce un po' vicino alla superficie.
+4b. **Meteo** (`weatherView`, sopra il buio): pioggia o neve fino alla superficie, nebbia sull'acqua, lampi; tutto sparisce scendendo (`weatherReach`, 60 m).
 5. Le bestie rare brillano un poco nel buio (`beastsLayer`). La vita e i danni si vedono solo in battaglia.
 
 ## Comandi

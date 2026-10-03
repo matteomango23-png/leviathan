@@ -63,6 +63,7 @@ export class LightView {
    * @param flash red overlay strength (hurt, low oxygen), 0..1
    * @param fade black fade (death), 0..1
    * @param murk murky water (the Delta), 0..1: darker and brownish
+   * @param weatherDim extra darkness from clouds and storms, already faded with depth
    */
   update(
     v: ViewInfo,
@@ -71,6 +72,7 @@ export class LightView {
     fade: number,
     glows: { x: number; y: number; r: number }[] = [],
     murk = 0,
+    weatherDim = 0,
   ): void {
     const s = LIGHT.maskScale;
     const mw = Math.ceil(v.w * s);
@@ -91,7 +93,7 @@ export class LightView {
     const coneLen = v.w * LIGHT.coneLengthView * (lamp.lengthMult ?? 1);
     const coneScale = (coneLen * s) / CONE_TEX.length;
 
-    const dark = Math.min(1, LightView.darknessAt(v.cy) + DELTA.murk.darkness * murk);
+    const dark = Math.min(1, LightView.darknessAt(v.cy) + DELTA.murk.darkness * murk + weatherDim);
     const color = murk > 0 ? mixColor(LIGHT.darkColor, DELTA.murk.tint, murk) : LIGHT.darkColor;
     const rt = this.mask;
     rt.clear();

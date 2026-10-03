@@ -23,6 +23,8 @@ export interface SessionEvents {
   switchGame: (to: 'new' | 'previous') => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
+  /** Test panel: skip to the next kind of weather. */
+  skipWeather: () => void;
   /** The diver reached the pier: open the port menu. */
   openPort: () => void;
 }
