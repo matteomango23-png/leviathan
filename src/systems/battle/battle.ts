@@ -35,7 +35,8 @@ export type Action =
   | { kind: 'switch'; index: number }
   | { kind: 'tame' }
   | { kind: 'flee' }
-  | { kind: 'item'; id: string };
+  /** An item on team beast `target` (an index; none: the one in the water), `move` for an Etere. */
+  | { kind: 'item'; id: string; target?: number; move?: number };
 
 /** What happened, in order, for the scene to show. */
 export type Step =

@@ -132,7 +132,12 @@ export const MAX_ACTIVE_MISSIONS = 3;
 
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */
 export const MARKET = {
-  items: ['conchiglia', 'alga_curativa', 'bolla_aria', 'esca_sangue', 'esca_gamberi', 'esca_viva', 'esca', 'krill_dorato', 'arpione_mitico'],
+  items: [
+    'conchiglia', 'alga_curativa', 'alga_rossa', 'alga_reale', 'corallo_vitale', 'perla_ristoro', 'ambra_risveglio',
+    'muschio_luminoso', 'elisir_abissale', 'antidoto', 'benda_alga', 'spugna_isolante', 'sale_aromatico', 'pietra_termale', 'panacea',
+    'attacco_x', 'difesa_x', 'attacco_sp_x', 'difesa_sp_x', 'velocita_x', 'precisione_x',
+    'bolla_aria', 'esca_sangue', 'esca_gamberi', 'esca_viva', 'esca', 'krill_dorato', 'arpione_mitico',
+  ],
   /** Upgrades whose effect is not in the game yet are shown but cannot be bought. */
   upgradesReady: ['apnea', 'lampada_1', 'lampada_2'],
   mythicHarpoonStock: 1, // restocked after each Guardian (tappa 4)

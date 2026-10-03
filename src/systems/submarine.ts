@@ -121,6 +121,8 @@ export function board(g: SubWorld, events: GameEvent[]): void {
   for (const t of g.beasts.team) {
     t.hp = maxHpOf(t);
     t.ppUsed = undefined;
+    t.status = undefined;
+    t.sleepTurns = undefined;
     t.ko = false;
   }
   events.push({ type: 'boarded' });

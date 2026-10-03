@@ -45,11 +45,6 @@ export const BATTLE = {
     max: 0.95,
   },
   ai: { randomChoice: 0.2 }, // the wild beast picks its best move, or a random one this often
-  /** Backpack items usable in battle (ITEMS in world.ts). */
-  items: {
-    alga_curativa: { healShare: 0.5 }, // heals half of your beast's health
-    arpione_mitico: { tameMult: 3 }, // the next taming attempt is three times as likely
-  } as Record<string, { healShare?: number; tameMult?: number }>,
 };
 
 /** The battle prototype (link with ?battaglia): your team, the wild beasts you may meet, your backpack. */
@@ -66,7 +61,7 @@ export const BATTLE_PROTOTYPE = {
     { speciesId: 'torpedine', level: [5, 7] },
     { speciesId: 'coccodrillo_marino', level: [9, 11] },
   ] as { speciesId: string; level: [number, number] }[],
-  items: { alga_curativa: 2, arpione_mitico: 1, conchiglia: 5 } as Record<string, number>,
+  items: { alga_curativa: 2, perla_ristoro: 1, ambra_risveglio: 1, muschio_luminoso: 1, attacco_x: 1, arpione_mitico: 1, conchiglia: 5 } as Record<string, number>,
   variantChance: 0.15, // a test foe is sometimes albino or alfa, to try harder taming
 };
 

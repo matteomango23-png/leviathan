@@ -7,6 +7,7 @@ import type { GameEvent } from '../events';
 import { raiseLevel } from '../beasts/growth';
 import { maxHpOf, teamMembers } from '../beasts/team';
 import { cleanBackpack, slotKind, type GearState } from './gear';
+import { canApply, careOfBeast, itemDef, useOnBeast } from './items';
 
 export interface BackpackWorld extends BeastWorld {
   gear: GearState;
@@ -56,15 +57,18 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[], uid?: string
     events.push({ type: 'itemUsed', id });
     return true;
   }
+  // medicine (Pokémon's): on the beast you chose, or the one in the water, or the most hurt
+  if (itemDef(id)?.use && !itemDef(id)?.battleOnly) {
+    const pick = uid ? target : (team.find((b) => canApply(itemDef(id)!.use!, careOfBeast(b))) ?? target);
+    if (!pick || !useOnBeast(gear.inventory, id, pick)) return false;
+    cleanBackpack(gear);
+    events.push({ type: 'itemUsed', id });
+    return true;
+  }
   switch (id) {
     case 'bolla_aria':
       if (d.o2 >= d.maxO2) return false;
       d.o2 = d.maxO2;
-      break;
-    case 'alga_curativa':
-      if (!target || (target.hp >= maxHpOf(target) && !target.ko)) return false;
-      target.hp = maxHpOf(target);
-      target.ko = false;
       break;
     case 'krill_dorato':
       if (!target || target.level >= PROGRESSION.maxLevel) return false;
@@ -112,3 +116,7 @@ export function useSlot(g: BackpackWorld, slot: number, events: GameEvent[]): bo
 export function stepSwarmCooldowns(g: BackpackWorld, dt: number): void {
   for (const k of Object.keys(g.swarmCooldowns)) g.swarmCooldowns[k] = Math.max(0, g.swarmCooldowns[k]! - dt);
 }
+
+/** Uses an item from the backpack screen (baits, air, krill on the beast in the water, medicine on the most hurt). */
+export const useItemNow = (g: BackpackWorld, id: string, events: GameEvent[]): boolean =>
+  useItem(g, id, events);

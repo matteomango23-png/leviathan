@@ -1,9 +1,9 @@
-// Team list: every tamed beast. Anywhere you can put the team in order (the first one leads in battle) and heal
-// one beast with an Alga curativa; at the port (the pen) you can also move beasts between team and reserve.
+// Team list, like Pokémon's party screen: every tamed beast with its level, health bar and condition. Anywhere you can
+// put the team in order (the first one leads in battle), open its sheet and give it an item from the backpack; at
+// the port (the pen) you can also move beasts between team and reserve.
 import { PROGRESSION } from '../data/rules';
 import { formName, formStars } from '../systems/beasts/forms';
 import { maxHpOf, moveInTeam, teamMembers, toggleInTeam } from '../systems/beasts/team';
-import { useItemOn } from '../systems/economy/backpack';
 import type { GameState } from '../systems/game';
 import { isHungry } from '../systems/beasts/growth';
 import { feedFromBag } from '../systems/feeding';
@@ -11,6 +11,8 @@ import { setArt } from './art';
 import { growthBars } from './growthBars';
 import { el } from './dom';
 import { openBeastSheet } from './beastSheet';
+import { openBag } from './bagScreen';
+import { STATUS_NAMES } from '../data/moveBattle';
 
 export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boolean): void {
   const box = el('div', 'team-panel', parent);
@@ -42,12 +44,18 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
       img.alt = '';
       const info = el('div', 'team-info', row);
       el('div', 'team-name', info, `${formName(b.form)} ${'★'.repeat(formStars(b.form))}`);
-      el(
-        'div',
-        'team-sub',
-        info,
-        `Liv. ${b.level} · Vita ${Math.ceil(b.hp)}/${maxHpOf(b)}${b.ko ? ' · KO' : ''} · ${b.inTeam ? 'in squadra' : 'in riserva'}`,
-      );
+      el('div', 'team-sub', info, `Liv. ${b.level} · ${b.inTeam ? 'in squadra' : 'in riserva'}`);
+      // like Pokémon's party: the health bar and the condition
+      const hp = el('div', 'team-hp', info);
+      const bar = el('span', 'bagbeast-bar', hp);
+      const frac = Math.max(0, b.hp / maxHpOf(b));
+      const fill = el('span', 'bagbeast-fill', bar);
+      fill.style.width = `${frac * 100}%`;
+      fill.classList.toggle('low', frac < 0.25);
+      fill.classList.toggle('mid', frac >= 0.25 && frac < 0.5);
+      el('span', 'bagbeast-hp', hp, b.ko ? 'KO' : `${Math.ceil(b.hp)}/${maxHpOf(b)}`);
+      if (b.status) el('span', `bagbeast-status ${b.status}`, hp, STATUS_NAMES[b.status]);
+      if (b.evolveReady) el('span', 'bagbeast-status evolve', hp, 'EVOLVE');
       growthBars(info, b);
       if (b.inTeam) {
         const members = teamMembers(g.beasts.team);
@@ -62,11 +70,10 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         down.disabled = i >= members.length - 1;
         down.addEventListener('click', () => moveInTeam(g.beasts.team, b.uid, 1) && draw());
       }
-      const algae = g.gear.inventory.alga_curativa ?? 0;
-      if ((b.ko || b.hp < maxHpOf(b)) && algae > 0) {
-        const heal = el('button', 'menu-btn small', row, `Cura (alga ×${algae})`);
-        heal.addEventListener('click', () => useItemOn(g, 'alga_curativa', b.uid, []) && draw());
-      }
+      const item = el('button', 'menu-btn small', row, 'Oggetto');
+      item.addEventListener('click', () =>
+        openBag(document.getElementById('ui') ?? document.body, g, draw, b),
+      );
       if (!editable) continue;
       if (isHungry(b)) {
         const feed = el('button', 'menu-btn small', row, 'Nutri');

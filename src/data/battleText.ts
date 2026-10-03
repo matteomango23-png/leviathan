@@ -35,7 +35,10 @@ export const BATTLE_TEXT = {
   weak: 'Non è molto efficace…',
   crit: 'Colpo critico!',
   hits: (n: number): string => `Colpito ${n} volte!`,
-  healed: (b: Named, n: number): string => `${b.name} recupera ${n} di vita.`,
+  healed: (b: Named, n: number): string => `${b.name} recupera ${n} PS.`,
+  revived: (b: Named): string => `${b.name} si riprende e torna a combattere!`,
+  cured: (b: Named): string => `${b.name} sta di nuovo bene!`,
+  ppBack: (b: Named): string => `I PP di ${b.name} tornano a salire.`,
   fainted: (b: Named): string => `${b.name} è sfinit${o(b)}!`,
   foeFainted: (b: Named): string => `${b.name} selvatic${o(b)} è sfinit${o(b)} e fugge nel buio!`,
   /** A beast with a title (Guardian, story beast): it does not run away. */

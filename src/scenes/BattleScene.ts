@@ -22,6 +22,7 @@ import {
   type Step,
 } from '../systems/battle/battle';
 import { makeFighter, named } from '../systems/battle/fighter';
+import { useBattleItem } from '../systems/battle/battleItems';
 import type { BeastForm } from '../systems/beasts/forms';
 import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
@@ -165,7 +166,7 @@ export class BattleScene extends Phaser.Scene {
       this.ui.show(s);
       await this.view!.swimIn('you', you(s).form, you(s).level);
       await this.ui.say(BATTLE_TEXT.switched(from, this.name('you')));
-    } else if (action.kind === 'item') await this.useItem(action.id);
+    } else if (action.kind === 'item') await this.useItem(action.id, action.target, action.move);
     else if (action.kind === 'tame') {
       if ((this.items[BATTLE.catch.shellItem] ?? 0) <= 0) {
         await this.ui.say(BATTLE_TEXT.noShells);
@@ -189,19 +190,18 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  private async useItem(id: string): Promise<void> {
-    const fx = BATTLE.items[id];
+  private async useItem(id: string, target?: number, move?: number): Promise<void> {
+    const s = this.s;
     const name = ITEMS.find((i) => i.id === id)?.name ?? id;
     this.items[id] = Math.max(0, (this.items[id] ?? 0) - 1);
-    await this.ui.say(BATTLE_TEXT.item(name, this.name('you')), 0.9);
-    const me = you(this.s);
-    if (fx?.healShare) {
-      const n = Math.min(me.maxHp - me.hp, Math.round(me.maxHp * fx.healShare));
-      me.hp += n;
-      this.ui.setHp(this.s);
-      await this.ui.say(BATTLE_TEXT.healed(this.name('you'), n));
+    const on = s.team[target ?? s.active] ?? you(s);
+    await this.ui.say(BATTLE_TEXT.item(name, named(on)), 0.9);
+    const r = useBattleItem(s, id, target, move);
+    if (r.tameMult !== 1) this.tameBonus = r.tameMult;
+    for (const line of r.lines) {
+      this.ui.setHp(s);
+      await this.ui.say(line);
     }
-    if (fx?.tameMult) this.tameBonus = fx.tameMult;
   }
 
   private async foeTurn(first = false): Promise<void> {

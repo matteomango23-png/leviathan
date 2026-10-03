@@ -301,3 +301,105 @@
 .evo-line {
   text-align: center;
 }
+
+/* the backpack out of battle (ui/bagScreen.ts) */
+.bag-card {
+  width: min(560px, 100%);
+}
+.bag-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bag-msg {
+  min-height: 1.2em;
+  color: #c9a86a;
+}
+.bag-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bag-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.bag-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bag-desc {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.bag-note {
+  font-size: 11px;
+  opacity: 0.6;
+}
+.bagbeast {
+  display: grid;
+  grid-template-columns: 1fr 90px auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1e9da;
+  font: inherit;
+  text-align: left;
+}
+.bagbeast:disabled {
+  opacity: 0.45;
+}
+.bagbeast-name {
+  font-weight: 800;
+}
+.bagbeast-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.bagbeast-fill {
+  display: block;
+  height: 100%;
+  background: #6fdc7a;
+}
+.bagbeast-fill.mid {
+  background: #f4d35e;
+}
+.bagbeast-fill.low {
+  background: #f06a5c;
+}
+.bagbeast-hp {
+  font-size: 12px;
+  font-weight: 700;
+}
+.bagbeast-status {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #02070c;
+  background: #ffb3a8;
+}
+.bagbeast-status.avvelenato {
+  background: #c58fe8;
+}
+.bagbeast-status.paralizzato {
+  background: #f4d35e;
+}
+.bagbeast-status.congelato {
+  background: #a9dcff;
+}
+.bagbeast-status.stordito {
+  background: #c9c9c9;
+}

@@ -1,4 +1,5 @@
 // Leviatano — world, economy and equipment data. Prices are "tuning" placeholders.
+import type { StageId, StatusId } from './moveBattle';
 import { TypeId } from './rules';
 
 export type RegionId = 'baia' | 'delta' | 'barriera' | 'foresta' | 'ghiaccio' | 'fossa' | 'abisso' | 'fossaNera';
@@ -79,21 +80,56 @@ export const WEAPONS: WeaponDef[] = [
 /** Backpack: base harpoon always equipped + BACKPACK_SLOTS chosen before each dive (weapons or items). */
 export const BACKPACK_SLOTS = 3;
 
+/** The pockets of the backpack, like Pokémon's bag. */
+export type Pocket = 'cure' | 'battaglia' | 'esche' | 'varie';
+export const POCKET_NAMES: Record<Pocket, string> = { cure: 'Cure', battaglia: 'Battaglia', esche: 'Esche', varie: 'Varie' };
+/** What an item does to a beast, like Pokémon's items (systems/economy/items.ts). */
+export interface ItemUse {
+  heal?: number | 'full';                  // health back (Pozione 20, Superpozione 60, Iperpozione 120, Pozione Max)
+  revive?: number;                         // a worn-out beast comes back with this share of its health (Revitalizzante ½)
+  cure?: StatusId[] | 'all';               // the conditions it ends (Antidoto, Cura totale…)
+  pp?: { amount: number | 'full'; all?: boolean }; // PP back to one move (Etere) or all of them (Elisir)
+  stage?: { stat: StageId; by: number };   // in battle only: a statistic up (Attacco X: +2 since gen 7)
+  tameMult?: number;                       // in battle only: the next taming attempt × this
+}
 export interface ItemDef { id: string; name: string; price: number; stockPerVisit?: number; restockAfterGuardian?: boolean; text: string;
   lure?: string[];         // a bait: these species come to you for a while (ITEM_RULES.bait)
   battleOnly?: boolean;    // used in battle only: never in a backpack slot
+  pocket?: Pocket;         // its pocket in the backpack (default: varie)
+  use?: ItemUse;
 }
 export const ITEMS: ItemDef[] = [
   { id: 'krill_dorato', name: 'Krill dorato', price: 500, stockPerVisit: 2, text: '+1 livello a una bestia' },
-  { id: 'alga_curativa', name: 'Alga curativa', price: 60, text: 'Cura una bestia, anche KO' },
+  // like Pokémon's medicine (owner, 3 ottobre: "copia da Pokémon"); prices about 0.3 × Pokémon's (tuning)
+  { id: 'alga_curativa', name: 'Alga curativa', price: 60, pocket: 'cure', use: { heal: 20 }, text: 'Recupera 20 PS a una bestia (come una Pozione)' },
+  { id: 'alga_rossa', name: 'Alga rossa', price: 210, pocket: 'cure', use: { heal: 60 }, text: 'Recupera 60 PS (come una Superpozione)' },
+  { id: 'alga_reale', name: 'Alga reale', price: 450, pocket: 'cure', use: { heal: 120 }, text: 'Recupera 120 PS (come un\u2019Iperpozione)' },
+  { id: 'corallo_vitale', name: 'Corallo vitale', price: 750, pocket: 'cure', use: { heal: 'full' }, text: 'Tutti i PS (come una Pozione Max)' },
+  { id: 'perla_ristoro', name: 'Perla di ristoro', price: 900, pocket: 'cure', use: { heal: 'full', cure: 'all' }, text: 'Tutti i PS e cura ogni stato (come una Ricarica totale)' },
+  { id: 'ambra_risveglio', name: 'Ambra del risveglio', price: 600, pocket: 'cure', use: { revive: 0.5 }, text: 'Rianima una bestia sfinita con metà dei PS (come un Revitalizzante)' },
+  { id: 'muschio_luminoso', name: 'Muschio luminoso', price: 360, pocket: 'cure', use: { pp: { amount: 10 } }, text: 'Ridà 10 PP a una mossa (come un Etere)' },
+  { id: 'elisir_abissale', name: 'Elisir abissale', price: 900, pocket: 'cure', use: { pp: { amount: 10, all: true } }, text: 'Ridà 10 PP a tutte le mosse (come un Elisir)' },
+  { id: 'antidoto', name: 'Antidoto', price: 30, pocket: 'cure', use: { cure: ['avvelenato'] }, text: 'Cura l\u2019avvelenamento' },
+  { id: 'benda_alga', name: 'Benda d\u2019alga', price: 60, pocket: 'cure', use: { cure: ['ferito'] }, text: 'Chiude le ferite (come una Antiscottatura)' },
+  { id: 'spugna_isolante', name: 'Spugna isolante', price: 60, pocket: 'cure', use: { cure: ['paralizzato'] }, text: 'Toglie la paralisi' },
+  { id: 'sale_aromatico', name: 'Sale aromatico', price: 30, pocket: 'cure', use: { cure: ['stordito'] }, text: 'Risveglia una bestia stordita (come una Sveglia)' },
+  { id: 'pietra_termale', name: 'Pietra termale', price: 30, pocket: 'cure', use: { cure: ['congelato'] }, text: 'Scongela una bestia (come un Antigelo)' },
+  { id: 'panacea', name: 'Panacea di madreperla', price: 120, pocket: 'cure', use: { cure: 'all' }, text: 'Cura ogni stato (come una Cura totale)' },
+  // like Pokémon's X items: in battle only, +2 since gen 7
+  { id: 'attacco_x', name: 'Attacco X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'atk', by: 2 } }, text: 'In battaglia: alza molto l\u2019Attacco' },
+  { id: 'difesa_x', name: 'Difesa X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'def', by: 2 } }, text: 'In battaglia: alza molto la Difesa' },
+  { id: 'attacco_sp_x', name: 'Att. Speciale X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'spa', by: 2 } }, text: 'In battaglia: alza molto l\u2019Attacco Speciale' },
+  { id: 'difesa_sp_x', name: 'Dif. Speciale X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'spd', by: 2 } }, text: 'In battaglia: alza molto la Difesa Speciale' },
+  { id: 'velocita_x', name: 'Velocità X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'spe', by: 2 } }, text: 'In battaglia: alza molto la Velocità' },
+  { id: 'precisione_x', name: 'Precisione X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'acc', by: 2 } }, text: 'In battaglia: alza molto la Precisione' },
   { id: 'bolla_aria', name: 'Bolla d\u2019aria', price: 40, text: 'Ricarica l\u2019ossigeno' },
-  { id: 'esca', name: 'Esca', price: 80, text: 'Attira le creature di una zona' },
+  { id: 'esca', name: 'Esca', price: 80, pocket: 'esche', text: 'Attira le creature di una zona' },
   // owner, 2 ottobre: baits for the beasts you are looking for, and shells for taming (no longer endless)
-  { id: 'esca_sangue', name: 'Esca di sangue', price: 180, text: 'Per un minuto e mezzo attira gli squali: bianco, tigre, martello', lure: ['squalo_bianco', 'squalo_tigre', 'squalo_martello'] },
-  { id: 'esca_gamberi', name: 'Esca di gamberi', price: 90, text: 'Attira tartarughe, pesci palla e mante', lure: ['tartaruga_marina', 'pesce_palla', 'manta'] },
-  { id: 'esca_viva', name: 'Esca viva', price: 90, text: 'Attira barracuda, murene, torpedini e coccodrilli', lure: ['barracuda', 'murena', 'torpedine', 'coccodrillo_marino'] },
-  { id: 'conchiglia', name: 'Conchiglia del domatore', price: 30, text: 'Serve per domare: una per ogni tentativo in battaglia', battleOnly: true },
-  { id: 'arpione_mitico', name: 'Arpione mitico', price: 5000, stockPerVisit: 1, restockAfterGuardian: true, text: 'Monouso: stordisce all\u2019istante la bestia colpita e porta subito al minigioco' },
+  { id: 'esca_sangue', name: 'Esca di sangue', price: 180, pocket: 'esche', text: 'Per un minuto e mezzo attira gli squali: bianco, tigre, martello', lure: ['squalo_bianco', 'squalo_tigre', 'squalo_martello'] },
+  { id: 'esca_gamberi', name: 'Esca di gamberi', price: 90, pocket: 'esche', text: 'Attira tartarughe, pesci palla e mante', lure: ['tartaruga_marina', 'pesce_palla', 'manta'] },
+  { id: 'esca_viva', name: 'Esca viva', price: 90, pocket: 'esche', text: 'Attira barracuda, murene, torpedini e coccodrilli', lure: ['barracuda', 'murena', 'torpedine', 'coccodrillo_marino'] },
+  { id: 'conchiglia', name: 'Conchiglia del domatore', price: 30, pocket: 'battaglia', text: 'Serve per domare: una per ogni tentativo in battaglia', battleOnly: true },
+  { id: 'arpione_mitico', name: 'Arpione mitico', price: 5000, stockPerVisit: 1, restockAfterGuardian: true, pocket: 'battaglia', use: { tameMult: 3 }, text: 'Monouso: stordisce all\u2019istante la bestia colpita e porta subito al minigioco' },
 ];
 
 /** Cosmetic skins for beasts already tamed: small bonus, one active per beast. */

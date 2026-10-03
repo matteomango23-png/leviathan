@@ -6,7 +6,7 @@ import { ROAM, TEAM_RULES, WILD_SPAWNS } from '../src/data/beasts';
 import { DIVER } from '../src/data/diver';
 import { START_INVENTORY } from '../src/data/world';
 import { bay as bayX } from '../src/data/worldLayout';
-import { moveInTeam, teamMembers } from '../src/systems/beasts/team';
+import { maxHpOf, moveInTeam, teamMembers } from '../src/systems/beasts/team';
 import { spawnWild } from '../src/systems/beasts/wildState';
 import { stepRoam } from '../src/systems/beasts/roam';
 import { useItemOn, useSlot } from '../src/systems/economy/backpack';
@@ -44,7 +44,7 @@ describe('team', () => {
     expect(teamMembers(g.beasts.team)[1]).toBe(a);
   });
 
-  it('an Alga curativa heals the beast you choose', () => {
+  it('medicine works on the beast you choose, like Pokémon (a potion does not revive)', () => {
     const g = game();
     giveTestBeast(g, { speciesId: 'barracuda', variant: 'comune' }, 5);
     giveTestBeast(g, { speciesId: 'torpedine', variant: 'comune' }, 5);
@@ -53,9 +53,13 @@ describe('team', () => {
     b!.hp = 0;
     b!.ko = true;
     g.gear.inventory.alga_curativa = 1;
-    expect(useItemOn(g, 'alga_curativa', b!.uid, [])).toBe(true);
+    g.gear.inventory.ambra_risveglio = 1;
+    expect(useItemOn(g, 'alga_curativa', b!.uid, [])).toBe(false); // worn out: a potion does nothing
+    expect(useItemOn(g, 'ambra_risveglio', b!.uid, [])).toBe(true);
     expect(b!.ko).toBe(false);
-    expect(a!.hp).toBe(1);
+    expect(b!.hp).toBe(Math.floor(maxHpOf(b!) / 2));
+    expect(useItemOn(g, 'alga_curativa', a!.uid, [])).toBe(true);
+    expect(a!.hp).toBe(Math.min(maxHpOf(a!), 21));
     expect(g.gear.inventory.alga_curativa ?? 0).toBe(0);
   });
 });

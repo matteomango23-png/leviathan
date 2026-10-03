@@ -103,6 +103,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |
 | `growthBars.ts` | Barre di esperienza e cibo. |
 | `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
+| `bagScreen.ts`, `battleBag.ts` | Lo zaino a tasche come Pokémon, dal menu e in battaglia (su chi usare una cura, su quale mossa un Muschio). |
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
@@ -116,6 +117,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `data/battle.ts`, `data/battleText.ts` | Numeri della battaglia (danni, stati, domatura, fuga, oggetti, squadra di prova) e testi. |
 | `data/battleMoves.ts`, `data/moveBattle.ts`, `data/learnsets.ts` | Le mosse di battaglia prese da Pokémon con i nostri nomi (potenza, precisione, PP, effetti), come funzionano, e quali impara ogni specie a che livello. |
 | `systems/beasts/battleMoves.ts` | Le mosse che una bestia conosce (al massimo 4): quelle di partenza, quelle nuove a ogni livello, dimenticare e ricordare. |
+| `systems/battle/battleItems.ts`, `systems/economy/items.ts` | Cosa fa ogni oggetto (vita, rianimare, stati, PP, X) a una bestia, fuori e dentro la battaglia. |
 | `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con i loro PP, stato e statistiche alzate o abbassate, danno di un colpo. |
 | `systems/battle/status.ts` | Gli stati alterati (avvelenato, ferito, paralizzato, stordito, congelato) e le statistiche da −6 a +6. |
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
