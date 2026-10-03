@@ -39,6 +39,8 @@ export interface Flock {
   patrol: number;
   altitude: number;
   t: number;
+  /** Seconds left before it flies off by itself. */
+  stay: number;
   birds: Bird[];
 }
 
@@ -81,6 +83,7 @@ export function createBirds(seed: number = BIRDS.seed): BirdsState {
       patrol: 0,
       altitude: 0,
       t: 0,
+      stay: 0,
       birds: [],
     });
   return { flocks, rng };
@@ -126,6 +129,7 @@ function arrive(f: Flock, rng: Rng, view: BirdsView, homeX: number): void {
   f.altitude = range(rng, BIRDS.altitude[0], BIRDS.altitude[1]);
   f.y = WORLD.surfaceY - f.altitude;
   f.t = rng() * 100;
+  f.stay = range(rng, BIRDS.staySeconds[0], BIRDS.staySeconds[1]);
   f.active = true;
   f.leaving = false;
   const n = Math.floor(range(rng, BIRDS.perFlock[0], BIRDS.perFlock[1] + 1));
@@ -173,7 +177,7 @@ export function stepBirds(
 
   for (const f of s.flocks) {
     if (!f.active) {
-      if (flying < want && rng() < dt * 0.3) {
+      if (flying < want && rng() < dt * BIRDS.arriveChancePerSec) {
         const home = pickHome(s, schools, view, f);
         if (home >= 0) {
           f.home = home;
@@ -183,7 +187,8 @@ export function stepBirds(
       }
       continue;
     }
-    if (!f.leaving && flying > want) {
+    f.stay -= dt;
+    if (!f.leaving && (flying > want || f.stay <= 0)) {
       f.leaving = true;
       flying--;
     }

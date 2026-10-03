@@ -478,3 +478,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Disegno:** 9 pose del battito d'ala + una ad ali chiuse, dipinte una volta all'avvio su canvas con curve e sfumature (`views/birdsView.ts`); ogni uccello è un'immagine che sceglie la posa.
 - **Comportamento come i banchi di pesci** (richiesta del proprietario): ogni stormo ha per casa un banco a meno di 170 unità sotto la superficie e a meno di 700 dalla telecamera; fa avanti e indietro sopra di lui (70–140 unità) virando con accelerazione limitata. Arriva, cambia casa e si ferma solo quando tutto lo stormo è fuori dallo schermo (`offScreen`, la scena passa la mezza larghezza vista). Un test fa nuotare la telecamera avanti e indietro per 10 minuti e controlla che nessun uccello compaia, sparisca o salti in vista.
 - **Meno uccelli:** 2 stormi da 3–6.
+
+## 2026-10-04 — Meno gabbiani ("e sono pure troppi")
+
+- Al massimo 1 stormo da 2–4 (`BIRDS.flocks`, `perFlock`). Non sempre presente: arriva con probabilità 0,03 al secondo (in media dopo ~30 s), resta 40–90 s (`staySeconds`), poi vola via fuori dallo schermo. Test: in 20 minuti gli stormi vanno e vengono e ci sono tra il 30% e l'85% del tempo.
