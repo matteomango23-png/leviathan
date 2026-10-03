@@ -245,7 +245,7 @@
 - Le bocche aperte le ha fatte il proprietario; dove mancano non si usano.
 - Varano albino (`asset animali ai/varano del nilo nero/varano_nilo_albino_*`): mancano card e vista dietro, si mette nel gioco dopo.
 
-**Piano approvato il 3 ottobre ("Ok su tutto"):** (1) via la schivata e mosse di Pokémon — fatto in v0.24.0; (2) posizioni e grandezze come Pokémon gen 3–5: la tua bestia più grande e tagliata dal bordo basso, il nemico grande che esce dalla pedana, ingresso con telecamera per le bestie grandi e leggendarie; (3) poi a scelta del proprietario: oggetti di cura, nature, abilità, strumenti, meteo, cacciatori rivali, evoluzioni con oggetti. Cavalcata: i 3 pulsanti in mare restano le mosse vecchie, da ripensare dopo.
+**Piano approvato il 3 ottobre ("Ok su tutto"):** (1) via la schivata e mosse di Pokémon — fatto in v0.24.0; (2) posizioni e grandezze come Pokémon gen 3–5 — fatto in v0.25.0 (la tua più grande e tagliata in basso, ingresso con telecamera da 5 m in su; la selvatica resta intera); (3) poi a scelta del proprietario: oggetti di cura, nature, abilità, strumenti, meteo, cacciatori rivali, evoluzioni con oggetti. Cavalcata: i 3 pulsanti in mare restano le mosse vecchie, da ripensare dopo.
 
 **Battaglie come Pokémon (piano approvato dal proprietario, 3 ottobre):** fase 1 fatta (v0.21.0: statistiche, danno, tipi). Fase 3 fatta (v0.23.0: gruppi di crescita, esperienza Gen V, cattura Gen III–IV). Fase 2 fatta (v0.22.0): mosse con potenza, precisione, PP (al posto della ricarica), categoria fisica/speciale/stato, priorità, stati alterati (avvelenato, paralizzato, stordito=sonno, congelato, ferito=scottatura) e statistiche da −6 a +6. Fase 3: esperienza (gruppi di crescita, formula Gen V) e cattura (formula Gen V).
 
