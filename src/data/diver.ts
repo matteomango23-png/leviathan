@@ -58,7 +58,7 @@ export const SARDINE = {
 };
 
 export const CAMERA = {
-  viewHeightUnits: 160, // how much sea is visible vertically: "telecamera lontana" (tuning)
+  viewHeightUnits: 130, // how much sea is visible vertically (was 160: small beasts were too small; owner, 3 ottobre)
   lookAhead: 20, // looks ahead in the direction the diver faces
   follow: 5, // how fast the camera catches up
   minY: -60, // can peek above the surface

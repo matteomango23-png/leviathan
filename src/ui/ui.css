@@ -1445,3 +1445,11 @@ img.albino-art {
   color: var(--muted);
   text-align: center;
 }
+
+/* the submarine hides the dash (controls.ts) */
+.act[hidden] {
+  display: none;
+}
+.backpack[hidden] {
+  display: none;
+}

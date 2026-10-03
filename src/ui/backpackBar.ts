@@ -44,7 +44,8 @@ export class BackpackBar {
 
   update(g: GameState): void {
     const gear = g.gear;
-    this.root.hidden = gear.backpack.every((s) => !s);
+    // weapons and baits are for swimming: in the submarine only the fishing button stays
+    this.root.hidden = g.sub.aboard || gear.backpack.every((s) => !s);
     gear.backpack.forEach((id, i) => {
       const b = this.slots[i]!;
       b.hidden = !id;

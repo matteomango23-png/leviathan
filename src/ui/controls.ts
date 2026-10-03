@@ -180,7 +180,9 @@ export class Controls {
   }
 
   /** Called every frame: writes the current controls into the session input. */
-  update(dashReady: boolean): void {
+  update(dashReady: boolean, aboard = false): void {
+    // in the submarine there is no dash (owner, 3 ottobre: "pulsanti per cose che non posso fare")
+    this.dashBtn.hidden = aboard;
     const input = this.session.input;
     const k = this.keys;
     let mx: number;

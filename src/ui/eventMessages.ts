@@ -70,7 +70,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'subGiven':
       return [SUB_TEXT.given, 6];
     case 'boarded':
-      return [`${SUB_TEXT.boarded} Joystick per guidare, Pesca col pulsante, Esci per nuotare.`, 4];
+      return [
+        `${SUB_TEXT.boarded} Joystick per guidare. Per pescare fermati, tocca Pesca e, quando abbocca, toccalo di nuovo. Esci per nuotare.`,
+        4,
+      ];
     case 'dove':
       return ['Il sottomarino resta qui ad aspettarti.', 2];
     case 'subRammed':
