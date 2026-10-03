@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.22.0 — Battaglie come Pokémon, fase 2: le mosse (3 ottobre 2026)
+
+- **PP al posto della ricarica:** ogni mossa si può usare un certo numero di volte (le deboli 30, le fortissime 5). I PP non tornano da soli tra una battaglia e l'altra: si ricaricano quando la bestia torna in piena salute (porto, santuario, sottomarino). Senza più PP resta la **Lotta disperata**, che fa male anche a chi la usa.
+- **Precisione:** le mosse fortissime possono mancare il colpo (85%), quelle che fanno solo addormentare un po' di più.
+- **Mosse fisiche, speciali e di stato**, e **priorità**: gli scatti e gli agguati colpiscono per primi, le mosse lente per ultime.
+- **Stati alterati come Pokémon**, con un'etichetta vicino alla vita: AVV avvelenato (perde vita ogni turno), FER ferito (perde un po' di vita e i suoi morsi fanno metà danno), PAR paralizzato (più lento, a volte non si muove), STO stordito (dorme 1–3 turni), CON congelato (fermo finché non si scongela). Alcuni tipi sono immuni a uno stato.
+- **Statistiche che salgono e scendono** in battaglia (da −6 a +6): corazze che alzano la difesa, nubi d'inchiostro che abbassano la precisione, e così via. Alcune mosse fanno tentennare: chi le subisce prima di muoversi perde il turno.
+- Nella scheda di una bestia ogni mossa mostra PP, categoria, potenza e precisione.
+
 ## v0.21.0 — Battaglie come Pokémon, fase 1 (3 ottobre 2026)
 
 - **Statistiche come Pokémon:** ogni bestia ha PS, Attacco, Difesa, Attacco Speciale, Difesa Speciale e Velocità, calcolate con la formula di Pokémon. Ogni esemplare ha i suoi valori individuali: due squali dello stesso livello non sono identici, e quello che domi tiene i suoi.

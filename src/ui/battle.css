@@ -677,3 +677,33 @@
     transform: scale(1.06);
   }
 }
+
+/* a lasting condition next to the health bar, like Pokémon's badges (systems/battle/status.ts) */
+.binfo-status {
+  margin-right: 4px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  color: #fff;
+  background: #6b6f72;
+}
+.binfo-status[hidden] {
+  display: none;
+}
+.binfo-status[data-status='avvelenato'] {
+  background: #8a3fb0;
+}
+.binfo-status[data-status='ferito'] {
+  background: #c0392b;
+}
+.binfo-status[data-status='paralizzato'] {
+  background: #c9a227;
+}
+.binfo-status[data-status='stordito'] {
+  background: #6b7a86;
+}
+.binfo-status[data-status='congelato'] {
+  background: #4aa3d8;
+}

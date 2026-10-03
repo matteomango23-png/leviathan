@@ -106,8 +106,10 @@ export function openBeastSheet(
     const t = el('span', 'tag small', top, m.typeName);
     t.style.color = m.typeColor;
     t.style.borderColor = m.typeColor;
-    el('span', 'move-meta', top, m.unlocked ? `ricarica ${m.cooldown} s` : `livello ${m.unlockLevel}`);
-    el('div', 'move-text', row, m.power > 0 ? `${m.text} · potenza ${m.power}` : m.text);
+    el('span', 'move-meta', top, m.unlocked ? `PP ${m.pp}` : `livello ${m.unlockLevel}`);
+    const acc = m.accuracy === null ? '—' : String(m.accuracy);
+    const power = m.power > 0 ? ` · potenza ${m.power}` : '';
+    el('div', 'move-text', row, `${m.text} · ${m.category}${power} · precisione ${acc}`);
   }
   if (s.fieldMove) {
     // the move used in the sea, not in battle: it breaks ancient bones

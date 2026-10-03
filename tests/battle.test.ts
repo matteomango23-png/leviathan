@@ -13,24 +13,23 @@ import {
   you,
 } from '../src/systems/battle/battle';
 import { judgeDodge, makeDodgeRing, ringProgress } from '../src/systems/battle/dodge';
-import { canUse, makeFighter, rechargeTurnsOf } from '../src/systems/battle/fighter';
+import { canUse, makeFighter } from '../src/systems/battle/fighter';
 import { makeRng } from '../src/systems/math';
 
 const shark = (level: number) => makeFighter({ speciesId: 'squalo_bianco', variant: 'comune' }, level);
 const barracuda = (level: number) => makeFighter({ speciesId: 'barracuda', variant: 'comune' }, level);
 
 describe('moves and damage', () => {
-  it('moves unlock at 1, 7, 15 and strong ones recharge for turns', () => {
+  it('moves unlock at 1, 7, 15 and spend PP, like Pokémon', () => {
     const f = shark(7);
     expect(f.moves.map((m) => m.unlocked)).toEqual([true, true, false]);
-    expect(rechargeTurnsOf(f.moves[0]!.move)).toBe(0);
-    expect(rechargeTurnsOf(f.moves[1]!.move)).toBeGreaterThan(0);
+    const m = f.moves[1]!;
+    expect(m.pp).toBe(m.maxPp);
     const s = createBattle([f], barracuda(5));
-    useMove(s, 'you', 1, makeRng(1));
-    endRound(s);
-    expect(canUse(f.moves[1]!)).toBe(false);
-    for (let i = 0; i < rechargeTurnsOf(f.moves[1]!.move); i++) endRound(s);
-    expect(canUse(f.moves[1]!)).toBe(true);
+    s.foe.hp = s.foe.maxHp = 9999;
+    for (let i = 0; i < m.maxPp; i++) useMove(s, 'you', 1, makeRng(i));
+    expect(m.pp).toBe(0);
+    expect(canUse(m)).toBe(false);
   });
 
   it('levels matter: a higher level hits harder (through the formula and the statistics)', () => {

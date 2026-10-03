@@ -34,6 +34,7 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     b.ko = s.ko || b.hp <= 0;
     b.xp = s.xp;
     b.food = s.food;
+    if (s.ppUsed) b.ppUsed = [...s.ppUsed];
     return b;
   });
 }
@@ -93,6 +94,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     hp: Math.round(b.hp * 10) / 10,
     ko: b.ko,
     inTeam: b.inTeam,
+    ...(b.ppUsed ? { ppUsed: [...b.ppUsed] } : {}),
   }));
   s.sanctuary = g.sanctuaries.current;
   s.brokenTiles = [...new Set(g.brokenTiles)];

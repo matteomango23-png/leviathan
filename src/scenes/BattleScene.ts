@@ -118,7 +118,7 @@ export class BattleScene extends Phaser.Scene {
       await this.ui.say(BATTLE_TEXT.ambushed(this.name('foe')), 1.2);
       await this.foeTurn(); // it touched you: a free attack
     } else if (this.setupInGame?.first === 'you') {
-      s.foe.stunned = true; // you hit it from behind: it loses its first turn
+      s.foe.flinch = true; // you hit it from behind: it loses its first turn
       await this.ui.say(BATTLE_TEXT.surprise(this.name('foe')), 1.2);
     }
     while (!s.over) {
@@ -134,11 +134,12 @@ export class BattleScene extends Phaser.Scene {
     s.foeMove = chooseFoeMove(s, this.rng);
     const order: Side[] = firstSide(s, action, this.rng) === 'you' ? ['you', 'foe'] : ['foe', 'you'];
     for (const side of order) {
-      if (s.over || s.foe.hp <= 0) break;
-      if (side === 'you') await this.yourTurn(action);
-      else await this.foeTurn();
+      if (s.over || s.foe.hp <= 0 || you(s).hp <= 0) break;
+      const first = side === order[0]; // a flinch only works on a beast that has not moved yet
+      if (side === 'you') await this.yourTurn(action, first);
+      else await this.foeTurn(first);
     }
-    endRound(s);
+    await this.play(endRound(s));
   }
 
   /** Your beast is knocked out: pick the next one (no turn lost). False when nobody is left. */
@@ -156,9 +157,9 @@ export class BattleScene extends Phaser.Scene {
     return true;
   }
 
-  private async yourTurn(action: Action): Promise<void> {
+  private async yourTurn(action: Action, first = false): Promise<void> {
     const s = this.s;
-    if (action.kind === 'move') await this.play(useMove(s, 'you', action.index, this.rng));
+    if (action.kind === 'move') await this.play(useMove(s, 'you', action.index, this.rng, 'none', first));
     else if (action.kind === 'switch') {
       const from = this.name('you');
       await this.view!.swimOut('you');
@@ -205,16 +206,18 @@ export class BattleScene extends Phaser.Scene {
     if (fx?.tameMult) this.tameBonus = fx.tameMult;
   }
 
-  private async foeTurn(): Promise<void> {
+  private async foeTurn(first = false): Promise<void> {
     const s = this.s;
-    if (s.foe.stunned || !foeCanBeDodged(s)) {
-      await this.play(useMove(s, 'foe', s.foeMove, this.rng));
+    const f = s.foe;
+    const bm = f.moves[s.foeMove];
+    // no dodge when it will not attack you (it lost its turn, or its move does no damage)
+    if (!bm || f.flinch || f.status === 'stordito' || f.status === 'congelato' || !foeCanBeDodged(s)) {
+      await this.play(useMove(s, 'foe', s.foeMove, this.rng, 'none', first));
       return;
     }
-    const move = s.foe.moves[s.foeMove]!.move.name;
-    await this.ui.say(BATTLE_TEXT.foeUses(this.name('foe'), move), 0.7);
+    await this.ui.say(BATTLE_TEXT.foeUses(this.name('foe'), bm.move.name), 0.7);
     const dodge = await this.runDodge();
-    await this.play(useMove(s, 'foe', s.foeMove, this.rng, dodge), true);
+    await this.play(useMove(s, 'foe', s.foeMove, this.rng, dodge, first), true);
   }
 
   /** The SCHIVA bar; resolves with how well you tapped. */
@@ -226,8 +229,10 @@ export class BattleScene extends Phaser.Scene {
   /** Shows the steps of a turn. `announced`: the wild beast's move name was already said. */
   private async play(steps: Step[], announced = false): Promise<void> {
     for (const st of steps) {
-      if (st.kind === 'text') await this.ui.say(st.text);
-      else if (st.kind === 'attack') {
+      if (st.kind === 'text') {
+        this.ui.setHp(this.s); // a condition or a stage may have changed
+        await this.ui.say(st.text);
+      } else if (st.kind === 'attack') {
         if (!(announced && st.side === 'foe'))
           await this.ui.say(
             st.side === 'you'
@@ -251,6 +256,10 @@ export class BattleScene extends Phaser.Scene {
       } else if (st.kind === 'heal') {
         this.ui.setHp(this.s);
         await this.ui.say(BATTLE_TEXT.healed(this.name(st.side), st.amount));
+      } else if (st.kind === 'hurt') {
+        await this.view!.hit(st.side, st.amount, false, 'abissale', false);
+        this.ui.setHp(this.s);
+        await this.ui.say(st.text);
       } else if (st.kind === 'faint') {
         await this.view!.faint(st.side);
         await this.ui.say(

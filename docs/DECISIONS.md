@@ -409,3 +409,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Salvataggio v13: le bestie tornano in piena salute (la vecchia vita non vale più).
 - La velocità di nuoto quando cavalchi resta a parte (`swimSpeedOf`).
 - Fonti: Bulbapedia (Damage, Stat), Smogon, Pokémon Wiki.
+
+## 2026-10-03 — Le mosse di Pokémon (fase 2 di 3)
+
+- **Regole di ogni mossa** in `data/moveBattle.ts` (`moveBattleOf`): potenza, precisione, PP, categoria, priorità ed effetti si ricavano dalla classe di potenza e dai suoi `fx` (quelli del mare aperto), pensando alla mossa Pokémon simile; si possono fissare a mano in `MOVE_OVERRIDES`. Così le 102+ mosse non vanno riscritte una per una.
+- **PP al posto della ricarica a turni**, salvati sulla bestia (`TeamBeast.ppUsed`, facoltativo nel salvataggio: niente nuova versione). Tornano pieni con la guarigione completa, come al Centro Pokémon.
+- **Stati** (`systems/battle/status.ts`): i 5 di Pokémon con nomi di mare; ferito = scottatura. Immunità: Glaciale al congelamento, Tempesta alla paralisi, Abissale al veleno. Stadi −6…+6 con le formule di Pokémon; un colpo critico ignora gli stadi sfavorevoli.
+- **Categoria**: per ogni mossa (danno: fisica se il tipo è Predatore o Corazzato, altrimenti speciale; senza danno: di stato). Una mossa "variabile" usa la statistica d'attacco più alta.
+- **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
+- Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
