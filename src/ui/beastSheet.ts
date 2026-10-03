@@ -1,27 +1,39 @@
-// The beast card sheet: the illustration whole on the left (framed in the rarity colour),
-// name, stars, type, role, level, stats and the three moves on the right.
+// The beast card sheet, like Pokémon's summary: the illustration whole on the left (framed in the rarity colour),
+// name and three pages on the right (Info, Statistiche, Mosse: ui/sheetPages.ts).
 import { SPECIAL_FRAMES } from '../data/cards';
 import { buildSheet } from '../systems/beasts/sheet';
 import type { BeastForm } from '../systems/beasts/forms';
 import type { TeamBeast } from '../systems/beasts/team';
-import { growthBars } from './growthBars';
+import type { GameEvent } from '../systems/events';
 import { el } from './dom';
-import { ICONS, icon } from './icons';
+import { evolutionScreen } from './evolutionScreen';
+import { ICONS } from './icons';
 import { setArt } from './art';
-import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
-import { learnScreen, rememberScreen } from './movePanel';
+import { infoPage, movesPage, statsPage, type PageContext } from './sheetPages';
+
+export type SheetPage = 'info' | 'stats' | 'moves';
 
 export interface SheetExtra {
   hp?: number;
   ko?: boolean;
   count?: number; // how many of this form you own
-  /** A tamed beast: shows its experience and nourishment bars, and the moves waiting to be learned. */
+  /** A tamed beast: its experience, its own moves (to order, learn, remember), its evolution. */
   beast?: TeamBeast;
   /** At the port: the Ricordamosse can teach it again a move it forgot. */
   remember?: boolean;
-  /** Something about the beast changed (its moves). */
+  /** Something about the beast changed (its moves, its evolution). */
   onChange?: () => void;
+  /** Where game events go (an evolution's message). */
+  events?: GameEvent[];
+  /** The page it opens on. */
+  page?: SheetPage;
 }
+
+const PAGES: [SheetPage, string, (box: HTMLElement, c: PageContext) => void][] = [
+  ['info', 'Info', infoPage],
+  ['stats', 'Statistiche', statsPage],
+  ['moves', 'Mosse', movesPage],
+];
 
 /** Opens a sheet over everything; returns a function that closes it. */
 export function openBeastSheet(
@@ -30,7 +42,8 @@ export function openBeastSheet(
   level?: number,
   extra: SheetExtra = {},
 ): () => void {
-  const s = buildSheet(form, level, extra.beast?.known, extra.beast?.ppUsed);
+  const b = extra.beast;
+  const s = buildSheet(b?.form ?? form, b?.level ?? level, b?.known, b?.ppUsed);
   const root = el('div', 'sheet', parent);
   const card = el('div', 'sheet-card', root);
   card.style.setProperty('--rarity', s.rarityColor);
@@ -45,7 +58,7 @@ export function openBeastSheet(
 
   const art = el('div', 'sheet-art', card);
   const img = el('img', '', art);
-  setArt(img, form);
+  setArt(img, b?.form ?? form);
   img.alt = s.name;
   const banner = el('div', 'sheet-banner', art);
   el('span', 'sheet-stars', banner).innerHTML = ICONS.star.repeat(s.stars);
@@ -64,108 +77,38 @@ export function openBeastSheet(
   x.setAttribute('aria-label', 'Chiudi');
   x.addEventListener('click', close);
 
-  const tags = el('div', 'sheet-tags', info);
-  const type = el('span', 'tag', tags, s.typeName);
-  type.style.borderColor = s.typeColor;
-  type.style.color = s.typeColor;
-  el('span', 'tag', tags, s.roleName);
-  el('span', 'tag', tags, s.levelLabel);
-  if (extra.count && extra.count > 1) el('span', 'tag', tags, `×${extra.count}`);
-  if (extra.beast) growthBars(info, extra.beast);
-  if (s.evolution.length) {
-    // the line, like a Pokédex: Zanna → Squarcio (Lv 16) → Zannarossa (Lv 36), the current stage lit
-    const evo = el('div', 'sheet-evo', info);
-    s.evolution.forEach((st, i) => {
-      if (i) el('span', 'evo-arrow', evo, '→');
-      const step = el('span', `evo-step${st.current ? ' current' : ''}`, evo, st.name);
-      if (st.level) el('span', 'evo-level', step, ` Lv ${st.level}`);
-    });
-  }
-
-  const stats = el('div', 'sheet-stats', info);
-  const stat = (label: string, value: string, iconName?: Parameters<typeof icon>[0]): void => {
-    const r = el('div', 'stat', stats);
-    if (iconName) r.append(icon(iconName));
-    el('span', 'stat-label', r, label);
-    el('span', 'stat-value', r, value);
-  };
-  stat(
-    'Vita',
-    extra.hp !== undefined
-      ? `${Math.ceil(extra.hp)} / ${s.stats.hp}${extra.ko ? ' (KO)' : ''}`
-      : String(s.stats.hp),
-    'heart',
-  );
-  stat('Attacco', String(s.stats.atk), 'tooth');
-  stat('Difesa', String(s.stats.def), 'shield');
-  stat('Att. Speciale', String(s.stats.spa), 'bolt');
-  stat('Dif. Speciale', String(s.stats.spd), 'shield');
-  stat('Velocità', String(s.stats.spe), 'dive');
-  stat('Lunghezza', `${s.lengthM.toString().replace('.', ',')} m`, 'fish');
-
-  el('h3', '', info, 'Mosse in battaglia');
-  const b = extra.beast;
-  if (b) {
-    // after a choice the sheet opens again, up to date
-    const again = (): void => {
+  let page: SheetPage = extra.page ?? 'info';
+  const tabs = el('div', 'sheet-tabs', info);
+  const body = el('div', 'sheet-page', info);
+  const ctx: PageContext = {
+    parent,
+    s,
+    beast: b,
+    hp: extra.hp,
+    ko: extra.ko,
+    count: extra.count,
+    remember: extra.remember,
+    // after a choice the sheet opens again, up to date, on the same page
+    again: () => {
       close();
       extra.onChange?.();
-      openBeastSheet(parent, b.form, b.level, extra);
-    };
-    for (const id of b.pendingMoves ?? []) {
-      const btn = el(
-        'button',
-        'menu-btn sheet-learn',
-        info,
-        `Nuova mossa: ${BATTLE_MOVE_BY_ID[id]?.name ?? id} · scegli`,
-      );
-      btn.addEventListener('click', () => learnScreen(parent, b, id, again));
-    }
-    if (extra.remember) {
-      const btn = el('button', 'menu-btn sheet-learn', info, 'Ricordamosse');
-      btn.addEventListener('click', () => rememberScreen(parent, b, again));
-    }
+      openBeastSheet(parent, form, level, { ...extra, page, hp: b?.hp ?? extra.hp, ko: b?.ko ?? extra.ko });
+    },
+  };
+  if (b) ctx.evolve = () => void evolutionScreen(parent, b, extra.events ?? []).then(ctx.again);
+  const show = (): void => {
+    body.replaceChildren();
+    for (const t of tabs.children) t.classList.toggle('on', (t as HTMLElement).dataset.page === page);
+    PAGES.find(([id]) => id === page)![2](body, ctx);
+  };
+  for (const [id, label] of PAGES) {
+    const t = el('button', 'sheet-tab', tabs, label);
+    t.dataset.page = id;
+    t.addEventListener('click', () => {
+      page = id;
+      show();
+    });
   }
-  for (const m of s.moves) {
-    const row = el('div', 'sheet-move', info);
-    const top = el('div', 'move-top', row);
-    el('span', 'move-name', top, m.name);
-    const t = el('span', 'tag small', top, m.typeName);
-    t.style.color = m.typeColor;
-    t.style.borderColor = m.typeColor;
-    el('span', 'move-meta', top, `PP ${m.pp}/${m.maxPp}`);
-    const acc = m.accuracy === null ? '—' : String(m.accuracy);
-    const power = m.power > 0 ? ` · potenza ${m.power}` : '';
-    el('div', 'move-text', row, `${m.text} · ${m.category}${power} · precisione ${acc}`);
-  }
-  if (s.nextMoves.length) {
-    const row = el('div', 'sheet-move locked', info);
-    const top = el('div', 'move-top', row);
-    top.append(icon('lock'));
-    el('span', 'move-name', top, 'Prossime mosse');
-    el('div', 'move-text', row, s.nextMoves.map((m) => `${m.name} (Lv. ${m.level})`).join(' · '));
-  }
-  el('h3', '', info, 'Mosse in mare');
-  for (const m of s.seaMoves) {
-    const row = el('div', `sheet-move${m.unlocked ? '' : ' locked'}`, info);
-    const top = el('div', 'move-top', row);
-    if (!m.unlocked) top.append(icon('lock'));
-    el('span', 'move-name', top, m.name);
-    el('span', 'move-meta', top, m.unlocked ? 'quando la cavalchi' : `livello ${m.unlockLevel}`);
-    el('div', 'move-text', row, m.text);
-  }
-  if (s.fieldMove) {
-    // the move used in the sea, not in battle: it breaks ancient bones
-    const f = s.fieldMove;
-    const row = el('div', `sheet-move${f.unlocked ? '' : ' locked'}`, info);
-    const top = el('div', 'move-top', row);
-    if (!f.unlocked) top.append(icon('lock'));
-    el('span', 'move-name', top, f.name);
-    el('span', 'tag small', top, 'Nel mare');
-    el('span', 'move-meta', top, f.unlocked ? 'pronta' : `livello ${f.level}`);
-    el('div', 'move-text', row, 'Rompe le ossa antiche: chiamala vicino alle ossa e premi Sfonda.');
-  }
-  el('h3', '', info, 'Habitat e carattere');
-  el('p', '', info, `${s.habitat}. ${s.trait}.`);
+  show();
   return close;
 }

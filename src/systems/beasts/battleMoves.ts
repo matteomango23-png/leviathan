@@ -70,3 +70,14 @@ export function learnMove(b: { known: string[]; ppUsed?: number[] }, move: strin
   if (b.ppUsed) b.ppUsed[forget] = 0;
   return true;
 }
+
+/** Two of its moves change place (like Pokémon's summary); their PP go with them. */
+export function swapMoves(b: { known: string[]; ppUsed?: number[] }, i: number, j: number): boolean {
+  if (i < 0 || j < 0 || i >= b.known.length || j >= b.known.length || i === j) return false;
+  [b.known[i], b.known[j]] = [b.known[j]!, b.known[i]!];
+  if (b.ppUsed) {
+    while (b.ppUsed.length < b.known.length) b.ppUsed.push(0);
+    [b.ppUsed[i], b.ppUsed[j]] = [b.ppUsed[j]!, b.ppUsed[i]!];
+  }
+  return true;
+}

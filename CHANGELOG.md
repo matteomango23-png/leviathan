@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.28.0 — Scheda come Pokémon ed evoluzione annullabile (3 ottobre 2026)
+
+- **La scheda di una bestia ha 3 pagine**, come il Riassunto di Pokémon:
+  - **Info:** tipo, ruolo, livello, barra dell'esperienza, punti esperienza totali e quanti ne mancano al livello dopo, dove e a che livello l'hai domata, la sua linea evolutiva, lunghezza e habitat;
+  - **Statistiche:** le sei statistiche con le barre colorate;
+  - **Mosse:** le 4 mosse di battaglia (tocca una mossa per vederne tutti i dettagli), con le frecce per cambiarne l'ordine, le prossime mosse, il Ricordamosse al porto e le mosse in mare.
+- **Evoluzione come Pokémon:** quando una bestia raggiunge il livello, a fine battaglia compare la schermata "Cosa? Zanna si sta evolvendo!" con la sagoma che lampeggia. Con **Annulla** la fermi: ci riprova al livello successivo. Se sale di livello fuori dalla battaglia, l'evoluzione aspetta nella sua scheda (pulsante "Evolvi").
+- Dopo l'evoluzione, se impara una mossa nuova e ne ha già 4, si apre subito la scelta.
+
 ## v0.27.0 — Livello massimo 100 (3 ottobre 2026)
 
 - **Le bestie arrivano al livello 100**, come in Pokémon (prima 50). Le statistiche al 100 sono il doppio di quelle al 50.

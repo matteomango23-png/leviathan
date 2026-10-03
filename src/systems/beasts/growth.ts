@@ -56,24 +56,59 @@ function levelUp(b: TeamBeast, events: GameEvent[]): void {
   b.level++;
   const final = finalFormAt(b.form, b.level);
   if (final) b.form = final;
-  // a starter line evolves, like Pokémon: same beast, new species (it keeps its moves)
-  const sp = speciesOf(b.form);
-  const from = sp.name;
-  const evolves = sp.evolvesTo && sp.evolveLevel !== undefined && b.level >= sp.evolveLevel;
-  if (evolves) b.form = { ...b.form, speciesId: sp.evolvesTo! };
   b.hp = Math.min(maxHpOf(b), b.hp + (maxHpOf(b) - before));
-  // its new battle moves, like Pokémon: into a free slot, or waiting for you to choose what to forget
+  const learned = learnNewMoves(b, false);
+  events.push({ type: 'levelUp', uid: b.uid, level: b.level, move: learned.join(', ') || undefined });
+  if (final) events.push({ type: 'finalForm', uid: b.uid });
+  // like Pokémon, it evolves after the battle (or from its sheet), and you can stop it: it tries again next level
+  if (canEvolve(b) && !b.evolveReady) {
+    b.evolveReady = true;
+    events.push({ type: 'evolveReady', uid: b.uid });
+  }
+  for (const id of b.pendingMoves ?? [])
+    events.push({ type: 'moveWaiting', uid: b.uid, move: BATTLE_MOVE_BY_ID[id]!.name });
+}
+
+/** Its new battle moves at its level (and its evolution moves): into a free slot, or waiting for your choice. */
+function learnNewMoves(b: TeamBeast, evolved: boolean): string[] {
   const learned: string[] = [];
-  for (const id of movesLearnedAt(b.form, b.level, !!evolves)) {
+  for (const id of movesLearnedAt(b.form, b.level, evolved)) {
     if (b.known.includes(id)) continue;
     if (learnMove(b, id)) learned.push(BATTLE_MOVE_BY_ID[id]!.name);
     else if (!b.pendingMoves?.includes(id)) (b.pendingMoves ??= []).push(id);
   }
-  events.push({ type: 'levelUp', uid: b.uid, level: b.level, move: learned.join(', ') || undefined });
-  if (final) events.push({ type: 'finalForm', uid: b.uid });
-  if (evolves) events.push({ type: 'evolved', uid: b.uid, from, fromId: sp.id });
+  return learned;
+}
+
+/** Its species evolves at its level (a starter line, pesce palla, pesce napoleone…). */
+export function canEvolve(b: TeamBeast): boolean {
+  const sp = speciesOf(b.form);
+  return !!sp.evolvesTo && sp.evolveLevel !== undefined && b.level >= sp.evolveLevel;
+}
+
+/** What it would become. */
+export const evolvesInto = (b: TeamBeast): BeastForm | null =>
+  canEvolve(b) ? { ...b.form, speciesId: speciesOf(b.form).evolvesTo! } : null;
+
+/** It evolves, like Pokémon: same beast, new species; it keeps its moves and learns the new stage's. */
+export function evolve(b: TeamBeast, events: GameEvent[]): boolean {
+  const next = evolvesInto(b);
+  b.evolveReady = undefined;
+  if (!next) return false;
+  const sp = speciesOf(b.form);
+  const before = maxHpOf(b);
+  b.form = next;
+  b.hp = Math.min(maxHpOf(b), b.hp + (maxHpOf(b) - before));
+  learnNewMoves(b, true);
+  events.push({ type: 'evolved', uid: b.uid, from: sp.name, fromId: sp.id });
   for (const id of b.pendingMoves ?? [])
     events.push({ type: 'moveWaiting', uid: b.uid, move: BATTLE_MOVE_BY_ID[id]!.name });
+  return true;
+}
+
+/** You stopped it (Pokémon's B button): it will try again at its next level. */
+export function stopEvolution(b: TeamBeast): void {
+  b.evolveReady = undefined;
 }
 
 /** Adds experience; levels up as many times as it can. Returns the levels gained. */
@@ -116,3 +151,6 @@ export function raiseLevel(b: TeamBeast, levels: number, events: GameEvent[]): n
   b.xp = Math.min(b.xp, xpToNext(b));
   return n;
 }
+
+/** All the experience it has gathered, like Pokémon's "Punti Esp." (its group's curve at its level + the rest). */
+export const totalXp = (b: TeamBeast): number => GROWTH_CURVES[growthOf(b.form)](b.level) + Math.floor(b.xp);

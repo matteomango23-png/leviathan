@@ -33,6 +33,8 @@ export interface SavedBeast {
   ppUsed?: number[]; // v13: PP its moves have spent (same order as known)
   known?: string[]; // its battle moves (0.24); missing: the last 4 it learned by its level
   pendingMoves?: string[]; // moves waiting for you to choose what to forget
+  evolveReady?: boolean; // it evolves after the battle or from its sheet
+  met?: { level: number; place: string }; // where you tamed it
 }
 
 export interface SaveData {
@@ -304,10 +306,17 @@ function validateBeast(raw: unknown): SavedBeast {
       : {}),
     ...(isStringList(raw.known) && raw.known.length ? { known: raw.known } : {}),
     ...(isStringList(raw.pendingMoves) && raw.pendingMoves.length ? { pendingMoves: raw.pendingMoves } : {}),
+    ...(raw.evolveReady === true ? { evolveReady: true } : {}),
+    ...(isMet(raw.met) ? { met: { level: raw.met.level, place: raw.met.place } } : {}),
   };
 }
 
 const isStringList = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
+const isMet = (v: unknown): v is { level: number; place: string } =>
+  !!v &&
+  typeof v === 'object' &&
+  Number.isInteger((v as { level?: unknown }).level) &&
+  typeof (v as { place?: unknown }).place === 'string';
 
 /** Text (from storage or an imported file) → a valid, up-to-date save. Throws SaveError. */
 export function parseSave(text: string): SaveData {

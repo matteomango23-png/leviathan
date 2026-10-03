@@ -34,6 +34,7 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
           beast: b,
           remember: editable, // the Ricordamosse is at the port
           onChange: draw,
+          events: g.story.pending,
         });
       });
       const img = el('img', '', row);

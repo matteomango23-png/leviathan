@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { SPECIES, UNIQUE_VARIANTS } from '../src/data/species';
 import { ART_KEYS, BATTLE_ART_KEYS, SPRITE_KEYS } from '../src/data/sprites.generated';
-import { raiseLevel } from '../src/systems/beasts/growth';
+import { evolve, raiseLevel } from '../src/systems/beasts/growth';
 import { makeTeamBeast, movesFor } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 
@@ -18,7 +18,13 @@ describe('evolutions of the sea', () => {
       const moves = movesFor(b).map((m) => m.move.id);
       const events: GameEvent[] = [];
       raiseLevel(b, speciesOf(from).evolveLevel! - b.level, events);
+      // like Pokémon it is ready, and evolves when you let it
+      expect(b.form.speciesId).toBe(from);
+      expect(b.evolveReady).toBe(true);
+      expect(events.some((e) => e.type === 'evolveReady')).toBe(true);
+      evolve(b, events);
       expect(b.form.speciesId).toBe(to);
+      expect(b.evolveReady).toBeUndefined();
       expect(events.some((e) => e.type === 'evolved')).toBe(true);
       expect(movesFor(b).map((m) => m.move.id)).toEqual(moves);
       expect(speciesOf(to).lengthM).toBeGreaterThan(speciesOf(from).lengthM);

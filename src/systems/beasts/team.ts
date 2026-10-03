@@ -2,6 +2,7 @@
 import { TEAM_RULES } from '../../data/beasts';
 import { movesOf, type MoveDef } from '../../data/moves';
 import { PROGRESSION } from '../../data/rules';
+import type { StatusId } from '../../data/moveBattle';
 import { defaultMoves } from './battleMoves';
 import { formStats, type BeastForm, moveSpeciesOf } from './forms';
 
@@ -22,6 +23,12 @@ export interface TeamBeast {
   ppUsed?: number[];
   /** Moves it could learn but has no room for: you choose what to forget (or give them up). */
   pendingMoves?: string[];
+  /** Its lasting condition: like Pokémon it stays after the battle, until cured (items, port, sanctuary). */
+  status?: StatusId;
+  /** It reached its evolution level: it evolves after the battle, or from its sheet (you can stop it). */
+  evolveReady?: boolean;
+  /** Where and at what level you tamed it (shown in its sheet). */
+  met?: { level: number; place: string };
 }
 
 export function maxHpOf(b: TeamBeast): number {

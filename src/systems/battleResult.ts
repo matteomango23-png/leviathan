@@ -1,6 +1,7 @@
 // After a battle (scenes/BattleScene.ts): health back to the team, experience, a tamed beast into the team,
 // the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to the sanctuary if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
+import { REGIONS } from '../data/world';
 import { ROAM } from '../data/beasts';
 import { seedFrom } from '../data/stats';
 import { isLegend } from './beasts/legends';
@@ -69,6 +70,9 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
       makeTeamBeast(`b${g.beasts.nextUid++}`, { ...o.foe.form }, o.foe.level, true),
     );
     b.hp = Math.max(1, Math.min(maxHpOf(b), o.foe.hp));
+    // where you met it, for its sheet (its home waters)
+    const region = speciesOf(o.foe.form).region;
+    b.met = { level: o.foe.level, place: REGIONS.find((r) => r.id === region)?.name ?? region };
     g.seen.add(formKey(o.foe.form));
     events.push({ type: 'tamed', uid: b.uid, toTeam: b.inTeam });
   }
