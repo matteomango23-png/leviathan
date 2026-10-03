@@ -9,7 +9,7 @@ import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
-import { chooseForget, openRemember } from './moveChooser';
+import { learnScreen, rememberScreen } from './movePanel';
 
 export interface SheetExtra {
   hp?: number;
@@ -119,11 +119,11 @@ export function openBeastSheet(
         info,
         `Nuova mossa: ${BATTLE_MOVE_BY_ID[id]?.name ?? id} · scegli`,
       );
-      btn.addEventListener('click', () => chooseForget(parent, b, id, again));
+      btn.addEventListener('click', () => learnScreen(parent, b, id, again));
     }
     if (extra.remember) {
       const btn = el('button', 'menu-btn sheet-learn', info, 'Ricordamosse');
-      btn.addEventListener('click', () => openRemember(parent, b, again));
+      btn.addEventListener('click', () => rememberScreen(parent, b, again));
     }
   }
   for (const m of s.moves) {

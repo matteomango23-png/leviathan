@@ -4,20 +4,17 @@
 import { BATTLE } from '../data/battle';
 import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
-import { TYPES, type MoveTypeId } from '../data/rules';
 import { ITEMS } from '../data/world';
-import { CATEGORY_NAMES, STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
+import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
 import type { Action, BattleState } from '../systems/battle/battle';
-import { canUse, named, type Fighter } from '../systems/battle/fighter';
+import { canUse, effectiveness, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
 import { rarityTier } from '../systems/battle/stage';
 import './battle.css';
 import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
 import { ICONS } from './icons';
-
-const typeColor = (type: MoveTypeId): string => (type === 'variabile' ? '#d9e4e6' : TYPES[type].color);
-const typeName = (type: MoveTypeId): string => (type === 'variabile' ? 'Variabile' : TYPES[type].name);
+import { moveDetail, typeColor, typeName } from './movePanel';
 
 class InfoBox {
   private readonly name: HTMLDivElement;
@@ -92,7 +89,6 @@ export class BattleUi {
   private readonly msg: HTMLDivElement;
   private readonly msgText: HTMLSpanElement;
   private readonly menu: HTMLDivElement;
-  /** The SCHIVA bar, shown when the wild beast attacks. */
   private advance: (() => void) | null = null;
 
   constructor(parent: HTMLElement) {
@@ -182,16 +178,37 @@ export class BattleUi {
       };
       const moves = (): void => {
         const m = this.page('moves');
+        // Info on: tapping a move shows its details instead of using it (like the recent Pokémon)
+        let info = false;
+        let detail: HTMLDivElement | null = null;
         const grid = el('div', 'bmoves', m);
         me.moves.forEach((bm, i) => {
-          const b = this.button(grid, '', () => done({ kind: 'move', index: i }), 'bmove');
+          const b = this.button(
+            grid,
+            '',
+            () => {
+              if (!info) return done({ kind: 'move', index: i });
+              detail?.remove();
+              detail = moveDetail(m, bm.move, { left: bm.pp, max: bm.maxPp });
+              detail.classList.add('bmove-detail');
+              m.prepend(detail);
+            },
+            'bmove',
+          );
           b.style.setProperty('--tc', typeColor(bm.move.type));
           b.append(typeIcon(bm.move.type, '#fff'));
           const text = el('span', 'bmove-text', b);
           el('span', 'bmove-name', text, bm.move.name);
-          const r = bm.move;
-          const info = `${r.power ? `potenza ${r.power}` : CATEGORY_NAMES.stato} · PP ${bm.pp}/${bm.maxPp}`;
-          el('span', 'bmove-info', text, info);
+          el('span', 'bmove-info', text, `${typeName(bm.move.type)} · PP ${bm.pp}/${bm.maxPp}`);
+          // like Pokémon (gen 7+): how well it works on the wild beast in front of you
+          const eff = bm.move.power > 0 ? effectiveness(bm.move, s.foe) : 1;
+          if (eff !== 1)
+            el(
+              'span',
+              `bmove-eff ${eff > 1 ? 'super' : 'weak'}`,
+              text,
+              eff > 1 ? 'Superefficace' : 'Poco efficace',
+            );
           b.disabled = !canUse(bm);
         });
         // no PP left anywhere: the last resort, like Pokémon
@@ -202,6 +219,19 @@ export class BattleUi {
           el('span', 'bmove-name', text, STRUGGLE.name);
           el('span', 'bmove-info', text, 'senza PP: si fa male anche lei');
         }
+        const toggle = this.button(
+          m,
+          'Info',
+          () => {
+            info = !info;
+            toggle.classList.toggle('on', info);
+            if (!info) {
+              detail?.remove();
+              detail = null;
+            }
+          },
+          'bbtn-back bbtn-info',
+        );
         this.back(m, main);
       };
       const bag = (): void => {

@@ -66,13 +66,6 @@ export const BATTLE_TEXT = {
   noEffect: 'Non ha effetto…',
   boostAll: (b: Named): string => `Tutte le statistiche di ${b.name} aumentano!`,
   haze: 'L’acqua si calma: tutte le statistiche tornano normali.',
-  // learning moves, like Pokémon
-  learned: (b: Named, move: string): string => `${b.name} impara ${move}!`,
-  wantsToLearn: (b: Named, move: string): string =>
-    `${b.name} vuole imparare ${move}, ma conosce già 4 mosse. Quale deve dimenticare?`,
-  forgot: (b: Named, old: string, move: string): string => `${b.name} dimentica ${old} e impara ${move}!`,
-  gaveUp: (b: Named, move: string): string => `${b.name} non impara ${move}.`,
-  giveUp: 'Non imparare',
   recoil: (b: Named): string => `${b.name} si fa male nello sforzo!`,
   gotStatus: {
     avvelenato: (b: Named): string => `${b.name} è avvelenat${o(b)}!`,
