@@ -1,4 +1,5 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
+import { FEMININE_SPECIES } from '../data/battleText';
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { PROGRESSION } from '../data/rules';
 import { SUB_TEXT } from '../data/submarine';
@@ -144,6 +145,15 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       const waiting = b?.pendingMoves?.some((id) => BATTLE_MOVE_BY_ID[id]?.name === e.move);
       return b && waiting
         ? [`${formName(b.form)} vuole imparare ${e.move}: apri la sua scheda in Squadra per scegliere.`, 4]
+        : null;
+    }
+    case 'evolveReady': {
+      const b = tamed(e.uid);
+      return b && b.evolveReady
+        ? [
+            `${formName(b.form)} è pront${FEMININE_SPECIES.includes(b.form.speciesId) ? 'a' : 'o'} a evolversi: apri la sua scheda in Squadra.`,
+            4,
+          ]
         : null;
     }
     case 'evolved': {

@@ -270,7 +270,7 @@ export class BattleScene extends Phaser.Scene {
     const before = snapshotTeam(g.beasts.team);
     g.story.pending.push(...finishBattle(g, battleOutcome(s, this.setupInGame.wildId)));
     // like Pokémon: the level-up panels, then a fifth move to learn
-    await afterBattleScreens(document.body, g.beasts.team, before);
+    await afterBattleScreens(document.body, g.beasts.team, before, g.story.pending);
     this.ui.result(title, lines, BATTLE_TEXT.back, () => this.backToSea());
   }
 

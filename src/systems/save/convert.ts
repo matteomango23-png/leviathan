@@ -45,6 +45,8 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     }
     const pending = (s.pendingMoves ?? []).filter((id) => BATTLE_MOVE_BY_ID[id] && !b.known.includes(id));
     if (pending.length) b.pendingMoves = pending;
+    if (s.evolveReady) b.evolveReady = true;
+    if (s.met) b.met = { ...s.met };
     return b;
   });
 }
@@ -107,6 +109,8 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     ...(b.ppUsed ? { ppUsed: [...b.ppUsed] } : {}),
     known: [...b.known],
     ...(b.pendingMoves?.length ? { pendingMoves: [...b.pendingMoves] } : {}),
+    ...(b.evolveReady ? { evolveReady: true } : {}),
+    ...(b.met ? { met: { ...b.met } } : {}),
   }));
   s.sanctuary = g.sanctuaries.current;
   s.brokenTiles = [...new Set(g.brokenTiles)];

@@ -61,6 +61,8 @@ export type GameEvent =
   | { type: 'levelUp'; uid: string; level: number; move?: string }
   /** It could learn a move but knows 4 already: you choose in its sheet. */
   | { type: 'moveWaiting'; uid: string; move: string }
+  /** It can evolve: after the battle, or from its sheet. */
+  | { type: 'evolveReady'; uid: string }
   | { type: 'evolved'; uid: string; from: string; fromId: string } // a starter became its next stage
   | { type: 'finalForm'; uid: string }
   | { type: 'beastFed'; uid: string; food: number }

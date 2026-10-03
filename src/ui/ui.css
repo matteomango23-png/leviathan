@@ -1457,3 +1457,124 @@ img.albino-art {
 .sheet-learn {
   margin: 4px 0;
 }
+
+/* the sheet's pages, like Pokémon's summary (ui/sheetPages.ts) */
+.sheet-tabs {
+  display: flex;
+  gap: 4px;
+}
+.sheet-tab {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid rgba(176, 138, 74, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: auto;
+}
+.sheet-tab.on {
+  background: var(--lamp);
+  border-color: var(--lamp);
+  color: #02070c;
+}
+.sheet-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sinfo-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+}
+.sinfo-label {
+  color: var(--muted);
+}
+.sinfo-value {
+  color: var(--ink);
+  font-weight: 700;
+  text-align: right;
+}
+.sstat {
+  display: grid;
+  grid-template-columns: 110px 64px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.sstat-label {
+  color: var(--muted);
+}
+.sstat-value {
+  font-weight: 800;
+  color: var(--ink);
+  text-align: right;
+}
+.sstat-track {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.sstat-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--lamp);
+}
+.sstat-fill.hp {
+  background: #6fdc7a;
+}
+.sstat-fill.atk {
+  background: #f0a35c;
+}
+.sstat-fill.def {
+  background: #f4d35e;
+}
+.sstat-fill.spa {
+  background: #6fb8f0;
+}
+.sstat-fill.spd {
+  background: #8fd18a;
+}
+.sstat-fill.spe {
+  background: #f08fb8;
+}
+.smove {
+  --tc: #888;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border-left: 4px solid var(--tc);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.smove-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.smove-top .move-name {
+  flex: 1;
+}
+.tag.status-avvelenato,
+.tag.status-ferito,
+.tag.status-paralizzato,
+.tag.status-stordito,
+.tag.status-congelato {
+  color: #ffb3a8;
+  border-color: #ffb3a8;
+}

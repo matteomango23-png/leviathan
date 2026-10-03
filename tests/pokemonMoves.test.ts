@@ -8,7 +8,7 @@ import { createBattle, endRound, useMove } from '../src/systems/battle/battle';
 import { makeFighter, rollHits, type Fighter } from '../src/systems/battle/fighter';
 import { checkTurn, effectiveStat, giveStatus, stageMult } from '../src/systems/battle/status';
 import { decideMove, defaultMoves, rememberable } from '../src/systems/beasts/battleMoves';
-import { gainXp, xpToNext } from '../src/systems/beasts/growth';
+import { evolve, gainXp, xpToNext } from '../src/systems/beasts/growth';
 import { makeTeamBeast } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 
@@ -68,7 +68,7 @@ describe('learning moves', () => {
   });
 
   it('with 4 moves it waits for you: forget one, or give it up', () => {
-    const b = makeTeamBeast('b1', { speciesId: 'zanna', variant: 'comune' }, 16, true);
+    const b = makeTeamBeast('b1', { speciesId: 'zanna', variant: 'comune' }, 17, true); // at 18: Fendente
     expect(b.known).toHaveLength(4);
     const events: GameEvent[] = [];
     gainXp(b, xpToNext(b), events);
@@ -88,6 +88,7 @@ describe('learning moves', () => {
     const b = makeTeamBeast('b1', { speciesId: 'zanna', variant: 'comune' }, 15, true);
     b.known = ['spinta'];
     gainXp(b, xpToNext(b), []);
+    evolve(b, []);
     expect(b.form.speciesId).toBe('squarcio');
     expect(b.known).toContain('zanna_lunga');
   });

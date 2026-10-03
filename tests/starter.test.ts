@@ -2,7 +2,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { STARTER } from '../src/data/story';
 import { emptyInput } from '../src/systems/input';
-import { fishXp, raiseLevel, xpBetween, xpReward } from '../src/systems/beasts/growth';
+import { evolve, fishXp, raiseLevel, stopEvolution, xpBetween, xpReward } from '../src/systems/beasts/growth';
 import { movesFor } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave } from '../src/systems/game';
@@ -63,10 +63,17 @@ describe('evolutions', () => {
     const moves = movesFor(b).map((m) => m.move.id);
     const events: GameEvent[] = [];
     raiseLevel(b, 16 - b.level, events);
+    // stopped (Pokémon's B): it stays as it is and tries again at the next level
+    stopEvolution(b);
+    expect(b.form.speciesId).toBe('zanna');
+    raiseLevel(b, 1, events);
+    expect(b.evolveReady).toBe(true);
+    evolve(b, events);
     expect(b.form.speciesId).toBe('squarcio');
     expect(events).toContainEqual({ type: 'evolved', uid: b.uid, from: 'Zanna', fromId: 'zanna' });
     expect(movesFor(b).map((m) => m.move.id)).toEqual(moves);
     raiseLevel(b, 36 - b.level, events);
+    evolve(b, events);
     expect(b.form.speciesId).toBe('zannarossa');
   });
 

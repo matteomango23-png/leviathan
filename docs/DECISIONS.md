@@ -419,6 +419,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
 
+## 2026-10-03 — Scheda in 3 pagine ed evoluzione annullabile
+
+- Scheda come il Riassunto di Pokémon (`ui/sheetPages.ts`): Info, Statistiche, Mosse. Ordine delle mosse modificabile (`swapMoves`: i PP seguono la mossa). Punti esperienza totali = curva del gruppo al livello + resto (`totalXp`).
+- Evoluzione: al livello giusto la bestia diventa `evolveReady`; evolve a fine battaglia con la schermata (o dalla scheda, se è salita fuori dalla battaglia). Annullata, ci riprova al livello dopo (come il tasto B di Pokémon). Salvate `evolveReady` e `met` (dove l'hai domata: le acque di casa della specie).
+
 ## 2026-10-03 — Livello massimo 100
 
 - Il proprietario: "100". La formula delle statistiche (livello / 100), le curve di esperienza e le evoluzioni al 16 e al 36 sono quelle di Pokémon, pensate per 100.
