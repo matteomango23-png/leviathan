@@ -260,10 +260,13 @@ export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
 
 // ---- Base stats (tuning). Stat at level L = base * (1 + statGrowthPerLevel * (L-1)) * variant mult.
 export interface Stats { hp: number; bite: number; charge: number; defense: number; speed: number; }
+// Health and bite are ×10 since 3 ottobre 2026 (owner: "un livello 1 mi toglie 1/5 di vita"): with 10 health at
+// level 11 the smallest hit (1) was a fifth of it; now, like Pokémon, a scratch is 1 of ~100 (save v12 migrates).
+// A support bites 1.8 (was 1): its moves did almost nothing (owner, Guscio).
 const ROLE_BASE: Record<Role, Stats> = {
-  cavalcatura: { hp: 10, bite: 2.6, charge: 3, defense: 0.10, speed: 120 }, // bite 2.6 (was 2): a final form bites harder than its second stage
-  compagno:    { hp: 8,  bite: 3, charge: 2, defense: 0.10, speed: 105 },
-  supporto:    { hp: 8,  bite: 1, charge: 1, defense: 0.18, speed: 95 },
+  cavalcatura: { hp: 100, bite: 26, charge: 3, defense: 0.10, speed: 120 }, // bite 2.6 (was 2): a final form bites harder than its second stage
+  compagno:    { hp: 80,  bite: 30, charge: 2, defense: 0.10, speed: 105 },
+  supporto:    { hp: 80,  bite: 18, charge: 1, defense: 0.18, speed: 95 },
 };
 const RARITY_MULT: Record<Stars, number> = { 1: 0.8, 2: 0.9, 3: 1.0, 4: 1.15, 5: 1.35 };
 const SIZE_HP: Record<SizeClass, number> = { piccola: 0.8, media: 1.0, grande: 1.3, colossale: 1.7 };

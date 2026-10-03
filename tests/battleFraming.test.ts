@@ -36,8 +36,11 @@ function onScreen(side: Side, form: BeastForm, level: number, w: number, h: numb
   const b = box ?? cardBox();
   const p = placePicture(side, size, w, h, b);
   const P = BATTLE_STAGE.picture;
+  const pw = (b[2] - b[0]) * p.scale;
+  const ph = (Math.min(b[3], P.foot) - b[1]) * p.scale;
   return {
     size,
+    area: pw * ph,
     left: p.x + (b[0] - P.square / 2) * p.scale,
     right: p.x + (b[2] - P.square / 2) * p.scale,
     top: p.y + (b[1] - P.foot) * p.scale,
@@ -55,10 +58,21 @@ describe('battle framing', () => {
             const r = onScreen(side, form, level, screen.w, screen.h);
             const at = `${screen.name}, level ${level}`;
             const bob = BOB * screen.h;
-            expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(0);
-            expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(screen.w);
+            const F = BATTLE_STAGE.fit;
             expect(r.top - bob, `${at}: top edge`).toBeGreaterThanOrEqual(0);
-            expect(r.bottom - bob, `${at}: bottom edge`).toBeLessThanOrEqual(screen.h);
+            if (side === 'foe') {
+              // the wild one: whole, in its half
+              expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(F.foeLeft * screen.w - 1);
+              expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(screen.w);
+              expect(r.bottom - bob, `${at}: bottom edge`).toBeLessThanOrEqual(screen.h);
+            } else {
+              // yours, like Pokémon: head and back in view, in its half; the rest may leave the screen
+              expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(F.youRight * screen.w + 1);
+              expect(r.top, `${at}: top`).toBeGreaterThanOrEqual(F.youTop * screen.h - 1);
+              const vw = Math.min(r.right, screen.w) - Math.max(r.left, 0);
+              const vh = Math.min(r.bottom, screen.h) - Math.max(r.top, 0);
+              expect((vw * vh) / r.area, `${at}: visible`).toBeGreaterThan(0.3);
+            }
             const longest = Math.max(r.right - r.left, r.bottom - r.top);
             expect(longest, `${at}: big enough`).toBeGreaterThanOrEqual(MIN_LONGEST * screen.h);
           }

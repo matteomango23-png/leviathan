@@ -5,7 +5,7 @@
 export const BATTLE = {
   secondsPerTurn: 4, // a move's cooldown (seconds, moves.ts) becomes turns of recharge: round(cooldown / this)
   levelEdge: 0.08, // tuning: each level above the target adds 8% damage (each level below takes 8% off)
-  levelEdgeClamp: [0.5, 2] as [number, number], // …but never less than half or more than double
+  levelEdgeClamp: [0.3, 2] as [number, number], // …but never less than 0.3× or more than double (was 0.5: a level 1 hurt a level 11 too much)
   randomRange: [0.85, 1] as [number, number], // damage varies a little, like Pokémon
   critChance: 1 / 16,
   critMult: 1.5,
@@ -99,16 +99,30 @@ export const BATTLE_STAGE = {
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
-    foe: { x: 0.64, y: 0.5 },
+    foe: { x: 0.62, y: 0.5 }, // was 0.64 (owner: the hammerhead a little more to the left)
     you: { x: 0.35, y: 1.0 },
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
   /**
    * Every beast stays whole on screen: at least `margin` (share of the screen height) from every edge, also while
    * it bobs. A wild beast too tall for its place stands lower, down to `foeLowest`; if it still does not fit, or is
-   * too wide, it is drawn smaller.
+   * too wide (or would cover the other beast), it is drawn smaller.
    */
-  fit: { margin: 0.03, foeLowest: 0.97 },
+  fit: {
+    margin: 0.03,
+    foeLowest: 0.62, // was 0.97: a big crocodile stood on top of your beast (owner, 3 ottobre)
+    foeLeft: 0.46, // the wild one stays whole, right of this share of the width
+    /**
+     * Yours is placed like Pokémon (owner, 3 ottobre: "il mio animale quando è grosso mettilo più giù e più a sinistra,
+     * mi basta vedere un po' di schiena, le zampe davanti e la testa"): its right edge (the head, seen from behind)
+     * at most at youRight, its top at least youTop below the top of the screen; the rest may leave the screen at the
+     * bottom and on the left. A small one just stands at the bottom.
+     */
+    youRight: 0.46,
+    youTop: 0.4,
+    youMax: 1.5, // and it is never drawn bigger than this share of the screen height
+    youWide: 1.5, // …nor wider than this × the width left of youRight, or taller than this × the height under youTop
+  },
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
   /**

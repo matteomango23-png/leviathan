@@ -87,7 +87,8 @@ export function formLengthM(form: BeastForm, level = 1): number {
 
 /** Drawn length in world units: real ratio to the diver × RENDER.beastScaleBoost for readability. */
 export function formLengthUnits(form: BeastForm, level = 1): number {
-  return (formLengthM(form, level) / RENDER.diverLengthM) * DIVER.lengthUnits * RENDER.beastScaleBoost;
+  const m = Math.max(RENDER.minLengthM, formLengthM(form, level));
+  return (m / RENDER.diverLengthM) * DIVER.lengthUnits * RENDER.beastScaleBoost;
 }
 
 export function formStats(form: BeastForm, level: number): Stats {

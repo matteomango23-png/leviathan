@@ -33,6 +33,12 @@ export function lengthSpectrum(lengthM: number): number {
   return Math.min(1, Math.max(0, t));
 }
 
+/** Its size from its length alone, between BATTLE_STAGE.size.min and max (× its pictureMult). */
+export function spectrumSize(beast: StageBeast): number {
+  const S = BATTLE_STAGE.size;
+  return (S.min + (S.max - S.min) * lengthSpectrum(beast.lengthM)) * (beast.pictureMult ?? 1);
+}
+
 /** How much bigger a flat picture is drawn (a turtle from behind looks small at the same longest side). */
 function flatBoost(box: PictureBox | undefined): number {
   if (!box) return 1;
@@ -54,13 +60,19 @@ function reach(box: PictureBox) {
 
 /** The biggest size at which the picture stays whole on a screen `aspect` times wider than tall. */
 export function fitSize(side: Side, beast: StageBeast, aspect: number): number {
-  const { margin, foeLowest } = BATTLE_STAGE.fit;
-  const a = BATTLE_STAGE.anchors[side];
+  const { margin, foeLowest, foeLeft, youMax, youWide, youRight, youTop } = BATTLE_STAGE.fit;
   const r = reach(beast.box ?? cardBox());
-  const ground = side === 'foe' ? foeLowest : a.y;
+  // yours may be cut by the screen's edges (placePicture), like Pokémon, but not too much
+  if (side === 'you')
+    return Math.min(
+      youMax,
+      (youWide * youRight * aspect) / (r.left + r.right),
+      (youWide * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
+    );
+  const a = BATTLE_STAGE.anchors.foe;
   return Math.min(
-    (ground - BATTLE_STAGE.hover - margin) / r.up,
-    (a.x * aspect - margin) / r.left,
+    (foeLowest - BATTLE_STAGE.hover - margin) / r.up,
+    ((a.x - foeLeft) * aspect) / r.left,
     ((1 - a.x) * aspect - margin) / r.right,
   );
 }
@@ -72,8 +84,7 @@ export function fitSize(side: Side, beast: StageBeast, aspect: number): number {
  */
 export function battleSize(side: Side, beast: StageBeast, aspect: number): number {
   const S = BATTLE_STAGE.size;
-  const own = (S.min + (S.max - S.min) * lengthSpectrum(beast.lengthM)) * (beast.pictureMult ?? 1);
-  const size = own * flatBoost(beast.box) * (side === 'you' ? S.youCloser : S.foeDistance);
+  const size = spectrumSize(beast) * flatBoost(beast.box) * (side === 'you' ? S.youCloser : S.foeDistance);
   return Math.min(size, fitSize(side, beast, aspect));
 }
 
@@ -92,7 +103,8 @@ export function rarityTier(form: BeastForm): 0 | 1 | 2 {
 /**
  * Where a beast's picture goes on a screen of w × h pixels when its box is `size` of the screen height: the
  * point under the middle of its picture's bottom (its ground, minus the hover) and the picture's scale.
- * A wild beast too tall for its place stands lower (down to fit.foeLowest), so its head stays in.
+ * A wild beast too tall for its place stands lower (down to fit.foeLowest), so its head stays in; yours is placed
+ * like Pokémon (fit.youRight, fit.youTop).
  */
 export function placePicture(
   side: Side,
@@ -102,8 +114,16 @@ export function placePicture(
   box: PictureBox = cardBox(),
 ): { x: number; y: number; scale: number } {
   const a = BATTLE_STAGE.anchors[side];
-  const { margin, foeLowest } = BATTLE_STAGE.fit;
-  const needed = margin + BATTLE_STAGE.hover + reach(box).up * size;
-  const ground = side === 'foe' ? Math.min(foeLowest, Math.max(a.y, needed)) : a.y;
-  return { x: a.x * w, y: (ground - BATTLE_STAGE.hover) * h, scale: (size * h) / BATTLE_STAGE.picture.box };
+  const { margin, foeLowest, youRight, youTop } = BATTLE_STAGE.fit;
+  const r = reach(box);
+  const hover = BATTLE_STAGE.hover;
+  const scale = (size * h) / BATTLE_STAGE.picture.box;
+  if (side === 'you') {
+    // its top no higher than youTop (a big one sinks below the screen) and its right edge no further than youRight
+    const ground = Math.max(a.y, youTop + hover + r.up * size);
+    const x = Math.min(a.x * w, youRight * w - r.right * size * h);
+    return { x, y: (ground - hover) * h, scale };
+  }
+  const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + r.up * size));
+  return { x: a.x * w, y: (ground - hover) * h, scale };
 }

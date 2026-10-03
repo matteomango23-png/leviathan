@@ -73,6 +73,7 @@ export const TAMING = {
 export const RENDER = {
   diverLengthM: 2,        // the diver (with fins) is the size reference
   beastScaleBoost: 1.5,   // readability: beasts are drawn 1.5× their real ratio to the diver (as in the approved prova-realistica)
+  minLengthM: 1.3,        // tuning: smaller beasts are drawn this long anyway (owner: "pesce palla invisibile, troppo piccolo")
 };
 export const FINAL_FORM_SIZE_MULT = 1.5; // final form = 1.5 × standard length (replaces the growth multiplier at level 50)
 

@@ -166,7 +166,7 @@ describe('the submarine', () => {
     const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
     expect(back.sub).toMatchObject({ owned: true, x: 9000, y: 200, hull: 50, model: 'squalo_ferro' });
     expect(back.sub.models).toEqual(['batiscafo', 'squalo_ferro']);
-    expect(SAVE_VERSION).toBe(11);
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(11);
     const old = migrate({ game: 'leviatano', version: 10, boat: { x: 777 } }) as {
       sub: unknown;
       boat?: unknown;

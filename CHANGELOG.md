@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.20.0 — Battaglie più giuste (3 ottobre 2026)
+
+- **I livelli contano davvero:** una bestia di livello 1 graffia appena una di livello 11 (prima ne toglieva un quinto della vita); la tua di livello alto la batte in un paio di colpi.
+- **Numeri più grandi, come Pokémon:** vita e morso delle bestie sono dieci volte quelli di prima (Guscio a livello 11 ha circa 100 di vita, non 10). I salvataggi vengono convertiti da soli: le tue bestie restano ferite o sane come prima.
+- **Le bestie di supporto mordono più forte**, e la **Corazza viva** di Guscio ora fa anche danno.
+- **In battaglia come Pokémon:** la tua bestia sta in basso a sinistra, vista da dietro; se è grossa scende ed esce un po' dallo schermo (si vedono testa, schiena e zampe davanti). Quella selvatica sta intera sulla sua pedana in alto a destra. Le due non si coprono più, qualunque sia l'animale.
+- **Le bestie piccole si vedono meglio nel mare:** pesce palla, pesce leone e simili sono disegnati almeno grandi come un sub piccolo.
+
 ## v0.19.1 — Porto e scelta del compagno (3 ottobre 2026)
 
 - **Scelta del compagno:** le tre carte sono allineate, con l'animale intero e centrato nello stesso riquadro.
