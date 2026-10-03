@@ -178,7 +178,8 @@ export const TEAM_RULES = {
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   /** Your beast turns around like a real one seen from the side: nose up (or down) through the vertical and back. */
-  loopSeconds: 0.75,
+  loopSeconds: 1, // owner, 3 ottobre: the turn looked strange (was 0.75)
+  loopPitchRate: 10, // how fast it leans into the loop (was 18)
   /** Your beast leans into the way it swims, up to nearly vertical when you dive straight down (radians). */
   pitchMax: 1.25,
   accelMult: 1.7, // riding: acceleration × the beast's speed

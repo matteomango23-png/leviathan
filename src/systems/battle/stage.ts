@@ -11,6 +11,8 @@ export interface StageBeast {
   giant: boolean;
   /** BATTLE_STAGE.pictureMult of its species (1 if none). */
   pictureMult?: number;
+  /** How flat its picture is (BATTLE_ART_FLAT, 1 = as tall as wide). */
+  flat?: number;
 }
 
 /**
@@ -23,7 +25,9 @@ export function battleSizes(you: StageBeast, foe: StageBeast): Record<Side, numb
   const longest = Math.max(you.lengthM, foe.lengthM, 0.1);
   const one = (b: StageBeast): number => {
     const rel = S.standard * Math.pow(Math.max(0.1, b.lengthM) / longest, S.exponent);
-    return Math.min(S.max, Math.max(b.giant ? S.giant : S.min, rel) * (b.pictureMult ?? 1));
+    const F = BATTLE_STAGE.flat;
+    const flat = Math.min(F.max, Math.pow(b.flat ?? 1, F.exponent));
+    return Math.min(S.max, Math.max(b.giant ? S.giant : S.min, rel) * (b.pictureMult ?? 1) * flat);
   };
   return { you: Math.min(S.max, one(you) * S.youCloser), foe: one(foe) * S.foeDistance };
 }
