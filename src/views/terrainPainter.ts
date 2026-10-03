@@ -76,7 +76,8 @@ function drawCorals(g: CanvasRenderingContext2D, map: TileMap, x0: number, y0: n
       const y = ty * T;
       const biome = biomeAt(x);
       const far = biome && biome.corals.colors.length ? { ...biome.corals, maxY: Infinity } : null;
-      const reef = !!far || (x > CORALS.reef.xMin && x < CORALS.reef.xMax && y < CORALS.reef.maxY);
+      const patch = CORALS.patches.some((p) => x > p.x0 && x < p.x1 && y < p.maxY);
+      const reef = !!far || patch || (x > CORALS.reef.xMin && x < CORALS.reef.xMax && y < CORALS.reef.maxY);
       const set = far
         ? far
         : reef

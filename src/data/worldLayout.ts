@@ -286,6 +286,15 @@ export const SARDINE_SCHOOLS: SchoolDef[] = [
   { x: east(4200), y: 130, roam: SEA_ROAM },
   { x: east(4620), y: 260, roam: SEA_ROAM },
   { x: east(4950), y: 160, roam: SEA_ROAM },
+  // the first 30 m full of life (owner, 3 ottobre)
+  { x: bay(300), y: 60, roam: BAY_ROAM },
+  { x: bay(800), y: 80, roam: BAY_ROAM },
+  { x: bay(1250), y: 70, roam: BAY_ROAM },
+  { x: bay(1700), y: 90, roam: BAY_ROAM },
+  { x: east(2600), y: 70, roam: SEA_ROAM },
+  { x: east(3150), y: 60, roam: SEA_ROAM },
+  { x: east(3700), y: 80, roam: SEA_ROAM },
+  { x: east(4400), y: 70, roam: SEA_ROAM },
 ];
 
 /** Kelp grows on rock tops above these depths (tuning). */
@@ -300,4 +309,11 @@ export const CORALS = {
   reef: { xMin: east(2460), xMax: east(4020), maxY: 420, chance: 0.55, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
   shallow: { maxY: 420, chance: 0.14, colors: ['#8c3b3b', '#a67c3d', '#b9ab8a'] },
   deep: { maxY: 1050, chance: 0.14, colors: ['#3b5f66', '#5a4a6e', '#6e7f7a'] },
+  /** Small bright reefs in shallow water, with coloured fish around them (owner, 3 ottobre: "qualche barriera
+   *  corallina con pesci colorati"): rock tops above maxY between x0 and x1 get the reef's corals. */
+  patches: [
+    { x0: 380, x1: 1060, maxY: 230 }, // off the beach of Portofosco, 10–30 m deep
+    { x0: east(3140), x1: east(3220), maxY: 260 }, // the shallow tops of the Barriera Rossa
+    { x0: east(3620), x1: east(3790), maxY: 270 },
+  ],
 };

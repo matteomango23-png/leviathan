@@ -2,6 +2,7 @@
 // endless) take, each time they come, a species of the stretch you are in and a level from its kind and its
 // distance from the coast; a few sardine schools follow you out there (left far behind, they are moved ahead).
 import { ENDLESS } from '../data/endless';
+import { SPECIES_DEPTH } from '../data/beasts';
 import { SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { biomeAt, endlessFloor, kmFromCoast, stretchAt, ventAt } from './world/endless';
@@ -17,13 +18,22 @@ import type { Rng } from './math';
  */
 export function prepareEndlessSpawn(
   w: WildBeast,
-  diver: { x: number },
+  diver: { x: number; y?: number },
   rng: Rng,
   lured: string[] = [],
 ): boolean {
   const b = biomeAt(diver.x);
   if (!b) return false;
-  const entries = Object.entries(b.beasts).map(([id, n]) => [id, lured.includes(id) ? n * 6 : n] as const);
+  // only the species that live at your depth (SPECIES_DEPTH: deep ones in the trenches, shallow ones above)
+  const depthM = Math.max(0, ((diver.y ?? WORLD.surfaceY) - WORLD.surfaceY) / WORLD.unitsPerMetre);
+  const fits = (id: string): boolean => {
+    const z = SPECIES_DEPTH[id];
+    return !z || ((z.minM === undefined || depthM >= z.minM) && (z.maxM === undefined || depthM <= z.maxM));
+  };
+  const entries = Object.entries(b.beasts)
+    .filter(([id]) => fits(id))
+    .map(([id, n]) => [id, lured.includes(id) ? n * 6 : n] as const);
+  if (!entries.length) return false;
   const total = entries.reduce((a, [, n]) => a + n, 0);
   let r = rng() * total;
   let speciesId = entries[0]![0];
@@ -43,7 +53,11 @@ export function prepareEndlessSpawn(
     endlessFloor(x1 - 200),
   );
   const lv = Math.round(b.baseLevel + ENDLESS.levelsPerKm * kmFromCoast(diver.x));
-  w.spawn = { ...w.spawn, speciesId, area: [x0, WORLD.surfaceY + 20, x1, floor], level: [lv, lv + 3] };
+  const z = SPECIES_DEPTH[speciesId];
+  const top = z?.minM !== undefined ? WORLD.surfaceY + z.minM * WORLD.unitsPerMetre : WORLD.surfaceY + 20;
+  const bottom =
+    z?.maxM !== undefined ? Math.min(floor, WORLD.surfaceY + z.maxM * WORLD.unitsPerMetre) : floor;
+  w.spawn = { ...w.spawn, speciesId, area: [x0, top, x1, Math.max(top + 40, bottom)], level: [lv, lv + 3] };
   return true;
 }
 

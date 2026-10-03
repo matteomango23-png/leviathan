@@ -51,6 +51,12 @@ const BAY_HIGH: [number, number, number, number] = [LAYOUT.shoreX + 200, 40, bay
 const REEF: [number, number, number, number] = [east(2480), 40, east(4000), 420];
 const FOREST: [number, number, number, number] = [east(4040), 40, east(5200), 520];
 const ICY: [number, number, number, number] = [east(5240), 60, ENDLESS.startX - 40, 420];
+const SHALLOW_BAY: [number, number, number, number] = [LAYOUT.bay.x0, 40, bay(1900), 200]; // the first 30 m
+const BEACH_REEF: [number, number, number, number] = [380, 40, 1300, 220]; // the coral reef off the beach
+const SHALLOW_REEF: [number, number, number, number] = [east(2480), 40, east(4000), 200];
+// the abysses (owner, 3 ottobre: "sono stato in un abisso ed era totalmente vuoto")
+const ABYSS_BAY: [number, number, number, number] = [bay(150), 1150, bay(1650), 1500]; // under the bone wall
+const ABYSS_EAST: [number, number, number, number] = [east(4150), 1150, east(5800), 1480]; // under the eastern shafts
 export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'barracuda', area: [LAYOUT.shoreX + 300, 50, bay(1900), 340], respawnSeconds: [12, 30] },
   { speciesId: 'barracuda', area: BAY, respawnSeconds: [15, 35] },
@@ -94,6 +100,51 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'tonno', area: REEF, respawnSeconds: [25, 50], level: [7, 9] },
   { speciesId: 'pesce_luna', area: FOREST, respawnSeconds: [40, 80], level: [10, 12] },
   { speciesId: 'scorfano', area: FOREST, respawnSeconds: [25, 50], level: [10, 12] },
+  // more life near the surface (owner, 3 ottobre; pictures: lotto Gemini 2)
+  { speciesId: 'cernia', area: BEACH_REEF, respawnSeconds: [15, 30], level: [2, 4] },
+  { speciesId: 'pastinaca', area: BEACH_REEF, respawnSeconds: [20, 40], level: [2, 4] },
+  { speciesId: 'pesce_leone', area: BEACH_REEF, respawnSeconds: [20, 40], level: [3, 5] },
+  { speciesId: 'pesce_palla', area: BEACH_REEF, respawnSeconds: [20, 40], level: [3, 5] },
+  { speciesId: 'cernia', area: BAY, respawnSeconds: [15, 30] },
+  { speciesId: 'cernia', area: BAY, respawnSeconds: [20, 40] },
+  { speciesId: 'pastinaca', area: BAY, respawnSeconds: [15, 30] },
+  { speciesId: 'pastinaca', area: BAY, respawnSeconds: [20, 40] },
+  { speciesId: 'squalo_nutrice', area: BAY, respawnSeconds: [25, 50] },
+  { speciesId: 'pesce_vela', area: SHALLOW_BAY, respawnSeconds: [35, 70] },
+  { speciesId: 'barracuda', area: SHALLOW_BAY, respawnSeconds: [12, 25] },
+  { speciesId: 'tonno', area: SHALLOW_BAY, respawnSeconds: [18, 35] },
+  { speciesId: 'pesce_leone', area: REEF, respawnSeconds: [15, 30] },
+  { speciesId: 'pesce_leone', area: SHALLOW_REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'medusa_gigante', area: SHALLOW_REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'medusa_gigante', area: REEF, respawnSeconds: [30, 60] },
+  { speciesId: 'cernia', area: REEF, respawnSeconds: [20, 40], level: [6, 8] },
+  { speciesId: 'squalo_nutrice', area: REEF, respawnSeconds: [30, 60], level: [7, 9] },
+  { speciesId: 'medusa_gigante', area: FOREST, respawnSeconds: [30, 60], level: [10, 12] },
+  // beasts that lived only out in the endless sea now visit the hand-made waters too (owner, 3 ottobre: "sentirlo vivo")
+  { speciesId: 'pesce_spada', area: REEF, respawnSeconds: [40, 80] },
+  { speciesId: 'squalo_volpe', area: REEF, respawnSeconds: [45, 90] },
+  { speciesId: 'delfino', area: REEF, respawnSeconds: [30, 60], level: [7, 9] },
+  { speciesId: 'delfino', area: SHALLOW_BAY, respawnSeconds: [35, 70] },
+  { speciesId: 'pastinaca', area: [delta(1960), 120, delta(2440), 215], respawnSeconds: [20, 40], level: [6, 8] },
+  { speciesId: 'orca', area: ICY, respawnSeconds: [90, 180] }, // rare up north
+  { speciesId: 'megattera', area: SHALLOW_REEF, respawnSeconds: [150, 300] }, // a rare whale passing over the reef
+  { speciesId: 'capodoglio', area: ABYSS_EAST, respawnSeconds: [150, 300], level: [24, 27] }, // rare, hunting squid
+  // the abysses: common, uncommon and rare beasts of the deep
+  { speciesId: 'rana_pescatrice', area: ABYSS_BAY, respawnSeconds: [15, 30], level: [15, 18] },
+  { speciesId: 'chimera', area: ABYSS_BAY, respawnSeconds: [15, 30], level: [15, 18] },
+  { speciesId: 'dragone_nero', area: ABYSS_BAY, respawnSeconds: [20, 40], level: [16, 19] },
+  { speciesId: 'granchio_ragno', area: ABYSS_BAY, respawnSeconds: [25, 50], level: [16, 19] },
+  { speciesId: 'isopode_gigante', area: ABYSS_BAY, respawnSeconds: [20, 40], level: [15, 18] },
+  { speciesId: 'squalo_capopiatto', area: ABYSS_BAY, respawnSeconds: [45, 90], level: [18, 21] },
+  { speciesId: 'squalo_goblin', area: ABYSS_BAY, respawnSeconds: [60, 120], level: [19, 22] },
+  { speciesId: 'rana_pescatrice', area: ABYSS_EAST, respawnSeconds: [15, 30], level: [19, 22] },
+  { speciesId: 'chimera', area: ABYSS_EAST, respawnSeconds: [15, 30], level: [19, 22] },
+  { speciesId: 'dragone_nero', area: ABYSS_EAST, respawnSeconds: [20, 40], level: [20, 23] },
+  { speciesId: 'granchio_ragno', area: ABYSS_EAST, respawnSeconds: [25, 50], level: [20, 23] },
+  { speciesId: 'isopode_gigante', area: ABYSS_EAST, respawnSeconds: [20, 40], level: [19, 22] },
+  { speciesId: 'squalo_capopiatto', area: ABYSS_EAST, respawnSeconds: [40, 80], level: [21, 24] },
+  { speciesId: 'squalo_goblin', area: ABYSS_EAST, respawnSeconds: [50, 100], level: [22, 25] },
+  { speciesId: 'calamaro_gigante', area: ABYSS_EAST, respawnSeconds: [90, 180], level: [24, 27] }, // rare
   // the Foresta Sommersa's own beasts (tappa 18, their pictures from lotto Gemini 1)
   { speciesId: 'anguilla_elettrica', area: FOREST, respawnSeconds: [25, 50] },
   { speciesId: 'polpo_gigante', area: FOREST, respawnSeconds: [40, 80] },
@@ -122,6 +173,24 @@ export const WILD_LEVELS = {
   outlierExtra: [5, 10] as [number, number],
 };
 
+/**
+ * Where in the water column a species lives, for the endless sea (owner, 3 ottobre): deep ones come only when
+ * you are deeper than minM, shallow ones only when you are above maxM; they appear within those depths.
+ */
+export const SPECIES_DEPTH: Record<string, { minM?: number; maxM?: number }> = {
+  rana_pescatrice: { minM: 120 },
+  chimera: { minM: 120 },
+  dragone_nero: { minM: 120 },
+  granchio_ragno: { minM: 120 },
+  squalo_capopiatto: { minM: 100 },
+  squalo_goblin: { minM: 120 },
+  isopode_gigante: { minM: 120 },
+  calamaro_gigante: { minM: 150 },
+  pesce_vela: { maxM: 60 },
+  medusa_gigante: { maxM: 80 },
+  pesce_leone: { maxM: 80 },
+};
+
 /** At most this many wild beasts are around you at the same time (tuning). */
 export const WILD_RULES = { maxPresent: 8 }; // owner, 3 ottobre: more life (was 5)
 
@@ -137,6 +206,20 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   squalo_martello: { temper: 'aggressive', speedMult: 0.9 },
   pesce_palla: { temper: 'shy', speedMult: 0.5 },
   anguilla_elettrica: { temper: 'aggressive', speedMult: 0.9 }, // the forest (tappa 18)
+  cernia: { temper: 'calm', speedMult: 0.6 }, // more life (3 ottobre)
+  pastinaca: { temper: 'shy', speedMult: 0.7 },
+  pesce_leone: { temper: 'calm', speedMult: 0.5 },
+  squalo_nutrice: { temper: 'calm', speedMult: 0.6 },
+  medusa_gigante: { temper: 'calm', speedMult: 0.3 },
+  pesce_vela: { temper: 'shy', speedMult: 1.4 },
+  chimera: { temper: 'shy', speedMult: 0.7 },
+  squalo_capopiatto: { temper: 'aggressive', speedMult: 0.8 },
+  dragone_nero: { temper: 'aggressive', speedMult: 0.9 },
+  granchio_ragno: { temper: 'calm', speedMult: 0.4 },
+  rana_pescatrice: { temper: 'aggressive', speedMult: 0.5 },
+  isopode_gigante: { temper: 'calm', speedMult: 0.4 },
+  squalo_goblin: { temper: 'aggressive', speedMult: 0.9 },
+  calamaro_gigante: { temper: 'aggressive', speedMult: 0.9 },
   polpo_gigante: { temper: 'shy', speedMult: 0.7 },
   lontra_marina: { temper: 'shy', speedMult: 1.1 },
   murena: { temper: 'aggressive', speedMult: 0.8 },

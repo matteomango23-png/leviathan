@@ -196,10 +196,25 @@ export const OTHER_FISH_SCHOOLS: FishSchoolDef[] = [
   { kind: 'triglia', x: east(4800), y: 330, roam: [east(4050), 200, east(5150), 420] },
   { kind: 'merluzzo_artico', x: east(5500), y: 160, roam: [east(5250), 70, east(6300), 360] }, // the ice sea
   { kind: 'merluzzo_artico', x: east(6000), y: 220, roam: [east(5250), 70, east(6300), 360] },
+  // the shallow coral patches (CORALS.patches) and the reef: coloured fish to catch
+  { kind: 'pesce_farfalla', x: 600, y: 120, roam: [400, 70, 1050, 190] }, // the reef off the beach
+  { kind: 'pesce_angelo', x: 800, y: 150, roam: [400, 80, 1050, 200] },
+  { kind: 'pesce_pagliaccio', x: 500, y: 90, roam: [400, 60, 1050, 170] },
+  { kind: 'pesce_chirurgo', x: 900, y: 140, roam: [400, 70, 1050, 200] },
+  { kind: 'pesce_farfalla', x: 950, y: 170, roam: [400, 90, 1050, 205] },
+  { kind: 'pesce_angelo', x: 450, y: 70, roam: [380, 50, 1050, 160] },
+  { kind: 'pesce_farfalla', x: east(3170), y: 200, roam: [east(3120), 140, east(3240), 250] },
+  { kind: 'pesce_angelo', x: east(3700), y: 210, roam: [east(3600), 150, east(3800), 260] },
+  { kind: 'pesce_farfalla', x: east(2900), y: 120, roam: [east(2500), 60, east(3950), 260] },
+  { kind: 'pesce_angelo', x: east(3500), y: 150, roam: [east(2500), 60, east(3950), 260] },
+  { kind: 'sgombro', x: east(3300), y: 60, roam: [east(2500), 40, east(3950), 160] },
+  { kind: 'sgombro', x: bay(1500), y: 60, roam: [LAYOUT.bay.x0, 40, bay(1850), 160] },
 ];
 export const FISH_LOOK: Record<string, { length: number; tint: number; perSchool: number; speedMult: number }> = {
-  sardina: { length: 5, tint: 0xffffff, perSchool: 12, speedMult: 1 },
-  sgombro: { length: 7, tint: 0xa8d4c8, perSchool: 7, speedMult: 1.2 },
+  sardina: { length: 5, tint: 0xffffff, perSchool: 22, speedMult: 1 }, // owner, 3 ottobre: bigger schools (was 12)
+  sgombro: { length: 7, tint: 0xa8d4c8, perSchool: 12, speedMult: 1.2 },
+  pesce_farfalla: { length: 4, tint: 0xffe060, perSchool: 7, speedMult: 0.8 },
+  pesce_angelo: { length: 5, tint: 0x6a8cff, perSchool: 6, speedMult: 0.8 },
   cefalo: { length: 8, tint: 0xb8b8a0, perSchool: 6, speedMult: 0.9 },
   pesce_arciere: { length: 5, tint: 0xd8e0a0, perSchool: 5, speedMult: 1.1 },
   triglia: { length: 6, tint: 0xffb8a8, perSchool: 6, speedMult: 0.9 },

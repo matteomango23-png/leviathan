@@ -54,6 +54,7 @@ export const SARDINE = {
   radius: 2,
   respawnSeconds: 20,
   seenRadius: 80, // first time a sardine is this close it is added to the bestiary
+  simRange: 420, // units: fish farther than this from you (out of sight) only follow their school, no collisions
 };
 
 export const CAMERA = {

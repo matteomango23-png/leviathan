@@ -364,3 +364,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **iPhone:** un'app aggiunta alla Home viene quasi sempre ripresa dallo sfondo, non riaperta. Il service worker cerca la versione nuova solo al caricamento della pagina, quindi gli aggiornamenti non arrivavano e il proprietario eliminava l'app, perdendo il salvataggio. Ora `pwa.ts` chiama `registration.update()` a ogni ritorno sullo schermo e ogni 30 minuti. Una versione trovata entro 8 s dal ritorno si applica subito (salvataggio, poi ricarica); una trovata dopo, all'uscita dall'app.
 - **Versione nel menu Pausa** e avviso di esportare prima di eliminare l'app: lo spazio dell'app sulla Home è separato da Safari e si cancella con lei.
 - **Virata delle cavalcature di lato** (scelta del proprietario tra tre opzioni). Il giro per la verticale sembrava una capriola completa.
+
+## 2026-10-03 — Il mare vivo
+
+- **Profondità per specie nel mare aperto** (`SPECIES_DEPTH`): una bestia degli abissi a pelo d'acqua rompeva l'atmosfera, e la superficie era povera. Ogni specie ha una profondità minima o massima; il punto di comparsa sta dentro quella fascia.
+- **Barriere coralline in acqua bassa:** dove il fondale è davvero tra 10 e 30 m (la spiaggia di Portofosco, due punti della Barriera Rossa), non dove sembrava sulla mappa. La Baia è profonda circa 50 m.
+- **Solo i pesci vicini si simulano:** con banchi più grandi (circa 900 pesci) le collisioni di tutti costavano troppo. Quelli a più di 420 unità dal sub seguono il banco senza collisioni; tanto non si vedono.
+- **Rarità:** come prima, è data dalle stelle della specie, dal tempo di ricomparsa e dal peso nei biomi del mare aperto. Le specie rare hanno tempi lunghi (calamaro gigante, capodoglio, megattera, orca).
