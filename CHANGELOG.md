@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.30.0 — Bestiario come il Pokédex e tessera del cacciatore (3 ottobre 2026)
+
+- **Bestiario con i filtri**, come il Pokédex: Tutte, Viste, Domate, Mancanti.
+- **Tessera del cacciatore** (in Pausa), come la Scheda Allenatore di Pokémon: denti, bestie viste e domate, tempo di gioco, immersione più profonda, reliquie, e una **medaglia per ogni Guardiano battuto** (Lo Sfregiato, Re Corallo, La Piovra, e quelli dei prossimi capitoli).
+
 ## v0.29.0 — Squadra e zaino come Pokémon (3 ottobre 2026)
 
 - **Gli stati restano dopo la battaglia**, come in Pokémon: una bestia avvelenata resta avvelenata finché non la curi (oggetto, porto, santuario o sottomarino). Una bestia sfinita perde il suo stato.

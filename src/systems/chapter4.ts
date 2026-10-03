@@ -62,6 +62,8 @@ export function createChapter4(beasts: BeastState, seen: string[]): Chapter4Stat
 
 const piovraOf = (g: Chapter4World): WildBeast => g.beasts.wilds.find((w) => w.id === PIOVRA_ID)!;
 export const spellBroken = (g: Chapter4World): boolean => g.story.seen.includes(M.bell);
+/** The Piovra was beaten (or tamed). */
+export const piovraDown = (g: Chapter4World): boolean => g.story.seen.includes(M.down);
 const restY = (): number => WRECK.floorY - formLengthUnits(FORM, PIOVRA.level) * 0.22;
 
 /** A weapon tip on the bell. Returns true if it hit it (the shot stops there). */

@@ -14,13 +14,8 @@ import { hasPreviousGame } from '../systems/save/storage';
 import { exportSave, pickSaveFile } from './saveTransfer';
 import { renderTeamPanel } from './teamPanel';
 import { openBag } from './bagScreen';
+import { formatTime, openHunterCard } from './hunterCardView';
 import { renderTestPanel } from './testPanel';
-
-function formatTime(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return h > 0 ? `${h} h ${m} min` : `${m} min`;
-}
 
 export class PauseMenu {
   private readonly root: HTMLDivElement;
@@ -44,6 +39,9 @@ export class PauseMenu {
     const bag = el('button', 'menu-btn', panel);
     bag.append(icon('backpack'), document.createTextNode(' Zaino'));
     bag.addEventListener('click', () => openBag(parent, game));
+    const card = el('button', 'menu-btn', panel);
+    card.append(icon('star'), document.createTextNode(' Tessera'));
+    card.addEventListener('click', () => openHunterCard(parent, game));
     const map = el('button', 'menu-btn', panel);
     map.append(icon('dive'), document.createTextNode(' Mappa'));
     map.addEventListener('click', () => openSeaMap(parent, game));
