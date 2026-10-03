@@ -58,7 +58,20 @@ const BATTLE_ERASE: Record<string, number[][]> = {
   ], // a cloud of dark specks above it
 };
 // Coiled bodies with background shut between the loops (systems: clearEnclosedBackground).
-const BATTLE_ENCLOSED = ['folgore_front', 'folgore_back', 'scintilla_front', 'scintilla_back'];
+const BATTLE_ENCLOSED = [
+  'folgore_front',
+  'folgore_back',
+  'scintilla_front',
+  'scintilla_back',
+  'polpo_gigante_front',
+  'polpo_gigante_back',
+  'calamaro_gigante_front',
+  'calamaro_gigante_back',
+  'isopode_gigante_front',
+  'isopode_gigante_back',
+];
+/** Profiles with background shut between tentacles or legs (lotto Gemini 1): those holes go too. */
+const SIDE_ENCLOSED = ['polpo_gigante', 'calamaro_gigante', 'isopode_gigante'];
 // Side profiles on a textured dark-grey background (not flat black): cut like the battle pictures.
 const TEXTURED_DARK: CutoutOptions = { low: 24, high: 40, soft: 50 };
 const NAVY_VIGNETTE: CutoutOptions = { low: 20, high: 34, soft: 24 };
@@ -153,6 +166,8 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
     first.y1 - first.y0 > info.height * 0.95
   )
     cut = removeDarkBackground(raw, borderColor(raw), radius, TEXTURED_DARK);
+  if (SIDE_ENCLOSED.some((id) => basename(src).startsWith(`${id}_side`)))
+    clearEnclosedBackground(raw, cut, borderColor(raw));
   const mouth = SIDE_MOUTH[basename(src, extname(src))];
   if (mouth) fillMouth(raw, cut, mouth);
   const box = opaqueBox(cut, info.width, info.height);
