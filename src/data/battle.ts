@@ -111,15 +111,15 @@ export const BATTLE_STAGE = {
   fit: {
     margin: 0.03,
     foeLowest: 0.62, // was 0.97: a big crocodile stood on top of your beast (owner, 3 ottobre)
-    foeLeft: 0.46, // the wild one stays whole, right of this share of the width
+    foeLeft: 0.52, // the wild one stays whole, right of this share of the width
     /**
      * Yours is placed like Pokémon (owner, 3 ottobre: "il mio animale quando è grosso mettilo più giù e più a sinistra,
      * mi basta vedere un po' di schiena, le zampe davanti e la testa"): its right edge (the head, seen from behind)
      * at most at youRight, its top at least youTop below the top of the screen; the rest may leave the screen at the
      * bottom and on the left. A small one just stands at the bottom.
      */
-    youRight: 0.46,
-    youTop: 0.4,
+    youRight: 0.4, // was 0.46: two big ones met head to head in the middle (owner, 3 ottobre)
+    youTop: 0.45,
     youMax: 1.5, // and it is never drawn bigger than this share of the screen height
     youWide: 1.5, // …nor wider than this × the width left of youRight, or taller than this × the height under youTop
   },

@@ -246,6 +246,7 @@
 - Varano albino (`asset animali ai/varano del nilo nero/varano_nilo_albino_*`): mancano card e vista dietro, si mette nel gioco dopo.
 
 **Prossima sessione:**
+0. Rifare in Gemini `squalo_martello_back` (è dritto, visto da dietro in pieno: owner, 3 ottobre) con la richiesta di schiena che funziona (coda vicina in basso a sinistra, testa lontana in alto a destra).
 1. Test delle evoluzioni vere: richiesta **senza immagine allegata**, una trasformazione forte (regole in memoria "Stile delle evoluzioni"), una alla volta, decide il proprietario.
 2. Il varano con tre stadi (l'ultimo quasi uno spinosauro marino).
 3. Poi capitolo 5, il Mare di Ghiaccio. Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.

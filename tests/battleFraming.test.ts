@@ -12,11 +12,10 @@ import { formKey, formLengthM, type BeastForm } from '../src/systems/beasts/form
 import { battleArt } from '../src/views/battle/beastArt';
 
 const SCREENS = [
-  { name: 'iPhone', w: 844, h: 390 },
-  { name: 'iPad', w: 1024, h: 768 },
+  { name: 'iPhone', w: 844, h: 390, minLongest: 0.28 },
+  { name: 'iPad', w: 1024, h: 768, minLongest: 0.25 }, // narrower: less room on each side of the gap
 ];
 const BOB = 0.012; // the beasts bob up and down by this share of the screen height
-const MIN_LONGEST = 0.28; // the drawn beast's longest side, at least this share of the screen height
 
 function allForms(): BeastForm[] {
   const out: BeastForm[] = [];
@@ -74,7 +73,7 @@ describe('battle framing', () => {
               expect((vw * vh) / r.area, `${at}: visible`).toBeGreaterThan(0.3);
             }
             const longest = Math.max(r.right - r.left, r.bottom - r.top);
-            expect(longest, `${at}: big enough`).toBeGreaterThanOrEqual(MIN_LONGEST * screen.h);
+            expect(longest, `${at}: big enough`).toBeGreaterThanOrEqual(screen.minLongest * screen.h);
           }
       });
 });
