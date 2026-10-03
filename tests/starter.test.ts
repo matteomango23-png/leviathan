@@ -2,8 +2,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { STARTER } from '../src/data/story';
 import { emptyInput } from '../src/systems/input';
-import { fishXp, raiseLevel, xpReward } from '../src/systems/beasts/growth';
-import { PROGRESSION } from '../src/data/rules';
+import { fishXp, raiseLevel, xpBetween, xpReward } from '../src/systems/beasts/growth';
 import { movesFor } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave } from '../src/systems/game';
@@ -94,9 +93,9 @@ describe('pace of the levels (Pokémon style)', () => {
   const fightsTo = (from: number, to: number, foeLevel: (l: number) => number): number => {
     let n = 0;
     for (let l = from; l < to; l++) {
-      let need = PROGRESSION.xpCurve(l);
+      let need = xpBetween('medio_lento', l);
       while (need > 0) {
-        need -= xpReward({ speciesId: 'barracuda', variant: 'comune' }, foeLevel(l));
+        need -= xpReward({ speciesId: 'barracuda', variant: 'comune' }, foeLevel(l), l);
         n++;
       }
     }
@@ -106,14 +105,14 @@ describe('pace of the levels (Pokémon style)', () => {
   it('the first evolution comes quickly, the second takes longer', () => {
     const toFirst = fightsTo(STARTER.level, 16, (l) => Math.max(3, l - 2));
     const toSecond = fightsTo(16, 36, (l) => l - 2);
-    expect(toFirst).toBeLessThan(30);
+    expect(toFirst).toBeLessThan(40); // like Pokémon: a few fights per level (plus the bench share and fish)
     expect(toSecond).toBeGreaterThan(toFirst);
-    expect(toSecond).toBeLessThan(60);
+    expect(toSecond).toBeLessThan(160);
   });
 
   it('a fish is worth some experience, a fight much more', () => {
     expect(fishXp(10)).toBeGreaterThan(0);
-    expect(xpReward({ speciesId: 'barracuda', variant: 'comune' }, 10)).toBeGreaterThan(fishXp(10) * 10);
+    expect(xpReward({ speciesId: 'barracuda', variant: 'comune' }, 10, 10)).toBeGreaterThan(fishXp(10) * 5);
   });
 });
 

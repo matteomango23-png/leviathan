@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.23.0 — Battaglie come Pokémon, fase 3: esperienza e cattura (3 ottobre 2026)
+
+- **Esperienza come Pokémon:** battere una bestia più forte della tua dà molta più esperienza, una più debole molto meno. Ogni bestia ha il suo ritmo di crescita: i pesci comuni crescono in fretta, i compagni come gli starter di Pokémon, le leggende piano.
+- **Si sale di livello più lentamente di prima** (qualche battaglia per livello, come in Pokémon). In compenso le bestie in squadra che non combattono prendono metà dell'esperienza (prima un quarto).
+- **Cattura come Pokémon:** più la bestia è sfinita, più è facile. Addormentata (STO) o congelata (CON) è 2,5 volte più facile, avvelenata, ferita o paralizzata 1,5 volte. Le bestie rare e le leggende sono molto più difficili.
+- L'esperienza che le tue bestie avevano già resta (se superava il nuovo livello si ferma lì).
+
 ## v0.22.0 — Battaglie come Pokémon, fase 2: le mosse (3 ottobre 2026)
 
 - **PP al posto della ricarica:** ogni mossa si può usare un certo numero di volte (le deboli 30, le fortissime 5). I PP non tornano da soli tra una battaglia e l'altra: si ricaricano quando la bestia torna in piena salute (porto, santuario, sottomarino). Senza più PP resta la **Lotta disperata**, che fa male anche a chi la usa.

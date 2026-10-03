@@ -5,6 +5,7 @@ import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
 import { hasAlbinoArt } from '../beasts/forms';
+import { xpToNext } from '../beasts/growth';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
 import type { BackpackWorld } from '../economy/backpack';
@@ -32,7 +33,7 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     const b = makeTeamBeast(s.uid, form, s.level, s.inTeam);
     b.hp = Math.min(s.hp, maxHpOf(b));
     b.ko = s.ko || b.hp <= 0;
-    b.xp = s.xp;
+    b.xp = Math.min(s.xp, xpToNext(b)); // v0.23: the experience needed changed (Pokémon groups)
     b.food = s.food;
     if (s.ppUsed) b.ppUsed = [...s.ppUsed];
     return b;

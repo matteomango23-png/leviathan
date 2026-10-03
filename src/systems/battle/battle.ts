@@ -206,16 +206,16 @@ export function useMove(
   return steps;
 }
 
-/** The chance a tame attempt holds (like a Poké Ball). */
+/** The chance a tame attempt holds: Pokémon's catch formula (data/battle.ts BATTLE.catch). */
 export function tameChance(s: BattleState, strongestLevel: number, bonus = 1): number {
   const f = s.foe;
   const c = BATTLE.catch;
-  let p = c.byStars[speciesOf(f.form).rarity] ?? 0.3;
-  if (f.form.unique) p *= c.uniqueMult;
-  else if (f.form.variant !== 'comune') p *= c.variantMult;
-  p *= 1 - c.hpWeight * (f.hp / f.maxHp);
-  p *= Math.pow(c.levelPenalty, Math.max(0, f.level - strongestLevel));
-  return Math.max(0, Math.min(1, p * bonus));
+  let rate = f.form.unique ? c.uniqueRate : (c.rateByStars[speciesOf(f.form).rarity] ?? 45);
+  if (!f.form.unique && f.form.variant !== 'comune') rate *= c.variantMult;
+  let a = ((3 * f.maxHp - 2 * Math.max(1, f.hp)) * rate * bonus) / (3 * f.maxHp);
+  if (f.status) a *= c.statusBonus[f.status] ?? 1;
+  a *= Math.pow(c.levelPenalty, Math.max(0, f.level - strongestLevel));
+  return Math.max(0, Math.min(1, a / 255));
 }
 
 /** A tame attempt: each shake holds with chance^(1/shakes), so all of them hold with `chance`. */

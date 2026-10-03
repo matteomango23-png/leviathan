@@ -1,14 +1,25 @@
-// Experience, levels and growth of tamed beasts (GDD "Livelli", "Crescita e forma finale").
+// Experience, levels and growth of tamed beasts (GDD "Livelli", "Crescita e forma finale"), the Pokémon way:
+// growth groups and the Gen V scaled experience (data/progression.ts).
 // Up to level 30 experience is enough; from 31 each level also needs a full nourishment bar (fish eaten).
 // At level 50 iconic species take their final form (the albino its own, where it has one; never the alfa).
-import { XP_RULES } from '../../data/progression';
+import { GROWTH_BY_STARS, GROWTH_CURVES, XP_RULES, scaledXp, type GrowthGroup } from '../../data/progression';
 import { PROGRESSION } from '../../data/rules';
 import type { GameEvent } from '../events';
 import { speciesOf, type BeastForm } from './forms';
 import { maxHpOf, movesFor, type TeamBeast } from './team';
 
 /** XP needed to go from the beast's level to the next. */
-export const xpToNext = (b: TeamBeast): number => PROGRESSION.xpCurve(b.level);
+export const xpToNext = (b: TeamBeast): number => xpBetween(growthOf(b.form), b.level);
+
+/** The growth group of a beast's species. */
+export function growthOf(form: BeastForm): GrowthGroup {
+  const s = speciesOf(form);
+  return s.growth ?? GROWTH_BY_STARS[s.rarity];
+}
+
+/** Experience from level `level` to the next, in a growth group. */
+export const xpBetween = (g: GrowthGroup, level: number): number =>
+  Math.max(1, GROWTH_CURVES[g](level + 1) - GROWTH_CURVES[g](level));
 
 /** The next level needs nourishment (levels 31–50). */
 export const needsFood = (b: TeamBeast): boolean =>
@@ -18,17 +29,16 @@ export const needsFood = (b: TeamBeast): boolean =>
 export const isHungry = (b: TeamBeast): boolean =>
   needsFood(b) && b.food < PROGRESSION.nourishmentPerGrowthLevel;
 
-/** XP for exhausting a wild beast of this form and level. */
-export function xpReward(form: BeastForm, level: number, guardian = false): number {
-  let xp = XP_RULES.rewardBase * Math.pow(level, XP_RULES.rewardPower);
+/** XP for beating a wild beast of this form and level, for a beast of level `own` (Gen V scaled). */
+export function xpReward(form: BeastForm, level: number, own: number, guardian = false): number {
+  let xp = scaledXp(XP_RULES.yieldByStars[speciesOf(form).rarity], level, own);
   if (form.variant !== 'comune') xp *= XP_RULES.variantMult;
   if (guardian) xp *= XP_RULES.guardianMult;
   return Math.round(xp);
 }
 
 /** XP for a small fish caught or eaten, for a beast of this level. */
-export const fishXp = (level: number): number =>
-  Math.round(XP_RULES.fishXpBase + XP_RULES.fishXpPerLevel * level);
+export const fishXp = (level: number): number => scaledXp(XP_RULES.fishYield, level, level);
 
 /** Level 50 of an iconic species: its final form (none for the alfa, the albino only where defined). */
 export function finalFormAt(form: BeastForm, level: number): BeastForm | null {

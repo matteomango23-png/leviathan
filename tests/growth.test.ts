@@ -36,7 +36,7 @@ describe('experience and levels', () => {
 
   it('can gain several levels at once and keeps the leftover', () => {
     const b = shark(1);
-    const need = PROGRESSION.xpCurve(1) + PROGRESSION.xpCurve(2);
+    const need = xpToNext(b) + xpToNext({ ...b, level: 2 });
     gainXp(b, need + 5, []);
     expect(b.level).toBe(3);
     expect(b.xp).toBe(5);
@@ -50,13 +50,13 @@ describe('experience and levels', () => {
   });
 
   it('rewards stronger and rarer beasts more, Guardians most', () => {
-    const common = xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 5);
-    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 8)).toBeGreaterThan(common);
-    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'albino' }, 5)).toBeCloseTo(
+    const common = xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 5, 5);
+    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 8, 5)).toBeGreaterThan(common);
+    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'albino' }, 5, 5)).toBeCloseTo(
       common * XP_RULES.variantMult,
       -1,
     );
-    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 5, true)).toBeCloseTo(
+    expect(xpReward({ speciesId: 'squalo_bianco', variant: 'comune' }, 5, 5, true)).toBeCloseTo(
       common * XP_RULES.guardianMult,
       -1,
     );
@@ -129,9 +129,11 @@ describe('experience in play', () => {
 
   it('after a battle won: all the experience to the last fighter, a share to the bench', () => {
     const { g, a, bench, w } = battle('won');
-    const xp = xpReward(w.form, 4);
-    expect(a.xp).toBe(xp);
-    expect(bench.xp).toBeCloseTo(xp * XP_RULES.benchShare);
+    expect(a.xp).toBe(xpReward(w.form, 4, a.level));
+    // the bench (level 3) gets half of its own share: enough here for a level
+    const share = Math.floor(xpReward(w.form, 4, 3) * XP_RULES.benchShare);
+    expect(bench.level).toBe(4);
+    expect(bench.xp).toBe(share - xpToNext({ ...bench, level: 3 }));
     expect(a.hp).toBe(3);
     expect(w.motion).toBe('gone');
     expect(g.beasts.battle).toBeNull();

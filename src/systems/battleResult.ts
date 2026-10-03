@@ -48,10 +48,10 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
   const w = g.beasts.wilds.find((x) => x.id === o.wildId);
   const win = o.over === 'won' || o.over === 'caught';
   if (win) {
-    const xp = xpReward(o.foe.form, o.foe.level, !!w?.guardian);
     for (const b of battleTeam(g)) {
       if (b.ko) continue;
-      gainXp(b, b.uid === o.lastActive ? xp : xp * XP_RULES.benchShare, events);
+      const xp = xpReward(o.foe.form, o.foe.level, b.level, !!w?.guardian); // each by its own level, like Pokémon
+      gainXp(b, b.uid === o.lastActive ? xp : Math.floor(xp * XP_RULES.benchShare), events);
     }
     const m = g.beasts.mount;
     const rode = activeBeast(g);

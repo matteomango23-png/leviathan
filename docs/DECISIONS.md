@@ -418,3 +418,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Categoria**: per ogni mossa (danno: fisica se il tipo è Predatore o Corazzato, altrimenti speciale; senza danno: di stato). Una mossa "variabile" usa la statistica d'attacco più alta.
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
+
+## 2026-10-03 — Esperienza e cattura di Pokémon (fase 3 di 3)
+
+- **Gruppi di crescita** (`data/progression.ts`): Veloce, Medio, Medio-lento, Lento con le curve di Pokémon; per stelle (1 veloce, 2–3 medio, 4 medio-lento come gli starter, 5 lento), o `growth` sulla specie. `TeamBeast.xp` resta l'esperienza verso il livello dopo; al caricamento si ferma al massimo del livello (le curve nuove sono vicine alle vecchie).
+- **Esperienza Gen V scalata**: resa × L / 5 × ((2L+10)/(L+Lp+10))^2,5 + 1, calcolata per ogni bestia col suo livello. Rese per stelle 60–270; alfa e albini ×1,5; Guardiani ×1,5 (come gli allenatori). Panchina 50% (Condividi Esp. moderno). Un pesce vale una bestia di resa 10 del livello di chi lo mangia.
+- **Cattura Gen III–IV**: a = (3·PSmax − 2·PS) × tasso × bonus conchiglia / (3·PSmax) × stato; riesce con probabilità a/255 (le 3 scosse la dividono). Tassi 190/120/75/45/25 per stelle, leggende e Guardiani 15 (in Pokémon 3–45: un po' più gentile perché le conchiglie si consumano). Stato: sonno e congelamento ×2,5, gli altri ×1,5. Resta la penalità se la bestia è sopra la tua più forte (come le medaglie di Spada e Scudo).
+- Si sale più lentamente di prima: è voluto (come Pokémon). Se è troppo, si cambiano le rese in `XP_RULES.yieldByStars`.
+- Fonti: Bulbapedia (Experience, Catch rate).
