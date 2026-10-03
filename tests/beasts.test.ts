@@ -57,10 +57,10 @@ describe('white shark versions', () => {
     expect(formStars(shark({ variant: 'albino' }))).toBe(4);
   });
 
-  it('grows 2% per level from 31, and the Titano stays half a megalodon', () => {
-    expect(formLengthM(shark(), 30)).toBe(6);
-    expect(formLengthM(shark(), 31)).toBeCloseTo(6.12);
-    expect(formLengthM(shark({ final: true }), 50)).toBe(9);
+  it('grows a little per level from 51, and the Titano stays half a megalodon', () => {
+    expect(formLengthM(shark(), 50)).toBe(6);
+    expect(formLengthM(shark(), 51)).toBeCloseTo(6.048);
+    expect(formLengthM(shark({ final: true }), 100)).toBe(9);
   });
 });
 

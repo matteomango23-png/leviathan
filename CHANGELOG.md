@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.27.0 — Livello massimo 100 (3 ottobre 2026)
+
+- **Le bestie arrivano al livello 100**, come in Pokémon (prima 50). Le statistiche al 100 sono il doppio di quelle al 50.
+- **Le mosse si imparano fino a circa il livello 65**, come nelle liste di Pokémon: fino al 16 nulla cambia, dopo le mosse arrivano un po' più tardi.
+- **La crescita col cibo** comincia al 51 (prima al 31) e servono 3 pesci per livello. **La forma finale** arriva al 100.
+- Le tue bestie tengono il loro livello. Se una era già cresciuta di dimensioni tra il 31 e il 50, torna alla grandezza normale finché non supera il 50.
+
 ## v0.26.0 — Schermate delle mosse come Pokémon (3 ottobre 2026)
 
 - **Schermata "impara mossa":** quando una bestia vuole una quinta mossa, vedi le 4 che conosce e quella nuova una accanto all'altra. Tocchi una mossa per leggerne tipo, categoria, potenza, precisione, PP e descrizione, poi scegli quale dimenticare: "1, 2 e… puff!". Oppure "Non imparare".
