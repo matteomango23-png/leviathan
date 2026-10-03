@@ -68,6 +68,7 @@ export class WorldArtView {
     const out: Wall[] = [];
     const rockX = x + side * 12;
     const waterX = x - side * 12;
+    const deepX = x + side * (WALLS.width * WALLS.inRock - 4);
     let start = -1;
     const flush = (end: number): void => {
       if (start < 0 || end - start < WALLS.minFace) return;
@@ -80,7 +81,9 @@ export class WorldArtView {
       }
     };
     for (let y = Math.max(y0, WORLD.surfaceY + 8); y <= y1; y += 8) {
-      const edge = this.map.solidAt(rockX, y) && !this.map.solidAt(waterX, y);
+      // the rock must be as deep as the picture, or the picture spills over the water on the other side
+      const deep = this.map.solidAt(deepX, y) && this.map.solidAt((rockX + deepX) / 2, y);
+      const edge = this.map.solidAt(rockX, y) && deep && !this.map.solidAt(waterX, y);
       if (edge && start < 0) start = y;
       if (!edge && start >= 0) {
         flush(y);

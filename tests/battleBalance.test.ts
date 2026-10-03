@@ -3,7 +3,9 @@
 import { describe, expect, it } from 'vitest';
 import { movesOf } from '../src/data/moves';
 import { hitDamage, makeFighter } from '../src/systems/battle/fighter';
-import { migrate } from '../src/systems/save/saveData';
+import { hasAlbinoArt, rollWildForm } from '../src/systems/beasts/forms';
+import { restoreTeam } from '../src/systems/save/convert';
+import { migrate, newSave } from '../src/systems/save/saveData';
 
 const rng = () => 0.5;
 const fighter = (id: string, level: number) => makeFighter({ speciesId: id, variant: 'comune' }, level);
@@ -32,6 +34,33 @@ describe('battle balance', () => {
     const foe = fighter('tonno', 11);
     for (const m of movesOf('guscio'))
       expect(hitDamage(guscio, foe, m, rng, false).damage, m.name).toBeGreaterThan(0);
+  });
+
+  it('Guscio hits about as hard as Zanna with its first move', () => {
+    const foe = fighter('tonno', 11);
+    const hit = (id: string) => hitDamage(fighter(id, 11), foe, movesOf(id)[0]!, rng, false).damage;
+    expect(hit('guscio') / hit('zanna')).toBeGreaterThan(0.85);
+  });
+
+  it('albinos only where they have pictures of their own; a pale stand-in goes back to the common one', () => {
+    expect(hasAlbinoArt('squalo_bianco')).toBe(true);
+    expect(hasAlbinoArt('barracuda')).toBe(false);
+    expect(rollWildForm('barracuda', () => 0).variant).not.toBe('albino');
+    expect(rollWildForm('squalo_bianco', () => 0).variant).toBe('albino');
+    const save = newSave({ x: 0, y: 0 });
+    save.team = [
+      {
+        uid: 'b1',
+        form: { speciesId: 'varano_nilo', variant: 'albino' },
+        level: 12,
+        hp: 50,
+        ko: false,
+        inTeam: true,
+        xp: 0,
+        food: 0,
+      },
+    ];
+    expect(restoreTeam(save)[0]!.form.variant).toBe('comune');
   });
 
   it('an old save keeps its beasts as healthy as they were (v12: health × 10)', () => {

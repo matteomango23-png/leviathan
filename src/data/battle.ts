@@ -96,11 +96,14 @@ export const BATTLE_STAGE = {
     max: 1.0, // …and the biggest are as tall as the screen (then `fit` keeps them inside)
     foeDistance: 0.82, // the wild beast is farther away: × this
     youCloser: 1.22, // yours is close to the camera, seen from behind: × this (owner: "looked like a wren")
+    /** A shorter beast of yours never looks bigger than the wild one: its presence (√ of its drawn area) is at most
+     *  this × the wild one's × the ratio of their sizes by length (owner, 3 ottobre: Guscio bigger than a hammerhead). */
+    smallerYours: 1.15,
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
     foe: { x: 0.62, y: 0.5 }, // was 0.64 (owner: the hammerhead a little more to the left)
-    you: { x: 0.35, y: 1.0 },
+    you: { x: 0.35, y: 0.9 }, // was 1.0: a small beast of yours hid behind its health box
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
   /**

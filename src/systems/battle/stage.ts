@@ -88,6 +88,27 @@ export function battleSize(side: Side, beast: StageBeast, aspect: number): numbe
   return Math.min(size, fitSize(side, beast, aspect));
 }
 
+/** How big a beast looks: the square root of its drawn area, in screen heights. */
+export function presence(beast: StageBeast, size: number): number {
+  const b = beast.box ?? cardBox();
+  return (size * Math.sqrt((b[2] - b[0]) * (b[3] - b[1]))) / BATTLE_STAGE.picture.box;
+}
+
+/**
+ * Both sizes: each from battleSize, then yours, when it is the shorter beast, shrunk so it does not look bigger than
+ * the wild one (BATTLE_STAGE.size.smallerYours).
+ */
+export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): Record<Side, number> {
+  const sizes = { you: battleSize('you', you, aspect), foe: battleSize('foe', foe, aspect) };
+  if (you.lengthM < foe.lengthM) {
+    const most =
+      presence(foe, sizes.foe) * BATTLE_STAGE.size.smallerYours * (spectrumSize(you) / spectrumSize(foe));
+    const now = presence(you, sizes.you);
+    if (now > most) sizes.you *= most / now;
+  }
+  return sizes;
+}
+
 /** The background of a battle: a Guardian's lair, or the region the wild beast lives in (else the bay). */
 export function battlePlace(region: string, inLair: boolean): BattlePlace {
   if (inLair) return 'tana';

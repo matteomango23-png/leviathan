@@ -105,11 +105,12 @@ export class BattleBackdrop {
     this.snow = scene.add.graphics().setDepth(20);
     for (let i = 0; i < 70; i++)
       this.motes.push({ x: Math.random(), y: Math.random(), s: 0.5 + Math.random() });
-    this.near = scene.add.graphics().setDepth(30);
-    this.front = painted.front ? add(painted.front, 31) : null;
+    // the framing layers stay behind the beasts (owner: only the health box may cover them)
+    this.near = scene.add.graphics().setDepth(6);
+    this.front = painted.front ? add(painted.front, 6.5) : null;
     if (!painted.front) {
       const corner = cornerTexture(scene, place, pal);
-      this.corners = [add(corner, 31), add(corner, 31).setFlipX(true)];
+      this.corners = [add(corner, 6.5), add(corner, 6.5).setFlipX(true)];
     }
     this.vignette = add(vignetteTexture(scene), 40);
     if (painted.borrowed) {

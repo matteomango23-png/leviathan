@@ -53,7 +53,8 @@ export const SPECIES: SpeciesDef[] = [
     abilities: ['sfondaOssa'], iconic: true, finalFormName: 'Squalo bianco Titano', albinoFinalFormName: 'Squalo bianco Mega albino',
     artPrompt: 'a massive scarred great white shark with jaws half open showing rows of serrated teeth and a black lifeless eye' },
 
-  // ---- The three starters (unique, never met in the wild while you have one): 3 stages each, evolving at Lv 16 and 36
+  // ---- The three starters (unique, never met in the wild while you have one): 3 stages each, evolving at Lv 16 and 36.
+// All three fight as 'compagno' (Guscio was 'supporto' and did half of Zanna's damage: owner, 3 ottobre 2026).
   { id: 'zanna', name: 'Zanna', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1.5, trait: 'Cucciolo di squalo preistorico: morde più forte di quanto sembri',
     starter: true, evolvesTo: 'squarcio', evolveLevel: 16, artFrom: 'squalo_bianco',
     artPrompt: 'a young prehistoric shark pup, about 1.5 metres long, slender and agile, oversized jagged teeth for its size, dark grey back with faint red scars, curious fierce eyes' },
@@ -63,10 +64,10 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'zannarossa', name: 'Zannarossa', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 15, trait: 'Squalo preistorico colossale, una leggenda viva',
     abilities: ['sfondaOssa'], movesFrom: 'zanna', artFrom: 'squalo_bianco_finale', legendary: true,
     artPrompt: 'a colossal prehistoric shark, 12 metres long, a living legend, massive armoured head, rows of enormous serrated teeth, ancient scars, deep red markings like war paint, terrifying and majestic' },
-  { id: 'guscio', name: 'Guscio', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1, trait: 'Tartarughina antica dal guscio di pietra',
+  { id: 'guscio', name: 'Guscio', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1, trait: 'Tartarughina antica dal guscio di pietra',
     starter: true, evolvesTo: 'rocciaguscio', evolveLevel: 16, artFrom: 'tartaruga_marina',
     artPrompt: 'a small ancient sea turtle hatchling, about 1 metre long, its shell made of dark stone plates with bronze veins, big wise eyes, stubby strong flippers' },
-  { id: 'rocciaguscio', name: 'Rocciaguscio', type: 'corazzato', role: 'supporto', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 3, rideSpeedMult: 0.75, trait: 'Tartaruga corazzata coperta di spuntoni',
+  { id: 'rocciaguscio', name: 'Rocciaguscio', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 3, rideSpeedMult: 0.75, trait: 'Tartaruga corazzata coperta di spuntoni',
     evolvesTo: 'archelon', evolveLevel: 36, movesFrom: 'guscio', artFrom: 'tartaruga_marina',
     artPrompt: 'a young armoured prehistoric sea turtle, 3 metres long, its stone shell covered in sharp bronze spikes and barnacles, a hooked beak, heavy and stubborn' },
   { id: 'archelon', name: 'Archelon', type: 'corazzato', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 8, trait: 'Tartaruga titanica preistorica, una fortezza viva',

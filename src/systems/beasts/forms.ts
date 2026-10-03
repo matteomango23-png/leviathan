@@ -4,6 +4,7 @@ import { ABILITIES, WILD_LEVELS } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
+import { ART_KEYS, BATTLE_ART_KEYS, SPRITE_KEYS } from '../../data/sprites.generated';
 import type { Rng } from '../math';
 import { rollLegend } from './legends';
 
@@ -113,6 +114,20 @@ export function formType(form: BeastForm): TypeId | 'variabile' {
 }
 
 /**
+ * An albino exists only where it has its own pictures (owner, 3 ottobre 2026: "togli questi albini finti", the
+ * species' pictures drawn pale): card, profile and both battle views.
+ */
+export function hasAlbinoArt(speciesId: string): boolean {
+  const k = `${speciesId}_albino`;
+  return (
+    ART_KEYS.includes(k) &&
+    SPRITE_KEYS.includes(k) &&
+    BATTLE_ART_KEYS.includes(`${k}_front`) &&
+    BATTLE_ART_KEYS.includes(`${k}_back`)
+  );
+}
+
+/**
  * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance); in its place a legend of the species may
  * come instead (`where`: the point where it comes, and the legends not available: tamed, gone, already out).
  */
@@ -124,7 +139,10 @@ export function rollWildForm(
   const legend = where ? rollLegend(speciesId, rng, where.x, where.unavailable) : null;
   if (legend) return { speciesId, variant: 'comune', unique: legend };
   const r = rng();
-  if (r < VARIANT_RULES.albino.spawnChance) return { speciesId, variant: 'albino' };
+  if (r < VARIANT_RULES.albino.spawnChance) {
+    if (hasAlbinoArt(speciesId)) return { speciesId, variant: 'albino' };
+    return { speciesId, variant: 'comune' };
+  }
   if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance)
     return { speciesId, variant: 'alfa' };
   return { speciesId, variant: 'comune' };

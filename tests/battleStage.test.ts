@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { BATTLE_STAGE } from '../src/data/battle';
-import { battlePlace, battleSize, isGiant, lengthSpectrum, spectrumSize } from '../src/systems/battle/stage';
+import { BATTLE_ART_BOX } from '../src/data/sprites.generated';
+import {
+  battlePlace,
+  battleSize,
+  battleSizes,
+  isGiant,
+  lengthSpectrum,
+  presence,
+  spectrumSize,
+} from '../src/systems/battle/stage';
 
 const S = BATTLE_STAGE.size;
 const WIDE = 3; // a screen so wide that nothing is shrunk to fit
@@ -41,6 +50,15 @@ describe('battle stage', () => {
   it('leaves an empty gap in the middle, so two big beasts never meet head to head', () => {
     const F = BATTLE_STAGE.fit;
     expect(F.foeLeft - F.youRight).toBeGreaterThanOrEqual(0.1);
+  });
+
+  it('a 1 m Guscio never looks bigger than a 6 m hammerhead', () => {
+    const guscio = { lengthM: 1, giant: false, box: BATTLE_ART_BOX.guscio_back! };
+    const hammer = { lengthM: 6, giant: false, box: BATTLE_ART_BOX.squalo_martello_front! };
+    for (const aspect of [2.16, 1.33]) {
+      const s = battleSizes(guscio, hammer, aspect);
+      expect(presence(guscio, s.you)).toBeLessThan(presence(hammer, s.foe));
+    }
   });
 
   it('knows the giants', () => {
