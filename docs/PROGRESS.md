@@ -1,5 +1,20 @@
 # Progressi
 
+## Stato al 4 ottobre 2026 (v0.30.0) — leggere per primo
+
+Il proprietario lavora qualche giorno con una sessione nel cloud e poi torna su quella del computer: regole per due sessioni in `docs/COME-LAVORIAMO.md`. Chi chiude una sessione aggiunge qui sopra una sezione "Sessione …" con fatto / mancante / cosa provare.
+
+**Fatto di recente (3 ottobre, v0.21–v0.30):** battaglie come Pokémon in tutto: statistiche e danno (v0.21), PP, precisione, stati e statistiche ±6 (v0.22), esperienza e cattura (v0.23), mosse di Pokémon con i nostri nomi imparate per livello e via la schivata (v0.24), inquadratura come gen 5 (v0.25), schermate delle mosse (v0.26), livello massimo 100 (v0.27), scheda in 3 pagine ed evoluzione annullabile (v0.28), squadra e zaino con gli oggetti di Pokémon e stati che restano (v0.29), bestiario con filtri e tessera del cacciatore (v0.30).
+
+**Da fare (in ordine; proporre il piano prima):**
+1. Rifare in Gemini `squalo_martello_back` (troppo dritto) e l'alone scuro della schiena della megattera. Nel cloud: il proprietario genera le immagini e le allega.
+2. Test delle evoluzioni vere (regole in COME-LAVORIAMO, "Lo stile"): una alla volta, senza immagine allegata. Primo: il varano in 3 stadi (l'ultimo uno spinosauro marino con la testa da varano).
+3. Varano albino: mancano card e vista di schiena, poi si mette nel gioco.
+4. Ripensare i 3 pulsanti delle mosse quando cavalchi (oggi usano le vecchie mosse del mare).
+5. Altre cose di Pokémon proposte e non ancora scelte dal proprietario: nature, abilità, strumenti da tenere, meteo e correnti, cacciatori rivali, evoluzioni con oggetti.
+6. Un'altra balena con evoluzione; le evoluzioni a 2 stadi; bestie evolute nelle zone di livello alto.
+7. Capitolo 5, il Mare di Ghiaccio (la Vedova e la reliquia dei templi; anguilla elettrica, polpo gigante, lontra marina). Ora che il livello massimo è 100, le zone nuove possono andare oltre il livello 50.
+
 ## Sessione 12 — Correzioni dopo la prova e tappa 11: l'oceano infinito (2 ottobre 2026) → v0.9.7 … v0.10.0
 
 **Fatto**
