@@ -205,6 +205,12 @@
 - Chrome (Claude in Chrome) non era collegato: le immagini della Piovra sono da generare. Testi su fondo verde in `docs/PROMPT-BESTIE.md`.
 - La campana è a pochi metri sotto la superficie, sotto la nave: si colpisce anche dal basso.
 
+**v0.17.1:**
+
+- `pwa.ts`: controllo degli aggiornamenti a ogni ritorno sullo schermo e ogni 30 minuti.
+- Versione e avviso di esportazione nel menu Pausa.
+- `Mount.turn`/`turnFrom` al posto del giro per la verticale (`TEAM_RULES.turnSeconds` 0,6).
+
 **Prossima sessione:** capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0

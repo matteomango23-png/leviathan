@@ -358,3 +358,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - i **tentacoli** che si annunciano (alghe che si muovono, bolle) prima di alzarsi; se ti prendono ti liberi con lo Scatto.
 - **Piovra livello 25** (proprietario). Battuta resta e si unisce, come il Re Corallo, senza catene da spezzare dopo: il collare si spezza da solo.
 - **Immagini provvisorie** con `artFrom` (il polpo gigante), come per i compagni iniziali in attesa delle loro.
+
+## 2026-10-03 — Aggiornamenti della PWA su iPhone; virata di lato
+
+- **iPhone:** un'app aggiunta alla Home viene quasi sempre ripresa dallo sfondo, non riaperta. Il service worker cerca la versione nuova solo al caricamento della pagina, quindi gli aggiornamenti non arrivavano e il proprietario eliminava l'app, perdendo il salvataggio. Ora `pwa.ts` chiama `registration.update()` a ogni ritorno sullo schermo e ogni 30 minuti. Una versione trovata entro 8 s dal ritorno si applica subito (salvataggio, poi ricarica); una trovata dopo, all'uscita dall'app.
+- **Versione nel menu Pausa** e avviso di esportare prima di eliminare l'app: lo spazio dell'app sulla Home è separato da Safari e si cancella con lei.
+- **Virata delle cavalcature di lato** (scelta del proprietario tra tre opzioni). Il giro per la verticale sembrava una capriola completa.

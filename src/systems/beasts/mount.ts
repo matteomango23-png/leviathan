@@ -24,10 +24,10 @@ export interface Mount extends BodyPose {
   /** You climb on when it reaches you (otherwise it follows you). */
   rider: boolean;
   t: number;
-  /** 0 = normal, rises to 1 while it turns around through the vertical. */
-  loop: number;
-  /** -1: the loop goes nose up, 1: nose down. */
-  loopDir: -1 | 1;
+  /** 0 = normal; 0..1 while it turns around (sideways, like the wild beasts: the head first, then the body). */
+  turn: number;
+  /** The way it faced before the turn. */
+  turnFrom: 1 | -1;
 }
 
 const U = DIVER.lengthUnits;
@@ -60,8 +60,8 @@ export function callMount(
     state: 'in',
     rider,
     t: 0,
-    loop: 0,
-    loopDir: -1,
+    turn: 0,
+    turnFrom: 1,
   };
 }
 
@@ -72,35 +72,28 @@ export function sendAway(m: Mount, diverX: number): void {
 }
 
 /**
- * Turning around: the beast rises (or dives) through the vertical and comes back facing the other way, as a fish
- * seen from the side does; it flips at the top, where both sides look alike (owner: the flat turn looked bad).
+ * Turning around sideways, like the wild beasts: the head turns first and the body follows, staying level
+ * (owner, 3 ottobre 2026: the loop through the vertical looked like a full roll, head up or down).
  */
 function faceTowards(m: Mount, dir: number, dt: number): void {
   const want: 1 | -1 = dir >= 0 ? 1 : -1;
-  if (want !== m.face && m.loop === 0) {
-    m.loop = 0.001;
-    m.loopDir = m.pitch > 0.2 ? 1 : -1; // already diving: it turns under, otherwise over the top
+  if (want !== m.face && m.turn === 0) {
+    m.turnFrom = m.face;
+    m.face = want;
+    m.turn = 0.001;
   }
-  if (m.loop > 0) {
-    m.loop += dt / TEAM_RULES.loopSeconds;
-    if (m.loop >= 0.5 && m.face !== want) m.face = want;
-    if (m.loop >= 1) m.loop = 0;
+  if (m.turn > 0) {
+    m.turn += dt / TEAM_RULES.turnSeconds;
+    if (m.turn >= 1) m.turn = 0;
   }
 }
 
 function animate(m: Mount, dt: number): void {
   const P = TEAM_RULES.pitchMax;
   let wp = clamp(Math.atan2(m.vy, Math.abs(m.vx) + U * 0.4), -P, P);
-  if (m.loop > 0) {
-    // 0 → 1 → 0 across the loop: towards the vertical, then back to the way it swims
-    const k = m.loop < 0.5 ? m.loop * 2 : (1 - m.loop) * 2;
-    const ease = k * k * (3 - 2 * k);
-    wp = wp + ((m.loopDir * Math.PI) / 2 - wp) * ease; // exactly vertical at the flip: both sides look alike
-  }
-  const rate = m.loop > 0 ? TEAM_RULES.loopPitchRate : ROAM.pitchRate;
-  const np = m.pitch + (wp - m.pitch) * Math.min(1, dt * rate);
-  // in the loop the body stays straight: bending it by the fast turn curled the tail upside down (owner, 3 ottobre)
-  m.pitchV = m.loop > 0 ? 0 : (np - m.pitch) / Math.max(dt, 1e-3);
+  if (m.turn > 0) wp *= 0.3; // level while it turns
+  const np = m.pitch + (wp - m.pitch) * Math.min(1, dt * ROAM.pitchRate);
+  m.pitchV = m.turn > 0 ? 0 : (np - m.pitch) / Math.max(dt, 1e-3);
   m.pitch = np;
   m.phase += dt * (ROAM.swimPhaseBase + (Math.hypot(m.vx, m.vy) / U) * ROAM.swimPhasePerSpeed);
 }

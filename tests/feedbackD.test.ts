@@ -23,12 +23,12 @@ const mount = (): Mount => ({
   state: 'ride',
   rider: true,
   t: 0,
-  loop: 0,
-  loopDir: -1,
+  turn: 0,
+  turnFrom: 1,
 });
 
 describe('riding turn', () => {
-  it('turns through the vertical with a straight body, never past upside down', () => {
+  it('turns sideways and level, never through the vertical', () => {
     for (const vy of [-40, 0, 40]) {
       const m = mount();
       const diver = { x: 0, y: 100, vx: 50, vy, face: 1 as 1 | -1 };
@@ -38,10 +38,11 @@ describe('riding turn', () => {
       for (let i = 0; i < 60; i++) {
         stepMount(m, diver, 1 / 30);
         maxPitch = Math.max(maxPitch, Math.abs(m.pitch));
-        if (m.loop > 0) expect(m.pitchV).toBe(0); // no bending in the loop
+        if (m.turn > 0) expect(m.pitchV).toBe(0); // no bending while it turns
       }
       expect(m.face).toBe(-1);
-      expect(maxPitch).toBeLessThanOrEqual(Math.PI / 2 + 0.01);
+      expect(maxPitch).toBeLessThan(0.9);
+      expect(m.turn).toBe(0);
     }
   });
 });

@@ -185,8 +185,8 @@ describe('your beast turning around', () => {
       steepest = Math.max(steepest, Math.abs(m.pitch));
     }
     expect(m.face).toBe(-1);
-    expect(steepest).toBeGreaterThan(1.2);
-    expect(m.loop).toBe(0);
+    expect(steepest).toBeLessThan(0.6); // it turns level, sideways (no loop through the vertical any more)
+    expect(m.turn).toBe(0);
   });
 });
 

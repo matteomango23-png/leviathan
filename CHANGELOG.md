@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.17.1 — Aggiornamenti sull'iPhone e virata di lato (3 ottobre 2026)
+
+- **Aggiornamenti:** il gioco installato sulla Home ora cerca la versione nuova ogni volta che ci torni, non solo quando lo apri da zero (prima su iPhone restava la vecchia). Se la trova subito, salva e si ricarica da solo; se la trova mentre giochi, la applica quando esci dall'app.
+- **Versione nel menu Pausa** (es. "Versione 0.17.1"), per controllare di avere l'ultima.
+- **Promemoria nel menu Pausa:** prima di eliminare il gioco dalla Home esporta il salvataggio. Eliminandolo, l'iPhone cancella anche la partita.
+- **Virata delle cavalcature:** tutte le bestie che cavalchi si girano di lato, restando orizzontali come quelle selvatiche (prima la testa, poi il corpo). Non c'è più il giro in su o in giù.
+
 ## v0.17.0 — Capitolo 4: la Foresta Sommersa (3 ottobre 2026)
 
 - **La storia continua:** dopo il capitolo 3 l'obiettivo ti porta alla Foresta Sommersa. Lì la nave della Vedova Nera è ancorata sopra un **galeone affondato** tra le alghe giganti.

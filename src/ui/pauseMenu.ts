@@ -1,5 +1,6 @@
 // Pause menu: resume, bestiary, replay the opening, export and import the save.
 import type { GameState } from '../systems/game';
+import pkg from '../../package.json';
 import { SaveError } from '../systems/save/saveData';
 import { toSave } from '../systems/game';
 import type { Session } from '../scenes/session';
@@ -86,8 +87,10 @@ export class PauseMenu {
       '',
       panel,
       'La partita si salva da sola. Esporta ogni tanto una copia: serve per non perdere i progressi e per ' +
-        'spostarli tra Safari, il gioco installato sulla Home e un altro telefono (hanno salvataggi separati).',
+        'spostarli tra Safari, il gioco installato sulla Home e un altro telefono (hanno salvataggi separati). ' +
+        'Prima di eliminare il gioco dalla Home esporta sempre: eliminandolo, il salvataggio si cancella.',
     );
+    el('p', 'menu-version', panel, `Versione ${pkg.version}`); // to check that the phone has the latest one
 
     resume.addEventListener('click', onResume);
     exp.addEventListener('click', () => void this.doExport());
