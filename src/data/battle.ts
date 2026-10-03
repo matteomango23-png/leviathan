@@ -36,13 +36,16 @@ export const BATTLE = {
     pauseChance: 0.45, // the ring sometimes stops for a moment (a feint) before closing
     pauseSeconds: [0.15, 0.35] as [number, number],
   },
-  /** Taming (like a Poké Ball): the chance falls with rarity and level, rises when it is worn out. */
+  /**
+   * Taming, with Pokémon's catch formula (Gen III–IV): a = (3·maxHP − 2·HP) × rate × shell / (3·maxHP) × condition,
+   * and the shell holds with chance a / 255. Worn out, asleep or frozen it is much easier.
+   */
   catch: {
-    byStars: { 1: 0.85, 2: 0.65, 3: 0.45, 4: 0.28, 5: 0.12 } as Record<number, number>, // tuning
+    rateByStars: { 1: 190, 2: 120, 3: 75, 4: 45, 5: 25 } as Record<number, number>, // like Pokémon's catch rates (Pidgey 255–190, starters 45). Tuning
+    uniqueRate: 15, // Guardians and legendaries (Pokémon's legendaries: 3–45). Tuning
     variantMult: 0.6, // albino and alfa are harder
-    uniqueMult: 0.35, // Guardians and legendaries are much harder
-    hpWeight: 2 / 3, // at full health the chance is × (1 − hpWeight); nearly worn out, × 1
-    levelPenalty: 0.85, // × this for every level the beast is above your strongest
+    statusBonus: { stordito: 2.5, congelato: 2.5, avvelenato: 1.5, ferito: 1.5, paralizzato: 1.5 } as Record<string, number>,
+    levelPenalty: 0.85, // × this for every level the beast is above your strongest (like Spada e Scudo's badges)
     shakes: 3, // the shell shakes this many times before it holds
     shellItem: 'conchiglia', // each attempt uses one (owner, 2 ottobre: they were endless)
   },

@@ -279,7 +279,7 @@ export class BattleScene extends Phaser.Scene {
     const lines: string[] = [];
     let title: string = BATTLE_TEXT.won;
     if (s.over === 'won' || s.over === 'caught')
-      lines.push(BATTLE_TEXT.xp(this.name('you'), xpReward(s.foe.form, s.foe.level)));
+      lines.push(BATTLE_TEXT.xp(this.name('you'), xpReward(s.foe.form, s.foe.level, you(s).level)));
     if (s.over === 'caught') title = BATTLE_TEXT.tamed(this.name('foe'));
     if (s.over === 'lost') title = BATTLE_TEXT.lost;
     if (s.over === 'fled') title = BATTLE_TEXT.fleeOk;

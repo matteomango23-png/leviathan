@@ -1,4 +1,5 @@
 // Leviatano — all tameable beasts. Every creature in the game is collectible.
+import type { GrowthGroup } from './progression';
 import { TypeId } from './rules';
 import type { Stats as BaseStats } from './stats';
 import { RegionId } from './world';
@@ -21,6 +22,8 @@ export interface SpeciesDef {
   size: SizeClass;
   /** Its own base statistics (data/stats.ts), when the automatic ones do not suit it. */
   base?: BaseStats;
+  /** Its growth group (data/progression.ts), when the one of its stars does not suit it. */
+  growth?: GrowthGroup;
   lengthM: number;             // standard adult length in metres (diver = 2 m): sprites are scaled from this at runtime
   trait: string;               // one-line description for the card
   abilities?: Ability[];
