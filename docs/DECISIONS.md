@@ -419,6 +419,17 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Lotta disperata**: potenza 50, chi la usa perde un quarto della sua vita.
 - Fonti: Bulbapedia (Status condition, Stat modifier, PP, Priority).
 
+## 2026-10-03 — Mosse di Pokémon e niente schivata
+
+- Il proprietario: "facciamo uguale a Pokémon e togliamo la schivata; prendi la lista delle mosse e le loro statistiche, rinominale e inseriscile allo stesso modo".
+- **Mosse di battaglia separate da quelle del mare**: `data/battleMoves.ts` (circa 135 mosse Pokémon, valori Gen IV–VII, nomi nostri; il commento dice quale mossa copiano). Le mosse di `data/moves.ts` restano per la cavalcata in mare aperto (i 3 pulsanti), da ripensare più avanti.
+- **Tipi**: restano i nostri 5 (decisione del proprietario). Predatore ← Normale, Buio, Lotta, Drago; Abissale ← Veleno, Spettro, Psico, Fuoco (le bocche idrotermali: ferisce come la scottatura); Glaciale ← Ghiaccio, Acqua; Tempesta ← Elettro, Volante; Corazzato ← Roccia, Acciaio, Terra e le chele.
+- **Categoria per mossa** (non più per tipo), come Pokémon dalla 4ª generazione.
+- **Liste per livello** (`data/learnsets.ts`): ogni specie segue il Pokémon a cui somiglia, compressa in 50 livelli; livello 0 = mossa imparata evolvendosi. Selvatiche e nuove: le ultime 4 imparate. Al massimo 4 mosse; la quinta aspetta in `pendingMoves` e si sceglie a fine battaglia o dalla scheda. Ricordamosse al porto.
+- **Salvataggio**: `known` e `pendingMoves` facoltativi (niente nuova versione); un salvataggio vecchio riceve le mosse del livello e PP pieni (i vecchi PP erano delle mosse del mare).
+- Effetti nuovi: rinculo, colpi multipli 2–5 (35/35/15/15%), critico alto 1/8, Letargo, Acqua ferma, Potere antico. Niente confusione, mosse a due turni, KO in un colpo, protezione (per ora).
+- Tolte la schivata (`dodge.ts`, `dodgeBar.ts`) e la derivazione automatica delle regole dalle fx.
+
 ## 2026-10-03 — Esperienza e cattura di Pokémon (fase 3 di 3)
 
 - **Gruppi di crescita** (`data/progression.ts`): Veloce, Medio, Medio-lento, Lento con le curve di Pokémon; per stelle (1 veloce, 2–3 medio, 4 medio-lento come gli starter, 5 lento), o `growth` sulla specie. `TeamBeast.xp` resta l'esperienza verso il livello dopo; al caricamento si ferma al massimo del livello (le curve nuove sono vicine alle vecchie).

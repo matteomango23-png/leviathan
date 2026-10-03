@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.24.0 — Mosse di Pokémon, niente schivata (3 ottobre 2026)
+
+- **Niente più schivata:** la battaglia è a turni come in Pokémon.
+- **Mosse nuove, prese da Pokémon** con i nostri nomi: più di 130, ognuna con la potenza, la precisione, i PP e l'effetto della mossa Pokémon da cui viene (per esempio Azzannata = Morso, Stritolamorso = Sgranocchio, Maremoto = Surf, Fulmine = Fulmine).
+- **Ogni bestia impara mosse a livelli precisi**, come il Pokémon a cui somiglia, e ne conosce **al massimo 4**. Quando ne impara una quinta ti chiede quale dimenticare (subito a fine battaglia, oppure dalla sua scheda), o puoi rinunciare.
+- **Le evoluzioni imparano una mossa nuova** appena si evolvono.
+- **Ricordamosse al porto:** dalla scheda di una bestia (Squadra, al porto) può reimparare una mossa che ha dimenticato.
+- Nella scheda: le mosse di battaglia con PP, le prossime che imparerà e a che livello, e a parte le mosse in mare (quando la cavalchi), che restano quelle di prima.
+- Le tue bestie ricevono le mosse giuste per il loro livello, con i PP pieni.
+
 ## v0.23.0 — Battaglie come Pokémon, fase 3: esperienza e cattura (3 ottobre 2026)
 
 - **Esperienza come Pokémon:** battere una bestia più forte della tua dà molta più esperienza, una più debole molto meno. Ogni bestia ha il suo ritmo di crescita: i pesci comuni crescono in fretta, i compagni come gli starter di Pokémon, le leggende piano.
