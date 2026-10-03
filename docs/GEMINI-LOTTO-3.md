@@ -83,3 +83,11 @@ Chat e immagini: da compilare man mano.
 | narvalo_doppio_corno | https://gemini.google.com/app/61321b0fd69db61e | card, profilo, davanti (`_flip`), dietro |
 
 **Mancano (prossima volta):** lontra_gigante, calamaro_abissale. Poi il proprietario scarica tutto sul Desktop e io sistemo e metto nel gioco le 18 forme.
+
+## Esito (scelta del proprietario, 3 ottobre)
+
+- **Evoluzioni:** istrice_gigante, napoleone_corazzato.
+- **Alfa:** elefante_marino, tricheco, rana_pescatrice, squalo_capopiatto, pesce_vela, pastinaca, torpedine, squalo_volpe.
+- **Unico:** beluga_spettro.
+- **Scartate dal proprietario:** goblin, dragone, granchio, narvalo, leone spinoso.
+- Originali in `asset animali ai/<bestia>/` con i nomi finali; bocche aperte fatte dal proprietario.

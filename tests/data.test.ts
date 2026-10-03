@@ -8,8 +8,8 @@ import { PROGRESSION, TYPES, typeMultiplier } from '../src/data/rules';
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
 
 describe('kit data integrity', () => {
-  it('has 63 beasts with unique ids (34 of the kit + 3 starter lines of 3 stages + 20 new ones)', () => {
-    expect(SPECIES).toHaveLength(63);
+  it('has 65 beasts with unique ids (34 of the kit + 3 starter lines of 3 stages + 20 new ones + 2 evolutions)', () => {
+    expect(SPECIES).toHaveLength(65);
     expect(unique(SPECIES.map((s) => s.id))).toBe(true);
   });
 

@@ -91,7 +91,12 @@ export const SPECIES: SpeciesDef[] = [
 
   // ---- Barriera Rossa (5-10)
   { id: 'pesce_palla', name: 'Pesce palla', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [5, 7], rarity: 1, size: 'piccola', lengthM: 0.6, trait: 'Si gonfia e respinge chi ti circonda',
+    evolvesTo: 'istrice_gigante', evolveLevel: 18,
     artPrompt: 'a spiny pufferfish inflated into a thorny sphere with armored skin plates' },
+  // its evolution (owner, 3 ottobre 2026): not met in the wild yet, keeps the moves of the pufferfish (tuning)
+  { id: 'istrice_gigante', name: 'Istrice gigante', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [18, 20], rarity: 2, size: 'media', lengthM: 1.2, trait: 'Corazza di bronzo irta di spine: chi lo morde si ferisce',
+    movesFrom: 'pesce_palla',
+    artPrompt: 'a giant porcupinefish, bronze armored skin plates with long sharp spines, half inflated, big beak-like teeth, battle scars' },
   { id: 'murena', name: 'Murena', type: 'abissale', role: 'compagno', region: 'barriera', wildLevel: [6, 8], rarity: 2, size: 'media', lengthM: 3, trait: 'Agguato dalle crepe, morso che trattiene',
     artPrompt: 'a green-black moray eel emerging from a coral crevice, gaping mouth with backward teeth, pale glowing spots' },
   { id: 'squalo_martello', name: 'Squalo martello', type: 'tempesta', role: 'cavalcatura', region: 'barriera', wildLevel: [7, 9], rarity: 3, size: 'grande', lengthM: 6, trait: 'Senso elettrico: rivela creature e relitti nascosti',
@@ -133,7 +138,12 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'scorfano', name: 'Scorfano gigante', type: 'abissale', role: 'supporto', region: 'barriera', wildLevel: [6, 9], rarity: 2, size: 'media', lengthM: 1.5, trait: 'Immobile tra le rocce, spine velenose',
     artPrompt: 'a giant scorpionfish camouflaged like a mossy rock, venomous dorsal spines, wide mouth' },
   { id: 'pesce_napoleone', name: 'Pesce napoleone', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [9, 12], rarity: 3, size: 'grande', lengthM: 2.3, trait: 'Fronte gibbosa, morde i coralli',
+    evolvesTo: 'napoleone_corazzato', evolveLevel: 24,
     artPrompt: 'a giant humphead wrasse with a big bulging forehead, green and violet scales, thick lips' },
+  // its evolution (owner, 3 ottobre 2026: "il pesce pappagallo può essere un'evoluzione, deve essere più grande")
+  { id: 'napoleone_corazzato', name: 'Napoleone corazzato', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [24, 26], rarity: 4, size: 'grande', lengthM: 3.5, trait: 'Elmo d\u2019osso sulla fronte: sfonda coralli e corazze',
+    movesFrom: 'pesce_napoleone',
+    artPrompt: 'a giant ancient humphead wrasse, its bulging forehead turned into a massive bony bronze helmet, green and violet scales hardened into armor plates' },
   { id: 'pesce_spada', name: 'Pesce spada', type: 'predatore', role: 'compagno', region: 'barriera', wildLevel: [10, 13], rarity: 3, size: 'grande', lengthM: 4, trait: 'Trafigge con la spada a tutta velocità',
     artPrompt: 'a swordfish with a long flat bill like a blade, dark blue back, powerful crescent tail' },
   { id: 'squalo_volpe', name: 'Squalo volpe', type: 'tempesta', role: 'compagno', region: 'barriera', wildLevel: [10, 13], rarity: 3, size: 'grande', lengthM: 5, trait: 'Stordisce le prede con la coda lunghissima',
@@ -235,6 +245,9 @@ export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
   { id: 'orca_matriarca_finale', speciesId: 'orca', name: 'Madre delle madri', level: 36, statMult: 1.5, sizeMult: 1.45, region: 'ghiaccio',
     chance: 0.01, where: { biome: 'ghiaccio', minKm: 3 }, place: 'Banchisa, oltre 3 km dalla costa', temper: 'aggressive',
     artPrompt: 'the oldest orca matriarch, enormous, covered in scars, mother of every pod' },
+  { id: 'beluga_spettro', speciesId: 'beluga', name: 'Beluga spettro', level: 24, statMult: 1.4, sizeMult: 1.3, region: 'ghiaccio',
+    chance: 0.02, where: { biome: 'ghiaccio', minKm: 2 }, place: 'Mare di Ghiaccio, oltre 2 km dalla costa', // owner, 3 ottobre: "una sorta di albino, un one off"
+    artPrompt: 'a ghostly beluga whale, pale translucent skin showing faint bones, a glowing rounded forehead' },
   { id: 'squalo_martello_preistorico', speciesId: 'squalo_martello', name: 'Squalo martello preistorico', level: 30, statMult: 1.5, sizeMult: 1.7, region: 'barriera',
     chance: 0.01, where: { biome: 'barriera', minKm: 3 }, place: 'Barriera lontana, oltre 3 km dalla costa', temper: 'aggressive',
     artPrompt: 'a prehistoric hammerhead shark covered in armored plates and ridges, red glow under its belly' },

@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.19.0 — Le prime evoluzioni e gli alfa (3 ottobre 2026)
+
+- **Due bestie del mare si evolvono**, come i compagni iniziali:
+  - il **pesce palla** diventa **Istrice gigante** al livello 18 (corazza di bronzo irta di spine);
+  - il **pesce Napoleone** diventa **Napoleone corazzato** al livello 24 (elmo d'osso, molto più grande).
+  - Tengono le loro mosse.
+- **Otto specie hanno il loro alfa**, con immagini proprie: elefante marino, tricheco (con quattro zanne), rana pescatrice, squalo capopiatto, pesce vela, pastinaca, torpedine (con le scariche) e squalo volpe. Gli alfa sono più grossi e più forti, e un po' più rari.
+- **Il Beluga spettro**: un beluga unico, pallido e trasparente, che si può incontrare una sola volta nel Mare di Ghiaccio, oltre 2 km dalla costa.
+
 ## v0.18.2 — Grandezze in battaglia (3 ottobre 2026)
 
 - In battaglia ogni bestia ha **sempre la stessa grandezza**, decisa dalla sua lunghezza vera, tra un minimo e un massimo:
