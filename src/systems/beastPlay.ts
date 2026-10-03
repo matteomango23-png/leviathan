@@ -5,7 +5,8 @@ import { TEAM_RULES } from '../data/beasts';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
-import { formLengthUnits, formStats, speciesOf } from './beasts/forms';
+import { swimSpeedOf } from '../data/species';
+import { formLengthUnits, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
 import { teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
@@ -30,7 +31,11 @@ export function contextAction(g: BeastWorld): ContextAction {
 export function mountSpeed(g: BeastWorld): number | undefined {
   const b = activeBeast(g);
   if (!g.beasts.riding || !b) return undefined;
-  return formStats(b.form, b.level).speed * TEAM_RULES.rideSpeedMult * (speciesOf(b.form).rideSpeedMult ?? 1);
+  return (
+    swimSpeedOf(speciesOf(b.form), b.form.variant) *
+    TEAM_RULES.rideSpeedMult *
+    (speciesOf(b.form).rideSpeedMult ?? 1)
+  );
 }
 
 /** Mounts (GDD "cavalcatura") and the second stages that can carry you; not while worn out. */

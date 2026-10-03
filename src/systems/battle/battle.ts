@@ -79,8 +79,8 @@ export function firstSide(s: BattleState, action: Action, rng: Rng): Side {
   };
   const p = prio(you(s), action.index) - prio(s.foe, s.foeMove);
   if (p !== 0) return p > 0 ? 'you' : 'foe';
-  const a = you(s).stats.speed;
-  const b = s.foe.stats.speed;
+  const a = you(s).stats.spe;
+  const b = s.foe.stats.spe;
   return a === b ? (rng() < 0.5 ? 'you' : 'foe') : a > b ? 'you' : 'foe';
 }
 
@@ -183,7 +183,7 @@ export function fleeChance(s: BattleState): number {
   const me = you(s);
   const p =
     f.base +
-    (me.stats.speed > s.foe.stats.speed ? f.fasterBonus : 0) +
+    (me.stats.spe > s.foe.stats.spe ? f.fasterBonus : 0) +
     f.perTry * s.fleeTries -
     f.perLevelAbove * Math.max(0, s.foe.level - me.level) -
     f.perStar * (formStars(s.foe.form) - 1) -

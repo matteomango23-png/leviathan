@@ -1,5 +1,6 @@
 // Leviatano — all tameable beasts. Every creature in the game is collectible.
-import { TypeId, PROGRESSION, VARIANT_RULES } from './rules';
+import { TypeId } from './rules';
+import type { Stats as BaseStats } from './stats';
 import { RegionId } from './world';
 
 export type Role = 'cavalcatura' | 'compagno' | 'supporto';
@@ -18,6 +19,8 @@ export interface SpeciesDef {
   wildLevel: [number, number];
   rarity: Stars;
   size: SizeClass;
+  /** Its own base statistics (data/stats.ts), when the automatic ones do not suit it. */
+  base?: BaseStats;
   lengthM: number;             // standard adult length in metres (diver = 2 m): sprites are scaled from this at runtime
   trait: string;               // one-line description for the card
   abilities?: Ability[];
@@ -259,33 +262,13 @@ export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
     artPrompt: 'a pure white orca queen with pale glowing eyes and a crown of frost on her head' },
 ];
 
-// ---- Base stats (tuning). Stat at level L = base * (1 + statGrowthPerLevel * (L-1)) * variant mult.
-export interface Stats { hp: number; bite: number; charge: number; defense: number; speed: number; }
-// Health and bite are ×10 since 3 ottobre 2026 (owner: "un livello 1 mi toglie 1/5 di vita"): with 10 health at
-// level 11 the smallest hit (1) was a fifth of it; now, like Pokémon, a scratch is 1 of ~100 (save v12 migrates).
-// A support bites 1.8 (was 1): its moves did almost nothing (owner, Guscio).
-const ROLE_BASE: Record<Role, Stats> = {
-  cavalcatura: { hp: 100, bite: 26, charge: 3, defense: 0.10, speed: 120 }, // bite 2.6 (was 2): a final form bites harder than its second stage
-  compagno:    { hp: 80,  bite: 30, charge: 2, defense: 0.10, speed: 105 },
-  supporto:    { hp: 80,  bite: 18, charge: 1, defense: 0.18, speed: 95 },
-};
-const RARITY_MULT: Record<Stars, number> = { 1: 0.8, 2: 0.9, 3: 1.0, 4: 1.15, 5: 1.35 };
-const SIZE_HP: Record<SizeClass, number> = { piccola: 0.8, media: 1.0, grande: 1.3, colossale: 1.7 };
-// the bigger the beast, the harder it bites (owner, 2 ottobre: a barracuda bit harder than a white shark)
-const SIZE_BITE: Record<SizeClass, number> = { piccola: 0.75, media: 0.95, grande: 1.2, colossale: 1.45 };
-const SIZE_SPEED: Record<SizeClass, number> = { piccola: 1.05, media: 1.0, grande: 0.95, colossale: 0.85 };
-
-export function statsAt(species: SpeciesDef, level: number, variant: 'comune' | 'albino' | 'alfa' = 'comune', uniqueMult = 1): Stats {
-  const b = ROLE_BASE[species.role], r = RARITY_MULT[species.rarity];
-  const lv = 1 + PROGRESSION.statGrowthPerLevel * (level - 1);
-  const v = (variant === 'comune' ? 1 : VARIANT_RULES[variant].statMult) * uniqueMult;
-  return {
-    hp: Math.round(b.hp * r * SIZE_HP[species.size] * lv * v),
-    bite: +(b.bite * r * SIZE_BITE[species.size] * lv * v).toFixed(1),
-    charge: +(b.charge * r * lv * v).toFixed(1),
-    defense: Math.min(0.5, b.defense * (variant === 'comune' ? 1 : 1.2)),
-    speed: Math.round(b.speed * SIZE_SPEED[species.size] * (variant === 'albino' ? 1.1 : 1)),
-  };
+// ---- Battle statistics: data/stats.ts (the Pokémon formula). Here only how fast a beast swims when ridden.
+export { statsAt, type Stats } from './stats';
+const ROLE_SWIM: Record<Role, number> = { cavalcatura: 120, compagno: 105, supporto: 95 }; // world units/s (tuning)
+const SIZE_SWIM: Record<SizeClass, number> = { piccola: 1.05, media: 1.0, grande: 0.95, colossale: 0.85 };
+/** How fast a beast swims with you on its back (before rideSpeedMult). */
+export function swimSpeedOf(species: SpeciesDef, variant: 'comune' | 'albino' | 'alfa' = 'comune'): number {
+  return Math.round(ROLE_SWIM[species.role] * SIZE_SWIM[species.size] * (variant === 'albino' ? 1.1 : 1));
 }
 
 export const speciesById = (id: string) => SPECIES.find((s) => s.id === id);

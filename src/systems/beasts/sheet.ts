@@ -6,7 +6,7 @@ import { MOVES } from '../../data/moves';
 import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { SpeciesDef, Stats } from '../../data/species';
-import { moveDamage } from './combat';
+import { powerOf } from './combat';
 import { ABILITIES } from '../../data/beasts';
 import {
   breaksBones,
@@ -29,8 +29,8 @@ export interface SheetMove {
   unlockLevel: number;
   unlocked: boolean;
   cooldown: number;
-  damageNow: number;
-  damageNext: number;
+  /** Its power, like Pokémon (0: no damage). */
+  power: number;
   text: string;
 }
 
@@ -95,8 +95,6 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
   const type = formType(form);
   const typeDef = type === 'variabile' ? null : TYPES[type];
   const stats = formStats(form, lv);
-  const next = formStats(form, Math.min(PROGRESSION.maxLevel, lv + 1));
-  const neutral = { type: 'variabile' as const, defense: 0, hp: 1, maxHp: 1 };
   const moves = MOVES.filter((m) => m.species === moveSpeciesOf(form))
     .sort((a, b) => a.slot - b.slot)
     .map((m) => {
@@ -110,8 +108,7 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
         unlockLevel,
         unlocked: lv >= unlockLevel,
         cooldown: m.cooldown,
-        damageNow: moveDamage({ type, bite: stats.bite, defense: 0 }, m, neutral),
-        damageNext: moveDamage({ type, bite: next.bite, defense: 0 }, m, neutral),
+        power: powerOf(m),
         text: m.text,
       };
     });

@@ -245,6 +245,8 @@
 - Le bocche aperte le ha fatte il proprietario; dove mancano non si usano.
 - Varano albino (`asset animali ai/varano del nilo nero/varano_nilo_albino_*`): mancano card e vista dietro, si mette nel gioco dopo.
 
+**Battaglie come Pokémon (piano approvato dal proprietario, 3 ottobre):** fase 1 fatta (v0.21.0: statistiche, danno, tipi). Fase 2: mosse con potenza, precisione, PP (al posto della ricarica), categoria fisica/speciale/stato, priorità, stati alterati (avvelenato, paralizzato, stordito=sonno, congelato, ferito=scottatura) e statistiche da −6 a +6. Fase 3: esperienza (gruppi di crescita, formula Gen V) e cattura (formula Gen V).
+
 **Prossima sessione:**
 0. Rifare in Gemini `squalo_martello_back` (è dritto, visto da dietro in pieno: owner, 3 ottobre) con la richiesta di schiena che funziona (coda vicina in basso a sinistra, testa lontana in alto a destra).
 1. Test delle evoluzioni vere: richiesta **senza immagine allegata**, una trasformazione forte (regole in memoria "Stile delle evoluzioni"), una alla volta, decide il proprietario.

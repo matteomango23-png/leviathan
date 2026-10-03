@@ -4,11 +4,11 @@
 
 export const BATTLE = {
   secondsPerTurn: 4, // a move's cooldown (seconds, moves.ts) becomes turns of recharge: round(cooldown / this)
-  levelEdge: 0.08, // tuning: each level above the target adds 8% damage (each level below takes 8% off)
-  levelEdgeClamp: [0.3, 2] as [number, number], // …but never less than 0.3× or more than double (was 0.5: a level 1 hurt a level 11 too much)
+  // the Pokémon damage modifiers (Gen VI+): the levels count through the formula and the statistics (data/stats.ts)
   randomRange: [0.85, 1] as [number, number], // damage varies a little, like Pokémon
-  critChance: 1 / 16,
+  critChance: 1 / 24,
   critMult: 1.5,
+  stab: 1.5, // a move of the beast's own type
   /** Move effects (fx in moves.ts) as they work in a turn-based battle. */
   fx: {
     multiHitShare: 0.6, // 'frenzy:N' / 'hits:N': several hits, each this share of the damage…

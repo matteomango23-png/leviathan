@@ -3,7 +3,8 @@
 import { MoveTypeId } from './rules';
 
 export type Power = 'nessuno' | 'basso' | 'medio' | 'alto' | 'altissimo';
-export const POWER_MULT: Record<Power, number> = { nessuno: 0, basso: 1, medio: 1.6, alto: 2.5, altissimo: 4 }; // tuning, × beast bite stat
+/** A move's power, like Pokémon's (Morso 60, Surf 90, Iper Raggio 150…): a first pass by its class, tuning. */
+export const MOVE_POWER: Record<Power, number> = { nessuno: 0, basso: 40, medio: 60, alto: 90, altissimo: 120 };
 
 export interface MoveDef {
   id: string;

@@ -64,7 +64,7 @@ describe('battle balance', () => {
   });
 
   it('an old save keeps its beasts as healthy as they were (v12: health × 10)', () => {
-    const old = migrate({ game: 'leviatano', version: 11, team: [{ uid: 'b1', hp: 5 }] }) as {
+    const old = migrate({ game: 'leviatano', version: 11, team: [{ uid: 'b1', hp: 5 }] }, undefined, 12) as {
       team: { hp: number }[];
     };
     expect(old.team[0]!.hp).toBe(50);

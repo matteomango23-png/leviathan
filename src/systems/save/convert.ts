@@ -3,6 +3,7 @@ import { START } from '../../data/worldLayout';
 import { saveSub, subWakePoint, type SubState } from '../submarine';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
+import { seedFrom } from '../../data/stats';
 import { hasAlbinoArt } from '../beasts/forms';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
@@ -27,6 +28,7 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     const form = { ...s.form };
     // an albino without pictures of its own was the species drawn pale: it goes back to the common one
     if (form.variant === 'albino' && !form.unique && !hasAlbinoArt(form.speciesId)) form.variant = 'comune';
+    form.seed ??= seedFrom(s.uid); // its individual values (data/stats.ts), kept from now on
     const b = makeTeamBeast(s.uid, form, s.level, s.inTeam);
     b.hp = Math.min(s.hp, maxHpOf(b));
     b.ko = s.ko || b.hp <= 0;

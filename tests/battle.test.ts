@@ -13,7 +13,7 @@ import {
   you,
 } from '../src/systems/battle/battle';
 import { judgeDodge, makeDodgeRing, ringProgress } from '../src/systems/battle/dodge';
-import { canUse, levelMult, makeFighter, rechargeTurnsOf } from '../src/systems/battle/fighter';
+import { canUse, makeFighter, rechargeTurnsOf } from '../src/systems/battle/fighter';
 import { makeRng } from '../src/systems/math';
 
 const shark = (level: number) => makeFighter({ speciesId: 'squalo_bianco', variant: 'comune' }, level);
@@ -33,9 +33,7 @@ describe('moves and damage', () => {
     expect(canUse(f.moves[1]!)).toBe(true);
   });
 
-  it('levels matter: each level above hits harder', () => {
-    expect(levelMult(8, 5)).toBeCloseTo(1 + 3 * BATTLE.levelEdge);
-    expect(levelMult(5, 8)).toBeCloseTo(1 - 3 * BATTLE.levelEdge);
+  it('levels matter: a higher level hits harder (through the formula and the statistics)', () => {
     const avg = (att: number, def: number): number => {
       let t = 0;
       for (let i = 0; i < 200; i++) {
@@ -63,7 +61,7 @@ describe('moves and damage', () => {
   it('the faster beast acts first; switching always comes first', () => {
     const s = createBattle([shark(5), barracuda(5)], barracuda(5));
     s.foeMove = 0;
-    const fast = you(s).stats.speed > s.foe.stats.speed ? 'you' : 'foe';
+    const fast = you(s).stats.spe > s.foe.stats.spe ? 'you' : 'foe';
     expect(firstSide(s, { kind: 'move', index: 0 }, makeRng(1))).toBe(fast);
     expect(firstSide(s, { kind: 'switch', index: 1 }, makeRng(1))).toBe('you');
     expect(switchTo(s, 1)).toHaveLength(1);

@@ -17,6 +17,8 @@ export interface BeastForm {
   unique?: string;
   /** Final form (level 50 of iconic species). */
   final?: boolean;
+  /** Its individual values (data/stats.ts ivsOf): set when met in the wild, kept when tamed. */
+  seed?: number;
 }
 
 export function speciesOf(form: BeastForm): SpeciesDef {
@@ -92,9 +94,10 @@ export function formLengthUnits(form: BeastForm, level = 1): number {
   return (m / RENDER.diverLengthM) * DIVER.lengthUnits * RENDER.beastScaleBoost;
 }
 
+/** Battle statistics (data/stats.ts): the individual values come from `form.seed`. */
 export function formStats(form: BeastForm, level: number): Stats {
   const u = uniqueOf(form);
-  return statsAt(speciesOf(form), level, form.variant, u ? u.statMult : 1);
+  return statsAt(speciesOf(form), level, form.variant, u ? u.statMult : 1, form.seed ?? 0);
 }
 
 export function formStars(form: BeastForm): number {

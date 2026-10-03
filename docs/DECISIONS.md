@@ -398,3 +398,14 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Un albino senza immagini sue era la specie schiarita: il proprietario non lo vuole. `hasAlbinoArt` (card, profilo, davanti e dietro) decide se un albino può comparire; al caricamento quelli senza immagini tornano comuni.
 - Le grandezze in battaglia restano per bestia, ma `battleSizes` confronta le due: se la tua è più corta, la sua presenza (radice dell'area disegnata) non supera `smallerYours` × quella della selvatica × il rapporto delle loro lunghezze.
 - I tre compagni iniziali combattono tutti come "compagno".
+
+## 2026-10-03 — Le regole di battaglia di Pokémon (fase 1 di 3)
+
+- Il proprietario vuole le stesse dinamiche di Pokémon, con i nomi nostri. Fase 1: statistiche, danno e tipi.
+- **Statistiche** (`data/stats.ts`): sei, formula Gen III+ senza EV e nature; valori individuali 0–31 da un seme (`BeastForm.seed`: dato all'incontro, tenuto alla domatura; le bestie vecchie lo prendono dal loro uid). Le basi si calcolano da rarità (totale come Pokémon: 330–580), ruolo, grandezza e tipo; una specie può avere le sue (`base`).
+- **Fisico/speciale per tipo**, come Pokémon fino alla 3ª generazione: Predatore e Corazzato fisici, gli altri speciali. Nella fase 2 ogni mossa avrà la sua categoria.
+- **Danno** (`combat.ts baseDamage`, `fighter.ts hitDamage`): formula Gen V+, STAB 1,5, critico 1/24 ×1,5, casuale 0,85–1; via il vecchio vantaggio di livello. Potenze per classe: 40, 60, 90, 120 (fase 2: per mossa).
+- **Tipi**: ×2 / ×½, ognuno forte contro due e debole contro due (il successivo e il terzo dopo nel cerchio).
+- Salvataggio v13: le bestie tornano in piena salute (la vecchia vita non vale più).
+- La velocità di nuoto quando cavalchi resta a parte (`swimSpeedOf`).
+- Fonti: Bulbapedia (Damage, Stat), Smogon, Pokémon Wiki.

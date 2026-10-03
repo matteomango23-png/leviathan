@@ -7,34 +7,35 @@ export type MoveTypeId = TypeId | 'variabile'; // 'variabile' = Leviatano: takes
 export interface TypeDef {
   id: TypeId;
   name: string;        // Italian UI name
-  beats: TypeId;       // this type deals bonus damage to `beats`
+  beats: TypeId[];     // this type's moves are super effective (×2) on these
   why: string;         // flavour text shown in the bestiary
   color: string;       // UI + illustration accent colour
 }
 
-// The circle: each type beats the next one.
+// Like Pokémon (owner, 3 ottobre 2026): super effective ×2, not very effective ×½. Five types, each strong against two
+// and weak against two (rock-paper-scissors on five): the one after it and the one three after it in this circle.
 // Predatore → Abissale → Glaciale → Tempesta → Corazzato → Predatore
 export const TYPES: Record<TypeId, TypeDef> = {
-  predatore: { id: 'predatore', name: 'Predatore', beats: 'abissale', why: 'Le creature molli del buio sono prede', color: '#c9443f' },
-  abissale:  { id: 'abissale',  name: 'Abissale',  beats: 'glaciale', why: 'Il calore delle bocche idrotermali scioglie il ghiaccio', color: '#5ff3d6' },
-  glaciale:  { id: 'glaciale',  name: 'Glaciale',  beats: 'tempesta', why: 'Il gelo spegne le correnti', color: '#a9dcff' },
-  tempesta:  { id: 'tempesta',  name: 'Tempesta',  beats: 'corazzato', why: 'La scarica passa attraverso il carapace', color: '#b07bff' },
-  corazzato: { id: 'corazzato', name: 'Corazzato', beats: 'predatore', why: 'I denti si spezzano sul carapace', color: '#d9a24a' },
+  predatore: { id: 'predatore', name: 'Predatore', beats: ['abissale', 'tempesta'], why: 'Le creature molli del buio e quelle che vivono di scariche sono prede', color: '#c9443f' },
+  abissale:  { id: 'abissale',  name: 'Abissale',  beats: ['glaciale', 'corazzato'], why: 'Il calore delle bocche idrotermali scioglie il ghiaccio, la pressione schiaccia i gusci', color: '#5ff3d6' },
+  glaciale:  { id: 'glaciale',  name: 'Glaciale',  beats: ['tempesta', 'predatore'], why: 'Il gelo spegne le correnti e intorpidisce i cacciatori', color: '#a9dcff' },
+  tempesta:  { id: 'tempesta',  name: 'Tempesta',  beats: ['corazzato', 'abissale'], why: 'La scarica passa attraverso il carapace e illumina il buio', color: '#b07bff' },
+  corazzato: { id: 'corazzato', name: 'Corazzato', beats: ['predatore', 'glaciale'], why: 'I denti si spezzano sul carapace, il ghiaccio si frantuma', color: '#d9a24a' },
 };
 
-export const TYPE_ADVANTAGE_MULT = 1.5;    // attacker type beats defender type
-export const TYPE_DISADVANTAGE_MULT = 0.66; // defender type beats attacker type
+export const TYPE_ADVANTAGE_MULT = 2;      // superefficace, like Pokémon
+export const TYPE_DISADVANTAGE_MULT = 0.5; // poco efficace, like Pokémon
 
 /** Damage multiplier for a move of type `atk` hitting a creature of type `def`. */
 export function typeMultiplier(atk: TypeId, def: TypeId): number {
-  if (TYPES[atk].beats === def) return TYPE_ADVANTAGE_MULT;
-  if (TYPES[def].beats === atk) return TYPE_DISADVANTAGE_MULT;
+  if (TYPES[atk].beats.includes(def)) return TYPE_ADVANTAGE_MULT;
+  if (TYPES[def].beats.includes(atk)) return TYPE_DISADVANTAGE_MULT;
   return 1;
 }
 
-/** For 'variabile' moves (Leviatano): the type that beats the defender. */
+/** For 'variabile' moves (Leviatano): a type that beats the defender. */
 export function counterTypeOf(def: TypeId): TypeId {
-  return (Object.keys(TYPES) as TypeId[]).find((t) => TYPES[t].beats === def)!;
+  return (Object.keys(TYPES) as TypeId[]).find((t) => TYPES[t].beats.includes(def))!;
 }
 
 export const PROGRESSION = {

@@ -30,17 +30,18 @@ beforeAll(() => {
 
 describe('stats', () => {
   it('a bigger beast bites harder at the same level (white shark over barracuda)', () => {
-    expect(statsAt(sp('squalo_bianco'), 20).bite).toBeGreaterThan(statsAt(sp('barracuda'), 20).bite);
+    expect(statsAt(sp('squalo_bianco'), 20).atk).toBeGreaterThan(statsAt(sp('barracuda'), 20).atk);
   });
 
   it('each stage of a starter line bites harder than the one before, at the same level', () => {
+    const hits = (id: string): number => Math.max(statsAt(sp(id), 40).atk, statsAt(sp(id), 40).spa);
     for (const line of [
       ['zanna', 'squarcio', 'zannarossa'],
       ['guscio', 'rocciaguscio', 'archelon'],
       ['scintilla', 'saetta', 'folgore'],
     ])
       for (let i = 1; i < line.length; i++)
-        expect(statsAt(sp(line[i]!), 40).bite, line[i]).toBeGreaterThan(statsAt(sp(line[i - 1]!), 40).bite);
+        expect(hits(line[i]!), line[i]).toBeGreaterThan(hits(line[i - 1]!));
   });
 
   it('the sea crocodile of the Delta is common enough for its numbers', () => {
