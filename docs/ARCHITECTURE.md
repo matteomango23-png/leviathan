@@ -103,6 +103,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |
 | `growthBars.ts` | Barre di esperienza e cibo. |
 | `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
+| `hunterCardView.ts` (con `systems/hunterCard.ts`) | La tessera del cacciatore: numeri del viaggio e medaglie dei Guardiani battuti. |
 | `bagScreen.ts`, `battleBag.ts` | Lo zaino a tasche come Pokémon, dal menu e in battaglia (su chi usare una cura, su quale mossa un Muschio). |
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |

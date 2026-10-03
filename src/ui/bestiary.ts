@@ -36,13 +36,37 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
 
   const body = el('div', 'bestiary-body', panel);
   el('h3', '', body, 'Bestie');
+  // like the Pokédex: all of them, or only the ones seen, tamed or still missing
+  const filters = el('div', 'sheet-tabs bestiary-filters', body);
   const grid = el('div', 'bestiary-grid', body);
+  const FILTERS: [string, string][] = [
+    ['all', 'Tutte'],
+    ['seen', 'Viste'],
+    ['tamed', 'Domate'],
+    ['missing', 'Mancanti'],
+  ];
+  const applyFilter = (f: string): void => {
+    for (const t of filters.children) t.classList.toggle('on', (t as HTMLElement).dataset.f === f);
+    for (const tile of grid.children) {
+      const st = (tile as HTMLElement).dataset.state;
+      const show =
+        f === 'all' || (f === 'seen' ? st !== 'unknown' : f === 'tamed' ? st === 'tamed' : st !== 'tamed');
+      (tile as HTMLElement).style.display = show ? '' : 'none'; // the tiles' own display beats [hidden]
+    }
+  };
+  for (const [f, label] of FILTERS) {
+    const t = el('button', 'sheet-tab', filters, label);
+    t.dataset.f = f;
+    t.addEventListener('click', () => applyFilter(f));
+  }
   SPECIES.forEach((s, i) => {
     const owned = team.filter((b) => b.form.speciesId === s.id);
     const seen = g.seen.has(s.id) || owned.length > 0;
     const form: BeastForm = { speciesId: s.id, variant: 'comune' };
     const stars = formStars(form) as 1 | 2 | 3 | 4 | 5;
-    const card = el('button', `beast-tile ${owned.length ? 'tamed' : seen ? 'seen' : 'unknown'}`, grid);
+    const state = owned.length ? 'tamed' : seen ? 'seen' : 'unknown';
+    const card = el('button', `beast-tile ${state}`, grid);
+    card.dataset.state = state;
     card.style.setProperty('--rarity', RARITY[stars].color);
     // never met: the same dark tile with a paw for every beast (its painting would show as a black block)
     if (seen && ART_KEYS.includes(s.id)) {
@@ -61,6 +85,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
       else openBeastSheet(parent, form);
     });
   });
+  applyFilter('all');
   // the legends: one of each in the world; ??? until met, then free, yours, or gone forever
   el('h3', '', body, 'Leggende');
   const lg = el('div', 'bestiary-grid', body);
