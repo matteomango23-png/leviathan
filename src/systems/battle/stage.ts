@@ -60,20 +60,19 @@ function reach(box: PictureBox) {
 
 /** The biggest size at which the picture stays whole on a screen `aspect` times wider than tall. */
 export function fitSize(side: Side, beast: StageBeast, aspect: number): number {
-  const { margin, foeLowest, foeLeft, youMax, youWide, youRight, youTop } = BATTLE_STAGE.fit;
+  const { margin, foeLowest, foeLeft, youMax, youWide, youTall, youRight, youTop } = BATTLE_STAGE.fit;
   const r = reach(beast.box ?? cardBox());
   // yours may be cut by the screen's edges (placePicture), like Pokémon, but not too much
   if (side === 'you')
     return Math.min(
       youMax,
       (youWide * youRight * aspect) / (r.left + r.right),
-      (youWide * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
+      (youTall * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
     );
-  const a = BATTLE_STAGE.anchors.foe;
+  // the wild one may use its whole side: placePicture slides it within it
   return Math.min(
     (foeLowest - BATTLE_STAGE.hover - margin) / r.up,
-    ((a.x - foeLeft) * aspect) / r.left,
-    ((1 - a.x) * aspect - margin) / r.right,
+    ((1 - foeLeft) * aspect - margin) / (r.left + r.right),
   );
 }
 
@@ -95,16 +94,21 @@ export function presence(beast: StageBeast, size: number): number {
 }
 
 /**
- * Both sizes: each from battleSize, then yours, when it is the shorter beast, shrunk so it does not look bigger than
- * the wild one (BATTLE_STAGE.size.smallerYours).
+ * Both sizes: each from battleSize, then the shorter beast shrunk so it does not look bigger than the other
+ * (BATTLE_STAGE.size.smallerYours).
  */
 export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): Record<Side, number> {
   const sizes = { you: battleSize('you', you, aspect), foe: battleSize('foe', foe, aspect) };
+  // the shorter of the two never looks bigger than the other (by more than smallerYours for yours, which is closer)
+  const k = BATTLE_STAGE.size.smallerYours;
   if (you.lengthM < foe.lengthM) {
-    const most =
-      presence(foe, sizes.foe) * BATTLE_STAGE.size.smallerYours * (spectrumSize(you) / spectrumSize(foe));
+    const most = presence(foe, sizes.foe) * k * (spectrumSize(you) / spectrumSize(foe));
     const now = presence(you, sizes.you);
     if (now > most) sizes.you *= most / now;
+  } else if (foe.lengthM < you.lengthM) {
+    const most = (presence(you, sizes.you) / k) * (spectrumSize(foe) / spectrumSize(you));
+    const now = presence(foe, sizes.foe);
+    if (now > most) sizes.foe *= most / now;
   }
   return sizes;
 }
@@ -146,5 +150,10 @@ export function placePicture(
     return { x, y: (ground - hover) * h, scale };
   }
   const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + r.up * size));
-  return { x: a.x * w, y: (ground - hover) * h, scale };
+  // at its anchor if it fits; else slid right of foeLeft, or left of the right margin
+  const { foeLeft } = BATTLE_STAGE.fit;
+  let x = a.x * w;
+  x = Math.max(x, foeLeft * w + r.left * size * h);
+  x = Math.min(x, w - margin * h - r.right * size * h);
+  return { x, y: (ground - hover) * h, scale };
 }

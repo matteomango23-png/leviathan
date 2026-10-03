@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.20.4 — Bestie più grandi in battaglia (3 ottobre 2026)
+
+- **La bestia selvatica usa tutta la sua metà dello schermo:** prima restava ferma vicino al centro e piccola, con l'angolo in alto a destra vuoto.
+- **Tutte le bestie sono più grandi** in battaglia; la più corta delle due non sembra mai più grande dell'altra, in tutte e due le direzioni.
+
 ## v0.20.3 — Telecamera più vicina (3 ottobre 2026)
 
 - **Mentre nuoti la telecamera è più vicina** (circa un quarto): le bestie piccole si vedono meglio.

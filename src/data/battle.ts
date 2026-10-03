@@ -92,9 +92,9 @@ export const BATTLE_STAGE = {
   size: {
     minM: 0.5, // this long or shorter: drawn at `min`
     maxM: 30, // this long or longer: drawn at `max`
-    min: 0.4, // a small fish stays well visible…
-    max: 1.0, // …and the biggest are as tall as the screen (then `fit` keeps them inside)
-    foeDistance: 0.82, // the wild beast is farther away: × this
+    min: 0.5, // a small fish stays well visible… (was 0.4)
+    max: 1.3, // …and the biggest fill their side (was 1.0; then `fit` keeps them inside)
+    foeDistance: 1, // the wild one is not drawn smaller any more (was 0.82: it left its corner half empty; owner, 3 ottobre)
     youCloser: 1.22, // yours is close to the camera, seen from behind: × this (owner: "looked like a wren")
     /** A shorter beast of yours never looks bigger than the wild one: its presence (√ of its drawn area) is at most
      *  this × the wild one's × the ratio of their sizes by length (owner, 3 ottobre: Guscio bigger than a hammerhead). */
@@ -102,7 +102,7 @@ export const BATTLE_STAGE = {
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
-    foe: { x: 0.62, y: 0.5 }, // was 0.64 (owner: the hammerhead a little more to the left)
+    foe: { x: 0.74, y: 0.5 }, // the middle of its side; a big one slides within it (stage.ts placePicture)
     you: { x: 0.35, y: 0.9 }, // was 1.0: a small beast of yours hid behind its health box
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
@@ -124,7 +124,8 @@ export const BATTLE_STAGE = {
     youRight: 0.4, // was 0.46: two big ones met head to head in the middle (owner, 3 ottobre)
     youTop: 0.45,
     youMax: 1.5, // and it is never drawn bigger than this share of the screen height
-    youWide: 1.5, // …nor wider than this × the width left of youRight, or taller than this × the height under youTop
+    youWide: 1.5, // …nor wider than this × the width left of youRight…
+    youTall: 2, // …nor taller than this × the height under youTop (half of a whale may be below the screen)
   },
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
