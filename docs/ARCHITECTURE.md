@@ -71,7 +71,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `progress.ts` | Dopo ogni passo: esperienza alla squadra, missioni, profondità massima. |
 | `guardian.ts` | Il Guardiano nella tana: appare quando entri, ti punta; battaglia senza fuga; ricompensa e ritorno dopo il porto. |
 | `world/lair.ts` | Forma della tana: grotta, pozzo, guscio di roccia. |
-| `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse con livello e danno. |
+| `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse di battaglia (e le prossime), mosse in mare. |
 | `sanctuary.ts` | Santuari: cura graduale di sub e squadra, punto di rinascita. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
 
@@ -103,7 +103,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |
 | `growthBars.ts` | Barre di esperienza e cibo. |
 | `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
-| `dodgeBar.ts` | Il pulsante SCHIVA con la barra, in battaglia. |
+| `moveChooser.ts` | "Quale mossa deve dimenticare?" quando una bestia ne conosce già 4, e il Ricordamosse del porto. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |
 | `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
@@ -112,12 +112,13 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 | File | Cosa fa |
 |---|---|
-| `data/battle.ts`, `data/battleText.ts` | Numeri della battaglia (danni, livelli, schivata, domatura, fuga, oggetti, squadra di prova) e testi. |
+| `data/battle.ts`, `data/battleText.ts` | Numeri della battaglia (danni, stati, domatura, fuga, oggetti, squadra di prova) e testi. |
+| `data/battleMoves.ts`, `data/moveBattle.ts`, `data/learnsets.ts` | Le mosse di battaglia prese da Pokémon con i nostri nomi (potenza, precisione, PP, effetti), come funzionano, e quali impara ogni specie a che livello. |
+| `systems/beasts/battleMoves.ts` | Le mosse che una bestia conosce (al massimo 4): quelle di partenza, quelle nuove a ogni livello, dimenticare e ricordare. |
 | `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con i loro PP, stato e statistiche alzate o abbassate, danno di un colpo. |
 | `systems/battle/status.ts` | Gli stati alterati (avvelenato, ferito, paralizzato, stordito, congelato) e le statistiche da −6 a +6. |
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
-| `systems/battle/dodge.ts` | L'anello della schivata (tempi, finte, giudizio del tocco). |
-| `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi, fa partire la schivata. |
+| `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi; a fine battaglia chiede quale mossa dimenticare. |
 | `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo, sempre tutta nello schermo), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
 | `views/battleView.ts` | Le due bestie: grandezza, respiro e ondeggio, rincorsa e affondo, colpi, svenimenti, ombra e luce dietro; mette insieme sfondo, effetti e conchiglia. |
 | `views/battle/backdrop.ts` | Lo sfondo a strati che si muove (acqua, rocce lontane, raggi, foschia, rocce medie, pedane con riflessi, neve marina e bolle, piante in primo piano, vignetta); usa gli strati dipinti quando ci sono. |
