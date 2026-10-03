@@ -137,6 +137,14 @@ export function stepFish(
     }
     let tx = f.school.x + f.ox + Math.sin(time * 1.3 + f.phase) * 6;
     let ty = f.school.y + f.oy + Math.cos(time * 1.1 + f.phase) * 4;
+    // far from you (out of sight): it just keeps its place in the school, no swimming against rock to work out
+    if (Math.abs(f.x - threat.x) > SARDINE.simRange || Math.abs(f.y - threat.y) > SARDINE.simRange) {
+      f.vx = ((tx - f.x) / Math.max(dt, 1e-3)) * 0.1;
+      f.vy = ((ty - f.y) / Math.max(dt, 1e-3)) * 0.1;
+      f.x += (tx - f.x) * 0.1;
+      f.y += (ty - f.y) * 0.1;
+      continue;
+    }
     const mult = FISH_LOOK[f.kind]?.speedMult ?? 1;
     let sp = SARDINE.swimSpeed * mult;
     const dx = f.x - threat.x;

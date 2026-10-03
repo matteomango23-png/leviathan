@@ -63,7 +63,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.1, colors: [] },
     weight: 4,
     weightPerKm: 0,
-    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4 },
+    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4, pesce_vela: 1.5, medusa_gigante: 1.5, squalo_nutrice: 1, cernia: 1, squalo_capopiatto: 0.8, chimera: 0.8 },
     baseLevel: 10,
   },
   {
@@ -77,7 +77,7 @@ export const BIOMES: BiomeDef[] = [
     corals: { chance: 0.6, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
     weight: 2,
     weightPerKm: 0,
-    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5 },
+    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5, pesce_leone: 2.5, cernia: 2, medusa_gigante: 1.5, squalo_nutrice: 1.5, pastinaca: 1.5 },
     baseLevel: 8,
   },
   {
@@ -121,7 +121,7 @@ export const BIOMES: BiomeDef[] = [
     trench: { floorY: 2600, width: 0.45 },
     weight: 0.6,
     weightPerKm: 0.35,
-    beasts: { capodoglio: 1.2, squalo_bianco: 1, squalo_volpe: 1, orca: 1, murena: 1, pesce_spada: 0.6 },
+    beasts: { capodoglio: 1.2, squalo_bianco: 1, squalo_volpe: 1, orca: 1, murena: 1, pesce_spada: 0.6, rana_pescatrice: 2.5, chimera: 2.5, dragone_nero: 2.5, granchio_ragno: 2, isopode_gigante: 2, squalo_capopiatto: 1.5, squalo_goblin: 1.2, calamaro_gigante: 0.6 },
     baseLevel: 20,
   },
 ];

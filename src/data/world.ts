@@ -34,6 +34,8 @@ export const FISH: FishDef[] = [
   { id: 'pesce_arciere', name: 'Pesce arciere', sellPrice: 7 },
   { id: 'pesce_pagliaccio', name: 'Pesce pagliaccio', sellPrice: 5 },
   { id: 'pesce_chirurgo', name: 'Pesce chirurgo', sellPrice: 6 },
+  { id: 'pesce_farfalla', name: 'Pesce farfalla', sellPrice: 5 },
+  { id: 'pesce_angelo', name: 'Pesce angelo', sellPrice: 7 },
   { id: 'cavalluccio', name: 'Cavalluccio marino', sellPrice: 9 },
   { id: 'triglia', name: 'Triglia', sellPrice: 8 },
   { id: 'merluzzo_artico', name: 'Merluzzo artico', sellPrice: 12 },

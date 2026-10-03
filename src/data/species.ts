@@ -103,6 +103,27 @@ export const SPECIES: SpeciesDef[] = [
   // ---- The open sea (tappa 11, the owner's pictures of 2 ottobre 2026): mostly common beasts of the endless sea
   { id: 'varano_nilo', name: 'Varano del Nilo nero', type: 'predatore', role: 'compagno', region: 'delta', wildLevel: [8, 11], rarity: 3, size: 'media', lengthM: 2.5, trait: 'Nuota tra le radici a pelo d’acqua, morso velenoso',
     artPrompt: 'a black Nile monitor lizard, long muscular tail, scaly dark armor with faint pale bands, forked tongue, swimming' },
+  // more life (owner, 3 ottobre 2026: "riempire il mare di animali medi e piccoli"; pictures: lotto Gemini 2)
+  { id: 'cernia', name: 'Cernia bruna', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [3, 6], rarity: 1, size: 'media', lengthM: 1.5, trait: 'Bocca enorme: risucchia la preda',
+    artPrompt: 'a giant dusky grouper, mottled brown and olive body with pale blotches, a huge mouth with thick lips' },
+  { id: 'pastinaca', name: 'Pastinaca', type: 'tempesta', role: 'supporto', region: 'baia', wildLevel: [3, 6], rarity: 1, size: 'media', lengthM: 1.8, trait: 'Si nasconde nella sabbia, aculeo velenoso',
+    artPrompt: 'a large stingray, flat diamond-shaped dark grey-brown body with pale spots, a long whip tail with a venomous barb' },
+  { id: 'pesce_leone', name: 'Pesce leone', type: 'abissale', role: 'supporto', region: 'barriera', wildLevel: [5, 8], rarity: 2, size: 'piccola', lengthM: 0.5, trait: 'Pinne a ventaglio piene di veleno',
+    artPrompt: 'a red lionfish, red and white stripes, long venomous fin spines spread like feathers' },
+  { id: 'squalo_nutrice', name: 'Squalo nutrice', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [4, 7], rarity: 1, size: 'media', lengthM: 3, trait: 'Tranquillo sul fondo, morso che non molla',
+    artPrompt: 'a nurse shark, tan-brown smooth skin, small barbels under the snout, rounded fins and a long tail' },
+  { id: 'medusa_gigante', name: 'Medusa criniera di leone', type: 'tempesta', role: 'supporto', region: 'barriera', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2, trait: 'Tentacoli lunghissimi e urticanti',
+    artPrompt: 'a giant lion\u2019s mane jellyfish, a glowing translucent red-orange bell and a mass of very long trailing tentacles' },
+  { id: 'pesce_vela', name: 'Pesce vela', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [7, 10], rarity: 2, size: 'media', lengthM: 3, trait: 'Il più veloce del mare aperto',
+    artPrompt: 'a sailfish, a huge blue sail-like dorsal fin, a long sharp bill, silver-blue body with dark vertical bars' },
+  { id: 'chimera', name: 'Chimera', type: 'abissale', role: 'supporto', region: 'fossa', wildLevel: [18, 21], rarity: 1, size: 'media', lengthM: 1.5, trait: 'Occhi enormi che vedono nel buio',
+    artPrompt: 'a ghost shark chimaera, pale silvery pearly skin, huge reflective green eyes, wing-like pectoral fins, a long thin whip tail' },
+  { id: 'squalo_capopiatto', name: 'Squalo capopiatto', type: 'predatore', role: 'cavalcatura', region: 'fossa', wildLevel: [20, 23], rarity: 2, size: 'grande', lengthM: 5, trait: 'Antico predatore delle fosse, sei branchie',
+    artPrompt: 'a bluntnose sixgill shark, dark grey-brown skin, six gill slits, a blunt rounded snout and glowing green eyes' },
+  { id: 'dragone_nero', name: 'Dragone nero', type: 'abissale', role: 'compagno', region: 'fossa', wildLevel: [19, 22], rarity: 2, size: 'piccola', lengthM: 0.6, trait: 'Zanne di vetro e luci lungo il corpo',
+    artPrompt: 'a black dragonfish, a slender black deep-sea fish with fang-like teeth, a glowing chin barbel and blue light organs' },
+  { id: 'granchio_ragno', name: 'Granchio ragno gigante', type: 'corazzato', role: 'compagno', region: 'fossa', wildLevel: [18, 21], rarity: 1, size: 'media', lengthM: 3.7, trait: 'Zampe lunghissime, corazza spinosa',
+    artPrompt: 'a giant spider crab with long spindly legs, orange shell with white spots and small spines' },
   { id: 'tonno', name: 'Tonno rosso', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [4, 7], rarity: 1, size: 'media', lengthM: 2.5, trait: 'Velocissimo, caccia in branco',
     artPrompt: 'a muscular bluefin tuna, steel-blue back and silver flanks, sharp finlets' },
   { id: 'delfino', name: 'Delfino', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2.5, trait: 'Intelligente e veloce, stordisce col sonar',
@@ -138,7 +159,6 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'polpo_gigante', name: 'Polpo gigante', type: 'abissale', role: 'supporto', region: 'foresta', wildLevel: [13, 15], rarity: 3, size: 'media', lengthM: 6, trait: 'Nube d\u2019inchiostro: i nemici perdono le tue tracce',
     artPrompt: 'a giant red-brown octopus releasing a cloud of black ink, eyes glinting with cyan light' },
   { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true,
-    artFrom: 'polpo_gigante', // until her own pictures arrive (docs/PROMPT-BESTIE.md)
     artPrompt: 'a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains' },
 
   // ---- Mare di Ghiaccio (15-20)

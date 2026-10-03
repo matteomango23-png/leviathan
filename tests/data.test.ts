@@ -8,13 +8,13 @@ import { PROGRESSION, TYPES, typeMultiplier } from '../src/data/rules';
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
 
 describe('kit data integrity', () => {
-  it('has 53 beasts with unique ids (34 of the kit + 3 starter lines of 3 stages + 10 new ones)', () => {
-    expect(SPECIES).toHaveLength(53);
+  it('has 63 beasts with unique ids (34 of the kit + 3 starter lines of 3 stages + 20 new ones)', () => {
+    expect(SPECIES).toHaveLength(63);
     expect(unique(SPECIES.map((s) => s.id))).toBe(true);
   });
 
-  it('has 141 moves, exactly 3 per beast (an evolved stage uses its first stage moves), one per unlock slot', () => {
-    expect(MOVES).toHaveLength(141);
+  it('has 171 moves, exactly 3 per beast (an evolved stage uses its first stage moves), one per unlock slot', () => {
+    expect(MOVES).toHaveLength(171);
     expect(unique(MOVES.map((m) => m.id))).toBe(true);
     for (const s of SPECIES) {
       expect(movesOf(s.movesFrom ?? s.id).map((m) => m.slot)).toEqual([1, 2, 3]);
@@ -34,7 +34,7 @@ describe('kit data integrity', () => {
     for (const s of SPECIES) expect(regions.has(s.region)).toBe(true);
     for (const sw of SWARMS) expect(regions.has(sw.region)).toBe(true);
     for (const r of REGIONS) for (const f of r.fish) expect(fish.has(f)).toBe(true);
-    expect(FISH).toHaveLength(12);
+    expect(FISH).toHaveLength(14); // + pesce farfalla, pesce angelo (3 ottobre)
     expect(SWARMS).toHaveLength(4);
   });
 

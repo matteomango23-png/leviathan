@@ -2,6 +2,28 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.18.0 — Il mare vivo (3 ottobre 2026)
+
+- **10 bestie nuove**, ognuna con le sue mosse, il suo livello e la sua rarità:
+  - di superficie: **cernia**, **pastinaca**, **pesce leone**, **squalo nutrice**, **medusa criniera di leone**, **pesce vela** (si cavalca);
+  - degli abissi: **chimera**, **squalo capopiatto** (si cavalca), **dragone nero**, **granchio ragno gigante**.
+- **I primi 30 metri pieni di vita:**
+  - una **barriera corallina colorata** davanti alla spiaggia di Portofosco, tra 10 e 30 metri;
+  - due punti bassi colorati nella Barriera Rossa;
+  - banchi di sardine quasi doppi e molti più banchi vicino alla superficie;
+  - pesci colorati da prendere con l'arpione: **pesce farfalla** e **pesce angelo** (nuovi), pesci pagliaccio, chirurgo, sgombri.
+- **Più bestie ovunque:**
+  - nella Baia cernie, pastinache, squali nutrice, pesci vela, delfini, barracuda e tonni;
+  - nella Barriera pesci leone, meduse, cernie, squali nutrice, pesci spada, squali volpe e, raramente, una megattera;
+  - nel Delta le pastinache; nel Mare di Ghiaccio, raramente, un'orca;
+  - nella Foresta Sommersa le meduse.
+- **Gli abissi non sono più vuoti:**
+  - sotto il muro di ossa della Baia e nelle fosse a est vivono rane pescatrici, chimere, dragoni neri, granchi ragno, isopodi, squali capopiatto e squali goblin;
+  - più rari il calamaro gigante e il capodoglio.
+- **Nel mare aperto** le bestie degli abissi compaiono solo quando sei in profondità, quelle di superficie solo in alto. Ogni tipo di mare ha le sue specie nuove.
+- **Immagini nuove:** la Piovra ha le sue (non più quelle del polpo); pronte quelle della Regina bianca per il capitolo 5; Livyatan e Dunkleosteus hanno la vista di spalle.
+- **Fluidità:** i pesci lontani da te non vengono calcolati uno per uno.
+
 ## v0.17.1 — Aggiornamenti sull'iPhone e virata di lato (3 ottobre 2026)
 
 - **Aggiornamenti:** il gioco installato sulla Home ora cerca la versione nuova ogni volta che ci torni, non solo quando lo apri da zero (prima su iPhone restava la vecchia). Se la trova subito, salva e si ricarica da solo; se la trova mentre giochi, la applica quando esci dall'app.

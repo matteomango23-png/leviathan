@@ -211,6 +211,23 @@
 - Versione e avviso di esportazione nel menu Pausa.
 - `Mount.turn`/`turnFrom` al posto del giro per la verticale (`TEAM_RULES.turnSeconds` 0,6).
 
+**v0.18.0, il mare vivo (richiesta del proprietario, 3 ottobre):**
+
+- Lotto Gemini 2 (`docs/GEMINI-LOTTO-2.md`), tutto su fondo verde.
+- 10 specie nuove in `species.ts` e 30 mosse in `moves.ts` (63 specie, 171 mosse).
+- `WILD_SPAWNS`:
+  - zone `BEACH_REEF`, `SHALLOW_BAY`, `SHALLOW_REEF`, `ABYSS_BAY`, `ABYSS_EAST`;
+  - le specie del mare aperto anche nelle zone fatte a mano.
+- `SPECIES_DEPTH`: nel mare aperto le specie compaiono solo alla loro profondità (`prepareEndlessSpawn`).
+- Biomi del mare aperto con le specie nuove.
+- `CORALS.patches`: barriere colorate in acqua bassa.
+- Pesci nuovi `pesce_farfalla`, `pesce_angelo`; banchi più grandi; 8 banchi di sardine in superficie e 11 di pesci colorati.
+- `SARDINE.simRange`: i pesci lontani seguono il banco senza collisioni (più fluido).
+- 406 test.
+- Visto nel browser: la barriera colorata davanti alla spiaggia con i banchi colorati, i banchi più grandi nella Baia.
+
+**Non messi nel mare, di proposito (scelta del proprietario):** i compagni iniziali, la Piovra (Guardiano), megalodonte, Dunkleosteus e Livyatan (future leggende, da decidere).
+
 **Prossima sessione:** capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
