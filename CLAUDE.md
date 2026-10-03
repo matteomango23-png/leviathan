@@ -1,6 +1,6 @@
 # Leviatano — istruzioni per Claude Code
 
-Gioco 2D dark fantasy dalla grafica realistica di esplorazione subacquea e collezione di bestie (Pokémon + Monster Hunter sott'acqua). Leggi all'inizio di ogni sessione: `docs/GDD.md` (regole di design), `docs/PROGRESS.md` (dove siamo). Riferimenti: `prototype/leviatano.html` (prototipo giocabile: meccaniche, generatore del mondo, luce, IA, domatura, squadra; la sua grafica pixel NON è la direzione finale), `prototype/prova-realistica.html` (la direzione grafica approvata: fondali dipinti a strati, luce, bestia animata a spina dorsale, regole di movimento dello squalo) e `docs/ART.md` (illustrazioni e sprite).
+Gioco 2D dark fantasy dalla grafica realistica di esplorazione subacquea e collezione di bestie (Pokémon + Monster Hunter sott'acqua). Leggi all'inizio di ogni sessione: `docs/COME-LAVORIAMO.md` (il proprietario, come si lavora e si pubblica, due sessioni computer/cloud), `docs/GDD.md` (regole di design), `docs/PROGRESS.md` (dove siamo, la sezione in alto per prima). Riferimenti: `prototype/leviatano.html` (prototipo giocabile: meccaniche, generatore del mondo, luce, IA, domatura, squadra; la sua grafica pixel NON è la direzione finale), `prototype/prova-realistica.html` (la direzione grafica approvata: fondali dipinti a strati, luce, bestia animata a spina dorsale, regole di movimento dello squalo) e `docs/ART.md` (illustrazioni e sprite).
 
 ## Risparmio di contesto
 
