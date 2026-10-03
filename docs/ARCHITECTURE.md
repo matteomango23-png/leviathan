@@ -113,7 +113,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | File | Cosa fa |
 |---|---|
 | `data/battle.ts`, `data/battleText.ts` | Numeri della battaglia (danni, livelli, schivata, domatura, fuga, oggetti, squadra di prova) e testi. |
-| `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con turni di ricarica, danno di un colpo. |
+| `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con i loro PP, stato e statistiche alzate o abbassate, danno di un colpo. |
+| `systems/battle/status.ts` | Gli stati alterati (avvelenato, ferito, paralizzato, stordito, congelato) e le statistiche da −6 a +6. |
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
 | `systems/battle/dodge.ts` | L'anello della schivata (tempi, finte, giudizio del tocco). |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi, fa partire la schivata. |

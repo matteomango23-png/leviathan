@@ -6,7 +6,10 @@ import { MOVES } from '../../data/moves';
 import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { SpeciesDef, Stats } from '../../data/species';
+import { moveBattleOf } from '../../data/moveBattle';
 import { powerOf } from './combat';
+
+const CATEGORY_NAMES = { fisico: 'fisica', speciale: 'speciale', stato: 'di stato' } as const;
 import { ABILITIES } from '../../data/beasts';
 import {
   breaksBones,
@@ -29,8 +32,11 @@ export interface SheetMove {
   unlockLevel: number;
   unlocked: boolean;
   cooldown: number;
-  /** Its power, like Pokémon (0: no damage). */
+  /** Like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
   power: number;
+  accuracy: number | null;
+  pp: number;
+  category: string;
   text: string;
 }
 
@@ -109,6 +115,9 @@ export function buildSheet(form: BeastForm, level?: number): Sheet {
         unlocked: lv >= unlockLevel,
         cooldown: m.cooldown,
         power: powerOf(m),
+        accuracy: moveBattleOf(m).accuracy,
+        pp: moveBattleOf(m).pp,
+        category: CATEGORY_NAMES[moveBattleOf(m).category],
         text: m.text,
       };
     });

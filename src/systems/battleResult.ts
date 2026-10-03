@@ -15,7 +15,7 @@ import { hurtDiver } from './diver';
 import type { GameEvent } from './events';
 import { guardianDefeated, type GuardianWorld } from './guardian';
 import { createBattle, type BattleState } from './battle/battle';
-import { fighterFromTeam, makeFighter } from './battle/fighter';
+import { fighterFromTeam, makeFighter, ppUsedOf } from './battle/fighter';
 import { battlePlace } from './battle/stage';
 import type { BattlePlace } from '../data/battle';
 
@@ -23,7 +23,7 @@ export interface BattleOutcome {
   wildId: number;
   over: 'won' | 'lost' | 'caught' | 'fled';
   /** Health of your team beasts after the battle. */
-  team: { uid: string; hp: number }[];
+  team: { uid: string; hp: number; ppUsed?: number[] }[];
   /** The beast that was fighting at the end (it gets all the experience). */
   lastActive?: string;
   foe: { form: BeastForm; level: number; hp: number };
@@ -39,6 +39,7 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
     const b = g.beasts.team.find((x) => x.uid === t.uid);
     if (!b) continue;
     b.hp = Math.max(0, Math.min(maxHpOf(b), t.hp));
+    b.ppUsed = t.ppUsed?.some((n) => n > 0) ? t.ppUsed : undefined;
     if (b.hp <= 0 && !b.ko) {
       b.ko = true;
       events.push({ type: 'beastKo', uid: b.uid });
@@ -124,7 +125,7 @@ export function battleOutcome(s: BattleState, wildId: number): BattleOutcome {
   return {
     wildId,
     over: s.over ?? 'fled',
-    team: s.team.filter((f) => f.uid).map((f) => ({ uid: f.uid!, hp: f.hp })),
+    team: s.team.filter((f) => f.uid).map((f) => ({ uid: f.uid!, hp: f.hp, ppUsed: ppUsedOf(f) })),
     lastActive: s.team[s.active]?.uid,
     foe: { form: s.foe.form, level: s.foe.level, hp: s.foe.hp },
   };

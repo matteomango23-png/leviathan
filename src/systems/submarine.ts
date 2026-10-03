@@ -120,6 +120,7 @@ export function board(g: SubWorld, events: GameEvent[]): void {
   Object.assign(d, { x: s.x, y: s.y, vx: 0, vy: 0, hp: d.maxHp, o2: d.maxO2 });
   for (const t of g.beasts.team) {
     t.hp = maxHpOf(t);
+    t.ppUsed = undefined;
     t.ko = false;
   }
   events.push({ type: 'boarded' });

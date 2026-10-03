@@ -30,6 +30,7 @@ export interface SavedBeast {
   hp: number;
   ko: boolean;
   inTeam: boolean;
+  ppUsed?: number[]; // v13: PP its moves have spent
 }
 
 export interface SaveData {
@@ -296,6 +297,9 @@ function validateBeast(raw: unknown): SavedBeast {
     hp: raw.hp,
     ko: raw.ko === true,
     inTeam: raw.inTeam === true,
+    ...(Array.isArray(raw.ppUsed) && raw.ppUsed.every((n) => Number.isInteger(n) && (n as number) >= 0)
+      ? { ppUsed: raw.ppUsed as number[] }
+      : {}),
   };
 }
 

@@ -6,6 +6,7 @@ import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { TYPES, type MoveTypeId } from '../data/rules';
 import { ITEMS } from '../data/world';
+import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
 import type { Action, BattleState } from '../systems/battle/battle';
 import { canUse, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
@@ -16,13 +17,7 @@ import { el } from './dom';
 import { DodgeBar } from './dodgeBar';
 import { ICONS } from './icons';
 
-const POWER_NAMES: Record<string, string> = {
-  nessuno: 'nessun danno',
-  basso: 'debole',
-  medio: 'medio',
-  alto: 'forte',
-  altissimo: 'fortissimo',
-};
+const CATEGORY_NAMES = { fisico: 'fisica', speciale: 'speciale', stato: 'di stato' };
 
 const typeColor = (type: MoveTypeId): string => (type === 'variabile' ? '#d9e4e6' : TYPES[type].color);
 const typeName = (type: MoveTypeId): string => (type === 'variabile' ? 'Variabile' : TYPES[type].name);
@@ -34,6 +29,7 @@ class InfoBox {
   private readonly fill: HTMLDivElement;
   private readonly hpText: HTMLSpanElement | null;
   private readonly box: HTMLDivElement;
+  private readonly status: HTMLSpanElement;
 
   constructor(parent: HTMLElement, side: 'foe' | 'you') {
     const box = (this.box = el('div', `binfo ${side}`, parent));
@@ -42,6 +38,8 @@ class InfoBox {
     this.level = el('span', 'binfo-lv', top);
     this.tags = el('div', 'binfo-tags', box);
     const row = el('div', 'binfo-row', box);
+    this.status = el('span', 'binfo-status', row);
+    this.status.hidden = true;
     el('span', 'binfo-ps', row, 'PS');
     const bar = el('div', 'binfo-bar', row);
     this.fill = el('div', 'binfo-fill', bar);
@@ -83,6 +81,10 @@ class InfoBox {
     this.fill.classList.toggle('low', frac < 0.25);
     this.fill.classList.toggle('mid', frac >= 0.25 && frac < 0.5);
     if (this.hpText) this.hpText.textContent = `${Math.ceil(f.hp)} / ${f.maxHp}`;
+    // its condition, like Pokémon's badge next to the health bar
+    this.status.hidden = !f.status;
+    this.status.textContent = f.status ? STATUS_NAMES[f.status] : '';
+    this.status.dataset.status = f.status ?? '';
   }
 }
 
@@ -192,16 +194,21 @@ export class BattleUi {
           b.append(typeIcon(bm.move.type, '#fff'));
           const text = el('span', 'bmove-text', b);
           el('span', 'bmove-name', text, bm.move.name);
-          const state = !bm.unlocked
+          const r = bm.rules;
+          const info = !bm.unlocked
             ? `dal Lv. ${bm.unlockLevel}`
-            : bm.recharge > 0
-              ? `pronta tra ${bm.recharge} ${bm.recharge === 1 ? 'turno' : 'turni'}`
-              : bm.rechargeTurns
-                ? `poi ricarica ${bm.rechargeTurns}`
-                : 'sempre pronta';
-          el('span', 'bmove-info', text, `${POWER_NAMES[bm.move.power]} · ${state}`);
+            : `${r.power ? `potenza ${r.power}` : CATEGORY_NAMES.stato} · PP ${bm.pp}/${bm.maxPp}`;
+          el('span', 'bmove-info', text, info);
           b.disabled = !canUse(bm);
         });
+        // no PP left anywhere: the last resort, like Pokémon
+        if (!me.moves.some(canUse)) {
+          const b = this.button(grid, '', () => done({ kind: 'move', index: -1 }), 'bmove');
+          b.style.setProperty('--tc', '#9aa4a8');
+          const text = el('span', 'bmove-text', b);
+          el('span', 'bmove-name', text, STRUGGLE.name);
+          el('span', 'bmove-info', text, 'senza PP: si fa male anche lei');
+        }
         this.back(m, main);
       };
       const bag = (): void => {

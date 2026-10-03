@@ -3,23 +3,29 @@
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
 export const BATTLE = {
-  secondsPerTurn: 4, // a move's cooldown (seconds, moves.ts) becomes turns of recharge: round(cooldown / this)
   // the Pokémon damage modifiers (Gen VI+): the levels count through the formula and the statistics (data/stats.ts)
   randomRange: [0.85, 1] as [number, number], // damage varies a little, like Pokémon
   critChance: 1 / 24,
   critMult: 1.5,
   stab: 1.5, // a move of the beast's own type
+  /** Lasting conditions, like Pokémon (systems/battle/status.ts). */
+  status: {
+    poisonShare: 1 / 8, // avvelenato: health lost each round
+    woundShare: 1 / 16, // ferito: health lost each round…
+    woundedAttack: 0.5, // …and its physical attacks do half damage (Pokémon's burn)
+    paralysisSkip: 0.25, // paralizzato: chance to lose the turn…
+    paralysisSpeed: 0.5, // …and half speed
+    sleepTurns: [1, 3] as [number, number], // stordito: turns asleep
+    thawChance: 0.2, // congelato: chance to thaw each turn
+    /** A type that cannot get a condition (like Pokémon: Ice cannot freeze, Electric cannot be paralysed). */
+    immune: { congelato: 'glaciale', paralizzato: 'tempesta', avvelenato: 'abissale' } as Partial<Record<string, string>>,
+  },
   /** Move effects (fx in moves.ts) as they work in a turn-based battle. */
   fx: {
     multiHitShare: 0.6, // 'frenzy:N' / 'hits:N': several hits, each this share of the damage…
     multiHitMax: 4, // …at most this many
     woundedMult: 2, // 'x2vsWounded': under MOVE_RULES.woundedFraction of health
     executeMult: 1.5, // 'executeLowHp': under MOVE_RULES.executeHpFraction
-    stunChance: 0.5, // 'stun:S' and friends: chance the target loses its next turn
-    healShare: 0.3, // 'heal:…': heals this share of the user's health
-    guardTurns: 2, // 'shield…' / 'dmgReduce…' / 'taunt…': the next hits on the user are halved
-    guardMult: 0.5,
-    grabSkipChance: 0.3, // 'grab:S' used by you: chance the target loses its next turn (used on you: no dodge)
   },
   /** The dodge: a ring closes on your beast; tap when it touches it. */
   dodge: {

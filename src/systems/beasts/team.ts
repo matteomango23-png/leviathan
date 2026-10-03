@@ -15,6 +15,8 @@ export interface TeamBeast {
   hp: number;
   ko: boolean;
   inTeam: boolean;
+  /** PP each move has spent (battle, like Pokémon); back to full when the beast is fully healed. */
+  ppUsed?: number[];
 }
 
 export function maxHpOf(b: TeamBeast): number {

@@ -60,6 +60,34 @@ export const BATTLE_TEXT = {
   ambushed: (b: Named): string => `${b.name} ti ha preso di sorpresa!`,
   surprise: (b: Named): string => `Attacco a sorpresa! ${b.name} è stordit${o(b)}.`,
   stunnedSkip: (b: Named): string => `${b.name} è stordit${o(b)} e non riesce a muoversi!`,
+  // conditions and stages, like Pokémon
+  flinched: (b: Named): string => `${b.name} tentenna e non attacca!`,
+  asleep: (b: Named): string => `${b.name} è stordit${o(b)} e non si muove.`,
+  frozen: (b: Named): string => `${b.name} è congelat${o(b)} e non si muove!`,
+  paralyzed: (b: Named): string => `${b.name} è paralizzat${o(b)}! Non riesce a muoversi!`,
+  woke: (b: Named): string => `${b.name} si riprende!`,
+  thawed: (b: Named): string => `${b.name} si è scongelat${o(b)}!`,
+  missed: (b: Named): string => `L’attacco di ${b.name} va a vuoto!`,
+  noEffect: 'Non ha effetto…',
+  recoil: (b: Named): string => `${b.name} si fa male nello sforzo!`,
+  gotStatus: {
+    avvelenato: (b: Named): string => `${b.name} è avvelenat${o(b)}!`,
+    ferito: (b: Named): string => `${b.name} è ferit${o(b)}!`,
+    paralizzato: (b: Named): string => `${b.name} è paralizzat${o(b)}! Forse non riuscirà a muoversi!`,
+    stordito: (b: Named): string => `${b.name} è stordit${o(b)}!`,
+    congelato: (b: Named): string => `${b.name} è congelat${o(b)}!`,
+  },
+  residual: {
+    avvelenato: (b: Named): string => `${b.name} soffre per il veleno!`,
+    ferito: (b: Named): string => `${b.name} perde sangue dalla ferita!`,
+    paralizzato: (_b: Named): string => '',
+    stordito: (_b: Named): string => '',
+    congelato: (_b: Named): string => '',
+  },
+  stage: (b: Named, stat: string, moved: number, by: number): string =>
+    moved === 0
+      ? `${stat[0]!.toUpperCase()}${stat.slice(1)} di ${b.name} non può ${by > 0 ? 'salire' : 'scendere'} oltre!`
+      : `${stat[0]!.toUpperCase()}${stat.slice(1)} di ${b.name} ${moved > 0 ? 'aumenta' : 'diminuisce'}${Math.abs(moved) > 1 ? ' molto' : ''}!`,
   stunned: (b: Named): string => `${b.name} è stordit${o(b)}!`,
   guarding: (b: Named): string => `${b.name} si protegge: i prossimi colpi faranno metà danno.`,
   noFlee: 'Non puoi fuggire da questa battaglia!',

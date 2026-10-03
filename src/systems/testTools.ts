@@ -33,6 +33,7 @@ export function healAll(g: GameState): void {
   for (const b of g.beasts.team) {
     b.hp = maxHpOf(b);
     b.ko = false;
+    b.ppUsed = undefined;
   }
 }
 

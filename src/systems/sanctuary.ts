@@ -72,6 +72,7 @@ export function stepSanctuaries(
       healing = true;
       b.hp = Math.min(max, b.hp + max * k);
       if (b.hp >= max && b.ko) b.ko = false;
+      if (b.hp >= max) b.ppUsed = undefined; // healed: PP back to full
     }
   }
   return healing;

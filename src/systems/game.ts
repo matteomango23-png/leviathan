@@ -315,6 +315,7 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   for (const b of g.beasts.team) {
     b.hp = maxHpOf(b);
     b.ko = false;
+    b.ppUsed = undefined; // PP back to full, like a Pokémon Center
   }
   if (g.beasts.riding) g.beasts.riding = false;
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
@@ -347,6 +348,7 @@ export function restAtPort(g: GameState): void {
   for (const b of g.beasts.team) {
     b.hp = maxHpOf(b);
     b.ko = false;
+    b.ppUsed = undefined; // PP back to full, like a Pokémon Center
   }
   g.sanctuaries.current = null;
 }
