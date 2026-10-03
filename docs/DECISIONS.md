@@ -371,3 +371,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Barriere coralline in acqua bassa:** dove il fondale è davvero tra 10 e 30 m (la spiaggia di Portofosco, due punti della Barriera Rossa), non dove sembrava sulla mappa. La Baia è profonda circa 50 m.
 - **Solo i pesci vicini si simulano:** con banchi più grandi (circa 900 pesci) le collisioni di tutti costavano troppo. Quelli a più di 420 unità dal sub seguono il banco senza collisioni; tanto non si vedono.
 - **Rarità:** come prima, è data dalle stelle della specie, dal tempo di ricomparsa e dal peso nei biomi del mare aperto. Le specie rare hanno tempi lunghi (calamaro gigante, capodoglio, megattera, orca).
+
+## 2026-10-03 — Grandezze in battaglia su uno spettro fisso
+
+- **Prima** la grandezza dipendeva dalla coppia (la più grande alla misura standard, i giganti almeno all'82%): la stessa bestia cambiava grandezza da una battaglia all'altra e i giganti a volte uscivano dallo schermo.
+- **Ora** ogni bestia ha la sua grandezza: la lunghezza vera su scala logaritmica tra 0,5 e 30 m, portata tra il 40% e il 100% dell'altezza dello schermo (`BATTLE_STAGE.size`). Scala logaritmica perché il proprietario vuole che 25 e 30 m, o 2 e 5 m, sembrino simili, ma il piccolo resti ben visibile.
+- **Sempre dentro lo schermo:** `npm run art` misura dove ogni immagine non è trasparente (`BATTLE_ART_BOX`); `fitSize` calcola la grandezza massima che ci sta (con un margine per il dondolio). La selvatica troppo alta scende fino al 97% dello schermo prima di rimpicciolirsi.
+- Restano: la tua più vicina (×1,22), la selvatica più lontana (×0,82), le immagini piatte un po' più grandi, murena e manta corrette a mano.

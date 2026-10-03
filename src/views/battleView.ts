@@ -1,15 +1,15 @@
 // What the battle looks like: a layered, moving sea (views/battle/backdrop.ts), the wild beast on its patch of
 // seabed up on the right and yours closer, bottom left, seen from behind (like Pokémon). Each beast is its
 // three-quarter picture (`<id>_front` / `<id>_back`, docs/ART.md) or, until it exists, its card with soft
-// edges. Sizes are relative to each other, giants always huge (systems/battle/stage.ts). Beasts come out of
+// edges. Sizes follow the real length, between a minimum and a maximum, always whole on screen (systems/battle/stage.ts). Beasts come out of
 // the dark, float and sway, wind up and lunge leaving bubbles, flash and recoil when hit, sink when they
 // faint; rare ones sparkle.
 import Phaser from 'phaser';
-import { BATTLE_ART_FLAT } from '../data/sprites.generated';
+import { BATTLE_ART_BOX } from '../data/sprites.generated';
 import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
 import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
-import { battleSizes, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
+import { battleSize, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
 import { formLengthM, type BeastForm } from '../systems/beasts/forms';
 import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
@@ -34,7 +34,7 @@ export class BattleView {
   private readonly backlights: Record<Side, Phaser.GameObjects.Image>;
   private readonly rayColor: number;
   private readonly poses: Record<Side, Pose> = { you: newPose(), foe: newPose() };
-  /** Length and giant flag of each beast on stage, for the relative sizes. */
+  /** Length, giant flag and picture box of each beast on stage, for its size. */
   private readonly stage: Record<Side, StageBeast | null> = { you: null, foe: null };
 
   constructor(
@@ -68,7 +68,7 @@ export class BattleView {
   /** The ground under each beast (screen pixels), moving with the camera drift. */
   private ground(side: Side): { x: number; y: number } {
     const d = this.backdrop.shift(DEPTH.ground);
-    const p = placePicture(side, this.poses[side].size, this.w, this.h); // the same rule the framing test checks
+    const p = placePicture(side, this.poses[side].size, this.w, this.h, this.stage[side]?.box); // the framing test checks it
     return { x: p.x + d.x, y: p.y + BATTLE_STAGE.hover * this.h + d.y };
   }
 
@@ -79,7 +79,7 @@ export class BattleView {
     return { x: g.x + this.poses[side].dx, y: g.y - size * 0.5 + this.poses[side].dy, size };
   }
 
-  /** Puts a beast on stage (hidden: only known, so the other one is sized against it from the start). */
+  /** Puts a beast on stage (hidden: placed but not shown yet). */
   setFighter(side: Side, form: BeastForm, level: number, hidden = false): void {
     const art = battleArt(form, side);
     const aura = beastAura(form);
@@ -87,7 +87,7 @@ export class BattleView {
       lengthM: formLengthM(form, level),
       giant: isGiant(form),
       pictureMult: BATTLE_STAGE.pictureMult[form.speciesId],
-      flat: art.own ? BATTLE_ART_FLAT[art.textureKey.replace(/^battle-/, '')] : undefined,
+      box: art.own ? BATTLE_ART_BOX[art.textureKey.replace(/^battle-/, '')] : undefined,
     };
     Object.assign(this.poses[side], newPose(), {
       key: art.textureKey,
@@ -96,13 +96,9 @@ export class BattleView {
       aura: aura.level,
       auraColor: aura.color,
     });
-    const you = this.stage.you ?? this.stage.foe!;
-    const foe = this.stage.foe ?? this.stage.you!;
-    const sizes = battleSizes(you, foe);
-    for (const s of ['you', 'foe'] as Side[]) {
-      this.poses[s].target = sizes[s];
-      if (s === side) this.poses[s].size = sizes[s]; // the newcomer starts at its size, the other eases
-    }
+    const size = battleSize(side, this.stage[side]!, this.w / this.h);
+    this.poses[side].target = size;
+    this.poses[side].size = size;
   }
 
   /** Whether the wild beast is a giant (its entrance shakes the sea). */

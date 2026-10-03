@@ -228,7 +228,15 @@
 
 **Non messi nel mare, di proposito (scelta del proprietario):** i compagni iniziali, la Piovra (Guardiano), megalodonte, Dunkleosteus e Livyatan (future leggende, da decidere).
 
-**Prossima sessione:** capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
+**v0.18.2, grandezze in battaglia (richiesta del proprietario, 3 ottobre):**
+
+- `battleSize` in `systems/battle/stage.ts`: la lunghezza vera su una scala logaritmica tra `BATTLE_STAGE.size.minM` (0,5 m) e `maxM` (30 m), portata tra `min` (0,4) e `max` (1,0) dell'altezza dello schermo; poi `fitSize` la rimpicciolisce se uscirebbe dallo schermo.
+- `npm run art` scrive `BATTLE_ART_BOX` (dove ogni immagine di battaglia non è trasparente) al posto di `BATTLE_ART_FLAT`.
+- Le grandezze non dipendono più dalla coppia: ogni bestia ha la sua.
+- `tests/battleFraming.test.ts`: ogni forma, in tutti e due i ruoli, su iPhone e iPad, a livello 1 e al massimo.
+- Per provare: `?battaglia&nemico=capodoglio&mio=pesce_leone` (nuovo `mio`).
+
+**Prossima sessione:** proposta sulle evoluzioni (in attesa di risposta del proprietario), poi capitolo 5, il Mare di Ghiaccio (la Regina bianca, il Corno). Proporre il piano prima. (la Vedova e la reliquia dei templi; bestie nuove dal lotto Gemini: anguilla elettrica, polpo gigante, lontra marina). Proporre il piano prima.
 
 ## Sessione 11 — Tappa 10: la Costa (1 ottobre 2026) → v0.9.0
 
