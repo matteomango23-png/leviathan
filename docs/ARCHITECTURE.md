@@ -38,7 +38,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `harpoon.ts` | Arpione: va, aggancia un pesce o rimbalza sulla roccia, torna. |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
-| `birds.ts` | Stormi di gabbiani sopra l'acqua intorno alla telecamera (solo aspetto, non salvati): restano uniti, si tuffano sulle sardine vicine alla superficie, se ne vanno col brutto tempo. |
+| `birds.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. |
 | `game.ts` | Un passo di gioco completo + conversione da/verso il salvataggio. |
 | `save/saveData.ts` | Formato del salvataggio con `version`, migrazioni, controllo di validità. |
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |

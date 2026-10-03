@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.31.1 — Gabbiani più naturali (4 ottobre 2026)
+
+- **I gabbiani sono disegnati meglio:** ali curve e sottili che sfumano nelle punte nere, corpo bianco, becco giallo; non più linee spesse a rettangoli.
+- **Vivono sopra i banchi di pesci**, come sardine e sgombri nelle loro zone: fanno avanti e indietro sopra il banco virando piano, e si tuffano ogni tanto.
+- **Non compaiono e non spariscono più davanti agli occhi:** arrivano e se ne vanno sempre da fuori dallo schermo, anche quando nuoti avanti e indietro.
+- **Sono meno:** al massimo 2 stormi da 3–6 uccelli. Dove non ci sono pesci vicino alla superficie non ci sono gabbiani.
+
 ## v0.31.0 — Meteo che cambia e gabbiani (4 ottobre 2026)
 
 - **Il tempo cambia da solo**, ogni pochi minuti e sfumando piano: sereno, nuvoloso, pioggia, tempesta, nebbia.

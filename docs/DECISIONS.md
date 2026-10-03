@@ -471,3 +471,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Profondità**: il meteo si sente fino a 60 m (`WEATHER.dimDepthM`): raggi più deboli, un po' di buio in più, lampi attenuati. Sotto, niente.
 - **Gabbiani** (`systems/birds.ts`): fino a 3 stormi intorno alla telecamera, a V larga, ogni uccello tenuto al suo posto da una molla smorzata (niente boids completi: costa poco e resta compatto). Si tuffano sulle sardine entro 40 unità sotto la superficie. Disegnati con linee (grigio chiaro, punte nere: si vedono sul cielo scuro) finché non arriva un disegno dipinto.
 - **Prova**: nel pannello `?prove` c'è "Cambia il meteo" (evento `skipWeather` della Session).
+
+## 2026-10-04 — Gabbiani più naturali (dopo la prova del proprietario)
+
+- **Problemi visti sull'iPhone:** linee troppo spesse (si vedevano i rettangoli) e stormi che comparivano e sparivano in vista andando avanti e indietro (venivano rimessi a 120 unità dal centro, dentro lo schermo).
+- **Disegno:** 9 pose del battito d'ala + una ad ali chiuse, dipinte una volta all'avvio su canvas con curve e sfumature (`views/birdsView.ts`); ogni uccello è un'immagine che sceglie la posa.
+- **Comportamento come i banchi di pesci** (richiesta del proprietario): ogni stormo ha per casa un banco a meno di 170 unità sotto la superficie e a meno di 700 dalla telecamera; fa avanti e indietro sopra di lui (70–140 unità) virando con accelerazione limitata. Arriva, cambia casa e si ferma solo quando tutto lo stormo è fuori dallo schermo (`offScreen`, la scena passa la mezza larghezza vista). Un test fa nuotare la telecamera avanti e indietro per 10 minuti e controlla che nessun uccello compaia, sparisca o salti in vista.
+- **Meno uccelli:** 2 stormi da 3–6.

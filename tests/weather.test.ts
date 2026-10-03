@@ -113,66 +113,145 @@ describe('meteo', () => {
 });
 
 describe('uccelli marini', () => {
-  const camX = 2000;
-
-  it('col bel tempo arrivano gli stormi, e restano sopra l’acqua', () => {
-    const s = createBirds(2);
-    let seenActive = 0;
-    for (let t = 0; t < 120; t += 1 / 30) {
-      stepBirds(s, 1 / 30, camX, 1, 0.2, []);
-      for (const f of s.flocks) {
-        if (!f.active) continue;
-        seenActive = Math.max(seenActive, s.flocks.filter((x) => x.active).length);
-        for (const b of f.birds) {
-          expect(b.dive).toBe('none');
-          expect(b.y).toBeLessThan(WORLD.surfaceY);
-        }
-      }
+  const halfW = 140;
+  const shallow = (x: number) => [{ x, y: WORLD.surfaceY + 40 }];
+  const view = (x: number) => ({ x, halfW });
+  /** Runs the birds with the camera at camX(t) over these schools; checks every frame with `each`. */
+  function fly(
+    seed: number,
+    seconds: number,
+    camX: (t: number) => number,
+    schools: (t: number) => { x: number; y: number }[],
+    wanted: (t: number) => number = () => 1,
+    each?: (s: ReturnType<typeof createBirds>, cx: number) => void,
+  ) {
+    const s = createBirds(seed);
+    let splashes = 0;
+    for (let t = 0; t < seconds; t += 1 / 30) {
+      const cx = camX(t);
+      splashes += stepBirds(s, 1 / 30, view(cx), wanted(t), 0.2, schools(t)).length;
+      each?.(s, cx);
     }
-    expect(seenActive).toBe(BIRDS.flocks);
+    return { s, splashes };
+  }
+
+  it('col bel tempo arrivano pochi stormi sopra i pesci, e restano sopra l’acqua', () => {
+    let most = 0;
+    const { s } = fly(
+      2,
+      120,
+      () => 2000,
+      () => [...shallow(2000), ...shallow(2300), ...shallow(1700)],
+      () => 1,
+      (st) => {
+        most = Math.max(most, st.flocks.filter((f) => f.active).length);
+        for (const f of st.flocks)
+          if (f.active)
+            for (const b of f.birds) if (b.dive === 'none') expect(b.y).toBeLessThan(WORLD.surfaceY);
+      },
+    );
+    expect(most).toBe(BIRDS.flocks);
+    for (const f of s.flocks) {
+      expect(f.birds.length).toBeGreaterThanOrEqual(BIRDS.perFlock[0]);
+      expect(f.birds.length).toBeLessThanOrEqual(BIRDS.perFlock[1]);
+    }
   });
 
-  it('gli uccelli di uno stormo restano vicini', () => {
-    const s = createBirds(4);
-    for (let t = 0; t < 60; t += 1 / 30) stepBirds(s, 1 / 30, camX, 1, 0.5, []);
-    for (const f of s.flocks.filter((x) => x.active))
-      for (const b of f.birds) {
-        expect(Math.abs(b.x - f.x)).toBeLessThan(BIRDS.spread[0] * 3);
-        expect(Math.abs(b.y - f.y)).toBeLessThan(BIRDS.spread[1] * 4);
-      }
-  });
-
-  it('in tempesta se ne vanno', () => {
-    const s = createBirds(6);
-    for (let t = 0; t < 60; t += 1 / 30) stepBirds(s, 1 / 30, camX, 1, 0.2, []);
-    expect(s.flocks.some((f) => f.active)).toBe(true);
-    for (let t = 0; t < 60; t += 1 / 30) stepBirds(s, 1 / 30, camX, 0, 1, []);
+  it('senza pesci vicini alla superficie niente uccelli', () => {
+    const { s } = fly(
+      3,
+      60,
+      () => 2000,
+      () => [{ x: 2000, y: WORLD.surfaceY + 400 }],
+    );
     expect(s.flocks.some((f) => f.active)).toBe(false);
   });
 
-  it('si tuffano sulle sardine vicine alla superficie, non su quelle profonde', () => {
-    const shallow = createBirds(8);
-    const deep = createBirds(8);
-    let splashShallow = 0;
-    let splashDeep = 0;
-    for (let t = 0; t < 120; t += 1 / 30) {
-      const fx = shallow.flocks.find((f) => f.active)?.x ?? camX;
-      for (const sp of stepBirds(shallow, 1 / 30, camX, 1, 0, [{ x: fx, y: WORLD.surfaceY + 15 }])) {
-        splashShallow++;
-        expect(sp.y).toBe(WORLD.surfaceY);
-      }
-      const dx = deep.flocks.find((f) => f.active)?.x ?? camX;
-      splashDeep += stepBirds(deep, 1 / 30, camX, 1, 0, [{ x: dx, y: WORLD.surfaceY + 200 }]).length;
+  it('uno stormo fa avanti e indietro sopra il suo banco e resta unito', () => {
+    const { s } = fly(
+      4,
+      90,
+      () => 2000,
+      () => shallow(2000),
+    );
+    const f = s.flocks.find((x) => x.active)!;
+    expect(f).toBeDefined();
+    expect(Math.abs(f.x - 2000)).toBeLessThan(BIRDS.patrol[1] + 80);
+    for (const b of f.birds) {
+      if (b.dive !== 'none') continue;
+      expect(Math.abs(b.x - f.x)).toBeLessThan(BIRDS.spread[0] * 3);
+      expect(Math.abs(b.y - f.y)).toBeLessThan(BIRDS.spread[1] * 4);
     }
-    expect(splashShallow).toBeGreaterThan(0);
-    expect(splashDeep).toBe(0);
   });
 
-  it('uno stormo lasciato lontano torna vicino alla telecamera', () => {
-    const s = createBirds(10);
-    for (let t = 0; t < 30; t += 1 / 30) stepBirds(s, 1 / 30, camX, 1, 0, []);
-    for (let t = 0; t < 30; t += 1 / 30) stepBirds(s, 1 / 30, camX + 3000, 1, 0, []);
-    for (const f of s.flocks.filter((x) => x.active))
-      expect(Math.abs(f.x - (camX + 3000))).toBeLessThanOrEqual(BIRDS.keepWithin);
+  it('nessun uccello compare, sparisce o salta dentro lo schermo, anche andando avanti e indietro', () => {
+    const visible = (x: number, cx: number) => Math.abs(x - cx) <= halfW + BIRDS.wingspanUnits / 2;
+    let prev = new Map<object, { x: number; cx: number }>();
+    let checked = 0;
+    // the camera swims east and west fast, over schools spread along the way (some deep, some shallow);
+    // the weather turns bad and good again
+    fly(
+      5,
+      600,
+      (t) => 3000 + Math.sin(t * 0.05) * 1500 + Math.sin(t * 0.31) * 200,
+      (t) =>
+        [0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+          x: 1500 + i * 420,
+          y: WORLD.surfaceY + (i % 3 === 0 ? 300 : 30 + Math.sin(t * 0.02 + i) * 20),
+        })),
+      (t) => (Math.floor(t / 150) % 2 ? 0 : 1),
+      (st, cx) => {
+        const now = new Map<object, { x: number; cx: number }>();
+        for (const f of st.flocks) if (f.active) for (const b of f.birds) now.set(b, { x: b.x, cx });
+        for (const [b, p] of now) {
+          const before = prev.get(b);
+          if (!before) expect(visible(p.x, cx), 'appeared in view').toBe(false);
+          else if (Math.abs(p.x - before.x) > 20) {
+            expect(visible(before.x, before.cx), 'jumped from view').toBe(false);
+            expect(visible(p.x, cx), 'jumped into view').toBe(false);
+          }
+          if (visible(p.x, cx)) checked++;
+        }
+        for (const [b, p] of prev)
+          if (!now.has(b)) expect(visible(p.x, p.cx), 'vanished in view').toBe(false);
+        prev = now;
+      },
+    );
+    expect(checked).toBeGreaterThan(1000); // birds were really seen
+  });
+
+  it('in tempesta se ne vanno', () => {
+    const { s } = fly(
+      6,
+      120,
+      () => 2000,
+      () => shallow(2000),
+      (t) => (t < 60 ? 1 : 0),
+    );
+    expect(s.flocks.some((f) => f.active)).toBe(false);
+    const calm = fly(
+      6,
+      60,
+      () => 2000,
+      () => shallow(2000),
+    );
+    expect(calm.s.flocks.some((f) => f.active)).toBe(true);
+  });
+
+  it('si tuffano sulle sardine vicine alla superficie, non su quelle più giù', () => {
+    const near = fly(
+      8,
+      300,
+      () => 2000,
+      () => [{ x: 2000, y: WORLD.surfaceY + 30 }],
+    );
+    const deeper = fly(
+      8,
+      300,
+      () => 2000,
+      () => [{ x: 2000, y: WORLD.surfaceY + 120 }],
+    );
+    expect(near.splashes).toBeGreaterThan(0);
+    expect(deeper.splashes).toBe(0);
   });
 });
