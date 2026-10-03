@@ -307,11 +307,7 @@ async function battleShapes(battle: string[]): Promise<string> {
       .raw()
       .toBuffer({ resolveWithObject: true });
     const box = opaqueBox(data, info.width, info.height);
-    if (!box) continue;
-    const w = box.x1 - box.x0 + 1;
-    const h = box.y1 - box.y0 + 1;
-    const flat = Math.max(w, h) / Math.sqrt(w * h);
-    if (flat > 1.05) out.push(`  '${k}': ${flat.toFixed(2)},`);
+    if (box) out.push(`  '${k}': [${box.x0}, ${box.y0}, ${box.x1 + 1}, ${box.y1 + 1}],`);
   }
   return `{\n${out.join('\n')}\n}`;
 }
@@ -339,8 +335,8 @@ async function writeSpriteList(): Promise<void> {
     `export const ART_KEYS: readonly string[] = [\n${list(art)}\n];\n\n` +
     `// Three-quarter battle pictures (<id>_front for the wild one, <id>_back for yours, + _open).\n` +
     `export const BATTLE_ART_KEYS: readonly string[] = [\n${list(battle)}\n];\n\n` +
-    `// Battle pictures much wider than tall (or the other way): longest side / sqrt(width × height).\n` +
-    `export const BATTLE_ART_FLAT: Readonly<Record<string, number>> = ${await battleShapes([...battle])};\n\n` +
+    `// Where each battle picture is not transparent, in its pixels: [left, top, right, bottom].\n` +
+    `export const BATTLE_ART_BOX: Readonly<Record<string, readonly [number, number, number, number]>> = ${await battleShapes([...battle])};\n\n` +
     `// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).\n` +
     `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
     `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +

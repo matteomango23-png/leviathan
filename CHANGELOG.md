@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.18.2 — Grandezze in battaglia (3 ottobre 2026)
+
+- In battaglia ogni bestia ha **sempre la stessa grandezza**, decisa dalla sua lunghezza vera, tra un minimo e un massimo:
+  - il pesce leone (50 cm) occupa circa un terzo dell'altezza dello schermo e si vede bene;
+  - i giganti (capodoglio, megalodonte, Kraken) arrivano quasi a tutto lo schermo;
+  - tra 25 e 30 metri, o tra 2 e 5 metri, la differenza è piccola.
+- **Nessuna bestia esce più dallo schermo**, né la tua né quella selvatica, né sul telefono né sul tablet: se è troppo alta o troppo larga per il suo posto, il gioco la rimpicciolisce quel tanto che basta.
+- Provato con un test automatico su tutte le bestie, varianti, forme finali e bestie uniche, sia come compagno sia come avversario.
+
 ## v0.18.1 — Beluga e pesce spada (3 ottobre 2026)
 
 - Beluga e pesce spada nuotano a bocca chiusa (prima avevano sempre la bocca spalancata) e la aprono quando mordono, con le nuove immagini del proprietario.

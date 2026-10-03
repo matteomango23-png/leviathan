@@ -7,7 +7,7 @@ import { BATTLE_STAGE } from '../src/data/battle';
 import { statsAt, SPECIES } from '../src/data/species';
 import { TILE } from '../src/data/worldLayout';
 import { canBreakBones } from '../src/systems/abilities';
-import { battleSizes } from '../src/systems/battle/stage';
+import { battleSize } from '../src/systems/battle/stage';
 import { breaksBones, rollWildLevel, wildLevelFloor, type BeastForm } from '../src/systems/beasts/forms';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, restAtPort, stepGame } from '../src/systems/game';
@@ -117,12 +117,13 @@ describe('wild levels', () => {
 
 describe('battle picture sizes', () => {
   it('a coiled moray is drawn smaller and a flat manta bigger than their length alone says', () => {
-    const plain = battleSizes({ lengthM: 2, giant: false }, { lengthM: 3, giant: false });
-    const moray = battleSizes(
-      { lengthM: 2, giant: false },
+    const plain = battleSize('foe', { lengthM: 3, giant: false }, 3);
+    const moray = battleSize(
+      'foe',
       { lengthM: 3, giant: false, pictureMult: BATTLE_STAGE.pictureMult.murena },
+      3,
     );
-    expect(moray.foe).toBeLessThan(plain.foe);
+    expect(moray).toBeLessThan(plain);
     expect(BATTLE_STAGE.pictureMult.manta).toBeGreaterThan(1);
   });
 });

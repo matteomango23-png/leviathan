@@ -2,8 +2,8 @@
 // pictures (a turtle from behind, a hammerhead head-on) looked tiny.
 import { describe, expect, it } from 'vitest';
 import { BATTLE_STAGE } from '../src/data/battle';
-import { BATTLE_ART_FLAT } from '../src/data/sprites.generated';
-import { battleSizes } from '../src/systems/battle/stage';
+import { BATTLE_ART_BOX } from '../src/data/sprites.generated';
+import { battleSize } from '../src/systems/battle/stage';
 import { stepMount, type Mount } from '../src/systems/beasts/mount';
 
 const mount = (): Mount => ({
@@ -49,12 +49,15 @@ describe('riding turn', () => {
 
 describe('battle sizes', () => {
   it('a flat picture is drawn bigger than a square one of the same length', () => {
-    expect(BATTLE_ART_FLAT.tartaruga_marina_back).toBeGreaterThan(1.4);
-    const square = { lengthM: 2, giant: false };
-    const flat = { lengthM: 2, giant: false, flat: BATTLE_ART_FLAT.tartaruga_marina_back };
-    const a = battleSizes(square, square).you;
-    const b = battleSizes(flat, square).you;
+    const turtle = BATTLE_ART_BOX.tartaruga_marina_back!;
+    expect((turtle[2] - turtle[0]) / (turtle[3] - turtle[1])).toBeGreaterThan(2);
+    const square = { lengthM: 2, giant: false, box: [20, 20, 780, 780] as const };
+    const flat = { lengthM: 2, giant: false, box: turtle };
+    const a = battleSize('you', square, 3);
+    const b = battleSize('you', flat, 3);
     expect(b).toBeGreaterThan(a * 1.3);
-    expect(b).toBeLessThanOrEqual(BATTLE_STAGE.size.max);
+    expect(b).toBeLessThanOrEqual(
+      BATTLE_STAGE.size.max * BATTLE_STAGE.size.youCloser * BATTLE_STAGE.flat.max,
+    );
   });
 });

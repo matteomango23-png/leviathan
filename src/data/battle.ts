@@ -84,12 +84,16 @@ export const BATTLE_PROTOTYPE = {
  * Giants (legendaries, final forms, Guardians and named beasts, colossal species) are always huge.
  */
 export const BATTLE_STAGE = {
+  /**
+   * How big each beast is drawn (owner, 3 ottobre: "grandezza relativa massima e minima… sempre dentro il range").
+   * Its real length is placed on the spectrum minM…maxM (on a log scale: 25 m and 30 m look alike, so do 2 m
+   * and 5 m) and mapped to min…max: the longest side of its picture as a share of the screen height (tuning).
+   */
   size: {
-    standard: 0.58, // the bigger beast of the pair, as a share of the screen height (tuning)
-    exponent: 0.73, // real length ratio ^ this: 2 m vs 6 m → ×2.2 instead of ×3 (tuning)
-    min: 0.26, // never smaller than this share of the screen height…
-    giant: 0.82, // …a giant is at least this big…
-    max: 1.05, // …and nothing is bigger than this
+    minM: 0.5, // this long or shorter: drawn at `min`
+    maxM: 30, // this long or longer: drawn at `max`
+    min: 0.4, // a small fish stays well visible…
+    max: 1.0, // …and the biggest are as tall as the screen (then `fit` keeps them inside)
     foeDistance: 0.82, // the wild beast is farther away: × this
     youCloser: 1.22, // yours is close to the camera, seen from behind: × this (owner: "looked like a wren")
   },
@@ -99,8 +103,12 @@ export const BATTLE_STAGE = {
     you: { x: 0.35, y: 1.0 },
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
-  /** A wild beast taller than half the screen stands lower, by this share of the extra, so its head stays in. */
-  bigFoeDrop: 0.9,
+  /**
+   * Every beast stays whole on screen: at least `margin` (share of the screen height) from every edge, also while
+   * it bobs. A wild beast too tall for its place stands lower, down to `foeLowest`; if it still does not fit, or is
+   * too wide, it is drawn smaller.
+   */
+  fit: { margin: 0.03, foeLowest: 0.97 },
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
   /**
@@ -110,10 +118,12 @@ export const BATTLE_STAGE = {
   pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
   /**
    * A picture much wider than tall (a turtle from behind, a hammerhead head-on) looks smaller than a square one
-   * of the same length: it is drawn bigger by (its flatness, BATTLE_ART_FLAT) ^ exponent, up to max (owner, 3 ottobre:
-   * "squalo martello piccolo in battaglia", "la tartaruga è sparita").
+   * of the same length: it is drawn bigger by (longest side / sqrt(width × height)) ^ exponent, up to max (owner,
+   * 3 ottobre: "squalo martello piccolo in battaglia", "la tartaruga è sparita").
    */
   flat: { exponent: 0.8, max: 1.55 },
+  /** A beast without battle pictures shows its card (2:3), standing on this share of its height. */
+  card: { aspect: 2 / 3, foot: 0.9 },
   /** Places with their own background; any other region uses the bay. */
   places: ['baia', 'delta', 'tana', 'barriera'] as const, // barriera: the coral amphitheatre (3 ottobre)
 };

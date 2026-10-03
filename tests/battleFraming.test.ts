@@ -1,19 +1,23 @@
-// Every beast must be well framed in battle, as the wild one and as yours, on an iPhone in landscape, at the
-// biggest size it can have: a huge one may leave the screen a little, but never its head or most of its body.
-import sharp from 'sharp';
+// Every beast must be well framed in battle, as the wild one and as yours, on a phone and on a tablet in
+// landscape, at every size it can have (level 1 to its final form): whole on screen, and never too small
+// (owner, 3 ottobre: "deve essere tutto bene visibile… senza uscire dallo schermo").
 import { describe, expect, it } from 'vitest';
 import { BATTLE_STAGE } from '../src/data/battle';
+import { PROGRESSION } from '../src/data/rules';
 import { SPECIES, UNIQUE_VARIANTS } from '../src/data/species';
-import { BATTLE_ART_KEYS } from '../src/data/sprites.generated';
+import { BATTLE_ART_BOX } from '../src/data/sprites.generated';
 import type { Side } from '../src/systems/battle/battle';
-import { isGiant, placePicture } from '../src/systems/battle/stage';
-import { formKey, type BeastForm } from '../src/systems/beasts/forms';
+import { battleSize, cardBox, isGiant, placePicture, type StageBeast } from '../src/systems/battle/stage';
+import { formKey, formLengthM, type BeastForm } from '../src/systems/beasts/forms';
+import { battleArt } from '../src/views/battle/beastArt';
 
-const SCREEN = { w: 844, h: 390 }; // iPhone 14 in landscape (CSS pixels): the narrowest height we support
-const MIN_VISIBLE = 0.85; // share of the beast that must be on screen
-const MAX_TOP_CUT = 0.12; // share of its height that may go above the top (heads are often up there)
+const SCREENS = [
+  { name: 'iPhone', w: 844, h: 390 },
+  { name: 'iPad', w: 1024, h: 768 },
+];
+const BOB = 0.012; // the beasts bob up and down by this share of the screen height
+const MIN_LONGEST = 0.28; // the drawn beast's longest side, at least this share of the screen height
 
-/** All the forms the game knows, to tell giants from the others by their picture's name. */
 function allForms(): BeastForm[] {
   const out: BeastForm[] = [];
   for (const s of SPECIES)
@@ -23,49 +27,40 @@ function allForms(): BeastForm[] {
   return out;
 }
 
-/** The biggest share of the screen height a beast can take on this side. */
-function worstSize(side: Side, giant: boolean): number {
-  const S = BATTLE_STAGE.size;
-  const own = giant ? S.giant : S.standard;
-  return side === 'foe' ? own * S.foeDistance : Math.min(S.max, own * S.youCloser);
-}
-
-async function framing(key: string, side: Side) {
-  const base = key.replace(/_(front|back)$/, '');
-  const form = allForms().find((f) => formKey(f) === base);
-  const giant = form ? isGiant(form) : true; // pictures of beasts not in the data yet: assume a legendary
-  const { data, info } = await sharp(`public/sprites/${key}.webp`)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+/** The beast's opaque box on screen, in pixels. */
+function onScreen(side: Side, form: BeastForm, level: number, w: number, h: number) {
+  const art = battleArt(form, side);
+  const box = art.own ? BATTLE_ART_BOX[art.textureKey.replace(/^battle-/, '')] : undefined;
+  const beast: StageBeast = { lengthM: formLengthM(form, level), giant: isGiant(form), box };
+  const size = battleSize(side, beast, w / h);
+  const b = box ?? cardBox();
+  const p = placePicture(side, size, w, h, b);
   const P = BATTLE_STAGE.picture;
-  const p = placePicture(side, worstSize(side, giant), SCREEN.w, SCREEN.h);
-  const left = p.x - (P.square / 2) * p.scale;
-  const top = p.y - P.foot * p.scale;
-  let all = 0;
-  let inside = 0;
-  let y0 = Infinity;
-  let y1 = -Infinity;
-  for (let y = 0; y < info.height; y += 2)
-    for (let x = 0; x < info.width; x += 2) {
-      if (data[(y * info.width + x) * 4 + 3]! < 64) continue;
-      all++;
-      const sx = left + x * p.scale;
-      const sy = top + y * p.scale;
-      if (sx >= 0 && sx < SCREEN.w && sy >= 0 && sy < SCREEN.h) inside++;
-      y0 = Math.min(y0, sy);
-      y1 = Math.max(y1, sy);
-    }
-  return { visible: inside / all, topCut: Math.max(0, -y0) / (y1 - y0), giant };
+  return {
+    size,
+    left: p.x + (b[0] - P.square / 2) * p.scale,
+    right: p.x + (b[2] - P.square / 2) * p.scale,
+    top: p.y + (b[1] - P.foot) * p.scale,
+    bottom: p.y + (Math.min(b[3], P.foot) - P.foot) * p.scale,
+  };
 }
 
-describe('battle framing on an iPhone', () => {
-  for (const key of BATTLE_ART_KEYS.filter((k) => /_(front|back)$/.test(k))) {
-    const side: Side = key.endsWith('_front') ? 'foe' : 'you';
-    it(`${key} as ${side === 'foe' ? 'the wild beast' : 'yours'}`, async () => {
-      const f = await framing(key, side);
-      expect(f.visible, `${key}: on screen`).toBeGreaterThanOrEqual(MIN_VISIBLE);
-      expect(f.topCut, `${key}: cut at the top`).toBeLessThanOrEqual(MAX_TOP_CUT);
-    });
-  }
+describe('battle framing', () => {
+  for (const form of allForms())
+    for (const side of ['foe', 'you'] as Side[])
+      it(`${formKey(form)} as ${side === 'foe' ? 'the wild beast' : 'yours'}`, () => {
+        const levels = form.final ? [PROGRESSION.finalFormLevel] : [1, PROGRESSION.finalFormLevel - 1];
+        for (const screen of SCREENS)
+          for (const level of levels) {
+            const r = onScreen(side, form, level, screen.w, screen.h);
+            const at = `${screen.name}, level ${level}`;
+            const bob = BOB * screen.h;
+            expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(0);
+            expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(screen.w);
+            expect(r.top - bob, `${at}: top edge`).toBeGreaterThanOrEqual(0);
+            expect(r.bottom - bob, `${at}: bottom edge`).toBeLessThanOrEqual(screen.h);
+            const longest = Math.max(r.right - r.left, r.bottom - r.top);
+            expect(longest, `${at}: big enough`).toBeGreaterThanOrEqual(MIN_LONGEST * screen.h);
+          }
+      });
 });
