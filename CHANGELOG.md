@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.26.0 — Schermate delle mosse come Pokémon (3 ottobre 2026)
+
+- **Schermata "impara mossa":** quando una bestia vuole una quinta mossa, vedi le 4 che conosce e quella nuova una accanto all'altra. Tocchi una mossa per leggerne tipo, categoria, potenza, precisione, PP e descrizione, poi scegli quale dimenticare: "1, 2 e… puff!". Oppure "Non imparare".
+- **Pannello della salita di livello** a fine battaglia: prima quanto sale ogni statistica (+3 Attacco…), poi con un tocco i nuovi valori.
+- **In battaglia:** i pulsanti delle mosse mostrano tipo e PP e dicono se la mossa è **Superefficace** o **Poco efficace** contro la bestia che hai davanti. Il tasto **Info** mostra i dettagli di una mossa senza usarla (toccalo di nuovo per tornare a combattere).
+- **Ricordamosse** (al porto) con la stessa schermata: scegli la mossa da ricordare guardandone i dettagli.
+
 ## v0.25.0 — Battaglia inquadrata come Pokémon (3 ottobre 2026)
 
 - **La tua bestia è più grande e più vicina**, vista da dietro e tagliata dal bordo in basso, come in Pokémon Nero e Bianco: si vedono schiena e testa, il resto esce dallo schermo.

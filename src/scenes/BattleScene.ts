@@ -27,7 +27,7 @@ import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
-import { chooseForget } from '../ui/moveChooser';
+import { afterBattleScreens, snapshotTeam } from '../ui/afterBattle';
 import type { Session } from './session';
 import { BattleView } from '../views/battleView';
 import { loadBattleArt, paintedLayers } from '../views/battle/battleAssets';
@@ -267,11 +267,10 @@ export class BattleScene extends Phaser.Scene {
       return;
     }
     // back to the sea: the results go into the game with its next step
+    const before = snapshotTeam(g.beasts.team);
     g.story.pending.push(...finishBattle(g, battleOutcome(s, this.setupInGame.wildId)));
-    // a beast that grew wants a fifth move: choose now, like Pokémon
-    for (const b of g.beasts.team)
-      for (const id of [...(b.pendingMoves ?? [])])
-        await new Promise<void>((done) => chooseForget(document.body, b, id, done));
+    // like Pokémon: the level-up panels, then a fifth move to learn
+    await afterBattleScreens(document.body, g.beasts.team, before);
     this.ui.result(title, lines, BATTLE_TEXT.back, () => this.backToSea());
   }
 

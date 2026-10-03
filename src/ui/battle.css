@@ -624,3 +624,7 @@
 .binfo-status[data-status='congelato'] {
   background: #4aa3d8;
 }
+.bbtn-info.on {
+  background: #c9a86a;
+  color: #02070c;
+}
