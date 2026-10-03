@@ -343,3 +343,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Un passo di storia, non missioni della bacheca:** i lavori guidano l'inizio uno alla volta (obiettivo in alto) e si chiudono al molo. Le missioni della bacheca restano facoltative.
 - **Lavori scelti per insegnare** pesca, battaglia, domatura e crescita, così il giocatore arriva alle ossa dello Sfregiato con una squadra. Il livello 9 è un primo valore, da regolare giocando.
 - **Salvataggio:** i progressi in `story.jobs` (facoltativo, i vecchi salvataggi partono da zero) e i lavori pagati nella lista "seen". Nessuna nuova versione.
+
+## 2026-10-03 — Grandezza in battaglia secondo la forma dell'immagine
+
+- Le immagini di battaglia stanno in un quadrato con il lato più lungo fisso. Così una bestia larga e bassa (tartaruga da dietro) o alta e stretta sembrava molto più piccola di quanto è.
+- `npm run art` misura ogni immagine e scrive `BATTLE_ART_FLAT`: il lato lungo diviso la radice di larghezza × altezza. In battaglia la grandezza si moltiplica per quel valore elevato a 0,8, al massimo ×1,55 (`BATTLE_STAGE.flat`).
+- Nella virata della cavalcatura il corpo resta dritto: la piega calcolata dalla velocità di rotazione, sommata alla verticale, girava la coda sottosopra.
