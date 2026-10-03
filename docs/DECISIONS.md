@@ -349,3 +349,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Le immagini di battaglia stanno in un quadrato con il lato più lungo fisso. Così una bestia larga e bassa (tartaruga da dietro) o alta e stretta sembrava molto più piccola di quanto è.
 - `npm run art` misura ogni immagine e scrive `BATTLE_ART_FLAT`: il lato lungo diviso la radice di larghezza × altezza. In battaglia la grandezza si moltiplica per quel valore elevato a 0,8, al massimo ×1,55 (`BATTLE_STAGE.flat`).
 - Nella virata della cavalcatura il corpo resta dritto: la piega calcolata dalla velocità di rotazione, sommata alla verticale, girava la coda sottosopra.
+
+## 2026-10-03 — Tappa 18: capitolo 4, la Foresta Sommersa
+
+- **Il Corno delle Catene** è il primo pezzo della reliquia. Lega la Piovra col suono, non con un collare nuovo: così la reliquia "che piega le bestie" si vede in azione.
+- **Due meccaniche nuove**, confermate dal proprietario:
+  - la **campana** da spezzare, un bersaglio come gli ancoraggi del Delta ma sopra di te, vicino alla superficie;
+  - i **tentacoli** che si annunciano (alghe che si muovono, bolle) prima di alzarsi; se ti prendono ti liberi con lo Scatto.
+- **Piovra livello 25** (proprietario). Battuta resta e si unisce, come il Re Corallo, senza catene da spezzare dopo: il collare si spezza da solo.
+- **Immagini provvisorie** con `artFrom` (il polpo gigante), come per i compagni iniziali in attesa delle loro.

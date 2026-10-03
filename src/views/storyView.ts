@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { PORT } from '../data/economy';
 import { VEDOVA } from '../data/chapter2';
 import { CORAL_KING } from '../data/chapter3';
+import { PIOVRA } from '../data/chapter4';
 import { SCENES } from '../data/story';
 import { COAST, WORLD } from '../data/worldLayout';
 import { formLengthUnits } from '../systems/beasts/forms';
@@ -117,13 +118,14 @@ export class StoryView {
     // chapter 2: the Vedova's ship at anchor in the Delta, until the whale is freed
     // chapter 3: then above the amphitheatre of the Barriera Rossa, until the Re Corallo is free
     const inDelta = s.step === 'chapter1Done' || s.step === 'freeWhale';
-    const anchored = !s.ship && (inDelta || s.step === 'chapter2Done' || s.step === 'freeKing');
+    const inForest = s.step === 'chapter3Done' || s.step === 'freePiovra';
+    const anchored = !s.ship && (inDelta || inForest || s.step === 'chapter2Done' || s.step === 'freeKing');
     if (!s.ship && !anchored) {
       this.ship.setVisible(false);
       this.whale.hide();
       return;
     }
-    const x = s.ship ? s.ship.x : inDelta ? VEDOVA.shipX : CORAL_KING.shipX;
+    const x = s.ship ? s.ship.x : inDelta ? VEDOVA.shipX : inForest ? PIOVRA.shipX : CORAL_KING.shipX;
     const bob = Math.sin(time * 1.3) * 0.8;
     this.ship.setVisible(true).setPosition(x, S + bob);
     // smoke from the stack

@@ -48,3 +48,13 @@ Queste bestie esistono nei dati del gioco ma non hanno ancora immagini: finché 
 | 21 | **Leviatano** (`leviatano`) | 120 m | `the Leviathan, an ancient serpentine sea god larger than a temple, eyes like molten amber, scales shimmering red, cyan, icy blue, violet and bronze` |
 
 Note: per **cefalopodi** (polpo, calamari, Piovra, Kraken) nel profilo chiedi `tentacles trailing straight behind the body`, così il gioco può animarli. Per il **Re Corallo** mancano solo profilo e card (fronte e retro ci sono già).
+
+## La Piovra (capitolo 4) — la più urgente
+
+Usa i prompt comuni di `docs/PROMPT-INIZIALI.md`, ma con il **fondo verde**.
+
+`[CREATURE]` = `a monstrous ancient octopus 15 metres long, dark red-brown skin with old scars, a rusted iron collar of the Company around its mantle with broken chain links, pale suckers, tentacles trailing straight behind the body`
+
+Per le viste di profilo, davanti e dietro, sostituisci `isolated on a pure flat black background` con `isolated on a flat pure green background (#00FF00)`.
+
+Salva le immagini come `piovra_card`, `piovra_side`, `piovra_side_open` (i tentacoli che si aprono), `piovra_front`, `piovra_back`.

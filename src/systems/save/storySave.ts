@@ -1,5 +1,6 @@
 // Checking the saved story (v5). Unknown steps or ids (e.g. from a newer game) are dropped.
 import { CLUES, DIALOGUES, STORY_STEPS, TUTORIAL, type SavedStory } from '../../data/story';
+import { chapter4MarkIds } from '../../data/chapter4';
 import { jobMarkIds, PORT_JOBS } from '../../data/portJobs';
 import { chapter3MarkIds } from '../../data/chapter3';
 
@@ -32,6 +33,7 @@ export function validateStory(raw: unknown): SavedStory | null {
       'freed',
       'starter',
       ...chapter3MarkIds(),
+      ...chapter4MarkIds(),
       ...jobMarkIds(),
     ]),
     jobs: jobsOf(raw.jobs),

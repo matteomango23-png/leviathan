@@ -137,7 +137,8 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a heavy tiger shark with dark stripes and stained jaws, fish bones drifting around it' },
   { id: 'polpo_gigante', name: 'Polpo gigante', type: 'abissale', role: 'supporto', region: 'foresta', wildLevel: [13, 15], rarity: 3, size: 'media', lengthM: 6, trait: 'Nube d\u2019inchiostro: i nemici perdono le tue tracce',
     artPrompt: 'a giant red-brown octopus releasing a cloud of black ink, eyes glinting with cyan light' },
-  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [17, 17], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true,
+  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true,
+    artFrom: 'polpo_gigante', // until her own pictures arrive (docs/PROMPT-BESTIE.md)
     artPrompt: 'a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains' },
 
   // ---- Mare di Ghiaccio (15-20)

@@ -40,7 +40,13 @@ Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
 - **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
 - **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
 - **Capitolo 2 (deciso il 1 ottobre 2026):** nel Delta delle Mangrovie la nave della Vedova Nera (prima comandante della Compagnia) tiene incatenata la megattera dell'apertura. Spezzi i tre ancoraggi mentre il suo coccodrillo ti attacca; la balena liberata si unisce a te e la Vedova fugge verso la Barriera Rossa.
-- **Capitolo 3 (deciso il 1 ottobre 2026, da fare):** nella Barriera Rossa la Vedova Nera sta strappando il Re Corallo con catene e argani; impazzito dal dolore ti attacca in un anfiteatro di corallo sul fondale. Sfinito, rompi le catene e lo domi; la Vedova fugge verso la Foresta Sommersa.
+- **Capitolo 3 (deciso il 1 ottobre 2026, fatto in v0.14.0):** nella Barriera Rossa la Vedova Nera sta strappando il Re Corallo con catene e argani; impazzito dal dolore ti attacca in un anfiteatro di corallo sul fondale. Sfinito, rompi le catene e lo domi; la Vedova fugge verso la Foresta Sommersa.
+- **Capitolo 4 (deciso il 3 ottobre 2026, fatto in v0.17.0):**
+  - la Vedova ha trovato il primo pezzo della reliquia, il **Corno delle Catene**: il suono passa da una campana di bronzo sotto la sua nave e lega **la Piovra** (livello 25) a un galeone affondato nella Foresta Sommersa;
+  - mentre il suono dura, i tentacoli escono dalle alghe e ti afferrano: ti liberi premendo più volte Scatto, intanto perdi aria;
+  - spezzi la campana con tre colpi, affronti la Piovra vicino al galeone e, battuta, il collare si spezza e lei si unisce a te;
+  - la Vedova fugge verso il Mare di Ghiaccio, dalla Regina bianca.
+- **Capitoli successivi (proposta, 3 ottobre 2026):** 5 Mare di Ghiaccio (Regina bianca), 6 Fossa del Capodoglio (Calamaro colossale), 7 Abisso del Tempio (il Leviatano, finale). Dopo il finale la Fossa Nera con le leggende. Dal capitolo 5 le zone sono lontane e profonde: servono i sottomarini migliori.
 - **Personaggi:** Nonno Aurelio (mentore), il mercante di denti, la Compagnia (un comandante per regione con una bestia incatenata da liberare), il Leviatano (finale).
 - **Dopo il finale:** Fossa Nera coi leggendari; il Leviatano diventa domabile.
 
@@ -117,7 +123,8 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 8c. ✅ **Le leggende (v0.12.0):** una sola nel mondo, solo nel suo posto, rara; domata è tua, sconfitta sparisce per sempre.
 8d. ✅ **Il primo tempio sommerso (v0.13.0):** nel mare aperto a quasi 4 km, mezzo sepolto nel fondale. Quattro sale: una leva, due leve da colpire una subito dopo l'altra, quattro rune nell'ordine del mosaico, un corridoio lungo con sfiatatoi. In fondo una reliquia (Respiro degli Antichi: l'aria dura circa il 50% in più, per sempre). La Compagnia è già passata di lì: la Vedova Nera cerca nei templi una reliquia che piega le bestie (gancio per il capitolo 3). Altri templi: altri rompicapo, con reliquie o leggende come premio.
 9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa.
-10. **Capitolo 4 e seguenti:** una regione alla volta (prossimo: la Foresta Sommersa).
+10. ✅ **Capitolo 4 (v0.17.0):** la Foresta Sommersa, il Corno delle Catene, la campana, i tentacoli, la Piovra.
+11. **Capitolo 5 e seguenti:** una regione alla volta (prossimo: il Mare di Ghiaccio e la Regina bianca).
 
 ## Decisioni aperte
 
