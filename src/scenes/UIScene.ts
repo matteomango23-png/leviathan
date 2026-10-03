@@ -116,7 +116,7 @@ export class UIScene extends Phaser.Scene {
   override update(_time: number, deltaMs: number): void {
     const g = this.session.game;
     if (!g) return;
-    this.controls.update(g.diver.dashCooldown <= 0);
+    this.controls.update(g.diver.dashCooldown <= 0, g.sub.aboard);
     const dt = Math.min(0.1, deltaMs / 1000);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);

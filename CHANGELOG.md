@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.20.3 — Telecamera più vicina (3 ottobre 2026)
+
+- **Mentre nuoti la telecamera è più vicina** (circa un quarto): le bestie piccole si vedono meglio.
+- **Nel sottomarino** spariscono Scatto e i pulsanti di armi ed esche, che lì non servono. Resta Pesca: fermati, toccalo, e quando abbocca toccalo di nuovo.
+
 ## v0.20.2 — Guscio, rocce, albini (3 ottobre 2026)
 
 - **Guscio combatte come gli altri due compagni:** prima faceva circa metà del danno di Zanna; ora la Testata di pietra è una mossa media e il suo morso è come il loro.
