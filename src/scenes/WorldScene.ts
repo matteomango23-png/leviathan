@@ -281,7 +281,14 @@ export class WorldScene extends Phaser.Scene {
     this.terrain.update(view);
     if (stepWeather(this.weather, dt)) this.weatherView.lightning(info);
     const sky = weatherLook(this.weather);
-    for (const s of stepBirds(this.birds, dt, info.cx, sky.birds, sky.wind, g.fish.schools))
+    for (const s of stepBirds(
+      this.birds,
+      dt,
+      { x: view.centerX, halfW: view.width / 2 },
+      sky.birds,
+      sky.wind,
+      g.fish.schools,
+    ))
       this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
     this.bg.update(info, g.time, sky);
     this.sanctuaries.update(g.sanctuaries, g.time);

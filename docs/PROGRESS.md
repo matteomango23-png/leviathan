@@ -7,21 +7,23 @@ Prima sessione nel cloud (dal telefono del proprietario). Nel cloud non si vede 
 **Fatto**
 
 - Meteo che cambia da solo, **solo aspetto** (scelta del proprietario): `data/weather.ts`, `systems/weather.ts`, `views/weatherView.ts`. Sereno, nuvoloso, pioggia, tempesta, nebbia; neve e bufera nel Mare di Ghiaccio e nella Banchisa; nuvole, pioggia con schizzi, onde più alte, lampi, nebbia; sott'acqua raggi più deboli e un po' più buio fino a 60 m.
-- Stormi di gabbiani: `systems/birds.ts`, `views/birdsView.ts`; si tuffano sulle sardine vicine alla superficie, se ne vanno in tempesta. Disegnati con linee finché non c'è un'immagine.
+- Stormi di gabbiani: `systems/birds.ts`, `views/birdsView.ts`; si tuffano sulle sardine vicine alla superficie, se ne vanno in tempesta.
+- **v0.31.1** (dopo la prova del proprietario: "troppo spessi, compaiono e spariscono"): gabbiani dipinti su canvas in 9 pose del battito; ogni stormo vive sopra un banco di pesci come sardine e sgombri; arrivano e se ne vanno solo fuori dallo schermo (test che lo controlla); 2 stormi da 3–6.
 - Nessun cambio a salvataggi, battaglie o bestie. Pannello `?prove`: "Cambia il meteo".
-- 12 test nuovi (`tests/weather.test.ts`), 1123 in tutto. Visto nel browser: sereno, nuvoloso, pioggia, tempesta col lampo, nebbia, neve, gabbiani.
+- 13 test (`tests/weather.test.ts`). Visto nel browser: sereno, nuvoloso, pioggia, tempesta col lampo, nebbia, neve, gabbiani.
 
 **Da provare sull'iPhone**
 
 1. Risali in superficie e guarda il cielo per qualche minuto: il tempo cambia da solo (per provarlo subito: apri in Safari il link del gioco con `?prove` in fondo, poi Pausa → "Cambia il meteo").
 2. Con pioggia o tempesta: gocce, schizzi sull'acqua, onde più alte, lampi. Scendi: sotto i 60 m non deve cambiare niente.
 3. Vai nel Mare di Ghiaccio con la pioggia: deve nevicare.
-4. Cerca i gabbiani sopra un banco di sardine vicino alla superficie: ogni tanto uno si tuffa.
+4. Cerca i gabbiani sopra un banco di sardine vicino alla superficie: ogni tanto uno si tuffa. Nuota avanti e indietro: non devono mai comparire o sparire davanti a te.
 5. Il gioco resta fluido quando piove?
 
 **Da sapere / possibili problemi**
 
-- I gabbiani sono disegnati con linee: se vuoi, un'immagine dipinta in Gemini (profilo con ali aperte, fondo verde) li renderebbe realistici.
+- I gabbiani sono dipinti dal codice: se vuoi, un'immagine fatta in Gemini (ali aperte, fondo verde) li renderebbe ancora più realistici.
+- L'etichetta git `v0.31.0` / `v0.31.1` non si può creare dal cloud (permesso solo sul ramo della sessione): aggiungerla dalla sessione del computer (`git tag v0.31.1 <commit> && git push origin v0.31.1`).
 - Il meteo riparte dal sereno a ogni apertura del gioco (non si salva).
 - `WorldScene.ts` è a circa 330 righe: alla prossima pulizia si può spostare il collegamento di meteo e uccelli in un file a parte.
 
