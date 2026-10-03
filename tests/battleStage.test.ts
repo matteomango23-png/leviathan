@@ -38,6 +38,11 @@ describe('battle stage', () => {
     expect(battleSize('you', tall, 2.16)).toBeLessThanOrEqual(F.youMax);
   });
 
+  it('leaves an empty gap in the middle, so two big beasts never meet head to head', () => {
+    const F = BATTLE_STAGE.fit;
+    expect(F.foeLeft - F.youRight).toBeGreaterThanOrEqual(0.1);
+  });
+
   it('knows the giants', () => {
     expect(isGiant({ speciesId: 'squalo_bianco', variant: 'albino', final: true })).toBe(true);
     expect(isGiant({ speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' })).toBe(true);

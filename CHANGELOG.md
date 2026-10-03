@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.20.1 — Spazio in mezzo (3 ottobre 2026)
+
+- In battaglia tra le due bestie resta uno spazio vuoto al centro: due bestie grandi non si incontrano più muso contro muso. La tua sta più in basso e più a sinistra.
+
 ## v0.20.0 — Battaglie più giuste (3 ottobre 2026)
 
 - **I livelli contano davvero:** una bestia di livello 1 graffia appena una di livello 11 (prima ne toglieva un quinto della vita); la tua di livello alto la batte in un paio di colpi.
