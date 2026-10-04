@@ -62,6 +62,8 @@ import { stepEndlessSchools, stepVents } from './endlessLife';
 import { board, canBoard, leaveSub, newSub, ramSub, repairSub, type SubState } from './submarine';
 import { dismount } from './beastState';
 import { rescue } from './fuel';
+import { addHuntSlots, hearRumours, placeDens, stepHunts, type Den, type HuntsState } from './hunts';
+import { createWeather, type WeatherState } from './weather';
 import { newShip, type ShipState } from './ship/ship';
 import { helmPoint } from './ship/geometry';
 import { canDock } from './ship/hatch';
@@ -103,6 +105,11 @@ export interface GameState extends Chapter4World {
   timers: { feed: number; vent: number };
   /** The air of the whales of your team, which you breathe while riding them (breath.ts, not saved). */
   rideTanks: RideTanks;
+  /** The weather above the sea (weather.ts, not saved; the World scene steps it). */
+  weather: WeatherState;
+  /** The hunts in the diary (saved) and the dens in the world. */
+  hunts: HuntsState;
+  dens: Den[];
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -124,6 +131,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
   const beasts = createBeasts(restoreTeam(s), s.legendsGone);
+  const dens = placeDens(map);
+  addHuntSlots(beasts.wilds, dens); // the legends and giants in their dens (hunts.ts)
   const g: GameState = {
     map,
     rng,
@@ -149,6 +158,9 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     ship: newShip(s.ship),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
+    weather: createWeather(),
+    hunts: structuredClone(s.hunts ?? {}),
+    dens,
     temples: createTemples(),
     chapter2: createChapter2(map),
     chapter3: createChapter3(beasts, s.story?.seen ?? []),
@@ -311,6 +323,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   }
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepGuardian(g, dt, events);
+  stepHunts(g, events);
 
   const eater = activeBeast(g);
   const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
@@ -390,6 +403,7 @@ export function blackout(g: GameState, events: GameEvent[]): void {
 export function enterPort(g: GameState, events: GameEvent[] = []): void {
   restAtPort(g);
   repairSub(g, events);
+  if (g.port) hearRumours(g.hunts, g.port, events); // the people of the harbour talk
   g.gear.shopBought = {};
   guardianReturns(g);
 }

@@ -13,10 +13,12 @@ import { icon, type IconName } from './icons';
 import { portCard } from './portCard';
 import { renderBackpack, type TabContext } from './portTabs';
 import { renderTeamPanel } from './teamPanel';
+import { renderDiary } from './huntDiary';
 
-type Tab = 'plancia' | 'recinto' | 'zaino';
+type Tab = 'plancia' | 'diario' | 'recinto' | 'zaino';
 const TABS: [Tab, string, IconName][] = [
   ['plancia', 'Plancia', 'lamp'],
+  ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
 ];
@@ -77,6 +79,7 @@ export class Cockpit {
     this.body.replaceChildren();
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
     if (this.tab === 'plancia') this.renderBridge(this.body);
+    else if (this.tab === 'diario') renderDiary(this.body, this.g);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else renderTeamPanel(this.body, this.g, true);
     this.body.scrollTop = keep;

@@ -85,6 +85,12 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [SHIP_TEXT.given, 7];
     case 'shipBoarded':
       return [SHIP_TEXT.aboard, 4];
+    case 'rumourHeard':
+      return [`Una voce al porto: ${e.name}. È scritta nel Diario di caccia (cockpit).`, 4];
+    case 'echoFound':
+      return [`Sonar: un’eco anomala, enorme, a ${e.depthM} m. Cala il sottomarino e cerca le tracce.`, 5];
+    case 'tracesFound':
+      return [`Tracce: ${e.text}`, 5];
     case 'outpostFound':
       return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
     case 'seaEnd':

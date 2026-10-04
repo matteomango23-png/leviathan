@@ -22,6 +22,7 @@ export interface SaveSource extends Pick<
 > {
   sub: SubState;
   ship: ShipState;
+  hunts: SaveData['hunts'];
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
@@ -93,6 +94,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.homePort = g.homePort;
   s.sub = saveSub(g.sub);
   s.ship = saveShip(g.ship);
+  s.hunts = structuredClone(g.hunts);
   s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
   if (g.sub.aboard && !d.dead) s.diver = subWakePoint(g.sub); // saved inside: you start next to it

@@ -57,6 +57,10 @@ export type GameEvent =
   | { type: 'seaEnd' }
   /** An outpost of the open sea found (economy/places.ts). */
   | { type: 'outpostFound'; name: string }
+  // the hunts (hunts.ts)
+  | { type: 'rumourHeard'; name: string }
+  | { type: 'echoFound'; name: string; depthM: number }
+  | { type: 'tracesFound'; text: string }
   | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }

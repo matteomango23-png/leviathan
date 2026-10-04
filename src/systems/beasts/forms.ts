@@ -7,7 +7,6 @@ import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId }
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
 import { ART_KEYS, BATTLE_ART_KEYS, SPRITE_KEYS } from '../../data/sprites.generated';
 import type { Rng } from '../math';
-import { rollLegend } from './legends';
 
 export type Variant = 'comune' | 'albino' | 'alfa';
 
@@ -132,16 +131,10 @@ export function hasAlbinoArt(speciesId: string): boolean {
 }
 
 /**
- * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance); in its place a legend of the species may
- * come instead (`where`: the point where it comes, and the legends not available: tamed, gone, already out).
+ * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance). The legends never come by chance any
+ * more: they are hunted (hunts.ts).
  */
-export function rollWildForm(
-  speciesId: string,
-  rng: Rng,
-  where?: { x: number; unavailable: ReadonlySet<string> },
-): BeastForm {
-  const legend = where ? rollLegend(speciesId, rng, where.x, where.unavailable) : null;
-  if (legend) return { speciesId, variant: 'comune', unique: legend };
+export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
   const r = rng();
   if (r < VARIANT_RULES.albino.spawnChance) {
     if (hasAlbinoArt(speciesId)) return { speciesId, variant: 'albino' };

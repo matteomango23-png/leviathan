@@ -8,7 +8,7 @@ import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
 import { distanceToBody } from './beasts/combat';
-import { formKey, formLengthM, rollWildForm, rollWildLevel } from './beasts/forms';
+import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
 import { SUBMARINE } from '../data/submarine';
 import { isLegend } from './beasts/legends';
@@ -72,14 +72,12 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (lure.t <= 0) g.beasts.lure = null;
   }
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
-  /** It comes out of the dark (a legend may come instead, in its place, if it is still free). */
+  /** It comes out of the dark. */
   const appear = (w: WildBeast): boolean => {
-    const unavailable = new Set([
-      ...g.beasts.gone,
-      ...g.beasts.team.map((b) => b.form.unique ?? ''),
-      ...g.beasts.wilds.filter((o) => isInWater(o)).map((o) => o.form.unique ?? ''),
-    ]);
-    const form = rollWildForm(w.spawn.speciesId, g.rng, { x: d.x, unavailable });
+    // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready)
+    const form: BeastForm = w.spawn.form
+      ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
+      : rollWildForm(w.spawn.speciesId, g.rng);
     const p = appearPoint(w, g.map, g.rng, d);
     if (!p) return false;
     spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
