@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.37.4 — Niente più virate animate (4 ottobre 2026)
+
+- **Le bestie si girano di colpo**, senza animazione: con immagini dipinte di profilo ogni virata animata sembrava un foglio di carta. Vale per quella che cavalchi, per i compagni e per le selvatiche (che continuano a girarsi soprattutto fuori dalla tua luce).
+
 ## v0.37.3 — Via lo zoom d'ingresso in battaglia (4 ottobre 2026)
 
 - Tolto lo zoom all'inizio della battaglia con le bestie grandi, alfa o rare (si vedevano i bordi del riquadro). La bestia esce dal buio come le altre; le gigantesche fanno ancora tremare il mare.

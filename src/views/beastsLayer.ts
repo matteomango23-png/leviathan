@@ -107,8 +107,6 @@ export class BeastsLayer {
         whale: CETACEANS.includes(w.form.speciesId),
         flash: w.flash,
         alpha: 1,
-        turn: w.turn,
-        turnFrom: w.turnFrom,
       });
       // the school: behind and around the leader, each a little out of step
       const schoolSize = BEAST_TEMPER[w.form.speciesId]?.school ?? 0;
@@ -133,8 +131,6 @@ export class BeastsLayer {
           whale: CETACEANS.includes(w.form.speciesId),
           flash: w.flash,
           alpha: 1,
-          turn: w.turn,
-          turnFrom: w.turnFrom,
         });
       });
     });
@@ -156,8 +152,6 @@ export class BeastsLayer {
         whale: CETACEANS.includes(b.form.speciesId),
         flash: c.flash,
         alpha: c.alpha,
-        turn: c.turn,
-        turnFrom: c.turnFrom,
       });
     else this.mount.hide();
   }

@@ -550,3 +550,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 2026-10-04 — Via lo zoom d'ingresso in battaglia (v0.37.3)
 
 - Il proprietario: lo zoom iniziale sulle bestie grandi mostrava ancora i bordi del riquadro anche dopo la correzione della vignettatura (v0.32.0). Tolto del tutto (`emerge` in `views/battleView.ts`); resta solo la scossa delle gigantesche (`BATTLE_STAGE.intro.giantShake`).
+
+## 2026-10-04 — Niente più virate animate (v0.37.4)
+
+- **Scelta del proprietario:** dopo tre tentativi (pezzo per pezzo, moneta spessa, sandwich con il corpo pieno) le virate restavano brutte, quindi niente animazione. In `views/beastView.ts` la bestia si disegna subito verso `face`: tolti il disegno della virata, lo spessore, le ellissi e `turnBreadth`.
+- La logica (`turn` in `roam.ts` e `mount.ts`) resta com'era: le selvatiche si girano solo fuori dalla luce o contro una parete, e durante il `turn` il beccheggio si appiattisce. Cambia solo il disegno.
+- Onda della coda dei cetacei un po' più bassa (`whaleWave.amp` 0,3): toglie i fili sottili vicino alla coda.
+- **Per riprovare un giorno:** servirebbero immagini dipinte apposta per le pose intermedie (di fronte e di tre quarti) da alternare durante la virata.

@@ -348,18 +348,11 @@ export const BEAST_SPRITE = {
   spineY: 250,
   segments: 26,
   /**
-   * Turning around (owner, 4 ottobre: "the ham between two slices of bread", in proportion to the animal): the
-   * profile narrows sideways while the body's bulk, as thick as this share of its length, shows around it as a
-   * rounded solid (views/beastView.ts). Whales are bulkier. Tuning.
-   */
-  turnBreadth: 0.2,
-  turnBreadthWhale: 0.28,
-  /**
    * Whales and dolphins beat their tail up and down (owner): only the back of the body bends (from `from`, share of
    * the length from the head), up to `amp` radians at the flukes; the thick front stays whole (bending it opened gaps
    * between the pieces of the picture). Tuning.
    */
-  whaleWave: { amp: 0.4, from: 0.6, waves: 1.2 },
+  whaleWave: { amp: 0.3, from: 0.6, waves: 1.2 },
 };
 
 /** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */
