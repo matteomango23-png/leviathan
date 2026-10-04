@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.37.3 — Via lo zoom d'ingresso in battaglia (4 ottobre 2026)
+
+- Tolto lo zoom all'inizio della battaglia con le bestie grandi, alfa o rare (si vedevano i bordi del riquadro). La bestia esce dal buio come le altre; le gigantesche fanno ancora tremare il mare.
+
 ## v0.37.2 — Virata con il corpo pieno (4 ottobre 2026)
 
 - **Le bestie grandi non sembrano più un foglio di carta quando girano.** Il profilo si stringe di lato come quello di un animale vero che si volta, e intorno compare il suo corpo pieno e tondo, spesso quanto l'animale (una megattera molto più di uno squalo). A metà virata vedi la bestia quasi di fronte.

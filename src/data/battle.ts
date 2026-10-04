@@ -118,11 +118,10 @@ export const BATTLE_STAGE = {
   /** Battle pictures (npm run art): a square of this side, the beast's longest side `box`, its lowest point at `foot`. */
   picture: { square: 800, box: 760, foot: 780 },
   /**
-   * The entrance of a big wild beast, like Pokémon gen 5 (owner, 3 ottobre: "la giusta maestosità"): the camera
-   * starts close on it while it comes out of the dark, holds, then pulls back to the whole stage. A giant also
-   * shakes the sea.
+   * The entrance of a wild beast: a giant makes the sea rumble as it comes. The camera zoom-in on big beasts
+   * (3 ottobre) was removed by the owner on 4 ottobre: it showed the edges of the stage.
    */
-  intro: { bigM: 5, zoom: 1.4, giantZoom: 1.6, holdMs: 450, pullMs: 1200 },
+  intro: { giantShake: 0.004 },
   /**
    * Pictures whose longest side is not the body length: a coiled moray looks far bigger than 3 m, a manta seen
    * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).

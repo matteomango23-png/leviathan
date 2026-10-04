@@ -546,3 +546,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Il corpo** (il "prosciutto"): dietro il profilo, a ogni pezzo della spina, un'ellisse alta quanto il corpo in quel punto (letta una volta dall'alfa dell'immagine) e profonda quanto lo spessore (`turnBreadth` 0,2 della lunghezza, cetacei 0,28) × quanto ha girato; più sottile a muso e coda. Colore: la media dell'immagine lungo la spina. Insieme fanno un corpo tondo, di taglio visto di fronte.
 - Tolta l'inarcatura durante la virata: inclinava i pezzi e apriva fessure.
 - Visto nel browser con la virata rallentata a 4 s (solo per la prova).
+
+## 2026-10-04 — Via lo zoom d'ingresso in battaglia (v0.37.3)
+
+- Il proprietario: lo zoom iniziale sulle bestie grandi mostrava ancora i bordi del riquadro anche dopo la correzione della vignettatura (v0.32.0). Tolto del tutto (`emerge` in `views/battleView.ts`); resta solo la scossa delle gigantesche (`BATTLE_STAGE.intro.giantShake`).
