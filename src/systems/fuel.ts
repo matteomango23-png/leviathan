@@ -55,7 +55,7 @@ export function transferFuel(g: FuelWorld, toSub: boolean): number {
 export function canRefuel(g: FuelWorld, which: 'ship' | 'sub'): boolean {
   const p = g.port;
   if (!p) return false;
-  const shipHere = g.ship.owned && Math.abs(g.ship.x - SHIP.dock[p.id]) < SHIP.dockReachPort;
+  const shipHere = g.ship.owned && Math.abs(g.ship.x - p.shipDock) < SHIP.dockReachPort;
   if (which === 'ship') return shipHere;
   if (!g.sub.owned) return false;
   return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;
@@ -114,9 +114,9 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
   if (s.aboard || (g.sub.aboard && s.owned)) {
     if (s.aboard) {
       const port = PORTS.reduce((a, b) =>
-        Math.abs(SHIP.dock[b.id] - s.x) < Math.abs(SHIP.dock[a.id] - s.x) ? b : a,
+        Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
       );
-      Object.assign(s, { x: SHIP.dock[port.id], speed: 0, lane: 0 });
+      Object.assign(s, { x: port.shipDock, speed: 0, lane: 0 });
       g.homePort = port.id;
       where = `a ${port.name}`;
     } else {

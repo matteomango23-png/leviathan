@@ -9,7 +9,7 @@ import { icebergsOfStretch, inIceberg, nearIceberg } from './icebergs';
 import { biomeOf, naturalFloor, stretchAt } from './stretches';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
 
-export { biomeAt, biomeOf, kmFromCoast, stretchAt } from './stretches';
+export { biomeAt, biomeOf, kmFromCoast, regionAt, regionIndexAt, stretchAt } from './stretches';
 
 /** The sea floor (world y) at x: the natural one, bent to meet a sunken temple near one. */
 export const endlessFloor = (x: number): number => floorNearTemple(x, naturalFloor(x));
@@ -64,6 +64,7 @@ function isIce(b: BiomeDef, k: number, x: number, y: number): boolean {
 /** The tile at a point of the endless sea. */
 export function endlessTile(x: number, y: number): TileValue {
   if (y < WORLD.surfaceY) return TILE.water;
+  if (x > ENDLESS.maxX - ENDLESS.endWall) return TILE.rock; // the end of the known sea: a cliff
   const temple = templeTileAt(x, y);
   if (temple !== null) return temple;
   const k = stretchAt(x);

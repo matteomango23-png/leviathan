@@ -1,6 +1,7 @@
 // The stretches of the endless sea (split from endless.ts so the temples can find their place without a cycle):
 // which kind each stretch is, and its natural floor.
 import { BIOMES, ENDLESS, type BiomeDef } from '../../data/endless';
+import { SEA_REGIONS, type SeaRegionDef } from '../../data/regions';
 import { WORLD } from '../../data/worldLayout';
 import { clamp, hash2, smoothstep } from '../math';
 
@@ -10,15 +11,26 @@ export const stretchAt = (x: number): number => Math.floor((x - ENDLESS.startX) 
 /** Distance from the coast in km at x (the beach is at the start of the world). */
 export const kmFromCoast = (x: number): number => Math.max(0, x / WORLD.unitsPerMetre / 1000);
 
+/** The region of the 30 km ocean at x (data/regions.ts); the hand-made coast counts as the first one's start. */
+export function regionAt(x: number): SeaRegionDef {
+  const km = kmFromCoast(x);
+  return SEA_REGIONS.find((r) => km < r.toKm) ?? SEA_REGIONS[SEA_REGIONS.length - 1]!;
+}
+
+/** Index of the region at x (0 … 4), for levels and rewards; -1 on the hand-made coast. */
+export const regionIndexAt = (x: number): number =>
+  x < ENDLESS.startX ? -1 : SEA_REGIONS.indexOf(regionAt(x));
+
 const cache = new Map<number, BiomeDef>();
 
-/** The kind of a stretch: the first one is always open sea (it blends out of the Mare di Ghiaccio). */
+/** The kind of a stretch: the first one is always open sea (it blends out of the Mare di Ghiaccio); then its
+ *  region decides which kinds come and how often. */
 export function biomeOf(k: number): BiomeDef {
   if (k <= 0) return BIOMES[0]!;
   const hit = cache.get(k);
   if (hit) return hit;
-  const km = kmFromCoast(ENDLESS.startX + (k + 0.5) * ENDLESS.stretch);
-  const weights = BIOMES.map((b) => Math.max(0, b.weight + b.weightPerKm * km));
+  const region = regionAt(ENDLESS.startX + (k + 0.5) * ENDLESS.stretch);
+  const weights = BIOMES.map((b) => region.biomes[b.id] ?? 0);
   const total = weights.reduce((a, b) => a + b, 0);
   let r = hash2(k * 7.3 + ENDLESS.seed, ENDLESS.seed * 0.37) * total;
   let pick = BIOMES[0]!;
@@ -29,9 +41,10 @@ export function biomeOf(k: number): BiomeDef {
       break;
     }
   }
-  // never the same kind three times in a row
-  if (k > 1 && biomeOf(k - 1).id === pick.id && biomeOf(k - 2).id === pick.id)
-    pick = BIOMES[(BIOMES.indexOf(pick) + 1) % BIOMES.length]!;
+  // never the same kind three times in a row (where the region has more than one)
+  const kinds = BIOMES.filter((b) => (region.biomes[b.id] ?? 0) > 0);
+  if (kinds.length > 1 && k > 1 && biomeOf(k - 1).id === pick.id && biomeOf(k - 2).id === pick.id)
+    pick = kinds[(kinds.indexOf(pick) + 1) % kinds.length]!;
   cache.set(k, pick);
   return pick;
 }

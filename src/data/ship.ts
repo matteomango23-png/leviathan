@@ -3,7 +3,6 @@
 // (what sticks out of the water it sails round, on the far lane, behind it); stopped, its side hatch opens, the
 // submarine slides down the ramp to mid-water under it and docks again only in front of the hatch. Open, the ship
 // does not move. You drive it, and the submarine, with levers (HELM). Values marked "tuning" are a first pass.
-import { PORT, PORTO_FANGO, type PortDef } from './economy';
 
 export const SHIP = {
   art: 'nave_1', // public/world: hatch closed…
@@ -47,8 +46,7 @@ export const SHIP = {
   launchDepth: 62, // units under the surface (~10 m)
   dockReach: 26, // units from the docking point (under the ramp) where Aggancia appears
   boardReach: 18, // units beyond the hull (sideways) or under the surface where A bordo appears
-  /** Where it docks in each port (deep enough water, alongside the pier) and how near counts. */
-  dock: { portofosco: PORT.x + 120, fango: PORTO_FANGO.x + 50 } as Record<PortDef['id'], number>,
+  /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },

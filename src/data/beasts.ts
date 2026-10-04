@@ -43,6 +43,8 @@ export interface WildSpawnDef {
   level?: [number, number];
   /** A slot of the endless sea: species, waters and level are chosen each time it comes (endlessLife.ts). */
   endless?: boolean;
+  /** A hunted beast's den (data/hunts.ts): it comes only when its hunt is ready (systems/hunts.ts). */
+  hunt?: string;
 }
 
 // Each entry is one beast that comes and goes; a species listed twice can be met two at a time.

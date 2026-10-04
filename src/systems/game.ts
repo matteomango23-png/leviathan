@@ -34,7 +34,7 @@ import { createChapter4, hitBell, stepChapter4, type Chapter4World } from './cha
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
-import { atPort, nearWreck, openWreck, placeWrecks, portAt, portStart, type Wreck } from './economy/places';
+import { atPort, discoverOutposts, nearWreck, openWreck, placeWrecks, portAt, portStart, type Wreck } from './economy/places';
 import { PORT, PORTS, type PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createFish, stepFish, takeFish, type FishState } from './fish';
@@ -46,6 +46,8 @@ import { restoreGear, restoreTeam } from './save/convert';
 import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
 import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
+import { regionAt } from './world/stretches';
+import { ENDLESS } from '../data/endless';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
 import { board, canBoard, leaveSub, newSub, ramSub, repairSub, type SubState } from './submarine';
@@ -329,6 +331,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   }
 
   g.port = g.ship.aboard ? shipPort(g) : portAt(d, g.map);
+  discoverOutposts(g, events);
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
@@ -342,6 +345,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (zone && zone !== g.zone) {
     g.zone = zone;
     g.seen.add(zoneKey(zone)); // for the sea map
+    if (d.x >= ENDLESS.startX) g.seen.add(zoneKey(regionAt(d.x).name)); // the region's tab of the map
     events.push({ type: 'zoneEntered', name: zone });
   }
   return events;

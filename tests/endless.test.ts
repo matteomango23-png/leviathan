@@ -11,7 +11,8 @@ import { DIVER } from '../src/data/diver';
 import { createWild } from '../src/systems/beasts/wildState';
 import { createFish } from '../src/systems/fish';
 import { makeRng } from '../src/systems/math';
-import { seaMap } from '../src/systems/seaMap';
+import { regionsMap } from '../src/systems/seaMap';
+import { SEA_REGIONS } from '../src/data/regions';
 import {
   biomeOf,
   endlessFloor,
@@ -62,9 +63,12 @@ describe('the endless sea', () => {
     }
     const near = (endlessFloor(S + 900) + endlessFloor(S + 2700)) / 2;
     let far = 0;
-    for (let i = 0; i < 20; i++) far += endlessFloor(S + 40 * km + i * 911) / 20;
+    for (let i = 0; i < 20; i++) far += endlessFloor(S + 20 * km + i * 911) / 20;
     expect(far).toBeGreaterThan(near);
-    expect(map.width).toBeGreaterThan(500 * km);
+    // the sea ends 30 km from the beach (regions.ts), with a cliff
+    expect(map.width).toBeGreaterThan(29.9 * km);
+    expect(map.width).toBeLessThan(31 * km);
+    expect(map.solidAt(map.width - 20, 200)).toBe(true);
   });
 
   it('can always be swum through in the upper sea (under the icebergs too: no wall across the sea)', () => {
@@ -77,9 +81,10 @@ describe('the endless sea', () => {
   }, 30_000); // it makes ~20 km of sea: slow when all the tests run together
 
   it('names the zones out there and shows them on the map', () => {
-    expect(zoneAt(S + 100, 200)).toBe('Mare aperto');
-    const names = BIOMES.map((b) => b.name);
-    expect(seaMap(new Set()).some((z) => names.includes(z.name))).toBe(true);
+    expect(zoneAt(S + 100, 200)).toBe('Barriera esterna · Mare aperto');
+    const regions = regionsMap(new Set());
+    expect(regions.map((r) => r.name)).toEqual(SEA_REGIONS.map((r) => r.name));
+    for (const r of regions) expect(r.beasts.reduce((a, b) => a + b.share, 0)).toBeCloseTo(1, 5);
   });
 
   it('keeps broken tiles apart from the hand-made ones', () => {

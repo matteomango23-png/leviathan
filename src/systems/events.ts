@@ -53,6 +53,10 @@ export type GameEvent =
   | { type: 'shipGiven' }
   | { type: 'shipBoarded' }
   | { type: 'shipShallow' }
+  /** The ship reached the end of the known sea. */
+  | { type: 'seaEnd' }
+  /** An outpost of the open sea found (economy/places.ts). */
+  | { type: 'outpostFound'; name: string }
   | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }

@@ -102,7 +102,7 @@ describe('carburante', () => {
   });
 
   it('al porto si fa il pieno solo se il mezzo è lì, e costa i denti giusti', () => {
-    const { g, input } = atTheHelm(SHIP.dock.portofosco);
+    const { g, input } = atTheHelm(PORT.shipDock);
     run(g, DT, input);
     expect(g.port?.id).toBe(PORT.id);
     g.ship.fuel = 100;
@@ -124,7 +124,7 @@ describe('razzo di soccorso', () => {
     g.gear.teeth = 400;
     const ev: GameEvent[] = [];
     rescue(g, ev);
-    expect(g.ship.x).toBe(SHIP.dock.fango); // Porto Fango is nearer than Portofosco
+    expect(g.ship.x).toBe(PORTO_FANGO.shipDock); // Porto Fango is nearer than Portofosco
     expect(g.ship.aboard).toBe(true);
     expect(g.gear.teeth).toBe(400 - 400 * RESCUE.teethShare);
     expect(ev.some((e) => e.type === 'rescued')).toBe(true);

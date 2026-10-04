@@ -80,6 +80,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [SHIP_TEXT.given, 7];
     case 'shipBoarded':
       return [SHIP_TEXT.aboard, 4];
+    case 'outpostFound':
+      return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'seaEnd':
+      return ['Oltre l’Abisso del Leviatano c’è solo tempesta: il mare conosciuto finisce qui.', 4];
     case 'shipShallow':
       return [SHIP_TEXT.shallow, 2.5];
     case 'shipHint':

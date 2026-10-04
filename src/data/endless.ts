@@ -37,7 +37,8 @@ export const ENDLESS = {
   seed: 7177, // tuning: change it to get another sea
   startX: WORLD.cols * WORLD.tileSize, // the hand-made world ends here (east of the Mare di Ghiaccio)
   chunkCols: 64, // tiles generated together
-  maxX: 4_000_000, // units: ~670 km, the camera's right bound ("endless" for a player)
+  maxX: 30 * 1000 * WORLD.unitsPerMetre + 300, // units: the sea ends 30 km from the beach (regions.ts)
+  endWall: 160, // units before maxX where a cliff closes the world
   stretch: 1800, // units (300 m): the length of a stretch of one kind
   blend: 320, // units: the floor of one stretch blends into the next over this
   deepenPerKm: 60, // units of floor depth added per km from the coast (tuning)

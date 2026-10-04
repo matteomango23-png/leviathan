@@ -14,7 +14,7 @@ import { consumePresses, emptyInput, type InputState } from '../src/systems/inpu
 import { migrate, parseSave } from '../src/systems/save/saveData';
 import { dockPoint, shipSpan } from '../src/systems/ship/geometry';
 import { newShip, sailShip, type ShipWorld } from '../src/systems/ship/ship';
-import { iceIn, obstacleIn } from '../src/systems/ship/surface';
+import { iceIn, obstacleIn, SEA_END_X } from '../src/systems/ship/surface';
 import { ENDLESS } from '../src/data/endless';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
@@ -158,7 +158,7 @@ describe('la nave da spedizione', () => {
   });
 
   it('attracca al porto: dal timone compare Porto', () => {
-    const { g, input } = atTheHelm(SHIP.dock.portofosco);
+    const { g, input } = atTheHelm(PORT.shipDock);
     run(g, DT, input);
     expect(currentAction(g)).toBe('porto');
     expect(g.port?.id).toBe(PORT.id);
@@ -201,9 +201,12 @@ describe('la nave non si blocca mai', () => {
     'da Portofosco a 30 km verso est: isola, Delta, ghiaccio e mare aperto, senza mai fermarsi',
     { timeout: 60000 },
     () => {
-      const goal = SHIP.dock.portofosco + 30 * 1000 * WORLD.unitsPerMetre;
-      const { g, lanes } = sail(SHIP.dock.portofosco, 1, 1200, goal);
+      // the sea ends 30 km from the beach: the ship gets there, to the last metre
+      const goal = SEA_END_X - SHIP.length / 2 - 1;
+      const { g, lanes, events } = sail(PORT.shipDock, 1, 1200, goal);
       expect(g.ship.x).toBeGreaterThan(goal);
+      for (let i = 0; i < 30; i++) sailShip(g, { throttle: 1, dir: 1, dive: 0 }, 1 / 15, events, () => true);
+      expect(events.some((e) => e.type === 'seaEnd')).toBe(true);
       // mostly on the near lane: the far one only round what stands in the way
       expect(lanes.filter((l) => l.lane > 0).length / lanes.length).toBeLessThan(0.35);
       // round the Isola delle Mangrovie on the far lane, then back on the near one
@@ -215,7 +218,7 @@ describe('la nave non si blocca mai', () => {
   );
 
   it('verso la spiaggia si ferma nel fondale basso, e lo dice', () => {
-    const { g, events } = sail(SHIP.dock.portofosco + 300, -1, 30);
+    const { g, events } = sail(PORT.shipDock + 300, -1, 30);
     expect(events.some((e) => e.type === 'shipShallow')).toBe(true);
     expect(shipSpan(g.ship).x0).toBeGreaterThan(LAYOUT.shoreX);
   });

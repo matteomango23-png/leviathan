@@ -6,12 +6,13 @@
 import { SHIP } from '../../data/ship';
 import { STORY_STEPS, type StoryStep } from '../../data/story';
 import { WRECK } from '../../data/chapter4';
+import { PORT, PORTO_FANGO } from '../../data/economy';
 import type { GameEvent } from '../events';
 import { litresFor } from '../fuelBurn';
 import { stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipSpan } from './geometry';
-import { BEACH_END, breakIce, iceIn, obstacleIn, refreeze, shallowAt, type BrokenIce } from './surface';
+import { SEA_END_X, BEACH_END, breakIce, iceIn, obstacleIn, refreeze, shallowAt, type BrokenIce } from './surface';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
@@ -93,7 +94,7 @@ export function giftShip(g: ShipWorld, events: GameEvent[]): void {
   s.owned = true;
   // above the galleon of the Foresta Sommersa, where chapter 4 ends; an older save far from there finds it at the
   // nearest harbour
-  const spots = [WRECK.x, ...Object.values(SHIP.dock)];
+  const spots = [WRECK.x, PORT.shipDock, PORTO_FANGO.shipDock];
   s.x = spots.reduce((a, b) => (Math.abs(b - g.diver.x) < Math.abs(a - g.diver.x) ? b : a));
   s.bay = !g.sub.owned ? 'none' : g.sub.aboard ? 'out' : 'docked';
   s.bayT = s.bay === 'out' ? 1 : 0;
@@ -150,7 +151,15 @@ export function sailShip(
   }
   const half = SHIP.length / 2;
   const from = s.x;
-  s.x = Math.max(half + 8, Math.min(g.map.width - half - 8, s.x + s.face * s.speed * dt));
+  const end = SEA_END_X - half;
+  s.x = Math.max(half + 8, Math.min(end, s.x + s.face * s.speed * dt));
+  if (s.x >= end && s.face > 0 && s.speed > 0) {
+    s.speed = 0; // the end of the known sea
+    if (s.shallowWarn <= 0) {
+      events.push({ type: 'seaEnd' });
+      s.shallowWarn = 8;
+    }
+  }
   const engine = helm && !s.hatchOpen ? helm.throttle : 0;
   s.fuel = Math.max(0, s.fuel - litresFor(Math.abs(s.x - from), engine, SHIP.fuel.perKm));
   if (s.fuel > 0) s.fuelWarned = false;

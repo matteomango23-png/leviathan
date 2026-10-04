@@ -14,7 +14,7 @@ import { newGear, slotKind } from '../src/systems/economy/gear';
 import { createGame, stepGame, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput } from '../src/systems/input';
 import { migrate } from '../src/systems/save/saveData';
-import { seaMap, zoneKey } from '../src/systems/seaMap';
+import { coastMap, zoneKey } from '../src/systems/seaMap';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -135,7 +135,7 @@ describe('sea map', () => {
     const g = game();
     stepGame(g, emptyInput(), DT);
     expect(g.seen.has(zoneKey(g.zone))).toBe(true);
-    const zones = seaMap(g.seen);
+    const zones = coastMap(g.seen);
     const here = zones.find((z) => z.name === g.zone)!;
     expect(here.visited).toBe(true);
     expect(here.beasts.length).toBeGreaterThan(0);
