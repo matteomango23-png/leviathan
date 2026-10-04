@@ -156,8 +156,14 @@ export class TileMap {
       e.vy *= -0.25;
       blocked = true;
     } else e.y = ny;
-    const r = typeof body === 'number' ? body : Math.max(...body.map((c) => c.r - c.dy));
-    const top = this.surfaceY + r;
+    // at the surface only the middle counts: a whale's head and tail may break the water (it has to come up to
+    // breathe; with the whole body its raised head kept you under, 4 ottobre)
+    const mid =
+      typeof body === 'number'
+        ? body
+        : body.reduce((m, c) => (Math.abs(c.dx) + Math.abs(c.dy) < Math.abs(m.dx) + Math.abs(m.dy) ? c : m))
+            .r;
+    const top = this.surfaceY + mid;
     if (e.y < top) {
       e.y = top;
       if (e.vy < 0) e.vy = 0;

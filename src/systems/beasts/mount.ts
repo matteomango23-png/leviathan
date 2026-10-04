@@ -28,6 +28,10 @@ export interface Mount extends BodyPose {
   turn: number;
   /** The way it faced before the turn. */
   turnFrom: 1 | -1;
+  /** Swimming with you: your way of travel, smoothed over a few seconds (it follows where you go, not your face). */
+  travel: number;
+  /** The side of you it keeps while you stay put. */
+  side: 1 | -1;
 }
 
 const U = DIVER.lengthUnits;
@@ -62,6 +66,8 @@ export function callMount(
     t: 0,
     turn: 0,
     turnFrom: 1,
+    travel: 0,
+    side: x < diver.x ? -1 : 1,
   };
 }
 
@@ -127,12 +133,20 @@ export function stepMount(
     return false;
   }
   if (m.state === 'follow') {
-    // behind you, a little lower; it faces where it swims, or your way when it is settled
+    // like a real dolphin swimming with you (owner, 4 ottobre): it follows the way you travel, smoothed over a few
+    // seconds, not the way you face; while you stay put it idles around you on its own side, and it turns only
+    // when it really swims the other way, so turning on the spot does not make it flip back and forth
     const f = TEAM_RULES.follow;
-    const tx = diver.x - diver.face * (m.length * f.behind + f.gap);
-    const ty = diver.y + f.below;
-    m.vx += ((tx - m.x) * f.speed - m.vx) * Math.min(1, dt * f.speed);
-    m.vy += ((ty - m.y) * f.speed - m.vy) * Math.min(1, dt * f.speed);
+    m.travel += (diver.vx - m.travel) * Math.min(1, dt / f.travelSeconds);
+    const travelling = Math.abs(m.travel) > U * f.travelMin;
+    if (travelling) m.side = m.travel > 0 ? -1 : 1; // behind you, the way you go
+    m.t += dt;
+    const reach = m.length * f.behind + f.gap;
+    const tx = diver.x + m.side * reach * (travelling ? 1 : 0.8) + Math.sin(m.t * 0.3) * m.length * f.wander;
+    const ty = diver.y + f.below + Math.sin(m.t * 0.45 + 1) * m.length * f.wander * 0.6;
+    const k = Math.min(1, dt * f.speed);
+    m.vx += ((tx - m.x) * f.speed - m.vx) * k;
+    m.vy += ((ty - m.y) * f.speed - m.vy) * k;
     // it swims around rock with its whole body; left far behind, it catches up the straight way
     if (map && Math.hypot(tx - m.x, ty - m.y) < m.length * TEAM_RULES.followFreeAfter)
       map.moveBody(m, bodyCircles(m), dt);
@@ -140,7 +154,8 @@ export function stepMount(
       m.x += m.vx * dt;
       m.y += m.vy * dt;
     }
-    faceTowards(m, Math.abs(m.vx) > U * 2 ? m.vx : diver.face, dt);
+    if (Math.abs(m.vx) > U * f.turnSpeed) faceTowards(m, m.vx, dt);
+    else faceTowards(m, m.face, dt);
     animate(m, dt);
     return false;
   }

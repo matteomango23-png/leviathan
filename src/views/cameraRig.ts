@@ -75,8 +75,9 @@ export class CameraRig {
     this.clampAndApply();
   }
 
-  shake(): void {
-    this.worldCam.shake(200, 0.004);
+  /** A jolt of the view; `strength` 1 = a hit on the diver, less for lighter knocks. */
+  shake(strength = 1): void {
+    this.worldCam.shake(120 + 80 * strength, 0.004 * strength);
   }
 
   /** The world rectangle currently on screen. */

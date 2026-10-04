@@ -25,6 +25,8 @@ const mount = (): Mount => ({
   t: 0,
   turn: 0,
   turnFrom: 1,
+  travel: 0,
+  side: -1,
 });
 
 describe('riding turn', () => {
@@ -59,5 +61,34 @@ describe('battle sizes', () => {
     expect(b).toBeLessThanOrEqual(
       BATTLE_STAGE.size.max * BATTLE_STAGE.size.youCloser * BATTLE_STAGE.flat.max,
     );
+  });
+});
+
+describe('il compagno nuota con te come un delfino vero (4 ottobre)', () => {
+  it('se ti giri a destra e sinistra da fermo, non si gira ogni volta', () => {
+    const m = { ...mount(), state: 'follow' as const, x: -30, y: 105 };
+    const diver = { x: 0, y: 100, vx: 0, vy: 0, face: 1 as 1 | -1 };
+    let turns = 0;
+    let face = m.face;
+    for (let i = 0; i < 300; i++) {
+      diver.face = Math.floor(i / 15) % 2 ? -1 : 1; // you flip every half second without moving
+      stepMount(m, diver, 1 / 30);
+      if (m.face !== face) {
+        turns++;
+        face = m.face;
+      }
+    }
+    expect(turns).toBeLessThanOrEqual(1);
+  });
+
+  it('quando nuoti da una parte, ti si mette dietro e si gira con calma', () => {
+    const m = { ...mount(), state: 'follow' as const, x: 30, y: 105, face: -1 as 1 | -1, side: 1 as 1 | -1 };
+    const diver = { x: 0, y: 100, vx: 45, vy: 0, face: 1 as 1 | -1 };
+    for (let i = 0; i < 300; i++) {
+      diver.x += diver.vx / 30;
+      stepMount(m, diver, 1 / 30);
+    }
+    expect(m.x).toBeLessThan(diver.x); // behind you
+    expect(m.face).toBe(1); // swimming your way
   });
 });

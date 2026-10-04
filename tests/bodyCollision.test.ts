@@ -49,3 +49,24 @@ describe('collisioni lungo tutto il corpo (4 ottobre)', () => {
     expect(w.x).toBeLessThan(x0 - 10);
   });
 });
+
+describe('in superficie (4 ottobre: in groppa al cetaceo l’aria non si ricaricava)', () => {
+  it('un cetaceo che risale col muso in su arriva con il centro alla superficie', () => {
+    const w = { x: 0, y: 120, vx: 0, vy: -60, face: 1 as const, pitch: -0.6, length: 90 };
+    // open water near the surface
+    for (let x = 2000; x < 9000; x += 4) {
+      if (
+        !map.hitShape(x, 60, bodyCircles({ ...w, x, y: 60 })) &&
+        !map.hitShape(x, 120, bodyCircles({ ...w, x }))
+      ) {
+        w.x = x;
+        break;
+      }
+    }
+    for (let i = 0; i < 90; i++) {
+      w.vy = -60;
+      map.moveBody(w, bodyCircles(w), 1 / 30);
+    }
+    expect(w.y).toBeLessThanOrEqual(map.surfaceY + 90 * 0.07 + 0.01);
+  });
+});

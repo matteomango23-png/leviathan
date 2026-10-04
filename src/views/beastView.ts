@@ -6,9 +6,18 @@ import { assetUrl } from '../data/assets';
 import { BEAST_SPRITE } from '../data/beasts';
 import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
-const { frameW: IW, frameH: IH, spineY: CY, segments: N, turnBreadth } = BEAST_SPRITE;
+const {
+  frameW: IW,
+  frameH: IH,
+  spineY: CY,
+  segments: N,
+  turnBreadth,
+  turnBreadthWhale,
+  whaleWave,
+} = BEAST_SPRITE;
 const SEG = IW / N;
 const OVERLAP = 1.07;
+const TURN_LEAD = 1.2; // how far the head leads the tail in a turn (1 = all at once)
 const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
 
 export const spriteUrl = (key: string, open: boolean): string =>
@@ -79,6 +88,8 @@ export interface BeastPoseView {
   girth?: number;
   /** An albino drawn with the normal sprite (no albino one yet): lightened to look pale. */
   pale?: boolean;
+  /** A whale or a dolphin: the tail beats up and down, and it is bulkier when it turns. */
+  whale?: boolean;
 }
 
 export class BeastSprite {
@@ -128,16 +139,20 @@ export class BeastSprite {
     this.front.setVisible(false);
     for (const s of this.strips) s.setVisible(true);
     const bend = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
-    // Turning around (own beasts, or against a wall): the head turns first and the body follows
-    // to the tail, each piece folding through edge-on; mid-turn the body darkens (showing its back)
-    // and arches, so it reads as a turn in depth rather than a flat card flipping.
+    // Turning around (own beasts, or against a wall): the body turns like a thick coin, the head a little
+    // ahead, never thinner than its breadth; mid-turn it darkens (showing its back) and arches a little.
     const turning = p.turn !== undefined && p.turn > 0;
     const t = turning ? p.turn! : 0;
     const baseFace = turning ? (p.turnFrom ?? p.face) : p.face;
+    // turning, no piece is ever thinner than the body's breadth: it turns like a thick coin (owner, 4 ottobre)
+    const breadth = p.whale ? turnBreadthWhale : turnBreadth;
+    // the whole body turns together, the head just a little ahead: pieces at different stages of the fold made
+    // stripes ("the picture gets grainy", owner, 4 ottobre)
     const facing = (u: number): number => {
       if (!turning) return 1;
-      const q = Math.max(0, Math.min(1, t * 1.7 - u * 0.7));
-      return Math.cos(Math.PI * q);
+      const q = Math.max(0, Math.min(1, t * TURN_LEAD - u * (TURN_LEAD - 1)));
+      const f = Math.cos(Math.PI * q);
+      return Math.sign(f || 1) * Math.max(Math.abs(f), breadth);
     };
     const pts: [number, number][] = [];
     const ang: number[] = [];
@@ -148,11 +163,27 @@ export class BeastSprite {
     for (let i = 0; i <= N; i++) {
       const u = i / N;
       const env = Math.pow(Math.max(0, (u - 0.35) / 0.65), 1.5);
-      const th = 1.05 * env * Math.sin(p.phase - u * 2.2);
       const f = facing(u);
-      const arch = turning ? -0.45 * Math.sin(Math.PI * Math.max(0, Math.min(1, t * 1.7 - u * 0.7))) : 0;
-      const a = p.pitch + bend * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2) + arch;
-      const len = SEG * (0.62 + 0.38 * Math.cos(th));
+      const arch = turning
+        ? -0.3 * Math.sin(Math.PI * Math.max(0, Math.min(1, t * TURN_LEAD - u * (TURN_LEAD - 1))))
+        : 0;
+      let a: number;
+      let len: number;
+      if (p.whale) {
+        // whales and dolphins: the tail beats up and down, the thick front of the body stays whole
+        const tail = Math.pow(Math.max(0, (u - whaleWave.from) / (1 - whaleWave.from)), 1.6);
+        a =
+          p.pitch +
+          bend * u * u * 0.9 +
+          whaleWave.amp * tail * Math.sin(p.phase - u * whaleWave.waves) +
+          arch;
+        len = SEG;
+      } else {
+        // sharks and fish: the tail swings sideways, shortening in perspective
+        const th = 1.05 * env * Math.sin(p.phase - u * 2.2);
+        a = p.pitch + bend * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2) + arch;
+        len = SEG * (0.62 + 0.38 * Math.cos(th));
+      }
       pts.push([px, py]);
       ang.push(a);
       lens.push(len);
@@ -164,30 +195,18 @@ export class BeastSprite {
       }
     }
     const mid = pts[Math.round(N * 0.45)]!;
-    // the fold: the piece most edge-on while turning shows the body's thickness (see below)
-    let fold = -1;
-    if (turning)
-      for (let i = 0; i < N; i++) {
-        const f = Math.abs(fs[i]! + fs[i + 1]!) / 2;
-        if (f < 0.6 && (fold < 0 || f < Math.abs(fs[fold]! + fs[fold + 1]!) / 2)) fold = i;
-      }
     for (let i = 0; i < N; i++) {
       const s = this.strips[i]!;
       const [x, y] = pts[i]!;
       const a = (ang[i]! + ang[i + 1]!) / 2;
       const fm = (fs[i]! + fs[i + 1]!) / 2;
       const width = (lens[i]! / SEG) * OVERLAP;
-      // where the body folds edge-on it shows its thickness (thickest in the middle, thin at nose and tail): that
-      // slice is stretched into a solid slab of its own colours, darkened, like the ham between two slices of bread;
-      // the other pieces keep a thin sliver so the outline stays whole
-      const u = (i + 0.5) / N;
-      const slab = i === fold ? ((turnBreadth * IW) / SEG) * Math.pow(Math.sin(Math.PI * u), 0.6) : 0;
-      const w = Math.sign(fm || 1) * Math.max(0.08, Math.abs(fm) * width, (1 - Math.abs(fm)) * slab);
+      const w = Math.sign(fm || 1) * Math.max(breadth, Math.abs(fm)) * width;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
         .setScale(w, 1);
-      // the slab of the fold a little lighter than the other edge-on pieces, so it reads as a rounded body
-      const shade = turning ? (i === fold ? 0.6 : 0.45) + (i === fold ? 0.4 : 0.55) * Math.abs(fm) : 1;
+      // seen edge-on it darkens a little (its back or belly turns to you)
+      const shade = turning ? 0.6 + 0.4 * Math.abs(Math.cos(Math.PI * t)) : 1;
       if (p.pale && p.flash <= 0) {
         // screen tint: lightens the dark sprite towards bone white
         const k = Math.round(ALBINO_SCREEN * shade);

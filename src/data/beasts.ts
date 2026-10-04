@@ -200,6 +200,8 @@ export const SPECIES_DEPTH: Record<string, { minM?: number; maxM?: number }> = {
 /** At most this many wild beasts are around you at the same time (tuning). */
 export const WILD_RULES = {
   maxPresent: 8, // owner, 3 ottobre: more life (was 5)
+  /** A wild beast counts as seen (bestiary) only this close to you, in your light (units). */
+  seenRadius: 90,
   /**
    * Who comes when there is room (owner, 4 ottobre: "you always see the same beasts"): a fair draw among the beasts
    * ready to come, not the first of the list. Weight by stars (common ones much more often)…
@@ -297,7 +299,12 @@ export const TEAM_RULES = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty (taming difficulty)
   summonDistance: 90, // the mount arrives from this far behind you
   arriveSeconds: 1.2, // at most this long to reach you
-  follow: { behind: 0.5, gap: 4, below: 5, speed: 3 }, // a companion swims just behind you, inside the lamp halo: × its length + gap units, spring rate
+  /**
+   * A companion swims around you, inside the lamp halo: behind you (× its length + gap units) the way you travel,
+   * your way of travel smoothed over travelSeconds (moving faster than travelMin diver lengths/s); it wanders a
+   * little (× its length) and turns only when it swims faster than turnSpeed diver lengths/s. Spring rate: speed.
+   */
+  follow: { behind: 0.5, gap: 4, below: 5, speed: 1.6, travelSeconds: 1.5, travelMin: 1.2, wander: 0.15, turnSpeed: 1.5 },
   followFreeAfter: 3, // × its length: left farther behind than this, it catches up straight through (no getting stuck)
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
@@ -341,11 +348,22 @@ export const BEAST_SPRITE = {
   spineY: 250,
   segments: 26,
   /**
-   * Turning around, a piece of the body seen edge-on shows its thickness, not a paper-thin line (owner, 4 ottobre:
-   * "the ham between two slices of bread"): the body's breadth as a share of its length, at its thickest. Tuning.
+   * Turning around, the body never gets thinner than its own breadth, as a share of its length (owner, 4 ottobre:
+   * "the ham between two slices of bread", in proportion to the animal): it turns like a thick coin, not a sheet of
+   * paper. Whales are bulkier. Tuning.
    */
-  turnBreadth: 0.13,
+  turnBreadth: 0.2,
+  turnBreadthWhale: 0.28,
+  /**
+   * Whales and dolphins beat their tail up and down (owner): only the back of the body bends (from `from`, share of
+   * the length from the head), up to `amp` radians at the flukes; the thick front stays whole (bending it opened gaps
+   * between the pieces of the picture). Tuning.
+   */
+  whaleWave: { amp: 0.4, from: 0.6, waves: 1.2 },
 };
+
+/** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */
+export const CETACEANS: readonly string[] = ['megattera', 'capodoglio', 'livyatan', 'orca', 'beluga', 'narvalo', 'delfino'];
 
 /**
  * Riding a whale (owner, 4 ottobre): the air bar is the whale's, bigger and lasting longer than yours, but it too

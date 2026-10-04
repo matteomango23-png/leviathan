@@ -238,10 +238,10 @@ export class WorldScene extends Phaser.Scene {
         for (let i = 0; i < Math.min(10, e.count); i++)
           this.effects.bubble(e.x + Math.random() * 12 - 6, e.y + Math.random() * 6 - 3);
       } else if (e.type === 'subRammed') {
-        // a blow on the hull: the screen shakes, bubbles and dark smoke burst from it
-        this.rig.shake();
-        this.effects.puff(e.x, e.y, 6, 0x2a2b2e, 22);
-        for (let i = 0; i < 6; i++) this.effects.bubble(e.x + Math.random() * 16 - 8, e.y - 4);
+        // a blow on the hull: a light jolt and a few bubbles (owner, 4 ottobre: much lighter than before)
+        this.rig.shake(e.by === 'beast' ? 0.45 : 0.2);
+        this.effects.puff(e.x, e.y, 2, 0x2a2b2e, 10);
+        for (let i = 0; i < 3; i++) this.effects.bubble(e.x + Math.random() * 12 - 6, e.y - 4);
       } else if (e.type === 'respawned') this.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'portArrived') {
         const port: GameEvent[] = [];

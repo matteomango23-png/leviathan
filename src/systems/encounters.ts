@@ -83,8 +83,6 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const p = appearPoint(w, g.map, g.rng, d);
     if (!p) return false;
     spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
-    g.seen.add(w.spawn.speciesId);
-    g.seen.add(formKey(form));
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
     events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique) });
     return true;
@@ -106,6 +104,12 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (!inArea(w, d.x, d.y, 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0))) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
+    }
+    // in the bestiary only once you have really seen it: close, in your light (it used to count as seen the
+    // moment it came out of the dark, far away; owner, 4 ottobre)
+    if (!d.dead && distanceToBody(w, d.x, d.y) < WILD_RULES.seenRadius) {
+      g.seen.add(w.spawn.speciesId);
+      g.seen.add(formKey(w.form));
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
     const rams = aboard && ramsSubmarine(w);
