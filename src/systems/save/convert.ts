@@ -18,7 +18,7 @@ import { saveStory, type StoryState } from '../story';
 /** The parts of the game that are saved. */
 export interface SaveSource extends Pick<
   BackpackWorld,
-  'diver' | 'sanctuaries' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'
+  'diver' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'
 > {
   sub: SubState;
   ship: ShipState;
@@ -88,14 +88,8 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   const d = g.diver;
   s.savedAt = now.toISOString();
   s.playTime = Math.round(g.playTime);
-  const i = g.sanctuaries.current;
-  const sanct = i === null ? undefined : g.sanctuaries.list[i];
   const home = PORTS.find((p) => p.id === g.homePort) ?? PORTS[0]!;
-  s.diver = d.dead
-    ? sanct
-      ? { x: sanct.x, y: sanct.y - 6 }
-      : portStart(home)
-    : { x: Math.round(d.x), y: Math.round(d.y) };
+  s.diver = d.dead ? portStart(home) : { x: Math.round(d.x), y: Math.round(d.y) };
   s.homePort = g.homePort;
   s.sub = saveSub(g.sub);
   s.ship = saveShip(g.ship);
@@ -120,7 +114,6 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     ...(b.status ? { status: b.status, ...(b.sleepTurns ? { sleepTurns: b.sleepTurns } : {}) } : {}),
     ...(b.met ? { met: { ...b.met } } : {}),
   }));
-  s.sanctuary = g.sanctuaries.current;
   s.brokenTiles = [...new Set(g.brokenTiles)];
   s.gear = saveGear(g.gear);
   s.story = saveStory(g.story);

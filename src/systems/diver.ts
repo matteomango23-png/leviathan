@@ -116,7 +116,7 @@ function updateOxygen(
 }
 
 export interface DiverOptions {
-  /** Where to wake up after dying (last sanctuary, or the start). */
+  /** Where to wake up after dying (your ship, or your harbour). */
   respawnAt: { x: number; y: number };
   /** Riding a beast: its speed (u/s) replaces the diver's, and the dash is the beast's. */
   mountSpeed?: number;

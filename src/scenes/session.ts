@@ -27,6 +27,8 @@ export interface SessionEvents {
   skipWeather: () => void;
   /** The diver reached the pier: open the port menu. */
   openPort: () => void;
+  /** The Cockpit button at the helm of the ship. */
+  openCockpit: () => void;
 }
 
 export class Session {

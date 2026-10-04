@@ -1,6 +1,5 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
-import { SANCTUARY_RULES } from '../data/beasts';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
@@ -46,7 +45,6 @@ import { TempleView } from '../views/templeView';
 import { WorldArtView } from '../views/worldArtView';
 import { SubmarineView } from '../views/submarineView';
 import { LightView } from '../views/lightView';
-import { SanctuaryView } from '../views/sanctuaryView';
 import { StoryView } from '../views/storyView';
 import { Chapter3View } from '../views/chapter3View';
 import { Chapter4View } from '../views/chapter4View';
@@ -70,7 +68,6 @@ export class WorldScene extends Phaser.Scene {
   private ship!: ShipView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
-  private sanctuaries!: SanctuaryView;
   private places!: PlacesView;
   private story!: StoryView;
   private chapter3!: Chapter3View;
@@ -117,7 +114,6 @@ export class WorldScene extends Phaser.Scene {
     const shipFar = this.add.container(); // the ship on its far lane: behind the rock
     L.world.add(shipFar);
     this.terrain = new TerrainView(this, L.world, map);
-    this.sanctuaries = new SanctuaryView(this, L.world, g.sanctuaries);
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
     this.chapter3 = new Chapter3View(this, L.world);
@@ -235,7 +231,6 @@ export class WorldScene extends Phaser.Scene {
         e.type === 'fishCaught' ||
         e.type === 'tamed' ||
         e.type === 'relicFound' ||
-        e.type === 'sanctuaryReached' ||
         e.type === 'beastKo'
       )
         this.save();
@@ -322,7 +317,6 @@ export class WorldScene extends Phaser.Scene {
     ))
       this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
     this.bg.update(info, g.time, sky);
-    this.sanctuaries.update(g.sanctuaries, g.time);
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
@@ -352,7 +346,6 @@ export class WorldScene extends Phaser.Scene {
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
     const lamp = rider ?? d;
     const glows = [
-      ...g.sanctuaries.list.map((s) => ({ x: s.x, y: s.y, r: SANCTUARY_RULES.radius * 1.4 })),
       ...this.places.glowSpots(g.gear),
       ...this.story.glowSpots(g.story, g.chapter2.anchors),
       ...this.chapter3.glowSpots(g),

@@ -1740,3 +1740,14 @@ img.albino-art {
 .driving .toast {
   bottom: calc(108px + var(--safe-b));
 }
+.helm-rescue {
+  position: absolute;
+  right: calc(22px + var(--safe-r));
+  bottom: calc(200px + var(--safe-b));
+  border-color: #e2553f;
+  color: #ffd2c8;
+}
+.helm-gauges.dry {
+  border-color: #e2553f;
+  color: #ffb3a3;
+}

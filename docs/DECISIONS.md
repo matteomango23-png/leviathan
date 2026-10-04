@@ -599,3 +599,18 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Vista:** al timone la telecamera si allarga dolcemente (`CameraRig.setView`, `SHIP.camera`).
 - **Salvataggio v14:** `ship` (x, direzione, portellone, dove sta il sottomarino, al timone).
 - **Scafi solidi:** `pushOutOfSub` è diventato `pushOutOfHull` (`systems/hull.ts`), usato per sottomarino e nave.
+
+## 2026-10-04 — Carburante, cockpit, cure solo sulla nave (v0.40.0)
+
+- **Tappa 2 delle spedizioni.** Risposte del proprietario: prima della nave si guarisce solo ai porti; il razzo di soccorso è un pulsante (cockpit e sottomarino a secco), non un oggetto.
+- **Carburante:**
+  - `systems/fuelBurn.ts`: il consumo `litresFor` è proporzionale alla distanza percorsa e vale `perKm × (idleShare + (1 − idleShare) × gas)`, zero a motore spento; `autonomyKm` dà l'autonomia;
+  - `systems/fuel.ts`: travaso (solo con `bay === 'docked'`), rifornimento (`canRefuel`: la nave entro `dockReachPort` dal suo ormeggio; il sottomarino nella stiva lì o entro `FUEL.portReach` dal molo), razzo di soccorso (`rescue`);
+  - `fuelBurn.ts` è separato perché nave e sottomarino lo usano senza creare un giro di import con `fuel.ts`;
+  - a secco `top = 0`: il mezzo scivola fino a fermarsi; l'evento `fuelOut` arriva una volta sola finché non torna carburante.
+- **Santuari tolti del tutto:** `systems/sanctuary.ts`, `views/sanctuaryView.ts`, `SANCTUARIES`, `SANCTUARY_RULES` e `PROGRESSION.sanctuaryHealSeconds`.
+  - Il punto di risveglio è la nave o il porto (`homePort`).
+  - Il sottomarino non cura più (`board` riempie solo l'aria).
+  - `restAboard` resta in `submarine.ts`, ma la usa solo la nave (salire a bordo, aggancio, risveglio).
+- **Cockpit:** `ui/cockpit.ts`, con lo stesso stile del porto, aperto dall'evento di sessione `openCockpit` (`MenusScene` in modo `'cockpit'`). Il razzo lanciato da lì mette il suo messaggio in `story.pending`.
+- **Salvataggio v15:** `fuel` per nave e sottomarino (se manca, serbatoio pieno); il campo `sanctuary` viene tolto.

@@ -176,7 +176,7 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
 10. ✅ **Capitolo 4 (v0.17.0):** la Foresta Sommersa, il Corno delle Catene, la campana, i tentacoli, la Piovra.
 11. **Spedizioni** (progetto del 4 ottobre 2026, sopra):
     1. ✅ la nave e le leve (v0.39.0);
-    2. carburante, cockpit e cure solo sulla nave (via i santuari, razzo di soccorso);
+    2. ✅ carburante, cockpit e cure solo sulla nave, via i santuari, razzo di soccorso (v0.40.0);
     3. l'oceano di 30 km in regioni, avamposti, mappa per regione;
     4. livelli per pericolo e habitat veri, avviso di pericolo, profondità nel bestiario;
     5. sonar e Diario di caccia (bacheca Avvistamenti, condizioni, echi, tracce, leggende);

@@ -47,7 +47,6 @@ export const PROGRESSION = {
   growthSizePerLevel: 0.008,                  // +0.8% size per level from 51 to 99 (about +40% in all, as before)
   finalFormLevel: 100,                        // iconic species reach their final form (was 50)
   teamSize: 5,                                // beasts in the team; reserve is unlimited
-  sanctuaryHealSeconds: 5,                    // gradual heal of HP and oxygen while standing still
   nourishmentPerGrowthLevel: 3,              // tuning: fish to eat for each level from 51 upward (was 8 for 20 levels)
 };
 

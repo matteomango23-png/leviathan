@@ -26,6 +26,8 @@ export const SHIP = {
   brake: 60, // units/s² when the lever points the other way
   stillBelow: 4, // units/s: slower than this it counts as still (the instruments show 0 knots)
   turnBelow: 12, // units/s: slower than this, a lever the other way turns it round (at once: owner's choice)
+  /** Fuel (owner, 4 ottobre: bought at the port, planned for the expedition). Tuning. */
+  fuel: { tank: 500, perKm: 10 },
   /** Breaking the ice: slower, and the channel freezes again later, far from you. */
   iceMult: 0.4,
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
@@ -52,6 +54,22 @@ export const SHIP = {
   camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
 };
 
+/** Fuel of the ship and the submarine: how much going slowly saves, the price, the transfer between them. */
+export const FUEL = {
+  /** Litres per km = perKm × (idleShare + (1 − idleShare) × throttle): going slowly lasts longer. Tuning. */
+  idleShare: 0.5,
+  pricePerLitre: 0.25, // teeth. Tuning
+  transferStep: 25, // litres per tap in the cockpit
+  /** The submarine fills up at a harbour when it is moored this close to the pier (units). */
+  portReach: 320,
+};
+
+/** The rescue flare (owner: a button in the cockpit, and in the submarine left dry). */
+export const RESCUE = {
+  teethShare: 0.25,
+  minTeeth: 50,
+};
+
 /** The levers, for the ship and the submarine (owner: no joystick in a vehicle). */
 export const HELM = {
   /** Shown speed: knots per unit/s. One factor for both: the ship at full throttle shows ~24 knots. */
@@ -71,6 +89,10 @@ export const SHIP_TEXT = {
   launched: 'Il sottomarino è in acqua. Per rientrare torna sotto il portellone e premi Aggancia.',
   docked: 'Il sottomarino è nella stiva. Chiudi il portellone per ripartire.',
   hatchOpenStill: 'Col portellone aperto la nave non si muove.',
+  fuelOutShip: 'La nave è senza carburante: si ferma. Nel cockpit c’è il razzo di soccorso.',
+  fuelOutSub: 'Il sottomarino è senza carburante. Puoi uscire e nuotare, o usare il razzo di soccorso.',
+  rescued: (where: string, teeth: number): string =>
+    `Razzo di soccorso: un rimorchiatore ti porta ${where}${teeth ? `. Paghi ${teeth} denti` : ''}.`,
   wreckedToShip: (teeth: number): string =>
     `Lo scafo del sottomarino cede. Ti rimorchiano alla nave${teeth ? `: perdi ${teeth} denti` : ''}. Riparalo al porto.`,
 };

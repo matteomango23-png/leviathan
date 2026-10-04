@@ -6,7 +6,6 @@ import type { Rng } from './math';
 import { sendAway, type Mount } from './beasts/mount';
 import type { TeamBeast } from './beasts/team';
 import { createWild, type WildBeast } from './beasts/wildState';
-import type { SanctuaryState } from './sanctuary';
 import type { TileMap } from './world/tileMap';
 
 export interface Decoy {
@@ -53,7 +52,6 @@ export interface BeastWorld {
   rng: Rng;
   diver: DiverState;
   beasts: BeastState;
-  sanctuaries: SanctuaryState;
   seen: Set<string>;
   brokenTiles: number[];
 }

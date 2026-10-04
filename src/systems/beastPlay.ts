@@ -1,5 +1,5 @@
 // Everything about beasts during a game step in the open sea: wild beasts and encounters, calling a mount
-// from the team bar and riding it, its ability, the sardine swarm, sanctuaries. Called by stepGame (game.ts).
+// from the team bar and riding it, its ability, the sardine swarm. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
 import { TEAM_RULES } from '../data/beasts';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
@@ -11,7 +11,6 @@ import { callMount, stepMount } from './beasts/mount';
 import { teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
-import { stepSanctuaries } from './sanctuary';
 
 export { activeBeast, createBeasts } from './beastState';
 export type { BeastState, BeastWorld } from './beastState';
@@ -100,5 +99,4 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     } else if (reached && m.state === 'in') m.state = 'follow';
     if (m.state === 'leaving' && m.t <= 0) bs.mount = null;
   }
-  g.sanctuaries.healing = stepSanctuaries(g.sanctuaries, d, bs.team, dt, events);
 }

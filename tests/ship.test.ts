@@ -177,7 +177,7 @@ describe('la nave non si blocca mai', () => {
   /** Only the ship, at full throttle, on the real map (fast: no beasts, no fish). */
   function sail(x: number, face: 1 | -1, seconds: number, goal = Infinity, dt = 1 / 15) {
     const g: ShipWorld = {
-      ship: { ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true }) },
+      ship: { ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true, fuel: 1e9 }) },
       map,
       story: { step: 'chapter4Done' },
       sub: { owned: true, aboard: false },

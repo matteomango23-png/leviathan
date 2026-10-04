@@ -15,6 +15,7 @@ import { PRESSURE } from '../data/diver';
 import { freshPressure, stepPressure } from './breath';
 import { HELM } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
+import { litresFor } from './fuelBurn';
 import type { HullPart } from './hull';
 
 export interface SubState {
@@ -29,6 +30,10 @@ export interface SubState {
   vy: number;
   face: 1 | -1;
   hull: number;
+  /** Litres of fuel (fuel.ts); dry, it does not move. */
+  fuel: number;
+  /** Already said it is dry (until it gets fuel again). */
+  fuelWarned: boolean;
   aboard: boolean;
   /** Seconds before the "too deep" message may show again. */
   deepWarn: number;
@@ -45,6 +50,7 @@ export interface SavedSub {
   model: string;
   models: string[];
   hull: number;
+  fuel: number;
 }
 
 export const subModel = (id: string): SubModel => SUB_MODELS.find((m) => m.id === id) ?? SUB_MODELS[0]!;
@@ -64,6 +70,8 @@ export function newSub(saved: SavedSub | null): SubState {
     aboard: false,
     deepWarn: 0,
     bumpWait: 0,
+    fuel: saved ? clamp(saved.fuel, 0, subModel(model).tank) : subModel(model).tank,
+    fuelWarned: false,
     ...freshPressure(),
   };
 }
@@ -76,6 +84,7 @@ export const saveSub = (s: SubState): SavedSub | null =>
         model: s.model,
         models: [...s.models],
         hull: Math.round(s.hull),
+        fuel: Math.round(s.fuel * 10) / 10,
       }
     : null;
 
@@ -110,7 +119,7 @@ export function canBoard(g: SubWorld): boolean {
   return s.owned && !s.aboard && !d.dead && Math.hypot(d.x - s.x, d.y - s.y) < SUBMARINE.reach;
 }
 
-/** You climb in: you and your team rest (it is a moving sanctuary). */
+/** You climb in: you breathe, but nobody heals any more (owner, 4 ottobre: only on the ship and at the port). */
 export function board(g: SubWorld, events: GameEvent[]): void {
   const s = g.sub;
   if (!s.owned) return;
@@ -118,11 +127,11 @@ export function board(g: SubWorld, events: GameEvent[]): void {
   s.vx = 0;
   s.vy = 0;
   Object.assign(g.diver, { x: s.x, y: s.y, vx: 0, vy: 0 });
-  restAboard(g);
+  g.diver.o2 = g.diver.maxO2;
   events.push({ type: 'boarded' });
 }
 
-/** Aboard the submarine or the ship: you breathe and heal, and your team rests. */
+/** Aboard the ship (and at the port): you breathe and heal, and your team rests. */
 export function restAboard(g: Pick<SubWorld, 'diver' | 'beasts'>): void {
   const d = g.diver;
   d.hp = d.maxHp;
@@ -185,6 +194,17 @@ function steer(s: SubState, helm: HelmState, top: number, dt: number): void {
   s.vy += Math.max(-step, Math.min(step, vyTarget - s.vy));
 }
 
+/** The engine burns fuel while it runs (the throttle, or the dive lever); dry, it says so once. */
+function burnFuel(s: SubState, helm: HelmState, perKm: number, dt: number, events: GameEvent[]): void {
+  const run = Math.max(helm.throttle, Math.abs(diveOf(helm.dive)));
+  s.fuel = Math.max(0, s.fuel - litresFor(Math.hypot(s.vx, s.vy) * dt, run, perKm));
+  if (s.fuel > 0) s.fuelWarned = false;
+  else if (!s.fuelWarned) {
+    s.fuelWarned = true;
+    events.push({ type: 'fuelOut', vehicle: 'sub' });
+  }
+}
+
 /** The deepest point this model stands (world y): deeper, the pressure bar empties. */
 export const subFloorY = (s: SubState): number =>
   WORLD.surfaceY + subModel(s.model).maxDepthM * WORLD.unitsPerMetre;
@@ -206,8 +226,9 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   if (!s.aboard) return false;
   const d = g.diver;
   const m = subModel(s.model);
-  const top = s.hull <= 0 ? 0 : m.speed; // broken, it only drifts
+  const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
   steer(s, input.helm, top, dt);
+  burnFuel(s, input.helm, m.perKm, dt, events);
   const nx = s.x + s.vx * dt;
   if (hits(g.map, nx, s.y)) {
     bump(g, Math.abs(s.vx), events);
@@ -294,9 +315,11 @@ export function buySub(g: SubWorld, id: string): { ok: boolean; reason?: string 
     g.gear.teeth -= m.price;
     s.models.push(id);
     s.hull = m.hull;
+    s.fuel = m.tank; // a new one comes out of the yard full
   } else {
     // switching to one you own: the same share of hull (the yard keeps them in the same state)
     s.hull = Math.round((s.hull / subModel(s.model).hull) * m.hull);
+    s.fuel = Math.min(s.fuel, m.tank);
   }
   s.model = id;
   return { ok: true };

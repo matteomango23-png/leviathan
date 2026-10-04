@@ -1,5 +1,5 @@
 // After a battle (scenes/BattleScene.ts): health back to the team, experience, a tamed beast into the team,
-// the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to the sanctuary if
+// the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to your ship or harbour if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
@@ -92,7 +92,7 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
   if (o.over === 'lost') {
     events.push({ type: 'battleLost' });
     g.diver.invulnerable = 0;
-    hurtDiver(g.diver, g.diver.hp, events); // the sea pushes you back to the last sanctuary
+    hurtDiver(g.diver, g.diver.hp, events); // the sea pushes you back to your ship or harbour
   }
   return events;
 }

@@ -2,10 +2,11 @@
 import Phaser from 'phaser';
 import { PauseMenu } from '../ui/pauseMenu';
 import { PortMenu } from '../ui/portMenu';
+import { Cockpit } from '../ui/cockpit';
 import type { SceneData, Session } from './session';
 
 export interface MenusData extends SceneData {
-  mode: 'pause' | 'port';
+  mode: 'pause' | 'port' | 'cockpit';
 }
 
 export class MenusScene extends Phaser.Scene {
@@ -30,7 +31,9 @@ export class MenusScene extends Phaser.Scene {
     this.menu =
       this.mode === 'port'
         ? new PortMenu(ui, this.session, game, close)
-        : new PauseMenu(ui, this.session, game, close);
+        : this.mode === 'cockpit'
+          ? new Cockpit(ui, this.session, game, close)
+          : new PauseMenu(ui, this.session, game, close);
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === 'Escape' || (this.mode === 'pause' && e.key.toLowerCase() === 'p')) close();
     };
