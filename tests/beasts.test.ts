@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { CORALS, DELTA, ICE, KELP } from '../src/data/worldLayout';
-import { ENDLESS } from '../src/data/endless';
 import { MOVES } from '../src/data/moves';
-import { WILD_SPAWNS } from '../src/data/beasts';
+import { SPECIES_DANGER, WILD_SPAWNS } from '../src/data/beasts';
+import { BIOMES } from '../src/data/endless';
 import { SPECIES } from '../src/data/species';
 import { baseDamage, moveTypeMult } from '../src/systems/beasts/combat';
 import {
@@ -116,22 +115,12 @@ describe('team', () => {
 });
 
 describe('wild spawns data', () => {
-  it('only spawns beasts inside their region (visitors elsewhere have their own levels)', () => {
-    const regions: Record<string, [number, number]> = {
-      baia: [0, DELTA.x0],
-      delta: [DELTA.x0, DELTA.x1],
-      barriera: [CORALS.reef.xMin, CORALS.reef.xMax],
-      foresta: [KELP.forest.xMin, KELP.forest.xMax],
-      ghiaccio: [ICE.xMin, ENDLESS.startX],
-    };
-    for (const sp of WILD_SPAWNS) {
-      if (sp.level || sp.endless) continue;
-      const region = SPECIES.find((x) => x.id === sp.speciesId)?.region ?? '';
-      const range = regions[region];
-      expect(range, sp.speciesId).toBeDefined();
-      expect(sp.area[0]).toBeGreaterThanOrEqual(range![0]);
-      expect(sp.area[2]).toBeLessThanOrEqual(range![1]);
-    }
+  it('every species met in the wild has its danger written down (4 ottobre 2026)', () => {
+    const wild = new Set([
+      ...WILD_SPAWNS.filter((sp) => !sp.endless).map((sp) => sp.speciesId),
+      ...BIOMES.flatMap((b) => Object.keys(b.beasts)),
+    ]);
+    for (const id of wild) expect(SPECIES_DANGER[id], id).toBeDefined();
   });
 });
 

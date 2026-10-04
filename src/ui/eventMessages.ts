@@ -50,6 +50,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
           `Qualcosa di antico si muove nel buio… ${formName(w.form)}! Ne esiste una sola: se la sconfiggi sparisce per sempre.`,
           6,
         ];
+      if (e.danger)
+        return [
+          `⚠ Pericolo: ${formName(w.form)} Lv ${w.level}. È molto più forte della tua squadra: meglio evitarlo.`,
+          4.5,
+        ];
       return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
     }
     case 'beastSensed': {
@@ -80,6 +85,16 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [SHIP_TEXT.given, 7];
     case 'shipBoarded':
       return [SHIP_TEXT.aboard, 4];
+    case 'rumourHeard':
+      return [`Una voce al porto: ${e.name}. È scritta nel Diario di caccia (cockpit).`, 4];
+    case 'echoFound':
+      return [`Sonar: un’eco anomala, enorme, a ${e.depthM} m. Cala il sottomarino e cerca le tracce.`, 5];
+    case 'tracesFound':
+      return [`Tracce: ${e.text}`, 5];
+    case 'outpostFound':
+      return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'seaEnd':
+      return ['Oltre l’Abisso del Leviatano c’è solo tempesta: il mare conosciuto finisce qui.', 4];
     case 'shipShallow':
       return [SHIP_TEXT.shallow, 2.5];
     case 'shipHint':

@@ -7,16 +7,19 @@ import type { Session } from '../scenes/session';
 import { autonomyKm, canRescue, rescue, transferFuel } from '../systems/fuel';
 import type { GameState } from '../systems/game';
 import { subModel } from '../systems/submarine';
+import { shipTank } from '../systems/ship/ship';
 import { kmFromCoast } from '../systems/world/endless';
 import { el } from './dom';
 import { icon, type IconName } from './icons';
 import { portCard } from './portCard';
 import { renderBackpack, type TabContext } from './portTabs';
 import { renderTeamPanel } from './teamPanel';
+import { renderDiary } from './huntDiary';
 
-type Tab = 'plancia' | 'recinto' | 'zaino';
+type Tab = 'plancia' | 'diario' | 'recinto' | 'zaino';
 const TABS: [Tab, string, IconName][] = [
   ['plancia', 'Plancia', 'lamp'],
+  ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
 ];
@@ -77,6 +80,7 @@ export class Cockpit {
     this.body.replaceChildren();
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
     if (this.tab === 'plancia') this.renderBridge(this.body);
+    else if (this.tab === 'diario') renderDiary(this.body, this.g);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else renderTeamPanel(this.body, this.g, true);
     this.body.scrollTop = keep;
@@ -92,7 +96,7 @@ export class Cockpit {
     const grid = el('div', 'pcard-grid', b);
     portCard(grid, {
       icon: 'bolt',
-      title: `Nave: ${Math.round(ship.fuel)} / ${SHIP.fuel.tank} L`,
+      title: `Nave: ${Math.round(ship.fuel)} / ${shipTank(ship)} L`,
       text: `Autonomia ${km(autonomyKm(ship.fuel, SHIP.fuel.perKm))} km. Si riempie in porto (scheda Mute).`,
     });
     if (sub.owned) {
@@ -119,7 +123,7 @@ export class Cockpit {
         text: `Riporta ${step} L nel serbatoio della nave.`,
         button: {
           label: `+${step} L alla nave`,
-          disabled: !docked || sub.fuel <= 0 || ship.fuel >= SHIP.fuel.tank,
+          disabled: !docked || sub.fuel <= 0 || ship.fuel >= shipTank(ship),
           onClick: () => {
             const l = transferFuel(g, false);
             this.say(`${Math.round(l)} L passati alla nave.`);

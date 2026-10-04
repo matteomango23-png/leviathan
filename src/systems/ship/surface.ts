@@ -2,6 +2,7 @@
 // them, on the far lane), shallow water (it stops) and the ice sheet (it breaks it; the channel freezes again later,
 // far from you). The broken ice is not saved: a new session finds the sheet whole.
 import { SHIP } from '../../data/ship';
+import { ENDLESS } from '../../data/endless';
 import { LAYOUT, TILE, WORLD } from '../../data/worldLayout';
 import { icebergsNear } from '../world/icebergs';
 import type { TileMap } from '../world/tileMap';
@@ -12,9 +13,13 @@ export const COAST_X = LAYOUT.shoreX + 80;
 /** East of this (the bay) rock close under the surface is sailed round too, like an island: it never stops you. */
 export const BEACH_END = LAYOUT.bay.x0;
 
+/** Where the sea ends: the ship stops here (the cliff past it is not sailed round). */
+export const SEA_END_X = ENDLESS.maxX - ENDLESS.endWall - 40;
+
 /** Does land, an iceberg or rock close under the surface stand in the way anywhere between x0 and x1? */
-export function obstacleIn(map: TileMap, x0: number, x1: number): boolean {
+export function obstacleIn(map: TileMap, x0: number, x1Wanted: number): boolean {
   const from = Math.max(x0, COAST_X);
+  const x1 = Math.min(x1Wanted, SEA_END_X);
   for (let x = from; x <= x1; x += 6)
     if (map.solidAt(x, WORLD.surfaceY - 3) || (x >= BEACH_END && shallowAt(map, x))) return true;
   if (from > x1) return false;

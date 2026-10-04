@@ -7,7 +7,7 @@ import { stepWildSpawns } from '../src/systems/encounters';
 import type { GameEvent } from '../src/systems/events';
 import { createGame } from '../src/systems/game';
 import { makeRng } from '../src/systems/math';
-import { seaMap } from '../src/systems/seaMap';
+import { coastMap, regionsMap } from '../src/systems/seaMap';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 
@@ -69,7 +69,7 @@ describe('comparse più varie (4 ottobre: "vedi sempre gli stessi animali")', ()
   });
 
   it('nella mappa i delfini compaiono in molte zone, e le percentuali sommano a 100', () => {
-    const zones = seaMap(new Set()).filter((z) => z.beasts.length);
+    const zones = [...coastMap(new Set()), ...regionsMap(new Set())].filter((z) => z.beasts.length);
     const withDolphins = zones.filter((z) => z.beasts.some((b) => b.id === 'delfino'));
     expect(withDolphins.length).toBeGreaterThanOrEqual(4);
     for (const z of zones) expect(z.beasts.reduce((a, b) => a + b.share, 0)).toBeCloseTo(1, 5);

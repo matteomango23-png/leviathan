@@ -13,6 +13,7 @@ import type { GameState } from '../systems/game';
 import { el } from './dom';
 import { iconFor } from './icons';
 import { portCard } from './portCard';
+import { renderDiary } from './huntDiary';
 
 export const slotName = (id: string): string =>
   WEAPONS.find((w) => w.id === id)?.name ??
@@ -92,6 +93,8 @@ export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
 
 export function renderBoard(b: HTMLElement, ctx: TabContext): void {
   const gear = ctx.g.gear;
+  el('h3', '', b, 'Avvistamenti');
+  renderDiary(b, ctx.g); // the rumours of this harbour are heard when you come in (hunts.ts)
   el('h3', '', b, 'In corso');
   const active = el('div', 'pcard-grid', b);
   if (!gear.missions.active.length)

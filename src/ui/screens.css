@@ -453,3 +453,26 @@
   font-weight: 700;
   text-align: center;
 }
+
+/* sea map tabs (one per region) */
+.map-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+.map-tab {
+  padding: 5px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(176, 138, 74, 0.6);
+  background: rgba(3, 12, 19, 0.6);
+  color: var(--lamp);
+  font-size: 12px;
+}
+.map-tab.on {
+  border-color: var(--glow);
+  color: #fff;
+}
+.map-region {
+  grid-column: 1 / -1;
+}

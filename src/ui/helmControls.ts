@@ -13,6 +13,8 @@ export interface HelmInfo {
   mode: 'ship' | 'sub';
   face: 1 | -1;
   knots: number;
+  /** The ship's sonar (only at its helm). */
+  sonar?: string;
   /** Litres left, and how far they take you at the throttle you have now. */
   fuel: number;
   rangeKm: number;
@@ -37,6 +39,8 @@ export class HelmControls {
   private readonly west: HTMLButtonElement;
   private readonly east: HTMLButtonElement;
   private readonly gauges: HTMLDivElement;
+  private readonly sonar: HTMLDivElement;
+  private sonarText = '';
   private readonly buttons: HTMLDivElement;
   private readonly hatchBtn: HTMLButtonElement;
   private readonly launchBtn: HTMLButtonElement;
@@ -72,6 +76,7 @@ export class HelmControls {
     this.west = el('button', 'helm-dir-btn', dir, '◀');
     this.east = el('button', 'helm-dir-btn', dir, '▶');
 
+    this.sonar = el('div', 'helm-sonar', this.root);
     this.gauges = el('div', 'helm-gauges', this.root);
     this.buttons = el('div', 'helm-buttons', this.root);
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
@@ -185,6 +190,12 @@ export class HelmControls {
     if (text !== this.gaugeText) {
       this.gaugeText = text;
       this.gauges.textContent = text;
+    }
+    this.sonar.hidden = !info.sonar;
+    if (info.sonar && info.sonar !== this.sonarText) {
+      this.sonarText = info.sonar;
+      this.sonar.textContent = info.sonar;
+      this.sonar.classList.toggle('anomaly', info.sonar.includes('anomala'));
     }
     this.buttons.hidden = info.mode !== 'ship';
     this.hatchBtn.textContent = info.hatchOpen ? 'Chiudi portellone' : 'Apri portellone';

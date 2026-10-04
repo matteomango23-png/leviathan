@@ -1,5 +1,5 @@
 import { DELTA, WORLD, ZONES } from '../../data/worldLayout';
-import { biomeAt } from './endless';
+import { biomeAt, regionAt } from './endless';
 import { templeAt } from './templeSite';
 
 /** Name of the zone at a world point (out in the endless sea: the kind of stretch you are in). */
@@ -7,7 +7,7 @@ export function zoneAt(x: number, y: number): string {
   const temple = templeAt(x, y);
   if (temple) return temple.def.name;
   const b = biomeAt(x);
-  if (b) return b.name;
+  if (b) return `${regionAt(x).name} · ${b.name}`;
   const z = ZONES.find((z) => x >= z.xMin && x < z.xMax && y >= z.yMin && y < z.yMax);
   return z ? z.name : '';
 }

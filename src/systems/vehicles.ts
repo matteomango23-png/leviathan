@@ -76,7 +76,7 @@ export function pushOutOfVehicles(
 export function shipPort(g: VehicleWorld): PortDef | null {
   const s = g.ship;
   if (!s.aboard || s.speed >= SHIP.stillBelow) return null;
-  return PORTS.find((p) => Math.abs(s.x - SHIP.dock[p.id]) < SHIP.dockReachPort) ?? null;
+  return PORTS.find((p) => Math.abs(s.x - p.shipDock) < SHIP.dockReachPort) ?? null;
 }
 
 /** What the context button does about the vehicles (null: nothing here). */

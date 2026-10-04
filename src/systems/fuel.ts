@@ -8,7 +8,7 @@ import { SUBMARINE } from '../data/submarine';
 import type { GameEvent } from './events';
 export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
-import type { ShipState } from './ship/ship';
+import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
 import type { TeamBeast } from './beasts/team';
 
@@ -37,7 +37,7 @@ export interface FuelWorld {
 export function transferFuel(g: FuelWorld, toSub: boolean): number {
   if (!g.ship.owned || !g.sub.owned || g.ship.bay !== 'docked') return 0;
   const subTank = subModel(g.sub.model).tank;
-  const room = toSub ? subTank - g.sub.fuel : SHIP.fuel.tank - g.ship.fuel;
+  const room = toSub ? subTank - g.sub.fuel : shipTank(g.ship) - g.ship.fuel;
   const have = toSub ? g.ship.fuel : g.sub.fuel;
   const l = Math.max(0, Math.min(FUEL.transferStep, room, have));
   if (toSub) {
@@ -55,7 +55,7 @@ export function transferFuel(g: FuelWorld, toSub: boolean): number {
 export function canRefuel(g: FuelWorld, which: 'ship' | 'sub'): boolean {
   const p = g.port;
   if (!p) return false;
-  const shipHere = g.ship.owned && Math.abs(g.ship.x - SHIP.dock[p.id]) < SHIP.dockReachPort;
+  const shipHere = g.ship.owned && Math.abs(g.ship.x - p.shipDock) < SHIP.dockReachPort;
   if (which === 'ship') return shipHere;
   if (!g.sub.owned) return false;
   return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;
@@ -77,7 +77,7 @@ export function buyFuel(g: FuelWorld, which: 'ship' | 'sub'): FuelBuy {
       cost: 0,
       reason: which === 'ship' ? 'La nave non è attraccata qui.' : 'Il sottomarino non è qui.',
     };
-  const tank = which === 'ship' ? SHIP.fuel.tank : subModel(g.sub.model).tank;
+  const tank = which === 'ship' ? shipTank(g.ship) : subModel(g.sub.model).tank;
   const now = which === 'ship' ? g.ship.fuel : g.sub.fuel;
   const litres = Math.min(tank - now, Math.floor(g.gear.teeth / FUEL.pricePerLitre));
   if (litres <= 0)
@@ -113,10 +113,8 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
   let where: string;
   if (s.aboard || (g.sub.aboard && s.owned)) {
     if (s.aboard) {
-      const port = PORTS.reduce((a, b) =>
-        Math.abs(SHIP.dock[b.id] - s.x) < Math.abs(SHIP.dock[a.id] - s.x) ? b : a,
-      );
-      Object.assign(s, { x: SHIP.dock[port.id], speed: 0, lane: 0 });
+      const port = PORTS.reduce((a, b) => (Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a));
+      Object.assign(s, { x: port.shipDock, speed: 0, lane: 0 });
       g.homePort = port.id;
       where = `a ${port.name}`;
     } else {

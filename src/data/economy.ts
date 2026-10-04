@@ -1,16 +1,21 @@
 // Leviatano — port, teeth economy, wrecks, missions, backpack and swarms (tappa 3).
 // Prices of suits, upgrades, weapons and items are in world.ts. Values marked "tuning" are a first pass.
 
-import { bay, delta, east, ISLAND_X, LAYOUT } from './worldLayout';
+import { kmToX, REGION_CHESTS, SEA_REGIONS } from './regions';
+import { bay, delta, east, ISLAND_X, LAYOUT, WORLD } from './worldLayout';
 
 /** A harbour at the surface: its pier runs from the shore out over the water. */
 export interface PortDef {
-  id: 'portofosco' | 'fango';
+  id: string;
   name: string;
   x: number; // end of the pier, on the surface (world units)
   shoreX: number; // where the pier starts, on the land
   reach: number; // how close (horizontally) to the pier you must be, at the surface
   surfaceBand: number; // up to this far below the surface still counts as "at the pier"
+  /** Where the expedition ship lies alongside it (deep enough water). */
+  shipDock: number;
+  /** An outpost of the open sea (a floating platform): found by sailing there. */
+  outpost?: boolean;
 }
 
 /** Portofosco, on the mainland beach, where a new game starts. */
@@ -21,6 +26,7 @@ export const PORT: PortDef = {
   shoreX: LAYOUT.shoreX,
   reach: 60,
   surfaceBand: 48, // 8 m
+  shipDock: LAYOUT.shoreX + 190,
 };
 
 /** Porto Fango (tappa 10): a full harbour on the east shore of the Isola delle Mangrovie, by the Delta. */
@@ -31,9 +37,16 @@ export const PORTO_FANGO: PortDef = {
   shoreX: ISLAND_X + LAYOUT.island.halfWidth - 4,
   reach: 60,
   surfaceBand: 48,
+  shipDock: LAYOUT.island.x1 + 110,
 };
 
-export const PORTS: PortDef[] = [PORT, PORTO_FANGO];
+/** The outposts of the open sea (data/regions.ts): one per region, a platform with a harbour. */
+export const OUTPOSTS: PortDef[] = SEA_REGIONS.map((r) => {
+  const x = Math.round(kmToX(r.outpost.km));
+  return { id: r.id, name: r.outpost.name, x, shoreX: x - 40, reach: 70, surfaceBand: 48, shipDock: x + 140, outpost: true };
+});
+
+export const PORTS: PortDef[] = [PORT, PORTO_FANGO, ...OUTPOSTS];
 
 /** Things that open with the context button: wrecks hold a weapon, chests hold teeth. */
 export interface WreckDef {
@@ -43,13 +56,33 @@ export interface WreckDef {
   y: number; // a point above the sea floor it rests on (the floor is found at runtime)
   reward: { weapon?: string; teeth?: number; item?: string };
 }
-export const WRECKS: WreckDef[] = [
+const COAST_WRECKS: WreckDef[] = [
   { id: 'relitto_baia', name: 'Relitto della Baia', x: bay(1250), y: 200, reward: { weapon: 'fiocine', teeth: 20 } },
   { id: 'relitto_barriera', name: 'Relitto della Barriera', x: east(3420), y: 330, reward: { weapon: 'rete', teeth: 30 } },
   { id: 'forziere_baia', name: 'Forziere', x: bay(560), y: 200, reward: { teeth: 60, item: 'bolla_aria' } },
   { id: 'forziere_reef', name: 'Forziere', x: east(3820), y: 200, reward: { teeth: 80 } },
   { id: 'forziere_crepuscolo', name: 'Forziere', x: bay(900), y: 640, reward: { teeth: 150, item: 'alga_curativa' } },
 ];
+
+/** The wrecks of the regions of the open sea (data/regions.ts: REGION_CHESTS): richer farther out. */
+const REGION_WRECKS: WreckDef[] = SEA_REGIONS.flatMap((r, i) =>
+  REGION_CHESTS.at.map((share, j) => {
+    const from = Math.max(r.fromKm, 1.8); // past the hand-made coast
+    const last = j === REGION_CHESTS.at.length - 1;
+    return {
+      id: `relitto_${r.id}_${j + 1}`,
+      name: `Relitto (${r.name})`,
+      x: Math.round(kmToX(from + (r.toKm - from) * share)),
+      y: WORLD.surfaceY + 40,
+      reward: {
+        teeth: REGION_CHESTS.teethBase * (1 + i) * (last ? 2 : 1),
+        item: last ? REGION_CHESTS.items[i] : undefined,
+      },
+    };
+  }),
+);
+
+export const WRECKS: WreckDef[] = [...COAST_WRECKS, ...REGION_WRECKS];
 export const WRECK_REACH = 26; // how close you must be to open one
 
 /** Simple missions on the harbour board (tuning). Progress counts only after you accept them. */
@@ -59,7 +92,10 @@ export type MissionGoal =
   | { kind: 'exhaust'; species: string; count: number }
   | { kind: 'tame'; region: string; count: number }
   | { kind: 'openWreck'; wreck: string }
-  | { kind: 'depth'; metres: number };
+  | { kind: 'depth'; metres: number }
+  /** Expeditions (4 ottobre 2026): sail this far from the beach; find the traces of a hunt. */
+  | { kind: 'reachKm'; km: number }
+  | { kind: 'hunt'; hunt: string };
 export interface MissionDef {
   id: string;
   title: string;
@@ -126,6 +162,33 @@ export const MISSIONS: MissionDef[] = [
     goal: { kind: 'depth', metres: 100 },
     reward: 60,
     requires: 'relitto_baia',
+  },
+  // expeditions (4 ottobre 2026): farther out, richer
+  ...SEA_REGIONS.map(
+    (r, i): MissionDef => ({
+      id: `spedizione_${r.id}`,
+      title: `Spedizione: ${r.outpost.name}`,
+      text: `Porta la nave fino all’${r.outpost.name}, a ${r.outpost.km.toString().replace('.', ',')} km dalla costa.`,
+      goal: { kind: 'reachKm', km: r.outpost.km },
+      reward: [150, 300, 500, 800, 1500][i]!,
+      requires: i === 0 ? undefined : `spedizione_${SEA_REGIONS[i - 1]!.id}`,
+    }),
+  ),
+  {
+    id: 'caccia_tracce_martello',
+    title: 'Le reti strappate',
+    text: 'Trova le tracce dello squalo martello preistorico nella Barriera esterna (Diario di caccia).',
+    goal: { kind: 'hunt', hunt: 'caccia_martello' },
+    reward: 400,
+    requires: 'spedizione_barriera_esterna',
+  },
+  {
+    id: 'relitto_lontano',
+    title: 'Il relitto dell’Orlo',
+    text: 'Apri il relitto più ricco delle Grandi fosse.',
+    goal: { kind: 'openWreck', wreck: 'relitto_grandi_fosse_3' },
+    reward: 600,
+    requires: 'spedizione_grandi_fosse',
   },
 ];
 export const MAX_ACTIVE_MISSIONS = 3;

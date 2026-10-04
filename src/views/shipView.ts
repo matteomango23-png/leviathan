@@ -86,7 +86,7 @@ export class ShipView {
       this.far?.hide();
       return;
     }
-    const k = s.speed / SHIP.maxSpeed;
+    const k = Math.min(1, s.speed / SHIP.maxSpeed);
     // rocking on the swell (more in bad weather), planing at speed
     const R = SHIP.rock;
     const sea = Math.min(3, waves);

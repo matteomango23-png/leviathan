@@ -5,7 +5,8 @@ import { ENDLESS } from '../data/endless';
 import { SPECIES_DEPTH } from '../data/beasts';
 import { SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
-import { biomeAt, endlessFloor, kmFromCoast, stretchAt, ventAt } from './world/endless';
+import { biomeAt, endlessFloor, regionAt, stretchAt, ventAt } from './world/endless';
+import { bandAt } from './beasts/forms';
 import type { GameEvent } from './events';
 import type { WildBeast } from './beasts/wildState';
 import type { FishState } from './fish';
@@ -52,12 +53,13 @@ export function prepareEndlessSpawn(
     endlessFloor(x0 + ENDLESS.stretch / 2),
     endlessFloor(x1 - 200),
   );
-  const lv = Math.round(b.baseLevel + ENDLESS.levelsPerKm * kmFromCoast(diver.x));
   const z = SPECIES_DEPTH[speciesId];
   const top = z?.minM !== undefined ? WORLD.surfaceY + z.minM * WORLD.unitsPerMetre : WORLD.surfaceY + 20;
   const bottom =
     z?.maxM !== undefined ? Math.min(floor, WORLD.surfaceY + z.maxM * WORLD.unitsPerMetre) : floor;
-  w.spawn = { ...w.spawn, speciesId, area: [x0, top, x1, Math.max(top + 40, bottom)], level: [lv, lv + 3] };
+  // its level: its danger band, higher in the farther regions and deeper (forms.ts rollWildLevel)
+  const band = bandAt(regionAt(diver.x).bandAt, depthM);
+  w.spawn = { ...w.spawn, speciesId, area: [x0, top, x1, Math.max(top + 40, bottom)], band };
   return true;
 }
 

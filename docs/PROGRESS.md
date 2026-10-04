@@ -1,5 +1,28 @@
 # Progressi
 
+## Sessione cloud 1 (fine) — Tappe 3–6 delle spedizioni (4 ottobre 2026) → v0.41.0
+
+**Fatto:**
+- oceano di 30 km in 5 regioni, con avamposti e la scogliera della fine;
+- mappa con una scheda per regione;
+- livelli dal pericolo di ogni specie e habitat veri;
+- avviso di pericolo; profondità, mari e pericolo nella scheda di ogni bestia;
+- cacce alle leggende (8 tane: voce, sonar, tracce, tempo giusto) e Diario di caccia;
+- sonar al timone;
+- relitti delle regioni, missioni di spedizione, pezzi per la nave;
+- salvataggio v16.
+
+**Da provare sull'iPhone (v0.41.0), la spedizione completa:**
+1. Al porto apri la Bacheca: le voci (Avvistamenti) e le missioni "Spedizione".
+2. Fai il pieno e naviga verso est: all'Avamposto del Corallo (4,2 km) compare il messaggio e il porto.
+3. Cerca lo squalo martello preistorico (Barriera esterna, cielo sereno). Al timone guarda la riga del sonar: quando il tempo è giusto compare l'eco anomala. Ferma la nave, cala il sottomarino, scendi verso l'eco: tracce, poi la leggenda (livello 60–75: serve una squadra forte!).
+4. Lungo la costa uno squalo bianco ha almeno livello 35 e compare l'avviso di pericolo.
+5. Mappa (Pausa): una scheda per regione.
+
+**Per provare in fretta:** il pannello di prova ha "Cambia il meteo" per arrivare al tempo giusto di una caccia.
+
+**Non fatto (proposta per dopo):** un tempio per regione, pesci rari da vendere, capitolo 5.
+
 ## Sessione cloud 1 (fine) — Tappa 2 delle spedizioni: carburante e cockpit (4 ottobre 2026) → v0.40.0
 
 **Fatto:**

@@ -71,6 +71,9 @@ export function infoPage(box: HTMLElement, c: PageContext): void {
   const list = el('div', 'sinfo', box);
   line(list, 'Lunghezza', `${s.lengthM.toString().replace('.', ',')} m`);
   line(list, 'Habitat', s.habitat);
+  line(list, 'Profondità', s.depth);
+  line(list, 'Mare aperto', s.seas);
+  line(list, 'Pericolo', s.danger);
   el('p', '', box, `${s.trait}.`);
 }
 

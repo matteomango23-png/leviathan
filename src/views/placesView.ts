@@ -3,7 +3,7 @@
 import Phaser from 'phaser';
 import { PIER_ART } from '../data/worldArt';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { PORT, PORTO_FANGO, type PortDef } from '../data/economy';
+import { OUTPOSTS, PORT, PORTO_FANGO, type PortDef } from '../data/economy';
 import { COAST, WORLD } from '../data/worldLayout';
 import { landHeight } from '../systems/world/worldGen';
 import type { Wreck } from '../systems/economy/places';
@@ -68,6 +68,36 @@ function drawPort(g: Phaser.GameObjects.Graphics, port: PortDef, painted: boolea
   g.fillRect(x + 1.6, s - 13, 1.2, 6);
 }
 
+/** An outpost of the open sea: a wooden platform on floats, a hut with a lit window, a crane and a lantern. */
+function drawOutpost(g: Phaser.GameObjects.Graphics, p: PortDef): void {
+  const s = WORLD.surfaceY;
+  const x = p.x;
+  // floats and their chains under the water
+  g.fillStyle(0x161c20, 1);
+  for (const fx of [-30, -10, 10, 30]) g.fillEllipse(x + fx, s + 3, 14, 7);
+  g.fillStyle(0x0e1316, 1);
+  for (const fx of [-30, 30]) g.fillRect(x + fx - 0.6, s + 6, 1.2, 40);
+  // the deck
+  g.fillStyle(0x3a2c20, 1);
+  g.fillRect(x - 40, s - 5, 80, 4);
+  g.fillStyle(0x1b1612, 1);
+  for (let px = -38; px <= 38; px += 9.5) g.fillRect(x + px, s - 2, 1.6, 5);
+  // the hut
+  g.fillStyle(0x0d1216, 1);
+  g.fillRect(x - 26, s - 23, 24, 18);
+  g.fillTriangle(x - 29, s - 23, x + 1, s - 23, x - 14, s - 33);
+  g.fillStyle(0xffc878, 0.9);
+  g.fillRect(x - 18, s - 17, 4, 4);
+  // a small crane and a lantern on a pole
+  g.fillStyle(0x1b1612, 1);
+  g.fillRect(x + 14, s - 34, 1.6, 29);
+  g.fillRect(x + 14, s - 34, 16, 1.4);
+  g.fillRect(x + 29, s - 34, 0.8, 12);
+  g.fillRect(x + 36, s - 26, 1.4, 21);
+  g.fillStyle(0xffd9a0, 1);
+  g.fillRect(x + 35.2, s - 29, 3, 3.5);
+}
+
 function drawWreck(g: Phaser.GameObjects.Graphics, w: Wreck): void {
   const x = w.x;
   const y = w.y + 4;
@@ -111,6 +141,7 @@ export class PlacesView {
         im.y = WORLD.surfaceY - PIER_ART.deckAbove - PIER_ART.deckAt * im.displayHeight;
         layer.add(im);
       }
+    for (const p of OUTPOSTS) drawOutpost(g, p);
     for (const w of wrecks) drawWreck(g, w);
     layer.add(g);
     this.glows = wrecks.map(() =>

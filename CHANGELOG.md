@@ -2,6 +2,44 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.41.0 — Le spedizioni complete: 30 km, pericolo, cacce, ricompense (4 ottobre 2026)
+
+- **L'oceano finisce a 30 km**, diviso in cinque regioni:
+  1. **Barriera esterna**;
+  2. **Mare blu**;
+  3. **Foresta e Banchisa**;
+  4. **Grandi fosse**;
+  5. **Abisso del Leviatano**.
+
+  Ogni regione ha i suoi tipi di mare. Entrando vedi il nome della regione. In fondo c'è una scogliera, e la nave dice "il mare conosciuto finisce qui".
+- **Un avamposto per regione:** una piattaforma galleggiante con porto (cure, carburante, mercato, bacheca). Lo trovi navigando, poi compare sulla mappa.
+- **Mappa del mare a schede:** Costa più una scheda per regione, con distanza, tipi di mare, avamposto e bestie.
+- **Livelli dal pericolo** di ogni specie, uguali dovunque la incontri:
+  - innocui 2–12;
+  - piccoli predatori 8–20;
+  - predatori seri 20–35;
+  - superpredatori 35–55, per esempio lo squalo bianco è sempre almeno 35, anche vicino a riva;
+  - giganti 55–75.
+
+  Le regioni lontane e la profondità li spostano un po' più su nella loro fascia; gli albini aggiungono 8 livelli, gli alfa 12.
+- **Avviso di pericolo** quando compare una bestia molto più forte della tua squadra.
+- **Habitat veri:** gli squali bianchi non vivono negli abissi, i cetacei restano verso la superficie. Nella scheda di ogni bestia ci sono **profondità**, **mari** e **pericolo**.
+- **Cacce alle leggende**, che non compaiono più a caso. Si seguono in quattro passi:
+  1. la **voce** sentita in un porto o in un avamposto (bacheca "Avvistamenti");
+  2. l'**eco anomala** col sonar della nave, da abbastanza vicino e col tempo giusto: sereno, nuvoloso, pioggia, tempesta o nebbia;
+  3. le **tracce** sott'acqua vicino alla tana;
+  4. la bestia, che esce solo col suo tempo.
+
+  Le cacce sono 8, tra cui il Megalodonte nelle Grandi fosse e il Livyatan nell'Abisso.
+- **Sonar al timone:** profondità del fondale, echi delle bestie grandi, echi anomale.
+- **Diario di caccia** nel cockpit.
+- **Ricompense:**
+  - 3 relitti per regione, più ricchi più lontano (il più ricco ha anche un oggetto raro);
+  - missioni "Spedizione" fino all'Ultimo Avamposto (fino a 1500 denti);
+  - una missione di caccia;
+  - pezzi per la nave al porto: Serbatoio grande, Sonar profondo, Motori potenziati.
+- Il coccodrillo marino del Delta ora è un superpredatore, ma compare più di rado.
+
 ## v0.40.0 — Carburante, cockpit e cure solo sulla nave (4 ottobre 2026)
 
 - **Carburante:**

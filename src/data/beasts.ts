@@ -39,10 +39,13 @@ export interface WildSpawnDef {
   speciesId: string;
   area: [number, number, number, number]; // x0, y0, x1, y1: present while the diver is inside
   respawnSeconds: [number, number];
-  /** A visitor outside its home region: its levels here (otherwise the species' wildLevel). */
-  level?: [number, number];
+  /** Where in its danger band its levels fall (0 = bottom; set for the endless sea by its region and depth). */
+  band?: number;
   /** A slot of the endless sea: species, waters and level are chosen each time it comes (endlessLife.ts). */
   endless?: boolean;
+  /** A hunted beast's den (data/hunts.ts): it comes only when its hunt is ready (systems/hunts.ts), as itself. */
+  hunt?: string;
+  form?: { unique?: string };
 }
 
 // Each entry is one beast that comes and goes; a species listed twice can be met two at a time.
@@ -65,15 +68,15 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'tartaruga_marina', area: BAY, respawnSeconds: [25, 50] },
   { speciesId: 'torpedine', area: [LAYOUT.bay.x0, 180, bay(1900), 380], respawnSeconds: [20, 40] },
   { speciesId: 'torpedine', area: BAY, respawnSeconds: [25, 50] },
-  { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120], level: [11, 13] }, // visitors from the reef
-  { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150], level: [11, 13] },
+  { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120] }, // visitors from the reef
+  { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150] },
   { speciesId: 'squalo_bianco', area: BAY, respawnSeconds: [120, 220] }, // rarer
   { speciesId: 'tonno', area: BAY_HIGH, respawnSeconds: [20, 45] }, // a school of bluefin tuna
   { speciesId: 'delfino', area: BAY, respawnSeconds: [40, 80] },
-  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] }, // the Delta
-  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [70, 120] },
+  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [150, 300] }, // the Delta: a superpredator, rare (4 ottobre)
+  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [240, 420] },
   { speciesId: 'varano_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [35, 70] },
-  { speciesId: 'coccodrillo_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [50, 90] },
+  { speciesId: 'coccodrillo_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [90, 160] },
   // the Mare di Ghiaccio (hand-made, before the endless sea)
   { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
   { speciesId: 'beluga', area: ICY, respawnSeconds: [35, 70] },
@@ -84,28 +87,28 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [15, 35] }, // its bite picture is the puffed-up one
   { speciesId: 'pesce_palla', area: REEF, respawnSeconds: [20, 40] },
   { speciesId: 'murena', area: REEF, respawnSeconds: [25, 50] },
-  { speciesId: 'barracuda', area: REEF, respawnSeconds: [15, 35], level: [6, 8] },
+  { speciesId: 'barracuda', area: REEF, respawnSeconds: [15, 35] },
   { speciesId: 'manta', area: REEF, respawnSeconds: [70, 140] },
-  { speciesId: 'torpedine', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
-  { speciesId: 'tartaruga_marina', area: REEF, respawnSeconds: [25, 50], level: [6, 8] },
+  { speciesId: 'torpedine', area: REEF, respawnSeconds: [25, 50] },
+  { speciesId: 'tartaruga_marina', area: REEF, respawnSeconds: [25, 50] },
   { speciesId: 'squalo_martello', area: REEF, respawnSeconds: [50, 100] },
   { speciesId: 'squalo_tigre', area: FOREST, respawnSeconds: [40, 80] },
-  { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40], level: [10, 12] },
-  { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60], level: [11, 13] },
+  { speciesId: 'barracuda', area: FOREST, respawnSeconds: [20, 40] },
+  { speciesId: 'murena', area: FOREST, respawnSeconds: [30, 60] },
   // more small and medium beasts (owner, 3 ottobre: "poca vita, soprattutto animali piccoli/medi")
-  { speciesId: 'pesce_palla', area: BAY, respawnSeconds: [15, 30], level: [4, 6] },
-  { speciesId: 'murena', area: BAY, respawnSeconds: [25, 45], level: [5, 7] },
+  { speciesId: 'pesce_palla', area: BAY, respawnSeconds: [15, 30] },
+  { speciesId: 'murena', area: BAY, respawnSeconds: [25, 45] },
   { speciesId: 'barracuda', area: BAY_HIGH, respawnSeconds: [12, 25] },
   { speciesId: 'scorfano', area: REEF, respawnSeconds: [20, 40] },
   { speciesId: 'pesce_napoleone', area: REEF, respawnSeconds: [30, 60] },
-  { speciesId: 'tonno', area: REEF, respawnSeconds: [25, 50], level: [7, 9] },
-  { speciesId: 'pesce_luna', area: FOREST, respawnSeconds: [40, 80], level: [10, 12] },
-  { speciesId: 'scorfano', area: FOREST, respawnSeconds: [25, 50], level: [10, 12] },
+  { speciesId: 'tonno', area: REEF, respawnSeconds: [25, 50] },
+  { speciesId: 'pesce_luna', area: FOREST, respawnSeconds: [40, 80] },
+  { speciesId: 'scorfano', area: FOREST, respawnSeconds: [25, 50] },
   // more life near the surface (owner, 3 ottobre; pictures: lotto Gemini 2)
-  { speciesId: 'cernia', area: BEACH_REEF, respawnSeconds: [15, 30], level: [2, 4] },
-  { speciesId: 'pastinaca', area: BEACH_REEF, respawnSeconds: [20, 40], level: [2, 4] },
-  { speciesId: 'pesce_leone', area: BEACH_REEF, respawnSeconds: [20, 40], level: [3, 5] },
-  { speciesId: 'pesce_palla', area: BEACH_REEF, respawnSeconds: [20, 40], level: [3, 5] },
+  { speciesId: 'cernia', area: BEACH_REEF, respawnSeconds: [15, 30] },
+  { speciesId: 'pastinaca', area: BEACH_REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'pesce_leone', area: BEACH_REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'pesce_palla', area: BEACH_REEF, respawnSeconds: [20, 40] },
   { speciesId: 'cernia', area: BAY, respawnSeconds: [15, 30] },
   { speciesId: 'cernia', area: BAY, respawnSeconds: [20, 40] },
   { speciesId: 'pastinaca', area: BAY, respawnSeconds: [15, 30] },
@@ -118,40 +121,40 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'pesce_leone', area: SHALLOW_REEF, respawnSeconds: [20, 40] },
   { speciesId: 'medusa_gigante', area: SHALLOW_REEF, respawnSeconds: [20, 40] },
   { speciesId: 'medusa_gigante', area: REEF, respawnSeconds: [30, 60] },
-  { speciesId: 'cernia', area: REEF, respawnSeconds: [20, 40], level: [6, 8] },
-  { speciesId: 'squalo_nutrice', area: REEF, respawnSeconds: [30, 60], level: [7, 9] },
-  { speciesId: 'medusa_gigante', area: FOREST, respawnSeconds: [30, 60], level: [10, 12] },
+  { speciesId: 'cernia', area: REEF, respawnSeconds: [20, 40] },
+  { speciesId: 'squalo_nutrice', area: REEF, respawnSeconds: [30, 60] },
+  { speciesId: 'medusa_gigante', area: FOREST, respawnSeconds: [30, 60] },
   // beasts that lived only out in the endless sea now visit the hand-made waters too (owner, 3 ottobre: "sentirlo vivo")
   { speciesId: 'pesce_spada', area: REEF, respawnSeconds: [40, 80] },
   { speciesId: 'squalo_volpe', area: REEF, respawnSeconds: [45, 90] },
-  { speciesId: 'delfino', area: REEF, respawnSeconds: [30, 60], level: [7, 9] },
+  { speciesId: 'delfino', area: REEF, respawnSeconds: [30, 60] },
   { speciesId: 'delfino', area: SHALLOW_BAY, respawnSeconds: [35, 70] },
   // dolphins almost everywhere (owner, 4 ottobre)
   { speciesId: 'delfino', area: BAY_HIGH, respawnSeconds: [30, 60] },
-  { speciesId: 'delfino', area: BEACH_REEF, respawnSeconds: [35, 70], level: [3, 5] },
-  { speciesId: 'delfino', area: SHALLOW_REEF, respawnSeconds: [30, 60], level: [7, 9] },
-  { speciesId: 'delfino', area: FOREST, respawnSeconds: [35, 70], level: [10, 12] },
-  { speciesId: 'delfino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80], level: [6, 8] },
-  { speciesId: 'pastinaca', area: [delta(1960), 120, delta(2440), 215], respawnSeconds: [20, 40], level: [6, 8] },
+  { speciesId: 'delfino', area: BEACH_REEF, respawnSeconds: [35, 70] },
+  { speciesId: 'delfino', area: SHALLOW_REEF, respawnSeconds: [30, 60] },
+  { speciesId: 'delfino', area: FOREST, respawnSeconds: [35, 70] },
+  { speciesId: 'delfino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80] },
+  { speciesId: 'pastinaca', area: [delta(1960), 120, delta(2440), 215], respawnSeconds: [20, 40] },
   { speciesId: 'orca', area: ICY, respawnSeconds: [90, 180] }, // rare up north
   { speciesId: 'megattera', area: SHALLOW_REEF, respawnSeconds: [150, 300] }, // a rare whale passing over the reef
-  { speciesId: 'capodoglio', area: ABYSS_EAST, respawnSeconds: [150, 300], level: [24, 27] }, // rare, hunting squid
+  { speciesId: 'capodoglio', area: ABYSS_EAST, respawnSeconds: [150, 300] }, // rare, hunting squid
   // the abysses: common, uncommon and rare beasts of the deep
-  { speciesId: 'rana_pescatrice', area: ABYSS_BAY, respawnSeconds: [15, 30], level: [15, 18] },
-  { speciesId: 'chimera', area: ABYSS_BAY, respawnSeconds: [15, 30], level: [15, 18] },
-  { speciesId: 'dragone_nero', area: ABYSS_BAY, respawnSeconds: [20, 40], level: [16, 19] },
-  { speciesId: 'granchio_ragno', area: ABYSS_BAY, respawnSeconds: [25, 50], level: [16, 19] },
-  { speciesId: 'isopode_gigante', area: ABYSS_BAY, respawnSeconds: [20, 40], level: [15, 18] },
-  { speciesId: 'squalo_capopiatto', area: ABYSS_BAY, respawnSeconds: [45, 90], level: [18, 21] },
-  { speciesId: 'squalo_goblin', area: ABYSS_BAY, respawnSeconds: [60, 120], level: [19, 22] },
-  { speciesId: 'rana_pescatrice', area: ABYSS_EAST, respawnSeconds: [15, 30], level: [19, 22] },
-  { speciesId: 'chimera', area: ABYSS_EAST, respawnSeconds: [15, 30], level: [19, 22] },
-  { speciesId: 'dragone_nero', area: ABYSS_EAST, respawnSeconds: [20, 40], level: [20, 23] },
-  { speciesId: 'granchio_ragno', area: ABYSS_EAST, respawnSeconds: [25, 50], level: [20, 23] },
-  { speciesId: 'isopode_gigante', area: ABYSS_EAST, respawnSeconds: [20, 40], level: [19, 22] },
-  { speciesId: 'squalo_capopiatto', area: ABYSS_EAST, respawnSeconds: [40, 80], level: [21, 24] },
-  { speciesId: 'squalo_goblin', area: ABYSS_EAST, respawnSeconds: [50, 100], level: [22, 25] },
-  { speciesId: 'calamaro_gigante', area: ABYSS_EAST, respawnSeconds: [90, 180], level: [24, 27] }, // rare
+  { speciesId: 'rana_pescatrice', area: ABYSS_BAY, respawnSeconds: [15, 30] },
+  { speciesId: 'chimera', area: ABYSS_BAY, respawnSeconds: [15, 30] },
+  { speciesId: 'dragone_nero', area: ABYSS_BAY, respawnSeconds: [20, 40] },
+  { speciesId: 'granchio_ragno', area: ABYSS_BAY, respawnSeconds: [25, 50] },
+  { speciesId: 'isopode_gigante', area: ABYSS_BAY, respawnSeconds: [20, 40] },
+  { speciesId: 'squalo_capopiatto', area: ABYSS_BAY, respawnSeconds: [45, 90] },
+  { speciesId: 'squalo_goblin', area: ABYSS_BAY, respawnSeconds: [60, 120] },
+  { speciesId: 'rana_pescatrice', area: ABYSS_EAST, respawnSeconds: [15, 30] },
+  { speciesId: 'chimera', area: ABYSS_EAST, respawnSeconds: [15, 30] },
+  { speciesId: 'dragone_nero', area: ABYSS_EAST, respawnSeconds: [20, 40] },
+  { speciesId: 'granchio_ragno', area: ABYSS_EAST, respawnSeconds: [25, 50] },
+  { speciesId: 'isopode_gigante', area: ABYSS_EAST, respawnSeconds: [20, 40] },
+  { speciesId: 'squalo_capopiatto', area: ABYSS_EAST, respawnSeconds: [40, 80] },
+  { speciesId: 'squalo_goblin', area: ABYSS_EAST, respawnSeconds: [50, 100] },
+  { speciesId: 'calamaro_gigante', area: ABYSS_EAST, respawnSeconds: [90, 180] }, // rare
   // the Foresta Sommersa's own beasts (tappa 18, their pictures from lotto Gemini 1)
   { speciesId: 'anguilla_elettrica', area: FOREST, respawnSeconds: [25, 50] },
   { speciesId: 'polpo_gigante', area: FOREST, respawnSeconds: [40, 80] },
@@ -167,17 +170,52 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
 ];
 
 /**
- * Wild levels (owner, 2 ottobre): the bigger and rarer a beast, the stronger. A wild beast is never below
- * size floor + rarity floor (a species can ask for more with `minLevel`); albino and alfa add to it. Now and
- * then one is far stronger than its waters ("fuori scala"). Distance from the coast joins with the endless ocean.
+ * How dangerous each species is (owner, 4 ottobre 2026: "Pokémon with real fear of some sea creatures"): the danger
+ * sets a band of levels, the same wherever it is met. A white shark near the shore is still a superpredator. The
+ * region and the depth only move it within its band (DANGER_RULES), albino and alfa add more. Tuning.
  */
-export const WILD_LEVELS = {
-  sizeFloor: { piccola: 0, media: 2, grande: 6, colossale: 12 } as Record<string, number>,
-  starFloor: { 1: 0, 2: 2, 3: 5, 4: 9, 5: 14 } as Record<number, number>,
-  variantExtra: { comune: 0, albino: 3, alfa: 5 } as Record<string, number>,
-  aboveFloor: 2, // a beast lifted to its floor gets 0…this many levels more
-  outlierChance: 0.05,
-  outlierExtra: [5, 10] as [number, number],
+export type Danger = 1 | 2 | 3 | 4 | 5;
+export const DANGER_NAMES: Record<Danger, string> = {
+  1: 'Innocuo',
+  2: 'Piccolo predatore',
+  3: 'Predatore serio',
+  4: 'Superpredatore',
+  5: 'Gigante preistorico',
+};
+export const DANGER_LEVELS: Record<Danger, [number, number]> = {
+  1: [2, 12],
+  2: [8, 20],
+  3: [20, 35],
+  4: [35, 55],
+  5: [55, 75],
+};
+/** The danger of each species met in the wild (unlisted: from its size, see dangerOf). */
+export const SPECIES_DANGER: Record<string, Danger> = {
+  // 1 — harmless
+  barracuda: 1, tartaruga_marina: 1, torpedine: 1, pesce_palla: 1, cernia: 1, pastinaca: 1, squalo_nutrice: 1,
+  tonno: 1, delfino: 1, pesce_luna: 1, manta: 1, lontra_marina: 1, chimera: 1, granchio_ragno: 1,
+  isopode_gigante: 1, pesce_napoleone: 1,
+  // 2 — small predators
+  murena: 2, pesce_leone: 2, medusa_gigante: 2, pesce_vela: 2, scorfano: 2, rana_pescatrice: 2, dragone_nero: 2,
+  tricheco: 2, elefante_marino: 2, beluga: 2, varano_nilo: 2, anguilla_elettrica: 2, narvalo: 2,
+  // 3 — serious predators (and the great whales: majestic, not to be taken lightly)
+  squalo_martello: 3, squalo_tigre: 3, squalo_volpe: 3, coccodrillo_nilo: 3, pesce_spada: 3, foca_leopardo: 3,
+  polpo_gigante: 3, squalo_capopiatto: 3, squalo_goblin: 3, megattera: 3,
+  // 4 — superpredators
+  squalo_bianco: 4, orca: 4, coccodrillo_marino: 4, capodoglio: 4, calamaro_gigante: 4,
+  // 5 — prehistoric giants
+  calamaro_colossale: 5, serpente_di_mare: 5, mosasauro: 5, megalodonte: 5, kraken: 5, dunkleosteus: 5,
+  livyatan: 5, leviatano: 5,
+};
+export const DANGER_RULES = {
+  /** Where in its band a beast falls: 0 = the bottom (the coast) … this share is added by the region's bandAt and
+   *  the depth, then a random spread on top. */
+  spread: 0.35,
+  depthPerShare: 1500, // metres of depth for +1 share of the band (so 300 m = +0.2)
+  depthMax: 0.2,
+  variantExtra: { comune: 0, albino: 8, alfa: 12 } as Record<string, number>,
+  /** A wild beast this many levels above your strongest one shows a danger warning. */
+  warnGap: 8,
 };
 
 /**
@@ -196,6 +234,24 @@ export const SPECIES_DEPTH: Record<string, { minM?: number; maxM?: number }> = {
   pesce_vela: { maxM: 60 },
   medusa_gigante: { maxM: 80 },
   pesce_leone: { maxM: 80 },
+  // owner, 4 ottobre: real habitats (a white shark is never met in the abyss)
+  squalo_bianco: { maxM: 250 },
+  squalo_martello: { maxM: 250 },
+  squalo_tigre: { maxM: 300 },
+  orca: { maxM: 300 },
+  megattera: { maxM: 200 },
+  delfino: { maxM: 200 },
+  tonno: { maxM: 300 },
+  manta: { maxM: 150 },
+  tartaruga_marina: { maxM: 150 },
+  pesce_luna: { maxM: 200 },
+  barracuda: { maxM: 100 },
+  pesce_palla: { maxM: 60 },
+  foca_leopardo: { maxM: 150 },
+  beluga: { maxM: 300 },
+  tricheco: { maxM: 100 },
+  lontra_marina: { maxM: 40 },
+  pesce_spada: { maxM: 600 },
 };
 
 /** At most this many wild beasts are around you at the same time (tuning). */

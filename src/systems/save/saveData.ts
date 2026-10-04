@@ -6,14 +6,15 @@ import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
-import { SHIP } from '../../data/ship';
+import { SHIP, SHIP_UPGRADES } from '../../data/ship';
+import { HUNTS } from '../../data/hunts';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
 import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 15;
+export const SAVE_VERSION = 16;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -57,6 +58,7 @@ export interface SaveData {
   sub: SavedSub | null; // your submarine: where it waits, its model, the ones you own, its hull (v11); null = not yours yet
   legendsGone: string[]; // legends defeated: gone forever (v10)
   ship: SavedShip | null; // your expedition ship: where it is, its hatch, the submarine in its hold (v14)
+  hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -76,6 +78,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     sub: null,
     legendsGone: [],
     ship: null,
+    hunts: {},
   };
 }
 
@@ -211,6 +214,8 @@ export const MIGRATIONS: Migration[] = [
       return rest;
     },
   },
+  // v15 → v16 (4 ottobre 2026): the hunting diary, empty
+  { from: 15, migrate: (o) => ({ ...o, hunts: {} }) },
 ];
 
 export class SaveError extends Error {}
@@ -277,6 +282,7 @@ export function validate(data: Record<string, unknown>): SaveData {
       ? [...new Set(data.legendsGone.filter((x): x is string => typeof x === 'string'))]
       : [],
     ship: checkedShip(data.ship),
+    hunts: checkedHunts(data.hunts),
   };
 }
 
@@ -382,6 +388,25 @@ function checkedShip(raw: unknown): SavedShip | null {
     hatchOpen: raw.hatchOpen === true,
     bay,
     aboard: raw.aboard === true,
-    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(SHIP.fuel.tank, raw.fuel)) : SHIP.fuel.tank,
+    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : SHIP.fuel.tank, // newShip caps it at its tank
+    upgrades: Array.isArray(raw.upgrades)
+      ? raw.upgrades.filter((u): u is string => SHIP_UPGRADES.some((x) => x.id === u))
+      : [],
   };
+}
+
+/** The hunting diary, checked: only the hunts that exist, only true steps. */
+function checkedHunts(raw: unknown): SaveData['hunts'] {
+  const out: SaveData['hunts'] = {};
+  if (!isObject(raw)) return out;
+  for (const h of HUNTS) {
+    const p = raw[h.id];
+    if (!isObject(p)) continue;
+    out[h.id] = {
+      ...(p.heard === true ? { heard: true } : {}),
+      ...(p.echo === true ? { echo: true } : {}),
+      ...(p.traces === true ? { traces: true } : {}),
+    };
+  }
+  return out;
 }

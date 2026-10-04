@@ -15,7 +15,7 @@ export type GameEvent =
   | { type: 'creatureSeen'; id: string }
   | { type: 'zoneEntered'; name: string }
   // wild beasts and battles
-  | { type: 'wildAppeared'; id: number; rare: boolean; legend?: boolean }
+  | { type: 'wildAppeared'; id: number; rare: boolean; legend?: boolean; danger?: boolean }
   /** A legend defeated: gone from the sea forever. */
   | { type: 'legendGone'; name: string }
   | { type: 'battleStart'; id: number; first: 'you' | 'foe' | 'normal' }
@@ -53,6 +53,14 @@ export type GameEvent =
   | { type: 'shipGiven' }
   | { type: 'shipBoarded' }
   | { type: 'shipShallow' }
+  /** The ship reached the end of the known sea. */
+  | { type: 'seaEnd' }
+  /** An outpost of the open sea found (economy/places.ts). */
+  | { type: 'outpostFound'; name: string }
+  // the hunts (hunts.ts)
+  | { type: 'rumourHeard'; name: string }
+  | { type: 'echoFound'; name: string; depthM: number }
+  | { type: 'tracesFound'; id: string; text: string }
   | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }

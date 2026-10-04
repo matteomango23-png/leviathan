@@ -1,5 +1,6 @@
 // Places you interact with: the piers of Portofosco and Porto Fango, and the wrecks/chests on the sea floor.
-import { PORTS, WRECKS, WRECK_REACH, type PortDef, type WreckDef } from '../../data/economy';
+import { OUTPOSTS, PORTS, WRECKS, WRECK_REACH, type PortDef, type WreckDef } from '../../data/economy';
+import type { GameEvent } from '../events';
 import type { TileMap } from '../world/tileMap';
 import type { GearState } from './gear';
 
@@ -60,4 +61,19 @@ export function openWreck(w: Wreck, gear: GearState): WreckLoot | null {
     loot.item = r.item;
   }
   return loot;
+}
+
+/** Key of a found outpost in the bestiary's "seen" list (no change to the save file). */
+export const outpostKey = (id: string): string => `avamposto:${id}`;
+
+/** How near (units) an outpost has to be to be found: you see its lantern from afar. */
+const OUTPOST_SIGHT = 600;
+
+/** Sailing or swimming near an outpost finds it: it shows on the map from then on. */
+export function discoverOutposts(g: { seen: Set<string>; diver: { x: number } }, events: GameEvent[]): void {
+  for (const p of OUTPOSTS) {
+    if (g.seen.has(outpostKey(p.id)) || Math.abs(g.diver.x - p.x) > OUTPOST_SIGHT) continue;
+    g.seen.add(outpostKey(p.id));
+    events.push({ type: 'outpostFound', name: p.name });
+  }
 }

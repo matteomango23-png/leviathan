@@ -1,14 +1,14 @@
 // Meeting wild beasts in the open sea: they appear in the dark of their waters, swim around (roam.ts), and a
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
-import { BEAST_BODY, ROAM, WILD_RULES } from '../data/beasts';
+import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { ITEM_RULES } from '../data/economy';
 import { prepareEndlessSpawn } from './endlessLife';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
 import { distanceToBody } from './beasts/combat';
-import { formKey, formLengthM, rollWildForm, rollWildLevel } from './beasts/forms';
+import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
 import { SUBMARINE } from '../data/submarine';
 import { isLegend } from './beasts/legends';
@@ -72,19 +72,20 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (lure.t <= 0) g.beasts.lure = null;
   }
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
-  /** It comes out of the dark (a legend may come instead, in its place, if it is still free). */
+  /** It comes out of the dark. */
   const appear = (w: WildBeast): boolean => {
-    const unavailable = new Set([
-      ...g.beasts.gone,
-      ...g.beasts.team.map((b) => b.form.unique ?? ''),
-      ...g.beasts.wilds.filter((o) => isInWater(o)).map((o) => o.form.unique ?? ''),
-    ]);
-    const form = rollWildForm(w.spawn.speciesId, g.rng, { x: d.x, unavailable });
+    // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready)
+    const form: BeastForm = w.spawn.form
+      ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
+      : rollWildForm(w.spawn.speciesId, g.rng);
     const p = appearPoint(w, g.map, g.rng, d);
     if (!p) return false;
-    spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
+    spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
-    events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique) });
+    // far stronger than your strongest beast: a warning (owner, 4 ottobre: fear of some creatures)
+    const top = Math.max(0, ...g.beasts.team.filter((b) => b.inTeam).map((b) => b.level));
+    const danger = w.level >= top + DANGER_RULES.warnGap;
+    events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique), danger });
     return true;
   };
   const ready: WildBeast[] = [];

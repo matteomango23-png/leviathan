@@ -16,21 +16,14 @@ import {
   writeToStorage,
 } from '../systems/save/storage';
 import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
-import {
-  coldAt,
-  createWeather,
-  skipWeather,
-  stepWeather,
-  weatherLook,
-  weatherName,
-  type WeatherState,
-} from '../systems/weather';
+import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres, murkAt } from '../systems/world/zones';
 import { DELTA, WORLD } from '../data/worldLayout';
 import { SHIP } from '../data/ship';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
+import { HuntView } from '../views/huntView';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
 import { CameraRig } from '../views/cameraRig';
@@ -66,6 +59,7 @@ export class WorldScene extends Phaser.Scene {
   private worldArt!: WorldArtView;
   private sub!: SubmarineView;
   private ship!: ShipView;
+  private hunts!: HuntView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
   private places!: PlacesView;
@@ -79,7 +73,6 @@ export class WorldScene extends Phaser.Scene {
   private weatherView!: WeatherView;
   private birdsView!: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
-  private readonly weather: WeatherState = createWeather();
   private readonly birds: BirdsState = createBirds();
   private saveTimer = 0;
   private hurtFlash = 0;
@@ -124,6 +117,7 @@ export class WorldScene extends Phaser.Scene {
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
     this.ship = new ShipView(this, L.world, shipFar);
+    this.hunts = new HuntView(this, L.world);
     this.sub = new SubmarineView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
@@ -160,8 +154,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private onSkipWeather(): void {
-    skipWeather(this.weather);
-    this.session.emit('toast', `Meteo: ${weatherName(this.weather, this.state.diver.x)}`);
+    skipWeather(this.state.weather);
+    this.session.emit('toast', `Meteo: ${weatherName(this.state.weather, this.state.diver.x)}`);
   }
 
   private onResize(size: Phaser.Structs.Size): void {
@@ -305,8 +299,8 @@ export class WorldScene extends Phaser.Scene {
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
     this.terrain.update(view);
-    if (stepWeather(this.weather, dt)) this.weatherView.lightning(info);
-    const sky = weatherLook(this.weather);
+    if (stepWeather(g.weather, dt)) this.weatherView.lightning(info);
+    const sky = weatherLook(g.weather);
     for (const s of stepBirds(
       this.birds,
       dt,
@@ -322,6 +316,7 @@ export class WorldScene extends Phaser.Scene {
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
     this.ship.update(g.ship, g.time, sky.waves);
+    this.hunts.update(g, view, g.time);
     this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && g.ship.hatch < 0.6);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);

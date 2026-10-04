@@ -614,3 +614,28 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - `restAboard` resta in `submarine.ts`, ma la usa solo la nave (salire a bordo, aggancio, risveglio).
 - **Cockpit:** `ui/cockpit.ts`, con lo stesso stile del porto, aperto dall'evento di sessione `openCockpit` (`MenusScene` in modo `'cockpit'`). Il razzo lanciato da lì mette il suo messaggio in `story.pending`.
 - **Salvataggio v15:** `fuel` per nave e sottomarino (se manca, serbatoio pieno); il campo `sanctuary` viene tolto.
+
+## 2026-10-04 — Spedizioni complete: tappe 3–6 (v0.41.0)
+
+- **Regioni** (`data/regions.ts`):
+  - `biomeOf` sceglie i tipi di tratto dai pesi della regione (via `weight` e `weightPerKm` dei biomi);
+  - `ENDLESS.maxX` = 30 km, con una scogliera (`endWall`);
+  - la nave si ferma a `SEA_END_X` (evento `seaEnd`) e non passa sulla corsia lontana per la scogliera;
+  - `zoneAt` in mare aperto: "Regione · Tratto"; la scheda della regione si sblocca entrando.
+- **Avamposti:** `OUTPOSTS` in `data/economy.ts`, porti a tutti gli effetti (`PortDef.outpost`, `shipDock` per ogni porto al posto di `SHIP.dock`); `discoverOutposts` li segna come trovati (`avamposto:<id>` in `seen`, niente cambio al salvataggio).
+- **Pericolo:**
+  - `SPECIES_DANGER` + `DANGER_LEVELS` sostituiscono `WILD_LEVELS` e i `level` dei punti di comparsa;
+  - `rollWildLevel(form, rng, band)`: la fascia del pericolo; `band` (0 = costa) viene dalla regione (`bandAt`) e dalla profondità;
+  - scelta: barracuda, torpedine e pesce palla tra gli innocui, per non rendere impossibile la Baia all'inizio;
+  - avviso quando la bestia supera di `warnGap` la tua migliore.
+- **Habitat:** `SPECIES_DEPTH` esteso con i limiti veri; la scheda mostra profondità, mari (dai biomi delle regioni) e pericolo.
+- **Cacce** (`data/hunts.ts`, `systems/hunts.ts`):
+  - le leggende non vengono più tirate a sorte (`rollLegend` tolto; `LEGENDS` = unici con una caccia);
+  - ogni caccia ha una tana (`placeDens`, sopra il fondale vero) e uno slot selvatico (`WildSpawnDef.hunt`/`form`), trattenuto finché voce, eco e tracce non sono fatte e il tempo non è quello giusto;
+  - il meteo è passato in `GameState` (`g.weather`, non salvato) perché le cacce lo leggono;
+  - salvataggio v16: `hunts`.
+- **Ricompense:**
+  - `REGION_CHESTS`: 3 relitti per regione, come i relitti della costa;
+  - missioni `reachKm` e `hunt`;
+  - `SHIP_UPGRADES` (serbatoio, sonar, motori) salvati in `ship.upgrades`.
+- **Non fatto:** un tempio per regione (resta solo il tempio del Mare aperto) e pesci rari da vendere. Proposti per una prossima tappa.

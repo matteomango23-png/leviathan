@@ -3,7 +3,6 @@
 // (what sticks out of the water it sails round, on the far lane, behind it); stopped, its side hatch opens, the
 // submarine slides down the ramp to mid-water under it and docks again only in front of the hatch. Open, the ship
 // does not move. You drive it, and the submarine, with levers (HELM). Values marked "tuning" are a first pass.
-import { PORT, PORTO_FANGO, type PortDef } from './economy';
 
 export const SHIP = {
   art: 'nave_1', // public/world: hatch closed…
@@ -47,12 +46,27 @@ export const SHIP = {
   launchDepth: 62, // units under the surface (~10 m)
   dockReach: 26, // units from the docking point (under the ramp) where Aggancia appears
   boardReach: 18, // units beyond the hull (sideways) or under the surface where A bordo appears
-  /** Where it docks in each port (deep enough water, alongside the pier) and how near counts. */
-  dock: { portofosco: PORT.x + 120, fango: PORTO_FANGO.x + 50 } as Record<PortDef['id'], number>,
+  /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
 };
+
+/** Parts for the ship, bought at the harbours (owner, 4 ottobre: the rewards of the far seas). Tuning. */
+export interface ShipUpgradeDef {
+  id: string;
+  name: string;
+  price: number;
+  text: string;
+  tankExtra?: number; // litres more in the tank
+  sonarMult?: number; // × the range of the anomalous echoes
+  speedMult?: number; // × top speed
+}
+export const SHIP_UPGRADES: ShipUpgradeDef[] = [
+  { id: 'serbatoio', name: 'Serbatoio grande', price: 900, text: '300 litri in più: spedizioni più lunghe', tankExtra: 300 },
+  { id: 'sonar_profondo', name: 'Sonar profondo', price: 1500, text: 'Sente le echi anomale dal doppio della distanza', sonarMult: 2 },
+  { id: 'motori', name: 'Motori potenziati', price: 2500, text: 'Il 20% più veloce', speedMult: 1.2 },
+];
 
 /** Fuel of the ship and the submarine: how much going slowly saves, the price, the transfer between them. */
 export const FUEL = {

@@ -1,5 +1,7 @@
 // Everything shown on a beast's card sheet: rarity, type, role, stats, its battle moves (and the next ones it
 // learns), its moves in the open sea, size, habitat. Pure data, rendered by ui/beastSheet.ts.
+import { BIOMES } from '../../data/endless';
+import { SEA_REGIONS } from '../../data/regions';
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
 import { SPECIES } from '../../data/species';
 import { MOVES } from '../../data/moves';
@@ -11,7 +13,7 @@ import { learnedAt } from '../../data/learnsets';
 import { CATEGORY_NAMES, type BattleMoveDef } from '../../data/moveBattle';
 import type { MoveTypeId } from '../../data/rules';
 import { defaultMoves, evolvedAtOf } from './battleMoves';
-import { ABILITIES } from '../../data/beasts';
+import { ABILITIES, DANGER_NAMES, SPECIES_DEPTH } from '../../data/beasts';
 import {
   breaksBones,
   formLengthM,
@@ -19,6 +21,7 @@ import {
   formStars,
   formStats,
   formType,
+  dangerOf,
   wildLevelRange,
   speciesOf,
   type BeastForm,
@@ -61,6 +64,10 @@ export interface Sheet {
   stats: Stats;
   lengthM: number;
   habitat: string;
+  /** Owner, 4 ottobre: where it really lives (depth, seas) and how dangerous it is. */
+  depth: string;
+  seas: string;
+  danger: string;
   trait: string;
   moves: SheetMove[];
   /** The next moves it learns, with their level. */
@@ -70,6 +77,21 @@ export interface Sheet {
   evolution: { name: string; level: number | null; current: boolean }[];
   /** Sfondamento (breaks ancient bones in the sea), for the beasts that learn it; null for the others. */
   fieldMove: { name: string; level: number; unlocked: boolean } | null;
+}
+
+/** Its depth and the seas of the open sea it lives in (data: SPECIES_DEPTH, the regions' kinds of stretches). */
+function whereItLives(id: string): { depth: string; seas: string } {
+  const z = SPECIES_DEPTH[id];
+  const depth =
+    z?.minM !== undefined
+      ? `da ${z.minM} m in giù`
+      : z?.maxM !== undefined
+        ? `dalla superficie a ${z.maxM} m`
+        : 'a ogni profondità';
+  const seas = SEA_REGIONS.filter((r) =>
+    BIOMES.some((b) => (r.biomes[b.id] ?? 0) > 0 && b.beasts[id] !== undefined),
+  ).map((r) => r.name);
+  return { depth, seas: seas.length ? seas.join(', ') : 'solo lungo la costa' };
 }
 
 /** The stages of the line a species belongs to, first to last. */
@@ -153,6 +175,8 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     stats,
     lengthM: Math.round(formLengthM(form, lv) * 10) / 10,
     habitat: REGIONS.find((r) => r.id === s.region)?.name ?? s.region,
+    ...whereItLives(s.id),
+    danger: `${DANGER_NAMES[dangerOf(s.id)]} (${'▲'.repeat(dangerOf(s.id))})`,
     trait: s.trait,
     moves,
     nextMoves,

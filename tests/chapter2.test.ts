@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { VEDOVA } from '../src/data/chapter2';
-import { UNIQUE_VARIANTS } from '../src/data/species';
 import { WRECKS } from '../src/data/economy';
 import { DELTA, TILE, WORLD } from '../src/data/worldLayout';
 import { rollWildForm } from '../src/systems/beasts/forms';
@@ -80,11 +79,9 @@ describe('crocodiles', () => {
     expect(maxDepth).toBeLessThan(w.length * 0.3);
   });
 
-  it('are sometimes the legendary albino', () => {
-    const rare = UNIQUE_VARIANTS.find((u) => u.id === 'coccodrillo_marino_leggendario')!;
-    const where = { x: 5300, unavailable: new Set<string>() };
-    expect(rollWildForm('coccodrillo_marino', () => rare.chance! / 2, where).unique).toBe(rare.id);
-    expect(rollWildForm('coccodrillo_marino', () => 0.99, where).unique).toBeUndefined();
+  it('never turn into the legendary albino by chance: it is hunted (4 ottobre 2026)', () => {
+    for (let r = 0; r < 1; r += 0.01)
+      expect(rollWildForm('coccodrillo_marino', () => r).unique).toBeUndefined();
   });
 });
 

@@ -1081,6 +1081,7 @@
 .pcard-text {
   font-size: 12px;
   line-height: 1.35;
+  white-space: pre-line;
   color: var(--muted);
 }
 .pcard-foot {
@@ -1750,4 +1751,25 @@ img.albino-art {
 .helm-gauges.dry {
   border-color: #e2553f;
   color: #ffb3a3;
+}
+.helm-sonar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(102px + var(--safe-b));
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(2, 20, 16, 0.72);
+  border: 1px solid rgba(95, 243, 214, 0.45);
+  color: #9ff5e2;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.helm-sonar.anomaly {
+  border-color: #ffb347;
+  color: #ffd7a0;
+}
+.driving .toast {
+  bottom: calc(132px + var(--safe-b));
 }
