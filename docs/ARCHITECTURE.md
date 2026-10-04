@@ -34,7 +34,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
-| `diver.ts` | Nuoto, scatto, ossigeno, cuori, morte e rinascita in superficie. |
+| `diver.ts` | Nuoto, scatto (costa aria), ossigeno, cuori, morte e rinascita in superficie. |
+| `breath.ts` | Barra della pressione (sub e sottomarino) e serbatoi d'aria. |
+| `rideAir.ts` | L'aria del cetaceo che cavalchi e le barre mostrate nell'HUD. |
 | `harpoon.ts` | Arpione: va, aggancia un pesce o rimbalza sulla roccia, torna. |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |

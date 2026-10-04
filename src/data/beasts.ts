@@ -300,7 +300,6 @@ export const ABILITIES = {
    */
   sfondamento: { name: 'Sfondamento', types: ['predatore', 'corazzato'] as string[], level: 16 },
   boneHint: { reach: 70, everySeconds: 25 },
-  staz_ossigeno: { o2DrainMult: 0 }, // you do not use air while riding it
 };
 
 /** Move effects shared by the battle (fx names in moves.ts). */
@@ -326,4 +325,14 @@ export const BEAST_SPRITE = {
    * "the ham between two slices of bread"): the body's breadth as a share of its length, at its thickest. Tuning.
    */
   turnBreadth: 0.13,
+};
+
+/**
+ * Riding a whale (owner, 4 ottobre): the air bar is the whale's, bigger and lasting longer than yours, but it too
+ * has to come up to breathe; empty, you are back on your own air. × your air, by species. Away from you it breathes
+ * again (refillPerSec of its bar). Tuning.
+ */
+export const RIDE_AIR = {
+  bySpecies: { megattera: 5, capodoglio: 7, livyatan: 8, orca: 3, beluga: 2.5, narvalo: 2.5 } as Record<string, number>,
+  refillAwayPerSec: 0.05,
 };

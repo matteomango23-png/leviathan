@@ -7,6 +7,7 @@ import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { clamp, range, type Rng } from './math';
 import type { BodyCircle, TileMap } from './world/tileMap';
+import { freshPressure, stepPressure, type AirTank } from './breath';
 
 export interface DiverState {
   x: number;
@@ -28,6 +29,9 @@ export interface DiverState {
   bubbleTime: number;
   oxygenWarned: boolean;
   depthWarn: number;
+  /** Too deep for the suit: 1 = safe … 0 = it hurts (breath.ts). */
+  pressure: number;
+  pressureHurt: number;
 }
 
 export function createDiver(x = START.x, y = START.y): DiverState {
@@ -51,6 +55,7 @@ export function createDiver(x = START.x, y = START.y): DiverState {
     bubbleTime: 0,
     oxygenWarned: false,
     depthWarn: 0,
+    ...freshPressure(),
   };
 }
 
@@ -73,13 +78,27 @@ function respawn(d: DiverState, at: { x: number; y: number }, events: GameEvent[
   events.push({ type: 'respawned' });
 }
 
-function updateOxygen(d: DiverState, map: TileMap, dt: number, events: GameEvent[], drainMult: number): void {
+/** Air used: from the whale you ride while it has some, otherwise from your own lungs. */
+function spendAir(d: DiverState, air: AirTank | undefined, amount: number): void {
+  if (air && air.o2 > 0) air.o2 = Math.max(0, air.o2 - amount);
+  else d.o2 = Math.max(0, d.o2 - amount);
+}
+
+function updateOxygen(
+  d: DiverState,
+  map: TileMap,
+  dt: number,
+  events: GameEvent[],
+  drainMult: number,
+  air: AirTank | undefined,
+): void {
   const o = DIVER.oxygen;
   if (d.y < map.surfaceY + o.surfaceBand + DIVER.radius) {
     d.o2 = Math.min(d.maxO2, d.o2 + o.surfaceRefill * dt);
+    if (air) air.o2 = Math.min(air.max, air.o2 + o.surfaceRefill * (air.max / d.maxO2) * dt);
   } else {
     const depthF = clamp((d.y - map.surfaceY) / (o.fullDepthY - map.surfaceY), 0, 1);
-    d.o2 = Math.max(0, d.o2 - (o.drainBase + o.drainDepthExtra * depthF) * drainMult * dt);
+    spendAir(d, air, (o.drainBase + o.drainDepthExtra * depthF) * drainMult * dt);
   }
   if (d.o2 <= 0) {
     d.chokeTime -= dt;
@@ -109,10 +128,12 @@ export interface DiverOptions {
   speedMult?: number;
   o2DrainMult?: number;
   canDash?: boolean;
-  /** Deepest world y the suit allows; deeper pushes you back up. */
+  /** Deepest world y the suit allows; deeper the pressure bar empties (breath.ts). */
   maxDepthY?: number;
   /** Riding: the beast's body against rock (circles along its spine), instead of the diver's own. */
   body?: readonly BodyCircle[];
+  /** Riding a whale: you breathe its air while it lasts (breath.ts). */
+  air?: AirTank;
 }
 
 export function stepDiver(
@@ -177,24 +198,31 @@ export function stepDiver(
     d.vy = Math.sin(d.aim) * speed;
     d.dashTime = mounted && md ? md.duration : DIVER.dash.duration;
     d.dashCooldown = mounted && md ? md.cooldown : DIVER.dash.cooldown;
+    spendAir(d, opt.air, DIVER.dashAir); // a burst of speed costs breath
     events.push({ type: 'dash', x: d.x, y: d.y });
   }
   d.dashTime = Math.max(0, d.dashTime - dt);
 
   map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt);
   if (mounted && d.y < map.surfaceY + DIVER.lengthUnits) d.y = map.surfaceY + DIVER.lengthUnits;
-  let drainMult = opt.o2DrainMult ?? 1;
-  if (opt.maxDepthY !== undefined && d.y > opt.maxDepthY) {
-    // too deep for the suit: the pressure burns oxygen much faster, more and more with depth
-    const overM = (d.y - opt.maxDepthY) / WORLD.unitsPerMetre;
-    drainMult *= SUIT_RULES.overDepthDrainMult + overM * SUIT_RULES.overDepthDrainPerM;
+  const drainMult = opt.o2DrainMult ?? 1;
+  // holding the sprint while riding costs breath too
+  if (mounted && input.dashHeld && Math.hypot(input.moveX, input.moveY) > 0.2)
+    spendAir(d, opt.air, DIVER.sprintAirPerSec * dt);
+  // too deep for the suit (also on a beast): the pressure bar empties, and empty it hurts until you go up
+  const overM = opt.maxDepthY !== undefined ? (d.y - opt.maxDepthY) / WORLD.unitsPerMetre : 0;
+  if (overM > 0) {
     d.depthWarn -= dt;
     if (d.depthWarn <= 0) {
       d.depthWarn = SUIT_RULES.warnEvery;
       events.push({ type: 'tooDeep' });
     }
   }
-  updateOxygen(d, map, dt, events, drainMult);
+  if (stepPressure(d, overM, dt)) {
+    d.invulnerable = 0;
+    hurtDiver(d, 1, events);
+  }
+  updateOxygen(d, map, dt, events, drainMult, opt.air);
 
   d.bubbleTime -= dt;
   if (d.bubbleTime <= 0 && d.y > map.surfaceY + 6) {

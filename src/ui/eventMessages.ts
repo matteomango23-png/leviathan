@@ -79,6 +79,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'dove':
       return ['Il sottomarino resta qui ad aspettarti.', 2];
     case 'subRammed':
+      if (e.by === 'pressure') return [SUB_TEXT.crushed(e.hull, e.max), 2];
       return e.by === 'rock' ? [SUB_TEXT.bumped, 1.5] : [SUB_TEXT.rammed(e.hull, e.max), 2];
     case 'subWrecked':
       return [SUB_TEXT.wrecked(e.teeth), 6];
@@ -204,7 +205,9 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'itemUsed':
       return [`${itemName(e.id)} usato.`, 1.4];
     case 'tooDeep':
-      return ['La muta non regge questa profondità: serve una muta migliore.', 3];
+      return ['La pressione sale: la muta non regge questa profondità. Risali!', 3];
+    case 'rideAirOut':
+      return [`${e.name} ha finito l'aria: ora respiri la tua. Risali a prendere fiato!`, 4];
     case 'missionComplete':
       return [`Missione compiuta: ${missionById(e.id)?.title ?? ''}. Riscuoti i denti al porto.`, 3.5];
     case 'wreckOpened': {
