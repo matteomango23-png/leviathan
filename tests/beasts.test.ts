@@ -171,5 +171,9 @@ describe('beasts in the sea are drawn', () => {
       expect(SPRITE_KEYS, id).toContain(id);
       expect(loaded, id).toContain(id);
     }
+    // the Guardians join your team when tamed: their pictures must be loaded too (the Piovra was invisible)
+    for (const sp of SPECIES.filter((s) => s.guardian && SPRITE_KEYS.includes(s.id)))
+      expect(loaded, sp.id).toContain(sp.id);
+    expect(loaded).toContain('piovra');
   });
 });

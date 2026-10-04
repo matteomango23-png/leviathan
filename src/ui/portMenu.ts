@@ -73,7 +73,7 @@ export class PortMenu {
       b.append(icon(ic), el('span', '', undefined, label));
       b.addEventListener('click', () => {
         this.tab = id;
-        this.render();
+        this.render(true);
       });
       b.dataset.tab = id;
       this.tabs.push(b);
@@ -97,12 +97,13 @@ export class PortMenu {
     this.render();
   }
 
-  private render(): void {
+  /** Redraws the open tab; the list keeps its scroll unless a new tab opens (buying used to jump to the top). */
+  private render(newTab = false): void {
     const gear = this.g.gear;
+    const keep = newTab ? 0 : this.body.scrollTop;
     this.teeth.replaceChildren(icon('tooth'), document.createTextNode(` ${gear.teeth}`));
     for (const t of this.tabs) t.classList.toggle('on', t.dataset.tab === this.tab);
     this.body.replaceChildren();
-    this.body.scrollTop = 0;
     const b = this.body;
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
     if (this.tab === 'mercato') this.renderMarket(b);
@@ -112,6 +113,7 @@ export class PortMenu {
     } else if (this.tab === 'zaino') renderBackpack(b, ctx);
     else if (this.tab === 'bacheca') renderBoard(b, ctx);
     else renderTeamPanel(b, this.g, true);
+    this.body.scrollTop = keep;
   }
 
   private renderMarket(b: HTMLElement): void {

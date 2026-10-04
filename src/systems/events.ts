@@ -45,9 +45,6 @@ export type GameEvent =
   | { type: 'subTooDeep' }
   | { type: 'boarded' }
   | { type: 'dove' }
-  | { type: 'lineCast' }
-  | { type: 'fishBite' }
-  | { type: 'fishEscaped' }
   /** You breathe in the bubbles of an air vent of the open sea. */
   | { type: 'ventBreath' }
   /** Your beast feels a wild one in the dark, to the left (-1) or right (1). */

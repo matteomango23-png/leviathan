@@ -242,6 +242,16 @@ describe('port', () => {
     enterPort(g);
     expect(g.diver.hp).toBe(g.diver.maxHp);
   });
+
+  it('a submarine moored at the pier can be boarded (the port button used to hide it)', () => {
+    const g = fresh();
+    g.diver.x = PORT.x;
+    g.diver.y = START.y;
+    Object.assign(g.sub, { owned: true, aboard: false, x: PORT.x + 5, y: START.y });
+    expect(currentAction(g)).toBe('sali');
+    g.sub.x = PORT.x + 200; // away from it, the pier opens the port again
+    expect(currentAction(g)).toBe('porto');
+  });
 });
 
 describe('save v3', () => {

@@ -203,7 +203,13 @@ export class BattleBackdrop {
         .setOrigin(i === 0 ? 0 : 1, 1)
         .setPosition((i === 0 ? -w * 0.03 : w * 1.03) + d.x, h * 1.04 + d.y);
     });
-    this.vignette.setScale(w / 512, h / 288).setPosition(w / 2, h / 2);
+    // the vignette frames what the camera sees, also while it zooms in on a big beast and pulls back (it used to
+    // stay on the stage and its dark edges slid into view during the pull)
+    const cam = this.scene.cameras.main;
+    const z = cam.zoom || 1;
+    this.vignette
+      .setScale(w / z / 512, h / z / 288)
+      .setPosition(cam.scrollX + cam.width / 2, cam.scrollY + cam.height / 2);
   }
 
   private drawSnow(dt: number, time: number): void {
