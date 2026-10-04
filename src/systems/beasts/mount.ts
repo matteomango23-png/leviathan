@@ -7,7 +7,7 @@ import { DIVER } from '../../data/diver';
 import { clamp } from '../math';
 import type { TileMap } from '../world/tileMap';
 import { bodyCircles, type BodyPose } from './combat';
-import { formLengthUnits } from './forms';
+import { formLengthUnits, shapeOfForm } from './forms';
 import type { TeamBeast } from './team';
 
 export interface Mount extends BodyPose {
@@ -49,6 +49,7 @@ export function callMount(
   if (map.hitCircle(x, y, r)) ({ x, y } = map.nearestOpen(diver.x, diver.y, r));
   return {
     uid: b.uid,
+    shape: shapeOfForm(b.form),
     x,
     y,
     face: x < diver.x ? 1 : -1,

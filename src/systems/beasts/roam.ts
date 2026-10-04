@@ -5,7 +5,7 @@ import { BEAST_TEMPER, ROAM, type Temper } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
-import { bodyCircles, distanceToBody } from './combat';
+import { bodiesTouch, bodyCircles, distanceToBody, type BodyPose } from './combat';
 import { uniqueOf } from './forms';
 import { bodyRadius, isRare, type WildBeast } from './wildState';
 
@@ -22,6 +22,8 @@ export interface RoamContext {
   riderLength?: number;
   /** You are inside your submarine and this beast is not one that rams it: it slips away (submarine.ts). */
   scared?: boolean;
+  /** The beast you ride: touching its body counts as touching you (owner, 4 ottobre). */
+  rider?: BodyPose;
 }
 
 /** Rare beasts are always shy (you have to reach them); named ones always come at you. */
@@ -149,5 +151,8 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.pitch = np;
   b.phase += dt * (ROAM.swimPhaseBase + (Math.hypot(b.vx, b.vy) / U) * ROAM.swimPhasePerSpeed);
 
-  return !quiet && distanceToBody(b, d.x, d.y) < b.length * ROAM.contactFrac + DIVER.radius;
+  if (quiet) return false;
+  // riding, the battle starts as soon as it touches your beast's body, not only when it reaches you
+  if (ctx.rider && bodiesTouch(b, ctx.rider, ROAM.bodyContact)) return true;
+  return distanceToBody(b, d.x, d.y) < b.length * ROAM.contactFrac + DIVER.radius;
 }

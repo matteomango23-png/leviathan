@@ -9,6 +9,7 @@ import { refillTanks, tankRanOut } from './breath';
 import { rideTank, type RideTanks } from './rideAir';
 import { bodyCircles, headOf } from './beasts/combat';
 import { formName } from './beasts/forms';
+import { isInWater } from './beasts/wildState';
 import {
   activeBeast,
   beastAction,
@@ -58,6 +59,7 @@ import {
   stepSub,
   subWakePoint,
   type SubState,
+  pushOutOfSub,
 } from './submarine';
 import { dismount } from './beastState';
 import { createTemples, hitLever, stepTemples, type TempleState } from './temple';
@@ -155,6 +157,12 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
   return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
 }
 
+/** Is there a dash now? Not in the submarine, nor in a suit without one (the palombaro), unless you ride a beast. */
+export function canDashNow(g: GameState): boolean {
+  if (g.sub.aboard) return false;
+  return g.beasts.riding || diverModifiers(g.gear).canDash;
+}
+
 /** What the context button does right now. */
 export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci';
 export function currentAction(g: GameState): Action {
@@ -244,6 +252,13 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     const whale = activeBeast(g);
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
+  // the submarine is solid: you (or the beast you ride) slide along its hull
+  if (!g.sub.aboard && !held)
+    pushOutOfSub(
+      g.sub,
+      d,
+      g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
+    );
   // after losing your senses you wake up on your boat
   if (g.sub.owned && !g.sub.aboard && events.some((e) => e.type === 'respawned')) board(g, events);
   stepVents(d, dt, g.timers, events);
@@ -269,6 +284,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
+  // …and the beasts slide along it too: wild ones, and yours when it swims with you
+  for (const w of g.beasts.wilds) if (isInWater(w) && !w.arena) pushOutOfSub(g.sub, w, bodyCircles(w));
+  const follower = g.beasts.mount;
+  if (follower && !g.beasts.riding) pushOutOfSub(g.sub, follower, bodyCircles(follower));
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);

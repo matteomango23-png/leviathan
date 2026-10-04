@@ -14,6 +14,7 @@ export const ROAM = {
   sightRange: 9, // U: it notices you this close
   loseRange: 16, // U: it gives up beyond this
   contactFrac: 0.2, // you touch it when you are this close to its body (× its length): the battle starts
+  bodyContact: 2, // units: riding, its body and your beast's body this close count as touching (the battle starts)
   calmAfterBattle: 6, // seconds a beast ignores you after a battle you fled from (or after biting you)
   noTeamKnock: 140, // u/s: with no beast able to fight, it bites you and pushes you away
   spawnMinDistance: 230, // units: it appears at least this far from you, in the dark
@@ -277,7 +278,10 @@ export const FEEDING = {
 export const BEAST_BODY = {
   headRadiusFrac: 0.13, // around the head, × body length
   bodyThicknessFrac: 0.1, // half thickness of the body, × body length
-  collideRadiusFrac: 0.07, // radius used against rock at the middle of the body, × body length
+  collideRadiusFrac: 0.07, // radius used against rock at the middle of the body, × body length (no outline known)
+  /** With its real outline (bodyShapes.generated.ts): each circle covers this share of the body's height there
+   *  (a little less than all: fins and the tips of the tail may brush the rock). Tuning. */
+  shapeFill: 0.85,
   /**
    * Against rock the whole body counts, not only its middle (owner, 4 ottobre: big beasts sank into reefs and the
    * floor): circles along the spine, at these places (share of the length from the middle, + towards the head)

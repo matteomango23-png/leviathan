@@ -2,7 +2,7 @@
 // They do not fight in the water: touching them, or hitting them with a weapon, starts a turn-based battle.
 import { BEAST_BODY, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
-import { formLengthUnits, type BeastForm } from './forms';
+import { formLengthUnits, type BeastForm, shapeOfForm } from './forms';
 
 export interface WildBeast extends BodyPose {
   id: number;
@@ -87,6 +87,7 @@ export function spawnWild(
     form,
     level,
     length: formLengthUnits(form, level),
+    shape: shapeOfForm(form),
     x,
     y,
     face,

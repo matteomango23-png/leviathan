@@ -151,3 +151,7 @@ Quando il verde è fatto bene (come per Delta e tana) basta togliere il verde, e
 Un luogo senza i suoi dipinti usa quelli della Baia con la sua tinta. Finché uno strato manca anche lì, lo disegna il codice (`views/battle/backdropArt.ts`) con i colori del luogo (`BATTLE_PALETTES` in `data/battle.ts`); appena arriva quello dipinto, il gioco usa quello.
 
 I ritratti per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`) non sono ancora collegati.
+
+## Forma del corpo per le collisioni (4 ottobre 2026)
+
+Dopo `npm run art` lancia anche **`npm run shapes`**: legge i profili in `public/sprites/` e scrive in `src/data/bodyShapes.generated.ts` quanto il corpo di ogni bestia sale e scende rispetto alla spina, in 9 punti dalla testa alla coda. Il gioco lo usa per gli urti con roccia, sottomarino e altre bestie, e per far sedere il sub sulla schiena. Un test controlla che ogni profilo abbia la sua forma.

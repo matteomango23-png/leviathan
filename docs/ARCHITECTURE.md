@@ -14,7 +14,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `src/ui/` | Interfaccia HTML sopra il gioco: HUD, controlli touch e tastiera, menu di pausa, esporta/importa. |
 | `tests/` | Test automatici (Vitest). |
 | `public/` | File serviti così come sono: sprite, illustrazioni, icone dell'app. |
-| `scripts/` | Script di servizio: `make-icons.mjs` (icone), `art.ts` + `art/cutout.ts` (`npm run art`), `check-cycles.mjs` (controllo delle dipendenze circolari). |
+| `scripts/` | Script di servizio: `make-icons.mjs` (icone), `art.ts` + `art/cutout.ts` (`npm run art`), `body-shapes.ts` (`npm run shapes`: forma dei corpi dai profili), `check-cycles.mjs` (controllo delle dipendenze circolari). |
 | `prototype/` | Prototipi HTML di riferimento (non fanno parte del gioco). |
 | `art-inbox/` | Immagini originali del proprietario con i nomi standard (`<id>_card`, `<id>_side`, `<id>_side_open`, `_left` se guarda a sinistra). `npm run art` le trasforma in `public/sprites/` e `public/art/`. |
 | `docs/` | Design, decisioni, progressi, crediti. |
