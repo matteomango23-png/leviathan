@@ -16,6 +16,8 @@ const LABELS = {
   porto: 'Porto',
   sali: 'Sali',
   esci: 'Esci',
+  aggancia: 'Aggancia',
+  abordo: 'A bordo',
 } as const;
 
 function press(btn: HTMLElement, fn: () => void): void {

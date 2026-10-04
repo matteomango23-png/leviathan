@@ -94,13 +94,14 @@ describe('forma vera delle bestie (4 ottobre: più sono grandi più entravano ne
 
 describe('il sottomarino è solido (4 ottobre)', () => {
   it('il sub e le bestie non gli passano attraverso', async () => {
-    const { pushOutOfSub, newSub } = await import('../src/systems/submarine');
+    const { subHull, newSub } = await import('../src/systems/submarine');
+    const { pushOutOfHull } = await import('../src/systems/hull');
     const s = { ...newSub(null), owned: true, x: 500, y: 200 };
     const diver = { x: 500, y: 203, vx: 0, vy: -30 };
-    expect(pushOutOfSub(s, diver, [{ dx: 0, dy: 0, r: 4 }])).toBe(true);
+    expect(pushOutOfHull(subHull(s), diver, [{ dx: 0, dy: 0, r: 4 }])).toBe(true);
     expect(Math.abs(diver.y - 200)).toBeGreaterThan(8);
     const beast = { x: 470, y: 200, vx: 40, vy: 0 };
-    pushOutOfSub(s, beast, [{ dx: 10, dy: 0, r: 8 }]);
+    pushOutOfHull(subHull(s), beast, [{ dx: 10, dy: 0, r: 8 }]);
     expect(beast.vx).toBeLessThanOrEqual(0.001); // it does not push on into the hull
   });
 });

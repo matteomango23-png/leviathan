@@ -3,6 +3,7 @@
 import { SWARMS } from '../data/world';
 import { slotKind } from '../systems/economy/gear';
 import type { GameState } from '../systems/game';
+import { inVehicle } from '../systems/vehicles';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
 import { slotName } from './portMenu';
@@ -44,8 +45,8 @@ export class BackpackBar {
 
   update(g: GameState): void {
     const gear = g.gear;
-    // weapons and baits are for swimming: in the submarine they hide
-    this.root.hidden = g.sub.aboard || gear.backpack.every((s) => !s);
+    // weapons and baits are for swimming: in the submarine and at the helm they hide
+    this.root.hidden = inVehicle(g) || gear.backpack.every((s) => !s);
     gear.backpack.forEach((id, i) => {
       const b = this.slots[i]!;
       b.hidden = !id;
@@ -65,7 +66,7 @@ export class BackpackBar {
     });
     if (this.harpoonLabel) {
       // in the submarine there is nothing to shoot (fishing from it was removed, 4 ottobre)
-      this.harpoonLabel.hidden = g.sub.aboard;
+      this.harpoonLabel.hidden = inVehicle(g);
       const name = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
       if (this.harpoonLabel.textContent !== name) this.harpoonLabel.textContent = name;
     }

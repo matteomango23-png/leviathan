@@ -65,8 +65,9 @@ export const SUBMARINE = {
     [17, 5],
   ] as [number, number][],
   reach: 26, // units: you climb in this close to it
-  accel: 110,
-  drag: 1.5,
+  accel: 110, // units/s² speeding up (and braking, with the lever the other way)
+  coast: 45, // units/s² it slows down by itself, throttle down
+  drag: 1.5, // after a bump: how fast the bounce dies out
   /** Beasts at least this long (m) that are aggressive come at it and ram it; the others slip away. */
   giantLengthM: 7,
   ram: {
@@ -91,7 +92,8 @@ export const SUBMARINE = {
 
 export const SUB_TEXT = {
   given: 'Aurelio ti lascia il suo vecchio batiscafo, ormeggiato oltre il molo. Avvicinati e premi Sali.',
-  boarded: 'Dentro il sottomarino: respiri, la squadra si riposa. Qui non si combatte.',
+  boarded:
+    'Dentro il sottomarino: respiri, la squadra si riposa. Qui non si combatte. Leva a sinistra: il gas. A destra: direzione e Sali/Scendi.',
   rammed: (hull: number, max: number): string => `Uno schianto contro lo scafo! (${hull}/${max})`,
   bumped: 'Lo scafo sbatte contro la roccia!',
   wrecked: (teeth: number): string =>

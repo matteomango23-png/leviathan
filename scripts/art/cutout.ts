@@ -403,7 +403,7 @@ export function parseExtraName(file: string): ExtraName | null {
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
-  if (/^(parete_[a-z]+(_\d)?|iceberg_\d|molo_[a-z]+|sottomarino_\d)$/.test(base))
+  if (/^(parete_[a-z]+(_\d)?|iceberg_\d|molo_[a-z]+|sottomarino_\d|nave_\d(_aperta)?)$/.test(base))
     return { kind: 'world', id: base };
   return null;
 }

@@ -182,13 +182,17 @@ export class Controls {
   /** Called every frame: writes the current controls into the session input. */
   /** @param canDash false hides the button: in the submarine, or in a suit with no dash (owner: no buttons for
    *  things you cannot do) */
-  update(dashReady: boolean, canDash = true): void {
+  /** @param driving at the levers of the ship or the submarine: no swimming (ui/helmControls.ts) */
+  update(dashReady: boolean, canDash = true, driving = false): void {
     this.dashBtn.hidden = !canDash;
     const input = this.session.input;
     const k = this.keys;
     let mx: number;
     let my: number;
-    if (this.joy.id !== -1) {
+    if (driving) {
+      if (this.joy.id !== -1) this.joyEnd({ pointerId: this.joy.id } as PointerEvent);
+      mx = my = 0;
+    } else if (this.joy.id !== -1) {
       mx = this.joy.x;
       my = this.joy.y;
       if (Math.hypot(mx, my) < 0.15) mx = my = 0;

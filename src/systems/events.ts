@@ -41,13 +41,28 @@ export type GameEvent =
   | { type: 'subRammed'; hull: number; max: number; by: 'rock' | 'beast' | 'pressure'; x: number; y: number }
   /** From the beasts: one rammed your submarine (game.ts applies it to the hull). */
   | { type: 'subRammedBy'; lengthM: number; x: number; y: number }
-  | { type: 'subWrecked'; teeth: number }
+  /** The submarine broke; with the ship it is towed to its hold, you at the helm (`toShip`). */
+  | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRepaired'; cost: number }
   | { type: 'subTooDeep' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }
   | { type: 'boarded' }
   | { type: 'dove' }
+  // the expedition ship (data/ship.ts)
+  | { type: 'shipGiven' }
+  | { type: 'shipBoarded' }
+  | { type: 'shipShallow' }
+  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
+  | { type: 'hatchMoved'; open: boolean }
+  | { type: 'subLaunching' }
+  | { type: 'subLaunched' }
+  | { type: 'subDocking' }
+  | { type: 'subDocked' }
+  /** The bow breaks the ice at x (chunks fly). */
+  | { type: 'iceCracked'; x: number; speed: number }
+  /** Tiles changed (ice broken or frozen again): to redraw. */
+  | { type: 'tilesChanged'; tiles: number[] }
   /** You breathe in the bubbles of an air vent of the open sea. */
   | { type: 'ventBreath' }
   /** Your beast feels a wild one in the dark, to the left (-1) or right (1). */

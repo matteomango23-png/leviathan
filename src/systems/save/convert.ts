@@ -1,6 +1,7 @@
 // Game state ⇄ save file.
 import { START } from '../../data/worldLayout';
 import { saveSub, subWakePoint, type SubState } from '../submarine';
+import { saveShip, type ShipState } from '../ship/ship';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
@@ -20,6 +21,7 @@ export interface SaveSource extends Pick<
   'diver' | 'sanctuaries' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'
 > {
   sub: SubState;
+  ship: ShipState;
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
@@ -96,6 +98,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     : { x: Math.round(d.x), y: Math.round(d.y) };
   s.homePort = g.homePort;
   s.sub = saveSub(g.sub);
+  s.ship = saveShip(g.ship);
   s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
   if (g.sub.aboard && !d.dead) s.diver = subWakePoint(g.sub); // saved inside: you start next to it

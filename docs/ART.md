@@ -155,3 +155,10 @@ I ritratti per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritra
 ## Forma del corpo per le collisioni (4 ottobre 2026)
 
 Dopo `npm run art` lancia anche **`npm run shapes`**: legge i profili in `public/sprites/` e scrive in `src/data/bodyShapes.generated.ts` quanto il corpo di ogni bestia sale e scende rispetto alla spina, in 9 punti dalla testa alla coda. Il gioco lo usa per gli urti con roccia, sottomarino e altre bestie, e per far sedere il sub sulla schiena. Un test controlla che ogni profilo abbia la sua forma.
+
+## La nave da spedizione (4 ottobre 2026)
+
+`art-inbox/nave_1.jpg` (portellone chiuso) e `art-inbox/nave_1_aperta.jpg` (portellone aperto) diventano `public/world/nave_1.webp` e `nave_1_aperta.webp`.
+- **Fondo:** può essere verde o bianco, lo script lo legge dai bordi.
+- **Inquadratura:** le due immagini devono avere la stessa inquadratura (stessa misura, nave nello stesso punto). Non vengono ritagliate, così nel gioco combaciano mentre il portellone si apre.
+- **Punti della nave:** la linea d'acqua, il portellone, la rampa e il timone stanno in `SHIP.picture` (`src/data/ship.ts`), come frazioni dell'immagine. Se una nuova immagine li ha altrove, si cambiano lì.

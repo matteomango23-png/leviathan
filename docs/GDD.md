@@ -109,6 +109,56 @@ Due binari: le bestie salgono di livello combattendo; il sub cresce con mute, ar
 
 Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitHub Pages. Dati separati dal codice (`data/`). Salvataggi versionati con esporta/importa. Grafica realistica in alta risoluzione con telecamera lontana (sub piccolo, mare grande): fondali dipinti a strati, bestie da immagini di profilo animate a spina dorsale, illustrazioni AI nelle card (`docs/ART.md`). Regole di movimento delle bestie grandi in `CLAUDE.md`.
 
+## Spedizioni (deciso il 4 ottobre 2026)
+
+Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rare e temibili, con paura e preparazione, non chilometri vuoti.
+
+- **Oceano finito di circa 30 km:**
+  - la costa fatta a mano (fino a ~1,6 km);
+  - poi 5 regioni progettate, in ordine di difficoltà:
+    1. Barriera esterna 2–6 km;
+    2. Mare blu 6–12;
+    3. Foresta e Banchisa 12–18;
+    4. Grandi fosse 18–26;
+    5. Abisso del Leviatano 26–30.
+  - Ogni regione ha uno strato vicino alla superficie e uno profondo.
+  - La mappa ha una scheda per regione.
+- **Livelli dal pericolo, non dalla distanza.** Ogni specie ha un grado:
+  1. innocui 2–12;
+  2. piccoli predatori 8–20;
+  3. predatori seri 20–35;
+  4. superpredatori 35–55, come squalo bianco, orca, coccodrillo marino, capodoglio;
+  5. giganti preistorici 55–75;
+  - leggende 50–100.
+
+  Alfa +10/15, albini +8. Regione e profondità spostano il livello solo di pochi punti. Lo squalo bianco può comparire anche vicino a riva, ma sempre a livello alto: con una squadra a 10–20 affrontarlo è un rischio vero.
+- **Habitat veri:** ogni specie ha profondità minima e massima e le sue regioni. Lo squalo bianco non vive negli abissi; negli abissi vivono gli animali degli abissi. Il bestiario mostra profondità e regioni.
+- **Paura:** quando compare una bestia molto più forte della squadra, un avviso ("Pericolo: Squalo bianco Lv 41") e un suono cupo. Scappare o evitarla è una scelta.
+- **La nave da spedizione, la tua casa** (arriva a fine capitolo 4):
+  - in superficie, veloce ma non esagerata; rompe il ghiaccio; non si blocca mai (quello che esce dall'acqua lo gira intorno);
+  - si guida con le leve: gas che resta a sinistra, direzione a destra; si gira di colpo da ferma;
+  - il portellone si apre solo a nave ferma, e aperto la nave non si muove. Il sottomarino scende lungo la rampa fino a mezz'acqua sotto la nave e si riaggancia solo davanti al portellone;
+  - nel cockpit: carburante e autonomia in km, sonar, mappa, Diario di caccia, recinto della squadra, riposo e salvataggio, deposito.
+- **Sonar solo sulla nave:** è la chiave dell'esplorazione. Mostra profondità ed echi delle bestie grandi; i potenziamenti riconoscono il tipo di eco e le echi anomale.
+- **Le leggende si cacciano in 4 passi, chiari e segnati nel Diario di caccia:**
+  1. una voce al porto o agli avamposti (bacheca "Avvistamenti") dice la regione;
+  2. una condizione (solo con la nebbia, in tempesta, di notte…);
+  3. l'eco anomala col sonar, solo abbastanza vicino, nel momento giusto e con il sonar adatto alla profondità;
+  4. le tracce col sottomarino (carcasse, graffi, sangue).
+
+  La bestia non sta ferma. Alfa e albini normali possono comparire anche a caso, ma raramente e solo nel loro habitat.
+- **Carburante e scorte:**
+  - nave e sottomarino hanno serbatoi propri, che si riempiono ai porti e agli avamposti;
+  - nel cockpit vedi l'autonomia e puoi travasare carburante tra i due;
+  - finito il carburante si torna a nuoto o in groppa; da lontano c'è il razzo di soccorso (un rimorchiatore ti riporta al porto a caro prezzo).
+- **Cure solo sulla nave e al porto:** il sottomarino non cura più, e i santuari in mare vengono tolti.
+- **I tre mezzi hanno ruoli diversi:**
+  - la nave per il viaggio, il sonar e la casa;
+  - il sottomarino per scendere al sicuro nel buio;
+  - la bestia cavalcata per grotte, templi e combattimento: non consuma carburante, ma non guarisce fuori dalla nave.
+- **Avamposti:** uno per regione, da scoprire: attracco, cure e negozio.
+- **Ricompense** scalate per regione e profondità: relitti più ricchi, un tempio per regione, pezzi per nave e sottomarino, pesci rari, missioni di spedizione.
+
 ## Roadmap
 
 1. ✅ **Fondamenta (v0.1.0):** progetto, mondo, luce, sub, arpione, PWA offline, salvataggi, deploy.
@@ -124,7 +174,14 @@ Phaser + TypeScript + Vite, PWA installabile e giocabile offline, deploy su GitH
 8d. ✅ **Il primo tempio sommerso (v0.13.0):** nel mare aperto a quasi 4 km, mezzo sepolto nel fondale. Quattro sale: una leva, due leve da colpire una subito dopo l'altra, quattro rune nell'ordine del mosaico, un corridoio lungo con sfiatatoi. In fondo una reliquia (Respiro degli Antichi: l'aria dura circa il 50% in più, per sempre). La Compagnia è già passata di lì: la Vedova Nera cerca nei templi una reliquia che piega le bestie (gancio per il capitolo 3). Altri templi: altri rompicapo, con reliquie o leggende come premio.
 9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa.
 10. ✅ **Capitolo 4 (v0.17.0):** la Foresta Sommersa, il Corno delle Catene, la campana, i tentacoli, la Piovra.
-11. **Capitolo 5 e seguenti:** una regione alla volta (prossimo: il Mare di Ghiaccio e la Regina bianca).
+11. **Spedizioni** (progetto del 4 ottobre 2026, sopra):
+    1. ✅ la nave e le leve (v0.39.0);
+    2. carburante, cockpit e cure solo sulla nave (via i santuari, razzo di soccorso);
+    3. l'oceano di 30 km in regioni, avamposti, mappa per regione;
+    4. livelli per pericolo e habitat veri, avviso di pericolo, profondità nel bestiario;
+    5. sonar e Diario di caccia (bacheca Avvistamenti, condizioni, echi, tracce, leggende);
+    6. ricompense per regione e profondità.
+12. **Capitolo 5 e seguenti:** una regione alla volta (prossimo: il Mare di Ghiaccio e la Regina bianca).
 
 ## Decisioni aperte
 

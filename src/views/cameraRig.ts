@@ -48,9 +48,23 @@ export class CameraRig {
     return this.worldCam.zoom;
   }
 
+  /** How much sea is visible vertically, and how far above the surface the view may go (wider at the helm). */
+  private viewH: number = CAMERA.viewHeightUnits;
+  private minY: number = CAMERA.minY;
+
   resize(w: number, h: number): void {
     for (const c of [this.bgCam, this.worldCam, this.overlayCam]) c.setSize(w, h);
-    this.worldCam.setZoom(h / CAMERA.viewHeightUnits);
+    this.worldCam.setZoom(h / this.viewH);
+    this.clampAndApply();
+  }
+
+  /** Eases the view to this height (world units) and top limit: wider at the helm of the ship. */
+  setView(viewHeight: number, minY: number, dt: number, snap = false): void {
+    const k = snap ? 1 : Math.min(1, dt * 1.6);
+    if (Math.abs(viewHeight - this.viewH) < 0.05 && Math.abs(minY - this.minY) < 0.05) return;
+    this.viewH += (viewHeight - this.viewH) * k;
+    this.minY += (minY - this.minY) * k;
+    this.worldCam.setZoom(this.worldCam.height / this.viewH);
     this.clampAndApply();
   }
 
@@ -59,11 +73,7 @@ export class CameraRig {
     const halfW = this.worldCam.width / 2 / z;
     const halfH = this.worldCam.height / 2 / z;
     this.cx = Phaser.Math.Clamp(this.cx, halfW, Math.max(halfW, this.worldW - halfW));
-    this.cy = Phaser.Math.Clamp(
-      this.cy,
-      CAMERA.minY + halfH,
-      Math.max(CAMERA.minY + halfH, this.worldH - halfH),
-    );
+    this.cy = Phaser.Math.Clamp(this.cy, this.minY + halfH, Math.max(this.minY + halfH, this.worldH - halfH));
     this.worldCam.centerOn(this.cx, this.cy);
   }
 

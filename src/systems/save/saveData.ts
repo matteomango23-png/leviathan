@@ -5,13 +5,14 @@
 import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
+import type { SavedShip } from '../ship/ship';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
 import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 13;
+export const SAVE_VERSION = 14;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -55,6 +56,7 @@ export interface SaveData {
   homePort: string; // the last harbour you came into: you wake up there (v7)
   sub: SavedSub | null; // your submarine: where it waits, its model, the ones you own, its hull (v11); null = not yours yet
   legendsGone: string[]; // legends defeated: gone forever (v10)
+  ship: SavedShip | null; // your expedition ship: where it is, its hatch, the submarine in its hold (v14)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -74,6 +76,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     homePort: 'portofosco',
     sub: null,
     legendsGone: [],
+    ship: null,
   };
 }
 
@@ -197,6 +200,8 @@ export const MIGRATIONS: Migration[] = [
         : o.team,
     }),
   },
+  // v13 → v14 (4 ottobre 2026): the expedition ship. Not in older saves: the game gives it if chapter 4 is over.
+  { from: 13, migrate: (o) => ({ ...o, ship: null }) },
 ];
 
 export class SaveError extends Error {}
@@ -266,6 +271,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     legendsGone: Array.isArray(data.legendsGone)
       ? [...new Set(data.legendsGone.filter((x): x is string => typeof x === 'string'))]
       : [],
+    ship: checkedShip(data.ship),
   };
 }
 
@@ -357,4 +363,17 @@ function checkedSub(raw: unknown): SavedSub | null {
   const max = SUB_MODELS.find((m) => m.id === model)!.hull;
   const hull = isFiniteNumber(raw.hull) ? Math.max(0, Math.min(max, raw.hull)) : max;
   return { x: raw.x, y: raw.y, model, models, hull };
+}
+
+/** The saved ship, checked: a broken one is dropped (the game gives it again after chapter 4). */
+function checkedShip(raw: unknown): SavedShip | null {
+  if (!isObject(raw) || !isFiniteNumber(raw.x)) return null;
+  const bay = raw.bay === 'docked' || raw.bay === 'out' ? raw.bay : 'none';
+  return {
+    x: raw.x,
+    face: raw.face === -1 ? -1 : 1,
+    hatchOpen: raw.hatchOpen === true,
+    bay,
+    aboard: raw.aboard === true,
+  };
 }

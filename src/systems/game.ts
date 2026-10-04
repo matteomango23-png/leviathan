@@ -56,12 +56,23 @@ import {
   newSub,
   ramSub,
   repairSub,
-  stepSub,
   subWakePoint,
   type SubState,
-  pushOutOfSub,
 } from './submarine';
 import { dismount } from './beastState';
+import { newShip, type ShipState } from './ship/ship';
+import { helmPoint } from './ship/geometry';
+import { canDock } from './ship/hatch';
+import {
+  doVehicleAction,
+  inVehicle,
+  onRamp,
+  pushOutOfVehicles,
+  shipPort,
+  stepVehicles,
+  vehicleAction,
+  wakeOnShip,
+} from './vehicles';
 import { createTemples, hitLever, stepTemples, type TempleState } from './temple';
 
 export { toSave } from './save/convert';
@@ -82,6 +93,8 @@ export interface GameState extends Chapter4World {
   homePort: PortDef['id'];
   /** Your submarine (from the end of chapter 1; saved). */
   sub: SubState;
+  /** Your expedition ship (from the end of chapter 4; saved). */
+  ship: ShipState;
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
@@ -139,6 +152,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     port: null,
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
     sub: newSub(s.sub),
+    ship: newShip(s.ship),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
     temples: createTemples(),
@@ -151,7 +165,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
 }
 
 export function respawnPoint(g: GameState): { x: number; y: number } {
-  if (g.sub.owned) return subWakePoint(g.sub); // you wake up by your submarine
+  if (g.ship.owned) return helmPoint(g.ship); // you wake up at the helm of your ship…
+  if (g.sub.owned) return subWakePoint(g.sub); // …or by your submarine
   const i = g.sanctuaries.current;
   const s = i === null ? undefined : g.sanctuaries.list[i];
   return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
@@ -159,22 +174,27 @@ export function respawnPoint(g: GameState): { x: number; y: number } {
 
 /** Is there a dash now? Not in the submarine, nor in a suit without one (the palombaro), unless you ride a beast. */
 export function canDashNow(g: GameState): boolean {
-  if (g.sub.aboard) return false;
+  if (inVehicle(g)) return false;
   return g.beasts.riding || diverModifiers(g.gear).canDash;
 }
 
 /** What the context button does right now. */
-export type Action = ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci';
+export type Action =
+  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
-  if (g.sub.aboard) return atPort(d, g.map) ? 'porto' : 'esci';
+  if (g.ship.aboard) return shipPort(g) ? 'porto' : null; // the rest is on the helm's own buttons
+  if (onRamp(g)) return null;
+  if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
   if (beast === 'sfonda') return beast;
   // next to your submarine you climb in, even at the pier (it was moored there and the port button hid it)
-  if (canBoard(g)) return 'sali';
+  if (g.ship.bay !== 'docked' && canBoard(g)) return 'sali'; // in the hold it is reached from the helm
+  const vehicle = vehicleAction(g); // by the ship's hull: A bordo
+  if (vehicle) return vehicle;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
   return beast;
 }
@@ -191,7 +211,10 @@ function doAction(g: GameState, events: GameEvent[]): void {
     dismount(g, events); // your beast swims off, you climb in
     board(g, events);
   } else if (act === 'esci') leaveSub(g, events);
-  else beastAction(g, events);
+  else if (act === 'aggancia' || act === 'abordo') {
+    if (act === 'abordo') dismount(g, events);
+    doVehicleAction(g, act, events);
+  } else beastAction(g, events);
 }
 
 function fire(g: GameState, input: InputState, events: GameEvent[]): void {
@@ -231,7 +254,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepSwarmCooldowns(g, dt);
 
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
-  const aboard = !held && stepSub(g, input, dt, events); // your submarine moves you
+  const aboard = !held && stepVehicles(g, input, dt, events); // your ship or your submarine moves you
   g.beasts.aboard = aboard;
   const tank = rideTank(g, g.rideTanks, d.maxO2);
   refillTanks(g.rideTanks, tank, dt);
@@ -253,14 +276,15 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
   // the submarine is solid: you (or the beast you ride) slide along its hull
-  if (!g.sub.aboard && !held)
-    pushOutOfSub(
-      g.sub,
+  if (!inVehicle(g) && !held)
+    pushOutOfVehicles(
+      g,
       d,
       g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
     );
   // after losing your senses you wake up on your boat
-  if (g.sub.owned && !g.sub.aboard && events.some((e) => e.type === 'respawned')) board(g, events);
+  if (events.some((e) => e.type === 'respawned') && !wakeOnShip(g, events) && g.sub.owned && !g.sub.aboard)
+    board(g, events);
   stepVents(d, dt, g.timers, events);
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
@@ -285,9 +309,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
   // …and the beasts slide along it too: wild ones, and yours when it swims with you
-  for (const w of g.beasts.wilds) if (isInWater(w) && !w.arena) pushOutOfSub(g.sub, w, bodyCircles(w));
+  for (const w of g.beasts.wilds) if (isInWater(w) && !w.arena) pushOutOfVehicles(g, w, bodyCircles(w));
   const follower = g.beasts.mount;
-  if (follower && !g.beasts.riding) pushOutOfSub(g.sub, follower, bodyCircles(follower));
+  if (follower && !g.beasts.riding) pushOutOfVehicles(g, follower, bodyCircles(follower));
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
@@ -323,7 +347,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     }
   }
 
-  g.port = portAt(d, g.map);
+  g.port = g.ship.aboard ? shipPort(g) : portAt(d, g.map);
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
@@ -362,13 +386,16 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
   g.gear.teeth -= teethLost;
   const i = g.sanctuaries.current;
-  if (g.sub.owned) board(g, events);
-  // "nel tuo sottomarino" / "al santuario della Baia" / "a Portofosco"
-  const place = g.sub.owned
-    ? 'nel tuo sottomarino'
-    : i !== null
-      ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
-      : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
+  const onShip = wakeOnShip(g, events);
+  if (!onShip && g.sub.owned) board(g, events);
+  // "sulla tua nave" / "nel tuo sottomarino" / "al santuario della Baia" / "a Portofosco"
+  const place = onShip
+    ? 'sulla tua nave'
+    : g.sub.owned
+      ? 'nel tuo sottomarino'
+      : i !== null
+        ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
+        : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
   events.push({ type: 'blackout', teethLost, place });
 }
 

@@ -12,6 +12,7 @@ import {
 } from '../../data/worldArt';
 import { WORLD } from '../../data/worldLayout';
 import { hash2 } from '../math';
+import { biomeOf } from './stretches';
 
 export interface IcebergBox {
   id: string;
@@ -59,7 +60,8 @@ export const nearIceberg = (boxes: IcebergBox[], x: number): boolean =>
 export function icebergsNear(x: number): IcebergBox[] {
   if (x < ENDLESS.startX) return HAND_MADE;
   const k = Math.floor((x - ENDLESS.startX) / ENDLESS.stretch);
-  return [...icebergsOfStretch(k - 1), ...icebergsOfStretch(k), ...icebergsOfStretch(k + 1)];
+  // only the Banchisa stretches have icebergs
+  return [k - 1, k, k + 1].flatMap((j) => (biomeOf(j).ice ? icebergsOfStretch(j) : []));
 }
 
 const cache = new Map<number, IcebergBox[]>();

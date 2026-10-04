@@ -565,3 +565,37 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Sottomarino solido:** `pushOutOfSub` spinge fuori dallo scafo e toglie la velocità verso l'interno. Vale per il sub (o la cavalcatura su cui sei), per le selvatiche in acqua e per la bestia che ti segue. Per salire basta avvicinarsi come prima.
 - **Sella:** `riderSeat` mette il sub sopra la schiena vera nel punto in cui siede; la Piovra ha `riderForward` 0,3 (sulla testa).
 - **Scatto:** `canDashNow`: il pulsante sparisce nel sottomarino o con una muta senza scatto, se non cavalchi. Era il motivo dello "scatto che non funziona": il proprietario indossava lo Scafandro da palombaro.
+
+## 2026-10-04 — La nave da spedizione e le leve (v0.39.0)
+
+- **Progetto approvato dal proprietario** (vedi GDD, "Spedizioni"): oceano di 30 km, livelli per pericolo e habitat veri, nave come casa, sonar solo sulla nave, caccia alle leggende tracciabile, carburante e cure solo sulla nave. Questa è la tappa 1: la nave e le leve.
+- **Nave** (`data/ship.ts`, `systems/ship/`):
+  - `ship.ts`: stato, `sailShip` (gas, inerzia, giro di colpo da ferma, ghiaccio, corsia lontana, fondale basso), `giftShip` a `chapter4Done`;
+  - `hatch.ts`: portellone, rampa, aggancio, A bordo e Tuffati;
+  - `geometry.ts`: punti dell'immagine nel mondo (linea d'acqua, portellone, rampa, timone, scafo);
+  - `surface.ts`: cosa incontra in superficie, rottura e ricongelamento del ghiaccio;
+  - `systems/vehicles.ts` mette insieme nave e sottomarino per `game.ts` (azioni, scafi solidi, porto dal timone, risveglio sulla nave).
+- **Non si blocca mai:**
+  - terra o iceberg sopra l'acqua, o roccia sotto lo scafo a est della spiaggia: la nave passa sulla **corsia lontana** (`lane`), più piccola e scura, disegnata dietro il terreno (un contenitore aggiunto prima di `TerrainView`). Lì non urta niente, non rompe ghiaccio e non apre il portellone;
+  - solo sulla spiaggia di Portofosco il fondale basso la ferma;
+  - un test naviga a tutta da Portofosco a 30 km;
+  - correzione collegata: `icebergsNear` contava gli iceberg di tutti i tratti del mare infinito, non solo della Banchisa.
+- **Ghiaccio:**
+  - la prua rompe le caselle di ghiaccio fino alla chiglia e la nave rallenta (`iceMult`, `iceBite`);
+  - le caselle si richiudono dopo `refreezeSeconds`, solo lontano da te e dalla nave;
+  - non si salvano: al riavvio la lastra è intera;
+  - evento `tilesChanged` per ridisegnarle.
+- **Leve** (`systems/helm.ts`, `ui/helmControls.ts`, `ui/helmInfo.ts`):
+  - `InputState.helm` (gas, direzione, Sali/Scendi) resta tra un fotogramma e l'altro;
+  - `helmCmd` per i pulsanti del timone;
+  - `stepHeading` è la stessa per nave e sottomarino: con la leva al contrario frena, e sotto `turnBelow` si gira di colpo (scelta del proprietario, niente virata animata);
+  - il sottomarino non usa più il joystick;
+  - i nodi mostrati hanno un fattore unico (`HELM.knotsPerUnit`): la nave a tutta fa circa 24 nodi.
+- **Immagini:**
+  - `nave_1.jpg` (fondo verde) e `nave_1_aperta.jpg` (fondo bianco) diventano `public/world/nave_1*.webp`;
+  - lo scontorno è apposta per la nave: per il verde conta quanto il pixel è più verde che rosso e blu, per gli altri colori la distanza;
+  - non si ritagliano, così le due immagini combaciano.
+  - Nel gioco la parte sotto la linea d'acqua è tinta di blu.
+- **Vista:** al timone la telecamera si allarga dolcemente (`CameraRig.setView`, `SHIP.camera`).
+- **Salvataggio v14:** `ship` (x, direzione, portellone, dove sta il sottomarino, al timone).
+- **Scafi solidi:** `pushOutOfSub` è diventato `pushOutOfHull` (`systems/hull.ts`), usato per sottomarino e nave.
