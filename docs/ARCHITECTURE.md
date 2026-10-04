@@ -48,6 +48,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
 | `beasts/roam.ts` | Bestie selvatiche in esplorazione: nuotano piano nel buio, si girano solo fuori dalla luce; ti puntano, ti ignorano o scivolano via secondo il carattere. |
 | `encounters.ts` | Comparse delle bestie selvatiche e inizio della battaglia (al tocco, o al colpo di fucile: alle spalle attacchi tu per primo). |
+| `beasts/spawnDraw.ts` | Chi compare quando c'è posto: estrazione pesata per rarità, meno per chi è già in acqua o appena visto; quote della mappa. |
 | `beasts/wildState.ts` | Stato delle bestie selvatiche, comparsa e uscita. |
 | `beastState.ts` | Stato condiviso delle bestie: selvatiche, squadra, cavalcatura, battaglia richiesta. |
 | `battleResult.ts` | Prepara la battaglia dal gioco e ne applica il risultato (vita, esperienza, domate, sconfitta, Guardiano). |

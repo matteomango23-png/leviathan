@@ -125,6 +125,12 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'squalo_volpe', area: REEF, respawnSeconds: [45, 90] },
   { speciesId: 'delfino', area: REEF, respawnSeconds: [30, 60], level: [7, 9] },
   { speciesId: 'delfino', area: SHALLOW_BAY, respawnSeconds: [35, 70] },
+  // dolphins almost everywhere (owner, 4 ottobre)
+  { speciesId: 'delfino', area: BAY_HIGH, respawnSeconds: [30, 60] },
+  { speciesId: 'delfino', area: BEACH_REEF, respawnSeconds: [35, 70], level: [3, 5] },
+  { speciesId: 'delfino', area: SHALLOW_REEF, respawnSeconds: [30, 60], level: [7, 9] },
+  { speciesId: 'delfino', area: FOREST, respawnSeconds: [35, 70], level: [10, 12] },
+  { speciesId: 'delfino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [40, 80], level: [6, 8] },
   { speciesId: 'pastinaca', area: [delta(1960), 120, delta(2440), 215], respawnSeconds: [20, 40], level: [6, 8] },
   { speciesId: 'orca', area: ICY, respawnSeconds: [90, 180] }, // rare up north
   { speciesId: 'megattera', area: SHALLOW_REEF, respawnSeconds: [150, 300] }, // a rare whale passing over the reef
@@ -192,7 +198,21 @@ export const SPECIES_DEPTH: Record<string, { minM?: number; maxM?: number }> = {
 };
 
 /** At most this many wild beasts are around you at the same time (tuning). */
-export const WILD_RULES = { maxPresent: 8 }; // owner, 3 ottobre: more life (was 5)
+export const WILD_RULES = {
+  maxPresent: 8, // owner, 3 ottobre: more life (was 5)
+  /**
+   * Who comes when there is room (owner, 4 ottobre: "you always see the same beasts"): a fair draw among the beasts
+   * ready to come, not the first of the list. Weight by stars (common ones much more often)…
+   */
+  rarityWeight: { 1: 10, 2: 6, 3: 3, 4: 1.2, 5: 0.5 } as Record<number, number>,
+  /** …less for a species already in the water, or among the last ones that came. */
+  presentMult: 0.35,
+  recentMult: 0.3,
+  recentMemory: 5,
+  /** For the map's shares: a beast that takes long to come back counts less (seconds of a "quick" one). */
+  quickRespawn: 30,
+  minAvailability: 0.15,
+};
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';

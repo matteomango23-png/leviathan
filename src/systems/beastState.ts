@@ -44,6 +44,8 @@ export interface BeastState {
   lure: { species: string[]; t: number } | null;
   /** Seconds before the hint about ancient bones can show again. */
   boneHintT: number;
+  /** The last species that came out of the dark (they come back less soon; not saved). */
+  recent: string[];
 }
 
 export interface BeastWorld {
@@ -77,6 +79,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     sensed: [],
     aboard: false,
     gone: [...gone],
+    recent: [],
   };
 }
 

@@ -512,3 +512,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Aria dei cetacei** (`RIDE_AIR` in `data/beasts.ts`, `systems/rideAir.ts`): in groppa a megattera ×5, capodoglio ×7, Livyatan ×8, orca ×3, beluga e narvalo ×2,5 la tua aria; il sub respira dal cetaceo finché ne ha, poi dalla sua (messaggio `rideAirOut`). In superficie si riempiono tutte e due; lontano da te il cetaceo si ricarica (5% al secondo). Non salvata. Tolta la vecchia regola "in groppa alla megattera non consumi aria" (`rideO2Mult`, `staz_ossigeno.o2DrainMult`): era il trucco per scendere ovunque.
 - **Scatto:** 3 di aria per ogni scatto, 1,5/s di sprint tenuto premuto in groppa (`DIVER.dashAir`, `sprintAirPerSec`).
 - **HUD:** barra dell'aria azzurra con 🐋 quando è quella del cetaceo; barra della pressione arancione, visibile solo quando non è piena.
+
+## 2026-10-04 — Bestie più varie (v0.36.0)
+
+- **Causa:** quando c'era posto (`WILD_RULES.maxPresent`), `stepWildSpawns` faceva comparire la prima bestia pronta nell'ordine di `WILD_SPAWNS`: barracuda e tartarughe, in cima e con tempi brevi, vincevano quasi sempre.
+- **Ora** (`systems/beasts/spawnDraw.ts`): le bestie pronte delle acque fatte a mano si raccolgono e si estrae a sorte; peso per stelle (1: 10, 2: 6, 3: 3, 4: 1,2, 5: 0,5), ×0,35 se la specie è già in acqua, ×0,3 se è tra le ultime 5 comparse (`BeastState.recent`, non salvato); le esche ×20 come prima. Il mare infinito sceglie ancora con i pesi dei tratti (`BIOMES`).
+- **Delfini** in 5 zone in più. **Mappa:** quota = peso della rarità × quanto torna presto (30 s / tempo medio, minimo 0,15).
+- **Test:** 20 minuti nella Baia con le bestie che se ne vanno una alla volta: nessuna specie sopra il 20% (prima il barracuda era il 25%).

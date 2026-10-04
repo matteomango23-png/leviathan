@@ -7,7 +7,23 @@ Il proprietario ha provato il gioco e mandato 13 punti. Piano approvato, in 4 gr
 1. **v0.32.0 — errori chiari (fatto):** Piovra invisibile (immagini dei Guardiani non caricate), "Sali" coperto da "Porto" col sottomarino al molo, luce del sottomarino fissa, lista del porto che torna in cima comprando, vignettatura fissa nello zoom d'ingresso della battaglia, pesca dal sottomarino tolta.
 2. **v0.33.0 — sottomarino (fatto):** niente muro invisibile negli urti (scossa, fumo/bolle, danno, piccolo rimbalzo); barra della vita sopra il sottomarino quando prende danno, che poi sparisce.
 3. **v0.34.0 — bestie grandi (fatto; la virata va guardata sull'iPhone):** virata con spessore ("il prosciutto tra due fette di pane": tra i due profili uno spessore dello stesso colore, scurito); la megattera mangia tutte le sardine che le entrano in bocca; collisioni lungo tutta la spina dorsale.
-4. **v0.35.0 (fatto) e v0.36.0 — equilibrio (scelte del proprietario):** pressione, aria dei cetacei e scatto in v0.35.0; comparse in v0.36.0. barra della **pressione** (sotto la profondità della muta o del sottomarino si svuota; a zero toglie vita finché non risali); lo **scatto consuma aria**; in groppa a un cetaceo la barra dell'aria è **la sua** (più grande e più lenta, ma deve risalire); comparse più varie (comuni e di basso livello molto più frequenti, delfini quasi ovunque, la stessa specie non subito di seguito).
+4. **v0.35.0 (fatto) e v0.36.0 — equilibrio (scelte del proprietario):** pressione, aria dei cetacei e scatto in v0.35.0; comparse in v0.36.0 (fatto). barra della **pressione** (sotto la profondità della muta o del sottomarino si svuota; a zero toglie vita finché non risali); lo **scatto consuma aria**; in groppa a un cetaceo la barra dell'aria è **la sua** (più grande e più lenta, ma deve risalire); comparse più varie (comuni e di basso livello molto più frequenti, delfini quasi ovunque, la stessa specie non subito di seguito).
+
+**Da provare sull'iPhone (v0.32–v0.36):**
+
+1. Piovra in squadra: chiamala e cavalcala, deve vedersi.
+2. Sottomarino ormeggiato al molo: accanto compare "Sali". La luce si gira con lui.
+3. Porto: compra un oggetto in fondo alla lista, la lista resta lì.
+4. Battaglia con una bestia grande o rara: lo zoom d'ingresso senza riquadro scuro fisso.
+5. Sbatti col sottomarino contro la roccia: scossa, fumo, barra dello scafo sopra di lui.
+6. Fai girare uno squalo o una megattera: la virata deve avere spessore, non sembrare un foglio. **Questa non sono riuscito a guardarla bene nel cloud: dimmi com'è.**
+7. Megattera in un banco di sardine: le mangia a bocconi interi.
+8. Bestie grandi contro scogli e fondale: non devono entrarci.
+9. Scendi oltre la muta: barra arancione della pressione, poi perdi cuori. In groppa a una megattera: barra dell'aria azzurra con la balena, che finisce.
+10. Scatto: ogni scatto costa un po' d'aria.
+11. Gira per la Baia: più varietà di bestie, più delfini.
+
+**Da sapere:** l'etichetta git `v0.31.0`…`v0.36.0` non si può creare dal cloud (permesso solo sul ramo della sessione): crearle dalla sessione del computer. Pesca dal sottomarino tolta: da ripensare.
 
 ## Sessione cloud 1 — Meteo dinamico e gabbiani (4 ottobre 2026) → v0.31.0
 
