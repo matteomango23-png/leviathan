@@ -159,8 +159,9 @@ export function currentAction(g: GameState): Action {
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
   if (beast === 'sfonda') return beast;
-  if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
+  // next to your submarine you climb in, even at the pier (it was moored there and the port button hid it)
   if (canBoard(g)) return 'sali';
+  if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
   return beast;
 }
 

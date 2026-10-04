@@ -1,9 +1,9 @@
 // Leviatano — your submarine (tappa 16, owner's decisions of 3 ottobre 2026: it replaces the boat). Nonno Aurelio
 // gives you his old bathyscaphe at the end of chapter 1. It travels under water (under the icebergs), each model
-// down to its own depth and at its own speed; better ones are bought at the port. Inside you breathe, heal and
-// fish, but you cannot fight: ordinary beasts slip away from it, the big aggressive ones ram it and break it.
+// down to its own depth and at its own speed; better ones are bought at the port. Inside you breathe and heal
+// (fishing from it was removed on 4 ottobre, to be rethought), but you cannot fight: ordinary beasts slip away
+// from it, the big aggressive ones ram it and break it.
 // It stays where you leave it. Values marked "tuning" are a first pass: change them here, never in systems.
-import type { BiomeId } from './endless';
 import { PORT } from './economy';
 import { WORLD } from './worldLayout';
 
@@ -67,24 +67,6 @@ export const SUBMARINE = {
   },
   repairPerPoint: 2, // teeth per hull point, repaired when you come into a port
   wreckTeethLoss: 0.1, // a broken submarine is towed back to Portofosco: you lose this share of your teeth
-  /** Fishing from it: wait for a bite, then tap while the line twitches. */
-  fishing: {
-    wait: [2.5, 6] as [number, number], // seconds before a fish bites
-    window: 0.9, // seconds to tap once it bites
-    maxSpeed: 10, // units/s: you can only fish with the submarine (almost) still
-    line: 50, // units of line below it (drawn)
-  },
-};
-
-/** Fish you catch from the submarine, by kind of sea (FISH ids in world.ts). */
-export const SUB_FISH: Record<BiomeId | 'baia' | 'delta', string[]> = {
-  baia: ['sardina', 'sgombro'],
-  delta: ['cefalo', 'pesce_arciere'],
-  aperto: ['sgombro', 'sardina'],
-  barriera: ['pesce_pagliaccio', 'pesce_chirurgo'],
-  foresta: ['cavalluccio', 'triglia'],
-  ghiaccio: ['merluzzo_artico', 'krill'],
-  fossa: ['pesce_vipera', 'pesce_accetta'],
 };
 
 export const SUB_TEXT = {

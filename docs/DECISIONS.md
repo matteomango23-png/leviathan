@@ -482,3 +482,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 2026-10-04 — Meno gabbiani ("e sono pure troppi")
 
 - Al massimo 1 stormo da 2–4 (`BIRDS.flocks`, `perFlock`). Non sempre presente: arriva con probabilità 0,03 al secondo (in media dopo ~30 s), resta 40–90 s (`staySeconds`), poi vola via fuori dallo schermo. Test: in 20 minuti gli stormi vanno e vengono e ci sono tra il 30% e l'85% del tempo.
+
+## 2026-10-04 — Correzioni dopo la prova (v0.32.0)
+
+- **Immagini caricate all'avvio** (`views/neededSprites.ts`): anche i Guardiani (domabili: la Piovra era invisibile come compagno) e, per ogni specie caricata, la sua evoluzione (`evolvesTo`) e le immagini prese in prestito (`artFrom`).
+- **Azione contestuale:** "Sali" vince su "Porto" quando il sottomarino è a portata (26 unità; il molo ne copre 60).
+- **Lampada:** `lampAim` in `systems/submarine.ts`: dentro il sottomarino punta dove guarda il muso.
+- **Porto:** il ridisegno conserva lo scorrimento della lista; si azzera solo cambiando scheda.
+- **Battaglia:** la vignettatura copre la vista della telecamera (scala 1/zoom, centrata sullo scroll), così resta ai bordi durante zoom e ritorno.
+- **Pesca dal sottomarino tolta** (scelta del proprietario: "poi ci pensiamo"): via `fish`, `subFishAt`, `SUB_FISH`, `SUBMARINE.fishing`, gli eventi della lenza e il pulsante "Pesca". Il salvataggio non cambia.

@@ -44,7 +44,7 @@ export class BackpackBar {
 
   update(g: GameState): void {
     const gear = g.gear;
-    // weapons and baits are for swimming: in the submarine only the fishing button stays
+    // weapons and baits are for swimming: in the submarine they hide
     this.root.hidden = g.sub.aboard || gear.backpack.every((s) => !s);
     gear.backpack.forEach((id, i) => {
       const b = this.slots[i]!;
@@ -64,9 +64,9 @@ export class BackpackBar {
       b.classList.toggle('on', k === 'weapon' && gear.activeWeapon === id);
     });
     if (this.harpoonLabel) {
-      // on your boat the weapon button fishes
-      const weapon = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
-      const name = g.sub.aboard ? 'Pesca' : weapon;
+      // in the submarine there is nothing to shoot (fishing from it was removed, 4 ottobre)
+      this.harpoonLabel.hidden = g.sub.aboard;
+      const name = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
       if (this.harpoonLabel.textContent !== name) this.harpoonLabel.textContent = name;
     }
   }

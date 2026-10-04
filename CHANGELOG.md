@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.32.0 — Correzioni dopo la prova (4 ottobre 2026)
+
+- **La Piovra si vede** come compagno e cavalcatura (e così gli altri Guardiani e tutte le evoluzioni delle bestie domabili): prima le loro immagini non venivano caricate.
+- **Sottomarino al porto:** se è ormeggiato vicino al molo, accanto a lui compare di nuovo "Sali" (prima c'era solo "Porto").
+- **La luce del sottomarino** si gira insieme a lui quando vai all'indietro.
+- **Menu del porto:** comprando un oggetto in fondo alla lista, la lista resta dov'era invece di tornare in cima.
+- **Battaglia con bestie grandi, alfa o rare:** durante lo zoom d'ingresso il bordo scuro segue lo schermo, non si vede più il riquadro fisso.
+- **Tolta la pesca dal sottomarino** (da ripensare): dentro il sottomarino il pulsante dell'arma non c'è più.
+
 ## v0.31.2 — Meno gabbiani (4 ottobre 2026)
 
 - **Ancora meno gabbiani:** al massimo uno stormo da 2–4 uccelli.

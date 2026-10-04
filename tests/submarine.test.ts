@@ -11,7 +11,7 @@ import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
 import { migrate, parseSave, SAVE_VERSION } from '../src/systems/save/saveData';
-import { buySub, canBoard, subFishAt, subFloorY } from '../src/systems/submarine';
+import { buySub, canBoard, subFloorY } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
 import { icebergBox } from '../src/systems/world/icebergs';
 import type { TileMap } from '../src/systems/world/tileMap';
@@ -151,13 +151,6 @@ describe('the submarine', () => {
     expect(g.gear.teeth).toBe(5000 - SUB_MODELS[1]!.price); // already yours: free
   });
 
-  it('you fish from it, by the kind of sea', () => {
-    expect(subFishAt(SUBMARINE.mooredX)).toContain('sardina');
-    const g = inside(SUBMARINE.mooredX + 200, 60);
-    run(g, DT, { ...emptyInput(), fireHeld: true });
-    expect(g.sub.fishing).not.toBeNull();
-  });
-
   it('is saved (v11); an older save’s boat becomes the bathyscaphe where the boat was', () => {
     const g = afterChapter1();
     g.gear.teeth = 5000;
@@ -179,5 +172,17 @@ describe('the submarine', () => {
       hull: 60,
     });
     expect(old.boat).toBeUndefined();
+  });
+});
+
+describe('lampada del sottomarino', () => {
+  it('punta dove guarda il sottomarino, non dove mirava il sub prima di salire', async () => {
+    const { lampAim } = await import('../src/systems/submarine');
+    const sub = { aboard: true, face: -1 } as unknown as Parameters<typeof lampAim>[0]['sub'];
+    expect(lampAim({ sub, diver: { aim: 0 } })).toBeCloseTo(Math.PI);
+    sub.face = 1;
+    expect(lampAim({ sub, diver: { aim: 2 } })).toBe(0);
+    sub.aboard = false;
+    expect(lampAim({ sub, diver: { aim: 2 } })).toBe(2);
   });
 });

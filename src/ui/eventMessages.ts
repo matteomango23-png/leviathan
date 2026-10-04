@@ -86,12 +86,6 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [SUB_TEXT.repaired(e.cost), 3];
     case 'subTooDeep':
       return [SUB_TEXT.tooDeep, 3];
-    case 'lineCast':
-      return ['Lenza in acqua… aspetta che abbocchi.', 2];
-    case 'fishBite':
-      return ['Abbocca! Tocca Pesca, presto!', 1];
-    case 'fishEscaped':
-      return ['Il pesce è scappato.', 1.6];
     case 'legendGone':
       return [`${e.name} è sconfitta: non tornerà mai più nel mare.`, 5];
     case 'noTeam':

@@ -1,6 +1,5 @@
 // Your submarine (tappa 16): the owner's painting, facing where it goes, rocking gently; its portholes glow when
-// you are inside; bubbles from the propeller when it moves; while fishing, a line goes down from its belly and
-// twitches when a fish bites.
+// you are inside; bubbles from the propeller when it moves.
 import Phaser from 'phaser';
 import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
@@ -59,13 +58,5 @@ export class SubmarineView {
         g.lineStyle(0.5, 0xdff8ff, 0.6 * (1 - t));
         g.strokeCircle(s.x - s.face * (L * 0.5 + t * 14), y - t * 6 + Math.sin(i * 2.1) * 2, 0.8 + t);
       }
-    // the fishing line from its belly
-    if (s.aboard && s.fishing) {
-      const twitch = s.fishing.bite ? Math.sin(time * 18) * 2 : Math.sin(time * 2) * 0.5;
-      const x = s.x + s.face * L * 0.1;
-      const bottom = y + L * 0.18 + SUBMARINE.fishing.line;
-      g.lineStyle(0.4, 0xd9e6e8, 0.7).lineBetween(x, y + L * 0.18, x + twitch, bottom);
-      g.fillStyle(s.fishing.bite ? 0xff5a3c : 0xf2efe6, 1).fillCircle(x + twitch, bottom, 1.2);
-    }
   }
 }

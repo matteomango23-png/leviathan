@@ -5,6 +5,7 @@ import { CAMERA, DIVER, SAVE } from '../data/diver';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
 import { diverModifiers } from '../systems/economy/gear';
+import { lampAim } from '../systems/submarine';
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { startNewGame, storyHoldsDiver } from '../systems/story';
@@ -310,7 +311,7 @@ export class WorldScene extends Phaser.Scene {
     this.diverView.setHidden(storyHoldsDiver(g) || g.sub.aboard); // inside the submarine you are not seen
     this.gearFx.update(g, rider ?? d, g.time);
 
-    let da = d.aim - this.lampAngle;
+    let da = lampAim(g) - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
     while (da < -Math.PI) da += Math.PI * 2;
     this.lampAngle += da * Math.min(1, dt * 6);
