@@ -1604,3 +1604,139 @@ img.albino-art {
 .bestiary-filters {
   margin-bottom: 6px;
 }
+
+/* The levers of the ship and the submarine (ui/helmControls.ts) */
+.helm {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.helm-lever {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.helm-throttle {
+  left: calc(26px + var(--safe-l));
+  bottom: calc(20px + var(--safe-b));
+}
+.helm-label {
+  color: var(--lamp);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px #000;
+}
+.helm-track {
+  pointer-events: auto;
+  touch-action: none;
+  position: relative;
+  width: 44px;
+  height: 150px;
+  border-radius: 22px;
+  border: 2px solid rgba(176, 138, 74, 0.7);
+  background: linear-gradient(to top, rgba(3, 12, 19, 0.75), rgba(46, 66, 74, 0.55));
+  box-sizing: content-box;
+  padding: 10px 0;
+}
+.helm-track-mid::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 2px;
+  background: rgba(255, 217, 160, 0.35);
+}
+.helm-knob {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  width: 52px;
+  height: 22px;
+  margin: 0 0 -11px -26px;
+  border-radius: 8px;
+  background: linear-gradient(#e7c58a, #9b7238);
+  border: 2px solid #3a2a12;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.helm-right {
+  position: absolute;
+  right: calc(22px + var(--safe-r));
+  bottom: calc(20px + var(--safe-b));
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+}
+.helm-dive {
+  position: static;
+}
+.helm-dir {
+  display: flex;
+  gap: 8px;
+}
+.helm-dir-btn {
+  pointer-events: auto;
+  touch-action: none;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: rgba(3, 12, 19, 0.7);
+  border: 2px solid rgba(176, 138, 74, 0.7);
+  color: var(--lamp);
+  font-size: 22px;
+}
+.helm-dir-btn.on {
+  border-color: var(--glow);
+  color: #fff;
+  background: rgba(30, 70, 70, 0.75);
+}
+.helm-gauges {
+  position: absolute;
+  left: 50%;
+  bottom: calc(66px + var(--safe-b));
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border-radius: 10px;
+  background: rgba(3, 10, 16, 0.7);
+  border: 1px solid rgba(176, 138, 74, 0.6);
+  color: var(--lamp);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.helm-buttons {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18px + var(--safe-b));
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.helm-btn {
+  pointer-events: auto;
+  touch-action: none;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: rgba(3, 12, 19, 0.75);
+  border: 2px solid rgba(176, 138, 74, 0.85);
+  color: var(--lamp);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.helm-btn.off {
+  opacity: 0.4;
+}
+.driving .stick,
+.driving .act-row,
+.driving .touch-left {
+  display: none;
+}
+/* at the levers the messages go above the instruments */
+.driving .toast {
+  bottom: calc(108px + var(--safe-b));
+}

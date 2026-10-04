@@ -33,6 +33,11 @@ function run(g: GameState, seconds: number, input: InputState = emptyInput()): G
   return all;
 }
 const press = (g: GameState): GameEvent[] => run(g, DT, { ...emptyInput(), action: true });
+/** The levers (helm.ts): throttle 0…1, direction, dive −1 (up) … 1 (down). */
+const levers = (throttle: number, dir: 1 | -1 = 1, dive = 0): InputState => ({
+  ...emptyInput(),
+  helm: { throttle, dir, dive },
+});
 
 /** After chapter 1: the submarine is yours and you float next to it. */
 function afterChapter1(): GameState {
@@ -78,12 +83,12 @@ describe('the submarine', () => {
     expect(g.diver.hp).toBe(g.diver.maxHp);
     expect(g.beasts.team[0]!.hp).toBeGreaterThan(1);
     expect(g.beasts.aboard).toBe(true);
-    run(g, 1, { ...emptyInput(), moveX: 1, moveY: 1 });
+    run(g, 1, levers(1, 1, 1));
     const at = { x: g.sub.x, y: g.sub.y };
     expect(at.y).toBeGreaterThan(SUBMARINE.restY); // it went under
     press(g); // out
     expect(g.sub.aboard).toBe(false);
-    run(g, 1, { ...emptyInput(), moveX: -1 });
+    run(g, 1, levers(1, -1));
     expect(g.sub.x).toBe(at.x); // it stays where you left it
     expect(g.sub.y).toBe(at.y);
   });
@@ -92,10 +97,10 @@ describe('the submarine', () => {
     const berg = icebergBox(ICEBERGS[1]!)!;
     const y = berg.top + berg.h + 25; // just under the iceberg
     const g = inside(berg.left - 40, y);
-    run(g, 10, { ...emptyInput(), moveX: 1 });
+    run(g, 10, levers(1));
     expect(g.sub.x).toBeGreaterThan(berg.left + berg.w); // passed under it
     const g2 = inside(SUBMARINE.mooredX + 200, SUBMARINE.restY + 20);
-    const ev = run(g2, 12, { ...emptyInput(), moveY: 1 });
+    const ev = run(g2, 12, levers(0, 1, 1));
     expect(g2.sub.y).toBeLessThanOrEqual(subFloorY(g2.sub));
     expect(subFloorY(g2.sub)).toBe(WORLD.surfaceY + SUB_MODELS[0]!.maxDepthM * U);
     expect(ev.some((e) => e.type === 'subTooDeep') || g2.sub.y < subFloorY(g2.sub)).toBe(true);
@@ -201,7 +206,7 @@ describe('urti del sottomarino (4 ottobre: niente muro invisibile)', () => {
     const g = inside(x, y);
     const max = g.sub.hull;
     g.sub.vx = subModel(g.sub.model).speed;
-    const ev = run(g, 1, { ...emptyInput(), moveX: 1 });
+    const ev = run(g, 1, levers(1));
     const hit = ev.find((e) => e.type === 'subRammed');
     expect(hit && hit.type === 'subRammed' && hit.by).toBe('rock');
     expect(g.sub.hull).toBeLessThan(max);
@@ -242,10 +247,10 @@ describe('pressione del sottomarino (4 ottobre: niente fondo invisibile)', () =>
     expect(x).toBeGreaterThan(0);
     const g = inside(x, limitY - 10);
     const max = g.sub.hull;
-    const ev = run(g, 2, { ...emptyInput(), moveY: 1 });
+    const ev = run(g, 2, levers(0, 1, 1));
     expect(g.sub.y).toBeGreaterThan(limitY); // no floor any more
     expect(ev.some((e) => e.type === 'subTooDeep')).toBe(true);
-    const more = run(g, 20, { ...emptyInput(), moveY: 1 });
+    const more = run(g, 20, levers(0, 1, 1));
     expect(more.some((e) => e.type === 'subRammed' && e.by === 'pressure')).toBe(true);
     expect(g.sub.hull).toBeLessThan(max);
   });

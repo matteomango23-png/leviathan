@@ -5,6 +5,8 @@
 //   icona_<name>.jpg, tipo_<name>.jpg  → public/ui/<name>.webp          (white icon, 160×160, tinted in game)
 //   parete_<name>.jpg, iceberg_<n>.jpg  → public/world/<name>.webp      (black removed; an iceberg also gets
 //                                          public/world/<name>.json: its waterline and a solid mask for collisions)
+//   nave_<n>.jpg, nave_<n>_aperta.jpg  → public/world/<name>.webp      (background read from the edges, green or
+//                                          white; NOT cropped, so the closed and open hatch stay in register)
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
@@ -162,6 +164,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
       if (n > best) [best, line] = [n, y];
     }
   }
+  if (id.startsWith('nave')) return makeShip(img, dest);
   const radius = Math.max(3, Math.round(img.width * 0.004));
   // icebergs are pale: a loose cut; the walls are dark rock: a tight one, or the rock turns see-through
   const opt = iceberg ? { low: 8, high: 30, soft: 40 } : { low: 2, high: 9, soft: 14 };
@@ -187,6 +190,14 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   }
   const box = opaqueBox(cut, img.width, img.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno');
+  if (id.startsWith('nave')) {
+    // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
+    await mkdir(dirname(dest), { recursive: true });
+    await sharp(Buffer.from(cut.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
+      .webp({ quality: 88 })
+      .toFile(dest);
+    return `nave ${img.width}×${img.height}, senza ritaglio`;
+  }
   const c = await cropped(cut, img);
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);
@@ -206,4 +217,38 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   const waterline = line >= 0 ? Math.max(0, Math.min(1, (line - box.y0) / c.h)) : 0.2;
   await writeFile(dest.replace(/\.webp$/, '.json'), JSON.stringify({ w: c.w, h: c.h, waterline, mask }));
   return `iceberg ${c.w}×${c.h}, linea dell'acqua al ${Math.round(waterline * 100)}%`;
+}
+
+/**
+ * The ship (hatch closed / open): a flat background of any colour (green, white) keyed out everywhere by its
+ * distance from the colour of the edges, so the gaps inside the hull (by the rudder) go too; the green left on the
+ * edges is taken out. NOT cropped: the two pictures share one frame and must line up.
+ */
+async function makeShip(img: Raw, dest: string): Promise<string> {
+  const [br, bg, bb] = borderColor(img);
+  const d = img.data;
+  const out = new Uint8ClampedArray(d.length);
+  out.set(d);
+  const low = 40;
+  const high = 95;
+  // a green background is keyed by how much greener than red and blue a pixel is (the dark hull is close to a dark
+  // green in plain distance); any other colour by its distance
+  const green = bg > Math.max(br, bb) + 30;
+  for (let o = 0; o < d.length; o += 4) {
+    const m = Math.max(d[o]!, d[o + 2]!);
+    if (green) {
+      const excess = d[o + 1]! - m;
+      out[o + 3] = excess >= 45 ? 0 : excess <= 15 ? 255 : Math.round(((45 - excess) / 30) * 255);
+      if (excess > 0) out[o + 1] = m; // despill
+      continue;
+    }
+    const dist = Math.hypot(d[o]! - br, d[o + 1]! - bg, d[o + 2]! - bb);
+    out[o + 3] = dist <= low ? 0 : dist >= high ? 255 : Math.round(((dist - low) / (high - low)) * 255);
+  }
+  keepLargest(out, img.width, img.height); // stray specks of the noisy background
+  await mkdir(dirname(dest), { recursive: true });
+  await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
+    .webp({ quality: 88, alphaQuality: 95 })
+    .toFile(dest);
+  return `nave ${img.width}×${img.height}, senza ritaglio`;
 }

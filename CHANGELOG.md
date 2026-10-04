@@ -2,6 +2,31 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.39.0 — La nave da spedizione e le leve di guida (4 ottobre 2026)
+
+- **La nave da spedizione:** alla fine del capitolo 4 Aurelio arriva con una nave e ci carica dentro il tuo sottomarino. Chi ha già finito il capitolo 4 la trova appena apre il gioco, al punto più vicino tra la Foresta Sommersa e i porti. Vicino allo scafo, in superficie, premi **A bordo**.
+- **Al timone:**
+  - si guida con le **leve**, non col joystick. A sinistra c'è il **gas**, che resta dove lo lasci; a destra la **direzione** (◀ ▶);
+  - gli strumenti mostrano i nodi e il gas;
+  - la vista si allarga;
+  - la nave è pesante: accelera e frena piano, a tutta velocità alza la prua e lascia la scia;
+  - beccheggia sulle onde, di più col brutto tempo;
+  - circa 1 km ogni 27 secondi.
+- **Non si blocca mai:**
+  - rompe il ghiaccio della Banchisa, rallentando; il canale si richiude più tardi, lontano da te;
+  - dove qualcosa esce dall'acqua (l'Isola delle Mangrovie, gli isolotti del Delta, gli iceberg) passa dietro, più piccola e scura, come se ci girasse intorno;
+  - vicino alla spiaggia di Portofosco si ferma nel fondale basso.
+- **Il portellone:**
+  - si apre solo a nave ferma, e aperto la nave non si muove;
+  - **Cala sottomarino**: il sottomarino scende lungo la rampa, con te dentro, e si ferma a mezz'acqua sotto la nave;
+  - per rientrare torni davanti al portellone e premi **Aggancia**: risale nella stiva e tu torni al timone;
+  - **Tuffati** per scendere a nuoto.
+- **Il sottomarino si guida con le leve:** gas a sinistra; a destra direzione e **Sali/Scendi**. La leva Sali/Scendi resta dove la lasci e si ferma a metà vicino allo zero. Gli strumenti mostrano nodi, gas, profondità e profondità massima. Sul PC: W/S gas, A/D direzione, frecce su/giù.
+- **Porti e risveglio:**
+  - ai porti la nave attracca e dal timone compare **Porto**;
+  - dopo uno svenimento ti risvegli sulla nave;
+  - se il sottomarino si rompe, lo rimorchiano nella stiva della nave.
+
 ## v0.38.0 — Corpi solidi (4 ottobre 2026)
 
 - **Le bestie urtano con il loro corpo vero:** la forma per gli urti è presa dall'immagine di ogni animale, alta quanto il corpo in ogni punto. Le bestie grandi (megattera, Piovra…) non entrano più negli scogli e nel fondale.

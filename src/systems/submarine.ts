@@ -13,6 +13,9 @@ import { clamp, type Rng } from './math';
 import type { TileMap } from './world/tileMap';
 import { PRESSURE } from '../data/diver';
 import { freshPressure, stepPressure } from './breath';
+import { HELM } from '../data/ship';
+import { diveOf, stepHeading, type HelmState } from './helm';
+import type { HullPart } from './hull';
 
 export interface SubState {
   owned: boolean;
@@ -114,8 +117,16 @@ export function board(g: SubWorld, events: GameEvent[]): void {
   s.aboard = true;
   s.vx = 0;
   s.vy = 0;
+  Object.assign(g.diver, { x: s.x, y: s.y, vx: 0, vy: 0 });
+  restAboard(g);
+  events.push({ type: 'boarded' });
+}
+
+/** Aboard the submarine or the ship: you breathe and heal, and your team rests. */
+export function restAboard(g: Pick<SubWorld, 'diver' | 'beasts'>): void {
   const d = g.diver;
-  Object.assign(d, { x: s.x, y: s.y, vx: 0, vy: 0, hp: d.maxHp, o2: d.maxO2 });
+  d.hp = d.maxHp;
+  d.o2 = d.maxO2;
   for (const t of g.beasts.team) {
     t.hp = maxHpOf(t);
     t.ppUsed = undefined;
@@ -123,7 +134,6 @@ export function board(g: SubWorld, events: GameEvent[]): void {
     t.sleepTurns = undefined;
     t.ko = false;
   }
-  events.push({ type: 'boarded' });
 }
 
 /** You get out: it stays here, still. */
@@ -152,6 +162,29 @@ function bump(g: SubWorld, speed: number, events: GameEvent[]): void {
   damageHull(g, Math.max(B.minDamage, Math.round((speed - B.minSpeed) * B.damagePerSpeed)), 'rock', events);
 }
 
+/**
+ * The levers move it (helm.ts): the throttle along where it points, the direction lever turns it round once slow,
+ * the dive lever up or down. After a bump (moving backwards) the bounce dies out first.
+ */
+function steer(s: SubState, helm: HelmState, top: number, dt: number): void {
+  const along = s.vx * s.face;
+  if (along < 0) s.vx -= s.vx * SUBMARINE.drag * dt;
+  else {
+    const rates = {
+      accel: SUBMARINE.accel,
+      coast: SUBMARINE.coast,
+      brake: SUBMARINE.accel,
+      turnBelow: HELM.subTurnBelow,
+    };
+    const h = stepHeading(s.face, along, helm, top, rates, dt);
+    s.face = h.face;
+    s.vx = h.speed * h.face;
+  }
+  const vyTarget = diveOf(helm.dive) * top * HELM.subDiveMult;
+  const step = SUBMARINE.accel * dt;
+  s.vy += Math.max(-step, Math.min(step, vyTarget - s.vy));
+}
+
 /** The deepest point this model stands (world y): deeper, the pressure bar empties. */
 export const subFloorY = (s: SubState): number =>
   WORLD.surfaceY + subModel(s.model).maxDepthM * WORLD.unitsPerMetre;
@@ -173,17 +206,8 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   if (!s.aboard) return false;
   const d = g.diver;
   const m = subModel(s.model);
-  const broken = s.hull <= 0;
-  const k = broken ? 0 : 1;
-  s.vx += input.moveX * SUBMARINE.accel * k * dt;
-  s.vy += input.moveY * SUBMARINE.accel * k * dt;
-  s.vx -= s.vx * SUBMARINE.drag * dt;
-  s.vy -= s.vy * SUBMARINE.drag * dt;
-  const sp = Math.hypot(s.vx, s.vy);
-  if (sp > m.speed) {
-    s.vx *= m.speed / sp;
-    s.vy *= m.speed / sp;
-  }
+  const top = s.hull <= 0 ? 0 : m.speed; // broken, it only drifts
+  steer(s, input.helm, top, dt);
   const nx = s.x + s.vx * dt;
   if (hits(g.map, nx, s.y)) {
     bump(g, Math.abs(s.vx), events);
@@ -201,7 +225,6 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
     s.deepWarn = 6;
   }
   if (stepPressure(s, overM, dt)) damageHull(g, PRESSURE.hullDamage, 'pressure', events);
-  if (Math.abs(input.moveX) > 0.2) s.face = input.moveX > 0 ? 1 : -1;
   d.face = s.face;
   Object.assign(d, { x: s.x, y: s.y, vx: s.vx, vy: s.vy, o2: d.maxO2 });
   return true;
@@ -290,35 +313,6 @@ export function lampAim(g: { sub: SubState; diver: { aim: number } }): number {
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
 
-/**
- * The hull is solid (owner, 4 ottobre): a body touching it (you, your beast, a wild one) is pushed out and slides
- * along it. `circles` are the body's own, as offsets from its middle. Returns true if it touched the hull.
- */
-export function pushOutOfSub(
-  s: SubState,
-  b: { x: number; y: number; vx: number; vy: number },
-  circles: readonly { dx: number; dy: number; r: number }[],
-): boolean {
-  if (!s.owned) return false;
-  let touched = false;
-  for (let pass = 0; pass < 2; pass++)
-    for (const c of circles)
-      for (const [hx, hr] of SUBMARINE.body) {
-        const px = b.x + c.dx - (s.x + hx);
-        const py = b.y + c.dy - s.y;
-        const d = Math.hypot(px, py) || 0.001;
-        const overlap = c.r + hr - d;
-        if (overlap <= 0) continue;
-        touched = true;
-        const nx = px / d;
-        const ny = py / d;
-        b.x += nx * overlap;
-        b.y += ny * overlap;
-        const vn = b.vx * nx + b.vy * ny;
-        if (vn < 0) {
-          b.vx -= nx * vn;
-          b.vy -= ny * vn;
-        }
-      }
-  return touched;
-}
+/** Its hull as circles in the world (for pushOutOfHull, hull.ts); none when it is not yours. */
+export const subHull = (s: SubState): HullPart[] =>
+  s.owned ? SUBMARINE.body.map(([dx, r]) => ({ x: s.x + dx, y: s.y, r })) : [];

@@ -30,7 +30,14 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
 | `world/icebergs.ts` | Gli iceberg: dove galleggiano e quali punti sono ghiaccio solido (dalla maschera del disegno). |
 | `beasts/legends.ts` | Le leggende: quali sono, dove vivono, quando una compare al posto di una bestia della sua specie. |
-| `submarine.ts` | Il tuo sottomarino (al posto della barca): regalo a fine capitolo 1, Sali/Esci a qualsiasi profondità, guida sott'acqua fino alla profondità del modello, cure e risveglio accanto, pesca, urti delle bestie grandi, rimorchio e riparazione al porto, modelli in vendita (`data/submarine.ts`). |
+| `submarine.ts` | Il tuo sottomarino (al posto della barca): regalo a fine capitolo 1, Sali/Esci a qualsiasi profondità, guida con le leve fino alla profondità del modello, cure e risveglio accanto, urti delle bestie grandi, rimorchio e riparazione al porto, modelli in vendita (`data/submarine.ts`). |
+| `helm.ts` | Le leve di nave e sottomarino: gas che resta, direzione (con la leva al contrario frena e da fermo si gira), Sali/Scendi; nodi mostrati. |
+| `ship/ship.ts` | La nave da spedizione: regalo a fine capitolo 4, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
+| `ship/hatch.ts` | Portellone, rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
+| `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave (linea d'acqua, portellone, rampa, timone, scafo). |
+| `ship/surface.ts` | Cosa incontra la nave in superficie: terra, iceberg, scogli, spiaggia; rompe il ghiaccio e lo fa richiudere lontano. |
+| `vehicles.ts` | Nave e sottomarino insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone, risveglio sulla nave. |
+| `hull.ts` | Scafi solidi: spinge fuori i corpi che li toccano. |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
@@ -95,6 +102,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
+| `helmControls.ts`, `helmInfo.ts` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
 | `saveTransfer.ts` | Esporta e importa il salvataggio come file. |
@@ -113,6 +121,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
+| `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |
 | `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
 

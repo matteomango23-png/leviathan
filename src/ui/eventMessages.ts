@@ -2,6 +2,7 @@
 import { FEMININE_SPECIES } from '../data/battleText';
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { PROGRESSION } from '../data/rules';
+import { SHIP_TEXT } from '../data/ship';
 import { SUB_TEXT } from '../data/submarine';
 import { TEMPLE_TEXT } from '../data/temples';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
@@ -72,17 +73,28 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'subGiven':
       return [SUB_TEXT.given, 6];
     case 'boarded':
-      return [
-        `${SUB_TEXT.boarded} Joystick per guidare. Per pescare fermati, tocca Pesca e, quando abbocca, toccalo di nuovo. Esci per nuotare.`,
-        4,
-      ];
+      return [SUB_TEXT.boarded, 4];
     case 'dove':
-      return ['Il sottomarino resta qui ad aspettarti.', 2];
+      return g.ship.owned && g.ship.bay !== 'out' && !g.sub.aboard
+        ? ['La nave resta qui ad aspettarti.', 2]
+        : ['Il sottomarino resta qui ad aspettarti.', 2];
+    case 'shipGiven':
+      return [SHIP_TEXT.given, 7];
+    case 'shipBoarded':
+      return [SHIP_TEXT.aboard, 4];
+    case 'shipShallow':
+      return [SHIP_TEXT.shallow, 2.5];
+    case 'shipHint':
+      return [SHIP_TEXT[e.text], 2.5];
+    case 'subLaunched':
+      return [SHIP_TEXT.launched, 4];
+    case 'subDocked':
+      return [SHIP_TEXT.docked, 3];
     case 'subRammed':
       if (e.by === 'pressure') return [SUB_TEXT.crushed(e.hull, e.max), 2];
       return e.by === 'rock' ? [SUB_TEXT.bumped, 1.5] : [SUB_TEXT.rammed(e.hull, e.max), 2];
     case 'subWrecked':
-      return [SUB_TEXT.wrecked(e.teeth), 6];
+      return [e.toShip ? SHIP_TEXT.wreckedToShip(e.teeth) : SUB_TEXT.wrecked(e.teeth), 6];
     case 'subRepaired':
       return [SUB_TEXT.repaired(e.cost), 3];
     case 'subTooDeep':

@@ -22,11 +22,12 @@ export class SubmarineView {
     layer.add([this.img, this.g, this.glow, this.bar]);
   }
 
-  update(s: SubState, time: number, dt: number): void {
+  /** @param hidden in the ship's hold behind the closed hatch */
+  update(s: SubState, time: number, dt: number, hidden = false): void {
     const g = this.g.clear();
     this.glow.clear();
     this.bar.clear();
-    if (!s.owned) {
+    if (!s.owned || hidden) {
       this.img.setVisible(false);
       return;
     }

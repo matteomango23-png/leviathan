@@ -3,6 +3,8 @@ import Phaser from 'phaser';
 import { BackpackBar } from '../ui/backpackBar';
 import { BeastUi } from '../ui/beastUi';
 import { Controls } from '../ui/controls';
+import { HelmControls } from '../ui/helmControls';
+import { helmInfo } from '../ui/helmInfo';
 import { DialogueBox } from '../ui/dialogueBox';
 import { el } from '../ui/dom';
 import { Hud } from '../ui/hud';
@@ -19,6 +21,7 @@ export class UIScene extends Phaser.Scene {
   private root!: HTMLDivElement;
   private hud!: Hud;
   private controls!: Controls;
+  private helm!: HelmControls;
   private beastUi!: BeastUi;
   private backpack!: BackpackBar;
   private dialogue!: DialogueBox;
@@ -38,6 +41,7 @@ export class UIScene extends Phaser.Scene {
     this.root.id = 'ui';
     this.hud = new Hud(this.root);
     this.controls = new Controls(this.root, this.session, () => this.openPause());
+    this.helm = new HelmControls(this.root, this.session);
     this.beastUi = new BeastUi(this.root, this.session);
     this.backpack = new BackpackBar(this.root, this.session);
     this.dialogue = new DialogueBox(this.root);
@@ -63,6 +67,7 @@ export class UIScene extends Phaser.Scene {
       this.session.off('openPort', this.openPort, this);
       this.session.off('battle', this.onBattle, this);
       this.controls.destroy();
+      this.helm.destroy();
       this.dialogue.destroy();
       this.root.remove();
       rotate.remove();
@@ -88,6 +93,7 @@ export class UIScene extends Phaser.Scene {
   /** During a battle the sea's interface hides (the battle has its own). */
   private onBattle(on: boolean): void {
     this.controls.releaseAll();
+    this.helm.releaseAll();
     this.root.style.display = on ? 'none' : '';
   }
 
@@ -95,6 +101,7 @@ export class UIScene extends Phaser.Scene {
     if (this.session.paused || this.session.inBattle || !this.session.game) return;
     this.session.paused = true;
     this.controls.releaseAll();
+    this.helm.releaseAll();
     this.scene.pause('World');
     this.scene.launch('Menus', { session: this.session, mode });
   }
@@ -110,6 +117,7 @@ export class UIScene extends Phaser.Scene {
   private onResume(): void {
     this.session.paused = false;
     this.controls.releaseAll();
+    this.helm.releaseAll();
     this.scene.stop('Menus');
     this.scene.resume('World');
   }
@@ -117,8 +125,11 @@ export class UIScene extends Phaser.Scene {
   override update(_time: number, deltaMs: number): void {
     const g = this.session.game;
     if (!g) return;
-    this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g));
     const dt = Math.min(0.1, deltaMs / 1000);
+    const helm = helmInfo(g);
+    this.root.classList.toggle('driving', !!helm);
+    this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g), !!helm);
+    this.helm.update(helm, dt);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);
     this.starter.setVisible(needsStarter(g) && !g.story.dialogue);

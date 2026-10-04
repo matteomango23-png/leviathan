@@ -1,4 +1,5 @@
 // What the player is asking for this frame, whatever the device (touch or keyboard).
+import { freshHelm, type HelmState } from './helm';
 
 export interface InputState {
   /** Swim direction, each axis in [-1, 1]. */
@@ -24,6 +25,10 @@ export interface InputState {
   tameTap: boolean;
   /** Backpack slot (0..2) tapped this frame, or -1. */
   slot: number;
+  /** The levers of the ship or the submarine (they stay where you leave them). */
+  helm: HelmState;
+  /** A button of the helm pressed this frame: the hatch, lower the submarine, dive off the ship. */
+  helmCmd: 'hatch' | 'launch' | 'dive' | null;
 }
 
 export const emptyInput = (): InputState => ({
@@ -39,6 +44,8 @@ export const emptyInput = (): InputState => ({
   summon: -1,
   tameTap: false,
   slot: -1,
+  helm: freshHelm(),
+  helmCmd: null,
 });
 
 /** Clears the one-frame presses after a game step. */
@@ -50,4 +57,5 @@ export function consumePresses(input: InputState): void {
   input.summon = -1;
   input.tameTap = false;
   input.slot = -1;
+  input.helmCmd = null;
 }

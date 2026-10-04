@@ -95,12 +95,14 @@ export class Hud {
       d.x > OPEN_SEA_X
         ? ` · ${(kmFromCoast(d.x) - kmFromCoast(LAYOUT.shoreX)).toFixed(1).replace('.', ',')} km dalla costa`
         : '';
-    // where your boat waits (when you are not on it)
-    const toBoat = (g.sub.x - d.x) / WORLD.unitsPerMetre;
+    // where your ship (or your submarine, out of its hold) waits when you are not on it
+    const home = g.ship.owned && !g.ship.aboard ? g.ship : g.sub;
+    const homeName = home === g.ship ? 'nave' : 'sottomarino';
+    const toBoat = (home.x - d.x) / WORLD.unitsPerMetre;
     const boat = g.sub.aboard
       ? ` · scafo ${Math.round(g.sub.hull)}/${subModel(g.sub.model).hull}`
-      : g.sub.owned && Math.abs(toBoat) > 15
-        ? ` · sottomarino ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
+      : home.owned && !g.ship.aboard && Math.abs(toBoat) > 15
+        ? ` · ${homeName} ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
         : '';
     const info = `${Math.round(depthMetres(d.y))} m${far}${boat} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
     if (info !== this.cache.info) {

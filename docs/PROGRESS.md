@@ -1,5 +1,36 @@
 # Progressi
 
+## Sessione cloud 1 (fine) — Progetto delle spedizioni e tappa 1: la nave (4 ottobre 2026) → v0.39.0
+
+**Progetto deciso col proprietario:** è scritto nel GDD, sezione "Spedizioni", con le 6 tappe nella Roadmap (punto 11).
+
+**Fatto (tappa 1, v0.39.0):**
+- nave da spedizione regalata a fine capitolo 4;
+- guida con le leve (gas che resta, direzione), per nave e sottomarino;
+- portellone, rampa, Cala sottomarino, Aggancia, Tuffati, A bordo;
+- ghiaccio rotto che si richiude lontano;
+- corsia lontana dietro isole e iceberg (la nave non si blocca mai: c'è un test fino a 30 km);
+- fondale basso solo alla spiaggia;
+- Porto dal timone; risveglio sulla nave; sottomarino rotto rimorchiato nella stiva;
+- salvataggio v14.
+
+Immagini: `art-inbox/nave_1.jpg` e `nave_1_aperta.jpg`.
+
+**Da provare sull'iPhone (v0.39.0):**
+1. Con un salvataggio dopo il capitolo 4: messaggio di Aurelio, nave vicina (Foresta Sommersa o porto). In superficie accanto allo scafo premi **A bordo**.
+2. Leva del gas a sinistra: la nave parte piano e a tutta alza la prua. Lascia il gas a metà: resta lì. Prova ◀ ▶: rallenta e si gira.
+3. Verso est: all'Isola delle Mangrovie la nave passa dietro (più piccola e scura) e poi torna davanti. Nella Banchisa rompe il ghiaccio e rallenta.
+4. Ferma, **Apri portellone**, poi **Cala sottomarino**: scende lungo la rampa. Guida con le leve (Sali/Scendi a destra). Torna sotto il portellone: **Aggancia**.
+5. Al porto (Portofosco o Porto Fango), da ferma: compare **Porto**.
+6. **Tuffati** e poi **A bordo** dall'acqua.
+7. Controlla che le leve non coprano altro sullo schermo dell'iPhone (in orizzontale).
+
+**Prossime tappe:**
+- tappa 2: carburante, cockpit, cure solo sulla nave, via i santuari, razzo di soccorso;
+- poi le regioni dei 30 km, i livelli per pericolo, il sonar e il Diario di caccia.
+
+**Da regolare guardando sul telefono:** linea d'acqua e portellone (`SHIP.picture`), velocità (`SHIP.maxSpeed`), quanto si allarga la vista (`SHIP.camera`).
+
 ## Sessione cloud 1 (seguito) — Feedback dopo la prova del 4 ottobre
 
 Il proprietario ha provato il gioco e mandato 13 punti. Piano approvato, in 4 gruppi con una versione ciascuno:
