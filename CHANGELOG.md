@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.37.1 — Avversari rivolti verso di te (4 ottobre 2026)
+
+- In battaglia ogni bestia avversaria guarda verso sinistra, verso la tua bestia: girate le 8 che guardavano a destra (anguilla elettrica, Folgore, Livyatan, lontra marina, pesce leone, pesce luna, Regina bianca, squalo capopiatto).
+
 ## v0.37.0 — Correzioni dopo la seconda prova (4 ottobre 2026)
 
 - **Virata come una moneta spessa:** tutto il corpo si gira insieme e non diventa mai più sottile del suo spessore, in proporzione all'animale (una megattera resta larga un quarto della sua lunghezza). Sparite le righe e la "grana" che comparivano sugli animali grandi mentre giravano.
