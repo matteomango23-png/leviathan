@@ -7,7 +7,7 @@ import { east } from './worldLayout';
 
 /** The amphitheatre: a stepped bowl carved into the reef floor (open to the sea above). */
 export const ARENA = {
-  x: east(3000), // centre (near the Barriera's sanctuary, so you can heal before the fight)
+  x: east(3000), // centre of the amphitheatre
   y0: 288, // its rim (world y): water from here down into the bowl
   rx: 130, // half width
   depth: 84, // the bottom of the bowl, below the rim

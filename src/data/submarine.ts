@@ -1,6 +1,6 @@
 // Leviatano — your submarine (tappa 16, owner's decisions of 3 ottobre 2026: it replaces the boat). Nonno Aurelio
 // gives you his old bathyscaphe at the end of chapter 1. It travels under water (under the icebergs), each model
-// down to its own depth and at its own speed; better ones are bought at the port. Inside you breathe and heal
+// down to its own depth and at its own speed; better ones are bought at the port. Inside you breathe (you heal only on the ship and at the port)
 // (fishing from it was removed on 4 ottobre, to be rethought), but you cannot fight: ordinary beasts slip away
 // from it, the big aggressive ones ram it and break it.
 // It stays where you leave it. Values marked "tuning" are a first pass: change them here, never in systems.
@@ -14,6 +14,8 @@ export interface SubModel {
   speed: number; // units/s (you swim at 42)
   maxDepthM: number;
   hull: number; // hits it takes (each ram takes SUBMARINE.ram.damage × the beast's size)
+  tank: number; // litres of fuel (owner, 4 ottobre: bought at the port). Tuning
+  perKm: number; // litres per km at full throttle (less going slowly: FUEL.idleShare). Tuning
   note: string;
   art: string; // its picture in public/world
 }
@@ -26,6 +28,8 @@ export const SUB_MODELS: SubModel[] = [
     speed: 70, // tuning: less than twice your swimming
     maxDepthM: 80,
     hull: 60,
+    tank: 120,
+    perKm: 8,
     note: 'Vecchio e lento, ma tiene l’acqua fuori',
     art: 'sottomarino_1',
   },
@@ -36,6 +40,8 @@ export const SUB_MODELS: SubModel[] = [
     speed: 110,
     maxDepthM: 250,
     hull: 120,
+    tank: 180,
+    perKm: 8,
     note: 'Più veloce e più profondo, scafo rinforzato',
     art: 'sottomarino_1',
   },
@@ -46,6 +52,8 @@ export const SUB_MODELS: SubModel[] = [
     speed: 160,
     maxDepthM: 900,
     hull: 240,
+    tank: 260,
+    perKm: 9,
     note: 'Per le zone più lontane e le fosse',
     art: 'sottomarino_1',
   },
@@ -93,7 +101,7 @@ export const SUBMARINE = {
 export const SUB_TEXT = {
   given: 'Aurelio ti lascia il suo vecchio batiscafo, ormeggiato oltre il molo. Avvicinati e premi Sali.',
   boarded:
-    'Dentro il sottomarino: respiri, la squadra si riposa. Qui non si combatte. Leva a sinistra: il gas. A destra: direzione e Sali/Scendi.',
+    'Dentro il sottomarino respiri, ma qui non si guarisce e non si combatte. Leva a sinistra: il gas. A destra: direzione e Sali/Scendi.',
   rammed: (hull: number, max: number): string => `Uno schianto contro lo scafo! (${hull}/${max})`,
   bumped: 'Lo scafo sbatte contro la roccia!',
   wrecked: (teeth: number): string =>

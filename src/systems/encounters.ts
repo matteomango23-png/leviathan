@@ -18,7 +18,7 @@ import type { BattleRequest, BeastWorld } from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
- * battle: like Pokémon you black out (game.ts wakes you at your sanctuary or harbour with the team healed).
+ * battle: like Pokémon you black out (game.ts wakes you on your ship or at your harbour with the team healed).
  */
 export function requestBattle(
   g: BeastWorld,

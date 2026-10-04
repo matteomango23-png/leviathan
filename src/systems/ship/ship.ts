@@ -7,6 +7,7 @@ import { SHIP } from '../../data/ship';
 import { STORY_STEPS, type StoryStep } from '../../data/story';
 import { WRECK } from '../../data/chapter4';
 import type { GameEvent } from '../events';
+import { litresFor } from '../fuelBurn';
 import { stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipSpan } from './geometry';
@@ -31,6 +32,9 @@ export interface ShipState {
   bayT: number;
   /** You are at the helm. */
   aboard: boolean;
+  /** Litres of fuel (fuel.ts); dry, it does not move. */
+  fuel: number;
+  fuelWarned: boolean;
   /** Seconds before the shallow-water message may show again. */
   shallowWarn: number;
   /** Ice broken by the bow, freezing again later (not saved). */
@@ -43,6 +47,7 @@ export interface SavedShip {
   hatchOpen: boolean;
   bay: 'none' | 'docked' | 'out';
   aboard: boolean;
+  fuel: number;
 }
 
 export function newShip(saved: SavedShip | null): ShipState {
@@ -58,6 +63,8 @@ export function newShip(saved: SavedShip | null): ShipState {
     bay,
     bayT: bay === 'out' ? 1 : 0,
     aboard: saved?.aboard ?? false,
+    fuel: saved ? Math.max(0, Math.min(SHIP.fuel.tank, saved.fuel)) : SHIP.fuel.tank,
+    fuelWarned: false,
     shallowWarn: 0,
     broken: [],
   };
@@ -67,7 +74,8 @@ export function saveShip(s: ShipState): SavedShip | null {
   if (!s.owned) return null;
   // half-way down or up the ramp counts as where it was going
   const bay = s.bay === 'launching' ? 'out' : s.bay === 'docking' ? 'docked' : s.bay;
-  return { x: Math.round(s.x), face: s.face, hatchOpen: s.hatchOpen, bay, aboard: s.aboard };
+  const fuel = Math.round(s.fuel * 10) / 10;
+  return { x: Math.round(s.x), face: s.face, hatchOpen: s.hatchOpen, bay, aboard: s.aboard, fuel };
 }
 
 export interface ShipWorld {
@@ -123,7 +131,7 @@ export function sailShip(
   const bow = s.face > 0 ? x1 : x0;
   const icy =
     s.lane < 0.5 && iceIn(g.map, Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
-  const top = SHIP.maxSpeed * (icy ? SHIP.iceMult : 1);
+  const top = s.fuel <= 0 ? 0 : SHIP.maxSpeed * (icy ? SHIP.iceMult : 1); // dry, it drifts to a stop
   if (helm && !s.hatchOpen && s.hatch === 0) {
     const h = stepHeading(s.face, s.speed, helm, top, SHIP, dt);
     s.face = h.face;
@@ -141,7 +149,15 @@ export function sailShip(
     }
   }
   const half = SHIP.length / 2;
+  const from = s.x;
   s.x = Math.max(half + 8, Math.min(g.map.width - half - 8, s.x + s.face * s.speed * dt));
+  const engine = helm && !s.hatchOpen ? helm.throttle : 0;
+  s.fuel = Math.max(0, s.fuel - litresFor(Math.abs(s.x - from), engine, SHIP.fuel.perKm));
+  if (s.fuel > 0) s.fuelWarned = false;
+  else if (!s.fuelWarned) {
+    s.fuelWarned = true;
+    events.push({ type: 'fuelOut', vehicle: 'ship' });
+  }
 
   const changed: number[] = [];
   if (s.lane < 0.5 && s.speed > 0.5) {

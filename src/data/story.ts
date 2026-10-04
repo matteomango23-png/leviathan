@@ -164,7 +164,7 @@ export const DIALOGUES = {
   ],
   hintFreeKing: [
     { who: 'aurelio', text: 'Un re impazzito dal dolore non riconosce nessuno. Sfinitelo, senza ucciderlo: poi le catene.' },
-    { who: 'aurelio', text: 'È un Corazzato di livello 20: porta bestie forti, e cura la squadra al santuario della Barriera prima di scendere.' },
+    { who: 'aurelio', text: 'È un Corazzato di livello 20: porta bestie forti, e cura la squadra al porto prima di scendere.' },
   ],
   hintChapter3Done: [
     { who: 'aurelio', text: 'Il Re Corallo con noi… Il mare se lo ricorderà.' },

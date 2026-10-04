@@ -1,0 +1,136 @@
+// Fuel of the ship and the submarine (owner, 4 ottobre 2026: an expedition is planned). They burn it only while the
+// engine runs, more at full throttle; dry, they stop. It is bought at the harbours, moved between the two in the
+// cockpit (the submarine in the hold), and far away the rescue flare tows you home for a share of your teeth.
+// Numbers in data/ship.ts (SHIP.fuel, FUEL, RESCUE) and data/submarine.ts (tank, perKm of each model).
+import { PORTS, type PortDef } from '../data/economy';
+import { FUEL, RESCUE, SHIP } from '../data/ship';
+import { SUBMARINE } from '../data/submarine';
+import type { GameEvent } from './events';
+export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
+import { helmPoint } from './ship/geometry';
+import type { ShipState } from './ship/ship';
+import { restAboard, subModel, type SubState } from './submarine';
+import type { TeamBeast } from './beasts/team';
+
+export interface FuelWorld {
+  ship: ShipState;
+  sub: SubState;
+  port: PortDef | null;
+  gear: { teeth: number };
+  diver: {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    face: 1 | -1;
+    hp: number;
+    maxHp: number;
+    o2: number;
+    maxO2: number;
+    dead: boolean;
+  };
+  beasts: { team: TeamBeast[] };
+  homePort: PortDef['id'];
+}
+
+/** In the cockpit, the submarine in the hold: moves up to one step of fuel to it (or from it). Returns litres. */
+export function transferFuel(g: FuelWorld, toSub: boolean): number {
+  if (!g.ship.owned || !g.sub.owned || g.ship.bay !== 'docked') return 0;
+  const subTank = subModel(g.sub.model).tank;
+  const room = toSub ? subTank - g.sub.fuel : SHIP.fuel.tank - g.ship.fuel;
+  const have = toSub ? g.ship.fuel : g.sub.fuel;
+  const l = Math.max(0, Math.min(FUEL.transferStep, room, have));
+  if (toSub) {
+    g.ship.fuel -= l;
+    g.sub.fuel += l;
+  } else {
+    g.sub.fuel -= l;
+    g.ship.fuel += l;
+  }
+  return l;
+}
+
+/** Can this vehicle fill up at the harbour you are in? The ship alongside its pier; the submarine in its hold
+ *  there, or moored by the pier. */
+export function canRefuel(g: FuelWorld, which: 'ship' | 'sub'): boolean {
+  const p = g.port;
+  if (!p) return false;
+  const shipHere = g.ship.owned && Math.abs(g.ship.x - SHIP.dock[p.id]) < SHIP.dockReachPort;
+  if (which === 'ship') return shipHere;
+  if (!g.sub.owned) return false;
+  return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;
+}
+
+export interface FuelBuy {
+  ok: boolean;
+  litres: number;
+  cost: number;
+  reason?: string;
+}
+
+/** Fills the tank as far as your teeth go. */
+export function buyFuel(g: FuelWorld, which: 'ship' | 'sub'): FuelBuy {
+  if (!canRefuel(g, which))
+    return {
+      ok: false,
+      litres: 0,
+      cost: 0,
+      reason: which === 'ship' ? 'La nave non è attraccata qui.' : 'Il sottomarino non è qui.',
+    };
+  const tank = which === 'ship' ? SHIP.fuel.tank : subModel(g.sub.model).tank;
+  const now = which === 'ship' ? g.ship.fuel : g.sub.fuel;
+  const litres = Math.min(tank - now, Math.floor(g.gear.teeth / FUEL.pricePerLitre));
+  if (litres <= 0)
+    return {
+      ok: false,
+      litres: 0,
+      cost: 0,
+      reason: now >= tank ? 'Il serbatoio è pieno.' : 'Non hai denti.',
+    };
+  const cost = Math.ceil(litres * FUEL.pricePerLitre);
+  g.gear.teeth -= cost;
+  if (which === 'ship') g.ship.fuel += litres;
+  else g.sub.fuel += litres;
+  return { ok: true, litres, cost };
+}
+
+/** The rescue flare works from the helm or inside the submarine. */
+export const canRescue = (g: FuelWorld): boolean =>
+  g.ship.aboard || (g.sub.aboard && g.ship.bay !== 'launching' && g.ship.bay !== 'docking');
+
+/**
+ * The rescue flare: at the helm, a tug tows the ship to the nearest harbour; in the submarine, it is towed to the
+ * hold of your ship (you at the helm), or to Portofosco without one. It costs a share of your teeth.
+ */
+export function rescue(g: FuelWorld, events: GameEvent[]): void {
+  if (!canRescue(g)) return;
+  const teeth = Math.min(
+    g.gear.teeth,
+    Math.max(RESCUE.minTeeth, Math.floor(g.gear.teeth * RESCUE.teethShare)),
+  );
+  g.gear.teeth -= teeth;
+  const s = g.ship;
+  let where: string;
+  if (s.aboard || (g.sub.aboard && s.owned)) {
+    if (s.aboard) {
+      const port = PORTS.reduce((a, b) =>
+        Math.abs(SHIP.dock[b.id] - s.x) < Math.abs(SHIP.dock[a.id] - s.x) ? b : a,
+      );
+      Object.assign(s, { x: SHIP.dock[port.id], speed: 0, lane: 0 });
+      g.homePort = port.id;
+      where = `a ${port.name}`;
+    } else {
+      g.sub.aboard = false;
+      s.bay = 'docked';
+      s.aboard = true;
+      restAboard(g);
+      where = 'alla tua nave';
+    }
+    Object.assign(g.diver, helmPoint(s), { vx: 0, vy: 0 });
+  } else {
+    Object.assign(g.sub, { x: SUBMARINE.mooredX, y: SUBMARINE.restY, vx: 0, vy: 0 });
+    Object.assign(g.diver, { x: g.sub.x, y: g.sub.y, vx: 0, vy: 0 });
+    where = 'a Portofosco';
+  }
+  events.push({ type: 'rescued', where, teeth });
+}

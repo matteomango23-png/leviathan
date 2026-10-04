@@ -23,7 +23,7 @@ export interface TeamBeast {
   ppUsed?: number[];
   /** Moves it could learn but has no room for: you choose what to forget (or give them up). */
   pendingMoves?: string[];
-  /** Its lasting condition: like Pokémon it stays after the battle, until cured (items, port, sanctuary). */
+  /** Its lasting condition: like Pokémon it stays after the battle, until cured (items, port, ship). */
   status?: StatusId;
   /** Turns of sleep left, with 'stordito'. */
   sleepTurns?: number;

@@ -39,9 +39,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return ['Ossigeno basso. Risali in superficie!', 2.6];
     case 'died':
       return [
-        g.sanctuaries.current === null
-          ? 'Il mare ti ha respinto in superficie.'
-          : 'Ti risvegli al santuario.',
+        g.ship.owned ? 'Ti risvegli sulla tua nave.' : 'Il mare ti ha respinto: ti risvegli al porto.',
         3,
       ];
     case 'wildAppeared': {
@@ -86,6 +84,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [SHIP_TEXT.shallow, 2.5];
     case 'shipHint':
       return [SHIP_TEXT[e.text], 2.5];
+    case 'fuelOut':
+      return [e.vehicle === 'ship' ? SHIP_TEXT.fuelOutShip : SHIP_TEXT.fuelOutSub, 5];
+    case 'rescued':
+      return [SHIP_TEXT.rescued(e.where, e.teeth), 5];
     case 'subLaunched':
       return [SHIP_TEXT.launched, 4];
     case 'subDocked':
@@ -109,7 +111,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         5,
       ];
     case 'battleLost':
-      return ['La tua squadra è sfinita. Curala a un santuario.', 3.5];
+      return ['La tua squadra è sfinita. Curala al porto o sulla nave.', 3.5];
     case 'tamed': {
       const b = tamed(e.uid);
       return b
@@ -139,7 +141,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'beastKo': {
       const b = tamed(e.uid);
-      return b ? [`${formName(b.form)} è sfinito. Curalo a un santuario.`, 3] : null;
+      return b ? [`${formName(b.form)} è sfinito. Curalo al porto o sulla nave.`, 3] : null;
     }
     case 'levelUp': {
       const b = tamed(e.uid);
@@ -193,8 +195,6 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       ];
     case 'guardianLeft':
       return ['Lo Sfregiato torna nel buio della sua tana.', 3];
-    case 'sanctuaryReached':
-      return ['Santuario raggiunto: rinascerai qui. Resta fermo per curarti.', 3];
     case 'bonesHint': {
       const b = e.breakerUid ? tamed(e.breakerUid) : undefined;
       return b

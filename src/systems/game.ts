@@ -41,7 +41,6 @@ import { createFish, stepFish, takeFish, type FishState } from './fish';
 import { BASE_HARPOON, createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
 import type { InputState } from './input';
 import { makeRng } from './math';
-import { placeSanctuaries } from './sanctuary';
 import { newSave, type SaveData } from './save/saveData';
 import { restoreGear, restoreTeam } from './save/convert';
 import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
@@ -49,17 +48,9 @@ import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import {
-  board,
-  canBoard,
-  leaveSub,
-  newSub,
-  ramSub,
-  repairSub,
-  subWakePoint,
-  type SubState,
-} from './submarine';
+import { board, canBoard, leaveSub, newSub, ramSub, repairSub, type SubState } from './submarine';
 import { dismount } from './beastState';
+import { rescue } from './fuel';
 import { newShip, type ShipState } from './ship/ship';
 import { helmPoint } from './ship/geometry';
 import { canDock } from './ship/hatch';
@@ -89,7 +80,7 @@ export interface GameState extends Chapter4World {
   /** True while the diver floats at a pier; `port` says which. */
   atPort: boolean;
   port: PortDef | null;
-  /** The last harbour you came into: you wake up there when there is no sanctuary to return to (saved). */
+  /** The last harbour you came into: you wake up there without a ship (saved). */
   homePort: PortDef['id'];
   /** Your submarine (from the end of chapter 1; saved). */
   sub: SubState;
@@ -118,7 +109,6 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const diver = createDiver(s.diver.x, s.diver.y);
   // A save inside rock (e.g. the world changed) falls back to the start.
   if (map.hitCircle(diver.x, diver.y, DIVER.radius)) Object.assign(diver, createDiver());
-  const list = placeSanctuaries(map);
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
@@ -137,13 +127,6 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     seen: new Set(s.seen),
     beasts,
     guardian: createGuardian(beasts),
-    sanctuaries: {
-      list,
-      current: s.sanctuary !== null && s.sanctuary < list.length ? s.sanctuary : null,
-      inside: null,
-      heartProgress: 0,
-      healing: false,
-    },
     brokenTiles: [...s.brokenTiles],
     gear,
     swarmCooldowns: {},
@@ -164,12 +147,10 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   return g;
 }
 
+/** Where you wake up (owner, 4 ottobre: you heal only on the ship and at the port): your ship, or your harbour. */
 export function respawnPoint(g: GameState): { x: number; y: number } {
-  if (g.ship.owned) return helmPoint(g.ship); // you wake up at the helm of your ship…
-  if (g.sub.owned) return subWakePoint(g.sub); // …or by your submarine
-  const i = g.sanctuaries.current;
-  const s = i === null ? undefined : g.sanctuaries.list[i];
-  return s ? { x: s.x, y: s.y - 6 } : portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
+  if (g.ship.owned) return helmPoint(g.ship);
+  return portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
 }
 
 /** Is there a dash now? Not in the submarine, nor in a suit without one (the palombaro), unless you ride a beast. */
@@ -250,6 +231,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   }
 
   if (input.action) doAction(g, events);
+  if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
   if (input.slot >= 0) useSlot(g, input.slot, events);
   stepSwarmCooldowns(g, dt);
 
@@ -283,8 +265,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
     );
   // after losing your senses you wake up on your boat
-  if (events.some((e) => e.type === 'respawned') && !wakeOnShip(g, events) && g.sub.owned && !g.sub.aboard)
-    board(g, events);
+  if (events.some((e) => e.type === 'respawned')) wakeOnShip(g, events);
   stepVents(d, dt, g.timers, events);
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
@@ -367,8 +348,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 }
 
 /**
- * Like Pokémon: a beast touched you with every beast of yours KO. You black out and wake up at your sanctuary
- * (or your harbour) with everyone healed, a few teeth lost on the way.
+ * Like Pokémon: a beast touched you with every beast of yours KO. You black out and wake up on your ship (or at
+ * your harbour) with everyone healed, a few teeth lost on the way.
  */
 export function blackout(g: GameState, events: GameEvent[]): void {
   const at = respawnPoint(g);
@@ -385,21 +366,14 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   if (g.beasts.riding) g.beasts.riding = false;
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);
   g.gear.teeth -= teethLost;
-  const i = g.sanctuaries.current;
+  if (g.sub.aboard) g.sub.aboard = false; // the submarine stays where it was
   const onShip = wakeOnShip(g, events);
-  if (!onShip && g.sub.owned) board(g, events);
-  // "sulla tua nave" / "nel tuo sottomarino" / "al santuario della Baia" / "a Portofosco"
-  const place = onShip
-    ? 'sulla tua nave'
-    : g.sub.owned
-      ? 'nel tuo sottomarino'
-      : i !== null
-        ? g.sanctuaries.list[i]!.name.replace(/^il /, 'al ')
-        : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
+  // "sulla tua nave" / "a Portofosco"
+  const place = onShip ? 'sulla tua nave' : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
   events.push({ type: 'blackout', teethLost, place });
 }
 
-/** Arriving at a harbour: its sanctuary heals everyone, the market restocks, you wake up here. */
+/** Arriving at a harbour: everyone is healed, the market restocks, you wake up here. */
 export function enterPort(g: GameState, events: GameEvent[] = []): void {
   restAtPort(g);
   repairSub(g, events);
@@ -420,7 +394,6 @@ export function restAtPort(g: GameState): void {
     b.status = undefined;
     b.sleepTurns = undefined;
   }
-  g.sanctuaries.current = null;
 }
 
 /** Sells the fish bag at the market; counts for "sell" missions. */

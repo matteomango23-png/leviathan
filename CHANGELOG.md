@@ -2,6 +2,23 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.40.0 — Carburante, cockpit e cure solo sulla nave (4 ottobre 2026)
+
+- **Carburante:**
+  - la nave (500 L) e il sottomarino (da 120 a 260 L secondo il modello) consumano solo col motore acceso, di più a tutto gas;
+  - gli strumenti delle leve mostrano litri e autonomia in km;
+  - a secco il mezzo si ferma e compare il **Razzo di soccorso**.
+- **Al porto,** nella scheda Mute, la sezione **Carburante** in cima: "Riempi" per la nave attraccata lì e per il sottomarino (nella stiva della nave attraccata, o ormeggiato al molo).
+- **Cockpit** (pulsante al timone):
+  - **Plancia:** carburante e autonomia di nave e sottomarino, travaso di 25 L tra i due (con il sottomarino nella stiva), razzo di soccorso, distanza dalla costa;
+  - **Recinto** e **Zaino** come al porto.
+- **Razzo di soccorso:** un rimorchiatore porta la nave al porto più vicino, oppure il sottomarino nella stiva della nave (senza nave, a Portofosco). Costa un quarto dei denti, minimo 50.
+- **Cure solo sulla nave e al porto:**
+  - i santuari in mare non ci sono più;
+  - nel sottomarino respiri, ma non guarisci;
+  - salire sulla nave (o rientrarci col sottomarino) cura te e la squadra;
+  - dopo uno svenimento ti risvegli sulla nave o all'ultimo porto.
+
 ## v0.39.0 — La nave da spedizione e le leve di guida (4 ottobre 2026)
 
 - **La nave da spedizione:** alla fine del capitolo 4 Aurelio arriva con una nave e ci carica dentro il tuo sottomarino. Chi ha già finito il capitolo 4 la trova appena apre il gioco, al punto più vicino tra la Foresta Sommersa e i porti. Vicino allo scafo, in superficie, premi **A bordo**.

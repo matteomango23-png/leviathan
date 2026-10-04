@@ -339,12 +339,6 @@ export const MOVE_RULES = {
   woundedFraction: 0.5, // 'x2vsWounded': double damage under this share of health
 };
 
-/** Sanctuaries: stand still inside to heal (PROGRESSION.sanctuaryHealSeconds). */
-export const SANCTUARY_RULES = {
-  radius: 26,
-  stillSpeed: 14, // u/s: slower than this counts as standing still
-};
-
 /** Sprite frame of big beasts (docs/ART.md). */
 export const BEAST_SPRITE = {
   frameW: 1000,

@@ -73,15 +73,16 @@ describe('the submarine', () => {
     expect(ev.some((e) => e.type === 'subGiven')).toBe(true);
   });
 
-  it('you climb in next to it at any depth; inside you and your team rest; you get out and it waits', () => {
+  it('you climb in next to it at any depth; inside you breathe but nobody heals; you get out and it waits', () => {
     const g = afterChapter1();
     expect(canBoard(g)).toBe(true);
     g.beasts.team[0]!.hp = 1;
     g.diver.hp = 1;
     press(g);
     expect(g.sub.aboard).toBe(true);
-    expect(g.diver.hp).toBe(g.diver.maxHp);
-    expect(g.beasts.team[0]!.hp).toBeGreaterThan(1);
+    expect(g.diver.o2).toBe(g.diver.maxO2);
+    expect(g.diver.hp).toBe(1); // only the ship and the port heal (4 ottobre)
+    expect(g.beasts.team[0]!.hp).toBe(1);
     expect(g.beasts.aboard).toBe(true);
     run(g, 1, levers(1, 1, 1));
     const at = { x: g.sub.x, y: g.sub.y };

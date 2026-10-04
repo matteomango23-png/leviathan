@@ -13,6 +13,9 @@ export interface HelmInfo {
   mode: 'ship' | 'sub';
   face: 1 | -1;
   knots: number;
+  /** Litres left, and how far they take you at the throttle you have now. */
+  fuel: number;
+  rangeKm: number;
   /** Submarine only: depth and the model's limit (m). */
   depthM?: number;
   maxDepthM?: number;
@@ -38,6 +41,8 @@ export class HelmControls {
   private readonly hatchBtn: HTMLButtonElement;
   private readonly launchBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
+  private readonly cockpitBtn: HTMLButtonElement;
+  private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
   private dragging: { lever: 'throttle' | 'dive'; id: number } | null = null;
   private readonly keys = new Set<string>();
@@ -72,6 +77,8 @@ export class HelmControls {
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
     this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
+    this.cockpitBtn = el('button', 'helm-btn', this.buttons, 'Cockpit');
+    this.rescueBtn = el('button', 'helm-btn helm-rescue', this.root, 'Razzo di soccorso');
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
     this.listen(this.diveTrack, 'pointerdown', (e) => this.grab(e, 'dive'));
@@ -85,6 +92,8 @@ export class HelmControls {
     this.tap(this.hatchBtn, () => (this.session.input.helmCmd = 'hatch'));
     this.tap(this.launchBtn, () => (this.session.input.helmCmd = 'launch'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
+    this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
+    this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
     this.listen<KeyboardEvent>(window, 'keydown', (e) => {
       const k = e.key.toLowerCase();
       this.keys.add(k);
@@ -166,7 +175,11 @@ export class HelmControls {
     this.west.classList.toggle('on', helm.dir === -1);
     this.east.classList.toggle('on', helm.dir === 1);
 
-    const parts = [`${Math.round(info.knots)} nodi`, `gas ${Math.round(helm.throttle * 100)}%`];
+    const parts = [
+      `${Math.round(info.knots)} nodi`,
+      `gas ${Math.round(helm.throttle * 100)}%`,
+      `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
+    ];
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
     const text = parts.join(' · ');
     if (text !== this.gaugeText) {
@@ -177,6 +190,8 @@ export class HelmControls {
     this.hatchBtn.textContent = info.hatchOpen ? 'Chiudi portellone' : 'Apri portellone';
     this.hatchBtn.classList.toggle('off', !info.hatchCanMove);
     this.launchBtn.hidden = !info.canLaunch;
+    this.rescueBtn.hidden = info.fuel > 0;
+    this.gauges.classList.toggle('dry', info.fuel <= 0);
   }
 
   destroy(): void {

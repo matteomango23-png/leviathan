@@ -1,5 +1,26 @@
 # Progressi
 
+## Sessione cloud 1 (fine) — Tappa 2 delle spedizioni: carburante e cockpit (4 ottobre 2026) → v0.40.0
+
+**Fatto:**
+- carburante di nave e sottomarino, mostrato negli strumenti con l'autonomia;
+- rifornimento al porto (scheda Mute, in cima);
+- cockpit con Plancia (travaso, razzo di soccorso), Recinto e Zaino;
+- razzo di soccorso;
+- santuari tolti; cure solo sulla nave e al porto; il sottomarino non cura più;
+- salvataggio v15.
+
+**Da provare sull'iPhone (v0.40.0):**
+1. Al timone, gli strumenti in basso mostrano litri e km. Muovi il gas: i km cambiano (piano = più km).
+2. Tocca **Cockpit**: Plancia con i due serbatoi; prova il travaso col sottomarino nella stiva.
+3. In porto, scheda **Mute**: "Riempi" la nave e il sottomarino.
+4. Nel sottomarino la squadra non guarisce più; salendo sulla nave sì.
+5. Resta a secco (o usa il razzo dal cockpit): il rimorchiatore ti porta al porto più vicino.
+
+**Da regolare giocando:** serbatoi e consumi (`SHIP.fuel`, `tank` e `perKm` in `SUB_MODELS`), prezzo (`FUEL.pricePerLitre`), costo del razzo (`RESCUE`).
+
+**Prossima tappa (3):** l'oceano di 30 km in regioni, gli avamposti, la mappa con una scheda per regione.
+
 ## Sessione cloud 1 (fine) — Progetto delle spedizioni e tappa 1: la nave (4 ottobre 2026) → v0.39.0
 
 **Progetto deciso col proprietario:** è scritto nel GDD, sezione "Spedizioni", con le 6 tappe nella Roadmap (punto 11).

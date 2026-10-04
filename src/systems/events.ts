@@ -61,6 +61,10 @@ export type GameEvent =
   | { type: 'subDocked' }
   /** The bow breaks the ice at x (chunks fly). */
   | { type: 'iceCracked'; x: number; speed: number }
+  /** A vehicle ran dry (fuel.ts). */
+  | { type: 'fuelOut'; vehicle: 'ship' | 'sub' }
+  /** The rescue flare: towed somewhere, for some teeth. */
+  | { type: 'rescued'; where: string; teeth: number }
   /** Tiles changed (ice broken or frozen again): to redraw. */
   | { type: 'tilesChanged'; tiles: number[] }
   /** You breathe in the bubbles of an air vent of the open sea. */
@@ -96,5 +100,4 @@ export type GameEvent =
   /** The whale you ride has no air left: you breathe your own again, go up. */
   | { type: 'rideAirOut'; name: string }
   | { type: 'missionComplete'; id: string }
-  | { type: 'sanctuaryReached'; index: number }
   | { type: 'healed' };

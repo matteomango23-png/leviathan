@@ -27,8 +27,8 @@ export interface InputState {
   slot: number;
   /** The levers of the ship or the submarine (they stay where you leave them). */
   helm: HelmState;
-  /** A button of the helm pressed this frame: the hatch, lower the submarine, dive off the ship. */
-  helmCmd: 'hatch' | 'launch' | 'dive' | null;
+  /** A button of the helm pressed this frame: the hatch, lower the submarine, dive off the ship, the flare. */
+  helmCmd: 'hatch' | 'launch' | 'dive' | 'rescue' | null;
 }
 
 export const emptyInput = (): InputState => ({

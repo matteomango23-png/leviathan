@@ -195,19 +195,6 @@ export const ICE = {
 };
 
 /** Sanctuaries: x and a y above the sea floor they rest on (the floor is found at runtime). */
-export interface SanctuaryDef {
-  name: string;
-  x: number;
-  y: number;
-}
-export const SANCTUARIES: SanctuaryDef[] = [
-  { name: 'il santuario della Barriera', x: east(2850), y: 200 },
-  { name: 'il santuario della Baia', x: bay(1010), y: 200 },
-  { name: 'il santuario crepuscolare', x: bay(1290), y: 650 },
-  { name: "il santuario dell'abisso", x: bay(520), y: 1250 },
-  { name: 'il santuario della fossa', x: east(4820), y: 1250 },
-];
-
 /** The west coast: a long beach slopes gently from Portofosco down to the floor of the bay. */
 export const COAST = {
   shoreX: LAYOUT.shoreX, // where the land meets the water line

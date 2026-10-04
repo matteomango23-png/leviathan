@@ -6,13 +6,14 @@ import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
+import { SHIP } from '../../data/ship';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
 import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 14;
+export const SAVE_VERSION = 15;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -49,7 +50,6 @@ export interface SaveData {
   fishCaught: Record<string, number>;
   seen: string[]; // bestiary ids seen at least once
   team: SavedBeast[]; // team and reserve (v2)
-  sanctuary: number | null; // respawn sanctuary index (v2)
   brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
   story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
@@ -69,7 +69,6 @@ export function newSave(start: { x: number; y: number }): SaveData {
     fishCaught: {},
     seen: [],
     team: [],
-    sanctuary: null,
     brokenTiles: [],
     gear: null,
     story: null,
@@ -202,6 +201,16 @@ export const MIGRATIONS: Migration[] = [
   },
   // v13 → v14 (4 ottobre 2026): the expedition ship. Not in older saves: the game gives it if chapter 4 is over.
   { from: 13, migrate: (o) => ({ ...o, ship: null }) },
+  // v14 → v15 (4 ottobre 2026): fuel, full tanks to start with (checkedSub / checkedShip fill a missing one);
+  // the sanctuaries are gone
+  {
+    from: 14,
+    migrate: (o) => {
+      const rest: Record<string, unknown> = { ...o };
+      delete rest.sanctuary;
+      return rest;
+    },
+  },
 ];
 
 export class SaveError extends Error {}
@@ -248,9 +257,6 @@ export function validate(data: Record<string, unknown>): SaveData {
   if (new Set(team.map((b) => b.uid)).size !== team.length) throw new SaveError('Squadra non valida.');
   const inTeam = team.filter((b) => b.inTeam);
   for (const b of inTeam.slice(PROGRESSION.teamSize)) b.inTeam = false;
-  const sanctuary = data.sanctuary;
-  if (sanctuary !== null && (!Number.isInteger(sanctuary) || (sanctuary as number) < 0))
-    throw new SaveError('Santuario non valido.');
   if (!Array.isArray(data.brokenTiles) || !data.brokenTiles.every((t) => Number.isInteger(t) && t >= 0))
     throw new SaveError('Mappa non valida.');
   return {
@@ -262,7 +268,6 @@ export function validate(data: Record<string, unknown>): SaveData {
     fishCaught,
     seen: [...new Set(data.seen as string[])],
     team,
-    sanctuary: sanctuary as number | null,
     brokenTiles: [...new Set(data.brokenTiles as number[])],
     gear: data.gear === null || data.gear === undefined ? null : checkedGear(data.gear),
     story: validateStory(data.story),
@@ -362,7 +367,9 @@ function checkedSub(raw: unknown): SavedSub | null {
   const model = typeof raw.model === 'string' && models.includes(raw.model) ? raw.model : models[0]!;
   const max = SUB_MODELS.find((m) => m.id === model)!.hull;
   const hull = isFiniteNumber(raw.hull) ? Math.max(0, Math.min(max, raw.hull)) : max;
-  return { x: raw.x, y: raw.y, model, models, hull };
+  const tank = SUB_MODELS.find((m) => m.id === model)!.tank;
+  const fuel = isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(tank, raw.fuel)) : tank;
+  return { x: raw.x, y: raw.y, model, models, hull, fuel };
 }
 
 /** The saved ship, checked: a broken one is dropped (the game gives it again after chapter 4). */
@@ -375,5 +382,6 @@ function checkedShip(raw: unknown): SavedShip | null {
     hatchOpen: raw.hatchOpen === true,
     bay,
     aboard: raw.aboard === true,
+    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(SHIP.fuel.tank, raw.fuel)) : SHIP.fuel.tank,
   };
 }

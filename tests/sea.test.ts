@@ -1,5 +1,5 @@
 // The open sea after the switch to turn-based battles: wild beasts roam and start battles, mounts carry
-// you and use their abilities, sanctuaries heal, old saves still load.
+// you and use their abilities, nothing heals in the sea, old saves still load.
 import { beforeAll, describe, expect, it } from 'vitest';
 import { ROAM, TEAM_RULES } from '../src/data/beasts';
 import { DIVER } from '../src/data/diver';
@@ -124,7 +124,7 @@ describe('wild beasts in the open sea', () => {
     expect(g.gear.teeth).toBe(90);
     expect(g.beasts.team.every((b) => !b.ko && b.hp > 0)).toBe(true);
     const out = ev.find((e) => e.type === 'blackout');
-    expect(out && out.type === 'blackout' && out.place).toBe('a Portofosco'); // no sanctuary yet: the harbour
+    expect(out && out.type === 'blackout' && out.place).toBe('a Portofosco'); // no ship yet: the harbour
   });
 
   it('the sea waits while a battle is on', () => {
@@ -223,22 +223,14 @@ describe('mounts', () => {
   });
 });
 
-describe('sanctuaries', () => {
-  it('heal the diver and a worn-out beast, and become the respawn point', () => {
+describe('no sanctuaries (4 ottobre 2026)', () => {
+  it('in the sea nothing heals: the team stays worn out until the port or the ship', () => {
     const g = bay();
-    const s = g.sanctuaries.list[1]!;
     const b = g.beasts.team[0]!;
     b.hp = 0;
     b.ko = true;
-    g.diver.hp = 1;
-    const events: GameEvent[] = [];
-    for (let t = 0; t < 6; t += DT) {
-      Object.assign(g.diver, { x: s.x, y: s.y, vx: 0, vy: 0 });
-      events.push(...stepGame(g, emptyInput(), DT));
-    }
-    expect(events.some((e) => e.type === 'sanctuaryReached')).toBe(true);
-    expect(g.diver.hp).toBe(g.diver.maxHp);
-    expect(b.ko).toBe(false);
+    for (let t = 0; t < 6; t += DT) stepGame(g, emptyInput(), DT);
+    expect(b.ko).toBe(true);
   });
 });
 

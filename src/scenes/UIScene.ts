@@ -59,12 +59,14 @@ export class UIScene extends Phaser.Scene {
     this.session.on('toast', this.onToast, this);
     this.session.on('resume', this.onResume, this);
     this.session.on('openPort', this.openPort, this);
+    this.session.on('openCockpit', this.openCockpit, this);
     this.session.on('battle', this.onBattle, this);
     this.events.once('shutdown', () => {
       this.session.off('gameEvents', this.onGameEvents, this);
       this.session.off('toast', this.onToast, this);
       this.session.off('resume', this.onResume, this);
       this.session.off('openPort', this.openPort, this);
+      this.session.off('openCockpit', this.openCockpit, this);
       this.session.off('battle', this.onBattle, this);
       this.controls.destroy();
       this.helm.destroy();
@@ -97,7 +99,7 @@ export class UIScene extends Phaser.Scene {
     this.root.style.display = on ? 'none' : '';
   }
 
-  private openMenus(mode: 'pause' | 'port'): void {
+  private openMenus(mode: 'pause' | 'port' | 'cockpit'): void {
     if (this.session.paused || this.session.inBattle || !this.session.game) return;
     this.session.paused = true;
     this.controls.releaseAll();
@@ -114,6 +116,10 @@ export class UIScene extends Phaser.Scene {
     this.openMenus('port');
   }
 
+  private openCockpit(): void {
+    this.openMenus('cockpit');
+  }
+
   private onResume(): void {
     this.session.paused = false;
     this.controls.releaseAll();
@@ -126,7 +132,7 @@ export class UIScene extends Phaser.Scene {
     const g = this.session.game;
     if (!g) return;
     const dt = Math.min(0.1, deltaMs / 1000);
-    const helm = helmInfo(g);
+    const helm = helmInfo(g, this.session.input.helm.throttle);
     this.root.classList.toggle('driving', !!helm);
     this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g), !!helm);
     this.helm.update(helm, dt);

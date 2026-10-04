@@ -37,6 +37,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave (linea d'acqua, portellone, rampa, timone, scafo). |
 | `ship/surface.ts` | Cosa incontra la nave in superficie: terra, iceberg, scogli, spiaggia; rompe il ghiaccio e lo fa richiudere lontano. |
 | `vehicles.ts` | Nave e sottomarino insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone, risveglio sulla nave. |
+| `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
 | `hull.ts` | Scafi solidi: spinge fuori i corpi che li toccano. |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
@@ -84,7 +85,6 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `guardian.ts` | Il Guardiano nella tana: appare quando entri, ti punta; battaglia senza fuga; ricompensa e ritorno dopo il porto. |
 | `world/lair.ts` | Forma della tana: grotta, pozzo, guscio di roccia. |
 | `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse di battaglia (e le prossime), mosse in mare. |
-| `sanctuary.ts` | Santuari: cura graduale di sub e squadra, punto di rinascita. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
 
 ## Scene (`src/scenes/`)
@@ -102,6 +102,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
+| `cockpit.ts` | Il cockpit della nave: Plancia (carburante, travaso, razzo di soccorso), Recinto e Zaino. |
 | `helmControls.ts`, `helmInfo.ts` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
@@ -152,7 +153,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo (più scuro sotto le nuvole), raggi di luce (più deboli col cielo coperto), creste lontane con parallasse, neve marina; le nuvole del meteo (`weatherView`).
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
-3. **Mondo**: santuari (`sanctuaryView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), gabbiani (`birdsView`), bolle e linea della superficie, più mossa col brutto tempo (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
+3. **Mondo**: la nave (`shipView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), gabbiani (`birdsView`), bolle e linea della superficie, più mossa col brutto tempo (`effectsView`); alcune alghe davanti al sub. Le scene della storia (nave della Compagnia, balena in catene, Aurelio, incendio, tracce) sono in `storyView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra. Il cielo coperto scurisce un po' vicino alla superficie.
 4b. **Meteo** (`weatherView`, sopra il buio): pioggia o neve fino alla superficie, nebbia sull'acqua, lampi; tutto sparisce scendendo (`weatherReach`, 60 m).
 5. Le bestie rare brillano un poco nel buio (`beastsLayer`). La vita e i danni si vedono solo in battaglia.
