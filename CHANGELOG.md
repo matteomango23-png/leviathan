@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.33.0 — Urti del sottomarino (4 ottobre 2026)
+
+- **Niente più muro invisibile:** il sottomarino tocca la roccia dove la tocca il disegno, e contro la roccia rimbalza un po' invece di fermarsi di colpo.
+- **Gli urti fanno danno:** se sbatti forte contro la roccia, o se una bestia grande ti sperona, lo schermo vibra, escono bolle e fumo scuro e lo scafo perde punti. La speronata ti spinge anche via.
+- **Barra della vita sopra il sottomarino:** compare quando lo scafo prende danno (verde, gialla, rossa) e sparisce dopo qualche secondo. Resta anche il valore in alto a sinistra.
+- **Molto danneggiato, fuma:** sotto un terzo dello scafo dal sottomarino sale fumo scuro. Al porto si ripara come prima.
+
 ## v0.32.0 — Correzioni dopo la prova (4 ottobre 2026)
 
 - **La Piovra si vede** come compagno e cavalcatura (e così gli altri Guardiani e tutte le evoluzioni delle bestie domabili): prima le loro immagini non venivano caricate.

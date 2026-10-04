@@ -37,9 +37,10 @@ export type GameEvent =
   | { type: 'summoned'; uid: string }
   // the boat (tappa 12)
   | { type: 'subGiven' }
-  | { type: 'subRammed'; hull: number; max: number }
+  /** The hull took a blow: a beast rammed it or it ran into rock. */
+  | { type: 'subRammed'; hull: number; max: number; by: 'rock' | 'beast'; x: number; y: number }
   /** From the beasts: one rammed your submarine (game.ts applies it to the hull). */
-  | { type: 'subRammedBy'; lengthM: number }
+  | { type: 'subRammedBy'; lengthM: number; x: number; y: number }
   | { type: 'subWrecked'; teeth: number }
   | { type: 'subRepaired'; cost: number }
   | { type: 'subTooDeep' }

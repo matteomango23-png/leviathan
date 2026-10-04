@@ -27,6 +27,8 @@ export interface SubState {
   aboard: boolean;
   /** Seconds before the "too deep" message may show again. */
   deepWarn: number;
+  /** Seconds before running into rock can damage it again. */
+  bumpWait: number;
 }
 
 export interface SavedSub {
@@ -53,6 +55,7 @@ export function newSub(saved: SavedSub | null): SubState {
     hull: saved ? clamp(saved.hull, 0, subModel(model).hull) : subModel(model).hull,
     aboard: false,
     deepWarn: 0,
+    bumpWait: 0,
   };
 }
 
@@ -129,10 +132,18 @@ export function leaveSub(g: SubWorld, events: GameEvent[]): void {
   events.push({ type: 'dove' });
 }
 
-/** Its body against rock: bow, middle and stern. */
+/** Its body against rock: circles along the hull (SUBMARINE.body). */
 function hits(map: TileMap, x: number, y: number): boolean {
-  const off = SUBMARINE.length / 2 - SUBMARINE.radius;
-  return [-off, 0, off].some((dx) => map.hitCircle(x + dx, y, SUBMARINE.radius));
+  return SUBMARINE.body.some(([dx, r]) => map.hitCircle(x + dx, y, r));
+}
+
+/** It ran into rock at this speed (one axis): it bounces back; fast enough, the hull takes it. */
+function bump(g: SubWorld, speed: number, events: GameEvent[]): void {
+  const B = SUBMARINE.bump;
+  const s = g.sub;
+  if (speed < B.minSpeed || s.bumpWait > 0) return;
+  s.bumpWait = B.cooldown;
+  damageHull(g, Math.max(B.minDamage, Math.round((speed - B.minSpeed) * B.damagePerSpeed)), 'rock', events);
 }
 
 /** The deepest point this model reaches (world y). */
@@ -152,6 +163,7 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   }
   if (!s.owned) return false;
   s.deepWarn = Math.max(0, s.deepWarn - dt);
+  s.bumpWait = Math.max(0, s.bumpWait - dt);
   if (!s.aboard) return false;
   const d = g.diver;
   const m = subModel(s.model);
@@ -167,8 +179,10 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
     s.vy *= m.speed / sp;
   }
   const nx = s.x + s.vx * dt;
-  if (hits(g.map, nx, s.y)) s.vx = 0;
-  else s.x = nx;
+  if (hits(g.map, nx, s.y)) {
+    bump(g, Math.abs(s.vx), events);
+    s.vx = -s.vx * SUBMARINE.bump.bounce;
+  } else s.x = nx;
   let ny = s.y + s.vy * dt;
   const floor = subFloorY(s);
   if (ny > floor) {
@@ -180,21 +194,41 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
     }
   }
   ny = Math.max(SUBMARINE.restY, ny); // it stays under the surface
-  if (hits(g.map, s.x, ny)) s.vy = 0;
-  else s.y = ny;
+  if (hits(g.map, s.x, ny)) {
+    bump(g, Math.abs(s.vy), events);
+    s.vy = -s.vy * SUBMARINE.bump.bounce;
+  } else s.y = ny;
   if (Math.abs(input.moveX) > 0.2) s.face = input.moveX > 0 ? 1 : -1;
   d.face = s.face;
   Object.assign(d, { x: s.x, y: s.y, vx: s.vx, vy: s.vy, o2: d.maxO2 });
   return true;
 }
 
-/** A big beast rammed it (encounters.ts): the hull takes it; at zero it is towed back to Portofosco. */
-export function ramSub(g: SubWorld, lengthM: number, events: GameEvent[]): void {
+/** A big beast rammed it (encounters.ts): the hull takes it and the blow pushes it away from the beast. */
+export function ramSub(
+  g: SubWorld,
+  lengthM: number,
+  fromX: number,
+  fromY: number,
+  events: GameEvent[],
+): void {
+  const s = g.sub;
+  if (!s.aboard || s.hull <= 0) return;
+  const dx = s.x - fromX;
+  const dy = s.y - fromY;
+  const dist = Math.hypot(dx, dy) || 1;
+  s.vx += (dx / dist) * SUBMARINE.ram.knock;
+  s.vy += (dy / dist) * SUBMARINE.ram.knock;
+  damageHull(g, Math.round(SUBMARINE.ram.damage * (lengthM / 6)), 'beast', events);
+}
+
+/** The hull takes a blow; at zero the submarine is towed back to Portofosco, you with it. */
+function damageHull(g: SubWorld, amount: number, by: 'rock' | 'beast', events: GameEvent[]): void {
   const s = g.sub;
   if (!s.aboard || s.hull <= 0) return;
   const max = subModel(s.model).hull;
-  s.hull = Math.max(0, s.hull - Math.round(SUBMARINE.ram.damage * (lengthM / 6)));
-  events.push({ type: 'subRammed', hull: s.hull, max });
+  s.hull = Math.max(0, s.hull - amount);
+  events.push({ type: 'subRammed', hull: s.hull, max, by, x: s.x, y: s.y });
   if (s.hull > 0) return;
   // broken: towed home, you with it (a price in teeth, like losing your senses)
   const teeth = Math.floor(g.gear.teeth * SUBMARINE.wreckTeethLoss);

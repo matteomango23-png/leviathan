@@ -55,7 +55,15 @@ export const SUBMARINE = {
   mooredX: PORT.x + 110, // where Aurelio leaves it: past the pier of Portofosco (out of the port's reach)
   restY: WORLD.surfaceY + 10, // at the port it floats just under the surface
   length: 46, // units, as drawn (~7.5 m)
-  radius: 9, // its body against rock (three circles: bow, middle, stern)
+  /** Its body against rock: circles along the hull (offset from the middle, radius), slimmer at bow and stern so
+   *  it touches where the picture touches (owner: it stopped at an invisible wall). */
+  body: [
+    [-17, 5],
+    [-9, 7],
+    [0, 7.5],
+    [9, 7],
+    [17, 5],
+  ] as [number, number][],
   reach: 26, // units: you climb in this close to it
   accel: 110,
   drag: 1.5,
@@ -64,7 +72,19 @@ export const SUBMARINE = {
   ram: {
     damage: 6, // tuning: hull per ram, × the beast's length in metres / 6
     calm: 2.5, // seconds the beast backs off before ramming again
+    knock: 60, // units/s the ram pushes the submarine away from the beast
   },
+  /** Running into rock: it bounces back a little; fast enough, the hull takes damage. Tuning. */
+  bump: {
+    bounce: 0.35, // share of the speed it keeps, backwards
+    minSpeed: 25, // units/s: slower touches only bounce
+    damagePerSpeed: 0.15, // hull per unit/s above minSpeed
+    minDamage: 2,
+    cooldown: 0.8, // seconds between two damaging bumps
+  },
+  /** How the damage shows: the hull bar over it (seconds on screen) and smoke below this share of the hull. */
+  hullBarSeconds: 3,
+  smokeBelow: 0.3,
   repairPerPoint: 2, // teeth per hull point, repaired when you come into a port
   wreckTeethLoss: 0.1, // a broken submarine is towed back to Portofosco: you lose this share of your teeth
 };
@@ -73,6 +93,7 @@ export const SUB_TEXT = {
   given: 'Aurelio ti lascia il suo vecchio batiscafo, ormeggiato oltre il molo. Avvicinati e premi Sali.',
   boarded: 'Dentro il sottomarino: respiri, la squadra si riposa. Qui non si combatte.',
   rammed: (hull: number, max: number): string => `Uno schianto contro lo scafo! (${hull}/${max})`,
+  bumped: 'Lo scafo sbatte contro la roccia!',
   wrecked: (teeth: number): string =>
     `Lo scafo cede. Ti rimorchiano a Portofosco${teeth ? `: perdi ${teeth} denti` : ''}. Riparalo al porto.`,
   repaired: (cost: number): string => `Il sottomarino è stato riparato (${cost} denti).`,
