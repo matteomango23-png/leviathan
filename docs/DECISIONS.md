@@ -532,3 +532,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Squalo volpe:** la sua immagine "di fronte" era di un altro squalo. Ora usa quella buona (`squalo_volpe_back.jpg`, specchiata); l'originale è in `art-inbox/_squalo_volpe_front_sbagliata.jpg`. Serve una vera vista di schiena.
 - **Sottomarino:** scossa 0,2 (roccia) o 0,45 (bestie) di quella del sub, meno bolle.
 - **Scatto del sub:** non riprodotto. Nel codice, nel browser col tasto e col pulsante passa da 46 a ~115 di velocità. Da capire col proprietario in che situazione non funziona.
+
+## 2026-10-04 — Avversari rivolti a sinistra (v0.37.1)
+
+- **Regola del proprietario:** in battaglia ogni immagine `_front` (l'avversario) ha la testa verso sinistra, cioè verso il centro dello schermo e il difensore. Il gioco non specchia le immagini in battaglia: la direzione si decide nei file di `art-inbox` col suffisso `_flip`.
+- Controllate tutte le 81 immagini `_front`. Rinominate in `_front_flip` quelle che guardavano a destra (anguilla_elettrica, folgore, livyatan, lontra_marina, pesce_leone, regina_bianca, squalo_capopiatto); a `pesce_luna_front_flip` tolto il `_flip`. Rielaborate con `npm run art -- --force --only=<id>`. Nessun file cancellato.
+- **Per le immagini nuove:** se l'avversario guarda a destra, chiamare il file `<id>_front_flip.jpg`.
