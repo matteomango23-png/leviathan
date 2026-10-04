@@ -15,8 +15,8 @@ export interface SeaRegionDef {
   toKm: number;
   /** Which kinds of stretches it is made of, and how often each. */
   biomes: Partial<Record<BiomeId, number>>;
-  /** Levels added to the wild beasts here (the danger of each species sets the rest). Tuning. */
-  levelBonus: number;
+  /** Where in their danger band the wild beasts' levels fall here (0 = bottom, as on the coast). Tuning. */
+  bandAt: number;
   /** Its outpost: a floating platform with a harbour (cures, fuel, market), at this km. */
   outpost: { name: string; km: number };
   /** One line for the map. */
@@ -30,7 +30,7 @@ export const SEA_REGIONS: SeaRegionDef[] = [
     fromKm: 0,
     toKm: 6,
     biomes: { barriera: 3, aperto: 2 },
-    levelBonus: 0,
+    bandAt: 0.1,
     outpost: { name: 'Avamposto del Corallo', km: 4.2 },
     note: 'Coralli e squali di barriera, i primi relitti ricchi.',
   },
@@ -40,7 +40,7 @@ export const SEA_REGIONS: SeaRegionDef[] = [
     fromKm: 6,
     toKm: 12,
     biomes: { aperto: 4, foresta: 1 },
-    levelBonus: 2,
+    bandAt: 0.2,
     outpost: { name: 'Avamposto della Corrente', km: 9.1 },
     note: 'Acqua aperta e profonda: tonni, pesci spada, squali oceanici, balene.',
   },
@@ -50,7 +50,7 @@ export const SEA_REGIONS: SeaRegionDef[] = [
     fromKm: 12,
     toKm: 18,
     biomes: { foresta: 2, ghiaccio: 3 },
-    levelBonus: 4,
+    bandAt: 0.3,
     outpost: { name: 'Avamposto del Gelo', km: 15.1 },
     note: 'Alghe giganti, poi il ghiaccio: foche, narvali, orche.',
   },
@@ -60,7 +60,7 @@ export const SEA_REGIONS: SeaRegionDef[] = [
     fromKm: 18,
     toKm: 26,
     biomes: { fossa: 3, aperto: 1 },
-    levelBonus: 6,
+    bandAt: 0.45,
     outpost: { name: 'Avamposto dell’Orlo', km: 22.1 },
     note: 'Abissi oltre i mille metri: servono mute e sottomarini migliori.',
   },
@@ -70,7 +70,7 @@ export const SEA_REGIONS: SeaRegionDef[] = [
     fromKm: 26,
     toKm: 30,
     biomes: { fossa: 1 },
-    levelBonus: 8,
+    bandAt: 0.6,
     outpost: { name: 'Ultimo Avamposto', km: 27.1 },
     note: 'La fine del mondo conosciuto.',
   },

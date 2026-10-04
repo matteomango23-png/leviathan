@@ -1,7 +1,7 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
 import { BODY_SHAPES } from '../../data/bodyShapes.generated';
-import { ABILITIES, WILD_LEVELS } from '../../data/beasts';
+import { ABILITIES, DANGER_LEVELS, DANGER_RULES, SPECIES_DANGER, type Danger } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
@@ -152,34 +152,41 @@ export function rollWildForm(
   return { speciesId, variant: 'comune' };
 }
 
-export function rollWildLevel(form: BeastForm, rng: Rng, levels?: [number, number]): number {
+/** How dangerous a species is (data/beasts.ts SPECIES_DANGER; unlisted: from its size). */
+export function dangerOf(speciesId: string): Danger {
+  const d = SPECIES_DANGER[speciesId];
+  if (d) return d;
+  const size = SPECIES.find((x) => x.id === speciesId)?.size;
+  return size === 'colossale' ? 4 : size === 'grande' ? 3 : size === 'media' ? 2 : 1;
+}
+
+/**
+ * The level of a wild beast (owner, 4 ottobre 2026): its danger band, the region and the depth move it up within
+ * the band (`band`: 0 = coast … DANGER_RULES), albino and alfa add more. Legends keep their own range, the story's
+ * unique beasts their level.
+ */
+export function rollWildLevel(form: BeastForm, rng: Rng, band = 0): number {
   const u = uniqueOf(form);
-  // a legend met by chance is very strong (its own range); the story's unique beasts keep their level
   if (u?.wildLevel) return u.wildLevel[0] + Math.floor(rng() * (u.wildLevel[1] - u.wildLevel[0] + 1));
   if (u) return u.level;
-  const W = WILD_LEVELS;
-  const [a, b] = levels ?? speciesOf(form).wildLevel;
-  let lv = a + Math.floor(rng() * (b - a + 1));
-  const floor = wildLevelFloor(form);
-  if (lv < floor) lv = floor + Math.floor(rng() * (W.aboveFloor + 1));
-  if (rng() < W.outlierChance)
-    lv += W.outlierExtra[0] + Math.floor(rng() * (W.outlierExtra[1] - W.outlierExtra[0] + 1));
+  const [lo, hi] = DANGER_LEVELS[dangerOf(form.speciesId)];
+  const t = Math.min(1, Math.max(0, band) + rng() * DANGER_RULES.spread);
+  const lv = Math.round(lo + (hi - lo) * t) + (DANGER_RULES.variantExtra[form.variant] ?? 0);
   return Math.min(PROGRESSION.maxLevel, lv);
 }
 
-/** The usual levels of a wild beast of this form (its species' range, lifted to its floor), outliers aside. */
-export function wildLevelRange(form: BeastForm): [number, number] {
-  const [a, b] = speciesOf(form).wildLevel;
-  const f = wildLevelFloor(form);
-  return a >= f ? [a, b] : [f, Math.max(b, f + WILD_LEVELS.aboveFloor)];
-}
+/** Where in its band a beast met at this region share and depth falls (for rollWildLevel). */
+export const bandAt = (regionShare: number, depthM: number): number =>
+  regionShare + Math.min(DANGER_RULES.depthMax, Math.max(0, depthM) / DANGER_RULES.depthPerShare);
 
-/** The lowest level a wild beast of this form can have: bigger and rarer means stronger. */
-export function wildLevelFloor(form: BeastForm): number {
-  const s = speciesOf(form);
-  const W = WILD_LEVELS;
-  const base = Math.max(s.minLevel ?? 0, (W.sizeFloor[s.size] ?? 0) + (W.starFloor[s.rarity] ?? 0));
-  return Math.max(1, base + (W.variantExtra[form.variant] ?? 0));
+/** The usual levels of a wild beast of this form, from the coast to the end of the sea. */
+export function wildLevelRange(form: BeastForm): [number, number] {
+  const u = uniqueOf(form);
+  if (u?.wildLevel) return u.wildLevel;
+  if (u) return [u.level, u.level];
+  const [lo, hi] = DANGER_LEVELS[dangerOf(form.speciesId)];
+  const extra = DANGER_RULES.variantExtra[form.variant] ?? 0;
+  return [lo + extra, hi + extra];
 }
 
 /** The six versions of the white shark (tappa 2), in the order shown in the test panel. */

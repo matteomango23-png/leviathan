@@ -12,7 +12,16 @@ import { litresFor } from '../fuelBurn';
 import { stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipSpan } from './geometry';
-import { SEA_END_X, BEACH_END, breakIce, iceIn, obstacleIn, refreeze, shallowAt, type BrokenIce } from './surface';
+import {
+  SEA_END_X,
+  BEACH_END,
+  breakIce,
+  iceIn,
+  obstacleIn,
+  refreeze,
+  shallowAt,
+  type BrokenIce,
+} from './surface';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';

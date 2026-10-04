@@ -70,10 +70,7 @@ export const outpostKey = (id: string): string => `avamposto:${id}`;
 const OUTPOST_SIGHT = 600;
 
 /** Sailing or swimming near an outpost finds it: it shows on the map from then on. */
-export function discoverOutposts(
-  g: { seen: Set<string>; diver: { x: number } },
-  events: GameEvent[],
-): void {
+export function discoverOutposts(g: { seen: Set<string>; diver: { x: number } }, events: GameEvent[]): void {
   for (const p of OUTPOSTS) {
     if (g.seen.has(outpostKey(p.id)) || Math.abs(g.diver.x - p.x) > OUTPOST_SIGHT) continue;
     g.seen.add(outpostKey(p.id));

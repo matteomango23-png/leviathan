@@ -45,7 +45,8 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
   el('p', 'bestiary-count', panel, `Sei a ${km(kmFromCoast(g.diver.x))} km dalla costa${where}`);
   const tabs = el('div', 'map-tabs', panel);
   const body = el('div', 'bestiary-body map-grid', panel);
-  const here = g.diver.x < ENDLESS.startX ? 0 : 1 + regions.findIndex((r) => kmFromCoast(g.diver.x) < r.km[1]);
+  const here =
+    g.diver.x < ENDLESS.startX ? 0 : 1 + regions.findIndex((r) => kmFromCoast(g.diver.x) < r.km[1]);
   const names = ['Costa', ...regions.map((r) => (r.visited ? r.name : '???'))];
   const buttons = names.map((n, i) => {
     const b = el('button', 'map-tab', tabs, n);
@@ -58,7 +59,11 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
     body.replaceChildren();
     if (i === 0) {
       for (const z of coast) {
-        const card = el('div', `map-zone${z.visited ? '' : ' unknown'}${z.name === g.zone ? ' here' : ''}`, body);
+        const card = el(
+          'div',
+          `map-zone${z.visited ? '' : ' unknown'}${z.name === g.zone ? ' here' : ''}`,
+          body,
+        );
         el('div', 'map-name', card, z.visited ? z.name : '???');
         const depth = z.depth[1] === null ? `oltre ${z.depth[0]} m` : `${z.depth[0]}–${z.depth[1]} m`;
         el('div', 'map-depth', card, z.visited ? depth : 'ancora da esplorare');
@@ -67,7 +72,11 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
       return;
     }
     const r = regions[i - 1]!;
-    const card = el('div', `map-zone map-region${r.visited ? '' : ' unknown'}${i === here ? ' here' : ''}`, body);
+    const card = el(
+      'div',
+      `map-zone map-region${r.visited ? '' : ' unknown'}${i === here ? ' here' : ''}`,
+      body,
+    );
     el('div', 'map-name', card, r.visited ? r.name : '???');
     el('div', 'map-depth', card, `${km(Math.max(r.km[0], startKm))}–${r.km[1]} km dalla costa`);
     if (!r.visited) {

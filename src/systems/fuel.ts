@@ -113,9 +113,7 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
   let where: string;
   if (s.aboard || (g.sub.aboard && s.owned)) {
     if (s.aboard) {
-      const port = PORTS.reduce((a, b) =>
-        Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
-      );
+      const port = PORTS.reduce((a, b) => (Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a));
       Object.assign(s, { x: port.shipDock, speed: 0, lane: 0 });
       g.homePort = port.id;
       where = `a ${port.name}`;

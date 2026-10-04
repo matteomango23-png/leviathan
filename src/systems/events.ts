@@ -15,7 +15,7 @@ export type GameEvent =
   | { type: 'creatureSeen'; id: string }
   | { type: 'zoneEntered'; name: string }
   // wild beasts and battles
-  | { type: 'wildAppeared'; id: number; rare: boolean; legend?: boolean }
+  | { type: 'wildAppeared'; id: number; rare: boolean; legend?: boolean; danger?: boolean }
   /** A legend defeated: gone from the sea forever. */
   | { type: 'legendGone'; name: string }
   | { type: 'battleStart'; id: number; first: 'you' | 'foe' | 'normal' }

@@ -112,12 +112,12 @@ describe('life out there', () => {
     const def = WILD_SPAWNS.find((s) => s.endless)!;
     const rng = makeRng(3);
     const w = createWild(1, def);
-    const levelAt = (x: number): number => {
+    const bandAt = (x: number): number => {
       expect(prepareEndlessSpawn(w, { x }, rng)).toBe(true);
       expect(Object.keys(biomeOf(Math.floor((x - S) / ENDLESS.stretch)).beasts)).toContain(w.spawn.speciesId);
-      return w.spawn.level![0];
+      return w.spawn.band!;
     };
-    expect(levelAt(S + 2 * km)).toBeLessThan(levelAt(S + 20 * km));
+    expect(bandAt(S + 2 * km)).toBeLessThan(bandAt(S + 20 * km));
     expect(prepareEndlessSpawn(w, { x: S - 100 }, rng)).toBe(false); // the hand-made coast keeps its own beasts
   });
 

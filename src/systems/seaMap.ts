@@ -91,7 +91,8 @@ export function regionsMap(seen: Set<string>): MapRegion[] {
       const share = (r.biomes[b.id] ?? 0) / total;
       if (!share) continue;
       const sum = Object.values(b.beasts).reduce((a, n) => a + n, 0) || 1;
-      for (const [id, n] of Object.entries(b.beasts)) weights.set(id, (weights.get(id) ?? 0) + (share * n) / sum);
+      for (const [id, n] of Object.entries(b.beasts))
+        weights.set(id, (weights.get(id) ?? 0) + (share * n) / sum);
     }
     const outpost = OUTPOSTS[i]!;
     return {

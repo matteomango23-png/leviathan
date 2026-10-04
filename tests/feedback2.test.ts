@@ -8,7 +8,8 @@ import { statsAt, SPECIES } from '../src/data/species';
 import { TILE } from '../src/data/worldLayout';
 import { canBreakBones } from '../src/systems/abilities';
 import { battleSize } from '../src/systems/battle/stage';
-import { breaksBones, rollWildLevel, wildLevelFloor, type BeastForm } from '../src/systems/beasts/forms';
+import { breaksBones, dangerOf, rollWildLevel, type BeastForm } from '../src/systems/beasts/forms';
+import { DANGER_LEVELS } from '../src/data/beasts';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, restAtPort, stepGame } from '../src/systems/game';
 import { emptyInput } from '../src/systems/input';
@@ -97,22 +98,24 @@ describe('Sfondamento', () => {
   });
 });
 
-describe('wild levels', () => {
-  it('bigger and rarer beasts are never weak: white shark 15+, its alfa 20+, hammerhead and tiger 11+', () => {
-    expect(wildLevelFloor(form('squalo_bianco'))).toBe(15);
-    expect(wildLevelFloor(form('squalo_bianco', 'alfa'))).toBe(20);
-    expect(wildLevelFloor(form('squalo_martello'))).toBe(11);
-    expect(wildLevelFloor(form('squalo_tigre'))).toBe(11);
-    expect(wildLevelFloor(form('barracuda'))).toBe(1);
+describe('wild levels by danger (4 ottobre 2026)', () => {
+  const rng = makeRng(7);
+  const roll = (id: string, variant: 'comune' | 'alfa' = 'comune', band = 0): number[] =>
+    Array.from({ length: 500 }, () => rollWildLevel(form(id, variant), rng, band));
+  it('a white shark is a superpredator even near the shore; its alfa stronger still', () => {
+    expect(Math.min(...roll('squalo_bianco'))).toBeGreaterThanOrEqual(DANGER_LEVELS[4][0]);
+    expect(Math.min(...roll('squalo_bianco', 'alfa'))).toBeGreaterThanOrEqual(DANGER_LEVELS[4][0] + 12);
+    expect(Math.min(...roll('squalo_martello'))).toBeGreaterThanOrEqual(DANGER_LEVELS[3][0]);
   });
 
-  it('a rolled level is never under the floor, and now and then one is far stronger', () => {
-    const rng = makeRng(7);
-    const levels = Array.from({ length: 2000 }, () => rollWildLevel(form('squalo_bianco'), rng));
-    expect(Math.min(...levels)).toBeGreaterThanOrEqual(15);
-    const outliers = levels.filter((l) => l > 15 + 2).length / levels.length;
-    expect(outliers).toBeGreaterThan(0.02);
-    expect(outliers).toBeLessThan(0.1);
+  it('harmless ones stay low on the coast; farther out (higher band) the same species is stronger', () => {
+    expect(Math.max(...roll('barracuda'))).toBeLessThanOrEqual(8);
+    const near = roll('squalo_tigre', 'comune', 0);
+    const far = roll('squalo_tigre', 'comune', 0.6);
+    const avg = (a: number[]): number => a.reduce((x, y) => x + y, 0) / a.length;
+    expect(avg(far)).toBeGreaterThan(avg(near) + 5);
+    expect(Math.max(...far)).toBeLessThanOrEqual(DANGER_LEVELS[3][1]);
+    expect(dangerOf('megalodonte')).toBe(5);
   });
 });
 

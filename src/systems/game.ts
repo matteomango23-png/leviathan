@@ -34,7 +34,16 @@ import { createChapter4, hitBell, stepChapter4, type Chapter4World } from './cha
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
-import { atPort, discoverOutposts, nearWreck, openWreck, placeWrecks, portAt, portStart, type Wreck } from './economy/places';
+import {
+  atPort,
+  discoverOutposts,
+  nearWreck,
+  openWreck,
+  placeWrecks,
+  portAt,
+  portStart,
+  type Wreck,
+} from './economy/places';
 import { PORT, PORTS, type PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createFish, stepFish, takeFish, type FishState } from './fish';

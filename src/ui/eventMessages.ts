@@ -50,6 +50,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
           `Qualcosa di antico si muove nel buio… ${formName(w.form)}! Ne esiste una sola: se la sconfiggi sparisce per sempre.`,
           6,
         ];
+      if (e.danger)
+        return [
+          `⚠ Pericolo: ${formName(w.form)} Lv ${w.level}. È molto più forte della tua squadra: meglio evitarlo.`,
+          4.5,
+        ];
       return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
     }
     case 'beastSensed': {
