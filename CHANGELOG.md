@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.36.0 — Bestie più varie (4 ottobre 2026)
+
+- **Non vedi più sempre le stesse bestie:** quando si libera un posto in acqua, la bestia che arriva viene scelta a sorte tra tutte quelle pronte, non più sempre la prima della lista (prima barracuda e tartarughe vincevano quasi sempre).
+- **Le comuni si vedono di più, le rare di meno:** la scelta pesa la rarità. Una specie già in acqua, o appena vista, ha meno probabilità di ricomparire subito.
+- **Delfini quasi ovunque:** ora nuotano anche sopra la spiaggia, sulla barriera, nella foresta di alghe e nel Delta.
+- **Le percentuali della mappa** seguono la nuova regola.
+
 ## v0.35.0 — Pressione, aria dei cetacei e scatto (4 ottobre 2026)
 
 - **Barra della pressione:** se scendi più in basso di quanto regge la tua muta compare sotto l'aria una barra arancione che si svuota (più in fretta più scendi). Vuota, ti toglie un cuore ogni 2 secondi finché non risali. L'aria non scende più per la profondità.

@@ -12,6 +12,7 @@ import { formKey, formLengthM, rollWildForm, rollWildLevel } from './beasts/form
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
 import { SUBMARINE } from '../data/submarine';
 import { isLegend } from './beasts/legends';
+import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
 import type { BattleRequest, BeastWorld } from './beastState';
 
@@ -71,32 +72,34 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (lure.t <= 0) g.beasts.lure = null;
   }
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
+  /** It comes out of the dark (a legend may come instead, in its place, if it is still free). */
+  const appear = (w: WildBeast): boolean => {
+    const unavailable = new Set([
+      ...g.beasts.gone,
+      ...g.beasts.team.map((b) => b.form.unique ?? ''),
+      ...g.beasts.wilds.filter((o) => isInWater(o)).map((o) => o.form.unique ?? ''),
+    ]);
+    const form = rollWildForm(w.spawn.speciesId, g.rng, { x: d.x, unavailable });
+    const p = appearPoint(w, g.map, g.rng, d);
+    if (!p) return false;
+    spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
+    g.seen.add(w.spawn.speciesId);
+    g.seen.add(formKey(form));
+    rememberSpawn(g.beasts.recent, w.spawn.speciesId);
+    events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique) });
+    return true;
+  };
+  const ready: WildBeast[] = [];
   for (const w of g.beasts.wilds) {
     if (w.arena) continue; // moved by the Guardian fight (guardian.ts)
     if (!isInWater(w)) {
       if (lured(w)) w.respawn = Math.min(w.respawn, ITEM_RULES.bait.respawn);
       w.respawn -= dt;
       const room = present < WILD_RULES.maxPresent || lured(w);
-      const can = w.respawn <= 0 && !d.dead && !g.beasts.arena && room;
-      const ready = w.spawn.endless
-        ? can && prepareEndlessSpawn(w, d, g.rng, g.beasts.lure?.species)
-        : inArea(w, d.x, d.y, 0);
-      if (can && ready) {
-        // a legend may come instead, in its place, if it is still free (not tamed, not gone, not already out)
-        const unavailable = new Set([
-          ...g.beasts.gone,
-          ...g.beasts.team.map((b) => b.form.unique ?? ''),
-          ...g.beasts.wilds.filter((o) => isInWater(o)).map((o) => o.form.unique ?? ''),
-        ]);
-        const form = rollWildForm(w.spawn.speciesId, g.rng, { x: d.x, unavailable });
-        const p = appearPoint(w, g.map, g.rng, d);
-        if (!p) continue;
-        spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.level), p.x, p.y, p.x < d.x ? 1 : -1);
-        present++;
-        g.seen.add(w.spawn.speciesId);
-        g.seen.add(formKey(form));
-        events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique) });
-      }
+      if (w.respawn > 0 || d.dead || g.beasts.arena || !room) continue;
+      if (w.spawn.endless) {
+        if (prepareEndlessSpawn(w, d, g.rng, g.beasts.lure?.species) && appear(w)) present++;
+      } else if (inArea(w, d.x, d.y, 0)) ready.push(w);
       continue;
     }
     // you swam far away from its waters: it goes back into the dark (a hunter on your tail a bit later)
@@ -112,6 +115,19 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
     } else if (touched && !aboard) requestBattle(g, w, 'foe', events);
+  }
+  // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the
+  // first of the list, so the same few came every time)
+  const inWater = g.beasts.wilds.filter((w) => !w.arena && isInWater(w)).map((w) => w.spawn.speciesId);
+  while (ready.length) {
+    const pool = present < WILD_RULES.maxPresent ? ready : ready.filter(lured);
+    if (!pool.length) break;
+    const w = drawSpawn(pool, inWater, g.beasts.recent, g.beasts.lure?.species ?? [], g.rng);
+    ready.splice(ready.indexOf(w), 1);
+    if (appear(w)) {
+      present++;
+      inWater.push(w.spawn.speciesId);
+    }
   }
 }
 

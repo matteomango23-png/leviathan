@@ -1,6 +1,7 @@
 // The sea map in the pause menu (owner, 2 ottobre): every zone, the ones you visited, and in those the beasts
 // that live there with their rarity and how often you meet them. Zones visited are kept in the bestiary's
 // "seen" list as `zona:<name>` (no change to the save file).
+import { mapWeight } from './beasts/spawnDraw';
 import { WILD_SPAWNS } from '../data/beasts';
 import { BIOMES } from '../data/endless';
 import { RARITY } from '../data/cards';
@@ -38,10 +39,8 @@ export function seaMap(seen: Set<string>): MapZone[] {
     const [x0, y0, x1, y1] = s.area;
     const zone = zoneAt((x0 + x1) / 2, (y0 + y1) / 2);
     const weights = byZone.get(zone) ?? new Map<string, number>();
-    weights.set(
-      s.speciesId,
-      (weights.get(s.speciesId) ?? 0) + 2 / (s.respawnSeconds[0] + s.respawnSeconds[1]),
-    );
+    // the same weights as the draw of who comes (spawnDraw.ts): rarity, and how soon it comes back
+    weights.set(s.speciesId, (weights.get(s.speciesId) ?? 0) + mapWeight(s));
     byZone.set(zone, weights);
   }
   const far = BIOMES.map((b) => ({ name: b.name, yMin: WORLD.surfaceY, yMax: Infinity }));
