@@ -44,6 +44,8 @@ export type GameEvent =
   | { type: 'subWrecked'; teeth: number }
   | { type: 'subRepaired'; cost: number }
   | { type: 'subTooDeep' }
+  /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
+  | { type: 'beastGulp'; x: number; y: number; count: number }
   | { type: 'boarded' }
   | { type: 'dove' }
   /** You breathe in the bubbles of an air vent of the open sea. */

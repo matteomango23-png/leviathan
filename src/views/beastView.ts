@@ -6,7 +6,7 @@ import { assetUrl } from '../data/assets';
 import { BEAST_SPRITE } from '../data/beasts';
 import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
-const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
+const { frameW: IW, frameH: IH, spineY: CY, segments: N, turnBreadth } = BEAST_SPRITE;
 const SEG = IW / N;
 const OVERLAP = 1.07;
 const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
@@ -164,18 +164,30 @@ export class BeastSprite {
       }
     }
     const mid = pts[Math.round(N * 0.45)]!;
+    // the fold: the piece most edge-on while turning shows the body's thickness (see below)
+    let fold = -1;
+    if (turning)
+      for (let i = 0; i < N; i++) {
+        const f = Math.abs(fs[i]! + fs[i + 1]!) / 2;
+        if (f < 0.6 && (fold < 0 || f < Math.abs(fs[fold]! + fs[fold + 1]!) / 2)) fold = i;
+      }
     for (let i = 0; i < N; i++) {
       const s = this.strips[i]!;
       const [x, y] = pts[i]!;
       const a = (ang[i]! + ang[i + 1]!) / 2;
       const fm = (fs[i]! + fs[i + 1]!) / 2;
       const width = (lens[i]! / SEG) * OVERLAP;
-      // never exactly zero wide: a thin sliver keeps the silhouette continuous
-      const w = Math.sign(fm || 1) * Math.max(0.08, Math.abs(fm)) * width;
+      // where the body folds edge-on it shows its thickness (thickest in the middle, thin at nose and tail): that
+      // slice is stretched into a solid slab of its own colours, darkened, like the ham between two slices of bread;
+      // the other pieces keep a thin sliver so the outline stays whole
+      const u = (i + 0.5) / N;
+      const slab = i === fold ? ((turnBreadth * IW) / SEG) * Math.pow(Math.sin(Math.PI * u), 0.6) : 0;
+      const w = Math.sign(fm || 1) * Math.max(0.08, Math.abs(fm) * width, (1 - Math.abs(fm)) * slab);
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
         .setScale(w, 1);
-      const shade = turning ? 0.45 + 0.55 * Math.abs(fm) : 1;
+      // the slab of the fold a little lighter than the other edge-on pieces, so it reads as a rounded body
+      const shade = turning ? (i === fold ? 0.6 : 0.45) + (i === fold ? 0.4 : 0.55) * Math.abs(fm) : 1;
       if (p.pale && p.flash <= 0) {
         // screen tint: lightens the dark sprite towards bone white
         const k = Math.round(ALBINO_SCREEN * shade);

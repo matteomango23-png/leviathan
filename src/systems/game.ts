@@ -1,10 +1,11 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
-import { TEAM_RULES } from '../data/beasts';
+import { FEEDING, TEAM_RULES } from '../data/beasts';
 import { stepPortJobs } from './portJobs';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
+import { bodyCircles, headOf } from './beasts/combat';
 import {
   activeBeast,
   beastAction,
@@ -230,6 +231,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       o2DrainMult: mods.o2DrainMult * rideO2Mult(g),
       canDash: mods.canDash,
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
+      body: g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : undefined,
     });
   }
   // after losing your senses you wake up on your boat
@@ -267,15 +269,22 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const eater = activeBeast(g);
   const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
-  // a growing beast (levels 31–50) keeps the fish for its nourishment bar
   // every fish caught or eaten is experience for the beast in the water (or the first of the team)
   const fed = eater ?? g.beasts.team[0];
-  const fishCaught = events.slice(fishMark).filter((e) => e.type === 'fishCaught').length + (eaten ? 1 : 0);
+  const fishCaught = events.slice(fishMark).filter((e) => e.type === 'fishCaught').length + eaten.length;
   if (fed && fishCaught > 0) gainXp(fed, fishXp(fed.level) * fishCaught, events);
-  if (eaten && eater && isHungry(eater)) {
-    takeFish(eaten);
-    feedBeast(eater, events);
-  } else if (eaten) catchFish(g, eaten, events);
+  // a growing beast (levels 31–50) keeps the fish for its nourishment bar; the rest go in your bag
+  for (const f of eaten) {
+    if (eater && isHungry(eater)) {
+      takeFish(f);
+      feedBeast(eater, events);
+    } else catchFish(g, f, events);
+  }
+  const m = g.beasts.mount;
+  if (m && eaten.length >= FEEDING.gulpFrom) {
+    const h = headOf(m);
+    events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
+  }
   stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
   stepEndlessSchools(g.fish, g.map, d, g.rng);
   for (const f of g.fish.fish) {
