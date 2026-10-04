@@ -11,7 +11,7 @@ import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
 import { migrate, parseSave, SAVE_VERSION } from '../src/systems/save/saveData';
-import { buySub, canBoard, subFloorY } from '../src/systems/submarine';
+import { buySub, canBoard, ramSub, subFloorY, subModel } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
 import { icebergBox } from '../src/systems/world/icebergs';
 import type { TileMap } from '../src/systems/world/tileMap';
@@ -184,5 +184,45 @@ describe('lampada del sottomarino', () => {
     expect(lampAim({ sub, diver: { aim: 2 } })).toBe(0);
     sub.aboard = false;
     expect(lampAim({ sub, diver: { aim: 2 } })).toBe(2);
+  });
+});
+
+describe('urti del sottomarino (4 ottobre: niente muro invisibile)', () => {
+  /** A spot in open water with rock just ahead to the east, at depth y. */
+  function nearWall(y: number): number {
+    const free = (x: number) => SUBMARINE.body.every(([dx, r]) => !map.hitCircle(x + dx, y, r));
+    for (let x = 1800; x < 9000; x += 2) if (free(x) && free(x - 40) && !free(x + 24)) return x - 30;
+    throw new Error('no wall found');
+  }
+
+  it('veloce contro la roccia rimbalza, prende danno e lo dice', () => {
+    const y = 150;
+    const x = nearWall(y);
+    const g = inside(x, y);
+    const max = g.sub.hull;
+    g.sub.vx = subModel(g.sub.model).speed;
+    const ev = run(g, 1, { ...emptyInput(), moveX: 1 });
+    const hit = ev.find((e) => e.type === 'subRammed');
+    expect(hit && hit.type === 'subRammed' && hit.by).toBe('rock');
+    expect(g.sub.hull).toBeLessThan(max);
+    expect(SUBMARINE.body.every(([dx, r]) => !map.hitCircle(g.sub.x + dx, g.sub.y, r))).toBe(true);
+  });
+
+  it('piano contro la roccia rimbalza appena, senza danno', () => {
+    const y = 150;
+    const x = nearWall(y);
+    const g = inside(x, y);
+    const max = g.sub.hull;
+    g.sub.vx = 12;
+    const ev = run(g, 2);
+    expect(ev.some((e) => e.type === 'subRammed')).toBe(false);
+    expect(g.sub.hull).toBe(max);
+  });
+
+  it('una speronata spinge via il sottomarino, lontano dalla bestia', () => {
+    const g = inside(SUBMARINE.mooredX + 300, 120);
+    g.sub.vx = 0;
+    ramSub(g, 6, g.sub.x - 20, g.sub.y, []);
+    expect(g.sub.vx).toBeGreaterThan(0);
   });
 });

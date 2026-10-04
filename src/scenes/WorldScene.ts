@@ -232,7 +232,12 @@ export class WorldScene extends Phaser.Scene {
         e.type === 'beastKo'
       )
         this.save();
-      else if (e.type === 'respawned') this.rig.follow(g.diver.x, g.diver.y, 0, true);
+      else if (e.type === 'subRammed') {
+        // a blow on the hull: the screen shakes, bubbles and dark smoke burst from it
+        this.rig.shake();
+        this.effects.puff(e.x, e.y, 6, 0x2a2b2e, 22);
+        for (let i = 0; i < 6; i++) this.effects.bubble(e.x + Math.random() * 16 - 8, e.y - 4);
+      } else if (e.type === 'respawned') this.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'portArrived') {
         const port: GameEvent[] = [];
         enterPort(g, port);
@@ -297,7 +302,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.sub.update(g.sub, g.time);
+    this.sub.update(g.sub, g.time, dt);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);

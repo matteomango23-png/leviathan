@@ -260,7 +260,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
-    if (e.type === 'subRammedBy') ramSub(g, e.lengthM, events); // a big beast against the hull
+    if (e.type === 'subRammedBy') ramSub(g, e.lengthM, e.x, e.y, events); // a big beast against the hull
   }
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepGuardian(g, dt, events);

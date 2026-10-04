@@ -491,3 +491,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Porto:** il ridisegno conserva lo scorrimento della lista; si azzera solo cambiando scheda.
 - **Battaglia:** la vignettatura copre la vista della telecamera (scala 1/zoom, centrata sullo scroll), così resta ai bordi durante zoom e ritorno.
 - **Pesca dal sottomarino tolta** (scelta del proprietario: "poi ci pensiamo"): via `fish`, `subFishAt`, `SUB_FISH`, `SUBMARINE.fishing`, gli eventi della lenza e il pulsante "Pesca". Il salvataggio non cambia.
+
+## 2026-10-04 — Urti del sottomarino (v0.33.0)
+
+- **Forma:** 5 cerchi lungo lo scafo (`SUBMARINE.body`), più stretti a prua e a poppa, al posto di 3 cerchi da 9 unità che lo fermavano prima del contatto.
+- **Roccia:** rimbalzo (35% della velocità all'indietro); sopra 25 unità/s danno = 0,15 × (velocità − 25), minimo 2, al massimo uno ogni 0,8 s. Stesso evento delle speronate (`subRammed` con `by: 'rock' | 'beast'`, e il punto) e stessa rottura (`damageHull`).
+- **Speronate:** spinta di 60 unità/s lontano dalla bestia.
+- **Si vede:** scossa dello schermo, bolle e fumo all'urto; barra dello scafo sopra il sottomarino per 3 s dopo ogni danno; fumo continuo sotto il 30%.
+- Il fondo massimo del modello resta un limite per ora: diventa la barra della pressione nel gruppo 4.

@@ -109,7 +109,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const scared = aboard && !rams;
     const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength, scared });
     if (touched && rams) {
-      events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form) });
+      events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
     } else if (touched && !aboard) requestBattle(g, w, 'foe', events);
   }

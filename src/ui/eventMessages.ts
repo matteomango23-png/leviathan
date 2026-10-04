@@ -79,7 +79,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'dove':
       return ['Il sottomarino resta qui ad aspettarti.', 2];
     case 'subRammed':
-      return [SUB_TEXT.rammed(e.hull, e.max), 2];
+      return e.by === 'rock' ? [SUB_TEXT.bumped, 1.5] : [SUB_TEXT.rammed(e.hull, e.max), 2];
     case 'subWrecked':
       return [SUB_TEXT.wrecked(e.teeth), 6];
     case 'subRepaired':

@@ -1,5 +1,6 @@
 // Your submarine (tappa 16): the owner's painting, facing where it goes, rocking gently; its portholes glow when
-// you are inside; bubbles from the propeller when it moves.
+// you are inside; bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
+// left for a few seconds, then fades; badly damaged it trails dark smoke.
 import Phaser from 'phaser';
 import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
@@ -9,17 +10,22 @@ export class SubmarineView {
   private readonly img: Phaser.GameObjects.Image;
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly glow: Phaser.GameObjects.Graphics;
+  private readonly bar: Phaser.GameObjects.Graphics;
+  private lastHull = NaN;
+  private barLeft = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.g = scene.add.graphics();
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
-    layer.add([this.img, this.g, this.glow]);
+    this.bar = scene.add.graphics();
+    layer.add([this.img, this.g, this.glow, this.bar]);
   }
 
-  update(s: SubState, time: number): void {
+  update(s: SubState, time: number, dt: number): void {
     const g = this.g.clear();
     this.glow.clear();
+    this.bar.clear();
     if (!s.owned) {
       this.img.setVisible(false);
       return;
@@ -58,5 +64,33 @@ export class SubmarineView {
         g.lineStyle(0.5, 0xdff8ff, 0.6 * (1 - t));
         g.strokeCircle(s.x - s.face * (L * 0.5 + t * 14), y - t * 6 + Math.sin(i * 2.1) * 2, 0.8 + t);
       }
+    this.drawDamage(s, y, time, dt);
+  }
+
+  /** The hull bar after a blow (then it fades), and dark smoke when little is left. */
+  private drawDamage(s: SubState, y: number, time: number, dt: number): void {
+    const L = SUBMARINE.length;
+    const max = subModel(s.model).hull;
+    if (s.hull < this.lastHull) this.barLeft = SUBMARINE.hullBarSeconds;
+    this.lastHull = s.hull;
+    this.barLeft = Math.max(0, this.barLeft - dt);
+    const share = Phaser.Math.Clamp(s.hull / max, 0, 1);
+    if (this.barLeft > 0) {
+      const a = Math.min(1, this.barLeft / 0.6);
+      const w = L * 0.7;
+      const top = y - L * 0.36;
+      const col = share > 0.5 ? 0x5fd38a : share > 0.25 ? 0xe8c64a : 0xe2553f;
+      this.bar.fillStyle(0x000000, 0.55 * a).fillRect(s.x - w / 2 - 0.6, top - 0.6, w + 1.2, 3.2);
+      this.bar.fillStyle(col, a).fillRect(s.x - w / 2, top, w * share, 2);
+    }
+    if (share < SUBMARINE.smokeBelow) {
+      const g = this.g;
+      for (let i = 0; i < 7; i++) {
+        const t = (time * 0.5 + i / 7) % 1;
+        const x = s.x - s.face * L * 0.05 + Math.sin(time * 1.7 + i * 2.3) * 2 * t;
+        g.fillStyle(0x1c1d1f, 0.45 * (1 - t));
+        g.fillCircle(x, y - L * 0.25 - t * 22, 1.6 + t * 3.2);
+      }
+    }
   }
 }
