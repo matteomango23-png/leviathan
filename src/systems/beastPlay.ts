@@ -92,7 +92,7 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     // it grows (levels, evolutions) while it is out
     const b = activeBeast(g);
     if (b && m.state !== 'leaving') m.length = formLengthUnits(b.form, b.level);
-    const reached = stepMount(m, d, dt);
+    const reached = stepMount(m, d, dt, g.map);
     if (reached && m.state === 'in' && m.rider) {
       m.state = 'ride';
       bs.riding = true;

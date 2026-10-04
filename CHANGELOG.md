@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.34.0 — Bestie grandi più vere (4 ottobre 2026)
+
+- **Virata con spessore:** quando una bestia si gira, nel punto in cui il corpo è di taglio si vede il suo spessore (dello stesso colore, un po' più scuro), come il prosciutto tra due fette di pane. Non sembra più un foglio di carta.
+- **La megattera inghiotte il banco:** le bestie mangiano in un morso tutte le sardine che hanno in bocca, non una alla volta. Le grandi ne prendono tante insieme, con una nuvola di scaglie e bolle; le piccole una o due.
+- **Collisioni con tutto il corpo:** testa, corpo e coda urtano gli scogli e il fondale, non solo il centro. Le bestie grandi non entrano più nella roccia, e così quella che cavalchi e quella che ti segue (se resta molto indietro, ti raggiunge comunque).
+
 ## v0.33.0 — Urti del sottomarino (4 ottobre 2026)
 
 - **Niente più muro invisibile:** il sottomarino tocca la roccia dove la tocca il disegno, e contro la roccia rimbalza un po' invece di fermarsi di colpo.

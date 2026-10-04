@@ -6,7 +6,7 @@ import { START, WORLD } from '../data/worldLayout';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { clamp, range, type Rng } from './math';
-import type { TileMap } from './world/tileMap';
+import type { BodyCircle, TileMap } from './world/tileMap';
 
 export interface DiverState {
   x: number;
@@ -111,6 +111,8 @@ export interface DiverOptions {
   canDash?: boolean;
   /** Deepest world y the suit allows; deeper pushes you back up. */
   maxDepthY?: number;
+  /** Riding: the beast's body against rock (circles along its spine), instead of the diver's own. */
+  body?: readonly BodyCircle[];
 }
 
 export function stepDiver(
@@ -179,7 +181,7 @@ export function stepDiver(
   }
   d.dashTime = Math.max(0, d.dashTime - dt);
 
-  map.moveBody(d, DIVER.radius, dt);
+  map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt);
   if (mounted && d.y < map.surfaceY + DIVER.lengthUnits) d.y = map.surfaceY + DIVER.lengthUnits;
   let drainMult = opt.o2DrainMult ?? 1;
   if (opt.maxDepthY !== undefined && d.y > opt.maxDepthY) {

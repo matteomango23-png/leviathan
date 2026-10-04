@@ -5,6 +5,7 @@ import { BEAST_BODY, MOVE_RULES } from '../../data/beasts';
 import { MOVE_POWER, type MoveDef } from '../../data/moves';
 import { counterTypeOf, typeMultiplier, type TypeId } from '../../data/rules';
 import { PHYSICAL_TYPES } from '../../data/stats';
+import type { BodyCircle } from '../world/tileMap';
 
 /** Type multiplier of a move against a target (Leviatano's 'variabile' takes the winning type). */
 export function moveTypeMult(moveType: MoveDef['type'], target: TypeId | 'variabile'): number {
@@ -42,6 +43,17 @@ export interface BodyPose {
 /** Unit vector from tail to head. */
 export function bodyAxis(p: BodyPose): { dx: number; dy: number } {
   return { dx: Math.cos(p.pitch) * p.face, dy: Math.sin(p.pitch) };
+}
+
+/** The body against rock: circles along the spine, as offsets from its middle (BEAST_BODY.collideAlong). */
+export function bodyCircles(p: BodyPose): BodyCircle[] {
+  const a = bodyAxis(p);
+  const r = p.length * BEAST_BODY.collideRadiusFrac;
+  return BEAST_BODY.collideAlong.map(([t, k]) => ({
+    dx: a.dx * p.length * t,
+    dy: a.dy * p.length * t,
+    r: Math.max(1.5, r * k),
+  }));
 }
 
 export function headOf(p: BodyPose, forward = 0.45): { x: number; y: number } {

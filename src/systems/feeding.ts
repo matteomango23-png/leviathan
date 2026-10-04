@@ -8,24 +8,28 @@ import type { TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
 import type { Fish, FishState } from './fish';
 
-/** Returns the fish eaten this frame (the caller puts it in the bag or heals), or null. */
+/**
+ * Returns the fish eaten this frame (the caller puts them in the bag or heals): every fish that is in its mouth
+ * when it bites, not one at a time (owner, 4 ottobre: a humpback gulps a whole school). The mouth grows with the
+ * body, so a big beast swallows many and a small one one or two.
+ */
 export function beastEats(
   c: Mount | null,
   b: TeamBeast | undefined,
   fish: FishState,
   timer: { feed: number },
   dt: number,
-): Fish | null {
+): Fish[] {
   timer.feed = Math.max(0, timer.feed - dt);
-  if (!c || !b || timer.feed > 0) return null;
-  if (c.state !== 'ride' && c.state !== 'follow') return null;
+  if (!c || !b || timer.feed > 0) return [];
+  if (c.state !== 'ride' && c.state !== 'follow') return [];
   const h = headOf(c);
   const reach = Math.max(FEEDING.minReach, c.length * FEEDING.reachFrac);
-  const f = fish.fish.find((x) => x.alive && !x.hooked && Math.hypot(x.x - h.x, x.y - h.y) < reach);
-  if (!f) return null;
+  const eaten = fish.fish.filter((x) => x.alive && !x.hooked && Math.hypot(x.x - h.x, x.y - h.y) < reach);
+  if (!eaten.length) return [];
   timer.feed = FEEDING.interval;
-  c.jaw = Math.max(c.jaw, 0.3);
-  return f;
+  c.jaw = Math.max(c.jaw, eaten.length >= FEEDING.gulpFrom ? 0.8 : 0.3);
+  return eaten;
 }
 
 /**

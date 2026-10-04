@@ -248,13 +248,26 @@ export const FEEDING = {
   reachFrac: 0.22, // × body length, around the head…
   minReach: 6, // …but at least this many units (a 1 m beast would never catch anything)
   interval: 0.25, // seconds between bites
+  gulpFrom: 3, // this many fish in one bite: the mouth opens wide and a cloud of scales and bubbles bursts out
 };
 
 /** A beast's body in the water (hits, collisions). */
 export const BEAST_BODY = {
   headRadiusFrac: 0.13, // around the head, × body length
   bodyThicknessFrac: 0.1, // half thickness of the body, × body length
-  collideRadiusFrac: 0.07, // radius used against rock, × body length
+  collideRadiusFrac: 0.07, // radius used against rock at the middle of the body, × body length
+  /**
+   * Against rock the whole body counts, not only its middle (owner, 4 ottobre: big beasts sank into reefs and the
+   * floor): circles along the spine, at these places (share of the length from the middle, + towards the head)
+   * and with these shares of the middle radius (slimmer to the nose and tail).
+   */
+  collideAlong: [
+    [-0.4, 0.45],
+    [-0.2, 0.8],
+    [0, 1],
+    [0.2, 0.85],
+    [0.4, 0.55],
+  ] as [number, number][],
   weaponHitMargin: 1.5, // units: a weapon tip this close to the body hits
   hitFlashSeconds: 0.15,
 };
@@ -265,6 +278,7 @@ export const TEAM_RULES = {
   summonDistance: 90, // the mount arrives from this far behind you
   arriveSeconds: 1.2, // at most this long to reach you
   follow: { behind: 0.5, gap: 4, below: 5, speed: 3 }, // a companion swims just behind you, inside the lamp halo: × its length + gap units, spring rate
+  followFreeAfter: 3, // × its length: left farther behind than this, it catches up straight through (no getting stuck)
   leaveSeconds: 1.5,
   riderOffset: [-0.02, -0.13] as [number, number], // where you sit, × body length (forward, up)
   /** Your beast turns around like a real one seen from the side: nose up (or down) through the vertical and back. */
@@ -307,4 +321,9 @@ export const BEAST_SPRITE = {
   frameH: 460,
   spineY: 250,
   segments: 26,
+  /**
+   * Turning around, a piece of the body seen edge-on shows its thickness, not a paper-thin line (owner, 4 ottobre:
+   * "the ham between two slices of bread"): the body's breadth as a share of its length, at its thickest. Tuning.
+   */
+  turnBreadth: 0.13,
 };

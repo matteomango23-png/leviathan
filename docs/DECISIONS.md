@@ -499,3 +499,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Speronate:** spinta di 60 unità/s lontano dalla bestia.
 - **Si vede:** scossa dello schermo, bolle e fumo all'urto; barra dello scafo sopra il sottomarino per 3 s dopo ogni danno; fumo continuo sotto il 30%.
 - Il fondo massimo del modello resta un limite per ora: diventa la barra della pressione nel gruppo 4.
+
+## 2026-10-04 — Bestie grandi più vere (v0.34.0)
+
+- **Virata ("il prosciutto tra due fette di pane", proposta del proprietario):** nel disegno a strisce, la striscia più di taglio durante la virata si allarga fino allo spessore del corpo (`BEAST_SPRITE.turnBreadth` 0,13 della lunghezza, più sottile verso muso e coda) con i suoi colori un po' scuriti. Si allarga solo quella: allargarle tutte faceva un effetto a tapparella. Da giudicare sull'iPhone: nel browser del cloud non si riesce a fotografare bene la virata.
+- **Mangiare:** `beastEats` restituisce tutti i pesci nel raggio della bocca (che cresce con la lunghezza) in un morso; da 3 in su (`FEEDING.gulpFrom`) la bocca si apre molto ed esce una nuvola di scaglie e bolle (evento `beastGulp`).
+- **Collisioni:** `bodyCircles` (5 cerchi lungo la spina, `BEAST_BODY.collideAlong`) per le bestie selvatiche, per quella che cavalchi (`stepDiver` con `body`) e per quella che ti segue (oltre 3 lunghezze di distanza ti raggiunge dritta, per non restare incastrata). `TileMap.moveBody` accetta un cerchio o la forma intera; se la bestia è già nella roccia conta solo il centro, così può uscirne.

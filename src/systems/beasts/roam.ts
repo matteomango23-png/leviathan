@@ -5,7 +5,7 @@ import { BEAST_TEMPER, ROAM, type Temper } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
-import { distanceToBody } from './combat';
+import { bodyCircles, distanceToBody } from './combat';
 import { uniqueOf } from './forms';
 import { bodyRadius, isRare, type WildBeast } from './wildState';
 
@@ -94,7 +94,6 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
 
   const spec = BEAST_TEMPER[b.form.speciesId];
   const mult = spec?.speedMult ?? 1;
-  const r = bodyRadius(b);
   const top = map.surfaceY + b.length * 0.12;
   let tx: number;
   let ty: number;
@@ -134,7 +133,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.vx += (wantVx - b.vx) * k;
   b.vy += (wantVy - b.vy) * k;
   const before = b.vx;
-  const blocked = map.moveBody(b, r, dt);
+  const blocked = map.moveBody(b, bodyCircles(b), dt); // the whole body against rock, not only its middle
   if (blocked && b.turn === 0 && Math.sign(before) === b.face && Math.abs(b.vx) < Math.abs(before) * 0.5) {
     turnAround(b);
     b.target = null;

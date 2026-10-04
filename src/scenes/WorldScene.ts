@@ -232,7 +232,12 @@ export class WorldScene extends Phaser.Scene {
         e.type === 'beastKo'
       )
         this.save();
-      else if (e.type === 'subRammed') {
+      else if (e.type === 'beastGulp') {
+        // a mouthful of fish: silver scales and bubbles burst from its jaws
+        this.effects.puff(e.x, e.y, Math.min(12, 4 + e.count), 0xcfdde4, 26);
+        for (let i = 0; i < Math.min(10, e.count); i++)
+          this.effects.bubble(e.x + Math.random() * 12 - 6, e.y + Math.random() * 6 - 3);
+      } else if (e.type === 'subRammed') {
         // a blow on the hull: the screen shakes, bubbles and dark smoke burst from it
         this.rig.shake();
         this.effects.puff(e.x, e.y, 6, 0x2a2b2e, 22);

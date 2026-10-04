@@ -6,7 +6,7 @@ import { BEAST_BODY, ROAM, TEAM_RULES } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { clamp } from '../math';
 import type { TileMap } from '../world/tileMap';
-import type { BodyPose } from './combat';
+import { bodyCircles, type BodyPose } from './combat';
 import { formLengthUnits } from './forms';
 import type { TeamBeast } from './team';
 
@@ -106,6 +106,7 @@ export function stepMount(
   m: Mount,
   diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 },
   dt: number,
+  map?: TileMap,
 ): boolean {
   m.flash = Math.max(0, m.flash - dt);
   m.jaw = Math.max(0, m.jaw - dt);
@@ -132,8 +133,13 @@ export function stepMount(
     const ty = diver.y + f.below;
     m.vx += ((tx - m.x) * f.speed - m.vx) * Math.min(1, dt * f.speed);
     m.vy += ((ty - m.y) * f.speed - m.vy) * Math.min(1, dt * f.speed);
-    m.x += m.vx * dt;
-    m.y += m.vy * dt;
+    // it swims around rock with its whole body; left far behind, it catches up the straight way
+    if (map && Math.hypot(tx - m.x, ty - m.y) < m.length * TEAM_RULES.followFreeAfter)
+      map.moveBody(m, bodyCircles(m), dt);
+    else {
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+    }
     faceTowards(m, Math.abs(m.vx) > U * 2 ? m.vx : diver.face, dt);
     animate(m, dt);
     return false;

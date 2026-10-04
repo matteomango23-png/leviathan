@@ -11,6 +11,13 @@ export interface Body {
   vy: number;
 }
 
+/** One circle of a long body, as an offset from its middle (a big beast is several along its spine). */
+export interface BodyCircle {
+  dx: number;
+  dy: number;
+  r: number;
+}
+
 const RING = Array.from({ length: 8 }, (_, i) => [Math.cos((i * Math.PI) / 4), Math.sin((i * Math.PI) / 4)]);
 
 /** Makes the tiles of columns tx0 … tx0 + cols - 1 (all rows) past the hand-made world: the endless sea. */
@@ -123,19 +130,33 @@ export class TileMap {
     return false;
   }
 
-  /** Moves a body one axis at a time; bounces softly off rock. Returns true if it hit something. */
-  moveBody(e: Body, r: number, dt: number): boolean {
+  /** Does a body (one circle, or several along a long body) touch rock at this point? */
+  hitShape(x: number, y: number, shape: number | readonly BodyCircle[]): boolean {
+    if (typeof shape === 'number') return this.hitCircle(x, y, shape);
+    return shape.some((c) => this.hitCircle(x + c.dx, y + c.dy, c.r));
+  }
+
+  /**
+   * Moves a body one axis at a time; bounces softly off rock. Returns true if it hit something. A long body passes
+   * its circles along the spine; if it is already stuck in rock (spawned or turned into it) only its middle counts,
+   * so it can swim out instead of freezing.
+   */
+  moveBody(e: Body, shape: number | readonly BodyCircle[], dt: number): boolean {
+    let body = shape;
+    if (typeof shape !== 'number' && this.hitShape(e.x, e.y, shape))
+      body = shape.reduce((m, c) => (Math.hypot(c.dx, c.dy) < Math.hypot(m.dx, m.dy) ? c : m)).r;
     let blocked = false;
     const nx = e.x + e.vx * dt;
-    if (this.hitCircle(nx, e.y, r)) {
+    if (this.hitShape(nx, e.y, body)) {
       e.vx *= -0.25;
       blocked = true;
     } else e.x = nx;
     const ny = e.y + e.vy * dt;
-    if (this.hitCircle(e.x, ny, r)) {
+    if (this.hitShape(e.x, ny, body)) {
       e.vy *= -0.25;
       blocked = true;
     } else e.y = ny;
+    const r = typeof body === 'number' ? body : Math.max(...body.map((c) => c.r - c.dy));
     const top = this.surfaceY + r;
     if (e.y < top) {
       e.y = top;
