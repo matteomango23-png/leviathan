@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.38.0 — Corpi solidi (4 ottobre 2026)
+
+- **Le bestie urtano con il loro corpo vero:** la forma per gli urti è presa dall'immagine di ogni animale, alta quanto il corpo in ogni punto. Le bestie grandi (megattera, Piovra…) non entrano più negli scogli e nel fondale.
+- **In groppa, la battaglia parte quando una bestia selvatica tocca la tua cavalcatura**, non solo quando arriva a te.
+- **Il sottomarino è solido:** il sub, la tua bestia e quelle selvatiche ci sbattono contro e ci scivolano attorno, invece di attraversarlo.
+- **Sulla Piovra stai sulla testa**, e su ogni bestia ti siedi sulla sua schiena vera.
+- **Il pulsante Scatto sparisce** quando la muta non lo permette (lo Scafandro da palombaro), a meno che tu non stia cavalcando.
+
 ## v0.37.4 — Niente più virate animate (4 ottobre 2026)
 
 - **Le bestie si girano di colpo**, senza animazione: con immagini dipinte di profilo ogni virata animata sembrava un foglio di carta. Vale per quella che cavalchi, per i compagni e per le selvatiche (che continuano a girarsi soprattutto fuori dalla tua luce).

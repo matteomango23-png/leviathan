@@ -38,6 +38,8 @@ export interface BodyPose {
   face: 1 | -1;
   pitch: number;
   length: number;
+  /** Its real outline (bodyShapes.generated.ts): how far it reaches above and below the spine, head to tail. */
+  shape?: readonly (readonly [number, number])[];
 }
 
 /** Unit vector from tail to head. */
@@ -48,12 +50,47 @@ export function bodyAxis(p: BodyPose): { dx: number; dy: number } {
 /** The body against rock: circles along the spine, as offsets from its middle (BEAST_BODY.collideAlong). */
 export function bodyCircles(p: BodyPose): BodyCircle[] {
   const a = bodyAxis(p);
-  const r = p.length * BEAST_BODY.collideRadiusFrac;
+  const L = p.length;
+  if (p.shape?.length) {
+    // its real outline (owner, 4 ottobre: the bigger the beast, the more it sank into the rock): one circle at
+    // each point from head to tail, as tall as the body there; the picture's middle is 45% from the head
+    const n = p.shape.length;
+    return p.shape.map(([top, bottom], k) => {
+      const t = 0.45 - (k + 0.5) / n; // along the spine, + towards the head
+      const v = ((top + bottom) / 2) * L; // the body's middle, above (−) or below the spine
+      return {
+        dx: a.dx * L * t - p.face * Math.sin(p.pitch) * v,
+        dy: a.dy * L * t + Math.cos(p.pitch) * v,
+        r: Math.max(1.5, ((bottom - top) / 2) * L * BEAST_BODY.shapeFill),
+      };
+    });
+  }
+  const r = L * BEAST_BODY.collideRadiusFrac;
   return BEAST_BODY.collideAlong.map(([t, k]) => ({
-    dx: a.dx * p.length * t,
-    dy: a.dy * p.length * t,
+    dx: a.dx * L * t,
+    dy: a.dy * L * t,
     r: Math.max(1.5, r * k),
   }));
+}
+
+/**
+ * Where you sit on a beast you ride, × its length (forward from its middle, up from its spine): on top of its
+ * real back at that point when its outline is known (owner, 4 ottobre: on the Piovra you floated over the tentacles).
+ */
+export function riderSeat(p: BodyPose, forward: number, fallbackUp: number): [number, number] {
+  if (!p.shape?.length) return [forward, fallbackUp];
+  const n = p.shape.length;
+  const k = Math.max(0, Math.min(n - 1, Math.floor((0.45 - forward) * n)));
+  return [forward, p.shape[k]![0] - 0.01];
+}
+
+/** Do two bodies touch (their circles overlap, with a little margin)? */
+export function bodiesTouch(a: BodyPose, b: BodyPose, margin = 0): boolean {
+  const ca = bodyCircles(a);
+  const cb = bodyCircles(b);
+  return ca.some((p) =>
+    cb.some((q) => Math.hypot(a.x + p.dx - b.x - q.dx, a.y + p.dy - b.y - q.dy) < p.r + q.r + margin),
+  );
 }
 
 export function headOf(p: BodyPose, forward = 0.45): { x: number; y: number } {

@@ -42,6 +42,7 @@ export interface SpeciesDef {
   artFrom?: string;            // pictures to use until its own exist (a form key with pictures, e.g. squalo_bianco_finale)
   minLevel?: number;           // wild ones are never below this level (over the size + rarity floor, WILD_LEVELS)
   rideSpeedMult?: number;      // not a mount but you can ride it anyway, at this × its riding speed (second stages)
+  riderForward?: number;       // where you sit along it, × its length from the middle (+ towards the head); default TEAM_RULES.riderOffset
   girth?: number;              // the side picture drawn this much thicker (a thin serpent made massive)
   alfaName?: string;           // the alfa has its own name (and pictures, alfaArt): the orca's is the Matriarch
   alfaArt?: string;
@@ -175,7 +176,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a heavy tiger shark with dark stripes and stained jaws, fish bones drifting around it' },
   { id: 'polpo_gigante', name: 'Polpo gigante', type: 'abissale', role: 'supporto', region: 'foresta', wildLevel: [13, 15], rarity: 3, size: 'media', lengthM: 6, trait: 'Nube d\u2019inchiostro: i nemici perdono le tue tracce',
     artPrompt: 'a giant red-brown octopus releasing a cloud of black ink, eyes glinting with cyan light' },
-  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true, rideSpeedMult: 0.9, // owner, 4 ottobre: you ride it, it is too big to swim at your side
+  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true, rideSpeedMult: 0.9, riderForward: 0.3, // owner, 4 ottobre: you ride it (too big to swim at your side), sitting on its head
     artPrompt: 'a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains' },
 
   // ---- Mare di Ghiaccio (15-20)

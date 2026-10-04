@@ -557,3 +557,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - La logica (`turn` in `roam.ts` e `mount.ts`) resta com'era: le selvatiche si girano solo fuori dalla luce o contro una parete, e durante il `turn` il beccheggio si appiattisce. Cambia solo il disegno.
 - Onda della coda dei cetacei un po' più bassa (`whaleWave.amp` 0,3): toglie i fili sottili vicino alla coda.
 - **Per riprovare un giorno:** servirebbero immagini dipinte apposta per le pose intermedie (di fronte e di tre quarti) da alternare durante la virata.
+
+## 2026-10-04 — Corpi solidi (v0.38.0)
+
+- **Forma vera:** `npm run shapes` (`scripts/body-shapes.ts`, con sharp) misura dai profili 1000×460, in 9 punti dalla testa alla coda, quanto il corpo arriva sopra e sotto la spina (`src/data/bodyShapes.generated.ts`). `bodyCircles` mette un cerchio per punto, centrato nel mezzo del corpo e con raggio pari all'85% della mezza altezza (`BEAST_BODY.shapeFill`). Selvatiche (`spawnWild`) e cavalcature (`callMount`) ricevono la `shape` della loro immagine (`shapeOfForm`); senza forma restano i vecchi cerchi.
+- **Battaglia in groppa:** `stepRoam` dà il tocco anche quando i corpi della selvatica e della tua cavalcatura si toccano (`bodiesTouch`, margine `ROAM.bodyContact` 2 unità).
+- **Sottomarino solido:** `pushOutOfSub` spinge fuori dallo scafo e toglie la velocità verso l'interno. Vale per il sub (o la cavalcatura su cui sei), per le selvatiche in acqua e per la bestia che ti segue. Per salire basta avvicinarsi come prima.
+- **Sella:** `riderSeat` mette il sub sopra la schiena vera nel punto in cui siede; la Piovra ha `riderForward` 0,3 (sulla testa).
+- **Scatto:** `canDashNow`: il pulsante sparisce nel sottomarino o con una muta senza scatto, se non cavalchi. Era il motivo dello "scatto che non funziona": il proprietario indossava lo Scafandro da palombaro.

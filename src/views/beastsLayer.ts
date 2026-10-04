@@ -5,6 +5,7 @@ import Phaser from 'phaser';
 import { BEAST_TEMPER, CETACEANS, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, formKey, speciesOf, type BeastForm } from '../systems/beasts/forms';
+import { riderSeat } from '../systems/beasts/combat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
@@ -52,12 +53,13 @@ export class BeastsLayer {
   riderPose(g: GameState): { x: number; y: number; pitch: number } | null {
     const c = g.beasts.mount;
     if (!g.beasts.riding || !c) return null;
-    const [fwd, up] = TEAM_RULES.riderOffset;
+    const b = activeBeast(g);
+    const sp = b ? speciesOf(b.form) : undefined;
+    const [fwd, up] = riderSeat(c, sp?.riderForward ?? TEAM_RULES.riderOffset[0], TEAM_RULES.riderOffset[1]);
     const cos = Math.cos(c.pitch);
     const sin = Math.sin(c.pitch);
     const lx = fwd * c.length;
-    const b = activeBeast(g);
-    const ly = up * c.length * (b ? (speciesOf(b.form).girth ?? 1) : 1);
+    const ly = up * c.length * (sp?.girth ?? 1);
     return { x: c.x + (lx * cos - ly * sin) * c.face, y: c.y + lx * sin + ly * cos, pitch: c.pitch };
   }
 

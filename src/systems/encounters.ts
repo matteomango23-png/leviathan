@@ -114,7 +114,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
     const rams = aboard && ramsSubmarine(w);
     const scared = aboard && !rams;
-    const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength, scared });
+    const rider = g.beasts.riding ? (g.beasts.mount ?? undefined) : undefined;
+    const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength, scared, rider });
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again

@@ -7,6 +7,7 @@ import { DialogueBox } from '../ui/dialogueBox';
 import { el } from '../ui/dom';
 import { Hud } from '../ui/hud';
 import type { GameEvent } from '../systems/events';
+import { canDashNow } from '../systems/game';
 import { storyHoldsDiver } from '../systems/story';
 import { needsStarter } from '../systems/starter';
 import { StarterPicker } from '../ui/starterPicker';
@@ -116,7 +117,7 @@ export class UIScene extends Phaser.Scene {
   override update(_time: number, deltaMs: number): void {
     const g = this.session.game;
     if (!g) return;
-    this.controls.update(g.diver.dashCooldown <= 0, g.sub.aboard);
+    this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g));
     const dt = Math.min(0.1, deltaMs / 1000);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);

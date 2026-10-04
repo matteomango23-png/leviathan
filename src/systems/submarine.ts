@@ -289,3 +289,36 @@ export const subWakePoint = (s: SubState): { x: number; y: number } => ({
 export function lampAim(g: { sub: SubState; diver: { aim: number } }): number {
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
+
+/**
+ * The hull is solid (owner, 4 ottobre): a body touching it (you, your beast, a wild one) is pushed out and slides
+ * along it. `circles` are the body's own, as offsets from its middle. Returns true if it touched the hull.
+ */
+export function pushOutOfSub(
+  s: SubState,
+  b: { x: number; y: number; vx: number; vy: number },
+  circles: readonly { dx: number; dy: number; r: number }[],
+): boolean {
+  if (!s.owned) return false;
+  let touched = false;
+  for (let pass = 0; pass < 2; pass++)
+    for (const c of circles)
+      for (const [hx, hr] of SUBMARINE.body) {
+        const px = b.x + c.dx - (s.x + hx);
+        const py = b.y + c.dy - s.y;
+        const d = Math.hypot(px, py) || 0.001;
+        const overlap = c.r + hr - d;
+        if (overlap <= 0) continue;
+        touched = true;
+        const nx = px / d;
+        const ny = py / d;
+        b.x += nx * overlap;
+        b.y += ny * overlap;
+        const vn = b.vx * nx + b.vy * ny;
+        if (vn < 0) {
+          b.vx -= nx * vn;
+          b.vy -= ny * vn;
+        }
+      }
+  return touched;
+}

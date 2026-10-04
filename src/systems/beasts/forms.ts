@@ -1,5 +1,6 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
+import { BODY_SHAPES } from '../../data/bodyShapes.generated';
 import { ABILITIES, WILD_LEVELS } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
@@ -196,4 +197,18 @@ export function breaksBones(form: BeastForm, level: number): boolean {
   const s = speciesOf(form);
   const S = ABILITIES.sfondamento;
   return !!s.abilities?.includes('sfondaOssa') || (S.types.includes(s.type) && level >= S.level);
+}
+
+const shapeCache = new Map<string, readonly (readonly [number, number])[] | undefined>();
+/** The real outline of the picture a form is drawn with (for collisions), if known. */
+export function shapeOfForm(form: BeastForm): readonly (readonly [number, number])[] | undefined {
+  const key = formKey(form);
+  if (!shapeCache.has(key))
+    shapeCache.set(
+      key,
+      artKeysOf(form)
+        .map((k) => BODY_SHAPES[k])
+        .find((x) => x),
+    );
+  return shapeCache.get(key);
 }

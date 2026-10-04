@@ -70,3 +70,37 @@ describe('in superficie (4 ottobre: in groppa al cetaceo l’aria non si ricaric
     expect(w.y).toBeLessThanOrEqual(map.surfaceY + 90 * 0.07 + 0.01);
   });
 });
+
+describe('forma vera delle bestie (4 ottobre: più sono grandi più entravano nella roccia)', () => {
+  it('ogni profilo ha la sua forma, e quella della megattera è più alta dei vecchi cerchi', async () => {
+    const { BODY_SHAPES } = await import('../src/data/bodyShapes.generated');
+    const { SPRITE_KEYS } = await import('../src/data/sprites.generated');
+    for (const k of SPRITE_KEYS) expect(BODY_SHAPES[k], k).toBeDefined();
+    const { shapeOfForm } = await import('../src/systems/beasts/forms');
+    const whale = { x: 0, y: 0, face: 1 as const, pitch: 0, length: 144 };
+    const real = bodyCircles({ ...whale, shape: shapeOfForm({ speciesId: 'megattera', variant: 'comune' }) });
+    const old = bodyCircles(whale);
+    expect(Math.max(...real.map((c) => c.r))).toBeGreaterThan(Math.max(...old.map((c) => c.r)) * 1.3);
+  });
+
+  it('in groppa la battaglia parte quando la selvatica tocca la tua bestia', async () => {
+    const { bodiesTouch } = await import('../src/systems/beasts/combat');
+    const mine = { x: 0, y: 100, face: 1 as const, pitch: 0, length: 140 };
+    const wild = { x: 75, y: 100, face: -1 as const, pitch: 0, length: 40 };
+    expect(bodiesTouch(mine, wild)).toBe(true); // its head reaches your whale's head, far from you on its back
+    expect(bodiesTouch(mine, { ...wild, x: 200 })).toBe(false);
+  });
+});
+
+describe('il sottomarino è solido (4 ottobre)', () => {
+  it('il sub e le bestie non gli passano attraverso', async () => {
+    const { pushOutOfSub, newSub } = await import('../src/systems/submarine');
+    const s = { ...newSub(null), owned: true, x: 500, y: 200 };
+    const diver = { x: 500, y: 203, vx: 0, vy: -30 };
+    expect(pushOutOfSub(s, diver, [{ dx: 0, dy: 0, r: 4 }])).toBe(true);
+    expect(Math.abs(diver.y - 200)).toBeGreaterThan(8);
+    const beast = { x: 470, y: 200, vx: 40, vy: 0 };
+    pushOutOfSub(s, beast, [{ dx: 10, dy: 0, r: 8 }]);
+    expect(beast.vx).toBeLessThanOrEqual(0.001); // it does not push on into the hull
+  });
+});
