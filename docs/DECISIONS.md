@@ -538,3 +538,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Regola del proprietario:** in battaglia ogni immagine `_front` (l'avversario) ha la testa verso sinistra, cioè verso il centro dello schermo e il difensore. Il gioco non specchia le immagini in battaglia: la direzione si decide nei file di `art-inbox` col suffisso `_flip`.
 - Controllate tutte le 81 immagini `_front`. Rinominate in `_front_flip` quelle che guardavano a destra (anguilla_elettrica, folgore, livyatan, lontra_marina, pesce_leone, regina_bianca, squalo_capopiatto); a `pesce_luna_front_flip` tolto il `_flip`. Rielaborate con `npm run art -- --force --only=<id>`. Nessun file cancellato.
 - **Per le immagini nuove:** se l'avversario guarda a destra, chiamare il file `<id>_front_flip.jpg`.
+
+## 2026-10-04 — Virata con il corpo pieno (v0.37.2)
+
+- **Il proprietario:** in v0.37.0 le virate di megattera e Piovra sembravano ancora un foglio di carta.
+- **Ora** (`views/beastView.ts`): durante la virata le strisce non cambiano. Si stringe tutta l'immagine in orizzontale (cos dell'angolo, mai sotto il 12%), come un animale che si volta visto di lato. Stringere ogni striscia per conto suo, inclinata, faceva i gradini.
+- **Il corpo** (il "prosciutto"): dietro il profilo, a ogni pezzo della spina, un'ellisse alta quanto il corpo in quel punto (letta una volta dall'alfa dell'immagine) e profonda quanto lo spessore (`turnBreadth` 0,2 della lunghezza, cetacei 0,28) × quanto ha girato; più sottile a muso e coda. Colore: la media dell'immagine lungo la spina. Insieme fanno un corpo tondo, di taglio visto di fronte.
+- Tolta l'inarcatura durante la virata: inclinava i pezzi e apriva fessure.
+- Visto nel browser con la virata rallentata a 4 s (solo per la prova).
