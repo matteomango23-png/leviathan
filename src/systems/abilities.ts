@@ -77,7 +77,3 @@ export function stepBoneHint(g: BeastWorld, dt: number, events: GameEvent[]): vo
   const breaker = teamMembers(g.beasts.team).find((b) => !b.ko && breaksBones(b.form, b.level));
   events.push({ type: 'bonesHint', breakerUid: breaker?.uid ?? null });
 }
-
-/** Oxygen use while riding (the humpback lets you breathe). */
-export const rideO2Mult = (g: BeastWorld): number =>
-  rideAbilities(g).includes('staz_ossigeno') ? ABILITIES.staz_ossigeno.o2DrainMult : 1;

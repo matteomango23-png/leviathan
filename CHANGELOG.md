@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.35.0 — Pressione, aria dei cetacei e scatto (4 ottobre 2026)
+
+- **Barra della pressione:** se scendi più in basso di quanto regge la tua muta compare sotto l'aria una barra arancione che si svuota (più in fretta più scendi). Vuota, ti toglie un cuore ogni 2 secondi finché non risali. L'aria non scende più per la profondità.
+- **Vale anche in groppa:** nessuna bestia ti porta più giù di quanto regge la tua muta.
+- **Il sottomarino non ha più il fondo invisibile:** può scendere oltre la sua profondità, ma la pressione si svuota e poi schiaccia lo scafo finché non risali.
+- **In groppa a un cetaceo** (megattera, capodoglio, Livyatan, orca, beluga, narvalo) la barra dell'aria è la sua (azzurra, con la balena): dura molto più della tua, ma finisce anche lei. Quando è vuota respiri di nuovo la tua e devi risalire. Lontano da te il cetaceo torna a respirare.
+- **Lo scatto costa un po' d'aria:** ogni scatto, e lo sprint tenuto premuto in groppa (dall'aria del cetaceo, se lo cavalchi). Non conviene più premerlo di continuo.
+
 ## v0.34.0 — Bestie grandi più vere (4 ottobre 2026)
 
 - **Virata con spessore:** quando una bestia si gira, nel punto in cui il corpo è di taglio si vede il suo spessore (dello stesso colore, un po' più scuro), come il prosciutto tra due fette di pane. Non sembra più un foglio di carta.

@@ -38,7 +38,7 @@ export type GameEvent =
   // the boat (tappa 12)
   | { type: 'subGiven' }
   /** The hull took a blow: a beast rammed it or it ran into rock. */
-  | { type: 'subRammed'; hull: number; max: number; by: 'rock' | 'beast'; x: number; y: number }
+  | { type: 'subRammed'; hull: number; max: number; by: 'rock' | 'beast' | 'pressure'; x: number; y: number }
   /** From the beasts: one rammed your submarine (game.ts applies it to the hull). */
   | { type: 'subRammedBy'; lengthM: number; x: number; y: number }
   | { type: 'subWrecked'; teeth: number }
@@ -78,6 +78,8 @@ export type GameEvent =
   | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string }
   | { type: 'portArrived' }
   | { type: 'tooDeep' }
+  /** The whale you ride has no air left: you breathe your own again, go up. */
+  | { type: 'rideAirOut'; name: string }
   | { type: 'missionComplete'; id: string }
   | { type: 'sanctuaryReached'; index: number }
   | { type: 'healed' };

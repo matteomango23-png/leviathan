@@ -62,6 +62,17 @@
   background: var(--glow);
   box-shadow: 0 0 6px var(--glow);
 }
+.hud-o2.whale .hud-o2-fill {
+  background: #7fb6ff;
+  box-shadow: 0 0 6px #7fb6ff;
+}
+.hud-press .hud-o2-fill {
+  background: #e8a33c;
+  box-shadow: 0 0 6px #e8a33c;
+}
+.hud-o2[hidden] {
+  display: none;
+}
 .hud-o2.low .hud-o2-fill {
   background: var(--blood);
   box-shadow: 0 0 6px var(--blood);

@@ -5,7 +5,10 @@ import { stepPortJobs } from './portJobs';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
+import { refillTanks, tankRanOut } from './breath';
+import { rideTank, type RideTanks } from './rideAir';
 import { bodyCircles, headOf } from './beasts/combat';
+import { formName } from './beasts/forms';
 import {
   activeBeast,
   beastAction,
@@ -45,7 +48,6 @@ import type { TileMap } from './world/tileMap';
 import { zoneAt } from './world/zones';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import { rideO2Mult } from './abilities';
 import {
   board,
   canBoard,
@@ -82,6 +84,8 @@ export interface GameState extends Chapter4World {
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
   timers: { feed: number; vent: number };
+  /** The air of the whales of your team, which you breathe while riding them (breath.ts, not saved). */
+  rideTanks: RideTanks;
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -134,6 +138,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
     sub: newSub(s.sub),
     timers: { feed: 0, vent: 0 },
+    rideTanks: {},
     temples: createTemples(),
     chapter2: createChapter2(map),
     chapter3: createChapter3(beasts, s.story?.seen ?? []),
@@ -220,6 +225,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
   const aboard = !held && stepSub(g, input, dt, events); // your submarine moves you
   g.beasts.aboard = aboard;
+  const tank = rideTank(g, g.rideTanks, d.maxO2);
+  refillTanks(g.rideTanks, tank, dt);
   if (!held && !aboard) {
     stepDiver(d, input, g.map, dt, g.rng, events, {
       respawnAt: respawnPoint(g),
@@ -228,11 +235,14 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       mountDash: TEAM_RULES.rideDash,
       mountSprint: TEAM_RULES.rideSprintMult,
       speedMult: mods.speedMult,
-      o2DrainMult: mods.o2DrainMult * rideO2Mult(g),
+      o2DrainMult: mods.o2DrainMult,
       canDash: mods.canDash,
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
       body: g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : undefined,
+      air: tank,
     });
+    const whale = activeBeast(g);
+    if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
   // after losing your senses you wake up on your boat
   if (g.sub.owned && !g.sub.aboard && events.some((e) => e.type === 'respawned')) board(g, events);

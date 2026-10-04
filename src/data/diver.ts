@@ -16,6 +16,12 @@ export const DIVER = {
   invulnerableAfterRespawn: 1.5,
   respawnDelay: 2,
   dash: { speed: 105, duration: 0.25, cooldown: 0.8, drag: 0.6 }, // tappa 10: was 150, slowed with the swim
+  /**
+   * Sprinting costs air (owner, 4 ottobre: the dash was spammed): each dash, and every second of holding the sprint
+   * while riding. Riding a whale it is the whale's air. Tuning.
+   */
+  dashAir: 3,
+  sprintAirPerSec: 1.5,
   oxygen: {
     drainBase: 1, // per second near the surface
     drainDepthExtra: 0.9, // extra per second at full depth
@@ -26,6 +32,19 @@ export const DIVER = {
     chokeInterval: 1.6, // with no air, lose a heart every this many seconds
   },
   bubbleEvery: [0.4, 0.9] as [number, number], // seconds between breath bubbles
+};
+
+/**
+ * Pressure (owner, 4 ottobre): deeper than your suit (or your submarine) allows, a pressure bar empties instead of
+ * the air; empty, it hurts you (or the hull) until you go back up. It also holds while riding: no beast takes you
+ * below what your suit can stand. Bar 0..1. Tuning.
+ */
+export const PRESSURE = {
+  drainPerSec: 0.08, // as soon as you pass the limit…
+  drainPerMetre: 0.006, // …plus this much more per second for every metre beyond it
+  refillPerSec: 0.25, // back within the limit
+  hurtEvery: 2, // seconds between hearts lost (or hull damage) with the bar empty
+  hullDamage: 6, // a submarine with its bar empty loses this much hull each time
 };
 
 export const HARPOON = {

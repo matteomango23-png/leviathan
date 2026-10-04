@@ -226,3 +226,27 @@ describe('urti del sottomarino (4 ottobre: niente muro invisibile)', () => {
     expect(g.sub.vx).toBeGreaterThan(0);
   });
 });
+
+describe('pressione del sottomarino (4 ottobre: niente fondo invisibile)', () => {
+  it('scende oltre la profondità del modello, ma la pressione schiaccia lo scafo', () => {
+    const limitY = subFloorY(afterChapter1().sub);
+    // open water wide enough for the hull, from above its limit to well below it
+    const fits = (x: number, y: number) =>
+      SUBMARINE.body.every(([dx, r]) => !map.hitCircle(x + dx, y, r + 2));
+    let x = 0;
+    for (let cx = 1000; cx < 12000 && !x; cx += 4) {
+      let ok = true;
+      for (let y = limitY - 10; y <= limitY + 120 && ok; y += 6) ok = fits(cx, y);
+      if (ok) x = cx;
+    }
+    expect(x).toBeGreaterThan(0);
+    const g = inside(x, limitY - 10);
+    const max = g.sub.hull;
+    const ev = run(g, 2, { ...emptyInput(), moveY: 1 });
+    expect(g.sub.y).toBeGreaterThan(limitY); // no floor any more
+    expect(ev.some((e) => e.type === 'subTooDeep')).toBe(true);
+    const more = run(g, 20, { ...emptyInput(), moveY: 1 });
+    expect(more.some((e) => e.type === 'subRammed' && e.by === 'pressure')).toBe(true);
+    expect(g.sub.hull).toBeLessThan(max);
+  });
+});

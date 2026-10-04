@@ -11,6 +11,8 @@ import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { clamp, type Rng } from './math';
 import type { TileMap } from './world/tileMap';
+import { PRESSURE } from '../data/diver';
+import { freshPressure, stepPressure } from './breath';
 
 export interface SubState {
   owned: boolean;
@@ -29,6 +31,9 @@ export interface SubState {
   deepWarn: number;
   /** Seconds before running into rock can damage it again. */
   bumpWait: number;
+  /** Deeper than its model allows: 1 = safe … 0 = the hull is crushed little by little (breath.ts). */
+  pressure: number;
+  pressureHurt: number;
 }
 
 export interface SavedSub {
@@ -56,6 +61,7 @@ export function newSub(saved: SavedSub | null): SubState {
     aboard: false,
     deepWarn: 0,
     bumpWait: 0,
+    ...freshPressure(),
   };
 }
 
@@ -146,7 +152,7 @@ function bump(g: SubWorld, speed: number, events: GameEvent[]): void {
   damageHull(g, Math.max(B.minDamage, Math.round((speed - B.minSpeed) * B.damagePerSpeed)), 'rock', events);
 }
 
-/** The deepest point this model reaches (world y). */
+/** The deepest point this model stands (world y): deeper, the pressure bar empties. */
 export const subFloorY = (s: SubState): number =>
   WORLD.surfaceY + subModel(s.model).maxDepthM * WORLD.unitsPerMetre;
 
@@ -183,21 +189,18 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
     bump(g, Math.abs(s.vx), events);
     s.vx = -s.vx * SUBMARINE.bump.bounce;
   } else s.x = nx;
-  let ny = s.y + s.vy * dt;
-  const floor = subFloorY(s);
-  if (ny > floor) {
-    ny = floor;
-    s.vy = 0;
-    if (input.moveY > 0.3 && s.deepWarn <= 0) {
-      events.push({ type: 'subTooDeep' });
-      s.deepWarn = 6;
-    }
-  }
-  ny = Math.max(SUBMARINE.restY, ny); // it stays under the surface
+  // no invisible floor any more (owner, 4 ottobre): deeper than its model, the pressure crushes the hull
+  const ny = Math.max(SUBMARINE.restY, s.y + s.vy * dt); // it stays under the surface
   if (hits(g.map, s.x, ny)) {
     bump(g, Math.abs(s.vy), events);
     s.vy = -s.vy * SUBMARINE.bump.bounce;
   } else s.y = ny;
+  const overM = (s.y - subFloorY(s)) / WORLD.unitsPerMetre;
+  if (overM > 0 && s.deepWarn <= 0) {
+    events.push({ type: 'subTooDeep' });
+    s.deepWarn = 6;
+  }
+  if (stepPressure(s, overM, dt)) damageHull(g, PRESSURE.hullDamage, 'pressure', events);
   if (Math.abs(input.moveX) > 0.2) s.face = input.moveX > 0 ? 1 : -1;
   d.face = s.face;
   Object.assign(d, { x: s.x, y: s.y, vx: s.vx, vy: s.vy, o2: d.maxO2 });
@@ -223,7 +226,12 @@ export function ramSub(
 }
 
 /** The hull takes a blow; at zero the submarine is towed back to Portofosco, you with it. */
-function damageHull(g: SubWorld, amount: number, by: 'rock' | 'beast', events: GameEvent[]): void {
+function damageHull(
+  g: SubWorld,
+  amount: number,
+  by: 'rock' | 'beast' | 'pressure',
+  events: GameEvent[],
+): void {
   const s = g.sub;
   if (!s.aboard || s.hull <= 0) return;
   const max = subModel(s.model).hull;

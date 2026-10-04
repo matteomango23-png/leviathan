@@ -171,8 +171,6 @@ export const SWARM_RULES = {
 
 /** Suits: deeper than the suit allows, the pressure makes oxygen drain much faster. */
 export const SUIT_RULES = {
-  overDepthDrainMult: 3, // oxygen drain × this as soon as you pass the limit…
-  overDepthDrainPerM: 0.15, // …plus this much more for every metre beyond it
   warnEvery: 4, // seconds between warnings
 };
 

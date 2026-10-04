@@ -98,5 +98,6 @@ export const SUB_TEXT = {
     `Lo scafo cede. Ti rimorchiano a Portofosco${teeth ? `: perdi ${teeth} denti` : ''}. Riparalo al porto.`,
   repaired: (cost: number): string => `Il sottomarino è stato riparato (${cost} denti).`,
   broken: 'Il sottomarino è a pezzi: entra in un porto per ripararlo.',
-  tooDeep: 'Lo scafo scricchiola: più giù di così questo sottomarino non va.',
+  tooDeep: 'Lo scafo scricchiola: la pressione è troppa per questo sottomarino. Risali!',
+  crushed: (hull: number, max: number): string => `La pressione schiaccia lo scafo! (${hull}/${max})`,
 };
