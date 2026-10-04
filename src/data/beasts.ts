@@ -348,9 +348,9 @@ export const BEAST_SPRITE = {
   spineY: 250,
   segments: 26,
   /**
-   * Turning around, the body never gets thinner than its own breadth, as a share of its length (owner, 4 ottobre:
-   * "the ham between two slices of bread", in proportion to the animal): it turns like a thick coin, not a sheet of
-   * paper. Whales are bulkier. Tuning.
+   * Turning around (owner, 4 ottobre: "the ham between two slices of bread", in proportion to the animal): the
+   * profile narrows sideways while the body's bulk, as thick as this share of its length, shows around it as a
+   * rounded solid (views/beastView.ts). Whales are bulkier. Tuning.
    */
   turnBreadth: 0.2,
   turnBreadthWhale: 0.28,

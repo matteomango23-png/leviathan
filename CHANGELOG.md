@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.37.2 — Virata con il corpo pieno (4 ottobre 2026)
+
+- **Le bestie grandi non sembrano più un foglio di carta quando girano.** Il profilo si stringe di lato come quello di un animale vero che si volta, e intorno compare il suo corpo pieno e tondo, spesso quanto l'animale (una megattera molto più di uno squalo). A metà virata vedi la bestia quasi di fronte.
+- Niente più gradini o righe sul profilo mentre gira.
+
 ## v0.37.1 — Avversari rivolti verso di te (4 ottobre 2026)
 
 - In battaglia ogni bestia avversaria guarda verso sinistra, verso la tua bestia: girate le 8 che guardavano a destra (anguilla elettrica, Folgore, Livyatan, lontra marina, pesce leone, pesce luna, Regina bianca, squalo capopiatto).
