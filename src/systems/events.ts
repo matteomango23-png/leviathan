@@ -60,7 +60,7 @@ export type GameEvent =
   // the hunts (hunts.ts)
   | { type: 'rumourHeard'; name: string }
   | { type: 'echoFound'; name: string; depthM: number }
-  | { type: 'tracesFound'; text: string }
+  | { type: 'tracesFound'; id: string; text: string }
   | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }

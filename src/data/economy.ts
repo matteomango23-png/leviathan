@@ -92,7 +92,10 @@ export type MissionGoal =
   | { kind: 'exhaust'; species: string; count: number }
   | { kind: 'tame'; region: string; count: number }
   | { kind: 'openWreck'; wreck: string }
-  | { kind: 'depth'; metres: number };
+  | { kind: 'depth'; metres: number }
+  /** Expeditions (4 ottobre 2026): sail this far from the beach; find the traces of a hunt. */
+  | { kind: 'reachKm'; km: number }
+  | { kind: 'hunt'; hunt: string };
 export interface MissionDef {
   id: string;
   title: string;
@@ -159,6 +162,33 @@ export const MISSIONS: MissionDef[] = [
     goal: { kind: 'depth', metres: 100 },
     reward: 60,
     requires: 'relitto_baia',
+  },
+  // expeditions (4 ottobre 2026): farther out, richer
+  ...SEA_REGIONS.map(
+    (r, i): MissionDef => ({
+      id: `spedizione_${r.id}`,
+      title: `Spedizione: ${r.outpost.name}`,
+      text: `Porta la nave fino all’${r.outpost.name}, a ${r.outpost.km.toString().replace('.', ',')} km dalla costa.`,
+      goal: { kind: 'reachKm', km: r.outpost.km },
+      reward: [150, 300, 500, 800, 1500][i]!,
+      requires: i === 0 ? undefined : `spedizione_${SEA_REGIONS[i - 1]!.id}`,
+    }),
+  ),
+  {
+    id: 'caccia_tracce_martello',
+    title: 'Le reti strappate',
+    text: 'Trova le tracce dello squalo martello preistorico nella Barriera esterna (Diario di caccia).',
+    goal: { kind: 'hunt', hunt: 'caccia_martello' },
+    reward: 400,
+    requires: 'spedizione_barriera_esterna',
+  },
+  {
+    id: 'relitto_lontano',
+    title: 'Il relitto dell’Orlo',
+    text: 'Apri il relitto più ricco delle Grandi fosse.',
+    goal: { kind: 'openWreck', wreck: 'relitto_grandi_fosse_3' },
+    reward: 600,
+    requires: 'spedizione_grandi_fosse',
   },
 ];
 export const MAX_ACTIVE_MISSIONS = 3;

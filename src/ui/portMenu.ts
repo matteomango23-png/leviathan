@@ -1,7 +1,7 @@
 // A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
 import { MARKET } from '../data/economy';
-import { renderFuel, renderSubs } from './portSubs';
+import { renderFuel, renderShipParts, renderSubs } from './portSubs';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
 import { restAtPort, sellAtPort, type GameState } from '../systems/game';
@@ -109,6 +109,7 @@ export class PortMenu {
     if (this.tab === 'mercato') this.renderMarket(b);
     else if (this.tab === 'mute') {
       renderFuel(b, ctx); // first: an expedition starts with full tanks
+      renderShipParts(b, ctx);
       el('h3', '', b, 'Mute');
       this.renderSuits(b);
       renderSubs(b, ctx);

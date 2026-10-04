@@ -11,6 +11,7 @@ import type { PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
 import { formLengthM } from './beasts/forms';
+import { sonarMult } from './ship/ship';
 import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
@@ -104,7 +105,7 @@ export interface HuntWorld {
   hunts: HuntsState;
   dens: Den[];
   weather: { from: WeatherId; to: WeatherId; blend: number };
-  ship: { aboard: boolean; x: number };
+  ship: { aboard: boolean; x: number; upgrades: string[] };
   diver: { x: number; y: number; dead: boolean };
   beasts: { wilds: WildBeast[]; gone: string[]; team: TeamBeast[] };
 }
@@ -126,7 +127,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
       !p.echo &&
       now &&
       g.ship.aboard &&
-      Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange
+      Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange * sonarMult(g.ship)
     ) {
       p.echo = true;
       events.push({
@@ -144,7 +145,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
       Math.hypot(d.x - den.x, d.y - den.y) < HUNT_RULES.traceRadius
     ) {
       p.traces = true;
-      events.push({ type: 'tracesFound', text: h.traces });
+      events.push({ type: 'tracesFound', id: h.id, text: h.traces });
     }
     // its slot: held back until the hunt is ready (it stays in the water once out, until you swim away)
     const slot = g.beasts.wilds.find((w) => w.spawn.hunt === h.id);
@@ -176,7 +177,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }): { floorM: number;
   }
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
-    if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2) return;
+    if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarMult(g.ship)) return;
     if (!huntOpen(h, g.beasts.gone, g.beasts.team)) return;
     echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
   });

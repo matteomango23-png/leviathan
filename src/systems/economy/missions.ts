@@ -9,6 +9,7 @@ export function goalCount(m: MissionDef): number {
   const g = m.goal;
   if (g.kind === 'openWreck') return 1;
   if (g.kind === 'depth') return g.metres;
+  if (g.kind === 'reachKm' || g.kind === 'hunt') return 1;
   return g.count;
 }
 
@@ -52,7 +53,9 @@ export type MissionSignal =
   | { kind: 'exhaust'; species: string }
   | { kind: 'tame'; region: string }
   | { kind: 'openWreck'; wreck: string }
-  | { kind: 'depth'; metres: number };
+  | { kind: 'depth'; metres: number }
+  | { kind: 'reachKm'; km: number }
+  | { kind: 'hunt'; hunt: string };
 
 /** Advances active missions. Returns ids that just became complete. */
 export function signalMissions(s: GearState, sig: MissionSignal): string[] {
@@ -71,6 +74,8 @@ export function signalMissions(s: GearState, sig: MissionSignal): string[] {
       s.missions.progress[id] = p + 1;
     else if (g.kind === 'openWreck' && sig.kind === 'openWreck' && sig.wreck === g.wreck)
       s.missions.progress[id] = 1;
+    else if (g.kind === 'reachKm' && sig.kind === 'reachKm' && sig.km >= g.km) s.missions.progress[id] = 1;
+    else if (g.kind === 'hunt' && sig.kind === 'hunt' && sig.hunt === g.hunt) s.missions.progress[id] = 1;
     else if (g.kind === 'depth' && sig.kind === 'depth')
       s.missions.progress[id] = Math.max(p, Math.floor(sig.metres));
     if (!before && isComplete(s, id)) done.push(id);

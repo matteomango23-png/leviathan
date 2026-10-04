@@ -6,7 +6,7 @@ import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
-import { SHIP } from '../../data/ship';
+import { SHIP, SHIP_UPGRADES } from '../../data/ship';
 import { HUNTS } from '../../data/hunts';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
@@ -388,7 +388,10 @@ function checkedShip(raw: unknown): SavedShip | null {
     hatchOpen: raw.hatchOpen === true,
     bay,
     aboard: raw.aboard === true,
-    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(SHIP.fuel.tank, raw.fuel)) : SHIP.fuel.tank,
+    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : SHIP.fuel.tank, // newShip caps it at its tank
+    upgrades: Array.isArray(raw.upgrades)
+      ? raw.upgrades.filter((u): u is string => SHIP_UPGRADES.some((x) => x.id === u))
+      : [],
   };
 }
 

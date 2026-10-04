@@ -52,6 +52,22 @@ export const SHIP = {
   camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
 };
 
+/** Parts for the ship, bought at the harbours (owner, 4 ottobre: the rewards of the far seas). Tuning. */
+export interface ShipUpgradeDef {
+  id: string;
+  name: string;
+  price: number;
+  text: string;
+  tankExtra?: number; // litres more in the tank
+  sonarMult?: number; // × the range of the anomalous echoes
+  speedMult?: number; // × top speed
+}
+export const SHIP_UPGRADES: ShipUpgradeDef[] = [
+  { id: 'serbatoio', name: 'Serbatoio grande', price: 900, text: '300 litri in più: spedizioni più lunghe', tankExtra: 300 },
+  { id: 'sonar_profondo', name: 'Sonar profondo', price: 1500, text: 'Sente le echi anomale dal doppio della distanza', sonarMult: 2 },
+  { id: 'motori', name: 'Motori potenziati', price: 2500, text: 'Il 20% più veloce', speedMult: 1.2 },
+];
+
 /** Fuel of the ship and the submarine: how much going slowly saves, the price, the transfer between them. */
 export const FUEL = {
   /** Litres per km = perKm × (idleShare + (1 − idleShare) × throttle): going slowly lasts longer. Tuning. */

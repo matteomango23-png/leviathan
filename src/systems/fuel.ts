@@ -8,7 +8,7 @@ import { SUBMARINE } from '../data/submarine';
 import type { GameEvent } from './events';
 export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
-import type { ShipState } from './ship/ship';
+import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
 import type { TeamBeast } from './beasts/team';
 
@@ -37,7 +37,7 @@ export interface FuelWorld {
 export function transferFuel(g: FuelWorld, toSub: boolean): number {
   if (!g.ship.owned || !g.sub.owned || g.ship.bay !== 'docked') return 0;
   const subTank = subModel(g.sub.model).tank;
-  const room = toSub ? subTank - g.sub.fuel : SHIP.fuel.tank - g.ship.fuel;
+  const room = toSub ? subTank - g.sub.fuel : shipTank(g.ship) - g.ship.fuel;
   const have = toSub ? g.ship.fuel : g.sub.fuel;
   const l = Math.max(0, Math.min(FUEL.transferStep, room, have));
   if (toSub) {
@@ -77,7 +77,7 @@ export function buyFuel(g: FuelWorld, which: 'ship' | 'sub'): FuelBuy {
       cost: 0,
       reason: which === 'ship' ? 'La nave non è attraccata qui.' : 'Il sottomarino non è qui.',
     };
-  const tank = which === 'ship' ? SHIP.fuel.tank : subModel(g.sub.model).tank;
+  const tank = which === 'ship' ? shipTank(g.ship) : subModel(g.sub.model).tank;
   const now = which === 'ship' ? g.ship.fuel : g.sub.fuel;
   const litres = Math.min(tank - now, Math.floor(g.gear.teeth / FUEL.pricePerLitre));
   if (litres <= 0)

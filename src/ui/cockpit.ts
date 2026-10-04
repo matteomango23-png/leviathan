@@ -7,6 +7,7 @@ import type { Session } from '../scenes/session';
 import { autonomyKm, canRescue, rescue, transferFuel } from '../systems/fuel';
 import type { GameState } from '../systems/game';
 import { subModel } from '../systems/submarine';
+import { shipTank } from '../systems/ship/ship';
 import { kmFromCoast } from '../systems/world/endless';
 import { el } from './dom';
 import { icon, type IconName } from './icons';
@@ -95,7 +96,7 @@ export class Cockpit {
     const grid = el('div', 'pcard-grid', b);
     portCard(grid, {
       icon: 'bolt',
-      title: `Nave: ${Math.round(ship.fuel)} / ${SHIP.fuel.tank} L`,
+      title: `Nave: ${Math.round(ship.fuel)} / ${shipTank(ship)} L`,
       text: `Autonomia ${km(autonomyKm(ship.fuel, SHIP.fuel.perKm))} km. Si riempie in porto (scheda Mute).`,
     });
     if (sub.owned) {
@@ -122,7 +123,7 @@ export class Cockpit {
         text: `Riporta ${step} L nel serbatoio della nave.`,
         button: {
           label: `+${step} L alla nave`,
-          disabled: !docked || sub.fuel <= 0 || ship.fuel >= SHIP.fuel.tank,
+          disabled: !docked || sub.fuel <= 0 || ship.fuel >= shipTank(ship),
           onClick: () => {
             const l = transferFuel(g, false);
             this.say(`${Math.round(l)} L passati alla nave.`);

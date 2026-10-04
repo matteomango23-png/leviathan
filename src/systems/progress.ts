@@ -5,6 +5,7 @@ import type { BackpackWorld } from './economy/backpack';
 import type { GameEvent } from './events';
 import { signalMissions } from './economy/missions';
 import { depthMetres } from './world/zones';
+import { kmFromCoast } from './world/stretches';
 
 function stepMissionsAndDepth(g: BackpackWorld, events: GameEvent[]): void {
   const d = g.diver;
@@ -14,8 +15,11 @@ function stepMissionsAndDepth(g: BackpackWorld, events: GameEvent[]): void {
     g.gear.deepestM = depth;
     done.push(...signalMissions(g.gear, { kind: 'depth', metres: depth }));
   }
+  // how far out you are (expeditions: at the helm you are where the ship is)
+  if (!d.dead) done.push(...signalMissions(g.gear, { kind: 'reachKm', km: kmFromCoast(d.x) }));
   for (const e of events) {
-    if (e.type === 'fishCaught') done.push(...signalMissions(g.gear, { kind: 'catch', fish: e.fishId }));
+    if (e.type === 'tracesFound') done.push(...signalMissions(g.gear, { kind: 'hunt', hunt: e.id }));
+    else if (e.type === 'fishCaught') done.push(...signalMissions(g.gear, { kind: 'catch', fish: e.fishId }));
     else if (e.type === 'wreckOpened')
       done.push(...signalMissions(g.gear, { kind: 'openWreck', wreck: e.id }));
     else if (e.type === 'battleWon')

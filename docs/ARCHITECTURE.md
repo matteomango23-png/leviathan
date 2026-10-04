@@ -24,7 +24,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | File | Cosa fa |
 |---|---|
 | `world/worldGen.ts` | Genera la mappa a tile (1207×560, tile da 8) dalle forme di `worldLayout.ts`: costa con spiaggia, Baia, Isola delle Mangrovie (terra e roccia), Delta, mare aperto. Sempre lo stesso mondo. |
-| `world/stretches.ts` | I tratti del mare infinito: di che tipo è ciascuno e il fondale naturale. |
+| `world/stretches.ts` | Le regioni dei 30 km (`regionAt`) e i tratti: di che tipo è ciascuno (dai pesi della regione) e il fondale naturale. |
 | `world/templeSite.ts` | Dove stanno i templi sommersi e di cosa sono fatti (pianta in `data/temples.ts`), il fondale che li incontra, gli sfiatatoi interni. |
 | `temple.ts` | I rompicapo dei templi: leva, due leve, rune nell'ordine del mosaico, reliquia; le porte aperte si salvano tra i tile rotti. |
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
@@ -38,6 +38,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/surface.ts` | Cosa incontra la nave in superficie: terra, iceberg, scogli, spiaggia; rompe il ghiaccio e lo fa richiudere lontano. |
 | `vehicles.ts` | Nave e sottomarino insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone, risveglio sulla nave. |
 | `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
+| `hunts.ts` | Le cacce alle leggende: tane, voci nei porti, eco anomala col sonar, tracce, comparsa col tempo giusto; lettura del sonar al timone. |
 | `hull.ts` | Scafi solidi: spinge fuori i corpi che li toccano. |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
@@ -102,6 +103,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
+| `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca. |
 | `cockpit.ts` | Il cockpit della nave: Plancia (carburante, travaso, razzo di soccorso), Recinto e Zaino. |
 | `helmControls.ts`, `helmInfo.ts` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
@@ -122,6 +124,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
+| `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |
 | `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
