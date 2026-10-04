@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.37.0 — Correzioni dopo la seconda prova (4 ottobre 2026)
+
+- **Virata come una moneta spessa:** tutto il corpo si gira insieme e non diventa mai più sottile del suo spessore, in proporzione all'animale (una megattera resta larga un quarto della sua lunghezza). Sparite le righe e la "grana" che comparivano sugli animali grandi mentre giravano.
+- **I cetacei** (megattera, capodoglio, orca, beluga, narvalo, Livyatan, delfino) **battono la coda su e giù**, non di lato come gli squali.
+- **In groppa a un cetaceo l'aria si ricarica in superficie:** prima la sua testa lo teneva troppo sott'acqua.
+- **La Piovra si cavalca:** quando la chiami ti porta, non ti nuota più accanto.
+- **I compagni nuotano con te come animali veri:** ti girano intorno, si mettono dietro quando vai da una parte e si girano solo quando nuotano davvero dall'altra. Se ti giri a destra e sinistra da fermo, non si girano ogni volta.
+- **Leggende fortissime:** una leggenda incontrata per caso ha un livello alto, dal 50 (Coccodrillo albino) al 100 (Orca preistorica albina).
+- **Bestiario:**
+  - una bestia conta come vista solo quando ti arriva vicina, nella tua luce (prima bastava che comparisse lontano nel buio). Quelle già segnate nella tua partita restano;
+  - nuovo pulsante **Per rarità** per ordinare dalle più rare.
+- **Squalo volpe:** in battaglia ha la sua immagine (prima ne aveva una di un altro squalo).
+- **Urti del sottomarino molto più lievi:** una piccola scossa e poche bolle.
+
 ## v0.36.0 — Bestie più varie (4 ottobre 2026)
 
 - **Non vedi più sempre le stesse bestie:** quando si libera un posto in acqua, la bestia che arriva viene scelta a sorte tra tutte quelle pronte, non più sempre la prima della lista (prima barracuda e tartarughe vincevano quasi sempre).

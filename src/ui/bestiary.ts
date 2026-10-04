@@ -59,6 +59,18 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     t.dataset.f = f;
     t.addEventListener('click', () => applyFilter(f));
   }
+  // order: by number (as in the Pokédex) or by rarity, rarest first (owner, 4 ottobre)
+  const sortBtn = el('button', 'sheet-tab bestiary-sort', filters, 'Per rarità');
+  let byRarity = false;
+  sortBtn.addEventListener('click', () => {
+    byRarity = !byRarity;
+    sortBtn.classList.toggle('on', byRarity);
+    sortBtn.textContent = byRarity ? 'Per numero' : 'Per rarità';
+    const tiles = [...grid.children] as HTMLElement[];
+    const n = (t: HTMLElement, k: string): number => Number(t.dataset[k] ?? 0);
+    tiles.sort((a, b) => (byRarity ? n(b, 'stars') - n(a, 'stars') : 0) || n(a, 'order') - n(b, 'order'));
+    grid.append(...tiles);
+  });
   SPECIES.forEach((s, i) => {
     const owned = team.filter((b) => b.form.speciesId === s.id);
     const seen = g.seen.has(s.id) || owned.length > 0;
@@ -67,6 +79,8 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     const state = owned.length ? 'tamed' : seen ? 'seen' : 'unknown';
     const card = el('button', `beast-tile ${state}`, grid);
     card.dataset.state = state;
+    card.dataset.order = String(i);
+    card.dataset.stars = String(stars);
     card.style.setProperty('--rarity', RARITY[stars].color);
     // never met: the same dark tile with a paw for every beast (its painting would show as a black block)
     if (seen && ART_KEYS.includes(s.id)) {
@@ -107,7 +121,10 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     } else card.append(icon('paw'));
     el('span', 'tile-name', card, met ? u.name : '???');
     el('span', 'tile-sub', card, mine ? 'domata' : gone ? 'sconfitta per sempre' : (u.place ?? ''));
-    if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level ?? u.level));
+    if (met)
+      card.addEventListener('click', () =>
+        openBeastSheet(parent, form, mine?.level ?? u.wildLevel?.[0] ?? u.level),
+      );
   }
   // rare versions you own (albino, alfa, Guardians, final forms)
   const specials = team.filter((b) => b.form.variant !== 'comune' || b.form.unique || b.form.final);

@@ -153,6 +153,8 @@ export function rollWildForm(
 
 export function rollWildLevel(form: BeastForm, rng: Rng, levels?: [number, number]): number {
   const u = uniqueOf(form);
+  // a legend met by chance is very strong (its own range); the story's unique beasts keep their level
+  if (u?.wildLevel) return u.wildLevel[0] + Math.floor(rng() * (u.wildLevel[1] - u.wildLevel[0] + 1));
   if (u) return u.level;
   const W = WILD_LEVELS;
   const [a, b] = levels ?? speciesOf(form).wildLevel;

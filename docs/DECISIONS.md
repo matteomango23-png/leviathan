@@ -519,3 +519,16 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Ora** (`systems/beasts/spawnDraw.ts`): le bestie pronte delle acque fatte a mano si raccolgono e si estrae a sorte; peso per stelle (1: 10, 2: 6, 3: 3, 4: 1,2, 5: 0,5), ×0,35 se la specie è già in acqua, ×0,3 se è tra le ultime 5 comparse (`BeastState.recent`, non salvato); le esche ×20 come prima. Il mare infinito sceglie ancora con i pesi dei tratti (`BIOMES`).
 - **Delfini** in 5 zone in più. **Mappa:** quota = peso della rarità × quanto torna presto (30 s / tempo medio, minimo 0,15).
 - **Test:** 20 minuti nella Baia con le bestie che se ne vanno una alla volta: nessuna specie sopra il 20% (prima il barracuda era il 25%).
+
+## 2026-10-04 — Correzioni dopo la seconda prova (v0.37.0)
+
+- **Virata:** ogni striscia ha facing = segno × max(|cos|, spessore); spessore 0,2 della lunghezza (cetacei 0,28), quindi in proporzione all'animale. Tutto il corpo gira insieme (la testa anticipa appena, `TURN_LEAD` 1,2) con ombra uniforme: le strisce a stadi diversi, e quelle specchiate in mezzo alle altre, facevano le righe ("si sgrana"). Tolta la fetta di prosciutto singola della v0.34.
+- **Cetacei** (`CETACEANS`): coda su e giù, piegando solo l'ultimo 40% del corpo (`whaleWave`). Ruotare o spostare in verticale ogni pezzo apriva fessure tra le strisce: il davanti, alto, resta intero.
+- **Superficie:** in `moveBody` per una forma lunga conta solo il cerchio centrale (testa e coda possono uscire): col muso in su la testa teneva il sub sotto la fascia in cui si respira.
+- **Compagno:** segue la direzione di viaggio media (1,5 s), non la faccia; da fermo resta dal suo lato e vaga un poco; si gira solo sopra 1,5 lunghezze di sub al secondo (`TEAM_RULES.follow`).
+- **Piovra:** `rideSpeedMult` 0,9, quindi si cavalca.
+- **Leggende:** `wildLevel` per ogni leggenda casuale, da [50, 65] a [85, 100]; le bestie uniche della storia tengono il loro livello.
+- **Bestiario:** vista solo entro 90 unità (`WILD_RULES.seenRadius`); ordinamento per rarità.
+- **Squalo volpe:** la sua immagine "di fronte" era di un altro squalo. Ora usa quella buona (`squalo_volpe_back.jpg`, specchiata); l'originale è in `art-inbox/_squalo_volpe_front_sbagliata.jpg`. Serve una vera vista di schiena.
+- **Sottomarino:** scossa 0,2 (roccia) o 0,45 (bestie) di quella del sub, meno bolle.
+- **Scatto del sub:** non riprodotto. Nel codice, nel browser col tasto e col pulsante passa da 46 a ~115 di velocità. Da capire col proprietario in che situazione non funziona.

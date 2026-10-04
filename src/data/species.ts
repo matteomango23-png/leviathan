@@ -175,7 +175,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a heavy tiger shark with dark stripes and stained jaws, fish bones drifting around it' },
   { id: 'polpo_gigante', name: 'Polpo gigante', type: 'abissale', role: 'supporto', region: 'foresta', wildLevel: [13, 15], rarity: 3, size: 'media', lengthM: 6, trait: 'Nube d\u2019inchiostro: i nemici perdono le tue tracce',
     artPrompt: 'a giant red-brown octopus releasing a cloud of black ink, eyes glinting with cyan light' },
-  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true,
+  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true, rideSpeedMult: 0.9, // owner, 4 ottobre: you ride it, it is too big to swim at your side
     artPrompt: 'a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains' },
 
   // ---- Mare di Ghiaccio (15-20)
@@ -238,28 +238,29 @@ export interface UniqueVariantDef { id: string; speciesId: string; name: string;
   place?: string;              // where it lives, for the bestiary
   temper?: 'aggressive' | 'calm' | 'shy'; // its own temperament (otherwise rare beasts are shy)
   surface?: boolean;           // it floats at the surface
+  wildLevel?: [number, number]; // a legend met by chance is always very strong (owner, 4 ottobre: 50 to 100)
 }
 export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
   { id: 'sfregiato', speciesId: 'squalo_bianco', name: 'Lo Sfregiato', level: 8, statMult: 1.35, sizeMult: 1.25, region: 'baia',
     artPrompt: 'a colossal great white shark covered in deep scars, a rusted iron collar embedded in its neck, broken chains trailing' },
   { id: 'coccodrillo_marino_leggendario', speciesId: 'coccodrillo_marino', name: 'Coccodrillo albino leggendario', level: 14, statMult: 1.5, sizeMult: 1.3, region: 'delta',
-    chance: 0.03, place: 'Delta delle Mangrovie, tra i coccodrilli', // not as rare as the others (owner)
+    wildLevel: [50, 65], chance: 0.03, place: 'Delta delle Mangrovie, tra i coccodrilli', // not as rare as the others (owner)
     artPrompt: 'a legendary albino saltwater crocodile, pale white scales, red eyes, ancient and enormous' },
   // the legends of the open sea (the owner's pictures)
   { id: 'orca_preistorica_albina', speciesId: 'orca', name: 'Orca preistorica albina', level: 45, statMult: 1.7, sizeMult: 1.6, region: 'ghiaccio',
-    chance: 0.004, where: { biome: 'ghiaccio', minKm: 8 }, place: 'Banchisa lontana, oltre 8 km dalla costa', temper: 'aggressive',
+    wildLevel: [85, 100], chance: 0.004, where: { biome: 'ghiaccio', minKm: 8 }, place: 'Banchisa lontana, oltre 8 km dalla costa', temper: 'aggressive',
     artPrompt: 'a colossal prehistoric albino orca, pale scarred hide, ancient and terrifying' },
   { id: 'orca_matriarca_finale', speciesId: 'orca', name: 'Madre delle madri', level: 36, statMult: 1.5, sizeMult: 1.45, region: 'ghiaccio',
-    chance: 0.01, where: { biome: 'ghiaccio', minKm: 3 }, place: 'Banchisa, oltre 3 km dalla costa', temper: 'aggressive',
+    wildLevel: [70, 85], chance: 0.01, where: { biome: 'ghiaccio', minKm: 3 }, place: 'Banchisa, oltre 3 km dalla costa', temper: 'aggressive',
     artPrompt: 'the oldest orca matriarch, enormous, covered in scars, mother of every pod' },
   { id: 'beluga_spettro', speciesId: 'beluga', name: 'Beluga spettro', level: 24, statMult: 1.4, sizeMult: 1.3, region: 'ghiaccio',
-    chance: 0.02, where: { biome: 'ghiaccio', minKm: 2 }, place: 'Mare di Ghiaccio, oltre 2 km dalla costa', // owner, 3 ottobre: "una sorta di albino, un one off"
+    wildLevel: [55, 70], chance: 0.02, where: { biome: 'ghiaccio', minKm: 2 }, place: 'Mare di Ghiaccio, oltre 2 km dalla costa', // owner, 3 ottobre: "una sorta di albino, un one off"
     artPrompt: 'a ghostly beluga whale, pale translucent skin showing faint bones, a glowing rounded forehead' },
   { id: 'squalo_martello_preistorico', speciesId: 'squalo_martello', name: 'Squalo martello preistorico', level: 30, statMult: 1.5, sizeMult: 1.7, region: 'barriera',
-    chance: 0.01, where: { biome: 'barriera', minKm: 3 }, place: 'Barriera lontana, oltre 3 km dalla costa', temper: 'aggressive',
+    wildLevel: [60, 75], chance: 0.01, where: { biome: 'barriera', minKm: 3 }, place: 'Barriera lontana, oltre 3 km dalla costa', temper: 'aggressive',
     artPrompt: 'a prehistoric hammerhead shark covered in armored plates and ridges, red glow under its belly' },
   { id: 'tartaruga_preistorica', speciesId: 'tartaruga_marina', name: 'Tartaruga preistorica', level: 32, statMult: 1.6, sizeMult: 7, region: 'barriera',
-    chance: 0.01, where: { biome: 'aperto', minKm: 4 }, place: 'Mare aperto, oltre 4 km: a pelo d\u2019acqua sembra un\u2019isoletta', temper: 'calm', surface: true,
+    wildLevel: [60, 80], chance: 0.01, where: { biome: 'aperto', minKm: 4 }, place: 'Mare aperto, oltre 4 km: a pelo d\u2019acqua sembra un\u2019isoletta', temper: 'calm', surface: true,
     artPrompt: 'a gigantic prehistoric sea turtle carrying a whole reef on its shell: ammonites, corals, crabs and jellyfish' },
   { id: 'regina_bianca', speciesId: 'orca', name: 'La Regina bianca', level: 22, statMult: 1.35, sizeMult: 1.2, region: 'ghiaccio',
     artPrompt: 'a pure white orca queen with pale glowing eyes and a crown of frost on her head' },

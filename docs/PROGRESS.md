@@ -23,6 +23,8 @@ Il proprietario ha provato il gioco e mandato 13 punti. Piano approvato, in 4 gr
 10. Scatto: ogni scatto costa un po' d'aria.
 11. Gira per la Baia: più varietà di bestie, più delfini.
 
+**v0.37.0 (seconda prova, 4 ottobre):** virata a moneta spessa, coda verticale dei cetacei, aria in superficie in groppa, Piovra cavalcatura, compagni che seguono come animali veri, leggende 50–100, bestiario (vista solo da vicino, per rarità), immagine dello squalo volpe, urti del sottomarino lievi. Lo scatto del sub che "non funziona più" non si riproduce: chiedere al proprietario quando succede. Serve una vista di schiena dello squalo volpe (Gemini).
+
 **Da sapere:** l'etichetta git `v0.31.0`…`v0.36.0` non si può creare dal cloud (permesso solo sul ramo della sessione): crearle dalla sessione del computer. Pesca dal sottomarino tolta: da ripensare.
 
 ## Sessione cloud 1 — Meteo dinamico e gabbiani (4 ottobre 2026) → v0.31.0
