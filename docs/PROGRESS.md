@@ -1,5 +1,27 @@
 # Progressi
 
+## Sessione cloud 1 — Correzioni e rifiniture della nave (5 ottobre 2026) → v0.42.0
+
+**Fatto (lista del proprietario del 5 ottobre, tutti i punti):**
+- nave che "saltava" (telecamera), riga in basso a sinistra (classe CSS in conflitto), Aggancia vicino al portellone, leve usabili insieme;
+- Delta prima dell'isola, porto commerciale di Porto Fango, nave solo a est di Porto Fango e senza ostacoli (niente iceberg, niente corsia lontana);
+- avamposti come chiatte (immagini del proprietario), rimorchiatore del razzo di soccorso;
+- luci della nave, bolle dell'elica, suoni dei motori e del sonar;
+- sonar accendibile, solo sotto 10 nodi, con schermo nel cockpit;
+- cockpit ridisegnato (obiettivo, carta ±2 km, quadranti, meteo);
+- diario a schede con "Segui" (salvato in `huntPinned`).
+
+**Da provare sull'iPhone (v0.42.0):**
+1. Sali e scendi dalla nave: la nave resta ferma.
+2. Nel sottomarino tieni il gas e intanto Sali/Scendi con l'altra mano.
+3. Cala il sottomarino e riagganciati appena sotto il portellone.
+4. Al timone: pulsante **Sonar**, poi Cockpit → **Sonar** (sotto 10 nodi vedi il fondale e i puntini).
+5. Cockpit → **Diario**: tocca una caccia, poi **Segui**; guarda la Plancia e la riga in alto a sinistra al timone.
+6. Vai a Porto Fango: il nuovo porto; poi verso est fino al primo avamposto (chiatta).
+7. Ascolta i motori con il gas; in superficie non devono esserci le bolle del nuoto.
+
+**Da sistemare a occhio se serve:** posizione delle finestre illuminate (`SHIP.lights` in `data/ship.ts`) e altezza dei pezzi del porto (`HARBOUR_PIECES`, `OUTPOST_ART` in `data/economy.ts`).
+
 ## Sessione cloud 1 (fine) — Tappe 3–6 delle spedizioni (4 ottobre 2026) → v0.41.0
 
 **Fatto:**

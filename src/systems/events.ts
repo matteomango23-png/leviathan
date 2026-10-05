@@ -52,9 +52,12 @@ export type GameEvent =
   // the expedition ship (data/ship.ts)
   | { type: 'shipGiven' }
   | { type: 'shipBoarded' }
-  | { type: 'shipShallow' }
   /** The ship reached the end of the known sea. */
   | { type: 'seaEnd' }
+  /** The ship reached Porto Fango going west: its waters end there. */
+  | { type: 'shipWest' }
+  /** The sonar pings (a sound). */
+  | { type: 'sonarPing' }
   /** An outpost of the open sea found (economy/places.ts). */
   | { type: 'outpostFound'; name: string }
   // the hunts (hunts.ts)

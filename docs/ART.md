@@ -159,6 +159,8 @@ Dopo `npm run art` lancia anche **`npm run shapes`**: legge i profili in `public
 ## La nave da spedizione (4 ottobre 2026)
 
 `art-inbox/nave_1.jpg` (portellone chiuso) e `art-inbox/nave_1_aperta.jpg` (portellone aperto) diventano `public/world/nave_1.webp` e `nave_1_aperta.webp`.
+
+**Porto commerciale, avamposti e rimorchiatore (5 ottobre 2026):** `porto_casa`, `porto_pescheria`, `porto_molo` (Porto Fango, posizioni in `HARBOUR_PIECES`), `avamposto_medio` e `avamposto_grande` (le chiatte degli avamposti, `OUTPOST_ART`), `rimorchiatore` (razzo di soccorso, `SHIP.tug`). Stesso trattamento dei pezzi del mondo: scontornati dal fondo nero, senza ritaglio, in `public/world/`.
 - **Fondo:** può essere verde o bianco, lo script lo legge dai bordi.
 - **Inquadratura:** le due immagini devono avere la stessa inquadratura (stessa misura, nave nello stesso punto). Non vengono ritagliate, così nel gioco combaciano mentre il portellone si apre.
 - **Punti della nave:** la linea d'acqua, il portellone, la rampa e il timone stanno in `SHIP.picture` (`src/data/ship.ts`), come frazioni dell'immagine. Se una nuova immagine li ha altrove, si cambiano lì.

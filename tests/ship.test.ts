@@ -1,20 +1,20 @@
 // The expedition ship (owner's decisions of 4 ottobre 2026): Aurelio's gift at the end of chapter 4 with the
 // submarine in its hold; levers (the throttle stays where you leave it); the hatch opens only with the ship still,
 // and open it does not move; the submarine slides down the ramp to mid-water and docks only in front of the
-// hatch; the ship breaks the ice, stops in shallow water and never gets stuck (it sails round what sticks out of
-// the water, on the far lane); saved (v14).
+// hatch; the ship breaks the ice and never gets stuck; it sails from Porto Fango east to the end of the sea with
+// nothing in the way (5 ottobre: no icebergs, no far lane); saved (v14).
 import { beforeAll, describe, expect, it } from 'vitest';
-import { PORT } from '../src/data/economy';
+import { PORTO_FANGO } from '../src/data/economy';
 import { SHIP } from '../src/data/ship';
-import { LAYOUT, OPEN_SEA_X, TILE, WORLD } from '../src/data/worldLayout';
+import { TILE, WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, currentAction, stepGame, toSave, type GameState } from '../src/systems/game';
 import { knotsOf, stepHeading } from '../src/systems/helm';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
 import { migrate, parseSave } from '../src/systems/save/saveData';
-import { dockPoint, shipSpan } from '../src/systems/ship/geometry';
-import { newShip, sailShip, type ShipWorld } from '../src/systems/ship/ship';
-import { iceIn, obstacleIn, SEA_END_X } from '../src/systems/ship/surface';
+import { dockPoint, holdPoint } from '../src/systems/ship/geometry';
+import { newShip, sailShip, sonarActive, type ShipWorld } from '../src/systems/ship/ship';
+import { iceIn, SEA_END_X, SHIP_WEST_X } from '../src/systems/ship/surface';
 import { ENDLESS } from '../src/data/endless';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
@@ -45,7 +45,7 @@ const cmd = (g: GameState, c: 'hatch' | 'launch' | 'dive', input: InputState): G
 };
 
 /** After chapter 4: the ship is yours, the submarine in its hold, and you are at the helm. */
-function atTheHelm(x = OPEN_SEA_X + 1200): { g: GameState; input: InputState } {
+function atTheHelm(x = 20000 /* open sea, before any ice */): { g: GameState; input: InputState } {
   const g = createGame(map, null, 4);
   g.story.step = 'chapter1Done';
   giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
@@ -149,6 +149,35 @@ describe('la nave da spedizione', () => {
     expect(g.sub.aboard).toBe(false);
   });
 
+  it('si riaggancia anche appena sotto il portellone, non solo a mezz’acqua (5 ottobre)', () => {
+    const { g, input } = atTheHelm();
+    cmd(g, 'hatch', input);
+    run(g, SHIP.hatchSeconds + 0.1, input);
+    cmd(g, 'launch', input);
+    run(g, SHIP.launchSeconds + 0.1, input);
+    const top = holdPoint(g.ship).y;
+    for (const y of [top + 4, (top + dockPoint(g.ship).y) / 2]) {
+      Object.assign(g.sub, { x: dockPoint(g.ship).x - 10, y, vx: 0, vy: 0 });
+      expect(currentAction(g), `y ${y}`).toBe('aggancia');
+    }
+  });
+
+  it('il sonar si accende e spegne, e sente solo sotto 10 nodi', () => {
+    const { g, input } = atTheHelm();
+    expect(g.ship.sonarOn).toBe(false);
+    input.helmCmd = 'sonar';
+    let ev = run(g, 3, input);
+    expect(g.ship.sonarOn).toBe(true);
+    expect(sonarActive(g.ship)).toBe(true);
+    expect(ev.some((e) => e.type === 'sonarPing')).toBe(true);
+    input.helm.throttle = 1;
+    run(g, 12, input);
+    expect(knotsOf(g.ship.speed)).toBeGreaterThan(SHIP.sonar.maxKnots);
+    expect(sonarActive(g.ship)).toBe(false);
+    ev = run(g, 3, input);
+    expect(ev.some((e) => e.type === 'sonarPing')).toBe(false);
+  });
+
   it('tuffati e risali a bordo dall’acqua', () => {
     const { g, input } = atTheHelm();
     cmd(g, 'dive', input);
@@ -158,10 +187,10 @@ describe('la nave da spedizione', () => {
   });
 
   it('attracca al porto: dal timone compare Porto', () => {
-    const { g, input } = atTheHelm(PORT.shipDock);
+    const { g, input } = atTheHelm(PORTO_FANGO.shipDock);
     run(g, DT, input);
     expect(currentAction(g)).toBe('porto');
-    expect(g.port?.id).toBe(PORT.id);
+    expect(g.port?.id).toBe(PORTO_FANGO.id);
   });
 
   it('salvata e ricaricata, è dove l’hai lasciata (v14)', () => {
@@ -187,53 +216,38 @@ describe('la nave non si blocca mai', () => {
     };
     const helm = { throttle: 1, dir: face, dive: 0 };
     const events: GameEvent[] = [];
-    const lanes: { x: number; lane: number; speed: number }[] = [];
+    const lanes: { x: number; speed: number }[] = [];
     let stalled = 0;
     for (let t = 0; t < seconds && g.ship.x < goal; t += dt) {
       const before = g.ship.x;
       sailShip(g, helm, dt, events, () => true);
-      lanes.push({ x: g.ship.x, lane: g.ship.lane, speed: g.ship.speed });
+      lanes.push({ x: g.ship.x, speed: g.ship.speed });
       stalled = g.ship.x === before ? stalled + dt : 0;
       if (stalled > 3) break;
     }
     return { g, events, lanes };
   }
 
-  it(
-    'da Portofosco a 30 km verso est: isola, Delta, ghiaccio e mare aperto, senza mai fermarsi',
-    { timeout: 60000 },
-    () => {
-      // the sea ends 30 km from the beach: the ship gets there, to the last metre
-      const goal = SEA_END_X - SHIP.length / 2 - 1;
-      const { g, lanes, events } = sail(PORT.shipDock, 1, 1200, goal);
-      expect(g.ship.x).toBeGreaterThan(goal);
-      for (let i = 0; i < 30; i++) sailShip(g, { throttle: 1, dir: 1, dive: 0 }, 1 / 15, events, () => true);
-      expect(events.some((e) => e.type === 'seaEnd')).toBe(true);
-      // mostly on the near lane: the far one only round what stands in the way
-      expect(lanes.filter((l) => l.lane > 0).length / lanes.length).toBeLessThan(0.35);
-      // round the Isola delle Mangrovie on the far lane, then back on the near one
-      const island = lanes.filter((l) => l.x > LAYOUT.island.x0 && l.x < LAYOUT.island.x1);
-      expect(island.length).toBeGreaterThan(0);
-      expect(island.every((l) => l.lane === 1)).toBe(true);
-      expect(lanes.find((l) => l.x > OPEN_SEA_X + 300)!.lane).toBe(0);
-    },
-  );
+  it('da Porto Fango a 30 km verso est: mare libero, senza mai fermarsi', { timeout: 60000 }, () => {
+    // the sea ends 30 km from the beach: the ship gets there, to the last metre
+    const goal = SEA_END_X - SHIP.length / 2 - 1;
+    const { g, events } = sail(PORTO_FANGO.shipDock, 1, 1200, goal);
+    expect(g.ship.x).toBeGreaterThan(goal);
+    for (let i = 0; i < 30; i++) sailShip(g, { throttle: 1, dir: 1, dive: 0 }, 1 / 15, events, () => true);
+    expect(events.some((e) => e.type === 'seaEnd')).toBe(true);
+  });
 
-  it('verso la spiaggia si ferma nel fondale basso, e lo dice', () => {
-    const { g, events } = sail(PORT.shipDock + 300, -1, 30);
-    expect(events.some((e) => e.type === 'shipShallow')).toBe(true);
-    expect(shipSpan(g.ship).x0).toBeGreaterThan(LAYOUT.shoreX);
+  it('a ovest non va oltre Porto Fango, e lo dice', () => {
+    const { g, events } = sail(PORTO_FANGO.shipDock + 300, -1, 30);
+    expect(events.some((e) => e.type === 'shipWest')).toBe(true);
+    expect(g.ship.x).toBe(SHIP_WEST_X);
   });
 
   it('nel ghiaccio rallenta e lo rompe; il canale si richiude solo lontano', () => {
-    // an ice field of the Banchisa with nothing to sail round (the Mare di Ghiaccio is full of icebergs)
+    // an ice field of the Banchisa
     let at = 0;
     for (let x = ENDLESS.startX; x < 400000 && !at; x += 50)
-      if (
-        Array.from({ length: 10 }, (_, i) => x + i * 20).every((c) => iceIn(map, c, c + 20)) &&
-        !obstacleIn(map, x - 600, x + 300)
-      )
-        at = x;
+      if (Array.from({ length: 10 }, (_, i) => x + i * 20).every((c) => iceIn(map, c, c + 20))) at = x;
     expect(at).toBeGreaterThan(0);
     const { g, events, lanes } = sail(at - 700, 1, 12);
     expect(events.some((e) => e.type === 'iceCracked')).toBe(true);

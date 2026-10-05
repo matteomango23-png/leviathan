@@ -29,21 +29,33 @@ export const PORT: PortDef = {
   shipDock: LAYOUT.shoreX + 190,
 };
 
-/** Porto Fango (tappa 10): a full harbour on the east shore of the Isola delle Mangrovie, by the Delta. */
+/** Porto Fango: the big trading harbour on the east shore of the Isola delle Mangrovie (owner, 5 ottobre),
+ *  facing the open sea; the home of the expedition ship (its waters begin here). */
 export const PORTO_FANGO: PortDef = {
   id: 'fango',
   name: 'Porto Fango',
-  x: LAYOUT.island.x1 + 60,
+  x: LAYOUT.island.x1 + 190,
   shoreX: ISLAND_X + LAYOUT.island.halfWidth - 4,
-  reach: 60,
+  reach: 90,
   surfaceBand: 48,
-  shipDock: LAYOUT.island.x1 + 110,
+  shipDock: LAYOUT.island.x1 + 330,
 };
+
+/** The owner's paintings of the trading harbour (public/world): centre x, width, and which share of the picture's
+ *  height sits on its base (the land under it, or the sea surface). Tuning, by eye. */
+export const HARBOUR_PIECES: { art: string; x: number; width: number; on: 'land' | 'sea'; share: number }[] = [
+  { art: 'porto_casa', x: ISLAND_X - 50, width: 150, on: 'land', share: 0.97 },
+  { art: 'porto_pescheria', x: LAYOUT.island.x1 - 80, width: 170, on: 'land', share: 0.95 },
+  { art: 'porto_molo', x: LAYOUT.island.x1 + 95, width: 260, on: 'sea', share: 0.6 },
+];
+
+/** The outposts' paintings: floating barges (the last, biggest one at the end of the sea). Tuning, by eye. */
+export const OUTPOST_ART = { art: 'avamposto_medio', last: 'avamposto_grande', width: 240, waterline: 0.66 };
 
 /** The outposts of the open sea (data/regions.ts): one per region, a platform with a harbour. */
 export const OUTPOSTS: PortDef[] = SEA_REGIONS.map((r) => {
   const x = Math.round(kmToX(r.outpost.km));
-  return { id: r.id, name: r.outpost.name, x, shoreX: x - 40, reach: 70, surfaceBand: 48, shipDock: x + 140, outpost: true };
+  return { id: r.id, name: r.outpost.name, x, shoreX: x - 120, reach: 120, surfaceBand: 48, shipDock: x + 225, outpost: true };
 });
 
 export const PORTS: PortDef[] = [PORT, PORTO_FANGO, ...OUTPOSTS];

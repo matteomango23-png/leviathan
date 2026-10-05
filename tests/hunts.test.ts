@@ -8,7 +8,7 @@ import type { WeatherId } from '../src/data/weather';
 import { WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/systems/game';
-import { sonarReadout } from '../src/systems/hunts';
+import { huntNextStep, sonarReadout } from '../src/systems/hunts';
 import { consumePresses, emptyInput } from '../src/systems/input';
 import { isInWater } from '../src/systems/beasts/wildState';
 import { migrate, parseSave } from '../src/systems/save/saveData';
@@ -65,7 +65,7 @@ describe('cacce alle leggende', () => {
     const g = game();
     const i = HUNTS.indexOf(martello);
     const den = g.dens[i]!;
-    Object.assign(g.ship, { aboard: true, x: den.x + HUNT_RULES.sonarRange * 0.5 });
+    Object.assign(g.ship, { aboard: true, sonarOn: true, x: den.x + HUNT_RULES.sonarRange * 0.5 });
     setWeather(g, 'sereno');
     run(g, DT);
     expect(g.hunts[martello.id]?.echo).toBeFalsy(); // no rumour yet
@@ -78,6 +78,21 @@ describe('cacce alle leggende', () => {
     expect(g.hunts[martello.id]?.echo).toBe(true);
     expect(ev.some((e) => e.type === 'echoFound')).toBe(true);
     expect(sonarReadout(g).echoes.some((e) => e.label === 'eco anomala')).toBe(true);
+  });
+
+  it('il sonar spento non sente niente; la caccia seguita si salva', () => {
+    const g = game();
+    const den = g.dens[HUNTS.indexOf(martello)]!;
+    g.hunts[martello.id] = { heard: true };
+    Object.assign(g.ship, { aboard: true, sonarOn: false, x: den.x + HUNT_RULES.sonarRange * 0.5 });
+    setWeather(g, 'sereno');
+    run(g, DT);
+    expect(g.hunts[martello.id]?.echo).toBeFalsy();
+    expect(sonarReadout(g).status).toBe('off');
+    g.huntPinned = martello.id;
+    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
+    expect(back.huntPinned).toBe(martello.id);
+    expect(huntNextStep(martello, back.hunts[martello.id])).toContain('sonar');
   });
 
   it('tracce vicino alla tana, poi la leggenda esce solo col suo tempo, fortissima', () => {

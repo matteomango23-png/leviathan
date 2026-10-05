@@ -8,6 +8,7 @@ import { SUBMARINE } from '../data/submarine';
 import type { GameEvent } from './events';
 export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
+import { SHIP_WEST_X } from './ship/surface';
 import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
 import type { TeamBeast } from './beasts/team';
@@ -113,8 +114,11 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
   let where: string;
   if (s.aboard || (g.sub.aboard && s.owned)) {
     if (s.aboard) {
-      const port = PORTS.reduce((a, b) => (Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a));
-      Object.assign(s, { x: port.shipDock, speed: 0, lane: 0 });
+      // the nearest harbour the ship can reach (none west of Porto Fango: ship/surface.ts)
+      const port = PORTS.filter((p) => p.shipDock >= SHIP_WEST_X).reduce((a, b) =>
+        Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
+      );
+      Object.assign(s, { x: port.shipDock, speed: 0 });
       g.homePort = port.id;
       where = `a ${port.name}`;
     } else {

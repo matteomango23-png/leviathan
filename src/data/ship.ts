@@ -1,6 +1,6 @@
 // Leviatano — the expedition ship (owner's decisions of 4 ottobre 2026): your home at sea. Aurelio brings it at the
-// end of chapter 4 with your submarine in its hold. It sails on the surface, breaks the ice, never gets stuck
-// (what sticks out of the water it sails round, on the far lane, behind it); stopped, its side hatch opens, the
+// end of chapter 4 with your submarine in its hold. It sails on the surface east of the trading harbour of Porto
+// Fango, breaks the ice and finds nothing in its way (owner, 5 ottobre); stopped, its side hatch opens, the
 // submarine slides down the ramp to mid-water under it and docks again only in front of the hatch. Open, the ship
 // does not move. You drive it, and the submarine, with levers (HELM). Values marked "tuning" are a first pass.
 
@@ -18,6 +18,8 @@ export const SHIP = {
     rampEnd: 0.93, // lowest point of the open ramp
     helmX: 0.35, // the wheelhouse: where you stand at the helm
     deckY: 0.38,
+    propX: 0.15, // the propeller (bubbles when it turns)
+    propY: 0.72,
   },
   maxSpeed: 220, // units/s at full throttle (~1 km in 27 s). Tuning: fast, not extreme
   accel: 38, // units/s² while speeding up: a heavy hull
@@ -32,19 +34,36 @@ export const SHIP = {
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
   refreezeSeconds: 40,
   refreezeDistance: 420, // units from you and the ship before the ice closes again (never on screen)
-  /** Shallow water: it stops this far above the keel. */
-  minUnderKeel: 10,
-  /** The far lane: what sticks out of the water (islands, islets, icebergs) it sails round, behind it. */
-  lane: { seconds: 0.9, scale: 0.72, darken: 0.45, lift: 10, lookAhead: 70 },
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
   /** Rocking on the waves (look only), scaled by the weather's waves. */
   rock: { pitch: 0.012, heave: 1.1, hz: 0.35 },
+  /** Its lights (owner, 5 ottobre): lit windows and lanterns of the painting (shares of the picture, radius in
+   *  units) and a floodlight under the hull shining down this far (units). Tuning. */
+  lights: {
+    windows: [
+      [0.335, 0.205, 1.1],
+      [0.358, 0.205, 1.1],
+      [0.381, 0.205, 1.1],
+      [0.403, 0.205, 1.1],
+      [0.122, 0.278, 1.3],
+      [0.416, 0.278, 1.3],
+      [0.186, 0.27, 0.9],
+      [0.264, 0.27, 0.9],
+    ] as [number, number, number][],
+    flood: { u: 0.6, v: 0.79, reach: 70 },
+  },
+  /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
+  tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
+  /** The sonar (owner, 5 ottobre): switched on at the helm, it hears only under this speed; it pings this often. */
+  sonar: { maxKnots: 10, pingSeconds: 2.6 },
+  /** The chart of the bridge: km shown each side of the ship (owner, 5 ottobre: "i prossimi 2 km"). */
+  chart: { halfKm: 2 },
   hatchSeconds: 1.4, // opening or closing
   /** The submarine: down the ramp to this depth under the surface, back the same way. */
   launchSeconds: 3.2,
   launchDepth: 62, // units under the surface (~10 m)
-  dockReach: 26, // units from the docking point (under the ramp) where Aggancia appears
+  dockReach: 40, // units: how near the hatch (sideways) Aggancia appears, from under the ramp up to the hatch
   boardReach: 18, // units beyond the hull (sideways) or under the surface where A bordo appears
   /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
@@ -98,7 +117,6 @@ export const SHIP_TEXT = {
   given:
     'Aurelio è arrivato con una nave da spedizione e ha caricato il tuo sottomarino nella stiva. Avvicinati in superficie e premi A bordo.',
   aboard: 'Al timone. Leva a sinistra: il gas (resta dove la lasci). Leva a destra: la direzione.',
-  shallow: 'Fondale troppo basso: la nave non passa.',
   hatchMoving: 'Ferma la nave per aprire il portellone.',
   launched: 'Il sottomarino è in acqua. Per rientrare torna sotto il portellone e premi Aggancia.',
   docked: 'Il sottomarino è nella stiva. Chiudi il portellone per ripartire.',

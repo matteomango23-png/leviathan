@@ -13,8 +13,11 @@ export interface HelmInfo {
   mode: 'ship' | 'sub';
   face: 1 | -1;
   knots: number;
-  /** The ship's sonar (only at its helm). */
+  /** The ship's sonar (only at its helm): its line, and whether it is switched on. */
   sonar?: string;
+  sonarOn?: boolean;
+  /** The hunt you follow (pinned in the diary), shown at the helm. */
+  objective?: string;
   /** Litres left, and how far they take you at the throttle you have now. */
   fuel: number;
   rangeKm: number;
@@ -46,9 +49,12 @@ export class HelmControls {
   private readonly launchBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
+  private readonly sonarBtn: HTMLButtonElement;
+  private readonly objective: HTMLDivElement;
   private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
-  private dragging: { lever: 'throttle' | 'dive'; id: number } | null = null;
+  /** One finger per lever (owner, 5 ottobre: throttle and dive together): pointer id → its lever. */
+  private readonly dragging = new Map<number, 'throttle' | 'dive'>();
   private readonly keys = new Set<string>();
   private readonly cleanup: (() => void)[] = [];
   private gaugeText = '';
@@ -82,22 +88,23 @@ export class HelmControls {
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
     this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
+    this.sonarBtn = el('button', 'helm-btn', this.buttons, 'Sonar');
     this.cockpitBtn = el('button', 'helm-btn', this.buttons, 'Cockpit');
-    this.rescueBtn = el('button', 'helm-btn helm-rescue', this.root, 'Razzo di soccorso');
+    this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
+    this.objective = el('div', 'helm-objective', this.root);
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
     this.listen(this.diveTrack, 'pointerdown', (e) => this.grab(e, 'dive'));
     this.listen(window, 'pointermove', (e) => this.drag(e));
     for (const t of ['pointerup', 'pointercancel'] as const)
-      this.listen(window, t, (e) => {
-        if (this.dragging?.id === e.pointerId) this.dragging = null;
-      });
+      this.listen(window, t, (e) => this.dragging.delete(e.pointerId));
     this.tap(this.west, () => (this.session.input.helm.dir = -1));
     this.tap(this.east, () => (this.session.input.helm.dir = 1));
     this.tap(this.hatchBtn, () => (this.session.input.helmCmd = 'hatch'));
     this.tap(this.launchBtn, () => (this.session.input.helmCmd = 'launch'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
+    this.tap(this.sonarBtn, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
     this.listen<KeyboardEvent>(window, 'keydown', (e) => {
       const k = e.key.toLowerCase();
@@ -132,23 +139,24 @@ export class HelmControls {
     if (this.session.paused) return;
     e.preventDefault();
     e.stopPropagation();
-    this.dragging = { lever, id: e.pointerId };
+    this.dragging.set(e.pointerId, lever);
     this.drag(e);
   }
 
   /** The finger sets the lever where it is along the track (top = full throttle / rise). */
   private drag(e: PointerEvent): void {
-    if (!this.dragging || e.pointerId !== this.dragging.id) return;
-    const track = this.dragging.lever === 'throttle' ? this.throttleTrack : this.diveTrack;
+    const lever = this.dragging.get(e.pointerId);
+    if (!lever) return;
+    const track = lever === 'throttle' ? this.throttleTrack : this.diveTrack;
     const r = track.getBoundingClientRect();
     const share = Math.max(0, Math.min(1, (r.bottom - e.clientY) / r.height)); // 0 bottom … 1 top
     const helm = this.session.input.helm;
-    if (this.dragging.lever === 'throttle') helm.throttle = share;
+    if (lever === 'throttle') helm.throttle = share;
     else helm.dive = diveOf(1 - share * 2); // top = rise (−1), bottom = sink (1)
   }
 
   releaseAll(): void {
-    this.dragging = null;
+    this.dragging.clear();
     this.keys.clear();
   }
 
@@ -159,7 +167,7 @@ export class HelmControls {
       // climbing in: the levers start at rest, pointing where the vehicle points
       Object.assign(helm, freshHelm(info?.face ?? 1));
       this.mode = info?.mode ?? null;
-      this.dragging = null;
+      this.dragging.clear();
     }
     this.root.hidden = !info;
     if (!info) return;
@@ -168,7 +176,7 @@ export class HelmControls {
     if (k.has('s')) helm.throttle = Math.max(0, helm.throttle - HELM.keyThrottlePerSec * dt);
     // keyboard: the arrows hold the dive lever up or down; let go, it goes back to the middle
     const held = k.has('arrowup') || k.has('arrowdown');
-    if (info.mode === 'sub' && !this.dragging) {
+    if (info.mode === 'sub' && ![...this.dragging.values()].includes('dive')) {
       if (held) helm.dive = k.has('arrowup') ? -1 : 1;
       else if (this.keyDive) helm.dive = 0;
     }
@@ -197,7 +205,14 @@ export class HelmControls {
       this.sonar.textContent = info.sonar;
       this.sonar.classList.toggle('anomaly', info.sonar.includes('anomala'));
     }
-    this.buttons.hidden = info.mode !== 'ship';
+    this.buttons.classList.toggle('sub', info.mode !== 'ship');
+    for (const b of [this.hatchBtn, this.launchBtn, this.diveBtn, this.sonarBtn, this.cockpitBtn])
+      b.hidden = info.mode !== 'ship';
+    this.sonarBtn.textContent = info.sonarOn ? 'Sonar: acceso' : 'Sonar: spento';
+    this.sonarBtn.classList.toggle('on', !!info.sonarOn);
+    this.objective.hidden = !info.objective;
+    if (info.objective && this.objective.textContent !== info.objective)
+      this.objective.textContent = info.objective;
     this.hatchBtn.textContent = info.hatchOpen ? 'Chiudi portellone' : 'Apri portellone';
     this.hatchBtn.classList.toggle('off', !info.hatchCanMove);
     this.launchBtn.hidden = !info.canLaunch;

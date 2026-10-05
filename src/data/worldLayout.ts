@@ -17,16 +17,17 @@ export const WORLD = {
 
 /**
  * The coast (tappa 10, owner's decisions of 1 ottobre 2026), west to east: Portofosco on the land, a long beach
- * sloping gently into the bay, the bay (wider than before), the Isola delle Mangrovie rising out of the water (you
- * dive under it; Porto Fango is on its east shore), the Delta at the mouth of its river, then the open sea. The
+ * sloping gently into the bay, the bay (wider than before), the Delta delle Mangrovie, then the Isola delle Mangrovie
+ * rising out of the water (you dive under it; on its east shore the big trading harbour of Porto Fango, where the
+ * expedition ship lives: owner, 5 ottobre, Delta and island swapped), then the open sea. The
  * bay, the Delta and the open sea keep their earlier hand-made design, moved and stretched by these transforms
  * (an "old" x is a position in the design before tappa 10): bay(780) is where 780 is now.
  */
 export const LAYOUT = {
   shoreX: 260, // the land meets the water here
   bay: { from: 110, x0: 1700, stretch: 1.6 }, // old 110…1940 → 1700…4628
-  island: { x0: 4628, x1: 5000, halfWidth: 168, landHeight: 24 }, // Isola delle Mangrovie: its zone, its rock
-  delta: { from: 1940, x0: 5000, stretch: 1.6 }, // old 1940…2460 → 5000…5832
+  delta: { from: 1940, x0: 4628, stretch: 1.6 }, // old 1940…2460 → 4628…5460
+  island: { x0: 5460, x1: 5832, halfWidth: 168, landHeight: 24 }, // Isola delle Mangrovie: its zone, its rock
   eastShift: 3372, // old 2460… (the open sea) → 5832…
 };
 export const bay = (x: number): number => LAYOUT.bay.x0 + (x - LAYOUT.bay.from) * LAYOUT.bay.stretch;
@@ -35,7 +36,7 @@ export const delta = (x: number): number => LAYOUT.delta.x0 + (x - LAYOUT.delta.
 export const east = (x: number): number => x + LAYOUT.eastShift;
 /** The middle of the Isola delle Mangrovie. */
 export const ISLAND_X = (LAYOUT.island.x0 + LAYOUT.island.x1) / 2;
-/** Where the open sea begins (the end of the Delta). */
+/** Where the open sea begins (past the Isola delle Mangrovie). */
 export const OPEN_SEA_X = east(2460);
 
 /** Tile values stored in the map. */
@@ -108,7 +109,7 @@ export const WORLD_SHAPE: ZoneShapeDef[] = [
   {
     // West: the beach (the coast slope, COAST) and the bay with its twilight caves and abyss below
     xMin: 0,
-    xMax: LAYOUT.island.x0,
+    xMax: LAYOUT.delta.x0,
     solids: [bayEll(700, 690, 40, 100, 0.6), bayEll(1180, 800, 70, 50, 0.6), bayEll(1000, 1330, 60, 70, 0.6)],
     floor: { base: 335, waves: [{ amp: 28, freq: 0.0045 / LAYOUT.bay.stretch }], noise: 80 },
     openings: [
@@ -123,17 +124,9 @@ export const WORLD_SHAPE: ZoneShapeDef[] = [
     ],
   },
   {
-    // The Isola delle Mangrovie: rock from above the water down to ~23 m; you pass under it
-    xMin: LAYOUT.island.x0,
-    xMax: LAYOUT.island.x1,
-    solids: [ell(ISLAND_X, 40, LAYOUT.island.halfWidth, 120, 0.35)],
-    floor: { base: 330, waves: [{ amp: 10, freq: 0.01 }], noise: 30 },
-    openings: [],
-  },
-  {
     // The Delta delle Mangrovie (chapter 2): the shallow, murky mouth of the island's river
-    xMin: LAYOUT.island.x1,
-    xMax: OPEN_SEA_X,
+    xMin: LAYOUT.delta.x0,
+    xMax: LAYOUT.island.x0,
     solids: [],
     floor: {
       points: [
@@ -145,6 +138,14 @@ export const WORLD_SHAPE: ZoneShapeDef[] = [
       waves: [{ amp: 6, freq: 0.03 / LAYOUT.delta.stretch }],
       noise: 30,
     },
+    openings: [],
+  },
+  {
+    // The Isola delle Mangrovie: rock from above the water down to ~23 m; you pass under it
+    xMin: LAYOUT.island.x0,
+    xMax: LAYOUT.island.x1,
+    solids: [ell(ISLAND_X, 40, LAYOUT.island.halfWidth, 120, 0.35)],
+    floor: { base: 330, waves: [{ amp: 10, freq: 0.01 }], noise: 30 },
     openings: [],
   },
   {
@@ -209,8 +210,8 @@ export const COAST = {
 
 /** The Delta delle Mangrovie (tappa 6): mangrove islands above the water and murky water below. */
 export const DELTA = {
-  x0: LAYOUT.island.x1,
-  x1: OPEN_SEA_X,
+  x0: LAYOUT.delta.x0,
+  x1: LAYOUT.island.x0,
   islands: [
     [delta(2060), delta(2125), 8],
     [delta(2200), delta(2295), 11],
@@ -234,14 +235,14 @@ export interface ZoneDef {
 export const ZONES: ZoneDef[] = [
   { name: 'Tana dello Sfregiato', xMin: bay(780) - 220, xMax: bay(780) + 220, yMin: 340, yMax: 512 }, // LAIR in guardians.ts
   { name: 'Spiaggia di Portofosco', xMin: 0, xMax: LAYOUT.bay.x0, yMin: -Infinity, yMax: 420 },
-  { name: 'Baia di Portofosco', xMin: LAYOUT.bay.x0, xMax: LAYOUT.island.x0, yMin: -Infinity, yMax: 420 },
+  { name: 'Baia di Portofosco', xMin: LAYOUT.bay.x0, xMax: LAYOUT.delta.x0, yMin: -Infinity, yMax: 420 },
+  { name: 'Delta delle Mangrovie', xMin: LAYOUT.delta.x0, xMax: LAYOUT.island.x0, yMin: -Infinity, yMax: 420 },
   { name: 'Isola delle Mangrovie', xMin: LAYOUT.island.x0, xMax: LAYOUT.island.x1, yMin: -Infinity, yMax: 420 },
-  { name: 'Delta delle Mangrovie', xMin: LAYOUT.island.x1, xMax: OPEN_SEA_X, yMin: -Infinity, yMax: 420 },
   { name: 'Barriera Rossa', xMin: OPEN_SEA_X, xMax: east(4020), yMin: -Infinity, yMax: 420 },
   { name: 'Foresta Sommersa', xMin: east(4020), xMax: east(5220), yMin: -Infinity, yMax: 420 },
   { name: 'Mare di Ghiaccio', xMin: east(5220), xMax: Infinity, yMin: -Infinity, yMax: 420 },
-  { name: 'Zona crepuscolare', xMin: 0, xMax: LAYOUT.island.x0, yMin: 420, yMax: 1060 },
-  { name: 'Abisso', xMin: 0, xMax: LAYOUT.island.x0, yMin: 1060, yMax: Infinity },
+  { name: 'Zona crepuscolare', xMin: 0, xMax: LAYOUT.delta.x0, yMin: 420, yMax: 1060 },
+  { name: 'Abisso', xMin: 0, xMax: LAYOUT.delta.x0, yMin: 1060, yMax: Infinity },
   { name: 'Profondità orientali', xMin: OPEN_SEA_X, xMax: Infinity, yMin: 420, yMax: 1100 },
   { name: 'Fossa orientale', xMin: OPEN_SEA_X, xMax: Infinity, yMin: 1100, yMax: Infinity },
 ];

@@ -608,6 +608,8 @@ export const UI_ICON_KEYS: readonly string[] = [
 
 // Painted walls and icebergs of the world (public/world); icebergs with their waterline and solid mask.
 export const WORLD_ART_KEYS: readonly string[] = [
+  'avamposto_grande',
+  'avamposto_medio',
   'iceberg_1',
   'iceberg_2',
   'iceberg_3',
@@ -620,6 +622,10 @@ export const WORLD_ART_KEYS: readonly string[] = [
   'parete_roccia_1',
   'parete_roccia_2',
   'parete_roccia_3',
+  'porto_casa',
+  'porto_molo',
+  'porto_pescheria',
+  'rimorchiatore',
   'sottomarino_1',
 ];
 
@@ -1348,6 +1354,8 @@ export const ASSET_HASHES: Readonly<Record<string, string>> = {
   'ui/tipo_glaciale.webp': 'e2f61187',
   'ui/tipo_predatore.webp': '79b484d2',
   'ui/tipo_tempesta.webp': 'ee3aee0d',
+  'world/avamposto_grande.webp': '1d9c4116',
+  'world/avamposto_medio.webp': '41be8d28',
   'world/iceberg_1.webp': '20c011c9',
   'world/iceberg_2.webp': 'f089b3f4',
   'world/iceberg_3.webp': 'fce2a42d',
@@ -1360,5 +1368,9 @@ export const ASSET_HASHES: Readonly<Record<string, string>> = {
   'world/parete_roccia_1.webp': '2474ec1d',
   'world/parete_roccia_2.webp': '1b7fb6da',
   'world/parete_roccia_3.webp': '15062bb1',
+  'world/porto_casa.webp': '3d9ead98',
+  'world/porto_molo.webp': '651b75f6',
+  'world/porto_pescheria.webp': 'fb075db6',
+  'world/rimorchiatore.webp': 'e3390d02',
   'world/sottomarino_1.webp': '0086c721',
 };

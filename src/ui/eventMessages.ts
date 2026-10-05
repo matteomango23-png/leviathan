@@ -93,10 +93,13 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [`Tracce: ${e.text}`, 5];
     case 'outpostFound':
       return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'shipWest':
+      return [
+        'La nave non va più a ovest del porto di Porto Fango: da qui prosegui col sottomarino o a nuoto.',
+        4,
+      ];
     case 'seaEnd':
       return ['Oltre l’Abisso del Leviatano c’è solo tempesta: il mare conosciuto finisce qui.', 4];
-    case 'shipShallow':
-      return [SHIP_TEXT.shallow, 2.5];
     case 'shipHint':
       return [SHIP_TEXT[e.text], 2.5];
     case 'fuelOut':

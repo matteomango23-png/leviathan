@@ -40,12 +40,13 @@ export function launchSub(g: HatchWorld, events: GameEvent[]): void {
   events.push({ type: 'subLaunching' });
 }
 
-/** In the submarine, in front of the open hatch: "Aggancia". */
+/** In the submarine, in front of the open hatch (anywhere from under the ramp up to the hatch): "Aggancia". */
 export function canDock(g: HatchWorld): boolean {
   const s = g.ship;
-  if (!g.sub.aboard || s.bay !== 'out' || s.hatch < 1 || s.lane > 0) return false;
+  if (!g.sub.aboard || s.bay !== 'out' || s.hatch < 1) return false;
   const p = dockPoint(s);
-  return Math.hypot(g.sub.x - p.x, g.sub.y - p.y) < SHIP.dockReach;
+  const top = holdPoint(s).y;
+  return Math.abs(g.sub.x - p.x) < SHIP.dockReach && g.sub.y > top - 10 && g.sub.y < p.y + SHIP.dockReach;
 }
 
 export function startDock(g: HatchWorld, events: GameEvent[]): void {
@@ -94,7 +95,7 @@ export function stepBay(g: HatchWorld, dt: number, events: GameEvent[]): boolean
 export function canBoardShip(g: HatchWorld & { diver: { dead: boolean } }): boolean {
   const s = g.ship;
   const d = g.diver;
-  if (!s.owned || s.aboard || g.sub.aboard || d.dead || s.lane > 0) return false;
+  if (!s.owned || s.aboard || g.sub.aboard || d.dead) return false;
   const { x0, x1 } = shipSpan(s);
   const r = SHIP.boardReach;
   return d.x > x0 - r && d.x < x1 + r && d.y < WORLD.surfaceY + SHIP_DRAFT + r;

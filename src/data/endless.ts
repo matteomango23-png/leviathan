@@ -35,6 +35,7 @@ export const ENDLESS = {
   chunkCols: 64, // tiles generated together
   maxX: 30 * 1000 * WORLD.unitsPerMetre + 300, // units: the sea ends 30 km from the beach (regions.ts)
   endWall: 160, // units before maxX where a cliff closes the world
+  clearTop: 60, // units under the surface where no rock rises (the ship finds nothing in its way: owner, 5 ottobre)
   stretch: 1800, // units (300 m): the length of a stretch of one kind
   blend: 320, // units: the floor of one stretch blends into the next over this
   deepenPerKm: 60, // units of floor depth added per km from the coast (tuning)

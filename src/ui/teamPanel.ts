@@ -46,7 +46,7 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
       el('div', 'team-name', info, `${formName(b.form)} ${'★'.repeat(formStars(b.form))}`);
       el('div', 'team-sub', info, `Liv. ${b.level} · ${b.inTeam ? 'in squadra' : 'in riserva'}`);
       // like Pokémon's party: the health bar and the condition
-      const hp = el('div', 'team-hp', info);
+      const hp = el('div', 'team-row-hp', info);
       const bar = el('span', 'bagbeast-bar', hp);
       const frac = Math.max(0, b.hp / maxHpOf(b));
       const fill = el('span', 'bagbeast-fill', bar);

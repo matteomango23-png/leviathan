@@ -104,8 +104,6 @@ export class WorldScene extends Phaser.Scene {
     this.rig = new CameraRig(this, map.width, map.height, d.x, d.y);
     const L = this.rig.layers;
     this.bg = new BackgroundView(this, L.bg);
-    const shipFar = this.add.container(); // the ship on its far lane: behind the rock
-    L.world.add(shipFar);
     this.terrain = new TerrainView(this, L.world, map);
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
@@ -116,7 +114,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents = new VentView(this, L.world);
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
-    this.ship = new ShipView(this, L.world, shipFar);
+    this.ship = new ShipView(this, L.world);
     this.hunts = new HuntView(this, L.world);
     this.sub = new SubmarineView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
@@ -243,6 +241,8 @@ export class WorldScene extends Phaser.Scene {
       else if (e.type === 'iceCracked' && Math.random() < 0.3)
         this.effects.puff(e.x, WORLD.surfaceY + 2, 3, 0xe6f2f8, 20 + e.speed * 0.2);
       else if (e.type === 'hatchMoved') this.rig.shake(0.15);
+      else if (e.type === 'sonarPing') this.session.sound.sonarPing();
+      else if (e.type === 'rescued' && g.ship.aboard) this.ship.towed(g.ship);
       else if (e.type === 'portArrived') {
         const port: GameEvent[] = [];
         enterPort(g, port);
@@ -271,11 +271,17 @@ export class WorldScene extends Phaser.Scene {
     const d0 = g.diver;
     this.session.sound.updateSea(
       {
-        speed: d0.dead ? 0 : Math.min(1, Math.hypot(d0.vx, d0.vy) / DIVER.maxSpeed),
+        // in a vehicle you do not swim: no bubbles (the engines sound instead)
+        speed: d0.dead || inVehicle(g) ? 0 : Math.min(1, Math.hypot(d0.vx, d0.vy) / DIVER.maxSpeed),
         depthM: depthMetres(d0.y),
         dash: d0.dashTime > 0 && dashBefore <= 0,
       },
       dt,
+    );
+    const lever = input.helm;
+    this.session.sound.updateEngines(
+      g.ship.aboard ? lever.throttle : null,
+      g.sub.aboard ? Math.max(lever.throttle, Math.abs(lever.dive)) : null,
     );
 
     this.saveTimer += dt;
@@ -290,7 +296,8 @@ export class WorldScene extends Phaser.Scene {
       // at the helm: a wider view on the ship, looking ahead where it sails
       const C = SHIP.camera;
       this.rig.setView(C.viewHeightUnits, C.minY, dt);
-      this.rig.follow(ship.x + ship.face * C.lookAhead * (0.4 + ship.speed / SHIP.maxSpeed), C.y, dt);
+      // looking ahead only as fast as it goes: climbing aboard or diving off, the view does not jump
+      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt);
     } else {
       this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt);
       const ahead = g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead;
@@ -315,7 +322,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.ship.update(g.ship, g.time, sky.waves);
+    this.ship.update(g.ship, g.time, dt, sky.waves);
     this.hunts.update(g, view, g.time);
     this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && g.ship.hatch < 0.6);
     this.fishView.update(g.fish, view, g.time, dt);
@@ -345,6 +352,7 @@ export class WorldScene extends Phaser.Scene {
       ...this.story.glowSpots(g.story, g.chapter2.anchors),
       ...this.chapter3.glowSpots(g),
       ...this.beasts.glowSpots(g),
+      ...this.ship.glowSpots(g.ship),
     ];
     const mods = diverModifiers(g.gear);
     const murk = murkAt(info.cx, info.cy);

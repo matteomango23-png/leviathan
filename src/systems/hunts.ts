@@ -2,7 +2,7 @@
 // dens and are found in four steps, kept in the hunting diary (saved): the rumour heard at a harbour or an outpost,
 // the anomalous echo on the ship's sonar (close enough, in its weather), the traces under water by the den, then
 // the beast itself, which comes out of its den only in its weather. Also the sonar's readout at the helm.
-import { HUNT_RULES, HUNTS, type HuntDef } from '../data/hunts';
+import { CONDITION_TEXT, HUNT_RULES, HUNTS, type HuntDef } from '../data/hunts';
 import { WILD_SPAWNS, type WildSpawnDef } from '../data/beasts';
 import { SEA_REGIONS } from '../data/regions';
 import { WORLD } from '../data/worldLayout';
@@ -11,7 +11,7 @@ import type { PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
 import { formLengthM } from './beasts/forms';
-import { sonarMult } from './ship/ship';
+import { sonarActive, sonarMult, type ShipState } from './ship/ship';
 import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
@@ -105,7 +105,7 @@ export interface HuntWorld {
   hunts: HuntsState;
   dens: Den[];
   weather: { from: WeatherId; to: WeatherId; blend: number };
-  ship: { aboard: boolean; x: number; upgrades: string[] };
+  ship: ShipState;
   diver: { x: number; y: number; dead: boolean };
   beasts: { wilds: WildBeast[]; gone: string[]; team: TeamBeast[] };
 }
@@ -127,6 +127,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
       !p.echo &&
       now &&
       g.ship.aboard &&
+      sonarActive(g.ship) &&
       Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange * sonarMult(g.ship)
     ) {
       p.echo = true;
@@ -161,32 +162,55 @@ export interface SonarEcho {
   depthM: number;
 }
 
+export interface SonarReadout {
+  /** 'off': switched off · 'fast': too fast to hear (over SHIP.sonar.maxKnots) · 'on': listening. */
+  status: 'off' | 'fast' | 'on';
+  /** How far it hears, each side (m). */
+  rangeM: number;
+  floorM: number;
+  /** The floor under its range, from west to east (m), for the sonar screen. */
+  profile: number[];
+  echoes: SonarEcho[];
+}
+
 /**
- * The sonar at the helm: the depth of the floor under the ship, the echoes of big beasts near it, the anomalous
- * echoes of the dens it has heard.
+ * The ship's sonar: the floor under it, the echoes of big beasts near it (dots, no shapes), the anomalous echoes of
+ * the dens it has heard. It hears only switched on and slow (owner, 5 ottobre).
  */
-export function sonarReadout(g: HuntWorld & { map: TileMap }): { floorM: number; echoes: SonarEcho[] } {
+export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): SonarReadout {
   const x = g.ship.x;
   const m = (u: number): number => Math.round(u / WORLD.unitsPerMetre);
-  const floorM = m(g.map.floorBelow(x, WORLD.surfaceY + 30) - WORLD.surfaceY);
-  const echoes: SonarEcho[] = [];
+  const range = HUNT_RULES.bigEchoRange * sonarMult(g.ship);
+  const status = !g.ship.sonarOn ? 'off' : sonarActive(g.ship) ? 'on' : 'fast';
+  const floorAt = (fx: number): number => m(g.map.floorBelow(fx, WORLD.surfaceY + 30) - WORLD.surfaceY);
+  const out: SonarReadout = { status, rangeM: m(range), floorM: floorAt(x), profile: [], echoes: [] };
+  if (status !== 'on') return out;
+  for (let i = 0; i < samples; i++) out.profile.push(floorAt(x - range + (2 * range * i) / (samples - 1)));
   for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || Math.abs(w.x - x) > HUNT_RULES.bigEchoRange) continue;
+    if (!isInWater(w) || Math.abs(w.x - x) > range) continue;
     if (formLengthM(w.form) < HUNT_RULES.bigEchoM) continue;
-    echoes.push({ label: 'eco grande', dx: m(w.x - x), depthM: m(w.y - WORLD.surfaceY) });
+    out.echoes.push({ label: 'eco grande', dx: m(w.x - x), depthM: m(w.y - WORLD.surfaceY) });
   }
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
     if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarMult(g.ship)) return;
     if (!huntOpen(h, g.beasts.gone, g.beasts.team)) return;
-    echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
+    out.echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
   });
-  echoes.sort((a, b) => Math.abs(a.dx) - Math.abs(b.dx));
-  return { floorM, echoes };
+  out.echoes.sort((a, b) => Math.abs(a.dx) - Math.abs(b.dx));
+  return out;
 }
 
 /** For the diary: the region of a hunt by name. */
 export function huntRegionName(h: HuntDef): string {
   if (h.region === 'costa') return 'Delta delle Mangrovie';
   return SEA_REGIONS.find((r) => r.id === h.region)?.name ?? h.region;
+}
+
+/** The next step of a hunt, in words (for the helm and the diary). */
+export function huntNextStep(h: HuntDef, p: HuntProgress | undefined): string {
+  if (!p?.heard) return 'ascolta le voci nei porti';
+  if (!p.echo) return `cerca l’eco col sonar (${huntRegionName(h)}, ${CONDITION_TEXT[h.condition]})`;
+  if (!p.traces) return 'cala il sottomarino e cerca le tracce vicino all’eco';
+  return `torna alla tana ${CONDITION_TEXT[h.condition]}: la bestia ti aspetta`;
 }

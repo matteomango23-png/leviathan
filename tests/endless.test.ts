@@ -193,12 +193,17 @@ describe('icebergs', () => {
     }
   });
 
-  it('float in the Banchisa stretches of the endless sea', () => {
+  it('none for now (owner, 5 ottobre: the ship finds nothing in its way)', () => {
     const k = Array.from({ length: 80 }, (_, i) => i).find((i) => biomeOf(i).ice)!;
-    const bergs = icebergsOfStretch(k);
-    expect(bergs.length).toBeGreaterThan(0);
-    const b = bergs[0]!;
-    const x = b.left + b.w / 2;
-    expect(endlessTile(x, WORLD.surfaceY + (b.top + b.h - WORLD.surfaceY) * 0.4)).toBe(TILE.ice);
+    expect(icebergsOfStretch(k)).toEqual([]);
+    expect(ICEBERGS).toEqual([]);
+  });
+
+  it('nothing solid just under the surface of the open sea, ice aside (the ship sails free)', () => {
+    for (let x = S; x < ENDLESS.maxX - ENDLESS.endWall; x += 97)
+      for (let y = WORLD.surfaceY; y < WORLD.surfaceY + ENDLESS.clearTop; y += 8) {
+        const t = endlessTile(x, y);
+        expect(t === TILE.water || t === TILE.ice, `x ${x} y ${y}`).toBe(true);
+      }
   });
 });

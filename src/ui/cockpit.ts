@@ -1,30 +1,25 @@
-// The cockpit of the ship (owner, 4 ottobre 2026: the centre of planning), full screen like a harbour: the bridge
-// (fuel of the ship and the submarine with their range, moving fuel between them, the rescue flare, where you
-// are), the pen (your team) and the backpack. More will come here: the sonar, the map, the hunting diary.
-import { FUEL, RESCUE, SHIP } from '../data/ship';
-import { OPEN_SEA_X } from '../data/worldLayout';
+// The cockpit of the ship (owner, 4-5 ottobre 2026: the centre of planning), full screen like a harbour: the
+// bridge (bridgePanel.ts), the sonar screen (sonarScreen.ts), the hunting diary, the pen (your team) and the
+// backpack.
 import type { Session } from '../scenes/session';
-import { autonomyKm, canRescue, rescue, transferFuel } from '../systems/fuel';
 import type { GameState } from '../systems/game';
-import { subModel } from '../systems/submarine';
-import { shipTank } from '../systems/ship/ship';
-import { kmFromCoast } from '../systems/world/endless';
+import { renderBridge } from './bridgePanel';
 import { el } from './dom';
 import { icon, type IconName } from './icons';
-import { portCard } from './portCard';
 import { renderBackpack, type TabContext } from './portTabs';
+import { renderSonar } from './sonarScreen';
 import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
+import './cockpit.css';
 
-type Tab = 'plancia' | 'diario' | 'recinto' | 'zaino';
+type Tab = 'plancia' | 'sonar' | 'diario' | 'recinto' | 'zaino';
 const TABS: [Tab, string, IconName][] = [
   ['plancia', 'Plancia', 'lamp'],
+  ['sonar', 'Sonar', 'dive'],
   ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
 ];
-
-const km = (v: number): string => (v < 10 ? v.toFixed(1).replace('.', ',') : `${Math.round(v)}`);
 
 export class Cockpit {
   private readonly root: HTMLDivElement;
@@ -34,6 +29,7 @@ export class Cockpit {
   private readonly tabs: HTMLButtonElement[] = [];
   private tab: Tab = 'plancia';
   private msgTimer = 0;
+  private stopSonar: (() => void) | null = null;
 
   constructor(
     parent: HTMLElement,
@@ -41,7 +37,8 @@ export class Cockpit {
     private readonly g: GameState,
     private readonly onClose: () => void,
   ) {
-    this.root = el('div', 'port', parent);
+    this.root = el('div', 'port cockpit', parent);
+    session.sound.updateEngines(null, null); // the sea stands still while you plan
     parent.classList.add('in-port'); // the sea's controls hide while the cockpit is open
     const top = el('div', 'port-top', this.root);
     el('span', '', el('div', 'port-title', top), 'Cockpit');
@@ -77,84 +74,29 @@ export class Cockpit {
     const keep = this.body.scrollTop;
     this.teeth.replaceChildren(icon('tooth'), document.createTextNode(` ${this.g.gear.teeth}`));
     for (const t of this.tabs) t.classList.toggle('on', t.dataset.tab === this.tab);
+    this.stopSonar?.();
+    this.stopSonar = null;
     this.body.replaceChildren();
-    const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
-    if (this.tab === 'plancia') this.renderBridge(this.body);
-    else if (this.tab === 'diario') renderDiary(this.body, this.g);
+    this.body.classList.toggle('is-sonar', this.tab === 'sonar');
+    const redraw = (): void => this.render();
+    const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw };
+    if (this.tab === 'plancia')
+      renderBridge(this.body, {
+        ...ctx,
+        fired: () => {
+          this.session.emit('saveNow');
+          this.onClose();
+        },
+      });
+    else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, this.session, redraw);
+    else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else renderTeamPanel(this.body, this.g, true);
     this.body.scrollTop = keep;
   }
 
-  private renderBridge(b: HTMLElement): void {
-    const g = this.g;
-    const ship = g.ship;
-    const sub = g.sub;
-    const where = ship.x > OPEN_SEA_X ? `${km(kmFromCoast(ship.x))} km dalla costa` : 'lungo la costa';
-    el('p', 'port-hint', b, `Sei ${where}. L’autonomia è a tutto gas: andando piano dura di più.`);
-    el('h3', '', b, 'Carburante');
-    const grid = el('div', 'pcard-grid', b);
-    portCard(grid, {
-      icon: 'bolt',
-      title: `Nave: ${Math.round(ship.fuel)} / ${shipTank(ship)} L`,
-      text: `Autonomia ${km(autonomyKm(ship.fuel, SHIP.fuel.perKm))} km. Si riempie in porto (scheda Mute).`,
-    });
-    if (sub.owned) {
-      const m = subModel(sub.model);
-      const docked = ship.bay === 'docked';
-      const step = FUEL.transferStep;
-      portCard(grid, {
-        icon: 'bolt',
-        title: `Sottomarino: ${Math.round(sub.fuel)} / ${m.tank} L`,
-        text: `Autonomia ${km(autonomyKm(sub.fuel, m.perKm))} km.${docked ? '' : ' È fuori dalla stiva: il travaso si fa con il sottomarino a bordo.'}`,
-        button: {
-          label: `+${step} L dalla nave`,
-          disabled: !docked || ship.fuel <= 0 || sub.fuel >= m.tank,
-          onClick: () => {
-            const l = transferFuel(g, true);
-            this.say(`${Math.round(l)} L passati al sottomarino.`);
-            this.render();
-          },
-        },
-      });
-      portCard(grid, {
-        icon: 'bolt',
-        title: 'Dal sottomarino alla nave',
-        text: `Riporta ${step} L nel serbatoio della nave.`,
-        button: {
-          label: `+${step} L alla nave`,
-          disabled: !docked || sub.fuel <= 0 || ship.fuel >= shipTank(ship),
-          onClick: () => {
-            const l = transferFuel(g, false);
-            this.say(`${Math.round(l)} L passati alla nave.`);
-            this.render();
-          },
-        },
-      });
-    }
-    el('h3', '', b, 'Emergenza');
-    const cost = Math.min(
-      g.gear.teeth,
-      Math.max(RESCUE.minTeeth, Math.floor(g.gear.teeth * RESCUE.teethShare)),
-    );
-    portCard(el('div', 'pcard-grid', b), {
-      icon: 'star',
-      title: 'Razzo di soccorso',
-      text: 'Un rimorchiatore porta la nave al porto più vicino. Da usare se resti senza carburante.',
-      price: cost,
-      button: {
-        label: 'Lancia il razzo',
-        disabled: !canRescue(g),
-        onClick: () => {
-          rescue(g, g.story.pending); // its message shows in the sea
-          this.session.emit('saveNow');
-          this.onClose();
-        },
-      },
-    });
-  }
-
   destroy(): void {
+    this.stopSonar?.();
     window.clearTimeout(this.msgTimer);
     this.root.parentElement?.classList.remove('in-port');
     this.root.remove();
