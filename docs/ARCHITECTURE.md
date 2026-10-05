@@ -40,7 +40,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
 | `hunts.ts` | Le cacce alle leggende: tane, voci nei porti, eco anomala col sonar, tracce, comparsa col tempo giusto; lettura del sonar al timone. |
 | `beasts/residents.ts` | Gli abitanti fissi del mare aperto: chi vive in ogni tratto, dove si trova, chi è uscito o è stato preso. |
-| `shipCamera.ts` | Dove guarda la telecamera: vista del timone vicino alla nave, del nuoto lontano, sfumata con la distanza. |
+| `shipCamera.ts` | Dove guarda la telecamera: vista del timone a bordo, la tua altrimenti (il cambio è uno stacco con dissolvenza). |
 | `chart.ts` | La carta nautica del cockpit: porti trovati, confini delle regioni, tane con l'eco, sottomarino, a ±2 km dalla nave. |
 | `hull.ts` | Scafi solidi: spinge fuori i corpi che li toccano. |
 | `endlessLife.ts` | La vita del mare infinito: sardine che seguono il sub, aria degli sfiatatoi (le bestie sono in `beasts/residents.ts`). |

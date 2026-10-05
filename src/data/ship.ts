@@ -62,20 +62,8 @@ export const SHIP = {
   /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
-  /**
-   * The view at the helm, and how it gives way to the view in the water (owner, 5 ottobre: the ship "slid" each time
-   * you got on or off). Near the ship (aboard, on the ramp, just dived, the submarine under the hull) the view is
-   * the helm's; it turns into the swimming one only as you move away: `near` (units beyond the hull sideways, and
-   * under the surface) keeps the helm's view, then it changes over `fade` units.
-   */
-  camera: {
-    viewHeightUnits: 230,
-    minY: -150,
-    lookAhead: 70,
-    y: -16,
-    near: { x: 30, y: 70 },
-    fade: { x: 170, y: 150 },
-  },
+  /** The view at the helm (getting on or off cuts to it behind a short fade: CAMERA.cutFadeMs). */
+  camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
 };
 
 /** Parts for the ship, bought at the harbours (owner, 4 ottobre: the rewards of the far seas). Tuning. */
