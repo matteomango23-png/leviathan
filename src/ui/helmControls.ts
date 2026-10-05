@@ -44,14 +44,13 @@ export class HelmControls {
   private readonly west: HTMLButtonElement;
   private readonly east: HTMLButtonElement;
   private readonly gauges: HTMLDivElement;
-  private readonly sonar: HTMLDivElement;
+  private readonly sonar: HTMLButtonElement;
   private sonarText = '';
   private readonly buttons: HTMLDivElement;
   private readonly hatchBtn: HTMLButtonElement;
   private readonly launchBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
-  private readonly sonarBtn: HTMLButtonElement;
   private readonly objective: HTMLDivElement;
   private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
@@ -84,15 +83,18 @@ export class HelmControls {
     this.west = el('button', 'helm-dir-btn', dir, '◀');
     this.east = el('button', 'helm-dir-btn', dir, '▶');
 
-    this.sonar = el('div', 'helm-sonar', this.root);
-    this.gauges = el('div', 'helm-gauges', this.root);
+    // fixed bands (owner, 5 ottobre: nothing on top of anything): the instruments in the middle at the top, the
+    // ship's buttons in a column on the right, the cockpit next to the pause button, the objective on the left
+    const panel = el('div', 'helm-panel', this.root);
+    this.gauges = el('div', 'helm-gauges', panel);
+    // the sonar's line is its switch too
+    this.sonar = el('button', 'helm-sonar', panel);
     this.buttons = el('div', 'helm-buttons', this.root);
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
     this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
-    this.sonarBtn = el('button', 'helm-btn', this.buttons, 'Sonar');
-    this.cockpitBtn = el('button', 'helm-btn', this.buttons, 'Cockpit');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
+    this.cockpitBtn = el('button', 'helm-btn helm-cockpit', this.root, 'Cockpit');
     this.objective = el('div', 'helm-objective', this.root);
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
@@ -106,7 +108,7 @@ export class HelmControls {
     this.tap(this.launchBtn, () => (this.session.input.helmCmd = 'launch'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
-    this.tap(this.sonarBtn, () => (this.session.input.helmCmd = 'sonar'));
+    this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
     this.listen<KeyboardEvent>(window, 'keydown', (e) => {
       const k = e.key.toLowerCase();
@@ -209,10 +211,9 @@ export class HelmControls {
       this.sonar.classList.toggle('anomaly', info.sonar.includes('anomala'));
     }
     this.buttons.classList.toggle('sub', info.mode !== 'ship');
-    for (const b of [this.hatchBtn, this.launchBtn, this.diveBtn, this.sonarBtn, this.cockpitBtn])
+    for (const b of [this.hatchBtn, this.launchBtn, this.diveBtn, this.cockpitBtn])
       b.hidden = info.mode !== 'ship';
-    this.sonarBtn.textContent = info.sonarOn ? 'Sonar: acceso' : 'Sonar: spento';
-    this.sonarBtn.classList.toggle('on', !!info.sonarOn);
+    this.sonar.classList.toggle('on', !!info.sonarOn);
     this.objective.hidden = !info.objective;
     if (info.objective && this.objective.textContent !== info.objective)
       this.objective.textContent = info.objective;

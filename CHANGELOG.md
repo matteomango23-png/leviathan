@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.45.0 — La nave non scivola più, schermo senza sovrapposizioni (5 ottobre 2026)
+
+- **La nave non "scivola" più** salendo, scendendo, calando o agganciando il sottomarino. La causa: la telecamera cambiava insieme zoom e centro, e il centro era su di te, non sulla nave. Ora l'inquadratura dipende da quanto sei vicino alla nave: vicino (a bordo, sulla rampa, appena tuffato, col sottomarino sotto lo scafo) è identica a quella del timone, e cambia piano solo mentre ti allontani. Un test controlla che salire o scendere non la sposti affatto.
+- **Timone senza sovrapposizioni**, anche sugli iPhone più piccoli: strumenti e sonar in alto al centro (vanno a capo invece di uscire), i pulsanti della nave in colonna a destra, **Cockpit accanto alla pausa**, l'obiettivo a sinistra, il pulsante Porto/Aggancia sopra le frecce.
+- **Il sonar si accende e si spegne toccando la sua riga** negli strumenti.
+- **Nome della zona e messaggi** stanno nella fascia centrale e vanno a capo: non sono più tagliati né sopra i pulsanti.
+- Controllo automatico di tutte le schermate (nuoto, timone, sottomarino, pausa, bestiario, zaino, tessera, mappa, porto, cockpit, diario) su tre misure di iPhone: nessuna sovrapposizione né scritta tagliata.
+
 ## v0.44.0 — Il mare aperto è abitato (5 ottobre 2026)
 
 - **Popolazione fissa del mare aperto:** ogni tratto di 300 m ha i suoi abitanti (circa 30 per km), sempre gli stessi, delle specie di quel mare e alla loro profondità. Nuotano piano intorno alla loro tana anche quando non ci sei.
