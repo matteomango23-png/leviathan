@@ -38,6 +38,8 @@ export class Session {
   tapScreen: { x: number; y: number } | null = null;
   game: GameState | null = null;
   paused = false;
+  /** The ship's cockpit is open: the sea goes on under it (owner, 5 ottobre: sail slowly watching the sonar). */
+  inCockpit = false;
   /** A battle is on (the World scene is paused under it). */
   inBattle = false;
   /** The sea ambience and the battle music. */

@@ -1,5 +1,15 @@
 # Progressi
 
+## Sessione cloud 1 — Cockpit dal vivo e correzioni (5 ottobre 2026) → v0.43.0
+
+**Fatto:** cockpit senza pausa (sonar per primo, "Avanti adagio"/"Ferma i motori", velocità dal vivo; si chiude da solo se lasci il timone o inizia una lotta); aggancio con avvicinamento morbido; stacco della telecamera salendo o scendendo; luce soffusa sotto lo scafo al posto di finestre e faro; HUD a sinistra con soli cuori, ossigeno e denti; squadra centrata; nome della zona senza sovrapposizioni; velocità del cockpit arrotondata.
+
+**Da provare sull'iPhone (v0.43.0):**
+1. Al timone apri il Cockpit: si apre sul Sonar. Tocca "Avanti adagio": la nave va a 8 nodi e il sonar continua a sentire. "Ferma i motori" la ferma.
+2. Cala il sottomarino, allontanati un po', torna sotto il portellone e premi Aggancia: deve scivolare fino alla rampa.
+3. Sali e scendi dalla nave: l'inquadratura cambia di colpo, la nave non scorre.
+4. Di notte o in profondità: la luce soffusa sotto lo scafo.
+
 ## Sessione cloud 1 — Correzioni e rifiniture della nave (5 ottobre 2026) → v0.42.0
 
 **Fatto (lista del proprietario del 5 ottobre, tutti i punti):**

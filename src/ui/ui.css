@@ -105,8 +105,10 @@
   text-overflow: ellipsis;
 }
 .zone-name {
-  top: calc(18% + var(--safe-t));
-  font-size: 22px;
+  /* under everything at the top (hearts, chapter line, team, instruments, helm buttons): owner, 5 ottobre */
+  top: calc(32% + var(--safe-t));
+  max-width: 60vw;
+  font-size: 20px;
   letter-spacing: 3px;
   color: var(--lamp);
   font-variant: small-caps;
@@ -304,7 +306,7 @@
 .team-slots {
   position: absolute;
   top: calc(8px + var(--safe-t));
-  left: calc(50% - 44px);
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
@@ -1740,12 +1742,9 @@ img.albino-art {
 .driving .touch-left {
   display: none;
 }
-/* at the helm the chapter line gives way to the instruments; the zone's name shows under them */
+/* at the helm the chapter line gives way to the instruments */
 .driving .hud-goal {
   display: none;
-}
-.driving .zone-name {
-  top: calc(140px + var(--safe-t));
 }
 .helm-rescue {
   border-color: #e2553f;

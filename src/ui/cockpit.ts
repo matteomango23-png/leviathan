@@ -1,7 +1,11 @@
-// The cockpit of the ship (owner, 4-5 ottobre 2026: the centre of planning), full screen like a harbour: the
-// bridge (bridgePanel.ts), the sonar screen (sonarScreen.ts), the hunting diary, the pen (your team) and the
-// backpack.
+// The cockpit of the ship (owner, 4-5 ottobre 2026: the centre of planning), full screen like a harbour: the sonar
+// screen (sonarScreen.ts, first), the bridge (bridgePanel.ts), the hunting diary, the pen (your team) and the
+// backpack. The sea goes on under it: a button sails the ship slowly (under the sonar's limit) or stops it, and the
+// speed shows live.
+import { SHIP } from '../data/ship';
 import type { Session } from '../scenes/session';
+import { knotsOf } from '../systems/helm';
+import { shipTopSpeed } from '../systems/ship/ship';
 import type { GameState } from '../systems/game';
 import { renderBridge } from './bridgePanel';
 import { el } from './dom';
@@ -14,8 +18,8 @@ import './cockpit.css';
 
 type Tab = 'plancia' | 'sonar' | 'diario' | 'recinto' | 'zaino';
 const TABS: [Tab, string, IconName][] = [
-  ['plancia', 'Plancia', 'lamp'],
   ['sonar', 'Sonar', 'dive'],
+  ['plancia', 'Plancia', 'lamp'],
   ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
@@ -27,7 +31,11 @@ export class Cockpit {
   private readonly body: HTMLDivElement;
   private readonly msg: HTMLDivElement;
   private readonly tabs: HTMLButtonElement[] = [];
-  private tab: Tab = 'plancia';
+  private tab: Tab = 'sonar';
+  private readonly engine: HTMLButtonElement;
+  private readonly speed: HTMLSpanElement;
+  private tick = 0;
+  private ticks = 0;
   private msgTimer = 0;
   private stopSonar: (() => void) | null = null;
 
@@ -38,10 +46,13 @@ export class Cockpit {
     private readonly onClose: () => void,
   ) {
     this.root = el('div', 'port cockpit', parent);
-    session.sound.updateEngines(null, null); // the sea stands still while you plan
     parent.classList.add('in-port'); // the sea's controls hide while the cockpit is open
     const top = el('div', 'port-top', this.root);
     el('span', '', el('div', 'port-title', top), 'Cockpit');
+    // the engine from here: slow ahead (the sonar still hears) or stop
+    this.speed = el('span', 'cockpit-speed', top);
+    this.engine = el('button', 'console-btn cockpit-engine', top);
+    this.engine.addEventListener('click', () => this.toggleEngine());
     this.teeth = el('span', 'port-teeth', top);
     const back = el('button', 'pbtn primary', top);
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
@@ -60,6 +71,31 @@ export class Cockpit {
     this.body = el('div', 'port-body', this.root);
     this.msg = el('div', 'port-msg', this.root);
     this.render();
+    this.live();
+    this.tick = window.setInterval(() => this.live(), 500);
+  }
+
+  /** The throttle that keeps the ship under the sonar's limit (SHIP.sonar.cruiseKnots). */
+  private cruise(): number {
+    return Math.min(1, SHIP.sonar.cruiseKnots / knotsOf(shipTopSpeed(this.g.ship)));
+  }
+
+  private toggleEngine(): void {
+    const helm = this.session.input.helm;
+    const going = helm.throttle > 0.01;
+    helm.throttle = going ? 0 : this.cruise();
+    helm.dir = this.g.ship.face;
+    this.live();
+  }
+
+  /** Twice a second: the speed and the engine button; the bridge redraws once a second. */
+  private live(): void {
+    const kn = Math.round(knotsOf(this.g.ship.speed));
+    const going = this.session.input.helm.throttle > 0.01;
+    this.speed.textContent = `${kn} nodi`;
+    this.engine.textContent = going ? '■ Ferma i motori' : `▶ Avanti adagio (${SHIP.sonar.cruiseKnots} nodi)`;
+    this.engine.classList.toggle('on', going);
+    if (this.tab === 'plancia' && this.ticks++ % 2 === 1) this.render();
   }
 
   private say(text: string, error = false): void {
@@ -88,7 +124,7 @@ export class Cockpit {
           this.onClose();
         },
       });
-    else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, this.session, redraw);
+    else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, redraw);
     else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else renderTeamPanel(this.body, this.g, true);
@@ -96,6 +132,7 @@ export class Cockpit {
   }
 
   destroy(): void {
+    window.clearInterval(this.tick);
     this.stopSonar?.();
     window.clearTimeout(this.msgTimer);
     this.root.parentElement?.classList.remove('in-port');

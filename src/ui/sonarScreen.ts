@@ -1,8 +1,7 @@
 // The sonar screen of the cockpit (owner, 5 ottobre): green curves of the floor under the ship within its range,
 // a sweep going back and forth, the echoes as dots (no shapes), the limit each side, and a switch. It hears only
-// switched on and under SHIP.sonar.maxKnots (systems/hunts.ts sonarReadout); each sweep pings.
+// switched on and under SHIP.sonar.maxKnots (systems/hunts.ts sonarReadout); the ship pings (sonarPing).
 import { SHIP } from '../data/ship';
-import type { Session } from '../scenes/session';
 import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
 import { el } from './dom';
@@ -11,7 +10,7 @@ const GREEN = '#5dff9e';
 const SWEEP_SECONDS = SHIP.sonar.pingSeconds;
 
 /** Draws the sonar into `b`; returns a function that stops its animation. */
-export function renderSonar(b: HTMLElement, g: GameState, session: Session, redraw: () => void): () => void {
+export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): () => void {
   const head = el('div', 'sonar-head', b);
   const status = el('div', 'sonar-status', head);
   const sw = el(
@@ -30,20 +29,25 @@ export function renderSonar(b: HTMLElement, g: GameState, session: Session, redr
   legend.innerHTML =
     '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>eco grande (bestia)</span><span><i class="lg odd"></i>eco anomala (tana)</span>';
 
+  // the ship sails on under the cockpit: fresh readings twice a second
   let r: SonarReadout = sonarReadout(g);
-  status.textContent =
-    r.status === 'off'
-      ? 'Sonar spento: accendilo per sentire il fondale e le bestie sotto la nave.'
-      : r.status === 'fast'
-        ? `Troppo veloce: il sonar sente solo sotto ${SHIP.sonar.maxKnots} nodi.`
-        : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m`;
-  status.classList.toggle('warn', r.status !== 'on');
+  const read = (): void => {
+    r = sonarReadout(g);
+    status.textContent =
+      r.status === 'off'
+        ? 'Sonar spento: accendilo per sentire il fondale e le bestie sotto la nave.'
+        : r.status === 'fast'
+          ? `Troppo veloce: il sonar sente solo sotto ${SHIP.sonar.maxKnots} nodi.`
+          : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m`;
+    status.classList.toggle('warn', r.status !== 'on');
+  };
+  read();
+  let readT = 0;
 
   const ctx = canvas.getContext('2d');
   let raf = 0;
   let last = performance.now();
   let t = 0;
-  let lastSide = 0;
   const seen = new Map<number, number>(); // echo index → time it was last swept (for the fading dots)
 
   const draw = (now: number): void => {
@@ -51,6 +55,11 @@ export function renderSonar(b: HTMLElement, g: GameState, session: Session, redr
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
     t += dt;
+    readT += dt;
+    if (readT > 0.5) {
+      readT = 0;
+      read();
+    }
     if (!ctx) return;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = Math.round(canvas.clientWidth * dpr);
@@ -104,11 +113,6 @@ export function renderSonar(b: HTMLElement, g: GameState, session: Session, redr
     const ph = (t % (SWEEP_SECONDS * 2)) / SWEEP_SECONDS; // 0…2
     const sweep = ph < 1 ? -1 + 2 * ph : 3 - 2 * ph; // -1…1…-1
     const side = ph < 1 ? 1 : -1;
-    if (side !== lastSide) {
-      lastSide = side;
-      session.sound.sonarPing();
-      r = sonarReadout(g); // fresh readings each sweep
-    }
     const sxp = px(sweep * r.rangeM);
     const grad = ctx.createLinearGradient(sxp - side * 120 * dpr, 0, sxp, 0);
     grad.addColorStop(0, 'rgba(93,255,158,0)');

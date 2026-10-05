@@ -143,7 +143,7 @@ describe('la nave da spedizione', () => {
     input.helm.throttle = 0;
     expect(currentAction(g)).toBe('aggancia');
     press(g, input);
-    run(g, SHIP.launchSeconds + 0.1, input);
+    run(g, SHIP.launchSeconds + 1, input);
     expect(g.ship.bay).toBe('docked');
     expect(g.ship.aboard).toBe(true);
     expect(g.sub.aboard).toBe(false);
@@ -160,6 +160,27 @@ describe('la nave da spedizione', () => {
       Object.assign(g.sub, { x: dockPoint(g.ship).x - 10, y, vx: 0, vy: 0 });
       expect(currentAction(g), `y ${y}`).toBe('aggancia');
     }
+  });
+
+  it('agganciando, il sottomarino scivola fino alla rampa: niente salti (5 ottobre)', () => {
+    const { g, input } = atTheHelm();
+    cmd(g, 'hatch', input);
+    run(g, SHIP.hatchSeconds + 0.1, input);
+    cmd(g, 'launch', input);
+    run(g, SHIP.launchSeconds + 0.1, input);
+    const p = dockPoint(g.ship);
+    Object.assign(g.sub, { x: p.x - 30, y: p.y + 20, vx: 0, vy: 0 });
+    expect(currentAction(g)).toBe('aggancia');
+    let prev = { x: g.sub.x, y: g.sub.y };
+    press(g, input);
+    for (let t = 0; t < SHIP.launchSeconds + 2; t += DT) {
+      run(g, DT, input);
+      // each step a small move, never a jump
+      expect(Math.hypot(g.sub.x - prev.x, g.sub.y - prev.y)).toBeLessThan(5);
+      prev = { x: g.sub.x, y: g.sub.y };
+    }
+    expect(g.ship.bay).toBe('docked');
+    expect(g.ship.aboard).toBe(true);
   });
 
   it('il sonar si accende e spegne, e sente solo sotto 10 nodi', () => {

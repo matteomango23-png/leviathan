@@ -650,3 +650,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Cockpit:** `ui/bridgePanel.ts` (plancia), `ui/instruments.ts` (quadranti e carta in SVG), `systems/chart.ts` (cosa c'è a ±2 km, logica pura), `ui/cockpit.css`.
 - **Caccia seguita:** `huntPinned` nel salvataggio, campo facoltativo (niente nuova versione: un salvataggio vecchio parte senza).
 - **Motori:** `audio/engineSound.ts` con Web Audio, numeri in `ENGINE_SOUND` (`data/audio.ts`).
+
+## 5 ottobre 2026 — Il cockpit non ferma il mare (v0.43.0)
+
+- **Decisione:** aprendo il cockpit la scena del mare non va in pausa (`session.inCockpit` al posto di `session.paused`); il cockpit imposta direttamente la leva del gas (`input.helm.throttle`) con "Avanti adagio" (`SHIP.sonar.cruiseKnots`) e si chiude da solo se non sei più al timone o inizia una lotta.
+- **Motivo:** il proprietario vuole navigare piano guardando il sonar.
+- **Telecamera:** quando cambia `ship.aboard` la vista salta subito (`snap`) invece di scorrere: lo scorrimento con lo zoom faceva sembrare che la nave si spostasse.
+- **Aggancio:** `ship.dockFrom`: prima il sottomarino scivola (`SHIP.dockGlide` unità/s) fino al punto più vicino della rampa, poi la risale.

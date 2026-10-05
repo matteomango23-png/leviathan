@@ -29,6 +29,8 @@ export interface ShipState {
   bay: Bay;
   /** Along the ramp: 0 = in the hold … 1 = at mid-water under the hatch. */
   bayT: number;
+  /** Docking: where the submarine glides from to the ramp, and how far it is (0…1); null once on the ramp. */
+  dockFrom: { x: number; y: number; t: number; at: number } | null;
   /** You are at the helm. */
   aboard: boolean;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
@@ -91,6 +93,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     hatchOpen: saved?.hatchOpen ?? false,
     bay,
     bayT: bay === 'out' ? 1 : 0,
+    dockFrom: null,
     aboard: saved?.aboard ?? false,
     upgrades: [...(saved?.upgrades ?? [])],
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : SHIP.fuel.tank,

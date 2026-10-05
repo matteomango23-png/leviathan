@@ -1,13 +1,9 @@
-// Hearts, oxygen, depth and messages (top-left, inside the iPhone safe area).
+// Hearts, oxygen, your teeth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
-import { subModel } from '../systems/submarine';
 import { airShown, pressureShown } from '../systems/rideAir';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/chapters';
-import { depthMetres } from '../systems/world/zones';
-import { kmFromCoast } from '../systems/world/endless';
-import { LAYOUT, OPEN_SEA_X, WORLD } from '../data/worldLayout';
 import { el } from './dom';
 import { messageFor } from './eventMessages';
 
@@ -89,22 +85,8 @@ export class Hud {
       this.pressFill.style.width = `${press}%`;
       this.press.classList.toggle('low', press < 30);
     }
-    const bag = Object.values(g.gear.bag).reduce((a, b) => a + b, 0);
-    // out at sea (past the Delta): how far you are from the coast
-    const far =
-      d.x > OPEN_SEA_X
-        ? ` · ${(kmFromCoast(d.x) - kmFromCoast(LAYOUT.shoreX)).toFixed(1).replace('.', ',')} km dalla costa`
-        : '';
-    // where your ship (or your submarine, out of its hold) waits when you are not on it
-    const home = g.ship.owned && !g.ship.aboard ? g.ship : g.sub;
-    const homeName = home === g.ship ? 'nave' : 'sottomarino';
-    const toBoat = (home.x - d.x) / WORLD.unitsPerMetre;
-    const boat = g.sub.aboard
-      ? ` · scafo ${Math.round(g.sub.hull)}/${subModel(g.sub.model).hull}`
-      : home.owned && !g.ship.aboard && Math.abs(toBoat) > 15
-        ? ` · ${homeName} ${Math.round(Math.abs(toBoat))} m ${toBoat < 0 ? '←' : '→'}`
-        : '';
-    const info = `${Math.round(depthMetres(d.y))} m${far}${boat} · 🦷 ${g.gear.teeth} · sacca ${bag}`;
+    // only your teeth here (owner, 5 ottobre: depth, distances and the bag are cockpit and map things)
+    const info = `🦷 ${g.gear.teeth}`;
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;

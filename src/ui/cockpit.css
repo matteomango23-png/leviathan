@@ -485,3 +485,20 @@
 .diary-rows dd {
   margin: 0;
 }
+
+/* the engine and the live speed, in the top bar (the sea goes on under the cockpit) */
+.cockpit-speed {
+  min-width: 64px;
+  text-align: right;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+.cockpit-engine {
+  padding: 6px 12px;
+}
+.cockpit-engine.on {
+  color: var(--phosphor);
+  border-color: var(--phosphor);
+}

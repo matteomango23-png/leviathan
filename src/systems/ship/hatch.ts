@@ -51,9 +51,19 @@ export function canDock(g: HatchWorld): boolean {
 
 export function startDock(g: HatchWorld, events: GameEvent[]): void {
   if (!canDock(g)) return;
-  g.ship.bay = 'docking';
-  g.ship.bayT = 1;
-  Object.assign(g.sub, { vx: 0, vy: 0, face: g.ship.face });
+  const s = g.ship;
+  s.bay = 'docking';
+  // it glides to the nearest point of the ramp, then goes up from there
+  let at = 1;
+  let best = Infinity;
+  for (let i = 0; i <= 40; i++) {
+    const p = bayPath(s, i / 40);
+    const d = Math.hypot(p.x - g.sub.x, p.y - g.sub.y);
+    if (d < best) [best, at] = [d, i / 40];
+  }
+  s.bayT = at;
+  s.dockFrom = { x: g.sub.x, y: g.sub.y, t: 0, at };
+  Object.assign(g.sub, { vx: 0, vy: 0, face: s.face });
   events.push({ type: 'subDocking' });
 }
 
@@ -70,6 +80,17 @@ export function stepBay(g: HatchWorld, dt: number, events: GameEvent[]): boolean
     return false;
   }
   if (s.bay !== 'launching' && s.bay !== 'docking') return false;
+  const from = s.bay === 'docking' ? s.dockFrom : null;
+  if (from) {
+    const to = bayPath(s, from.at);
+    const dist = Math.hypot(to.x - from.x, to.y - from.y);
+    from.t = Math.min(1, from.t + (dt * SHIP.dockGlide) / Math.max(1, dist));
+    const e = from.t * from.t * (3 - 2 * from.t);
+    Object.assign(sub, { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e, vx: 0, vy: 0 });
+    Object.assign(g.diver, { x: sub.x, y: sub.y, vx: 0, vy: 0, face: s.face });
+    if (from.t >= 1) s.dockFrom = null;
+    return true;
+  }
   s.bayT += ((s.bay === 'launching' ? 1 : -1) * dt) / SHIP.launchSeconds;
   const done = s.bay === 'launching' ? s.bayT >= 1 : s.bayT <= 0;
   s.bayT = Math.max(0, Math.min(1, s.bayT));

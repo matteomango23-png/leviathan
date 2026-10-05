@@ -100,12 +100,17 @@ export class UIScene extends Phaser.Scene {
   }
 
   private openMenus(mode: 'pause' | 'port' | 'cockpit'): void {
-    if (this.session.paused || this.session.inBattle || !this.session.game) return;
-    this.session.paused = true;
+    const s = this.session;
+    if (s.paused || s.inCockpit || s.inBattle || !s.game) return;
     this.controls.releaseAll();
     this.helm.releaseAll();
-    this.scene.pause('World');
-    this.scene.launch('Menus', { session: this.session, mode });
+    // the cockpit does not stop the sea: the ship sails on while you watch the sonar
+    if (mode === 'cockpit') s.inCockpit = true;
+    else {
+      s.paused = true;
+      this.scene.pause('World');
+    }
+    this.scene.launch('Menus', { session: s, mode });
   }
 
   private openPause(): void {
@@ -122,6 +127,7 @@ export class UIScene extends Phaser.Scene {
 
   private onResume(): void {
     this.session.paused = false;
+    this.session.inCockpit = false;
     this.controls.releaseAll();
     this.helm.releaseAll();
     this.scene.stop('Menus');
@@ -132,6 +138,8 @@ export class UIScene extends Phaser.Scene {
     const g = this.session.game;
     if (!g) return;
     const dt = Math.min(0.1, deltaMs / 1000);
+    // off the helm (rescued, a battle) the cockpit closes by itself
+    if (this.session.inCockpit && (!g.ship.aboard || this.session.inBattle)) this.session.emit('resume');
     const helm = helmInfo(g, this.session.input.helm.throttle);
     this.root.classList.toggle('driving', !!helm);
     this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g), !!helm);

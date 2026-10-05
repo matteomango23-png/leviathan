@@ -40,28 +40,22 @@ export const SHIP = {
   rock: { pitch: 0.012, heave: 1.1, hz: 0.35 },
   /** Its lights (owner, 5 ottobre): lit windows and lanterns of the painting (shares of the picture, radius in
    *  units) and a floodlight under the hull shining down this far (units). Tuning. */
-  lights: {
-    windows: [
-      [0.335, 0.205, 1.1],
-      [0.358, 0.205, 1.1],
-      [0.381, 0.205, 1.1],
-      [0.403, 0.205, 1.1],
-      [0.122, 0.278, 1.3],
-      [0.416, 0.278, 1.3],
-      [0.186, 0.27, 0.9],
-      [0.264, 0.27, 0.9],
-    ] as [number, number, number][],
-    flood: { u: 0.6, v: 0.79, reach: 70 },
-  },
+  /** A soft light under the hull, like the submarine's (owner, 5 ottobre: the lit windows and the floodlight
+   *  "fanno cacare"): spots along the keel (shares of the picture) that open the dark, and a faint wash. */
+  lights: { under: { from: 0.25, to: 0.75, v: 0.8, below: 18, radius: 34, spots: 4, wash: 0.03 } },
+
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
   /** The sonar (owner, 5 ottobre): switched on at the helm, it hears only under this speed; it pings this often. */
-  sonar: { maxKnots: 10, pingSeconds: 2.6 },
+  sonar: { maxKnots: 10, pingSeconds: 2.6, cruiseKnots: 8 }, // cruise: "Avanti adagio" in the cockpit
   /** The chart of the bridge: km shown each side of the ship (owner, 5 ottobre: "i prossimi 2 km"). */
   chart: { halfKm: 2 },
   hatchSeconds: 1.4, // opening or closing
   /** The submarine: down the ramp to this depth under the surface, back the same way. */
   launchSeconds: 3.2,
+  /** Docking: the submarine first glides from where it is to the nearest point of the ramp (units/s; owner,
+   *  5 ottobre: "non teletrasportarlo"). */
+  dockGlide: 45,
   launchDepth: 62, // units under the surface (~10 m)
   dockReach: 40, // units: how near the hatch (sideways) Aggancia appears, from under the ramp up to the hatch
   boardReach: 18, // units beyond the hull (sideways) or under the surface where A bordo appears

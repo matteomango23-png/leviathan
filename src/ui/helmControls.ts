@@ -24,6 +24,8 @@ export interface HelmInfo {
   /** Submarine only: depth and the model's limit (m). */
   depthM?: number;
   maxDepthM?: number;
+  /** The submarine's hull, now and whole (shown in its instruments). */
+  hull?: [number, number];
   /** Ship only: which buttons work now. */
   hatchCanMove?: boolean;
   hatchOpen?: boolean;
@@ -194,6 +196,7 @@ export class HelmControls {
       `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
     ];
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
+    if (info.hull) parts.push(`scafo ${Math.round(info.hull[0])}/${info.hull[1]}`);
     const text = parts.join(' · ');
     if (text !== this.gaugeText) {
       this.gaugeText = text;
