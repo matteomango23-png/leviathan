@@ -534,9 +534,10 @@
 
 /* Backpack slots (top right, left of the pause button) */
 .backpack {
+  /* under the pause button, out of the team's row (owner, 5 ottobre: they overlapped) */
   position: absolute;
-  top: calc(8px + var(--safe-t));
-  right: calc(58px + var(--safe-r));
+  top: calc(50px + var(--safe-t));
+  right: calc(10px + var(--safe-r));
   display: flex;
   gap: 6px;
 }

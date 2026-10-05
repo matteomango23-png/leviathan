@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.46.0 — Stacco netto della telecamera, zaino al suo posto (5 ottobre 2026)
+
+- **Telecamera: mai più scorrimento.** Salendo o scendendo dalla nave, calando o agganciando il sottomarino, la vista passa di colpo da quella della nave alla tua (e viceversa), con una breve dissolvenza dal buio (un quarto di secondo) che nasconde lo stacco. Niente zoom né movimenti in mezzo. Tolta la vista "larga" della v0.45 che restava sulla nave finché non scendevi in profondità.
+- **Barra dello zaino** (Bolla, Esca, Sardine) spostata sotto la pausa: non copre più i ritratti della squadra.
+
 ## v0.45.0 — La nave non scivola più, schermo senza sovrapposizioni (5 ottobre 2026)
 
 - **La nave non "scivola" più** salendo, scendendo, calando o agganciando il sottomarino. La causa: la telecamera cambiava insieme zoom e centro, e il centro era su di te, non sulla nave. Ora l'inquadratura dipende da quanto sei vicino alla nave: vicino (a bordo, sulla rampa, appena tuffato, col sottomarino sotto lo scafo) è identica a quella del timone, e cambia piano solo mentre ti allontani. Un test controlla che salire o scendere non la sposti affatto.

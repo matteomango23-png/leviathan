@@ -1,5 +1,11 @@
 # Progressi
 
+## Sessione cloud 1 — Stacco netto della telecamera (5 ottobre 2026) → v0.46.0
+
+**Fatto:** vista del timone o tua, mai mescolate: il cambio è uno stacco con dissolvenza (`CAMERA.cutFadeMs`, `CameraRig.fadeCut`); misurato fotogramma per fotogramma: un solo salto, poi fermo. Barra dello zaino sotto la pausa.
+
+**Da provare sull'iPhone (v0.46.0):** tuffati, risali, cala e aggancia il sottomarino: la scena cambia con un breve buio, senza scorrere. In acqua con oggetti nello zaino: la barra è sotto il pulsante di pausa.
+
 ## Sessione cloud 1 — Telecamera definitiva e schermo ordinato (5 ottobre 2026) → v0.45.0
 
 **Fatto:** telecamera a distanza dalla nave (`systems/shipCamera.ts`, numeri in `SHIP.camera.near/fade`); timone a fasce fisse (`--side` in `ui.css`); sonar con la sua riga; Cockpit accanto alla pausa; nome della zona e messaggi che vanno a capo.

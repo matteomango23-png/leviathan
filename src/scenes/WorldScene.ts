@@ -22,7 +22,7 @@ import { depthMetres, murkAt } from '../systems/world/zones';
 import { DELTA, WORLD } from '../data/worldLayout';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
-import { cameraAim } from '../systems/shipCamera';
+import { atHelmView, cameraAim } from '../systems/shipCamera';
 import { HuntView } from '../views/huntView';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
@@ -59,6 +59,7 @@ export class WorldScene extends Phaser.Scene {
   private worldArt!: WorldArtView;
   private sub!: SubmarineView;
   private ship!: ShipView;
+  private helmView = false;
   private hunts!: HuntView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
@@ -130,6 +131,7 @@ export class WorldScene extends Phaser.Scene {
     const aim0 = cameraAim(this.state, CAMERA.lookAhead);
     this.rig.setView(aim0.viewH, aim0.minY, 0, true);
     this.rig.follow(aim0.x, aim0.y, 0, true);
+    this.helmView = atHelmView(this.state);
     this.terrain.update(this.rig.worldView(), true);
 
     this.scale.on('resize', this.onResize, this);
@@ -293,11 +295,15 @@ export class WorldScene extends Phaser.Scene {
     }
 
     const d = g.diver;
-    // the view depends on how near the ship you are, not on being aboard: getting on or off moves nothing
-    // (systems/shipCamera.ts)
+    // the helm's view or yours (systems/shipCamera.ts): a change cuts at once behind a short fade, never a glide
+    // (owner, 5 ottobre: any glide made the ship slide sideways)
+    const helmView = atHelmView(g);
+    const cut = helmView !== this.helmView;
+    this.helmView = helmView;
+    if (cut) this.rig.fadeCut(CAMERA.cutFadeMs);
     const aim = cameraAim(g, g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead);
     this.rig.setView(aim.viewH, aim.minY, dt, true);
-    this.rig.follow(aim.x, aim.y, dt);
+    this.rig.follow(aim.x, aim.y, dt, cut);
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
     this.terrain.update(view);

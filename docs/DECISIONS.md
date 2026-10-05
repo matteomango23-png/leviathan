@@ -671,3 +671,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Decisione:** la vista non dipende più da `ship.aboard` ma da `helmShare` (`systems/shipCamera.ts`): 1 vicino alla nave, 0 lontano, sfumata con la distanza laterale dallo scafo e la profondità. Salire o scendere non cambia la distanza, quindi la vista resta identica. Tolti lo stacco (v0.43) e la transizione a tempo (v0.44).
 - **Motivo:** cambiare zoom attorno a un punto che non è il centro della nave la fa sembrare spostarsi, comunque si faccia la transizione.
 - **Timone a fasce:** `--side` (`clamp(176px, 26vw, 260px)`) è la larghezza delle fasce laterali; strumenti, nome della zona e messaggi stanno nella fascia centrale e vanno a capo.
+
+## 5 ottobre 2026 — Stacco netto con dissolvenza (v0.46.0)
+
+- **Decisione:** tra la vista del timone e la tua non c'è più nessuna transizione di zoom o di posizione: al cambio la telecamera salta subito e tutte e tre le telecamere ripartono dal buio (`fadeIn` di Phaser, `CAMERA.cutFadeMs`).
+- **Motivo:** il proprietario non vuole mai vedere scorrere la vista; la vista a distanza dalla nave (v0.45) teneva la nave al centro troppo a lungo. Lo stacco senza effetti (v0.43) funzionava ma era brusco: la dissolvenza lo addolcisce.

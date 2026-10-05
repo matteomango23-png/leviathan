@@ -6,7 +6,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { PORTO_FANGO } from '../src/data/economy';
 import { CAMERA } from '../src/data/diver';
-import { cameraAim } from '../src/systems/shipCamera';
+import { atHelmView, cameraAim } from '../src/systems/shipCamera';
 import { SHIP } from '../src/data/ship';
 import { TILE, WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
@@ -201,39 +201,17 @@ describe('la nave da spedizione', () => {
     expect(ev.some((e) => e.type === 'sonarPing')).toBe(false);
   });
 
-  it('salire, scendere, calare e agganciare non muovono la telecamera (5 ottobre: la nave "scivolava")', () => {
+  it('telecamera: al timone la vista della nave, fuori la tua; si passa con uno stacco, mai scivolando', () => {
     const { g, input } = atTheHelm();
-    const aim = (): ReturnType<typeof cameraAim> => cameraAim(g, CAMERA.lookAhead);
-    const same = (a: ReturnType<typeof cameraAim>, b: ReturnType<typeof cameraAim>): void => {
-      expect(Math.abs(a.x - b.x)).toBeLessThan(0.5);
-      expect(Math.abs(a.y - b.y)).toBeLessThan(0.5);
-      expect(Math.abs(a.viewH - b.viewH)).toBeLessThan(0.5);
-    };
-    // diving off and climbing back aboard
-    let before = aim();
+    expect(atHelmView(g)).toBe(true);
+    const helm = cameraAim(g, CAMERA.lookAhead);
+    expect(helm.x).toBe(g.ship.x); // still: centred on the ship
+    expect(helm.viewH).toBe(SHIP.camera.viewHeightUnits);
     cmd(g, 'dive', input);
-    expect(g.ship.aboard).toBe(false);
-    same(before, aim());
-    before = aim();
-    press(g, input);
-    expect(g.ship.aboard).toBe(true);
-    same(before, aim());
-    // down the ramp in the submarine, and back up
-    cmd(g, 'hatch', input);
-    run(g, SHIP.hatchSeconds + 0.1, input);
-    before = aim();
-    cmd(g, 'launch', input);
-    run(g, SHIP.launchSeconds + 0.1, input);
-    expect(g.sub.aboard).toBe(true);
-    same(before, aim());
-    press(g, input);
-    run(g, SHIP.launchSeconds + 1.5, input);
-    expect(g.ship.aboard).toBe(true);
-    same(before, aim());
-    // swimming far away: the swimming view
-    cmd(g, 'dive', input);
-    Object.assign(g.diver, { x: g.ship.x + 800, y: WORLD.surfaceY + 300 });
-    expect(aim().viewH).toBe(CAMERA.viewHeightUnits);
+    expect(atHelmView(g)).toBe(false); // the scene cuts (WorldScene: snap behind a fade)
+    const you = cameraAim(g, CAMERA.lookAhead);
+    expect(you.viewH).toBe(CAMERA.viewHeightUnits);
+    expect(you.y).toBe(g.diver.y);
   });
 
   it('con la nave in moto non ti tuffi (5 ottobre: ti lasciava lì)', () => {

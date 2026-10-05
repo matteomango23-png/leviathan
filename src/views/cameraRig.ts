@@ -85,6 +85,11 @@ export class CameraRig {
     this.clampAndApply();
   }
 
+  /** The view cut to another (the helm's, yours): it comes back from dark, so the jump does not show. */
+  fadeCut(ms: number): void {
+    for (const c of [this.bgCam, this.worldCam, this.overlayCam]) c.fadeIn(ms, 2, 8, 14);
+  }
+
   /** A jolt of the view; `strength` 1 = a hit on the diver, less for lighter knocks. */
   shake(strength = 1): void {
     this.worldCam.shake(120 + 80 * strength, 0.004 * strength);
