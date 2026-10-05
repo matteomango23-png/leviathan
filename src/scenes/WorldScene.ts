@@ -129,6 +129,7 @@ export class WorldScene extends Phaser.Scene {
     this.lampAngle = d.aim;
 
     this.rig.follow(d.x + d.face * CAMERA.lookAhead, d.y, 0, true);
+    this.wasAboard = this.state.ship.aboard; // a game saved at the helm starts there, with no glide
     this.terrain.update(this.rig.worldView(), true);
 
     this.scale.on('resize', this.onResize, this);
@@ -293,19 +294,19 @@ export class WorldScene extends Phaser.Scene {
 
     const d = g.diver;
     const ship = g.ship;
-    // climbing aboard, diving off, going down or up the ramp: the view cuts at once (owner, 5 ottobre: easing
-    // between the two views made the ship look as if it slid sideways)
-    const cut = ship.aboard !== this.wasAboard;
+    // climbing aboard, diving off, going down or up the ramp: one smooth glide of zoom and position together
+    // (owner, 5 ottobre: two separate easings made the ship look as if it slid sideways; a cut was too abrupt)
+    if (ship.aboard !== this.wasAboard) this.rig.startBlend();
     this.wasAboard = ship.aboard;
     if (ship.aboard) {
       // at the helm: a wider view on the ship, looking ahead where it sails
       const C = SHIP.camera;
-      this.rig.setView(C.viewHeightUnits, C.minY, dt, cut);
-      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt, cut);
+      this.rig.setView(C.viewHeightUnits, C.minY, dt);
+      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt);
     } else {
-      this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt, cut);
+      this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt);
       const ahead = g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead;
-      this.rig.follow(d.x + d.face * ahead, d.y, dt, cut);
+      this.rig.follow(d.x + d.face * ahead, d.y, dt);
     }
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();

@@ -1,67 +1,13 @@
-// Life in the endless sea (tappa 11): its wild beasts and its sardines. A few wild "slots" (WILD_SPAWNS marked
-// endless) take, each time they come, a species of the stretch you are in and a level from its kind and its
-// distance from the coast; a few sardine schools follow you out there (left far behind, they are moved ahead).
+// Life in the endless sea (tappa 11): its sardines and its air vents. A few sardine schools follow you out there
+// (left far behind, they are moved ahead). Its wild beasts live there for good: beasts/residents.ts.
 import { ENDLESS } from '../data/endless';
-import { SPECIES_DEPTH } from '../data/beasts';
 import { SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
-import { biomeAt, endlessFloor, regionAt, stretchAt, ventAt } from './world/endless';
-import { bandAt } from './beasts/forms';
+import { endlessFloor, ventAt } from './world/endless';
 import type { GameEvent } from './events';
-import type { WildBeast } from './beasts/wildState';
 import type { FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 import type { Rng } from './math';
-
-/**
- * Gets an endless slot ready to come: picks the species and level for where you are and sets its waters (the
- * stretch, a little beyond its ends). False while you are on the hand-made coast.
- */
-export function prepareEndlessSpawn(
-  w: WildBeast,
-  diver: { x: number; y?: number },
-  rng: Rng,
-  lured: string[] = [],
-): boolean {
-  const b = biomeAt(diver.x);
-  if (!b) return false;
-  // only the species that live at your depth (SPECIES_DEPTH: deep ones in the trenches, shallow ones above)
-  const depthM = Math.max(0, ((diver.y ?? WORLD.surfaceY) - WORLD.surfaceY) / WORLD.unitsPerMetre);
-  const fits = (id: string): boolean => {
-    const z = SPECIES_DEPTH[id];
-    return !z || ((z.minM === undefined || depthM >= z.minM) && (z.maxM === undefined || depthM <= z.maxM));
-  };
-  const entries = Object.entries(b.beasts)
-    .filter(([id]) => fits(id))
-    .map(([id, n]) => [id, lured.includes(id) ? n * 6 : n] as const);
-  if (!entries.length) return false;
-  const total = entries.reduce((a, [, n]) => a + n, 0);
-  let r = rng() * total;
-  let speciesId = entries[0]![0];
-  for (const [id, n] of entries) {
-    r -= n;
-    if (r <= 0) {
-      speciesId = id;
-      break;
-    }
-  }
-  const k = stretchAt(diver.x);
-  const x0 = ENDLESS.startX + k * ENDLESS.stretch - 200;
-  const x1 = x0 + ENDLESS.stretch + 400;
-  const floor = Math.max(
-    endlessFloor(x0 + 200),
-    endlessFloor(x0 + ENDLESS.stretch / 2),
-    endlessFloor(x1 - 200),
-  );
-  const z = SPECIES_DEPTH[speciesId];
-  const top = z?.minM !== undefined ? WORLD.surfaceY + z.minM * WORLD.unitsPerMetre : WORLD.surfaceY + 20;
-  const bottom =
-    z?.maxM !== undefined ? Math.min(floor, WORLD.surfaceY + z.maxM * WORLD.unitsPerMetre) : floor;
-  // its level: its danger band, higher in the farther regions and deeper (forms.ts rollWildLevel)
-  const band = bandAt(regionAt(diver.x).bandAt, depthM);
-  w.spawn = { ...w.spawn, speciesId, area: [x0, top, x1, Math.max(top + 40, bottom)], band };
-  return true;
-}
 
 /** Sardine schools of the endless sea left far behind you are moved near you again (out of sight). */
 export function stepEndlessSchools(

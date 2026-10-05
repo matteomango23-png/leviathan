@@ -41,8 +41,10 @@ export interface WildSpawnDef {
   respawnSeconds: [number, number];
   /** Where in its danger band its levels fall (0 = bottom; set for the endless sea by its region and depth). */
   band?: number;
-  /** A slot of the endless sea: species, waters and level are chosen each time it comes (endlessLife.ts). */
+  /** A slot of the endless sea: it brings out the resident nearest to you (beasts/residents.ts). */
   endless?: boolean;
+  /** The resident it brought out (set when it comes; beasts/residents.ts). */
+  resident?: string;
   /** A hunted beast's den (data/hunts.ts): it comes only when its hunt is ready (systems/hunts.ts), as itself. */
   hunt?: string;
   form?: { unique?: string };
@@ -160,11 +162,11 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'polpo_gigante', area: FOREST, respawnSeconds: [40, 80] },
   { speciesId: 'lontra_marina', area: FOREST, respawnSeconds: [20, 40] },
   { speciesId: 'foca_leopardo', area: ICY, respawnSeconds: [25, 50] },
-  // the endless sea: a few slots that take the beasts of the stretch you are in
-  ...Array.from({ length: ENDLESS.wildSlots }, (_, i) => ({
+  // the endless sea: a few slots that bring out the residents near you (they live there already: quick)
+  ...Array.from({ length: ENDLESS.wildSlots }, () => ({
     speciesId: 'barracuda',
     area: [ENDLESS.startX, 0, ENDLESS.startX, 0] as [number, number, number, number],
-    respawnSeconds: [10 + i * 4, 25 + i * 6] as [number, number],
+    respawnSeconds: [1, 3] as [number, number],
     endless: true,
   })),
 ];

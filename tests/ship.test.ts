@@ -199,6 +199,15 @@ describe('la nave da spedizione', () => {
     expect(ev.some((e) => e.type === 'sonarPing')).toBe(false);
   });
 
+  it('con la nave in moto non ti tuffi (5 ottobre: ti lasciava lì)', () => {
+    const { g, input } = atTheHelm();
+    input.helm.throttle = 1;
+    run(g, 2, input);
+    const ev = cmd(g, 'dive', input);
+    expect(g.ship.aboard).toBe(true);
+    expect(ev.some((e) => e.type === 'shipHint' && e.text === 'stopToDive')).toBe(true);
+  });
+
   it('tuffati e risali a bordo dall’acqua', () => {
     const { g, input } = atTheHelm();
     cmd(g, 'dive', input);

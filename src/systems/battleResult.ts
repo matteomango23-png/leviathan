@@ -1,6 +1,7 @@
 // After a battle (scenes/BattleScene.ts): health back to the team, experience, a tamed beast into the team,
 // the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to your ship or harbour if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
+import { residentGone } from './beasts/residents';
 import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
 import { ROAM } from '../data/beasts';
@@ -83,8 +84,11 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
   if (w) {
     if (win && w.storyBoss) w.beaten = o.over === 'caught' ? 'caught' : 'won';
     else if (win && w.guardian) guardianDefeated(g, o.over === 'caught', events);
-    else if (win) removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
-    else w.calm = ROAM.calmAfterBattle;
+    else if (win) {
+      removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
+      // a resident of the endless sea: its place stays empty for a while (beasts/residents.ts)
+      if (w.spawn.resident) residentGone(g.beasts.residents, w.spawn.resident, g.rng);
+    } else w.calm = ROAM.calmAfterBattle;
   }
   // a moment of peace: nobody comes at you right after a battle
   for (const x of g.beasts.wilds) x.calm = Math.max(x.calm, 1.5);

@@ -83,8 +83,13 @@ describe('the submarine', () => {
     expect(g.beasts.team[0]!.hp).toBe(1);
     expect(g.beasts.aboard).toBe(true);
     run(g, 1, levers(1, 1, 1));
+    expect(g.sub.y).toBeGreaterThan(SUBMARINE.restY); // it went under
+    // still moving: you may not get out (owner, 5 ottobre: it left you behind)
+    const ev = press(g);
+    expect(g.sub.aboard).toBe(true);
+    expect(ev.some((e) => e.type === 'shipHint' && e.text === 'stopToLeave')).toBe(true);
+    run(g, 6, levers(0));
     const at = { x: g.sub.x, y: g.sub.y };
-    expect(at.y).toBeGreaterThan(SUBMARINE.restY); // it went under
     press(g); // out
     expect(g.sub.aboard).toBe(false);
     run(g, 1, levers(1, -1));

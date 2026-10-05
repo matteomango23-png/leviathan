@@ -3,7 +3,8 @@
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { ITEM_RULES } from '../data/economy';
-import { prepareEndlessSpawn } from './endlessLife';
+import { ENDLESS } from '../data/endless';
+import { residentArea, residentsNear } from './beasts/residents';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
@@ -72,13 +73,13 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (lure.t <= 0) g.beasts.lure = null;
   }
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
-  /** It comes out of the dark. */
-  const appear = (w: WildBeast): boolean => {
+  /** It comes out of the dark (a resident of the endless sea: where it already is). */
+  const appear = (w: WildBeast, at?: { x: number; y: number }): boolean => {
     // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready)
     const form: BeastForm = w.spawn.form
       ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
       : rollWildForm(w.spawn.speciesId, g.rng);
-    const p = appearPoint(w, g.map, g.rng, d);
+    const p = at ?? appearPoint(w, g.map, g.rng, d);
     if (!p) return false;
     spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
@@ -86,6 +87,35 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const top = Math.max(0, ...g.beasts.team.filter((b) => b.inTeam).map((b) => b.level));
     const danger = w.level >= top + DANGER_RULES.warnGap;
     events.push({ type: 'wildAppeared', id: w.id, rare: isRare(w), legend: isLegend(form.unique), danger });
+    return true;
+  };
+  // the endless sea's residents: the clock of their laps, and who is no longer out
+  const res = g.beasts.residents;
+  res.clock += dt;
+  for (const [id, wildId] of Object.entries(res.awake)) {
+    const w = g.beasts.wilds.find((x) => x.id === wildId);
+    if (!w || !isInWater(w) || w.spawn.resident !== id) delete res.awake[id];
+  }
+  const R = ENDLESS.residents;
+  /** The nearest resident not out yet (a lured species first) comes out for real in this slot. */
+  const wakeResident = (w: WildBeast): boolean => {
+    const lure = g.beasts.lure?.species ?? [];
+    const dist = (c: { x: number; y: number }): number => Math.hypot(c.x - d.x, c.y - d.y);
+    const near = residentsNear(res, d.x, R.wakeRadius).filter(
+      (c) => res.awake[c.r.id] === undefined && dist(c) < R.wakeRadius,
+    );
+    if (!near.length) return false;
+    const score = (c: (typeof near)[number]): number => dist(c) - (lure.includes(c.r.speciesId) ? 1e6 : 0);
+    const c = near.reduce((a, b) => (score(b) < score(a) ? b : a));
+    w.spawn = {
+      ...w.spawn,
+      speciesId: c.r.speciesId,
+      area: residentArea(c.r),
+      band: c.r.band,
+      resident: c.r.id,
+    };
+    if (!appear(w, g.map.nearestOpen(c.x, c.y, 8))) return false;
+    res.awake[c.r.id] = w.id;
     return true;
   };
   const ready: WildBeast[] = [];
@@ -97,7 +127,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       const room = present < WILD_RULES.maxPresent || lured(w);
       if (w.respawn > 0 || d.dead || g.beasts.arena || !room) continue;
       if (w.spawn.endless) {
-        if (prepareEndlessSpawn(w, d, g.rng, g.beasts.lure?.species) && appear(w)) present++;
+        if (wakeResident(w)) present++;
       } else if (inArea(w, d.x, d.y, 0)) ready.push(w);
       continue;
     }

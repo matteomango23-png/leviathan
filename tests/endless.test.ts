@@ -1,14 +1,12 @@
 // The endless open sea (tappa 11): generated piece by piece east of the Mare di Ghiaccio, always the same,
 // stretch after stretch of different kinds, deeper and more dangerous the farther you go.
 import { beforeAll, describe, expect, it } from 'vitest';
-import { WILD_SPAWNS } from '../src/data/beasts';
 import { BIOMES, ENDLESS } from '../src/data/endless';
 import { SPRITE_KEYS } from '../src/data/sprites.generated';
 import { TILE, WORLD } from '../src/data/worldLayout';
-import { prepareEndlessSpawn, stepEndlessSchools, stepVents } from '../src/systems/endlessLife';
+import { stepEndlessSchools, stepVents } from '../src/systems/endlessLife';
 import { SUITS } from '../src/data/world';
 import { DIVER } from '../src/data/diver';
-import { createWild } from '../src/systems/beasts/wildState';
 import { createFish } from '../src/systems/fish';
 import { makeRng } from '../src/systems/math';
 import { regionsMap } from '../src/systems/seaMap';
@@ -108,19 +106,6 @@ describe('the endless sea', () => {
 });
 
 describe('life out there', () => {
-  it('beasts of the stretch you are in, stronger the farther you go', () => {
-    const def = WILD_SPAWNS.find((s) => s.endless)!;
-    const rng = makeRng(3);
-    const w = createWild(1, def);
-    const bandAt = (x: number): number => {
-      expect(prepareEndlessSpawn(w, { x }, rng)).toBe(true);
-      expect(Object.keys(biomeOf(Math.floor((x - S) / ENDLESS.stretch)).beasts)).toContain(w.spawn.speciesId);
-      return w.spawn.band!;
-    };
-    expect(bandAt(S + 2 * km)).toBeLessThan(bandAt(S + 20 * km));
-    expect(prepareEndlessSpawn(w, { x: S - 100 }, rng)).toBe(false); // the hand-made coast keeps its own beasts
-  });
-
   it('only beasts with a side picture live out there (otherwise they would be invisible)', () => {
     for (const b of BIOMES) for (const id of Object.keys(b.beasts)) expect(SPRITE_KEYS, id).toContain(id);
   });

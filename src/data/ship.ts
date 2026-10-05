@@ -115,6 +115,9 @@ export const SHIP_TEXT = {
   launched: 'Il sottomarino è in acqua. Per rientrare torna sotto il portellone e premi Aggancia.',
   docked: 'Il sottomarino è nella stiva. Chiudi il portellone per ripartire.',
   hatchOpenStill: 'Col portellone aperto la nave non si muove.',
+  // owner, 5 ottobre: diving off a moving ship (or out of a moving submarine) left you behind
+  stopToDive: 'Ferma la nave prima di tuffarti.',
+  stopToLeave: 'Fermati prima di uscire dal sottomarino.',
   fuelOutShip: 'La nave è senza carburante: si ferma. Nel cockpit c’è il razzo di soccorso.',
   fuelOutSub: 'Il sottomarino è senza carburante. Puoi uscire e nuotare, o usare il razzo di soccorso.',
   rescued: (where: string, teeth: number): string =>

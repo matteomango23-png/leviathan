@@ -149,6 +149,10 @@ export function restAboard(g: Pick<SubWorld, 'diver' | 'beasts'>): void {
 export function leaveSub(g: SubWorld, events: GameEvent[]): void {
   const s = g.sub;
   if (!s.aboard) return;
+  if (Math.hypot(s.vx, s.vy) >= SUBMARINE.stillBelow) {
+    events.push({ type: 'shipHint', text: 'stopToLeave' });
+    return;
+  }
   s.aboard = false;
   s.vx = 0;
   s.vy = 0;

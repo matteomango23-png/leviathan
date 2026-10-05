@@ -348,6 +348,11 @@
 .lg.big {
   background: #b4ffd2;
 }
+.lg.small {
+  background: #b4ffd2;
+  width: 5px;
+  height: 5px;
+}
 .lg.odd {
   background: #ff785a;
 }
