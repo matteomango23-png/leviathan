@@ -639,3 +639,14 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - missioni `reachKm` e `hunt`;
   - `SHIP_UPGRADES` (serbatoio, sonar, motori) salvati in `ship.upgrades`.
 - **Non fatto:** un tempio per regione (resta solo il tempio del Mare aperto) e pesci rari da vendere. Proposti per una prossima tappa.
+
+## 5 ottobre 2026 — La nave vive solo a est di Porto Fango (v0.42.0)
+
+- **Decisione:** via la "corsia lontana" e gli iceberg. Il Delta va prima dell'isola; sulla riva est dell'isola c'è il porto commerciale di Porto Fango; la nave si ferma a `SHIP_WEST_X` (evento `shipWest`) e da lì a est non trova nulla (`ENDLESS.clearTop`: niente roccia sotto la superficie in mare aperto, il ghiaccio resta e si rompe).
+- **Motivo:** il proprietario trovava la corsia lontana "terribile". Il razzo di soccorso porta la nave al porto più vicino *raggiungibile*.
+- **Telecamera al timone:** lo sguardo avanti cresce con la velocità, così salire o scendere non sposta l'inquadratura.
+- **Leve:** un tocco per dito (`Map` dei puntatori), così gas e Sali/Scendi funzionano insieme.
+- **Sonar:** `ship.sonarOn` (non salvato) e `sonarActive` (sotto `SHIP.sonar.maxKnots`); le eco della caccia si trovano solo a sonar attivo. Lo schermo del cockpit (`ui/sonarScreen.ts`) disegna su canvas e suona un ping a ogni passata.
+- **Cockpit:** `ui/bridgePanel.ts` (plancia), `ui/instruments.ts` (quadranti e carta in SVG), `systems/chart.ts` (cosa c'è a ±2 km, logica pura), `ui/cockpit.css`.
+- **Caccia seguita:** `huntPinned` nel salvataggio, campo facoltativo (niente nuova versione: un salvataggio vecchio parte senza).
+- **Motori:** `audio/engineSound.ts` con Web Audio, numeri in `ENGINE_SOUND` (`data/audio.ts`).

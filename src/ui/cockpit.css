@@ -1,0 +1,487 @@
+/* The cockpit of the ship: a navy bridge (dark steel, amber dials, green sonar) — owner, 5 ottobre 2026. */
+.cockpit {
+  --steel: #0c1a22;
+  --steel-2: #13262f;
+  --bezel: #3a4a50;
+  --amber: #ffb84d;
+  --phosphor: #5dff9e;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(40, 70, 80, 0.35), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 4px), #050d12;
+}
+
+.bridge {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-bottom: 10px;
+}
+.bridge-panel {
+  position: relative;
+  padding: 22px 12px 10px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--steel-2), var(--steel));
+  border: 1px solid var(--bezel);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.bridge-panel::before,
+.bridge-panel::after {
+  /* the screws of the plate */
+  content: '';
+  position: absolute;
+  top: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #56666c;
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.6);
+}
+.bridge-panel::before {
+  left: 6px;
+}
+.bridge-panel::after {
+  right: 6px;
+}
+.bridge-panel.wide,
+.bridge-panel.objective {
+  grid-column: 1 / -1;
+}
+.bridge-panel-title {
+  position: absolute;
+  top: 4px;
+  left: 18px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  opacity: 0.85;
+}
+.bridge-panel.danger {
+  border-color: rgba(201, 68, 63, 0.6);
+}
+.bridge-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.bridge-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.console-btn {
+  pointer-events: auto;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #5a6a70;
+  background: linear-gradient(180deg, #2a3a40, #17252b);
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 0 #050b0e;
+}
+.console-btn:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.console-btn:disabled {
+  opacity: 0.4;
+}
+.console-btn.red {
+  color: #ffd2cc;
+  background: linear-gradient(180deg, #7a2420, #4a1210);
+  border-color: #a8443d;
+}
+
+/* the hunt you follow */
+.bridge-objective-none {
+  font-size: 13px;
+  color: var(--muted);
+}
+.bridge-objective-name {
+  font-weight: 800;
+  color: var(--lamp);
+  font-size: 15px;
+}
+.bridge-objective-next {
+  margin-top: 6px;
+  font-size: 13px;
+}
+.bridge-steps {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.bridge-step,
+.diary-light {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  border: 1px solid #3c4c52;
+  color: var(--muted);
+}
+.bridge-step.done,
+.diary-light.done {
+  color: #04140b;
+  background: var(--phosphor);
+  border-color: var(--phosphor);
+  font-weight: 700;
+}
+
+/* dials */
+.bridge-dials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 8px;
+}
+.dial {
+  width: 132px;
+  text-align: center;
+}
+.dial-svg {
+  width: 120px;
+  height: 104px;
+}
+.dial-bezel {
+  fill: #071116;
+  stroke: #56666c;
+  stroke-width: 3;
+}
+.dial-track {
+  fill: none;
+  stroke: #1d2c32;
+  stroke-width: 7;
+}
+.dial-fill {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 7;
+  filter: drop-shadow(0 0 3px rgba(255, 184, 77, 0.7));
+}
+.dial-fill.low {
+  stroke: #ff5a4a;
+}
+.dial-tick {
+  stroke: #9fb0b4;
+  stroke-width: 1.4;
+}
+.dial-needle {
+  stroke: #ff6a3d;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+.dial-hub {
+  fill: #c8d2d4;
+}
+.dial-value {
+  fill: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+.dial-unit {
+  fill: var(--muted);
+  font-size: 9px;
+  text-anchor: middle;
+}
+.dial-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.dial-note {
+  font-size: 11px;
+  color: var(--muted);
+}
+.dial.weather {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  height: 120px;
+  width: 120px;
+  margin-top: 0;
+  background: #071116;
+  border: 3px solid #56666c;
+}
+.weather-icon {
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+/* the chart */
+.chart-svg {
+  width: 100%;
+  height: 130px;
+  display: block;
+  background: radial-gradient(100% 140% at 50% 100%, #0b2a33, #06161c);
+  border-radius: 6px;
+  border: 1px solid #23363d;
+}
+.chart-grid {
+  stroke: rgba(120, 200, 220, 0.08);
+}
+.chart-sea {
+  stroke: rgba(120, 200, 220, 0.5);
+  stroke-width: 2;
+  stroke-dasharray: 10 6;
+}
+.chart-tick {
+  stroke: #9fb0b4;
+}
+.chart-km {
+  fill: var(--muted);
+  font-size: 13px;
+  text-anchor: middle;
+}
+.chart-border {
+  stroke: rgba(255, 184, 77, 0.55);
+  stroke-dasharray: 4 5;
+}
+.chart-border-label {
+  fill: var(--amber);
+  font-size: 13px;
+}
+.chart-me {
+  stroke: rgba(255, 255, 255, 0.15);
+}
+.chart-ship {
+  fill: #e6ede8;
+}
+.chart-mark {
+  text-anchor: middle;
+  font-size: 22px;
+  fill: #e6ede8;
+}
+.chart-mark.sub {
+  fill: #ffd34d;
+  font-size: 16px;
+}
+.chart-mark.den {
+  fill: var(--phosphor);
+}
+.chart-mark.target {
+  fill: #ff785a;
+  font-size: 28px;
+}
+.chart-mark.end {
+  fill: #ff5a4a;
+}
+.chart-label {
+  font-size: 12px;
+  fill: #cfe0e4;
+}
+.chart-label.target {
+  fill: #ffb09d;
+  font-weight: 700;
+}
+
+/* the sonar */
+.port-body.is-sonar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sonar-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.sonar-status {
+  flex: 1;
+  font-size: 13px;
+  color: var(--phosphor);
+}
+.sonar-status.warn {
+  color: var(--amber);
+}
+.sonar-switch.on {
+  background: #0f3a22;
+  color: var(--phosphor);
+  border-color: var(--phosphor);
+}
+.sonar-frame {
+  flex: 1;
+  min-height: 140px;
+  border-radius: 12px;
+  border: 3px solid #3a4a50;
+  box-shadow:
+    inset 0 0 30px rgba(93, 255, 158, 0.12),
+    0 0 0 4px #0c1a22;
+  overflow: hidden;
+}
+.sonar-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.sonar-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.sonar-legend .lg {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.lg.floor {
+  background: #5dff9e;
+  border-radius: 2px;
+  height: 3px;
+}
+.lg.big {
+  background: #b4ffd2;
+}
+.lg.odd {
+  background: #ff785a;
+}
+
+/* the diary */
+.diary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 8px;
+}
+.diary-card {
+  pointer-events: auto;
+  text-align: left;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(30, 40, 44, 0.9), rgba(10, 18, 22, 0.9));
+  color: var(--ink);
+}
+.diary-card.pinned {
+  border-color: #ff785a;
+  box-shadow: 0 0 10px rgba(255, 120, 90, 0.35);
+}
+.diary-card.closed {
+  opacity: 0.6;
+}
+.diary-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  align-items: center;
+}
+.diary-card-name {
+  font-weight: 800;
+  color: var(--lamp);
+  font-size: 14px;
+}
+.diary-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #33444a;
+  white-space: nowrap;
+}
+.diary-badge.pin {
+  background: #5a2216;
+  color: #ffc4b4;
+}
+.diary-card-where {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 6px;
+}
+.diary-lights {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.diary-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  padding: calc(10px + var(--safe-t)) calc(16px + var(--safe-r)) calc(10px + var(--safe-b))
+    calc(16px + var(--safe-l));
+}
+.diary-sheet-card {
+  width: min(560px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #13262f, #0a161c);
+}
+.diary-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.diary-sheet-head h3 {
+  margin: 0;
+  color: var(--lamp);
+}
+.diary-track {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0;
+}
+.diary-track-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.diary-track-step.done {
+  color: var(--ink);
+}
+.diary-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #4a5a60;
+  font-size: 11px;
+  font-weight: 800;
+}
+.diary-track-step.done .diary-dot {
+  background: #5dff9e;
+  color: #04140b;
+  border-color: #5dff9e;
+}
+.diary-rows {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 12px;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+.diary-rows dt {
+  color: #ffb84d;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.diary-rows dd {
+  margin: 0;
+}

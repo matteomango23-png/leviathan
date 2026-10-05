@@ -71,6 +71,7 @@ export function endlessTile(x: number, y: number): TileValue {
   const b = biomeOf(k);
   if (b.ice && inIceberg(icebergsOfStretch(k), x, y)) return TILE.ice;
   if (isIce(b, k, x, y) && !nearIceberg(icebergsOfStretch(k), x)) return TILE.ice; // no old ice by the painted ones
+  if (y < WORLD.surfaceY + ENDLESS.clearTop) return TILE.water; // nothing rises near the surface
   const n = (fbm(x * WORLD.noiseScale, y * WORLD.noiseScale) - 0.5) * WORLD.noiseAmp;
   if (y > endlessFloor(x) + n * b.noise) return TILE.rock;
   for (const m of moundsOf(k)) {

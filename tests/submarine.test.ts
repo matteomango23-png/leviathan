@@ -4,7 +4,6 @@
 // ones are bought; saved (v11, the old boat becomes the bathyscaphe).
 import { beforeAll, describe, expect, it } from 'vitest';
 import { SUB_MODELS, SUBMARINE } from '../src/data/submarine';
-import { ICEBERGS } from '../src/data/worldArt';
 import { WORLD } from '../src/data/worldLayout';
 import { spawnWild } from '../src/systems/beasts/wildState';
 import type { GameEvent } from '../src/systems/events';
@@ -13,7 +12,6 @@ import { consumePresses, emptyInput, type InputState } from '../src/systems/inpu
 import { migrate, parseSave, SAVE_VERSION } from '../src/systems/save/saveData';
 import { buySub, canBoard, ramSub, subFloorY, subModel } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
-import { icebergBox } from '../src/systems/world/icebergs';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 
@@ -95,11 +93,14 @@ describe('the submarine', () => {
   });
 
   it('goes under water (under the icebergs) but not deeper than its model', () => {
-    const berg = icebergBox(ICEBERGS[1]!)!;
-    const y = berg.top + berg.h + 25; // just under the iceberg
-    const g = inside(berg.left - 40, y);
+    // under the ice sheet of the Mare di Ghiaccio (no icebergs for now, owner 5 ottobre)
+    const x0 = 8540;
+    expect(map.solidAt(8700, WORLD.surfaceY + 10)).toBe(true); // the ice
+    let y = WORLD.surfaceY + 4;
+    while (y < 600 && [x0, 8700, 8800].some((x) => map.solidAt(x, y) || map.solidAt(x, y + 30))) y += 4;
+    const g = inside(x0, y + 15);
     run(g, 10, levers(1));
-    expect(g.sub.x).toBeGreaterThan(berg.left + berg.w); // passed under it
+    expect(g.sub.x).toBeGreaterThan(8640); // under it
     const g2 = inside(SUBMARINE.mooredX + 200, SUBMARINE.restY + 20);
     const ev = run(g2, 12, levers(0, 1, 1));
     expect(g2.sub.y).toBeLessThanOrEqual(subFloorY(g2.sub));

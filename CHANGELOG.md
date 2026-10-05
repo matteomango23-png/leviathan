@@ -2,6 +2,22 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.42.0 — Nave più viva, porto commerciale, cockpit da plancia, sonar e diario (5 ottobre 2026)
+
+- **Correzioni:**
+  - salendo o scendendo dalla nave la nave non "salta" più di decine di metri (era la telecamera);
+  - sparita la riga bianca e verde in basso a sinistra che apriva la scheda della Piovra;
+  - **Aggancia** funziona in tutta la zona davanti e sotto il portellone, non solo a mezz'acqua;
+  - le leve si usano **insieme**: gas e Sali/Scendi nel sottomarino, gas e direzione sulla nave.
+- **Mappa della costa:** il Delta delle Mangrovie è prima dell'isola; sulla riva est dell'isola c'è il nuovo **porto commerciale di Porto Fango** (casa del porto, pescheria, grande molo). La nave vive da lì verso est fino alla fine del mare, **senza ostacoli**: niente iceberg, niente secondo binario. A ovest di Porto Fango non va.
+- **Avamposti galleggianti:** al posto delle palafitte, chiatte ancorate (l'ultimo, in fondo all'Abisso, è il più grande).
+- **Nave più viva:** finestre e lanterne accese, faro sotto lo scafo, bolle dell'elica quando va. Col razzo di soccorso arriva un **rimorchiatore** che la traina.
+- **Suoni:** motore della nave e del sottomarino (cambia col gas); in superficie niente più bolle del nuoto; il "ping" del sonar.
+- **Sonar:** si accende e si spegne (pulsante al timone e nel cockpit) e sente solo **sotto 10 nodi**. Nel cockpit c'è lo **schermo sonar**: curve verdi del fondale, la portata per lato, i puntini delle bestie grandi e, in rosso, l'eco anomala della tana.
+- **Cockpit da plancia della marina:** obiettivo seguito, **carta nautica** dei 2 km prima e dopo la nave (porti, confini delle regioni, tane trovate, sottomarino), quadranti del carburante di nave e sottomarino, velocità, **meteo**, travaso e razzo.
+- **Diario:** schede piccole con i quattro passi; toccandole si apre la scheda completa. Con **Segui** la caccia diventa l'obiettivo, in plancia e al timone.
+- **Al timone** i pulsanti stanno in alto a destra, gli strumenti in alto al centro: lo scafo resta libero.
+
 ## v0.41.0 — Le spedizioni complete: 30 km, pericolo, cacce, ricompense (4 ottobre 2026)
 
 - **L'oceano finisce a 30 km**, diviso in cinque regioni:

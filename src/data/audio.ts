@@ -22,6 +22,16 @@ export const SEA_SOUND = {
   },
 };
 
+/** Engines and sonar (owner, 5 ottobre): a deep diesel throb for the ship, a whining motor for the submarine,
+ *  louder with the throttle; the sonar's ping while it is on. */
+export const ENGINE_SOUND = {
+  ship: { freq: [38, 62] as [number, number], volume: [0.05, 0.16] as [number, number], cutoff: 260, throbHz: 6 },
+  sub: { freq: [95, 170] as [number, number], volume: [0.03, 0.09] as [number, number], cutoff: 700 },
+  /** Gliding from one level to the next (seconds). */
+  glide: 0.4,
+  ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },
+};
+
 /** Semitones from A3 (220 Hz); null = rest. Each pattern is 16 steps (one bar of sixteenth notes). */
 type Steps = (number | null)[];
 

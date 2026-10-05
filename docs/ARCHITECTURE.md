@@ -9,7 +9,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `src/data/` | Tutti i numeri del gioco (fonte unica). File del kit (`rules`, `species`, `moves`, `world`) + `worldLayout.ts` (forma della costa e dell'oceano con `LAYOUT` e le trasformazioni `bay()`, `delta()`, `east()`, zone, banchi, alghe, coralli, santuari) + `diver.ts` (sub, arpione, sardine, telecamera, luce, colori del mare, salvataggi) + `beasts.ts` (movimento delle bestie grandi, combattimento, domatura, squadra, mosse, santuari, dove vivono) + `economy.ts` (porti Portofosco e Porto Fango, relitti, missioni, mercato, armi da pesca, sciami, altri pesci) + `progression.ts` (esperienza) + `guardians.ts` (tana e scontro dei Guardiani) + `story.ts` (dialoghi, obiettivi, tracce e scene della storia) + `chapter2.ts` (la Vedova Nera, gli ancoraggi, i coccodrilli leggendari) + `chapter3.ts` (l'anfiteatro, il Re Corallo, le catene) + `temples.ts` (pianta dei templi, reliquie) + `cards.ts` (colori della rarità e cornici speciali delle schede) + `sprites.generated.ts` (scritto da `npm run art`). |
 | `src/systems/` | Logica di gioco pura, senza Phaser: testabile con Vitest. |
 | `src/views/` | Disegno con Phaser: fondali, rocce dipinte, luce, sub, pesci, alghe, effetti, telecamere. Nessuna regola di gioco. |
-| `src/audio/` | Suoni sintetizzati con Web Audio: il mare (rombo e bollicine) e la musica di battaglia; il motore sta nella Session, i numeri in `data/audio.ts`. |
+| `src/audio/` | Suoni sintetizzati con Web Audio: il mare (rombo e bollicine), i motori di nave e sottomarino e il ping del sonar (`engineSound.ts`), la musica di battaglia; il motore sta nella Session, i numeri in `data/audio.ts`. |
 | `src/scenes/` | Scene Phaser: collegano sistemi, viste e input. |
 | `src/ui/` | Interfaccia HTML sopra il gioco: HUD, controlli touch e tastiera, menu di pausa, esporta/importa. |
 | `tests/` | Test automatici (Vitest). |
@@ -39,6 +39,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `vehicles.ts` | Nave e sottomarino insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone, risveglio sulla nave. |
 | `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
 | `hunts.ts` | Le cacce alle leggende: tane, voci nei porti, eco anomala col sonar, tracce, comparsa col tempo giusto; lettura del sonar al timone. |
+| `chart.ts` | La carta nautica del cockpit: porti trovati, confini delle regioni, tane con l'eco, sottomarino, a ±2 km dalla nave. |
 | `hull.ts` | Scafi solidi: spinge fuori i corpi che li toccano. |
 | `endlessLife.ts` | La vita del mare infinito: bestie della zona con livello per distanza, sardine che seguono il sub, aria degli sfiatatoi. |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
@@ -103,8 +104,10 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
-| `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca. |
-| `cockpit.ts` | Il cockpit della nave: Plancia (carburante, travaso, razzo di soccorso), Recinto e Zaino. |
+| `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca: schede, scheda completa, "Segui". |
+| `cockpit.ts`, `cockpit.css` | Il cockpit della nave: Plancia, Sonar, Diario, Recinto e Zaino. |
+| `bridgePanel.ts`, `instruments.ts` | La plancia: obiettivo seguito, carta nautica ±2 km, quadranti (carburante, velocità), meteo, travaso, razzo. |
+| `sonarScreen.ts` | Lo schermo sonar del cockpit (canvas animato). |
 | `helmControls.ts`, `helmInfo.ts` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |

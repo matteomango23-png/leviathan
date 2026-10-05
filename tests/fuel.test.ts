@@ -3,7 +3,7 @@
 // them in the cockpit; the flare tows you home for a share of your teeth. Nobody heals in the submarine: only on
 // the ship and at the port; after blacking out you wake up on the ship. Saved (v15).
 import { beforeAll, describe, expect, it } from 'vitest';
-import { PORT, PORTO_FANGO } from '../src/data/economy';
+import { OUTPOSTS, PORTO_FANGO } from '../src/data/economy';
 import { FUEL, RESCUE, SHIP } from '../src/data/ship';
 import { SUB_MODELS, SUBMARINE } from '../src/data/submarine';
 import { OPEN_SEA_X, WORLD } from '../src/data/worldLayout';
@@ -102,9 +102,9 @@ describe('carburante', () => {
   });
 
   it('al porto si fa il pieno solo se il mezzo è lì, e costa i denti giusti', () => {
-    const { g, input } = atTheHelm(PORT.shipDock);
+    const { g, input } = atTheHelm(PORTO_FANGO.shipDock);
     run(g, DT, input);
-    expect(g.port?.id).toBe(PORT.id);
+    expect(g.port?.id).toBe(PORTO_FANGO.id);
     g.ship.fuel = 100;
     g.gear.teeth = 1000;
     const r = buyFuel(g, 'ship');
@@ -112,7 +112,7 @@ describe('carburante', () => {
     expect(g.ship.fuel).toBe(SHIP.fuel.tank);
     expect(r.cost).toBe(Math.ceil((SHIP.fuel.tank - 100) * FUEL.pricePerLitre));
     expect(g.gear.teeth).toBe(1000 - r.cost);
-    g.port = PORTO_FANGO; // another harbour: the ship is not there
+    g.port = OUTPOSTS[0]!; // another harbour: the ship is not there
     expect(canRefuel(g, 'ship')).toBe(false);
     expect(buyFuel(g, 'ship').ok).toBe(false);
   });
@@ -124,7 +124,7 @@ describe('razzo di soccorso', () => {
     g.gear.teeth = 400;
     const ev: GameEvent[] = [];
     rescue(g, ev);
-    expect(g.ship.x).toBe(PORTO_FANGO.shipDock); // Porto Fango is nearer than Portofosco
+    expect(g.ship.x).toBe(PORTO_FANGO.shipDock); // the ship never goes to Portofosco (west of Porto Fango)
     expect(g.ship.aboard).toBe(true);
     expect(g.gear.teeth).toBe(400 - 400 * RESCUE.teethShare);
     expect(ev.some((e) => e.type === 'rescued')).toBe(true);

@@ -6,22 +6,13 @@
 import { SHIP, SHIP_UPGRADES, type ShipUpgradeDef } from '../../data/ship';
 import { STORY_STEPS, type StoryStep } from '../../data/story';
 import { WRECK } from '../../data/chapter4';
-import { PORT, PORTO_FANGO } from '../../data/economy';
+import { PORTO_FANGO } from '../../data/economy';
 import type { GameEvent } from '../events';
 import { litresFor } from '../fuelBurn';
-import { stepHeading, type HelmState } from '../helm';
+import { knotsOf, stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipSpan } from './geometry';
-import {
-  SEA_END_X,
-  BEACH_END,
-  breakIce,
-  iceIn,
-  obstacleIn,
-  refreeze,
-  shallowAt,
-  type BrokenIce,
-} from './surface';
+import { breakIce, iceIn, refreeze, SEA_END_X, SHIP_WEST_X, type BrokenIce } from './surface';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
@@ -32,8 +23,6 @@ export interface ShipState {
   face: 1 | -1;
   /** Speed along where it points (≥ 0). */
   speed: number;
-  /** 0 = near lane, 1 = far lane (sailing round something behind it). */
-  lane: number;
   /** 0 = hatch closed … 1 = open; `hatchOpen` is where it is going. */
   hatch: number;
   hatchOpen: boolean;
@@ -45,6 +34,9 @@ export interface ShipState {
   /** Litres of fuel (fuel.ts); dry, it does not move. */
   fuel: number;
   fuelWarned: boolean;
+  /** The sonar is switched on (not saved), and seconds to its next ping. */
+  sonarOn: boolean;
+  sonarT: number;
   /** Parts bought for it (data/ship.ts SHIP_UPGRADES). */
   upgrades: string[];
   /** Seconds before the shallow-water message may show again. */
@@ -95,7 +87,6 @@ export function newShip(saved: SavedShip | null): ShipState {
     x: saved?.x ?? WRECK.x,
     face: saved?.face ?? 1,
     speed: 0,
-    lane: 0,
     hatch: saved?.hatchOpen ? 1 : 0,
     hatchOpen: saved?.hatchOpen ?? false,
     bay,
@@ -104,6 +95,8 @@ export function newShip(saved: SavedShip | null): ShipState {
     upgrades: [...(saved?.upgrades ?? [])],
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : SHIP.fuel.tank,
     fuelWarned: false,
+    sonarOn: false,
+    sonarT: 0,
     shallowWarn: 0,
     broken: [],
   };
@@ -140,16 +133,19 @@ export function giftShip(g: ShipWorld, events: GameEvent[]): void {
   s.owned = true;
   // above the galleon of the Foresta Sommersa, where chapter 4 ends; an older save far from there finds it at the
   // nearest harbour
-  const spots = [WRECK.x, PORT.shipDock, PORTO_FANGO.shipDock];
+  const spots = [Math.max(WRECK.x, SHIP_WEST_X), PORTO_FANGO.shipDock];
   s.x = spots.reduce((a, b) => (Math.abs(b - g.diver.x) < Math.abs(a - g.diver.x) ? b : a));
   s.bay = !g.sub.owned ? 'none' : g.sub.aboard ? 'out' : 'docked';
   s.bayT = s.bay === 'out' ? 1 : 0;
   events.push({ type: 'shipGiven' });
 }
 
-/** Can the hatch move now? Only with the ship still, on the near lane, and the submarine not on the ramp. */
+/** The sonar hears only with the ship slow (owner, 5 ottobre: under 10 knots) and switched on. */
+export const sonarActive = (s: ShipState): boolean => s.sonarOn && knotsOf(s.speed) < SHIP.sonar.maxKnots;
+
+/** Can the hatch move now? Only with the ship still and the submarine not on the ramp. */
 export const hatchCanMove = (s: ShipState): boolean =>
-  s.owned && s.speed < SHIP.stillBelow && s.lane === 0 && s.bay !== 'launching' && s.bay !== 'docking';
+  s.owned && s.speed < SHIP.stillBelow && s.bay !== 'launching' && s.bay !== 'docking';
 
 /**
  * One step of the ship. `helm` is null when you are not at the helm (it drifts to a stop). `far` tells whether
@@ -167,17 +163,18 @@ export function sailShip(
   if (!s.owned) return [];
   s.shallowWarn = Math.max(0, s.shallowWarn - dt);
   s.hatch = Math.max(0, Math.min(1, s.hatch + ((s.hatchOpen ? 1 : -1) * dt) / SHIP.hatchSeconds));
+  // the sonar pings while it is on and the ship slow enough to hear
+  if (sonarActive(s) && s.aboard) {
+    s.sonarT -= dt;
+    if (s.sonarT <= 0) {
+      s.sonarT = SHIP.sonar.pingSeconds;
+      events.push({ type: 'sonarPing' });
+    }
+  } else s.sonarT = 0;
 
-  // the far lane: something sticks out of the water under or just ahead of the hull
   const { x0, x1 } = shipSpan(s);
-  const ahead = SHIP.lane.lookAhead + s.speed * SHIP.lane.seconds;
-  const blocked = obstacleIn(g.map, s.face > 0 ? x0 : x0 - ahead, s.face > 0 ? x1 + ahead : x1);
-  const step = dt / SHIP.lane.seconds;
-  s.lane = Math.max(0, Math.min(1, s.lane + (blocked ? step : -step)));
-
   const bow = s.face > 0 ? x1 : x0;
-  const icy =
-    s.lane < 0.5 && iceIn(g.map, Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
+  const icy = iceIn(g.map, Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
   const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1); // dry, it drifts to a stop
   if (helm && !s.hatchOpen && s.hatch === 0) {
     const h = stepHeading(s.face, s.speed, helm, top, SHIP, dt);
@@ -186,24 +183,18 @@ export function sailShip(
   } else s.speed = Math.max(0, s.speed - (s.hatchOpen ? SHIP.brake : SHIP.coast) * dt);
   if (s.speed > top) s.speed = Math.max(top, s.speed - SHIP.iceBite * dt); // into the ice: it bites
 
-  // the beach ahead of the bow: it stops (elsewhere rock under the surface is sailed round, on the far lane)
-  const nextBow = bow + s.face * (s.speed * dt + 4);
-  if (s.lane < 0.5 && s.speed > 0 && nextBow < BEACH_END && shallowAt(g.map, nextBow)) {
-    s.speed = 0;
-    if (s.shallowWarn <= 0) {
-      events.push({ type: 'shipShallow' });
-      s.shallowWarn = 5;
-    }
-  }
+  // its waters (owner, 5 ottobre): from the trading harbour of Porto Fango east to the end of the known sea, with
+  // nothing in the way (no icebergs, no islands); west of the harbour it does not go
   const half = SHIP.length / 2;
   const from = s.x;
   const end = SEA_END_X - half;
-  s.x = Math.max(half + 8, Math.min(end, s.x + s.face * s.speed * dt));
-  if (s.x >= end && s.face > 0 && s.speed > 0) {
-    s.speed = 0; // the end of the known sea
+  s.x = Math.max(SHIP_WEST_X, Math.min(end, s.x + s.face * s.speed * dt));
+  const atEdge = s.x >= end ? 'seaEnd' : s.x <= SHIP_WEST_X ? 'shipWest' : null;
+  if (atEdge && s.speed > 0 && s.face > 0 === (atEdge === 'seaEnd')) {
+    s.speed = 0;
     if (s.shallowWarn <= 0) {
-      events.push({ type: 'seaEnd' });
-      s.shallowWarn = 8;
+      events.push({ type: atEdge });
+      s.shallowWarn = 6;
     }
   }
   const engine = helm && !s.hatchOpen ? helm.throttle : 0;
@@ -215,7 +206,7 @@ export function sailShip(
   }
 
   const changed: number[] = [];
-  if (s.lane < 0.5 && s.speed > 0.5) {
+  if (s.speed > 0.5) {
     const cut = breakIce(g.map, bow - 10, bow + 10, s.broken);
     if (cut.length) events.push({ type: 'iceCracked', x: bow, speed: s.speed });
     changed.push(...cut);

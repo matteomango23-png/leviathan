@@ -34,9 +34,9 @@ function run(g: GameState, seconds: number): GameEvent[] {
 }
 
 describe('the Delta delle Mangrovie', () => {
-  it('lies between the bay and the reef, shallow and murky', () => {
+  it('lies between the bay and the island, shallow and murky', () => {
     expect(zoneAt(mid, 100)).toBe('Delta delle Mangrovie');
-    expect(zoneAt(DELTA.x1 + 200, 100)).toBe('Barriera Rossa');
+    expect(zoneAt(DELTA.x1 + 200, 100)).toBe('Isola delle Mangrovie'); // moved before the island (5 ottobre)
     const floor = map.floorBelow(mid, WORLD.surfaceY + 10);
     expect((floor - WORLD.surfaceY) / WORLD.unitsPerMetre).toBeLessThan(34);
     expect(murkAt(mid, 100)).toBe(1);

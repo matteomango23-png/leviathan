@@ -59,6 +59,7 @@ export interface SaveData {
   legendsGone: string[]; // legends defeated: gone forever (v10)
   ship: SavedShip | null; // your expedition ship: where it is, its hatch, the submarine in its hold (v14)
   hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
+  huntPinned?: string | null; // the hunt you follow (added 5 ottobre; missing = none)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -79,6 +80,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     legendsGone: [],
     ship: null,
     hunts: {},
+    huntPinned: null,
   };
 }
 
@@ -283,6 +285,7 @@ export function validate(data: Record<string, unknown>): SaveData {
       : [],
     ship: checkedShip(data.ship),
     hunts: checkedHunts(data.hunts),
+    huntPinned: HUNTS.some((h) => h.id === data.huntPinned) ? (data.huntPinned as string) : null,
   };
 }
 

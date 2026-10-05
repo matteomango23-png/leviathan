@@ -38,6 +38,7 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   if (input.helmCmd === 'hatch') toggleHatch(g, events);
   else if (input.helmCmd === 'launch') launchSub(g, events);
   else if (input.helmCmd === 'dive') diveFromShip(g, events);
+  else if (input.helmCmd === 'sonar' && ship.aboard) ship.sonarOn = !ship.sonarOn;
   const far = (x: number): boolean =>
     Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;
   const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far);
@@ -56,10 +57,10 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   return ship.aboard || ramp || inSub;
 }
 
-/** The solid hulls in the sea now: the submarine (unless in the hold) and the ship (unless on its far lane). */
+/** The solid hulls in the sea now: the submarine (unless in the hold) and the ship. */
 export function vehicleHulls(g: VehicleWorld): HullPart[] {
   const sub = g.ship.bay === 'docked' || onRamp(g) ? [] : subHull(g.sub);
-  return g.ship.owned && g.ship.lane < 0.5 ? [...sub, ...shipHull(g.ship)] : sub;
+  return g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
 }
 
 /** Pushes a body (you, your beast, a wild one) out of the hulls. */

@@ -94,7 +94,7 @@ export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
 export function renderBoard(b: HTMLElement, ctx: TabContext): void {
   const gear = ctx.g.gear;
   el('h3', '', b, 'Avvistamenti');
-  renderDiary(b, ctx.g); // the rumours of this harbour are heard when you come in (hunts.ts)
+  renderDiary(b, ctx.g, ctx.redraw); // the rumours of this harbour are heard when you come in (hunts.ts)
   el('h3', '', b, 'In corso');
   const active = el('div', 'pcard-grid', b);
   if (!gear.missions.active.length)

@@ -1,7 +1,6 @@
 // Leviatano — painted pieces of the world (owner's pictures, docs/PROMPT-MONDO.md): rock, coral and ice walls laid
 // over the straight faces of the shafts and trenches, and icebergs floating in the cold seas. Sizes in world
 // units (the diver is 12). Values marked "tuning" are a first pass: change them here, never in systems.
-import { east } from './worldLayout';
 
 /** Icebergs: their width (the height follows the picture); the waterline of the picture sits on the surface. */
 export const ICEBERG_WIDTH: Record<string, number> = {
@@ -31,18 +30,17 @@ export interface IcebergPlace {
   x: number; // centre
 }
 
-/** Icebergs of the hand-made Mare di Ghiaccio (the endless Banchisa places its own, ICEBERGS_PER_STRETCH). */
-export const ICEBERGS: IcebergPlace[] = [
-  { id: 'iceberg_2', x: east(5420) },
-  { id: 'iceberg_1', x: east(5800) },
-  { id: 'iceberg_3', x: east(6130) },
-];
+/** Icebergs of the hand-made Mare di Ghiaccio (the endless Banchisa places its own, ICEBERGS_PER_STRETCH).
+ *  None for now (owner, 5 ottobre: the ship must find nothing in its way east of the harbour); the pictures and
+ *  the code stay, to bring them back one day: { id: 'iceberg_2', x: east(5420) }, iceberg_1 at east(5800),
+ *  iceberg_3 at east(6130). */
+export const ICEBERGS: IcebergPlace[] = [];
 /** How deep an iceberg may reach under the surface (units): taller pictures are drawn smaller, so there is
  *  always room to swim under them (owner: "sotto non si passa"). The sea floor there is at ~380 or deeper. */
 export const ICEBERG_MAX_DRAFT = 190;
 /** Around a painted iceberg the old blocky ice (ceiling, pillars) is left out, so only the picture shows. */
 export const ICEBERG_CLEAR_MARGIN = 24;
-export const ICEBERGS_PER_STRETCH = 2; // tuning, Banchisa stretches of the endless sea
+export const ICEBERGS_PER_STRETCH = 0; // tuning, Banchisa stretches of the endless sea (0: none for now, owner 5 ottobre)
 
 /** Painted walls: their size, how much of them sits in the rock, and which picture goes where. */
 export const WALLS = {

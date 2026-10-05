@@ -4,12 +4,14 @@
 import { AUDIO } from '../data/audio';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
+import { EngineSound } from './engineSound';
 
 export class SoundEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private sea: SeaAmbience | null = null;
   private music: BattleMusic | null = null;
+  private engines: EngineSound | null = null;
   private battle = false;
   private on = readEnabled();
 
@@ -38,8 +40,22 @@ export class SoundEngine {
 
   /** Every frame in the sea. */
   updateSea(m: SeaMoment, dt: number): void {
-    if (!this.ctx || this.ctx.state !== 'running' || this.battle) return;
+    if (!this.ctx || this.ctx.state !== 'running' || this.battle) {
+      this.engines?.update(null, null);
+      return;
+    }
     this.sea?.update(m, dt);
+  }
+
+  /** Every frame: the engines you drive (null: not driving that one). */
+  updateEngines(ship: number | null, sub: number | null): void {
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    this.engines?.update(this.battle ? null : ship, this.battle ? null : sub);
+  }
+
+  /** The sonar's ping. */
+  sonarPing(): void {
+    if (this.ctx?.state === 'running' && !this.battle) this.engines?.ping();
   }
 
   /** A battle opens (true) or ends (false): the music takes over from the sea, and back. */
@@ -65,6 +81,7 @@ export class SoundEngine {
     this.applyMaster();
     this.sea = new SeaAmbience(this.ctx, this.master);
     this.music = new BattleMusic(this.ctx, this.master);
+    this.engines = new EngineSound(this.ctx, this.master);
     if (this.battle) {
       this.sea.fadeTo(0, this.ctx.currentTime, 0.01);
       this.music.play(this.ctx.currentTime);

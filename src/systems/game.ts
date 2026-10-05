@@ -110,6 +110,8 @@ export interface GameState extends Chapter4World {
   /** The hunts in the diary (saved) and the dens in the world. */
   hunts: HuntsState;
   dens: Den[];
+  /** The hunt you follow (pinned in the diary; saved). */
+  huntPinned: string | null;
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -160,6 +162,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     rideTanks: {},
     weather: createWeather(),
     hunts: structuredClone(s.hunts ?? {}),
+    huntPinned: s.huntPinned ?? null,
     dens,
     temples: createTemples(),
     chapter2: createChapter2(map),
