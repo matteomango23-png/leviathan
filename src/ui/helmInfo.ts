@@ -56,6 +56,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       rangeKm: autonomyKm(g.sub.fuel, subModel(g.sub.model).perKm, throttle),
       depthM: Math.max(0, (g.sub.y - WORLD.surfaceY) / WORLD.unitsPerMetre),
       maxDepthM: subModel(g.sub.model).maxDepthM,
+      hull: [g.sub.hull, subModel(g.sub.model).hull],
     };
   return null;
 }

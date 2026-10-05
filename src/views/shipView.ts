@@ -1,8 +1,8 @@
 // The expedition ship (data/ship.ts): the owner's two paintings (hatch closed and open, the same frame, so the
 // open one fades in while the hatch opens). Its waterline sits on the sea surface; the hull under it is drawn
 // darker and bluer, as seen through the water. It rocks with the waves (more in bad weather), lifts its bow and
-// throws foam when it planes at speed, leaves a wake and bubbles behind its propeller. Its windows and lanterns glow,
-// a floodlight shines down from under the hull (owner, 5 ottobre: "più viva"). After the rescue flare a tug tows it.
+// throws foam when it planes at speed, leaves a wake and bubbles behind its propeller. A soft light glows under the hull
+// (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
@@ -118,39 +118,31 @@ export class ShipView {
     return { x: s.x + s.face * (u - 0.5) * SHIP.length, y: top + v * SHIP_HEIGHT };
   }
 
-  /** Lit windows and lanterns (where the painting has them), and the floodlight under the hull. */
-  private drawLights(s: ShipState, top: number, time: number): void {
-    const g = this.glow;
-    for (const [u, v, r] of SHIP.lights.windows) {
-      const p = this.at(s, top, u, v);
-      const flicker = 0.85 + 0.15 * Math.sin(time * 7 + u * 40);
-      g.fillStyle(0xffc56a, 0.18 * flicker).fillCircle(p.x, p.y, r * 3);
-      g.fillStyle(0xffe2a8, 0.55 * flicker).fillCircle(p.x, p.y, r);
-    }
-    // the floodlight: a soft cone straight down from the keel
-    const f = SHIP.lights.flood;
-    const p = this.at(s, top, f.u, f.v);
-    for (let i = 0; i < 6; i++) {
-      const t = i / 5;
-      g.fillStyle(0xcfe8ff, 0.12 * (1 - t * 0.8)).fillEllipse(
-        p.x,
-        p.y + t * f.reach,
-        8 + t * f.reach * 0.9,
-        10 + t * 12,
-      );
-    }
-    g.fillStyle(0xffffff, 0.6).fillCircle(p.x, p.y, 1.6);
+  /** Points under the keel where the soft light sits. */
+  private underSpots(s: ShipState, top: number): { x: number; y: number }[] {
+    const L = SHIP.lights.under;
+    return Array.from({ length: L.spots }, (_, i) => {
+      const p = this.at(s, top, L.from + ((L.to - L.from) * i) / (L.spots - 1), L.v);
+      return { x: p.x, y: p.y + L.below };
+    });
   }
 
-  /** Light spots for the darkness mask (views/lightView.ts). */
+  /** A faint, soft wash of light under the hull (no hard shapes): many wide, nearly clear layers. */
+  private drawLights(s: ShipState, top: number, time: number): void {
+    const L = SHIP.lights.under;
+    const pulse = 0.9 + 0.1 * Math.sin(time * 1.3);
+    for (const p of this.underSpots(s, top))
+      for (let k = 6; k >= 1; k--)
+        this.glow
+          .fillStyle(0x9fd8ff, L.wash * pulse)
+          .fillEllipse(p.x, p.y, L.radius * k * 0.45, L.radius * k * 0.3);
+  }
+
+  /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
   glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
     const top = WORLD.surfaceY - P.waterline * SHIP_HEIGHT;
-    const spots = SHIP.lights.windows.map(([u, v, r]) => ({ ...this.at(s, top, u, v), r: r * 4 }));
-    const f = SHIP.lights.flood;
-    const p = this.at(s, top, f.u, f.v);
-    for (let i = 1; i <= 3; i++) spots.push({ x: p.x, y: p.y + (f.reach * i) / 3, r: 14 + i * 8 });
-    return spots;
+    return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
   }
 
   /** The tug after a rescue flare: ahead of the bow, a towline to it, then it sails away. */

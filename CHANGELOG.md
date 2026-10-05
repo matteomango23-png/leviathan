@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.43.0 — Cockpit dal vivo, aggancio morbido, schermo più pulito (5 ottobre 2026)
+
+- **Il cockpit non mette più in pausa:** il mare va avanti mentre lo guardi. La prima scheda è il **Sonar**. In alto ci sono la velocità dal vivo e il pulsante **Avanti adagio** (8 nodi, sotto il limite del sonar) / **Ferma i motori**.
+- **Aggancio morbido:** premendo Aggancia il sottomarino scivola dalla sua posizione fino alla rampa, poi sale; niente più teletrasporto.
+- **Salire e scendere dalla nave** (anche col sottomarino): la telecamera cambia inquadratura di colpo invece di scorrere, così la nave non sembra più spostarsi.
+- **Luci della nave:** tolte finestre e faro; ora c'è solo una luce soffusa sotto lo scafo, come quella del sottomarino.
+- **Schermo più pulito:** a sinistra solo cuori, ossigeno e denti (profondità, distanze e sacca sono nel cockpit e nella mappa; lo scafo del sottomarino è negli strumenti di guida). I ritratti della squadra sono centrati.
+- **Nome della zona** più in basso e più stretto: non si sovrappone più ad altre scritte.
+- **Corretto** il numero della velocità nel cockpit (a volte compariva lunghissimo).
+
 ## v0.42.0 — Nave più viva, porto commerciale, cockpit da plancia, sonar e diario (5 ottobre 2026)
 
 - **Correzioni:**

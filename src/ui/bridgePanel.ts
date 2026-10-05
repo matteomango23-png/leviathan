@@ -104,7 +104,7 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
   dial(dials, {
     label: 'Velocità',
     share: kn / top,
-    value: `${kn}`,
+    value: `${Math.round(kn)}`, // knotsOf can give 6.4799999…: whole knots on the dial
     unit: 'nodi',
     note:
       kn > 0

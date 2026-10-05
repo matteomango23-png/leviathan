@@ -59,6 +59,7 @@ export class WorldScene extends Phaser.Scene {
   private worldArt!: WorldArtView;
   private sub!: SubmarineView;
   private ship!: ShipView;
+  private wasAboard = false;
   private hunts!: HuntView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
@@ -292,16 +293,19 @@ export class WorldScene extends Phaser.Scene {
 
     const d = g.diver;
     const ship = g.ship;
+    // climbing aboard, diving off, going down or up the ramp: the view cuts at once (owner, 5 ottobre: easing
+    // between the two views made the ship look as if it slid sideways)
+    const cut = ship.aboard !== this.wasAboard;
+    this.wasAboard = ship.aboard;
     if (ship.aboard) {
       // at the helm: a wider view on the ship, looking ahead where it sails
       const C = SHIP.camera;
-      this.rig.setView(C.viewHeightUnits, C.minY, dt);
-      // looking ahead only as fast as it goes: climbing aboard or diving off, the view does not jump
-      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt);
+      this.rig.setView(C.viewHeightUnits, C.minY, dt, cut);
+      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt, cut);
     } else {
-      this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt);
+      this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt, cut);
       const ahead = g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead;
-      this.rig.follow(d.x + d.face * ahead, d.y, dt);
+      this.rig.follow(d.x + d.face * ahead, d.y, dt, cut);
     }
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
