@@ -42,6 +42,20 @@ export const ENDLESS = {
   maxFloorY: 4300, // the floor never goes deeper (WORLD.rows bounds the map)
   firstFloorY: 390, // the hand-made floor at the start (worldLayout, east zone): the first stretch blends from it
   wildSlots: 8, // wild beasts that can be around you out there at once (owner, 3 ottobre: more life; was 5)
+  /**
+   * The beasts living out there (owner, 5 ottobre: "under the ship there was nothing"): each stretch has its own,
+   * always the same (from the seed), wandering round a home at their depth even when you are far. The sonar hears
+   * them; near you they come out for real (in the wild slots above); caught or beaten, another takes the place
+   * after a while. Tuning.
+   */
+  residents: {
+    perStretch: 9, // beasts living in each 300 m of sea
+    wakeRadius: 320, // units: nearer than this to you, one comes out for real
+    roamX: 170, // units: how far it wanders each side of its home
+    roamY: 45,
+    lapSeconds: [50, 110] as [number, number], // one lap of its wandering
+    returnSeconds: [240, 480] as [number, number], // caught or beaten: a new one lives there after this
+  },
   schools: 9, // sardine schools that follow you out there (moved ahead of you when left far behind)
   schoolFar: 900, // units: a school this far from you is moved near you again
   /** Vents on the sea floor breathing out columns of air bubbles: swim into one to refill your air. */

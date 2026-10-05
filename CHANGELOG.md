@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.44.0 — Il mare aperto è abitato (5 ottobre 2026)
+
+- **Popolazione fissa del mare aperto:** ogni tratto di 300 m ha i suoi abitanti (circa 30 per km), sempre gli stessi, delle specie di quel mare e alla loro profondità. Nuotano piano intorno alla loro tana anche quando non ci sei.
+  - Il **sonar** li sente tutti entro la sua portata: puntini piccoli per gli animali, più grandi per le bestie grandi; al timone la riga dice quanti sono ("12 animali, 2 grandi").
+  - Quando ti avvicini (a nuoto o col sottomarino) escono davvero, proprio dove sono.
+  - Catturati o sconfitti, il loro posto resta vuoto per 4–8 minuti.
+- **Niente tuffo con la nave in moto**, e niente uscita dal sottomarino mentre si muove: prima fermati.
+- **Telecamera:** salendo, scendendo, calando o agganciando il sottomarino l'inquadratura passa in modo graduale (zoom e posizione insieme, in circa un secondo), senza far "scivolare" la nave.
+
 ## v0.43.0 — Cockpit dal vivo, aggancio morbido, schermo più pulito (5 ottobre 2026)
 
 - **Il cockpit non mette più in pausa:** il mare va avanti mentre lo guardi. La prima scheda è il **Sonar**. In alto ci sono la velocità dal vivo e il pulsante **Avanti adagio** (8 nodi, sotto il limite del sonar) / **Ferma i motori**.

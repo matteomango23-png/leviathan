@@ -657,3 +657,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Motivo:** il proprietario vuole navigare piano guardando il sonar.
 - **Telecamera:** quando cambia `ship.aboard` la vista salta subito (`snap`) invece di scorrere: lo scorrimento con lo zoom faceva sembrare che la nave si spostasse.
 - **Aggancio:** `ship.dockFrom`: prima il sottomarino scivola (`SHIP.dockGlide` unità/s) fino al punto più vicino della rampa, poi la risale.
+
+## 5 ottobre 2026 — Il mare aperto ha abitanti fissi (v0.44.0)
+
+- **Decisione (scelta del proprietario):** le bestie del mare aperto non nascono più a caso intorno al sub. Ogni tratto ha i suoi abitanti, generati dal seme del mare (specie dal tipo di mare, casa alla profondità della specie, giro lento intorno alla casa calcolato dal tempo, senza simulazione). Gli "slot" selvatici del mare aperto fanno uscire l'abitante più vicino a te (entro `wakeRadius`), dove si trova; lontano torna virtuale. Catturato o sconfitto, il posto resta vuoto per `returnSeconds` (non salvato).
+- **Motivo:** dalla nave il sonar non vedeva nulla: le bestie esistevano solo intorno al sub e alla sua profondità.
+- **Tolto:** `prepareEndlessSpawn` (la vecchia scelta a caso).
+- **Sonar:** sente tutti gli animali (non solo i grandi), compresi gli abitanti non usciti.
+- **Telecamera:** un unico passaggio morbido (`CAMERA.boardBlend`) che porta zoom e posizione insieme sulla stessa curva, al posto dello stacco netto della v0.43.

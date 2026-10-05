@@ -27,7 +27,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
   const canvas = el('canvas', 'sonar-canvas', frame);
   const legend = el('div', 'sonar-legend', b);
   legend.innerHTML =
-    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>eco grande (bestia)</span><span><i class="lg odd"></i>eco anomala (tana)</span>';
+    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>bestia grande</span><span><i class="lg small"></i>animale</span><span><i class="lg odd"></i>eco anomala (tana)</span>';
 
   // the ship sails on under the cockpit: fresh readings twice a second
   let r: SonarReadout = sonarReadout(g);
@@ -154,7 +154,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       ctx.shadowColor = odd ? '#ff785a' : GREEN;
       ctx.shadowBlur = 12 * dpr * a;
       ctx.beginPath();
-      ctx.arc(ex, py(e.depthM), (odd ? 6 : 4.5) * dpr, 0, Math.PI * 2);
+      ctx.arc(ex, py(e.depthM), (odd ? 6 : e.label === 'eco grande' ? 4.5 : 2.6) * dpr, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
       ctx.fillStyle = `rgba(207,232,216,${a * 0.9})`;

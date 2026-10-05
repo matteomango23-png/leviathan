@@ -133,6 +133,10 @@ export function boardShip(g: HatchWorld, events: GameEvent[]): void {
 export function diveFromShip(g: HatchWorld, events: GameEvent[]): void {
   const s = g.ship;
   if (!s.aboard) return;
+  if (s.speed >= SHIP.stillBelow) {
+    events.push({ type: 'shipHint', text: 'stopToDive' });
+    return;
+  }
   s.aboard = false;
   const x = helmPoint(s).x;
   Object.assign(g.diver, { x, y: WORLD.surfaceY + SHIP_DRAFT + 8, vx: 0, vy: 10 });

@@ -6,6 +6,7 @@ import type { Rng } from './math';
 import { sendAway, type Mount } from './beasts/mount';
 import type { TeamBeast } from './beasts/team';
 import { createWild, type WildBeast } from './beasts/wildState';
+import { newResidents, type ResidentsState } from './beasts/residents';
 import type { TileMap } from './world/tileMap';
 
 export interface Decoy {
@@ -45,6 +46,8 @@ export interface BeastState {
   boneHintT: number;
   /** The last species that came out of the dark (they come back less soon; not saved). */
   recent: string[];
+  /** The beasts living in the endless sea: who is out, who is gone (not saved; beasts/residents.ts). */
+  residents: ResidentsState;
 }
 
 export interface BeastWorld {
@@ -59,7 +62,7 @@ export interface BeastWorld {
 export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState {
   const wilds = WILD_SPAWNS.map((s, i) => {
     const w = createWild(i + 1, s);
-    w.respawn = 1 + i * 2;
+    w.respawn = s.endless ? 1 : 1 + i * 2; // the endless sea's residents are already there
     return w;
   });
   const maxUid = team.reduce((m, b) => Math.max(m, Number(b.uid.replace(/\D/g, '')) || 0), 0);
@@ -78,6 +81,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     aboard: false,
     gone: [...gone],
     recent: [],
+    residents: newResidents(),
   };
 }
 

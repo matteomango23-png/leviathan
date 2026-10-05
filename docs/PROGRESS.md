@@ -1,5 +1,17 @@
 # Progressi
 
+## Sessione cloud 1 — Mare abitato (5 ottobre 2026) → v0.44.0
+
+**Fatto:** popolazione fissa del mare aperto (`systems/beasts/residents.ts`, numeri in `ENDLESS.residents`), il sonar sente tutti gli animali, niente tuffo o uscita in movimento, passaggio graduale della telecamera.
+
+**Da provare sull'iPhone (v0.44.0):**
+1. In mare aperto, nave ferma o "Avanti adagio", sonar acceso: Cockpit → Sonar mostra molti puntini; al timone la riga dice quanti animali ci sono.
+2. Cala il sottomarino vicino a dei puntini: le bestie compaiono dove il sonar le mostrava.
+3. Prova a tuffarti con la nave in moto: compare "Ferma la nave prima di tuffarti".
+4. Sali e scendi, cala e aggancia: il passaggio della telecamera è morbido.
+
+**Da regolare se serve:** quanti abitanti (`perStretch`), a che distanza escono (`wakeRadius`), quanto tornano (`returnSeconds`) in `data/endless.ts`.
+
 ## Sessione cloud 1 — Cockpit dal vivo e correzioni (5 ottobre 2026) → v0.43.0
 
 **Fatto:** cockpit senza pausa (sonar per primo, "Avanti adagio"/"Ferma i motori", velocità dal vivo; si chiude da solo se lasci il timone o inizia una lotta); aggancio con avvicinamento morbido; stacco della telecamera salendo o scendendo; luce soffusa sotto lo scafo al posto di finestre e faro; HUD a sinistra con soli cuori, ossigeno e denti; squadra centrata; nome della zona senza sovrapposizioni; velocità del cockpit arrotondata.

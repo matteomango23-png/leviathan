@@ -17,10 +17,15 @@ function sonarLine(g: GameState): string {
   const r = sonarReadout(g, 2);
   if (r.status === 'off') return 'Sonar spento';
   if (r.status === 'fast') return `Sonar: troppo veloce (sotto ${SHIP.sonar.maxKnots} nodi)`;
-  const echoes = r.echoes
-    .slice(0, 2)
-    .map((e) => `${e.label} ${e.dx < 0 ? '◀' : '▶'} ${Math.abs(e.dx)} m, a ${e.depthM} m`);
-  return [`Sonar: fondale ${r.floorM} m`, ...echoes].join(' · ');
+  // the den's echo first, then how many beasts it hears (owner, 5 ottobre: the sea is full now)
+  const odd = r.echoes
+    .filter((e) => e.label === 'eco anomala')
+    .slice(0, 1)
+    .map((e) => `eco anomala ${e.dx < 0 ? '◀' : '▶'} ${Math.abs(e.dx)} m, a ${e.depthM} m`);
+  const big = r.echoes.filter((e) => e.label === 'eco grande').length;
+  const all = r.echoes.filter((e) => e.label !== 'eco anomala').length;
+  const life = all ? [`${all} animali${big ? ` (${big} grandi)` : ''}`] : [];
+  return [`Sonar: fondale ${r.floorM} m`, ...life, ...odd].join(' · ');
 }
 
 /** The hunt you follow, in one line. */

@@ -64,7 +64,7 @@ export type GameEvent =
   | { type: 'rumourHeard'; name: string }
   | { type: 'echoFound'; name: string; depthM: number }
   | { type: 'tracesFound'; id: string; text: string }
-  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' }
+  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' | 'stopToDive' | 'stopToLeave' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }
   | { type: 'subLaunched' }

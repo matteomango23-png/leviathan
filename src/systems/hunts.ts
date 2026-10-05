@@ -11,6 +11,7 @@ import type { PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
 import { formLengthM } from './beasts/forms';
+import { residentsNear, type ResidentsState } from './beasts/residents';
 import { sonarActive, sonarMult, type ShipState } from './ship/ship';
 import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
@@ -107,7 +108,7 @@ export interface HuntWorld {
   weather: { from: WeatherId; to: WeatherId; blend: number };
   ship: ShipState;
   diver: { x: number; y: number; dead: boolean };
-  beasts: { wilds: WildBeast[]; gone: string[]; team: TeamBeast[] };
+  beasts: { wilds: WildBeast[]; gone: string[]; team: TeamBeast[]; residents: ResidentsState };
 }
 
 /**
@@ -186,11 +187,19 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
   const out: SonarReadout = { status, rangeM: m(range), floorM: floorAt(x), profile: [], echoes: [] };
   if (status !== 'on') return out;
   for (let i = 0; i < samples; i++) out.profile.push(floorAt(x - range + (2 * range * i) / (samples - 1)));
-  for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || Math.abs(w.x - x) > range) continue;
-    if (formLengthM(w.form) < HUNT_RULES.bigEchoM) continue;
-    out.echoes.push({ label: 'eco grande', dx: m(w.x - x), depthM: m(w.y - WORLD.surfaceY) });
-  }
+  // every beast down there is a dot (owner, 5 ottobre): the ones out for real, and the residents of the endless
+  // sea living round the ship even with nobody near them (beasts/residents.ts)
+  const dot = (lengthM: number, bx: number, by: number): void => {
+    const label = lengthM >= HUNT_RULES.bigEchoM ? 'eco grande' : 'eco piccola';
+    out.echoes.push({ label, dx: m(bx - x), depthM: m(by - WORLD.surfaceY) });
+  };
+  for (const w of g.beasts.wilds)
+    if (isInWater(w) && Math.abs(w.x - x) <= range && w.y > WORLD.surfaceY)
+      dot(formLengthM(w.form), w.x, w.y);
+  const res = g.beasts.residents;
+  for (const c of residentsNear(res, x, range))
+    if (res.awake[c.r.id] === undefined)
+      dot(formLengthM({ speciesId: c.r.speciesId, variant: 'comune' }), c.x, c.y);
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
     if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarMult(g.ship)) return;

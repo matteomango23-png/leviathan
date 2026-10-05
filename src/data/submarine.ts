@@ -60,6 +60,7 @@ export const SUB_MODELS: SubModel[] = [
 ];
 
 export const SUBMARINE = {
+  stillBelow: 4, // units/s: slower than this it counts as still (you may get out)
   mooredX: PORT.x + 110, // where Aurelio leaves it: past the pier of Portofosco (out of the port's reach)
   restY: WORLD.surfaceY + 10, // at the port it floats just under the surface
   length: 46, // units, as drawn (~7.5 m)
