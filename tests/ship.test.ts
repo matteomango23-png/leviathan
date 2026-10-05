@@ -5,6 +5,8 @@
 // nothing in the way (5 ottobre: no icebergs, no far lane); saved (v14).
 import { beforeAll, describe, expect, it } from 'vitest';
 import { PORTO_FANGO } from '../src/data/economy';
+import { CAMERA } from '../src/data/diver';
+import { cameraAim } from '../src/systems/shipCamera';
 import { SHIP } from '../src/data/ship';
 import { TILE, WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
@@ -197,6 +199,41 @@ describe('la nave da spedizione', () => {
     expect(sonarActive(g.ship)).toBe(false);
     ev = run(g, 3, input);
     expect(ev.some((e) => e.type === 'sonarPing')).toBe(false);
+  });
+
+  it('salire, scendere, calare e agganciare non muovono la telecamera (5 ottobre: la nave "scivolava")', () => {
+    const { g, input } = atTheHelm();
+    const aim = (): ReturnType<typeof cameraAim> => cameraAim(g, CAMERA.lookAhead);
+    const same = (a: ReturnType<typeof cameraAim>, b: ReturnType<typeof cameraAim>): void => {
+      expect(Math.abs(a.x - b.x)).toBeLessThan(0.5);
+      expect(Math.abs(a.y - b.y)).toBeLessThan(0.5);
+      expect(Math.abs(a.viewH - b.viewH)).toBeLessThan(0.5);
+    };
+    // diving off and climbing back aboard
+    let before = aim();
+    cmd(g, 'dive', input);
+    expect(g.ship.aboard).toBe(false);
+    same(before, aim());
+    before = aim();
+    press(g, input);
+    expect(g.ship.aboard).toBe(true);
+    same(before, aim());
+    // down the ramp in the submarine, and back up
+    cmd(g, 'hatch', input);
+    run(g, SHIP.hatchSeconds + 0.1, input);
+    before = aim();
+    cmd(g, 'launch', input);
+    run(g, SHIP.launchSeconds + 0.1, input);
+    expect(g.sub.aboard).toBe(true);
+    same(before, aim());
+    press(g, input);
+    run(g, SHIP.launchSeconds + 1.5, input);
+    expect(g.ship.aboard).toBe(true);
+    same(before, aim());
+    // swimming far away: the swimming view
+    cmd(g, 'dive', input);
+    Object.assign(g.diver, { x: g.ship.x + 800, y: WORLD.surfaceY + 300 });
+    expect(aim().viewH).toBe(CAMERA.viewHeightUnits);
   });
 
   it('con la nave in moto non ti tuffi (5 ottobre: ti lasciava lì)', () => {

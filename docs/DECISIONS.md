@@ -665,3 +665,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Tolto:** `prepareEndlessSpawn` (la vecchia scelta a caso).
 - **Sonar:** sente tutti gli animali (non solo i grandi), compresi gli abitanti non usciti.
 - **Telecamera:** un unico passaggio morbido (`CAMERA.boardBlend`) che porta zoom e posizione insieme sulla stessa curva, al posto dello stacco netto della v0.43.
+
+## 5 ottobre 2026 — La telecamera segue la distanza dalla nave (v0.45.0)
+
+- **Decisione:** la vista non dipende più da `ship.aboard` ma da `helmShare` (`systems/shipCamera.ts`): 1 vicino alla nave, 0 lontano, sfumata con la distanza laterale dallo scafo e la profondità. Salire o scendere non cambia la distanza, quindi la vista resta identica. Tolti lo stacco (v0.43) e la transizione a tempo (v0.44).
+- **Motivo:** cambiare zoom attorno a un punto che non è il centro della nave la fa sembrare spostarsi, comunque si faccia la transizione.
+- **Timone a fasce:** `--side` (`clamp(176px, 26vw, 260px)`) è la larghezza delle fasce laterali; strumenti, nome della zona e messaggi stanno nella fascia centrale e vanno a capo.

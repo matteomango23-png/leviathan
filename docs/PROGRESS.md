@@ -1,5 +1,16 @@
 # Progressi
 
+## Sessione cloud 1 — Telecamera definitiva e schermo ordinato (5 ottobre 2026) → v0.45.0
+
+**Fatto:** telecamera a distanza dalla nave (`systems/shipCamera.ts`, numeri in `SHIP.camera.near/fade`); timone a fasce fisse (`--side` in `ui.css`); sonar con la sua riga; Cockpit accanto alla pausa; nome della zona e messaggi che vanno a capo.
+
+**Da provare sull'iPhone (v0.45.0):**
+1. Sali, scendi, tuffati, cala e aggancia il sottomarino: la nave resta ferma sullo schermo.
+2. Nuota lontano dalla nave: l'inquadratura torna piano quella del nuoto.
+3. Al timone: niente si sovrappone; tocca la riga del sonar per accenderlo o spegnerlo; Cockpit è in alto a destra.
+
+**Strumento per le prossime sessioni:** uno script Playwright (in questa sessione era in `/tmp`, da rifare se serve) che apre tutte le schermate su 667×375, 844×390 e 932×430 e segnala sovrapposizioni, scritte tagliate e pezzi fuori schermo.
+
 ## Sessione cloud 1 — Mare abitato (5 ottobre 2026) → v0.44.0
 
 **Fatto:** popolazione fissa del mare aperto (`systems/beasts/residents.ts`, numeri in `ENDLESS.residents`), il sonar sente tutti gli animali, niente tuffo o uscita in movimento, passaggio graduale della telecamera.

@@ -80,9 +80,6 @@ export const CAMERA = {
   viewHeightUnits: 130, // how much sea is visible vertically (was 160: small beasts were too small; owner, 3 ottobre)
   lookAhead: 20, // looks ahead in the direction the diver faces
   follow: 5, // how fast the camera catches up
-  /** Seconds of the glide between the view in the water and the wider one at the helm (aboard, ashore, docking):
-   *  zoom and pan move together on one curve, so the ship does not seem to slide (owner, 5 ottobre). */
-  boardBlend: 1.1,
   minY: -60, // can peek above the surface
   maxDpr: 2, // render resolution cap (device pixel ratio)
 };

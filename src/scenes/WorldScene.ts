@@ -20,9 +20,9 @@ import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../s
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres, murkAt } from '../systems/world/zones';
 import { DELTA, WORLD } from '../data/worldLayout';
-import { SHIP } from '../data/ship';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
+import { cameraAim } from '../systems/shipCamera';
 import { HuntView } from '../views/huntView';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
@@ -59,7 +59,6 @@ export class WorldScene extends Phaser.Scene {
   private worldArt!: WorldArtView;
   private sub!: SubmarineView;
   private ship!: ShipView;
-  private wasAboard = false;
   private hunts!: HuntView;
   private fishView!: FishView;
   private beasts!: BeastsLayer;
@@ -128,8 +127,9 @@ export class WorldScene extends Phaser.Scene {
     this.weatherView = new WeatherView(this, L.bg, L.overlay);
     this.lampAngle = d.aim;
 
-    this.rig.follow(d.x + d.face * CAMERA.lookAhead, d.y, 0, true);
-    this.wasAboard = this.state.ship.aboard; // a game saved at the helm starts there, with no glide
+    const aim0 = cameraAim(this.state, CAMERA.lookAhead);
+    this.rig.setView(aim0.viewH, aim0.minY, 0, true);
+    this.rig.follow(aim0.x, aim0.y, 0, true);
     this.terrain.update(this.rig.worldView(), true);
 
     this.scale.on('resize', this.onResize, this);
@@ -293,21 +293,11 @@ export class WorldScene extends Phaser.Scene {
     }
 
     const d = g.diver;
-    const ship = g.ship;
-    // climbing aboard, diving off, going down or up the ramp: one smooth glide of zoom and position together
-    // (owner, 5 ottobre: two separate easings made the ship look as if it slid sideways; a cut was too abrupt)
-    if (ship.aboard !== this.wasAboard) this.rig.startBlend();
-    this.wasAboard = ship.aboard;
-    if (ship.aboard) {
-      // at the helm: a wider view on the ship, looking ahead where it sails
-      const C = SHIP.camera;
-      this.rig.setView(C.viewHeightUnits, C.minY, dt);
-      this.rig.follow(ship.x + ship.face * C.lookAhead * (ship.speed / SHIP.maxSpeed), C.y, dt);
-    } else {
-      this.rig.setView(CAMERA.viewHeightUnits, CAMERA.minY, dt);
-      const ahead = g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead;
-      this.rig.follow(d.x + d.face * ahead, d.y, dt);
-    }
+    // the view depends on how near the ship you are, not on being aboard: getting on or off moves nothing
+    // (systems/shipCamera.ts)
+    const aim = cameraAim(g, g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead);
+    this.rig.setView(aim.viewH, aim.minY, dt, true);
+    this.rig.follow(aim.x, aim.y, dt);
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
     this.terrain.update(view);

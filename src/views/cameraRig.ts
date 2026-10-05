@@ -58,27 +58,8 @@ export class CameraRig {
     this.clampAndApply();
   }
 
-  /** A glide from one view to another (boarding, docking): from where the camera is, along one curve. */
-  private blend: { t: number; cx: number; cy: number; viewH: number; minY: number } | null = null;
-  private blendE = 1;
-
-  /** Starts a glide: the next setView/follow calls move zoom and position together, over CAMERA.boardBlend. */
-  startBlend(): void {
-    this.blend = { t: 0, cx: this.cx, cy: this.cy, viewH: this.viewH, minY: this.minY };
-  }
-
   /** Eases the view to this height (world units) and top limit: wider at the helm of the ship. */
   setView(viewHeight: number, minY: number, dt: number, snap = false): void {
-    const b = this.blend;
-    if (b && !snap) {
-      b.t = Math.min(1, b.t + dt / CAMERA.boardBlend);
-      const e = (this.blendE = b.t * b.t * (3 - 2 * b.t));
-      this.viewH = b.viewH + (viewHeight - b.viewH) * e;
-      this.minY = b.minY + (minY - b.minY) * e;
-      this.worldCam.setZoom(this.worldCam.height / this.viewH);
-      this.clampAndApply();
-      return;
-    }
     const k = snap ? 1 : Math.min(1, dt * 1.6);
     if (Math.abs(viewHeight - this.viewH) < 0.05 && Math.abs(minY - this.minY) < 0.05) return;
     this.viewH += (viewHeight - this.viewH) * k;
@@ -98,15 +79,6 @@ export class CameraRig {
 
   /** Eases towards a target; `snap` jumps straight there (start, respawn, import). */
   follow(tx: number, ty: number, dt: number, snap = false): void {
-    const b = this.blend;
-    if (b && !snap) {
-      this.cx = b.cx + (tx - b.cx) * this.blendE;
-      this.cy = b.cy + (ty - b.cy) * this.blendE;
-      if (b.t >= 1) this.blend = null;
-      this.clampAndApply();
-      return;
-    }
-    if (snap) this.blend = null;
     const k = snap ? 1 : Math.min(1, dt * CAMERA.follow);
     this.cx += (tx - this.cx) * k;
     this.cy += (ty - this.cy) * k;
