@@ -11,6 +11,7 @@ import type { GameState } from '../systems/game';
 import { knotsOf } from '../systems/helm';
 import { huntNextStep, huntOpen, huntRegionName, weatherNow } from '../systems/hunts';
 import { shipTank, shipTopSpeed } from '../systems/ship/ship';
+import { shipModel } from '../systems/ship/model';
 import { subModel } from '../systems/submarine';
 import { coldAt, weatherName } from '../systems/weather';
 import { kmFromCoast, regionAt } from '../systems/world/endless';
@@ -85,7 +86,7 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
     share: ship.fuel / tank,
     value: `${Math.round(ship.fuel)}`,
     unit: `L su ${tank}`,
-    note: `${km(autonomyKm(ship.fuel, SHIP.fuel.perKm))} km a tutto gas`,
+    note: `${km(autonomyKm(ship.fuel, shipModel(ship).perKm))} km a tutto gas`,
     warnBelow: 0.2,
   });
   if (sub.owned) {

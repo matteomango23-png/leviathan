@@ -6,7 +6,7 @@ import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
-import { SHIP, SHIP_UPGRADES } from '../../data/ship';
+import { FIRST_SHIP, SHIP_MODELS } from '../../data/fleet';
 import { HUNTS } from '../../data/hunts';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
 import { validateGear, type SavedGear } from './gearSave';
@@ -14,7 +14,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 17;
+export const SAVE_VERSION = 18;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -221,7 +221,34 @@ export const MIGRATIONS: Migration[] = [
   // v16 → v17 (8 ottobre 2026): the story is paused. Its beasts leave the team (owner), the chapters are gone:
   // with the ship the sea is open, without it Aurelio waits at Porto Fango with ship and submarine.
   { from: 16, migrate: migrateTo17 },
+  // v17 → v18 (8 ottobre 2026): the fleet. Your ship is the Aurelia; the parts bought for it and the submarines
+  // bought on their own are gone, their teeth given back; the submarine is the Aurelia's bathyscaphe again.
+  { from: 17, migrate: migrateTo18 },
 ];
+
+function migrateTo18(o: Record<string, unknown>): Record<string, unknown> {
+  // prices of the time (data/ship.ts and data/submarine.ts at v0.48.0)
+  const partPrice: Record<string, number> = { serbatoio: 900, sonar_profondo: 1500, motori: 2500 };
+  const subPrice: Record<string, number> = { squalo_ferro: 1800, leviatano_ottone: 6000 };
+  let refund = 0;
+  let ship = o.ship;
+  if (isObject(ship)) {
+    const parts = Array.isArray(ship.upgrades) ? ship.upgrades : [];
+    for (const p of parts) refund += partPrice[String(p)] ?? 0;
+    const rest: Record<string, unknown> = { ...ship, model: 'aurelia' };
+    delete rest.upgrades;
+    ship = rest;
+  }
+  let sub = o.sub;
+  if (isObject(sub)) {
+    const models = Array.isArray(sub.models) ? sub.models : [];
+    for (const m of models) refund += subPrice[String(m)] ?? 0;
+    sub = { ...sub, model: 'batiscafo', models: ['batiscafo'] };
+  }
+  const gear = isObject(o.gear) ? { ...o.gear } : o.gear;
+  if (isObject(gear) && refund) gear.teeth = (isFiniteNumber(gear.teeth) ? gear.teeth : 0) + refund;
+  return { ...o, ship, sub, gear };
+}
 
 function migrateTo17(o: Record<string, unknown>): Record<string, unknown> {
   const storySpecies = ['re_corallo', 'piovra'];
@@ -420,7 +447,7 @@ function checkedSub(raw: unknown): SavedSub | null {
   return { x: raw.x, y: raw.y, model, models, hull, fuel };
 }
 
-/** The saved ship, checked: a broken one is dropped (the game gives it again after chapter 4). */
+/** The saved ship, checked: a broken one is dropped (the story gives it again at Porto Fango). */
 function checkedShip(raw: unknown): SavedShip | null {
   if (!isObject(raw) || !isFiniteNumber(raw.x)) return null;
   const bay = raw.bay === 'docked' || raw.bay === 'out' ? raw.bay : 'none';
@@ -430,11 +457,9 @@ function checkedShip(raw: unknown): SavedShip | null {
     hatchOpen: raw.hatchOpen === true,
     bay,
     aboard: raw.aboard === true,
-    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : SHIP.fuel.tank, // newShip caps it at its tank
+    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : Infinity, // newShip caps it at its tank
     engineOn: raw.engineOn === true,
-    upgrades: Array.isArray(raw.upgrades)
-      ? raw.upgrades.filter((u): u is string => SHIP_UPGRADES.some((x) => x.id === u))
-      : [],
+    model: SHIP_MODELS.some((m) => m.id === raw.model) ? String(raw.model) : FIRST_SHIP,
   };
 }
 

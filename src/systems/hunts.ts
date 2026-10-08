@@ -12,7 +12,8 @@ import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
 import { formLengthM } from './beasts/forms';
 import { residentsNear, type ResidentsState } from './beasts/residents';
-import { sonarActive, sonarMult, type ShipState } from './ship/ship';
+import { sonarActive, type ShipState } from './ship/ship';
+import { sonarRange } from './ship/model';
 import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
@@ -129,7 +130,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
       now &&
       g.ship.aboard &&
       sonarActive(g.ship) &&
-      Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange * sonarMult(g.ship)
+      Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange * sonarRange(g.ship)
     ) {
       p.echo = true;
       events.push({
@@ -164,7 +165,7 @@ export interface SonarEcho {
 }
 
 export interface SonarReadout {
-  /** 'off': switched off · 'fast': too fast to hear (over SHIP.sonar.maxKnots) · 'on': listening. */
+  /** 'off': switched off · 'fast': too fast to hear (over its model's sonar speed) · 'on': listening. */
   status: 'off' | 'fast' | 'on';
   /** How far it hears, each side (m). */
   rangeM: number;
@@ -181,7 +182,7 @@ export interface SonarReadout {
 export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): SonarReadout {
   const x = g.ship.x;
   const m = (u: number): number => Math.round(u / WORLD.unitsPerMetre);
-  const range = HUNT_RULES.bigEchoRange * sonarMult(g.ship);
+  const range = HUNT_RULES.bigEchoRange * sonarRange(g.ship);
   const status = !g.ship.sonarOn ? 'off' : sonarActive(g.ship) ? 'on' : 'fast';
   const floorAt = (fx: number): number => m(g.map.floorBelow(fx, WORLD.surfaceY + 30) - WORLD.surfaceY);
   const out: SonarReadout = { status, rangeM: m(range), floorM: floorAt(x), profile: [], echoes: [] };
@@ -202,7 +203,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
       dot(formLengthM({ speciesId: c.r.speciesId, variant: 'comune' }), c.x, c.y);
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
-    if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarMult(g.ship)) return;
+    if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarRange(g.ship)) return;
     if (!huntOpen(h, g.beasts.gone, g.beasts.team)) return;
     out.echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
   });

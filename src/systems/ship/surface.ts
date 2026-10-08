@@ -6,17 +6,16 @@ import { ENDLESS } from '../../data/endless';
 import { PORTO_FANGO } from '../../data/economy';
 import { TILE, WORLD } from '../../data/worldLayout';
 import type { TileMap } from '../world/tileMap';
-import { SHIP_DRAFT } from './geometry';
 
 /** Where the sea ends: the ship stops here. */
 export const SEA_END_X = ENDLESS.maxX - ENDLESS.endWall - 40;
 /** The ship's waters begin at the trading harbour of Porto Fango (owner, 5 ottobre): it goes no farther west. */
 export const SHIP_WEST_X = PORTO_FANGO.shipDock - 20;
 
-/** Is there ice under the hull between x0 and x1 (to the keel)? */
-export function iceIn(map: TileMap, x0: number, x1: number): boolean {
+/** Is there ice under the hull between x0 and x1 (down to the keel, `draft` units under the surface)? */
+export function iceIn(map: TileMap, x0: number, x1: number, draft = 25): boolean {
   const T = map.tileSize;
-  for (let ty = Math.floor(WORLD.surfaceY / T); ty * T <= WORLD.surfaceY + SHIP_DRAFT; ty++)
+  for (let ty = Math.floor(WORLD.surfaceY / T); ty * T <= WORLD.surfaceY + draft; ty++)
     for (let tx = Math.floor(x0 / T); tx * T <= x1; tx++) if (map.get(tx, ty) === TILE.ice) return true;
   return false;
 }
@@ -28,10 +27,10 @@ export interface BrokenIce {
 }
 
 /** Breaks the ice under the hull between x0 and x1; returns the tiles broken now (to redraw them). */
-export function breakIce(map: TileMap, x0: number, x1: number, broken: BrokenIce[]): number[] {
+export function breakIce(map: TileMap, x0: number, x1: number, broken: BrokenIce[], draft: number): number[] {
   const T = map.tileSize;
   const out: number[] = [];
-  for (let ty = Math.floor(WORLD.surfaceY / T); ty * T <= WORLD.surfaceY + SHIP_DRAFT; ty++)
+  for (let ty = Math.floor(WORLD.surfaceY / T); ty * T <= WORLD.surfaceY + draft; ty++)
     for (let tx = Math.floor(x0 / T); tx * T <= x1; tx++) {
       if (map.get(tx, ty) !== TILE.ice) continue;
       map.set(tx, ty, TILE.water);

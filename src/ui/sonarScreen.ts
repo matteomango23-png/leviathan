@@ -1,9 +1,10 @@
 // The sonar screen of the cockpit (owner, 5 ottobre): green curves of the floor under the ship within its range,
 // a sweep going back and forth, the echoes as dots (no shapes), the limit each side, and a switch. It hears only
-// switched on and under SHIP.sonar.maxKnots (systems/hunts.ts sonarReadout); the ship pings (sonarPing).
+// switched on and under its ship's sonar speed (systems/hunts.ts sonarReadout); the ship pings (sonarPing).
 import { SHIP } from '../data/ship';
 import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
+import { sonarMaxKnots } from '../systems/ship/model';
 import { el } from './dom';
 
 const GREEN = '#5dff9e';
@@ -37,7 +38,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       r.status === 'off'
         ? 'Sonar spento: accendilo per sentire il fondale e le bestie sotto la nave.'
         : r.status === 'fast'
-          ? `Troppo veloce: il sonar sente solo sotto ${SHIP.sonar.maxKnots} nodi.`
+          ? `Troppo veloce: il sonar sente solo sotto ${sonarMaxKnots(g.ship)} nodi.`
           : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m`;
     status.classList.toggle('warn', r.status !== 'on');
   };

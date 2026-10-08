@@ -307,28 +307,6 @@ export function repairSub(g: SubWorld, events: GameEvent[]): void {
   events.push({ type: 'subRepaired', cost });
 }
 
-/** Buying (or switching to) a model at the port: a new one comes out of the yard at full hull. */
-export function buySub(g: SubWorld, id: string): { ok: boolean; reason?: string } {
-  const m = SUB_MODELS.find((x) => x.id === id);
-  const s = g.sub;
-  if (!m) return { ok: false, reason: 'Sottomarino sconosciuto.' };
-  if (!s.owned) return { ok: false, reason: 'Prima Aurelio deve lasciarti il suo batiscafo.' };
-  if (!s.models.includes(id)) {
-    if (g.gear.teeth < m.price)
-      return { ok: false, reason: `Servono ${m.price} denti (ne hai ${g.gear.teeth}).` };
-    g.gear.teeth -= m.price;
-    s.models.push(id);
-    s.hull = m.hull;
-    s.fuel = m.tank; // a new one comes out of the yard full
-  } else {
-    // switching to one you own: the same share of hull (the yard keeps them in the same state)
-    s.hull = Math.round((s.hull / subModel(s.model).hull) * m.hull);
-    s.fuel = Math.min(s.fuel, m.tank);
-  }
-  s.model = id;
-  return { ok: true };
-}
-
 /** Where you wake up when you own it: next to it (then you climb in). */
 export const subWakePoint = (s: SubState): { x: number; y: number } => ({
   x: s.x,

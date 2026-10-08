@@ -1,4 +1,4 @@
-// The expedition ship (data/ship.ts): the owner's two paintings (hatch closed and open, the same frame, so the
+// The expedition ship (its model in data/fleet.ts): the owner's two paintings (hatch closed and open, the same frame, so the
 // open one fades in while the hatch opens). Its waterline sits on the sea surface; the hull under it is drawn
 // darker and bluer, as seen through the water. It rocks with the waves (more in bad weather), lifts its bow and
 // throws foam when it planes at speed, leaves a wake and bubbles behind its propeller. A soft light glows under the hull
@@ -8,10 +8,11 @@ import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { SHIP_HEIGHT } from '../systems/ship/geometry';
+import type { ShipPicture } from '../data/fleet';
+import { shipHeight } from '../systems/ship/geometry';
+import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
 
-const P = SHIP.picture;
 const UNDERWATER_TINT = 0x6f97a6;
 const FAR_TINT = 0x7f8c94;
 
@@ -19,16 +20,20 @@ const FAR_TINT = 0x7f8c94;
 class ShipPictures {
   readonly parts: Phaser.GameObjects.Image[];
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container) {
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
+    art: { closed: string; open: string; picture: ShipPicture },
+  ) {
     const make = (key: string): Phaser.GameObjects.Image => scene.add.image(0, 0, key).setVisible(false);
-    const closed = `world-${SHIP.art}`;
-    const open = `world-${SHIP.artOpen}`;
+    const closed = `world-${art.closed}`;
+    const open = `world-${art.open}`;
     this.parts = [make(closed), make(closed), make(open), make(open)];
     layer.add(this.parts);
     for (const [i, im] of this.parts.entries()) {
       const below = i % 2 === 1;
       const h = im.height;
-      const cut = Math.round(P.waterline * h);
+      const cut = Math.round(art.picture.waterline * h);
       if (below) im.setCrop(0, cut, im.width, h - cut).setTint(UNDERWATER_TINT);
       else im.setCrop(0, 0, im.width, cut);
     }
@@ -40,8 +45,8 @@ class ShipPictures {
 
   /** Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), open share, darkening. */
   place(s: ShipState, x: number, top: number, scale: number, pitch: number, dark: number): void {
-    const w = SHIP.length * scale;
-    const h = w * P.aspect;
+    const w = shipLength(s) * scale;
+    const h = w * shipPicture(s).aspect;
     for (const [i, im] of this.parts.entries()) {
       const open = i >= 2;
       const alpha = open ? s.hatch : 1;
@@ -58,7 +63,10 @@ class ShipPictures {
 }
 
 export class ShipView {
-  private readonly pics: ShipPictures | null;
+  /** The paintings of each model sailed so far (made when first needed). */
+  private readonly pics = new Map<string, ShipPictures | null>();
+  private readonly scene: Phaser.Scene;
+  private readonly layer: Phaser.GameObjects.Layer;
   private readonly fx: Phaser.GameObjects.Graphics;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
@@ -67,17 +75,28 @@ export class ShipView {
   private tugFrom = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
-    const painted = WORLD_ART_KEYS.includes(SHIP.art) && WORLD_ART_KEYS.includes(SHIP.artOpen);
+    this.scene = scene;
+    this.layer = layer;
     this.fallback = scene.add.graphics();
     layer.add(this.fallback);
     this.tug = WORLD_ART_KEYS.includes(SHIP.tug.art)
       ? scene.add.image(0, 0, `world-${SHIP.tug.art}`).setVisible(false)
       : null;
     if (this.tug) layer.add(this.tug);
-    this.pics = painted ? new ShipPictures(scene, layer) : null;
     this.fx = scene.add.graphics();
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     layer.add([this.fx, this.glow]);
+  }
+
+  /** The paintings of this ship's model (null: not painted yet), the others hidden. */
+  private picsOf(s: ShipState): ShipPictures | null {
+    const art = shipArt(s);
+    if (!this.pics.has(art.closed)) {
+      const painted = WORLD_ART_KEYS.includes(art.closed) && WORLD_ART_KEYS.includes(art.open);
+      this.pics.set(art.closed, painted ? new ShipPictures(this.scene, this.layer, art) : null);
+    }
+    for (const [key, p] of this.pics) if (key !== art.closed) p?.hide();
+    return this.pics.get(art.closed) ?? null;
   }
 
   /** The rescue flare: a tug comes and tows the ship (look only), then sails off. */
@@ -92,11 +111,11 @@ export class ShipView {
     this.glow.clear();
     this.fallback.clear();
     if (!s.owned) {
-      this.pics?.hide();
+      for (const p of this.pics.values()) p?.hide();
       this.tug?.setVisible(false);
       return;
     }
-    const k = Math.min(1, s.speed / SHIP.maxSpeed);
+    const k = Math.min(1, s.speed / shipTopSpeed(s));
     // rocking on the swell (more in bad weather), planing at speed
     const R = SHIP.rock;
     const sea = Math.min(3, waves);
@@ -105,8 +124,9 @@ export class ShipView {
     const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
     const pitch = roll + planing * SHIP.plane.pitch;
     const lift = planing * SHIP.plane.lift;
-    const top = WORLD.surfaceY - P.waterline * SHIP_HEIGHT + heave - lift;
-    if (this.pics) this.pics.place(s, s.x, top, 1, pitch, 0);
+    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + heave - lift;
+    const pics = this.picsOf(s);
+    if (pics) pics.place(s, s.x, top, 1, pitch, 0);
     else this.drawFallback(s, top);
     this.drawWake(s, k, planing, time, heave);
     this.drawLights(s, top, time);
@@ -115,7 +135,7 @@ export class ShipView {
 
   /** A point of the picture (shares) in the world, at this top. */
   private at(s: ShipState, top: number, u: number, v: number): { x: number; y: number } {
-    return { x: s.x + s.face * (u - 0.5) * SHIP.length, y: top + v * SHIP_HEIGHT };
+    return { x: s.x + s.face * (u - 0.5) * shipLength(s), y: top + v * shipHeight(s) };
   }
 
   /** Points under the keel where the soft light sits. */
@@ -141,7 +161,7 @@ export class ShipView {
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
   glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
-    const top = WORLD.surfaceY - P.waterline * SHIP_HEIGHT;
+    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s);
     return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
   }
 
@@ -172,8 +192,9 @@ export class ShipView {
   /** No picture yet: a dark hull with a wheelhouse. */
   private drawFallback(s: ShipState, top: number): void {
     const g = this.fallback;
-    const L = SHIP.length;
-    const H = SHIP_HEIGHT;
+    const L = shipLength(s);
+    const H = shipHeight(s);
+    const P = shipPicture(s);
     const wl = top + P.waterline * H;
     g.fillStyle(0x2c2a27, 1).fillRect(s.x - L * 0.45, top + 0.3 * H, L * 0.9, wl - top - 0.3 * H);
     g.fillStyle(0x1f2a30, 1).fillRect(s.x - L * 0.42, wl, L * 0.84, (P.keel - P.waterline) * H);
@@ -183,7 +204,8 @@ export class ShipView {
   private drawWake(s: ShipState, k: number, planing: number, time: number, heave: number): void {
     if (k < 0.03) return;
     const g = this.fx;
-    const L = SHIP.length;
+    const L = shipLength(s);
+    const P = shipPicture(s);
     const bow = s.x + s.face * L * 0.47;
     const stern = s.x - s.face * L * 0.46;
     const y = WORLD.surfaceY + heave * 0.3;
@@ -199,7 +221,7 @@ export class ShipView {
     // bubbles churned by the propeller, under water at the stern
     const prop = {
       x: s.x + s.face * (P.propX - 0.5) * L,
-      y: WORLD.surfaceY + (P.propY - P.waterline) * SHIP_HEIGHT,
+      y: WORLD.surfaceY + (P.propY - P.waterline) * shipHeight(s),
     };
     for (let i = 0; i < 16; i++) {
       const t = (time * (1.2 + k * 2) + i / 16) % 1;

@@ -131,6 +131,9 @@ async function knownIds(): Promise<Set<string>> {
     const text = await readFile(f, 'utf8');
     for (const m of text.matchAll(/id: '([a-z0-9_]+)'/g)) ids.add(m[1]!);
   }
+  // the cards of the fleet (ships, their submarines and boats: data/fleet.ts)
+  const fleet = await readFile('src/data/fleet.ts', 'utf8');
+  for (const m of fleet.matchAll(/card: '([a-z0-9_]+)'/g)) ids.add(m[1]!);
   return ids;
 }
 
