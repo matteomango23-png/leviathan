@@ -1,5 +1,29 @@
 # Progressi
 
+## Blocco 3 — Decisioni di design (8 ottobre 2026), solo documenti
+
+**Fatto:** le risposte del proprietario alle 11 domande sono nel GDD, nella sezione "Decisioni di design (8 ottobre 2026)". Nel BACKLOG ogni blocco futuro ha la sua riga "Deciso l'8 ottobre". Corrette anche le parti superate del GDD (santuari, vecchio minigioco della domatura, ruoli). Nessuna modifica al gioco: la versione resta la 0.48.0.
+
+**Prossimo: blocco 4, la flotta.** Prima si decidono con il proprietario le statistiche delle 7 navi, una alla volta: lunghezza, peso, velocità, serbatoio e consumi, sonar, portelloni e mezzi, vasca, abilità speciali, prezzo. Le immagini sono sul suo desktop, una cartella per nave. Poi il codice: concessionario a Porto Fango, potenziamenti attuali tolti, carburante da pianificare.
+
+## Blocco 2 — Correzioni rapide (8 ottobre 2026) → v0.48.0
+
+**Fatto:** tutte le correzioni del blocco 2 di `docs/BACKLOG.md` (dettagli nel CHANGELOG), ognuna con un test in `tests/block2.test.ts`. Prossimo: **blocco 3, decisioni di design** (le 11 domande nel BACKLOG: si discutono col proprietario e si scrivono nel GDD, niente codice).
+
+**Da provare sull'iPhone (v0.48.0):**
+1. Al timone: **Spegni motore / Accendi motore**. Spento il motore non si sente; acceso si sente il minimo. Tuffati e allontanati: il rumore cala fino a sparire. In pausa e in battaglia: silenzio.
+2. Nel cockpit: "Spegni motore" accanto ad "Avanti adagio".
+3. Nella Banchisa la nave va a tutta velocità rompendo il ghiaccio.
+4. Nel sottomarino: alza il dito dalle leve, si fermano da sole. Sbatti contro una roccia, poi dai gas: riparte.
+5. Riaggancia il sottomarino e risali al timone: niente giri strani. Con lo scafo danneggiato, rientrando viene riparato (paghi in denti).
+6. In groppa a un capodoglio: scendi, poi risali in superficie, l'aria si ricarica.
+7. A un avamposto: il pulsante Porto c'è da entrambi i lati della chiatta.
+8. In battaglia, con "Info" (dettaglio della mossa): c'è il **Danno**.
+9. Bestiario: Megalodonte e Livyatan tra le Leggende.
+10. Sardine: la sacca si riempie a 30 ("Sacca piena"), al porto rendono la metà.
+
+**Da sapere:** nel mare aperto non ci sono iceberg (tolti il 5 ottobre). Il rallentamento vicino agli iceberg c'è già nel codice e funzionerà se li rimettiamo.
+
 ## Blocco 2 — Correzioni rapide (8 ottobre 2026) → v0.48.0
 
 **Fatto:** tutte le correzioni del blocco 2 di `docs/BACKLOG.md` (dettagli nel CHANGELOG), ognuna con un test in `tests/block2.test.ts`. Prossimo: **blocco 3, decisioni di design** (le 11 domande nel BACKLOG: si discutono col proprietario e si scrivono nel GDD, niente codice).

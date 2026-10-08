@@ -19,16 +19,15 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 - **Profondità:** la muta indossata fissa la profondità massima; per scendere oltre serve una muta migliore.
 - **Delta delle Mangrovie:** piccola zona tra la Baia e la Barriera Rossa, dove un fiume sfocia nel mare: acqua salmastra, bassa e torbida, radici di mangrovie e rive. Ci vivono i due coccodrilli, che attaccano dalla superficie.
 - **Abilità delle bestie:** alcuni passaggi si aprono solo con certe bestie (sfondare ossa, spezzare il ghiaccio, vincere le correnti).
-- **Porto di Portofosco:** unica base. Mercato, recinto (riserva), bacheca missioni, santuario.
+- **Porti:** Portofosco (l'inizio), Porto Fango (il porto principale, da cui parte la nave) e un avamposto per regione del mare aperto. Mercato, recinto (riserva), bacheca, cure, carburante.
 - **Sottomarino** (dal 3 ottobre 2026, al posto della barca):
   - va sott'acqua, anche sotto gli iceberg, ogni modello fino alla sua profondità;
   - il primo è lento; al porto se ne comprano di migliori;
-  - è un santuario mobile: dentro respiri, ti curi e peschi;
+  - dentro respiri, ma non ti curi (le cure sono solo sulla nave e al porto, dal 4 ottobre);
   - dentro non si combatte: le bestie normali scappano, quelle grandi e aggressive lo urtano;
-  - rotto, viene rimorchiato al porto, dove si ripara;
+  - rotto, viene rimorchiato nella stiva della nave, che lo ripara pagando in denti (dall'8 ottobre);
   - resta dove lo lasci.
-- **Santuari:** cura graduale di giocatore e squadra (circa 5 s fermi per riempire vita e ossigeno); punto di rinascita.
-- **Guardiani:** chiudono ogni capitolo; sconfitti danno molti denti e diventano domabili come variante unica.
+- **Guardiani:** in pausa con la storia (8 ottobre 2026).
 - **Sessioni:** immersioni di 10-15 minuti, poi ritorno in porto.
 
 ## Storia
@@ -48,7 +47,7 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 ## Bestie
 
 - **Squadra:** 5 bestie, una in acqua alla volta; riserva al recinto senza limite.
-- **Ruoli:** cavalcatura (grande, carica, spesso chiave di un passaggio), compagno (combatte con te), supporto (cura, luce, scudo, inchiostro). Nel mare ogni bestia si chiama dalla barra: le cavalcature ti portano in sella, le altre ti seguono e mangiano i pesci. Le seconde forme delle linee iniziali si cavalcano già, più lente.
+- **Ruoli** (rivisti l'8 ottobre 2026, vedi "Decisioni di design"): cavalcatura (mezzo per esplorare: velocità, profondità, passaggi), compagno (combatte con te), supporto (un potere in mare ciascuna: luce, forzieri, riparo, eco, raccolta). Nel mare ogni bestia si chiama dalla barra: le cavalcature ti portano in sella, le altre ti seguono e mangiano i pesci. Le seconde forme delle linee iniziali si cavalcano già, più lente.
 - **Tipi:** cinque in cerchio, ognuno batte il successivo: Predatore → Abissale → Glaciale → Tempesta → Corazzato → Predatore. Come Pokémon (dal 3 ottobre 2026): ogni tipo batte il successivo e il terzo dopo nel cerchio, danno ×2 contro chi batti e ×½ contro chi ti batte. Anche mosse, alcune armi e Guardiani hanno un tipo.
 - **Livelli:** 1-100 come Pokémon (dal 3 ottobre 2026; prima 1-50), esperienza combattendo; le statistiche crescono col livello. Le bestie selvatiche hanno livelli legati alla zona.
 - **Mosse:** 3 per bestia, sbloccate ai livelli 1, 7 e 15 (una bestia domata oltre il 15 le ha tutte). Il danno delle mosse cresce del 4% per livello. In sella stanno su 3 pulsanti; compagno e branco le usano da soli. Le mosse firma hanno un'animazione dedicata (`anim` in `data/moves.ts`).
@@ -58,8 +57,8 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 - **Varianti:** ogni specie ha albino (+10%, 8% degli incontri) e alfa (+20%, più grande, 4%); i Guardiani hanno varianti uniche. Una stella in più.
 - **Scheda della bestia:** illustrazione, stelle, tipo, ruolo, statistiche, le tre mosse con livello di sblocco, lucchetto, danno attuale e al prossimo livello, habitat, varianti, storia.
 - **Layout della scheda in orizzontale** (il gioco si usa in orizzontale): illustrazione a sinistra a tutta altezza, sempre intera; a destra nome, stelle, tipo, statistiche e mosse, scorrevoli. In verticale: illustrazione sopra, dati sotto. L'illustrazione non va mai tagliata. Tocco sull'illustrazione: passa al modello animato del gioco.
-- **Ossigeno:** capodoglio, megattera e Livyatan sono stazioni d'ossigeno: mentre li cavalchi l'ossigeno non cala.
-- **Vita e KO:** in sella i colpi li prende la bestia; a zero va KO e si cura in un santuario.
+- **Ossigeno:** in groppa a un cetaceo respiri la sua aria (più grande della tua, ma finisce anche lei) e si ricarica in superficie (dal 4 ottobre).
+- **Vita e KO:** in sella i colpi li prende la bestia; a zero va KO e si cura sulla nave o al porto.
 - **Catena alimentare:** i predatori, tuoi e selvatici, mangiano le creature più piccole.
 - **Sciami:** le creature che vivono in branco non si domano una a una: catturandone abbastanza (es. 10 sardine) si lega a sé l'intero sciame, che entra nel bestiario e va nello zaino come richiamo con durata e ricarica. Quattro sciami: sardine (muro-esca che distrae i predatori), meduse spettrali (barriera che stordisce), pesci lanterna (luce), krill (cura lenta della squadra). Dati in `SWARMS` (`data/world.ts`).
 - **Bestiario:** 34 bestie, 4 sciami, 12 pesci da cattura.
@@ -76,13 +75,9 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 
 ## Domatura
 
-Nessun limite artificiale: si può provare con qualsiasi bestia, ma la differenza di livello rende quasi impossibile domarne una molto più forte della tua squadra.
+Come Pokémon (dal 3 ottobre 2026): la bestia si sfinisce nella **battaglia a turni** e si doma lanciando la **Conchiglia del domatore**; più è stanca, più è facile. Nessun limite artificiale, ma una bestia molto più forte della tua squadra è quasi impossibile da domare. Un doppione della versione comune, sfinito, fugge. Una leggenda sconfitta e non domata sparisce per sempre.
 
-1. **Sfiancare:** portare la vita sotto la soglia di sfinimento (tacca sulla barra), leggendo i pattern d'attacco. Le mosse del tipo giusto sfiancano prima.
-2. **Conchiglia del domatore:** lo strumento con cui si doma; senza gradi né potenziamenti.
-3. **Minigioco:** tre colpi a tempo, tre errori concessi; fasce più strette e indicatore più veloce quanto più il livello della bestia supera quello della tua bestia più forte (`TAMING` in `data/rules.ts`).
-4. **Doppioni:** un doppione della versione comune, sfiancato, fugge.
-5. **Arpione mitico:** oggetto monouso che stordisce all'istante e porta dritto al minigioco (il minigioco resta).
+Decisi l'8 ottobre 2026 (blocco 6): l'arpione in mare indebolisce prima della lotta (fino a metà vita) e ci saranno conchiglie di qualità diverse. Vedi "Decisioni di design".
 
 ## Progressione ed economia
 
@@ -154,6 +149,36 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
 - **Avamposti:** uno per regione, da scoprire: attracco, cure e negozio.
 - **Ricompense** scalate per regione e profondità: relitti più ricchi, un tempio per regione, pezzi per nave e sottomarino, pesci rari, missioni di spedizione.
 
+## Decisioni di design (8 ottobre 2026)
+
+Le risposte del proprietario alle domande del blocco 3 di `docs/BACKLOG.md`, prima delle funzioni grandi. Tra parentesi il blocco che le realizza.
+
+1. **Cavalcature: un mezzo per esplorare** (blocco 7). Più veloci del nuoto, ognuna con la sua profondità massima, mangiano i banchi, sfondano passaggi (ossa, ghiaccio). Solo alcune specie si cavalcano, quelle che animate in groppa rendono bene; le altre fanno da compagno o da supporto.
+2. **Il nuoto è una vera modalità di dettaglio** (blocco 7). Solo a nuoto si entra nei posti stretti (grotte, relitti, templi), si raccoglie (forzieri, campioni) e si è silenziosi: le bestie timide non scappano, e si può avvicinarle o metterci un tracker. In cambio sei lento e fragile.
+3. **Supporto: un potere in mare ciascuna** (blocco 7). Per esempio:
+   - luce (pesce lanterna, rana pescatrice);
+   - apre i forzieri (polpo);
+   - protezione e riparo (tartaruga);
+   - eco che trova le bestie (beluga);
+   - raccolta (lontra).
+
+   In battaglia restano bestie normali.
+4. **Pesca** (blocco 6): sì alla **pastura**, che attira bestie vicino alla nave ferma e fa parte della ricerca. La pesca con la canna dalla nave è rimandata.
+5. **Cattura** (blocco 6):
+   - in mare l'**arpione indebolisce** la bestia prima della lotta: ogni colpo toglie un po' di vita, **fino a metà, mai di più**, ma la fa arrabbiare o scappare;
+   - la battaglia a turni parte con la bestia già indebolita;
+   - si doma con la Conchiglia in battaglia, con **conchiglie di qualità diverse** (come le Poké Ball).
+6. **Cibo solo per le bestie** (blocco 6). Il giocatore non ha fame. "Nutri" resta per la crescita (barra del nutrimento) e in più dà per un po' un piccolo vantaggio (esperienza in più, ti segue meglio): le sardine hanno un uso oltre alla vendita.
+7. **Equipaggio: più avanti, come sistema dei potenziamenti** (blocco 10): sonarista (+portata), motorista (−consumi), biologo (più informazioni dagli scan), meccanico (riparazioni).
+8. **Lo scafo del sottomarino è il rischio della caccia** (blocchi 4 e 5). Le bestie grandi e aggressive lo speronano; scafo basso vuol dire tornare in nave. I sottomarini migliori hanno scafi più resistenti.
+9. **Navigazione a due andature** (blocco 5):
+   - **trasferimento:** veloce, sonar sordo, consuma tanto;
+   - **ricerca:** lenta, sonar attivo.
+
+   Col mare mosso, a tutta velocità la nave consuma di più e rovina lo scafo: la velocità giusta dipende dalle onde. Niente minigiochi in più.
+10. **Squadra al porto, più la vasca della nave** (blocchi 4 e 6). La squadra si cambia al porto. Le navi grandi hanno una **vasca** con alcuni posti (una statistica della nave) per scambiare anche in mare. In nave le cure richiedono qualche decina di secondi, al porto sono immediate.
+11. **Chi modifica le bestie** (il villain, o anche noi): si decide con la storia (blocco 10); le proposte sono nel BACKLOG.
+
 ## Roadmap
 
 1. ✅ **Fondamenta (v0.1.0):** progetto, mondo, luce, sub, arpione, PWA offline, salvataggi, deploy.
@@ -179,7 +204,7 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
 12. **I blocchi di feedback (dall’8 ottobre 2026, dopo 6 ore di gioco del proprietario; dettagli in `docs/BACKLOG.md`):**
     1. ✅ nuovo inizio senza storia, zona protetta sulla costa (v0.47.0);
     2. ✅ correzioni rapide (v0.48.0);
-    3. decisioni di design;
+    3. ✅ decisioni di design (sezione sopra);
     4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario);
     5. sonar e spedizioni;
     6. cattura e combattimento;
@@ -191,4 +216,4 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
 ## Decisioni aperte
 
 - Prezzi, curva di esperienza, valori di danno (primo passaggio in `data/`, da bilanciare giocando).
-- Penalità alla morte: per ora nessuna (si rinasce al santuario o al porto).
+- Penalità alla morte: per ora nessuna (ti risvegli sulla nave o all'ultimo porto).
