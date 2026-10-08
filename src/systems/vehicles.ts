@@ -48,8 +48,10 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   else if (input.helmCmd === 'sonar' && ship.aboard) ship.sonarOn = !ship.sonarOn;
   else if (input.helmCmd === 'engine' && ship.aboard) {
     // the engine button (owner, 8 ottobre): off, the throttle goes back to zero; on, it idles
+    const was = ship.engineOn;
     ship.engineOn = !ship.engineOn && ship.fuel > 0;
     if (!ship.engineOn) input.helm.throttle = 0;
+    if (ship.engineOn !== was) events.push({ type: ship.engineOn ? 'engineStarted' : 'engineStopped' });
   }
   const far = (x: number): boolean =>
     Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;

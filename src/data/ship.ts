@@ -48,8 +48,9 @@ export const SHIP = {
   dockReachOutpost: 280,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   /** The view at the helm (getting on or off cuts to it behind a short fade: CAMERA.cutFadeMs). */
-  /** The view grows with the ship (viewHeightUnits is for a 180-unit ship), up to maxScale. Tuning. */
-  camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16, refLength: 180, maxScale: 2.2 },
+  /** The view grows with the ship, less than the ship (owner, 8 ottobre: the big ones looked as big as the first):
+   *  × (length / refLength) ^ growth, up to maxScale. viewHeightUnits is for a 180-unit ship. Tuning. */
+  camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16, refLength: 180, growth: 0.4, maxScale: 2 },
 };
 
 /** Fuel of the ship and the submarine: how much going slowly saves, the price, the transfer between them. */

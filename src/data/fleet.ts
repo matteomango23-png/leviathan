@@ -34,6 +34,8 @@ export type CockpitTab = 'sonar' | 'plancia' | 'diario' | 'recinto' | 'zaino';
 export interface ShipModelDef {
   id: string;
   name: string;
+  /** How premium it is, 1…5: the colour of its frame, like the rarity of the beasts (data/cards.ts RARITY). */
+  tier: 1 | 2 | 3 | 4 | 5;
   /** Sails in the game now (the others are shown in the shipyard, not sold yet). */
   ready: boolean;
   price: number; // teeth (0: Aurelio's gift)
@@ -55,8 +57,9 @@ export interface ShipModelDef {
   note: string;
   cockpit: CockpitTab[];
   card: string; // public/art/<card>.webp
-  /** Its painting in public/world (hatch closed and open, same frame) and where things are on it. */
-  art?: { closed: string; open: string; picture: ShipPicture };
+  /** Its painting in public/world (hatch closed and open, and the propeller turning if painted: same frame) and
+   *  where things are on it. */
+  art?: { closed: string; open: string; picture: ShipPicture; moving?: string };
 }
 
 const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
@@ -64,6 +67,7 @@ const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'
 export const SHIP_MODELS: ShipModelDef[] = [
   {
     id: 'aurelia',
+    tier: 1,
     name: 'Aurelia',
     ready: true,
     price: 0,
@@ -99,6 +103,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'eh1',
+    tier: 2,
     name: 'Expedition Hunter 1',
     ready: true,
     price: 6000,
@@ -118,6 +123,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     art: {
       closed: 'nave_eh1',
       open: 'nave_eh1_aperta',
+      moving: 'nave_eh1_moto', // the propeller turning (owner, 8 ottobre)
       picture: {
         aspect: 768 / 1376,
         waterline: 0.6,
@@ -134,6 +140,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'whale',
+    tier: 2,
     name: 'U-Boat Whale Exploration',
     ready: false,
     price: 7500,
@@ -154,6 +161,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'imperium',
+    tier: 3,
     name: 'Imperium Explorer VI',
     ready: false,
     price: 15000,
@@ -177,6 +185,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'stormtrooper',
+    tier: 3,
     name: 'U-Boat Stormtrooper',
     ready: false,
     price: 18000,
@@ -197,6 +206,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'poseidon',
+    tier: 4,
     name: 'Poseidon Yacht',
     ready: false,
     price: 22000,
@@ -217,6 +227,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'eh2',
+    tier: 4,
     name: 'Expedition Hunter 2',
     ready: false,
     price: 30000,
@@ -240,6 +251,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'nightmare',
+    tier: 5,
     name: 'Ocean’s Nightmare',
     ready: false,
     price: 50000,

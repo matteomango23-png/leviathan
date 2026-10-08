@@ -40,6 +40,9 @@ export interface ShipState {
   /** The engine runs (owner, 8 ottobre): it starts with the throttle, burns a little even still, and the button
    *  switches it off. Off, the ship coasts to a stop, silent. */
   engineOn: boolean;
+  /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
+   *  the propeller picture and its bubbles follow it). */
+  prop: number;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
   fuel: number;
   fuelWarned: boolean;
@@ -80,6 +83,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     dockFrom: null,
     aboard: saved?.aboard ?? false,
     engineOn: saved?.engineOn ?? false,
+    prop: 0,
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : shipTank({ model: FIRST_SHIP }),
     fuelWarned: false,
     sonarOn: false,
@@ -162,8 +166,16 @@ export function sailShip(
   const icy = icebergAcross(Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
   const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1); // dry, it drifts to a stop
   // the throttle off zero starts the engine; dry, it stops (owner, 8 ottobre)
-  if (helm && helm.throttle > 0 && s.fuel > 0) s.engineOn = true;
-  if (s.fuel <= 0) s.engineOn = false;
+  if (helm && helm.throttle > 0 && s.fuel > 0 && !s.engineOn) {
+    s.engineOn = true;
+    events.push({ type: 'engineStarted' });
+  }
+  if (s.fuel <= 0 && s.engineOn) {
+    s.engineOn = false;
+    events.push({ type: 'engineStopped' });
+  }
+  const push = helm && s.engineOn && !s.hatchOpen && s.hatch === 0 ? helm.throttle : 0;
+  s.prop += (push - s.prop) * Math.min(1, dt * 2); // the propeller speeds up and slows down gently
   if (helm && s.engineOn && !s.hatchOpen && s.hatch === 0) {
     const h = stepHeading(s.face, s.speed, helm, top, shipRates(s), dt);
     s.face = h.face;

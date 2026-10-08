@@ -8,7 +8,7 @@ import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import type { ShipPicture } from '../data/fleet';
+import { SHIP_MODELS, type ShipPicture } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
@@ -16,19 +16,26 @@ import type { ShipState } from '../systems/ship/ship';
 const UNDERWATER_TINT = 0x6f97a6;
 const FAR_TINT = 0x7f8c94;
 
-/** One copy of the ship: the closed and open pictures, each cut at the waterline (above / below). */
+/**
+ * One copy of the ship: the closed, open and (if painted) propeller-turning pictures, each cut at the waterline
+ * (above / below). Parts in pairs: 0–1 closed, 2–3 open, 4–5 moving.
+ */
 class ShipPictures {
   readonly parts: Phaser.GameObjects.Image[];
 
   constructor(
     scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
-    art: { closed: string; open: string; picture: ShipPicture },
+    art: { closed: string; open: string; picture: ShipPicture; moving?: string },
   ) {
     const make = (key: string): Phaser.GameObjects.Image => scene.add.image(0, 0, key).setVisible(false);
     const closed = `world-${art.closed}`;
     const open = `world-${art.open}`;
     this.parts = [make(closed), make(closed), make(open), make(open)];
+    if (art.moving && WORLD_ART_KEYS.includes(art.moving)) {
+      const moving = `world-${art.moving}`;
+      this.parts.push(make(moving), make(moving));
+    }
     layer.add(this.parts);
     for (const [i, im] of this.parts.entries()) {
       const below = i % 2 === 1;
@@ -48,8 +55,9 @@ class ShipPictures {
     const w = shipLength(s) * scale;
     const h = w * shipPicture(s).aspect;
     for (const [i, im] of this.parts.entries()) {
-      const open = i >= 2;
-      const alpha = open ? s.hatch : 1;
+      // the open hatch fades in over the closed one; the turning propeller over both while it pushes
+      const turning = Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - s.hatch);
+      const alpha = i >= 4 ? turning : i >= 2 ? s.hatch : 1;
       const sc = w / im.width;
       im.setVisible(alpha > 0.01)
         .setPosition(x, top + h / 2)
@@ -63,10 +71,9 @@ class ShipPictures {
 }
 
 export class ShipView {
-  /** The paintings of each model sailed so far (made when first needed). */
+  /** The paintings of every model, made at once so they stay under the submarine (owner, 8 ottobre: made later,
+   *  on top, the open hatch hid it). */
   private readonly pics = new Map<string, ShipPictures | null>();
-  private readonly scene: Phaser.Scene;
-  private readonly layer: Phaser.GameObjects.Layer;
   private readonly fx: Phaser.GameObjects.Graphics;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
@@ -75,10 +82,14 @@ export class ShipView {
   private tugFrom = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
-    this.scene = scene;
-    this.layer = layer;
     this.fallback = scene.add.graphics();
     layer.add(this.fallback);
+    for (const m of SHIP_MODELS) {
+      const art = m.art;
+      if (!art || this.pics.has(art.closed)) continue;
+      const painted = WORLD_ART_KEYS.includes(art.closed) && WORLD_ART_KEYS.includes(art.open);
+      this.pics.set(art.closed, painted ? new ShipPictures(scene, layer, art) : null);
+    }
     this.tug = WORLD_ART_KEYS.includes(SHIP.tug.art)
       ? scene.add.image(0, 0, `world-${SHIP.tug.art}`).setVisible(false)
       : null;
@@ -91,10 +102,6 @@ export class ShipView {
   /** The paintings of this ship's model (null: not painted yet), the others hidden. */
   private picsOf(s: ShipState): ShipPictures | null {
     const art = shipArt(s);
-    if (!this.pics.has(art.closed)) {
-      const painted = WORLD_ART_KEYS.includes(art.closed) && WORLD_ART_KEYS.includes(art.open);
-      this.pics.set(art.closed, painted ? new ShipPictures(this.scene, this.layer, art) : null);
-    }
     for (const [key, p] of this.pics) if (key !== art.closed) p?.hide();
     return this.pics.get(art.closed) ?? null;
   }
@@ -202,10 +209,10 @@ export class ShipView {
 
   /** Foam at the bow and the stern, a wake behind, spray when it planes, bubbles behind the propeller. */
   private drawWake(s: ShipState, k: number, planing: number, time: number, heave: number): void {
-    if (k < 0.03) return;
     const g = this.fx;
+    this.drawPropBubbles(s, time);
+    if (k < 0.03) return;
     const L = shipLength(s);
-    const P = shipPicture(s);
     const bow = s.x + s.face * L * 0.47;
     const stern = s.x - s.face * L * 0.46;
     const y = WORLD.surfaceY + heave * 0.3;
@@ -218,7 +225,21 @@ export class ShipView {
       g.fillStyle(0xf4fafb, 0.5 * k * (1 - t));
       g.fillEllipse(bx, y - 1 + t * 0.5, 3 + t * 6, 1.4);
     }
-    // bubbles churned by the propeller, under water at the stern
+    if (planing > 0)
+      for (let i = 0; i < 8; i++) {
+        const t = (time * 2.2 + i / 8) % 1;
+        g.fillStyle(0xffffff, 0.45 * planing * (1 - t));
+        g.fillCircle(bow + s.face * (2 + t * 8), y - 2 - t * 9 + t * t * 8, 0.8 + t * 1.6);
+      }
+  }
+
+  /** Bubbles churned by the propeller, only while it turns (owner, 8 ottobre: not while the ship coasts). */
+  private drawPropBubbles(s: ShipState, time: number): void {
+    const k = s.prop;
+    if (k < 0.03) return;
+    const g = this.fx;
+    const L = shipLength(s);
+    const P = shipPicture(s);
     const prop = {
       x: s.x + s.face * (P.propX - 0.5) * L,
       y: WORLD.surfaceY + (P.propY - P.waterline) * shipHeight(s),
@@ -232,11 +253,5 @@ export class ShipView {
         0.7 + t * 1.4,
       );
     }
-    if (planing > 0)
-      for (let i = 0; i < 8; i++) {
-        const t = (time * 2.2 + i / 8) % 1;
-        g.fillStyle(0xffffff, 0.45 * planing * (1 - t));
-        g.fillCircle(bow + s.face * (2 + t * 8), y - 2 - t * 9 + t * t * 8, 0.8 + t * 1.6);
-      }
   }
 }

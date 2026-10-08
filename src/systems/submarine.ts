@@ -156,9 +156,18 @@ export function leaveSub(g: SubWorld, events: GameEvent[]): void {
   events.push({ type: 'dove' });
 }
 
-/** Its body against rock: circles along the hull (SUBMARINE.body). */
-function hits(map: TileMap, x: number, y: number): boolean {
-  return SUBMARINE.body.some(([dx, r]) => map.hitCircle(x + dx, y, r));
+/** Its length in world units (each model its own: owner, 8 ottobre, it looked too small). */
+export const subLength = (s: { model: string }): number => subModel(s.model).lengthM * WORLD.unitsPerMetre;
+
+/** Its body: the circles of SUBMARINE.body (drawn for SUBMARINE.length), scaled to its model's length. */
+const subBody = (s: { model: string }): [number, number][] => {
+  const k = subLength(s) / SUBMARINE.length;
+  return SUBMARINE.body.map(([dx, r]) => [dx * k, r * k]);
+};
+
+/** Its body against rock. */
+function hits(map: TileMap, s: SubState, x: number, y: number): boolean {
+  return subBody(s).some(([dx, r]) => map.hitCircle(x + dx, y, r));
 }
 
 /** It ran into rock at this speed (one axis): it bounces back; fast enough, the hull takes it. */
@@ -234,13 +243,13 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   steer(s, input.helm, top, dt);
   burnFuel(s, input.helm, m.perKm, dt, events);
   const nx = s.x + s.vx * dt;
-  if (hits(g.map, nx, s.y)) {
+  if (hits(g.map, s, nx, s.y)) {
     bump(g, Math.abs(s.vx), events);
     s.vx = -s.vx * SUBMARINE.bump.bounce;
   } else s.x = nx;
   // no invisible floor any more (owner, 4 ottobre): deeper than its model, the pressure crushes the hull
   const ny = Math.max(SUBMARINE.restY, s.y + s.vy * dt); // it stays under the surface
-  if (hits(g.map, s.x, ny)) {
+  if (hits(g.map, s, s.x, ny)) {
     bump(g, Math.abs(s.vy), events);
     s.vy = -s.vy * SUBMARINE.bump.bounce;
   } else s.y = ny;
@@ -320,4 +329,4 @@ export function lampAim(g: { sub: SubState; diver: { aim: number } }): number {
 
 /** Its hull as circles in the world (for pushOutOfHull, hull.ts); none when it is not yours. */
 export const subHull = (s: SubState): HullPart[] =>
-  s.owned ? SUBMARINE.body.map(([dx, r]) => ({ x: s.x + dx, y: s.y, r })) : [];
+  s.owned ? subBody(s).map(([dx, r]) => ({ x: s.x + dx, y: s.y, r })) : [];

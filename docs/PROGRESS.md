@@ -1,5 +1,17 @@
 # Progressi
 
+## Ritocchi alla flotta (8 ottobre 2026) → v0.50.0
+
+**Fatto:** le richieste del proprietario dopo la prova dell'EH1 (dettagli nel CHANGELOG): grandezze di navi e sottomarini, sottomarino davanti al portellone, elica che gira e bolle solo quando spinge, suoni di accensione e spegnimento, cantiere con le cornici di rarità e la pagina della nave con la galleria.
+
+**Da provare sull'iPhone (v0.50.0):**
+1. Con l'EH1 apri il portellone: il sottomarino si vede nella stiva. Calalo: scende davanti alla nave.
+2. Confronta le grandezze con l'Aurelia (puoi riprenderla al cantiere: la permuta ti dà la differenza).
+3. Accendi il motore (suono), dai gas: l'elica gira e fa le bolle; togli il gas: la nave scivola, l'elica si ferma. Spegni: suono di spegnimento.
+4. Cantiere: tocca una nave, scorri col dito tra le immagini.
+
+**Prossimo:** parte 4b (secondo portellone e mezzi di superficie: Expedition Hunter 2, Poseidon, Imperium VI).
+
 ## Blocco 4a — La flotta, prima parte (8 ottobre 2026) → v0.49.0
 
 **Fatto:** cantiere navale a Porto Fango (scheda Navi) con le 8 navi; le navi sono modelli con lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar; Expedition Hunter 1 comprabile con il suo sottomarino squalo; carburante a 1 dente/L; via potenziamenti e sottomarini a parte (rimborsati, salvataggio v18); cockpit con le schede della nave; strumento di prova +5000 denti.

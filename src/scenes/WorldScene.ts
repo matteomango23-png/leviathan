@@ -244,7 +244,12 @@ export class WorldScene extends Phaser.Scene {
         this.effects.puff(e.x, WORLD.surfaceY + 2, 3, 0xe6f2f8, 20 + e.speed * 0.2);
       else if (e.type === 'hatchMoved') this.rig.shake(0.15);
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();
-      else if (e.type === 'rescued' && g.ship.aboard) this.ship.towed(g.ship);
+      else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
+        const g = this.state;
+        const near =
+          engineHeard({ ...g.ship, engineOn: true }, g.diver, 0, ENGINE_SOUND.ship.hearRange)?.near ?? 0;
+        this.session.sound.engineStartStop(e.type === 'engineStarted', near);
+      } else if (e.type === 'rescued' && g.ship.aboard) this.ship.towed(g.ship);
       else if (e.type === 'portArrived') {
         const port: GameEvent[] = [];
         enterPort(g, port);

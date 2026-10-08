@@ -34,6 +34,8 @@ export const ENGINE_SOUND = {
     hearRange: 500,
   },
   sub: { freq: [95, 170] as [number, number], volume: [0.03, 0.09] as [number, number], cutoff: 700 },
+  /** The ship's engine starting and stopping (owner, 8 ottobre): pitch range (Hz), length, coughs of the starter. */
+  startStop: { freq: [22, 60] as [number, number], seconds: 1.4, volume: 0.22, coughs: 3, coughGap: 0.16 },
   /** Gliding from one level to the next (seconds). */
   glide: 0.4,
   ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },

@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.50.0 — Ritocchi alla flotta (8 ottobre 2026)
+
+- **Le navi grandi si vedono grandi:** la vista del timone si allarga meno di quanto cresce la nave, così l'Expedition Hunter 1 appare più grande dell'Aurelia (e le navi da 90 m quasi il doppio).
+- **Sottomarini più grandi**, ognuno con la sua lunghezza: Batiscafo 9 m, Squalo d'acciaio 12 m (riempie il portellone dell'EH1).
+- **Il portellone aperto non copre più il sottomarino:** lo vedi nella stiva e mentre scende la rampa.
+- **L'elica gira:** quando il motore spinge, l'Expedition Hunter 1 mostra l'elica in funzione. Le bolle dell'elica ci sono solo mentre spinge, non quando la nave scivola da sola.
+- **Suoni di accensione e spegnimento** del motore, per tutte le navi (più deboli se sei lontano).
+- **Cantiere navale rifatto:**
+  - card grandi con la cornice del colore della rarità, come le bestie: grigia Aurelia, verde EH1 e Whale, blu Imperium e Stormtrooper, viola Poseidon ed EH2, oro Ocean's Nightmare;
+  - tocca una nave e si apre la sua **pagina**: scorri col dito (o con le frecce) tra nave, sottomarino e mezzi, con i puntini sotto, e trovi tutte le statistiche.
+
 ## v0.49.0 — La flotta, prima parte: il cantiere di Porto Fango (8 ottobre 2026)
 
 - **Cantiere navale a Porto Fango:** nel porto c'è la nuova scheda **Navi** con le card delle 8 navi, i loro mezzi e i numeri (lunghezza, velocità, serbatoio, sonar, vasca).
