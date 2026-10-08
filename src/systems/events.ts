@@ -42,6 +42,7 @@ export type GameEvent =
   | { type: 'subRepaired'; cost: number }
   | { type: 'bagFull' }
   | { type: 'engineStarted' }
+  | { type: 'harbourApproach' }
   | { type: 'engineStopped' }
   | { type: 'subTooDeep' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */

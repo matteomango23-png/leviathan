@@ -43,6 +43,8 @@ export interface ShipState {
   /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
    *  the propeller picture and its bubbles follow it). */
   prop: number;
+  /** Slowing down by itself into the harbour (not saved: says it once per approach). */
+  approaching: boolean;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
   fuel: number;
   fuelWarned: boolean;
@@ -84,6 +86,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     aboard: saved?.aboard ?? false,
     engineOn: saved?.engineOn ?? false,
     prop: 0,
+    approaching: false,
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : shipTank({ model: FIRST_SHIP }),
     fuelWarned: false,
     sonarOn: false,
@@ -188,6 +191,18 @@ export function sailShip(
   const half = shipLength(s) / 2;
   const from = s.x;
   const end = SEA_END_X - half;
+  // coming into Porto Fango (or to the end of the sea) it slows down by itself and stops at the berth (owner,
+  // 8 ottobre: at full speed you crashed into it every time, unseen)
+  const A = SHIP.approach;
+  const ahead = s.face < 0 ? s.x - PORTO_FANGO.shipDock : end - s.x;
+  if (ahead < A.range && s.speed > 0) {
+    const most = Math.sqrt(2 * A.decel * Math.max(0, ahead)); // the speed that stops it right there
+    if (s.speed > most) {
+      s.speed = most; // it follows the braking curve exactly: it stops at the berth, never all at once
+      if (!s.approaching && s.face < 0) events.push({ type: 'harbourApproach' });
+      s.approaching = true;
+    }
+  } else s.approaching = false;
   s.x = Math.max(SHIP_WEST_X, Math.min(end, s.x + s.face * s.speed * dt));
   const atEdge = s.x >= end ? 'seaEnd' : s.x <= SHIP_WEST_X ? 'shipWest' : null;
   if (atEdge && s.speed > 0 && s.face > 0 === (atEdge === 'seaEnd')) {

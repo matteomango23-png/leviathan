@@ -186,3 +186,36 @@ describe('after the first try (owner, 8 ottobre)', () => {
     expect(SHIP_MODELS.find((m) => m.id === 'nightmare')!.tier).toBe(5);
   });
 });
+
+describe('coming into Porto Fango (owner: at full speed you crashed into it every time)', () => {
+  it('the ship slows down by itself and stops at the berth, never all at once', () => {
+    const w: ShipWorld = {
+      ship: newShip({
+        x: PORTO_FANGO.shipDock + 1600,
+        face: -1,
+        hatchOpen: false,
+        bay: 'docked',
+        aboard: true,
+        fuel: 300,
+        model: 'aurelia',
+        engineOn: true,
+      }),
+      map,
+      sub: { owned: true, aboard: false },
+      diver: { x: 0, y: 0, vx: 0, vy: 0, face: -1 },
+    };
+    w.ship.speed = shipTopSpeed(w.ship);
+    const ev: GameEvent[] = [];
+    let last = w.ship.speed;
+    let worstDrop = 0;
+    for (let t = 0; t < 40; t += 0.05) {
+      sailShip(w, { throttle: 1, dir: -1, dive: 0 }, 0.05, ev, () => false);
+      worstDrop = Math.max(worstDrop, last - w.ship.speed);
+      last = w.ship.speed;
+    }
+    expect(ev).toContainEqual({ type: 'harbourApproach' });
+    expect(Math.abs(w.ship.x - PORTO_FANGO.shipDock)).toBeLessThan(25);
+    expect(w.ship.speed).toBeLessThan(1);
+    expect(worstDrop).toBeLessThan(10); // a gentle slowing down, not a crash (units/s in 1/20 s)
+  });
+});

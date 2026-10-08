@@ -282,10 +282,11 @@ describe('la nave non si blocca mai', () => {
     expect(events.some((e) => e.type === 'seaEnd')).toBe(true);
   });
 
-  it('a ovest non va oltre Porto Fango, e lo dice', () => {
+  it('a ovest non va oltre Porto Fango: rallenta da sola e si ferma al molo (8 ottobre)', () => {
     const { g, events } = sail(PORTO_FANGO.shipDock + 300, -1, 30);
-    expect(events.some((e) => e.type === 'shipWest')).toBe(true);
-    expect(g.ship.x).toBe(SHIP_WEST_X);
+    expect(events.some((e) => e.type === 'harbourApproach')).toBe(true);
+    expect(g.ship.x).toBeGreaterThanOrEqual(SHIP_WEST_X);
+    expect(Math.abs(g.ship.x - PORTO_FANGO.shipDock)).toBeLessThan(25);
   });
 
   it('rompe la lastra di ghiaccio senza rallentare (8 ottobre); il canale si richiude solo lontano', () => {

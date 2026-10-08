@@ -91,6 +91,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [`Tracce: ${e.text}`, 5];
     case 'outpostFound':
       return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'harbourApproach':
+      return ['In avvicinamento a Porto Fango: la nave rallenta da sola per attraccare.', 3.5];
     case 'shipWest':
       return [
         'La nave non va più a ovest del porto di Porto Fango: da qui prosegui col sottomarino o a nuoto.',

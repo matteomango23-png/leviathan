@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.50.2 — Fumo da treno a vapore, attracco automatico (8 ottobre 2026)
+
+- **Fumo come un treno a vapore:** nuvolette che escono quasi nere e restano nell'aria dove sono uscite, salgono, si gonfiano e diventano grigie. In corsa formano una scia lunga dietro la nave. Più gas, più fumo e più denso; da fermi esce un filo leggero.
+- **Arrivo a Porto Fango senza schianti:** avvicinandoti veloce, la nave rallenta da sola e si ferma dolcemente al molo ("In avvicinamento a Porto Fango…"). Vale anche alla fine del mare.
+
 ## v0.50.1 — Fumo dalle ciminiere (8 ottobre 2026)
 
 - **Fumo dalle ciminiere** quando il motore è acceso: sale piano da fermi, e in corsa il vento lo spinge all'indietro. Spegnendo il motore gli ultimi sbuffi si dissolvono. È disegnato dietro la nave.
