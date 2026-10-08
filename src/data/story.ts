@@ -128,9 +128,3 @@ export const STARTER = {
   evolves: (name: string, level: number): string => `Al livello ${level} diventa ${name}`,
   choose: 'Scegli',
 };
-
-/** The evolution on screen (ui/evolutionShow.ts). */
-export const EVOLUTION_TEXT = {
-  what: (name: string): string => `Cosa succede? ${name} si sta evolvendo!`,
-  done: (from: string, to: string): string => `${from} si evolve in ${to}!`,
-};

@@ -27,6 +27,8 @@ export function moveDetail(
   parent: HTMLElement,
   m: BattleMoveDef,
   pp?: { left: number; max: number },
+  /** In battle: what one hit does to the beast in front of you (lowest–highest roll). */
+  damage?: [number, number] | null,
 ): HTMLDivElement {
   const box = el('div', 'mdetail', parent);
   const head = el('div', 'mdetail-head', box);
@@ -40,6 +42,7 @@ export function moveDetail(
   };
   cell('Categoria', CATEGORY_NAMES[m.category]);
   cell('Potenza', m.power ? String(m.power) : '—');
+  if (damage) cell('Danno', damage[0] === damage[1] ? String(damage[0]) : `${damage[0]}–${damage[1]}`);
   cell('Precisione', m.accuracy === null ? '—' : String(m.accuracy));
   cell('PP', pp ? `${pp.left}/${pp.max}` : String(m.pp));
   if (m.priority) cell('Priorità', m.priority > 0 ? `+${m.priority}` : String(m.priority));

@@ -123,7 +123,6 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `bagScreen.ts`, `battleBag.ts` | Lo zaino a tasche come Pokémon, dal menu e in battaglia (su chi usare una cura, su quale mossa un Muschio). |
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
-| `evolutionShow.ts`, `evolution.css` | L'animazione di evoluzione (carta che si illumina, lampo, nuova forma); mette in pausa il mondo. |
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |

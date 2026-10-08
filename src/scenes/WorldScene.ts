@@ -1,6 +1,8 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
+import { ENGINE_SOUND } from '../data/audio';
+import { engineHeard } from '../systems/ship/ship';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
 import { diverModifiers } from '../systems/economy/gear';
@@ -279,9 +281,11 @@ export class WorldScene extends Phaser.Scene {
       dt,
     );
     const lever = input.helm;
+    const shipSound = engineHeard(g.ship, g.diver, lever.throttle, ENGINE_SOUND.ship.hearRange);
     this.session.sound.updateEngines(
-      g.ship.aboard ? lever.throttle : null,
+      shipSound?.level ?? null,
       g.sub.aboard ? Math.max(lever.throttle, Math.abs(lever.dive)) : null,
+      shipSound?.near ?? 0,
     );
 
     this.saveTimer += dt;

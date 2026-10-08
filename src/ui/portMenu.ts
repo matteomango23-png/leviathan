@@ -1,6 +1,6 @@
 // A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
-import { MARKET } from '../data/economy';
+import { BAG, MARKET } from '../data/economy';
 import { renderFuel, renderShipParts, renderSubs } from './portSubs';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
@@ -129,7 +129,7 @@ export class PortMenu {
     const sell = el('div', 'pcard-grid', b);
     portCard(sell, {
       icon: 'fish',
-      title: `Sacca: ${n} pesci`,
+      title: `Sacca: ${n}/${BAG.capacity} pesci`,
       text: n
         ? 'Il mercante compra tutto il pescato.'
         : 'Pesca con arpione, fiocine o rete: i pesci finiscono qui.',

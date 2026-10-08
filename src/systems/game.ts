@@ -1,6 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
+import { XP_RULES } from '../data/progression';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
@@ -312,7 +313,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
   // every fish caught or eaten is experience for the beast in the water (or the first of the team)
   const fed = eater ?? g.beasts.team[0];
-  const fishCaught = events.slice(fishMark).filter((e) => e.type === 'fishCaught').length + eaten.length;
+  const fishCaught =
+    events.slice(fishMark).filter((e) => e.type === 'fishCaught').length +
+    Math.min(eaten.length, XP_RULES.fishPerBiteMax);
   if (fed && fishCaught > 0) gainXp(fed, fishXp(fed.level) * fishCaught, events);
   // a growing beast (levels 31–50) keeps the fish for its nourishment bar; the rest go in your bag
   for (const f of eaten) {

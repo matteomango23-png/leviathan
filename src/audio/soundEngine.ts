@@ -47,10 +47,18 @@ export class SoundEngine {
     this.sea?.update(m, dt);
   }
 
-  /** Every frame: the engines you drive (null: not driving that one). */
-  updateEngines(ship: number | null, sub: number | null): void {
+  /**
+   * Every frame: the engines (null: off, or not yours to hear). `shipNear` 1 next to the ship … 0 far from it: a
+   * running engine is heard less the farther you swim (owner, 8 ottobre).
+   */
+  updateEngines(ship: number | null, sub: number | null, shipNear = 1): void {
     if (!this.ctx || this.ctx.state !== 'running') return;
-    this.engines?.update(this.battle ? null : ship, this.battle ? null : sub);
+    this.engines?.update(this.battle ? null : ship, this.battle ? null : sub, shipNear);
+  }
+
+  /** The sea stops (pause, menus): the engines fall silent at once (they are not updated while it waits). */
+  silence(): void {
+    this.engines?.update(null, null);
   }
 
   /** The sonar's ping. */
@@ -62,6 +70,7 @@ export class SoundEngine {
   setBattle(on: boolean): void {
     if (on === this.battle) return;
     this.battle = on;
+    if (on) this.silence(); // the World scene waits under the battle: nobody updates the engines
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.sea?.fadeTo(on ? 0 : 1, t, AUDIO.fade);

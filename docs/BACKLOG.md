@@ -2,8 +2,8 @@
 
 I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blocchi. **Ordine concordato** (un blocco alla volta, ognuno pianificato in Plan mode prima di scrivere codice):
 
-1. **Nuovo inizio senza storia** (v0.47.0)
-2. Correzioni rapide
+1. ✅ Nuovo inizio senza storia (v0.47.0)
+2. ✅ Correzioni rapide (v0.48.0)
 3. Decisioni di design (le domande del punto 14, scritte nel GDD)
 4. La flotta (navi, sottomarini, mezzi nei portelloni, concessionario)
 5. Sonar e spedizioni

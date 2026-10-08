@@ -229,7 +229,15 @@
   }
 }
 
-/* the evolution screen: the old and the new shape flash white, faster and faster */
+/* the evolution screen: the old and the new shape flash white, faster and faster (the only evolution animation
+   since 8 ottobre: the card one is gone, its look of the whole screen kept here) */
+.mscreen.evo {
+  z-index: 70;
+  flex-direction: column;
+  gap: 14px;
+  background: radial-gradient(ellipse at center, rgba(10, 20, 26, 0.92), rgba(0, 0, 0, 0.97));
+  font-family: 'Baloo 2', system-ui, sans-serif;
+}
 .evo-card {
   width: min(420px, 100%);
   align-items: center;
@@ -237,7 +245,7 @@
 .evo-stage {
   position: relative;
   width: min(300px, 55vh);
-  aspect-ratio: 1;
+  height: min(62vh, 420px);
 }
 .evo-stage img {
   position: absolute;

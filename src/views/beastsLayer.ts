@@ -2,9 +2,9 @@
 // alfa, legendary, Guardians) shimmer with a pale glow so you notice them in the dark. Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
-import { BEAST_TEMPER, CETACEANS, TEAM_RULES } from '../data/beasts';
+import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { artKeysOf, formKey, speciesOf, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, formKey, speciesOf, tailUpDown, type BeastForm } from '../systems/beasts/forms';
 import { riderSeat } from '../systems/beasts/combat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
@@ -106,7 +106,7 @@ export class BeastsLayer {
         jaw: w.jaw,
         length: w.length,
         girth: speciesOf(w.form).girth,
-        whale: CETACEANS.includes(w.form.speciesId),
+        whale: tailUpDown(w.form),
         flash: w.flash,
         alpha: 1,
       });
@@ -130,7 +130,7 @@ export class BeastsLayer {
           phase: w.phase + 1.3 * (k + 1),
           jaw: 0,
           length: w.length * (0.82 + 0.06 * k),
-          whale: CETACEANS.includes(w.form.speciesId),
+          whale: tailUpDown(w.form),
           flash: w.flash,
           alpha: 1,
         });
@@ -151,7 +151,7 @@ export class BeastsLayer {
         jaw: c.jaw,
         length: c.length,
         girth: speciesOf(b.form).girth,
-        whale: CETACEANS.includes(b.form.speciesId),
+        whale: tailUpDown(b.form),
         flash: c.flash,
         alpha: c.alpha,
       });

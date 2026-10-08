@@ -29,7 +29,7 @@ export const REGIONS: RegionDef[] = [
 /** Small fish: caught with harpoon, fiocine or net; sold for teeth; eaten by beasts (nourishment). */
 export interface FishDef { id: string; name: string; sellPrice: number; effect?: 'cuore' | 'ossigeno'; }
 export const FISH: FishDef[] = [
-  { id: 'sardina', name: 'Sardina argentea', sellPrice: 2, effect: 'cuore' },
+  { id: 'sardina', name: 'Sardina argentea', sellPrice: 1, effect: 'cuore' }, // was 2 (owner, 8 ottobre: too many teeth)
   { id: 'sgombro', name: 'Sgombro', sellPrice: 3 },
   { id: 'cefalo', name: 'Cefalo', sellPrice: 4 },
   { id: 'pesce_arciere', name: 'Pesce arciere', sellPrice: 7 },

@@ -76,7 +76,8 @@ export const SUBMARINE = {
   reach: 26, // units: you climb in this close to it
   accel: 110, // units/s² speeding up (and braking, with the lever the other way)
   coast: 45, // units/s² it slows down by itself, throttle down
-  drag: 1.5, // after a bump: how fast the bounce dies out
+  drag: 1.5, // after a bump: how fast the bounce dies out…
+  bounceStop: 3, // …and below this speed (units/s) it is over: the levers drive again (owner, 8 ottobre: the gas got stuck)
   /** Beasts at least this long (m) that are aggressive come at it and ram it; the others slip away. */
   giantLengthM: 7,
   ram: {

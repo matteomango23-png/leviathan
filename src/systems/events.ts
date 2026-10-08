@@ -40,6 +40,7 @@ export type GameEvent =
   /** The submarine broke; with the ship it is towed to its hold, you at the helm (`toShip`). */
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRepaired'; cost: number }
+  | { type: 'bagFull' }
   | { type: 'subTooDeep' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }
@@ -60,7 +61,7 @@ export type GameEvent =
   | { type: 'rumourHeard'; name: string }
   | { type: 'echoFound'; name: string; depthM: number }
   | { type: 'tracesFound'; id: string; text: string }
-  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' | 'stopToDive' | 'stopToLeave' }
+  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' | 'stopToDive' | 'stopToLeave' | 'subBroken' }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }
   | { type: 'subLaunched' }

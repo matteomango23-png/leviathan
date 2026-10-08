@@ -178,7 +178,7 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
     6. ✅ ricompense per regione: relitti, missioni di spedizione, pezzi per la nave (v0.41.0). Da fare: un tempio per regione, pesci rari.
 12. **I blocchi di feedback (dall’8 ottobre 2026, dopo 6 ore di gioco del proprietario; dettagli in `docs/BACKLOG.md`):**
     1. ✅ nuovo inizio senza storia, zona protetta sulla costa (v0.47.0);
-    2. correzioni rapide;
+    2. ✅ correzioni rapide (v0.48.0);
     3. decisioni di design;
     4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario);
     5. sonar e spedizioni;

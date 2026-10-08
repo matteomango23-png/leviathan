@@ -138,7 +138,7 @@ export function movesPage(box: HTMLElement, c: PageContext): void {
       });
     }
     // tap a move for all of its details
-    const def = ids ? BATTLE_MOVE_BY_ID[ids[i]!] : undefined;
+    const def = ids ? BATTLE_MOVE_BY_ID[m.id] : undefined; // by its id (8 ottobre: never another row's move)
     let open: HTMLElement | null = null;
     row.addEventListener('click', () => {
       if (open) {

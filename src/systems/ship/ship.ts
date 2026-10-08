@@ -5,12 +5,14 @@
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP, SHIP_UPGRADES, type ShipUpgradeDef } from '../../data/ship';
 import { PORTO_FANGO } from '../../data/economy';
+import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
 import { litresFor } from '../fuelBurn';
 import { knotsOf, stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipSpan } from './geometry';
-import { breakIce, iceIn, refreeze, SEA_END_X, SHIP_WEST_X, type BrokenIce } from './surface';
+import { breakIce, refreeze, SEA_END_X, SHIP_WEST_X, type BrokenIce } from './surface';
+import { icebergAcross } from '../world/icebergs';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
@@ -31,6 +33,9 @@ export interface ShipState {
   dockFrom: { x: number; y: number; t: number; at: number } | null;
   /** You are at the helm. */
   aboard: boolean;
+  /** The engine runs (owner, 8 ottobre): it starts with the throttle, burns a little even still, and the button
+   *  switches it off. Off, the ship coasts to a stop, silent. */
+  engineOn: boolean;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
   fuel: number;
   fuelWarned: boolean;
@@ -52,6 +57,7 @@ export interface SavedShip {
   bay: 'none' | 'docked' | 'out';
   aboard: boolean;
   fuel: number;
+  engineOn?: boolean; // added 8 ottobre: missing = off
   upgrades: string[];
 }
 
@@ -94,6 +100,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     dockFrom: null,
     aboard: saved?.aboard ?? false,
     upgrades: [...(saved?.upgrades ?? [])],
+    engineOn: saved?.engineOn ?? false,
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : SHIP.fuel.tank,
     fuelWarned: false,
     sonarOn: false,
@@ -115,6 +122,7 @@ export function saveShip(s: ShipState): SavedShip | null {
     bay,
     aboard: s.aboard,
     fuel,
+    engineOn: s.engineOn,
     upgrades: [...s.upgrades],
   };
 }
@@ -170,9 +178,14 @@ export function sailShip(
 
   const { x0, x1 } = shipSpan(s);
   const bow = s.face > 0 ? x1 : x0;
-  const icy = iceIn(g.map, Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
+  // the ice sheet breaks under the bow without slowing it; an iceberg slows it down (owner, 8 ottobre: entering the
+  // Banchisa capped the ship at 10 knots)
+  const icy = icebergAcross(Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
   const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1); // dry, it drifts to a stop
-  if (helm && !s.hatchOpen && s.hatch === 0) {
+  // the throttle off zero starts the engine; dry, it stops (owner, 8 ottobre)
+  if (helm && helm.throttle > 0 && s.fuel > 0) s.engineOn = true;
+  if (s.fuel <= 0) s.engineOn = false;
+  if (helm && s.engineOn && !s.hatchOpen && s.hatch === 0) {
     const h = stepHeading(s.face, s.speed, helm, top, SHIP, dt);
     s.face = h.face;
     s.speed = h.speed;
@@ -193,8 +206,9 @@ export function sailShip(
       s.shallowWarn = 6;
     }
   }
-  const engine = helm && !s.hatchOpen ? helm.throttle : 0;
-  s.fuel = Math.max(0, s.fuel - litresFor(Math.abs(s.x - from), engine, SHIP.fuel.perKm));
+  const engine = helm && s.engineOn && !s.hatchOpen ? helm.throttle : 0;
+  const idle = s.engineOn ? (SHIP.fuel.idlePerMinute / 60) * dt : 0; // running, it burns a little even still
+  s.fuel = Math.max(0, s.fuel - idle - litresFor(Math.abs(s.x - from), engine, SHIP.fuel.perKm));
   if (s.fuel > 0) s.fuelWarned = false;
   else if (!s.fuelWarned) {
     s.fuelWarned = true;
@@ -214,4 +228,20 @@ export function sailShip(
     Object.assign(g.diver, { x: p.x, y: p.y, vx: s.face * s.speed, vy: 0, face: s.face });
   }
   return changed;
+}
+
+/**
+ * What its engine sounds like to you (owner, 8 ottobre): null when it is off; otherwise how hard it works (the lever
+ * at the helm, its speed when you are elsewhere) and how near you are (1 aboard … 0 at `hearRange` or farther).
+ */
+export function engineHeard(
+  s: ShipState,
+  you: { x: number; y: number },
+  throttle: number,
+  hearRange: number,
+): { level: number; near: number } | null {
+  if (!s.owned || !s.engineOn) return null;
+  const level = s.aboard ? throttle : s.speed / Math.max(1, shipTopSpeed(s));
+  const near = s.aboard ? 1 : Math.max(0, 1 - Math.hypot(you.x - s.x, you.y - WORLD.surfaceY) / hearRange);
+  return { level, near };
 }

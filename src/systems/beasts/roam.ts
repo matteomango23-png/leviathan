@@ -47,7 +47,10 @@ export function wanderPoint(
   const span = 320;
   const ax = near ? Math.max(x0, near.x - span) : x0;
   const bx = near ? Math.min(x1, near.x + span) : x1;
-  return map.randomOpen(rng, ax, Math.max(y0, map.surfaceY + r), bx, y1, r);
+  const p = map.randomOpen(rng, ax, Math.max(y0, map.surfaceY + r), bx, y1, r);
+  // crabs and isopods walk on the floor: their places are on it (owner, 8 ottobre)
+  if (BEAST_TEMPER[b.form.speciesId]?.floor) p.y = map.floorBelow(p.x, p.y) - r * 0.5;
+  return p;
 }
 
 /** A place in the dark to appear: in its area, at least ROAM.spawnMinDistance from you. */
@@ -122,6 +125,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   tx = clamp(tx, x0 - leash, x1 + leash);
   ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
   if ((spec?.surface || uniqueOf(b.form)?.surface) && b.mood !== 'chase') ty = top;
+  if (spec?.floor && b.mood === 'flee') ty = b.y; // slipping away along the floor, not swimming up
 
   // turn around only out of the light (a visible turn is allowed against a wall)
   const want = Math.sign(tx - b.x) || b.face;

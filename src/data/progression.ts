@@ -32,6 +32,9 @@ export const XP_RULES = {
   guardianMult: 1.5, // like a trainer's beast in Pokémon
   /** A small fish caught or eaten: worth a beaten beast of this yield and of the eater's own level. Tuning. */
   fishYield: 10,
+  /** One bite of a big beast counts as at most this many fish (owner, 8 ottobre: a humpback gulping a school of 22
+   *  sardines grew by handfuls of levels). Tuning. */
+  fishPerBiteMax: 2,
   benchShare: 0.5, // the team beasts not in the water get this share, like the modern Exp. Share
 };
 

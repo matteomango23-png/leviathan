@@ -84,3 +84,7 @@ export function icebergsOfStretch(k: number): IcebergBox[] {
   cache.set(k, out);
   return out;
 }
+
+/** Does an iceberg stand anywhere between x0 and x1? (the ship slows down passing one: owner, 8 ottobre) */
+export const icebergAcross = (x0: number, x1: number): boolean =>
+  icebergsNear((x0 + x1) / 2).some((b) => x1 > b.left && x0 < b.left + b.w);

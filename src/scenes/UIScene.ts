@@ -13,7 +13,6 @@ import { canDashNow } from '../systems/game';
 import { storyHoldsDiver } from '../systems/story';
 import { needsStarter } from '../systems/starter';
 import { StarterPicker } from '../ui/starterPicker';
-import { EvolutionShow } from '../ui/evolutionShow';
 import type { SceneData, Session } from './session';
 
 export class UIScene extends Phaser.Scene {
@@ -26,7 +25,6 @@ export class UIScene extends Phaser.Scene {
   private backpack!: BackpackBar;
   private dialogue!: DialogueBox;
   private starter!: StarterPicker;
-  private evolution!: EvolutionShow;
 
   constructor() {
     super('UI');
@@ -46,11 +44,6 @@ export class UIScene extends Phaser.Scene {
     this.backpack = new BackpackBar(this.root, this.session);
     this.dialogue = new DialogueBox(this.root);
     this.starter = new StarterPicker(this.root, () => this.session.game);
-    // the sea waits while an evolution is on screen
-    this.evolution = new EvolutionShow(document.body, (paused) => {
-      if (paused) this.scene.pause('World');
-      else if (!this.session.paused && !this.session.inBattle) this.scene.resume('World');
-    });
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -85,7 +78,6 @@ export class UIScene extends Phaser.Scene {
   private onGameEvents(events: GameEvent[]): void {
     if (!this.session.game) return;
     this.hud.onEvents(events, this.session.game);
-    this.evolution.onEvents(events, this.session.game);
   }
 
   private onToast(text: string): void {
@@ -109,6 +101,7 @@ export class UIScene extends Phaser.Scene {
     else {
       s.paused = true;
       this.scene.pause('World');
+      s.sound.silence(); // owner, 8 ottobre: the engine went on in the pause menu
     }
     this.scene.launch('Menus', { session: s, mode });
   }

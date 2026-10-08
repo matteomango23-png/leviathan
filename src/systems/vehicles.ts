@@ -1,10 +1,12 @@
 // The ship and the submarine together (data/ship.ts, data/submarine.ts): the helm buttons, the ship, the submarine
 // on its ramp or in the sea, their solid hulls, and what the context button does about them. game.ts calls these.
 import { PORTS, type PortDef } from '../data/economy';
+import { shipAlongside } from './economy/places';
 import { SHIP } from '../data/ship';
 import type { GameEvent } from './events';
 import { pushOutOfHull, type HullPart } from './hull';
 import type { InputState } from './input';
+import { freshHelm } from './helm';
 import { helmPoint, shipHull } from './ship/geometry';
 import {
   boardShip,
@@ -18,7 +20,7 @@ import {
   type HatchWorld,
 } from './ship/hatch';
 import { sailShip, type ShipWorld } from './ship/ship';
-import { restAboard, stepSub, subHull } from './submarine';
+import { repairSub, restAboard, stepSub, subHull } from './submarine';
 
 export type VehicleWorld = HatchWorld & ShipWorld & { diver: { dead: boolean } };
 
@@ -35,15 +37,26 @@ export const onRamp = (g: VehicleWorld): boolean => g.ship.bay === 'launching' |
  */
 export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, events: GameEvent[]): boolean {
   const ship = g.ship;
+  // into a vehicle: its levers start at rest, pointing where it points (owner, 8 ottobre: the levers kept the last
+  // vehicle's way, and on the first step at the helm the still ship turned round, the submarine in its hold with it)
+  const freshLevers = (face: 1 | -1): void => void Object.assign(input.helm, freshHelm(face));
+  if (events.some((e) => e.type === 'shipBoarded')) freshLevers(ship.face);
+  if (events.some((e) => e.type === 'boarded')) freshLevers(g.sub.face);
   if (input.helmCmd === 'hatch') toggleHatch(g, events);
   else if (input.helmCmd === 'launch') launchSub(g, events);
   else if (input.helmCmd === 'dive') diveFromShip(g, events);
   else if (input.helmCmd === 'sonar' && ship.aboard) ship.sonarOn = !ship.sonarOn;
+  else if (input.helmCmd === 'engine' && ship.aboard) {
+    // the engine button (owner, 8 ottobre): off, the throttle goes back to zero; on, it idles
+    ship.engineOn = !ship.engineOn && ship.fuel > 0;
+    if (!ship.engineOn) input.helm.throttle = 0;
+  }
   const far = (x: number): boolean =>
     Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;
   const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far);
   if (tiles.length) events.push({ type: 'tilesChanged', tiles });
   const ramp = stepBay(g, dt, events);
+  if (events.some((e) => e.type === 'subDocked')) freshLevers(ship.face);
   const inSub = !ramp && stepSub(g, input, dt, events);
   // broken, the submarine is towed to the ship's hold (not to Portofosco), you back at the helm
   const wreck = events.find((e) => e.type === 'subWrecked');
@@ -53,6 +66,8 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     ship.aboard = true;
     g.sub.aboard = false;
     Object.assign(g.diver, helmPoint(ship), { vx: 0, vy: 0 });
+    freshLevers(ship.face);
+    repairSub(g, events); // in the hold the crew mends it, for teeth, like a port
   }
   return ship.aboard || ramp || inSub;
 }
@@ -77,7 +92,7 @@ export function pushOutOfVehicles(
 export function shipPort(g: VehicleWorld): PortDef | null {
   const s = g.ship;
   if (!s.aboard || s.speed >= SHIP.stillBelow) return null;
-  return PORTS.find((p) => Math.abs(s.x - p.shipDock) < SHIP.dockReachPort) ?? null;
+  return PORTS.find((p) => shipAlongside(s.x, p)) ?? null;
 }
 
 /** What the context button does about the vehicles (null: nothing here). */

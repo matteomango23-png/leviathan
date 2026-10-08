@@ -6,7 +6,7 @@ import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
 import type { Action, BattleState } from '../systems/battle/battle';
-import { canUse, effectiveness, named, type Fighter } from '../systems/battle/fighter';
+import { canUse, damageRange, effectiveness, named, type Fighter } from '../systems/battle/fighter';
 import { formName, formStars, formType } from '../systems/beasts/forms';
 import { rarityTier } from '../systems/battle/stage';
 import './battle.css';
@@ -189,7 +189,12 @@ export class BattleUi {
             () => {
               if (!info) return done({ kind: 'move', index: i });
               detail?.remove();
-              detail = moveDetail(m, bm.move, { left: bm.pp, max: bm.maxPp });
+              detail = moveDetail(
+                m,
+                bm.move,
+                { left: bm.pp, max: bm.maxPp },
+                damageRange(me, s.foe, bm.move),
+              );
               detail.classList.add('bmove-detail');
               m.prepend(detail);
             },

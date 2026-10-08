@@ -30,6 +30,8 @@ import {
 
 /** A battle move, like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
 export interface SheetMove {
+  /** Its id: the sheet's rows find their move by it, never by their place in a list. */
+  id: string;
   name: string;
   typeName: string;
   typeColor: string;
@@ -138,6 +140,7 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     .map((id) => BATTLE_MOVE_BY_ID[id])
     .filter((m): m is BattleMoveDef => !!m)
     .map((m, i) => ({
+      id: m.id,
       name: m.name,
       typeName: typeNameOf(m.type),
       typeColor: typeColorOf(m.type),
