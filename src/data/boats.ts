@@ -96,6 +96,9 @@ export const BOAT = {
   stillBelow: 28,
   /** It stops this far (units) from the edge of the ice sheet: it cannot break it. */
   iceMargin: 4,
+  /** Its view (owner, 8 ottobre: like the submarine's, closer than the helm's, so the boat does not look tiny):
+   *  sea shown top to bottom, how far it may look above the surface, and how far ahead at top speed (units). */
+  camera: { viewHeightUnits: 150, minY: -90, lookAhead: 90 },
   /** The engine sound: higher and quicker than the ship's. */
   soundPitch: 1.8,
 };

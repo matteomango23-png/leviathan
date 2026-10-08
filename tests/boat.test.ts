@@ -21,6 +21,8 @@ import { buyShip } from '../src/systems/ship/shipyard';
 import { iceIn } from '../src/systems/ship/surface';
 import { ENDLESS } from '../src/data/endless';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { lampAim } from '../src/systems/submarine';
+import { cameraAim } from '../src/systems/shipCamera';
 import { giveVessels } from './helpers/vessels';
 
 const map = generateWorld();
@@ -124,6 +126,25 @@ describe('two hatches', () => {
 });
 
 describe('the speedboat', () => {
+  it('in its hold it rises to float at the surface as its hatch opens (owner, 8 ottobre)', () => {
+    const { g, input } = withShip('eh2');
+    const low = g.boat.y;
+    expect(low).toBeGreaterThan(WORLD.surfaceY); // the hold is under the waterline
+    cmd(g, 'hatch2', input);
+    run(g, SHIP.hatchSeconds + 0.1, input);
+    expect(g.boat.y).toBeLessThanOrEqual(WORLD.surfaceY);
+  });
+
+  it('its headlight points where it goes; the camera stays close (like the submarine)', () => {
+    const { g, input } = boatOut();
+    input.helm.dir = -1;
+    input.helm.throttle = 0.3;
+    run(g, 0.5, input);
+    expect(g.boat.face).toBe(-1);
+    expect(lampAim(g)).toBeCloseTo(Math.PI);
+    expect(cameraAim(g, 0).viewH).toBe(BOAT.camera.viewHeightUnits);
+  });
+
   it('goes down its ramp onto the water and races faster than any ship', () => {
     const { g, input } = boatOut();
     expect(g.boat.y).toBe(WORLD.surfaceY);

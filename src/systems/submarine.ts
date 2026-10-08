@@ -323,7 +323,13 @@ export const subWakePoint = (s: SubState): { x: number; y: number } => ({
 });
 
 /** Where the lamp points: the diver's aim, or in the submarine where its nose points. */
-export function lampAim(g: { sub: SubState; diver: { aim: number } }): number {
+export function lampAim(g: {
+  sub: SubState;
+  diver: { aim: number };
+  boat?: { aboard: boolean; face: 1 | -1 };
+}): number {
+  // in a vehicle its headlight points where it goes (owner, 8 ottobre: the boat's stayed to the right)
+  if (g.boat?.aboard) return g.boat.face > 0 ? 0 : Math.PI;
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
 
