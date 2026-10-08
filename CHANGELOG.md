@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.52.2 — Pagina della nave sistemata (8 ottobre 2026)
+
+- La pagina della nave al cantiere ora sta dentro lo schermo dell'iPhone e **scorre col dito**; prima le righe uscivano dal riquadro e non si potevano raggiungere.
+- Il riquadro non è più trasparente (sotto si leggeva il menu del porto).
+- Il nome della nave resta in alto e il pulsante Compra / Usa / Vendi resta sempre visibile in basso mentre scorri.
+
 ## v0.52.1 — Strumenti di prova dal gioco sulla Home (8 ottobre 2026)
 
 - **Temporaneo:** toccando 5 volte "Versione …" in fondo al menu di pausa si accendono (o spengono) gli strumenti di prova, anche nel gioco installato sulla Home. Nuovo pulsante "+50.000 denti" per provare tutte le navi. Da togliere prima della fine del gioco.
