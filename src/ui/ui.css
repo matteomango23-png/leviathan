@@ -1865,7 +1865,7 @@ img.albino-art {
 }
 /* the buttons that work only with the ship still fade out under way and back in (owner, 9 ottobre) */
 .helm-btn.still-only {
-  transition: opacity 0.35s ease;
+  transition: opacity 0.5s ease;
 }
 .helm-buttons.under-way .helm-btn.still-only {
   opacity: 0;

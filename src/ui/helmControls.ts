@@ -261,7 +261,9 @@ export class HelmControls {
     // they fade out under way and back in once still (owner, 9 ottobre: they popped in and out at once)
     const ship = info.mode === 'ship';
     for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn]) b.hidden = !ship;
-    this.buttons.classList.toggle('under-way', ship && !still);
+    // all together, as soon as the throttle moves (owner, 9 ottobre: they went one by one, seconds later, while a
+    // heavy ship slowly got going); back once it is still with the throttle at zero
+    this.buttons.classList.toggle('under-way', ship && (!still || helm.throttle > 0.01));
     this.cockpitBtn.hidden = info.mode !== 'ship';
     this.engineBtn.hidden = info.mode === 'sub';
     const share = Math.max(0, Math.min(1, info.fuel / Math.max(1, info.tank)));
