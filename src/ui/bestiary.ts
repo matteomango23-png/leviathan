@@ -1,7 +1,7 @@
 // The bestiary (like a Pokédex): every beast, swarm and fish. Unknown ones are silhouettes,
 // seen ones are in shadow, tamed ones are in colour. Tap a beast to open its sheet.
 import { RARITY } from '../data/cards';
-import { SPECIES } from '../data/species';
+import { GAME_SPECIES } from '../data/species';
 import { FISH, SWARMS } from '../data/world';
 import { formKey, formName, formStars, type BeastForm } from '../systems/beasts/forms';
 import { ART_KEYS } from '../data/sprites.generated';
@@ -25,13 +25,13 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
 
   const team = g.beasts.team;
   const tamedCount = (id: string) => team.filter((b) => b.form.speciesId === id).length;
-  const seenBeasts = SPECIES.filter((s) => g.seen.has(s.id) || tamedCount(s.id) > 0).length;
-  const tamedBeasts = SPECIES.filter((s) => tamedCount(s.id) > 0).length;
+  const seenBeasts = GAME_SPECIES.filter((s) => g.seen.has(s.id) || tamedCount(s.id) > 0).length;
+  const tamedBeasts = GAME_SPECIES.filter((s) => tamedCount(s.id) > 0).length;
   el(
     'p',
     'bestiary-count',
     panel,
-    `Bestie viste ${seenBeasts}/${SPECIES.length} · domate ${tamedBeasts}/${SPECIES.length}`,
+    `Bestie viste ${seenBeasts}/${GAME_SPECIES.length} · domate ${tamedBeasts}/${GAME_SPECIES.length}`,
   );
 
   const body = el('div', 'bestiary-body', panel);
@@ -71,7 +71,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     tiles.sort((a, b) => (byRarity ? n(b, 'stars') - n(a, 'stars') : 0) || n(a, 'order') - n(b, 'order'));
     grid.append(...tiles);
   });
-  SPECIES.forEach((s, i) => {
+  GAME_SPECIES.forEach((s, i) => {
     const owned = team.filter((b) => b.form.speciesId === s.id);
     const seen = g.seen.has(s.id) || owned.length > 0;
     const form: BeastForm = { speciesId: s.id, variant: 'comune' };

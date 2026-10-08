@@ -1,5 +1,27 @@
 # Progressi
 
+## Blocco 1 — Nuovo inizio senza storia (8 ottobre 2026) → v0.47.0
+
+**Contesto:** il proprietario ha giocato più di 6 ore e ha raccolto molti feedback, ora in `docs/BACKLOG.md` divisi in 10 blocchi, nell'ordine concordato. **Ogni blocco si pianifica in Plan mode prima di scrivere codice.** Prossimo: **blocco 2, correzioni rapide** (elenco nel BACKLOG).
+
+**Fatto:**
+- tolti i capitoli 1–4 (la storia è in pausa fino al blocco 10);
+- nuovo inizio: barca di Aurelio, starter, tutorial (nuota, 5 sardine, scatto, doma, molo), appuntamento a Porto Fango, dove arrivano nave e sottomarino nella stiva;
+- costa senza superpredatori;
+- Sfregiato, Re Corallo e Piovra segnati `storyOnly` e fuori dal gioco;
+- tessera senza medaglie;
+- salvataggio v17;
+- limite dei test a 20 s.
+
+**Da provare sull'iPhone (v0.47.0):**
+1. **Prima di aggiornare, esporta il salvataggio** (Pausa → Esporta).
+2. Dopo l'aggiornamento: la tua partita si carica, Piovra e Re Corallo non sono più in squadra (al loro posto quelle della riserva), nave e sottomarino sono dove li avevi lasciati.
+3. Bestiario e Tessera: niente Piovra, Re Corallo, Sfregiato né medaglie.
+4. Partita nuova (in Safari privato, oppure Pausa → Nuova partita dopo aver esportato: cancella quella in corso): barca di Aurelio, scelta del compagno, i cinque compiti del tutorial, il dialogo al molo, poi a nuoto fino a Porto Fango (sotto l'isola). Lì Aurelio ti dà la nave: sali a bordo e cala il sottomarino.
+5. Nella Baia e nel Delta non devono comparire squali bianchi né coccodrilli marini.
+
+**Da sapere:** il Calamaro colossale ora è una bestia normale, ma non ha immagini: non compare finché non le generi (blocco 8). Nel bestiario resta "???".
+
 ## Sessione cloud 1 — Stacco netto della telecamera (5 ottobre 2026) → v0.46.0
 
 **Fatto:** vista del timone o tua, mai mescolate: il cambio è uno stacco con dissolvenza (`CAMERA.cutFadeMs`, `CameraRig.fadeCut`); misurato fotogramma per fotogramma: un solo salto, poi fermo. Barra dello zaino sotto la pausa.

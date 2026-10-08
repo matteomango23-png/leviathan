@@ -233,7 +233,7 @@ export interface ZoneDef {
   yMax: number;
 }
 export const ZONES: ZoneDef[] = [
-  { name: 'Tana dello Sfregiato', xMin: bay(780) - 220, xMax: bay(780) + 220, yMin: 340, yMax: 512 }, // LAIR in guardians.ts
+  { name: 'Grotta delle ossa', xMin: bay(780) - 220, xMax: bay(780) + 220, yMin: 340, yMax: 512 }, // LAIR in scenery.ts
   { name: 'Spiaggia di Portofosco', xMin: 0, xMax: LAYOUT.bay.x0, yMin: -Infinity, yMax: 420 },
   { name: 'Baia di Portofosco', xMin: LAYOUT.bay.x0, xMax: LAYOUT.delta.x0, yMin: -Infinity, yMax: 420 },
   { name: 'Delta delle Mangrovie', xMin: LAYOUT.delta.x0, xMax: LAYOUT.island.x0, yMin: -Infinity, yMax: 420 },

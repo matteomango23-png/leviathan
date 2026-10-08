@@ -64,7 +64,7 @@ export const ramsSubmarine = (w: WildBeast): boolean =>
 /** Wild beasts appear, swim, leave when you are far, and touch you. */
 export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): void {
   const d = g.diver;
-  let present = g.beasts.wilds.filter((w) => !w.arena && isInWater(w)).length;
+  let present = g.beasts.wilds.filter((w) => isInWater(w)).length;
   const hidden = !!g.beasts.decoy;
   const aboard = g.beasts.aboard; // in the submarine: the big hunters ram it, the others slip away
   const lure = g.beasts.lure;
@@ -120,12 +120,11 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   };
   const ready: WildBeast[] = [];
   for (const w of g.beasts.wilds) {
-    if (w.arena) continue; // moved by the Guardian fight (guardian.ts)
     if (!isInWater(w)) {
       if (lured(w)) w.respawn = Math.min(w.respawn, ITEM_RULES.bait.respawn);
       w.respawn -= dt;
       const room = present < WILD_RULES.maxPresent || lured(w);
-      if (w.respawn > 0 || d.dead || g.beasts.arena || !room) continue;
+      if (w.respawn > 0 || d.dead || !room) continue;
       if (w.spawn.endless) {
         if (wakeResident(w)) present++;
       } else if (inArea(w, d.x, d.y, 0)) ready.push(w);
@@ -154,7 +153,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the
   // first of the list, so the same few came every time)
-  const inWater = g.beasts.wilds.filter((w) => !w.arena && isInWater(w)).map((w) => w.spawn.speciesId);
+  const inWater = g.beasts.wilds.filter((w) => isInWater(w)).map((w) => w.spawn.speciesId);
   while (ready.length) {
     const pool = present < WILD_RULES.maxPresent ? ready : ready.filter(lured);
     if (!pool.length) break;
@@ -180,7 +179,7 @@ export function stepSenses(g: BeastWorld, events: GameEvent[]): void {
   const d = g.diver;
   let nearest: { w: WildBeast; dist: number } | null = null;
   for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || w.arena || s.includes(w.id)) continue;
+    if (!isInWater(w) || s.includes(w.id)) continue;
     const dist = Math.hypot(w.x - d.x, w.y - d.y);
     if (dist > ROAM.senseRange || dist < ROAM.senseMin) continue;
     s.push(w.id); // several at once: it warns about the nearest one only

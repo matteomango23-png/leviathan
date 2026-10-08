@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { DIVER } from '../src/data/diver';
 import { PORT, PORTO_FANGO } from '../src/data/economy';
-import { LAIR } from '../src/data/guardians';
+import { LAIR } from '../src/data/scenery';
 import { BONE_WALL, COAST, DELTA, LAYOUT, START, TILE, WORLD } from '../src/data/worldLayout';
 import { portAt, portStart } from '../src/systems/economy/places';
 import { createGame, enterPort, respawnPoint, toSave } from '../src/systems/game';

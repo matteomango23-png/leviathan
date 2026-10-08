@@ -45,8 +45,8 @@ export class PortMenu {
     const title = el('div', 'port-title', top);
     el('span', '', title, g.port?.name ?? 'Portofosco');
     this.teeth = el('span', 'port-teeth', top);
-    if (!g.port || g.port.id === 'portofosco') {
-      // Aurelio lives in Portofosco
+    if (!g.port || g.port.id === 'portofosco' || g.port.id === 'fango') {
+      // Aurelio is at Portofosco, and at Porto Fango with your ship
       const aurelio = el('button', 'pbtn', top);
       aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
       aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));

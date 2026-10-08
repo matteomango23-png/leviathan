@@ -1,6 +1,6 @@
-// Shape of a Guardian's lair (LAIR in data/guardians.ts): the cave, the shaft that leads down to it,
+// Shape of the bone cave under the Baia (LAIR in data/scenery.ts): the cave, the shaft that leads down to it,
 // and the shell of solid rock around the cave.
-import { LAIR } from '../../data/guardians';
+import { LAIR } from '../../data/scenery';
 
 const ellipse = (x: number, y: number, grow: number): number =>
   ((x - LAIR.x) / (LAIR.rx + grow)) ** 2 + ((y - LAIR.y) / (LAIR.ry + grow)) ** 2;
@@ -15,6 +15,3 @@ export const inLairShaft = (x: number, y: number): boolean =>
 /** Inside the rock shell around the cave (the cave and shaft excluded). */
 export const inLairShell = (x: number, y: number): boolean =>
   ellipse(x, y, LAIR.wall) < 1 && !inLairCave(x, y) && !inLairShaft(x, y);
-
-/** The y of the cave's roof, where the shaft opens into it. */
-export const lairRoofY = (): number => LAIR.y - LAIR.ry;

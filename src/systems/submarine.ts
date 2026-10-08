@@ -1,10 +1,9 @@
-// Your submarine (tappa 16, data/submarine.ts; it replaces the boat of tappa 12). Aurelio gives it to you at the
-// end of chapter 1. You climb in next to it at any depth, steer it under water (down to its model's depth, under
-// the icebergs), get out and it waits where you left it. Inside you breathe and rest your team, but you
+// Your submarine (tappa 16, data/submarine.ts; it replaces the boat of tappa 12). Aurelio gives it to you at
+// Porto Fango, in the hold of your ship. You climb in next to it at any depth, steer it under water (down to its
+// model's depth, under the icebergs), get out and it waits where you left it. Inside you breathe and rest your team, but you
 // cannot fight: ordinary beasts slip away (encounters.ts), big aggressive ones ram it. A broken submarine is towed
 // back to Portofosco; ports repair it for teeth. Pure logic; views/submarineView.ts draws it.
 import { SUB_MODELS, SUBMARINE, type SubModel } from '../data/submarine';
-import { STORY_STEPS, type StoryStep } from '../data/story';
 import { WORLD } from '../data/worldLayout';
 import { maxHpOf, type TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
@@ -104,13 +103,9 @@ export interface SubWorld {
     maxHp: number;
     dead: boolean;
   };
-  story: { step: StoryStep };
   beasts: { team: TeamBeast[] };
   gear: { teeth: number };
 }
-
-const after = (step: StoryStep, than: StoryStep): boolean =>
-  STORY_STEPS.indexOf(step) >= STORY_STEPS.indexOf(than);
 
 /** Close enough to climb in (at any depth). */
 export function canBoard(g: SubWorld): boolean {
@@ -214,16 +209,18 @@ export const subFloorY = (s: SubState): number =>
   WORLD.surfaceY + subModel(s.model).maxDepthM * WORLD.unitsPerMetre;
 
 /**
- * One step of the submarine. Returns true while you are inside (it moves you, not your swimming).
- * Also: Aurelio's gift once chapter 1 is over.
+ * Aurelio's gift at Porto Fango (story.ts), together with the ship: the submarine waits in its hold at x. One you
+ * already had (an older save) is brought into the hold too, unless you are inside it.
  */
+export function giftSub(s: SubState, x: number): void {
+  if (s.aboard) return;
+  if (!s.owned) Object.assign(s, { owned: true, hull: subModel(s.model).hull });
+  Object.assign(s, { x, y: SUBMARINE.restY, vx: 0, vy: 0 });
+}
+
+/** One step of the submarine. Returns true while you are inside (it moves you, not your swimming). */
 export function stepSub(g: SubWorld, input: InputState, dt: number, events: GameEvent[]): boolean {
   const s = g.sub;
-  if (!s.owned && after(g.story.step, 'chapter1Done')) {
-    s.owned = true;
-    Object.assign(s, { x: SUBMARINE.mooredX, y: SUBMARINE.restY, hull: subModel(s.model).hull });
-    events.push({ type: 'subGiven' });
-  }
   if (!s.owned) return false;
   s.deepWarn = Math.max(0, s.deepWarn - dt);
   s.bumpWait = Math.max(0, s.bumpWait - dt);

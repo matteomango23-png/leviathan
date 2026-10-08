@@ -33,22 +33,17 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 
 ## Storia
 
-Storia leggera con pochi personaggi, mistero raccontato dall'ambiente.
+**In pausa dall'8 ottobre 2026.** La storia dei capitoli 1–4 (la Compagnia dell'Olio Nero, la Vedova Nera, lo Sfregiato, il Re Corallo, la Piovra) non convinceva il proprietario ed è stata tolta dal gioco (v0.47.0). Verrà ripensata da capo nell'ultimo blocco di lavoro (vedi `docs/BACKLOG.md`, blocco 10: un villain baleniere industriale, la scelta morale sulle bestie modificate). Il codice dei vecchi capitoli resta nella storia di git (fino alla v0.46.0).
 
-- **Premessa:** il Leviatano si è svegliato, le bestie impazziscono. La Compagnia dell'Olio Nero le caccia, le incatena con collari di ferro e ne estrae l'olio; il piano finale è dissanguare il Leviatano.
-- **I lavori di Aurelio** (dal 3 ottobre 2026): dopo la prima immersione, prima che il molo bruci, quattro piccoli lavori del porto. Pescare 5 sardine, vincere 2 battaglie contro i barracuda, domare una bestia, portare il compagno al livello 9. Pagano denti e fanno crescere la squadra.
-- **Apertura:** sulla barca di Nonno Aurelio passa una nave della Compagnia che trascina una balena in catene. Aurelio ti dà l'arpione e la Conchiglia del domatore: "Scendi, prendi confidenza col mare". Risalito, il molo brucia; Aurelio ti consegna un collare spezzato: "Uno di questi l'avevano messo al mio squalo. Trovalo".
-- **Capitolo 1 (deciso il 30 settembre 2026):** lo Sfregiato è lo squalo di Aurelio, impazzito per il collare della Compagnia; domarlo lo libera. Il capitolo si chiude con la nave della Compagnia che salpa verso il Delta delle Mangrovie.
-- **Capitolo 2 (deciso il 1 ottobre 2026):** nel Delta delle Mangrovie la nave della Vedova Nera (prima comandante della Compagnia) tiene incatenata la megattera dell'apertura. Spezzi i tre ancoraggi mentre il suo coccodrillo ti attacca; la balena liberata si unisce a te e la Vedova fugge verso la Barriera Rossa.
-- **Capitolo 3 (deciso il 1 ottobre 2026, fatto in v0.14.0):** nella Barriera Rossa la Vedova Nera sta strappando il Re Corallo con catene e argani; impazzito dal dolore ti attacca in un anfiteatro di corallo sul fondale. Sfinito, rompi le catene e lo domi; la Vedova fugge verso la Foresta Sommersa.
-- **Capitolo 4 (deciso il 3 ottobre 2026, fatto in v0.17.0):**
-  - la Vedova ha trovato il primo pezzo della reliquia, il **Corno delle Catene**: il suono passa da una campana di bronzo sotto la sua nave e lega **la Piovra** (livello 25) a un galeone affondato nella Foresta Sommersa;
-  - mentre il suono dura, i tentacoli escono dalle alghe e ti afferrano: ti liberi premendo più volte Scatto, intanto perdi aria;
-  - spezzi la campana con tre colpi, affronti la Piovra vicino al galeone e, battuta, il collare si spezza e lei si unisce a te;
-  - la Vedova fugge verso il Mare di Ghiaccio, dalla Regina bianca.
-- **Capitoli successivi (proposta, 3 ottobre 2026):** 5 Mare di Ghiaccio (Regina bianca), 6 Fossa del Capodoglio (Calamaro colossale), 7 Abisso del Tempio (il Leviatano, finale). Dopo il finale la Fossa Nera con le leggende. Dal capitolo 5 le zone sono lontane e profonde: servono i sottomarini migliori.
-- **Personaggi:** Nonno Aurelio (mentore), il mercante di denti, la Compagnia (un comandante per regione con una bestia incatenata da liberare), il Leviatano (finale).
-- **Dopo il finale:** Fossa Nera coi leggendari; il Leviatano diventa domabile.
+**L'inizio, per ora:**
+- sulla barca di Nonno Aurelio: ti dà l'arpione e la Conchiglia del domatore, poi scegli il tuo primo compagno (uno di tre giovani preistorici);
+- immersione guidata a Portofosco: nuota, cattura 5 sardine, scatta, doma una bestia, torna al molo;
+- Aurelio: "Ci vediamo a Porto Fango", oltre il Delta e l'Isola delle Mangrovie (si passa a nuoto sotto l'isola);
+- a Porto Fango Aurelio ti consegna la nave da spedizione con il sottomarino nella stiva e spiega come calarlo. Da lì il mare è aperto.
+
+**Zona protetta:** la costa da Portofosco a Porto Fango (Baia e Delta) non ha superpredatori né giganti (niente squalo bianco né coccodrillo marino): solo bestie innocue o mediamente pericolose. Le bestie pericolose hanno sempre livelli alti, nel mare aperto.
+
+**Restano:** i templi sommersi (senza riferimenti alla storia), la grotta delle ossa della Baia, l'anfiteatro di corallo, il galeone nella Foresta. Le bestie della storia (Sfregiato, Re Corallo, Piovra) sono segnate `storyOnly` nei dati: fuori da mare, bestiario e tessera, pronte per la storia nuova. Il Calamaro colossale è una bestia normale (gli mancano ancora le immagini).
 
 ## Bestie
 
@@ -165,15 +160,15 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
 2. ✅ **Bestie e combattimento (v0.2.0):** tipi, mosse, squadra, compagno, cavalcatura, domatura, santuari.
 3. ✅ **Porto ed economia (v0.3.0):** mercato, mute, zaino, missioni, denti.
 4. ✅ **Livelli e crescita (v0.4.0):** esperienza, sblocco mosse, crescita 31-50, forme finali, Lo Sfregiato come primo Guardiano.
-5. ✅ **Storia del capitolo 1 (v0.5.0):** apertura, collare spezzato, lo Sfregiato è lo squalo di Aurelio, finale verso il Delta.
-6. ✅ **Capitolo 2 (v0.6.0):** il Delta delle Mangrovie, i coccodrilli, la Vedova Nera e la megattera liberata.
+5. ✅ **Storia del capitolo 1 (v0.5.0):** apertura, collare spezzato, lo Sfregiato è lo squalo di Aurelio, finale verso il Delta. *Tolto l'8 ottobre 2026 (storia in pausa).*
+6. ✅ **Capitolo 2 (v0.6.0):** il Delta delle Mangrovie, i coccodrilli, la Vedova Nera e la megattera liberata. *Tolto l'8 ottobre 2026.*
 7. ✅ **La Costa (v0.9.0):** spiaggia, Baia più grande, Isola delle Mangrovie con Porto Fango, Delta alla foce, velocità più realistiche.
 8. ✅ **Oceano aperto infinito (v0.10.0):** tratti generati (mare aperto, barriera, foresta, banchisa, fosse), mute per immersioni lunghe, sfiatatoi per l'ossigeno, livelli che crescono con la distanza.
 8b. ✅ **La barca (v0.11.0),** diventata **il sottomarino (v0.15.0):** regalo di Aurelio, sott'acqua fino alla profondità del modello, santuario mobile, pesca, modelli migliori al porto; niente viaggio istantaneo.
 8c. ✅ **Le leggende (v0.12.0):** una sola nel mondo, solo nel suo posto, rara; domata è tua, sconfitta sparisce per sempre.
 8d. ✅ **Il primo tempio sommerso (v0.13.0):** nel mare aperto a quasi 4 km, mezzo sepolto nel fondale. Quattro sale: una leva, due leve da colpire una subito dopo l'altra, quattro rune nell'ordine del mosaico, un corridoio lungo con sfiatatoi. In fondo una reliquia (Respiro degli Antichi: l'aria dura circa il 50% in più, per sempre). La Compagnia è già passata di lì: la Vedova Nera cerca nei templi una reliquia che piega le bestie (gancio per il capitolo 3). Altri templi: altri rompicapo, con reliquie o leggende come premio.
-9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa.
-10. ✅ **Capitolo 4 (v0.17.0):** la Foresta Sommersa, il Corno delle Catene, la campana, i tentacoli, la Piovra.
+9. ✅ **Capitolo 3 (v0.14.0):** la Barriera Rossa. Sopra un anfiteatro di corallo a gradoni la nave della Vedova tiene il Re Corallo (livello 20) con tre catene. Il re ti attacca; battuto resta sfinito, spezzi le catene e si unisce a te. La Vedova cerca nei templi una reliquia che piega le bestie e fugge verso la Foresta Sommersa. *Tolto l'8 ottobre 2026.*
+10. ✅ **Capitolo 4 (v0.17.0):** la Foresta Sommersa, il Corno delle Catene, la campana, i tentacoli, la Piovra. *Tolto l'8 ottobre 2026.*
 11. **Spedizioni** (progetto del 4 ottobre 2026, sopra):
     1. ✅ la nave e le leve (v0.39.0);
     2. ✅ carburante, cockpit e cure solo sulla nave, via i santuari, razzo di soccorso (v0.40.0);
@@ -181,11 +176,19 @@ Il mare deve avere uno scopo: spedizioni vere per trovare e catturare bestie rar
     4. ✅ livelli per pericolo e habitat veri, avviso di pericolo, profondità nel bestiario (v0.41.0);
     5. ✅ sonar e Diario di caccia (bacheca Avvistamenti, condizioni, echi, tracce, leggende) (v0.41.0);
     6. ✅ ricompense per regione: relitti, missioni di spedizione, pezzi per la nave (v0.41.0). Da fare: un tempio per regione, pesci rari.
-12. **Capitolo 5 e seguenti:** una regione alla volta (prossimo: il Mare di Ghiaccio e la Regina bianca).
+12. **I blocchi di feedback (dall’8 ottobre 2026, dopo 6 ore di gioco del proprietario; dettagli in `docs/BACKLOG.md`):**
+    1. ✅ nuovo inizio senza storia, zona protetta sulla costa (v0.47.0);
+    2. correzioni rapide;
+    3. decisioni di design;
+    4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario);
+    5. sonar e spedizioni;
+    6. cattura e combattimento;
+    7. ruoli delle bestie, nuoto, cavalcature;
+    8. immagini;
+    9. audio e atmosfera;
+    10. storia nuova e villain.
 
 ## Decisioni aperte
 
-- Nomi definitivi dei comandanti dei capitoli successivi (il primo è la Vedova Nera).
 - Prezzi, curva di esperienza, valori di danno (primo passaggio in `data/`, da bilanciare giocando).
-- Penalità alla morte: per ora nessuna (si rinasce al santuario o al porto); contro i Guardiani il proprietario ha scelto "solo rinascita".
-- Guardiano della Fossa: Abissale o Tempesta (ora due Guardiani Abissali).
+- Penalità alla morte: per ora nessuna (si rinasce al santuario o al porto).

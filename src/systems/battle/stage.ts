@@ -114,7 +114,7 @@ export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): R
 }
 
 /** The background of a battle: a Guardian's lair, or the region the wild beast lives in (else the bay). */
-export function battlePlace(region: string, inLair: boolean): BattlePlace {
+export function battlePlace(region: string, inLair = false): BattlePlace {
   if (inLair) return 'tana';
   return (BATTLE_STAGE.places as readonly string[]).includes(region) ? (region as BattlePlace) : 'baia';
 }

@@ -15,6 +15,7 @@ import { migrate, parseSave } from '../src/systems/save/saveData';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { giveVessels } from './helpers/vessels';
 
 let map: TileMap;
 beforeAll(() => {
@@ -34,8 +35,8 @@ function run(g: GameState, seconds: number): GameEvent[] {
 
 function game(): GameState {
   const g = createGame(map, null, 4);
-  g.story.step = 'chapter4Done';
   giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 30);
+  giveVessels(g);
   run(g, DT);
   return g;
 }

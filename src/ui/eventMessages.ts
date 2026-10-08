@@ -7,7 +7,7 @@ import { SUB_TEXT } from '../data/submarine';
 import { TEMPLE_TEXT } from '../data/temples';
 import { FISH, ITEMS, SWARMS, WEAPONS } from '../data/world';
 import { SPECIES } from '../data/species';
-import { STORY_NOTES } from '../data/story';
+import { BONE_TEXT } from '../data/scenery';
 import { missionById } from '../systems/economy/missions';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
@@ -73,8 +73,6 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
-    case 'subGiven':
-      return [SUB_TEXT.given, 6];
     case 'boarded':
       return [SUB_TEXT.boarded, 4];
     case 'dove':
@@ -202,17 +200,6 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'storyNote':
       return [e.text, 5];
-    case 'guardianAppeared':
-      return ['Lo Sfregiato! Il Guardiano della Baia esce dal buio.', 3.5];
-    case 'guardianBeaten':
-      return [
-        e.teeth
-          ? `Guardiano sconfitto! +${e.teeth} denti, e c’è di nuovo un Arpione mitico al mercato.`
-          : 'Guardiano sconfitto!',
-        5,
-      ];
-    case 'guardianLeft':
-      return ['Lo Sfregiato torna nel buio della sua tana.', 3];
     case 'bonesHint': {
       const b = e.breakerUid ? tamed(e.breakerUid) : undefined;
       return b
@@ -220,7 +207,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
             `Ossa antiche. ${formName(b.form)} conosce Sfondamento: chiamalo dalla barra in alto e premi Sfonda.`,
             4.5,
           ]
-        : [STORY_NOTES.boneHint, 5];
+        : [BONE_TEXT.hint, 5];
     }
     case 'bonesBroken':
       return ['Le ossa antiche cedono!', 1.5];

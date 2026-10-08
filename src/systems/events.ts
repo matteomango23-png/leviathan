@@ -29,14 +29,10 @@ export type GameEvent =
   | { type: 'dialogueOpened'; id: DialogueId }
   | { type: 'storyNote'; text: string }
   // Guardians
-  | { type: 'guardianAppeared'; id: number }
-  | { type: 'guardianBeaten'; teeth: number }
-  | { type: 'guardianLeft' }
   // your team
   | { type: 'tamed'; uid: string; toTeam: boolean }
   | { type: 'summoned'; uid: string }
   // the boat (tappa 12)
-  | { type: 'subGiven' }
   /** The hull took a blow: a beast rammed it or it ran into rock. */
   | { type: 'subRammed'; hull: number; max: number; by: 'rock' | 'beast' | 'pressure'; x: number; y: number }
   /** From the beasts: one rammed your submarine (game.ts applies it to the hull). */

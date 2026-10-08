@@ -4,7 +4,6 @@ import type { GameState } from '../systems/game';
 import {
   giveTestBeast,
   goToDelta,
-  goToLair,
   goToPortoFango,
   healAll,
   raiseTeam,
@@ -55,11 +54,6 @@ export function renderTestPanel(
   grow.addEventListener('click', () => {
     giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 30);
     done('Squalo liv. 30 aggiunto: dagli esperienza e fagli mangiare pesci.');
-  });
-  const lair = el('button', 'menu-btn small', grid, 'Portami nella tana dello Sfregiato');
-  lair.addEventListener('click', () => {
-    goToLair(g);
-    done('Sei nella tana dello Sfregiato (liv. 8). Porta una squadra forte!');
   });
   const delta = el('button', 'menu-btn small', grid, 'Portami nel Delta');
   delta.addEventListener('click', () => {

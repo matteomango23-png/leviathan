@@ -27,16 +27,8 @@ export interface WildBeast extends BodyPose {
   /** 0 = normal; 0..1 while turning around, from turnFrom. */
   turn: number;
   turnFrom: 1 | -1;
-  /** Title in the battle for named beasts (a Guardian, the Vedova's crocodile). */
+  /** Title in the battle for named beasts. */
   boss?: string;
-  /** Guardian id (e.g. 'sfregiato') when this beast is a region's Guardian. */
-  guardian?: string;
-  /** Lives in a Guardian's lair: moved by guardian.ts, never respawns on its own. */
-  arena?: boolean;
-  /** A beast of the story (the Re Corallo): beaten it stays, and the story decides what happens (chapter3.ts). */
-  storyBoss?: boolean;
-  /** How its last battle ended, for the story to read (storyBoss only). */
-  beaten?: 'won' | 'caught';
 }
 
 export interface Rect {

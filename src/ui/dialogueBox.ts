@@ -2,8 +2,7 @@
 // Tap (or Enter / Space / E) shows the whole line, then the next one; after the last, the story goes on.
 import { SPEAKERS, type DialogueId } from '../data/story';
 import type { GameState } from '../systems/game';
-import { finishDialogue } from '../systems/chapters';
-import { dialogueLines } from '../systems/story';
+import { closeDialogue, dialogueLines } from '../systems/story';
 import { el } from './dom';
 
 const LETTERS_PER_SECOND = 55;
@@ -64,7 +63,7 @@ export class DialogueBox {
     const g = this.game;
     this.id = null;
     this.root.classList.remove('show');
-    if (g) finishDialogue(g, g.story.pending);
+    if (g) closeDialogue(g, g.story.pending);
   }
 
   /** Every frame: shows the story's open dialogue, if any. */

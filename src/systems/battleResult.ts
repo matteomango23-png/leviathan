@@ -1,5 +1,5 @@
 // After a battle (scenes/BattleScene.ts): health back to the team, experience, a tamed beast into the team,
-// the wild beast gone (or calm for a while if you fled), the Guardian's reward, or back to your ship or harbour if
+// the wild beast gone (or calm for a while if you fled), or back to your ship or harbour if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import { residentGone } from './beasts/residents';
 import type { StatusId } from '../data/moveBattle';
@@ -16,7 +16,7 @@ import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { removeWild } from './beasts/wildState';
 import { hurtDiver } from './diver';
 import type { GameEvent } from './events';
-import { guardianDefeated, type GuardianWorld } from './guardian';
+import type { BackpackWorld } from './economy/backpack';
 import { createBattle, type BattleState } from './battle/battle';
 import { fighterFromTeam, makeFighter, ppUsedOf } from './battle/fighter';
 import { battlePlace } from './battle/stage';
@@ -33,9 +33,9 @@ export interface BattleOutcome {
 }
 
 /** The beasts that fight for you: the team, worn-out ones included (they cannot be sent in). */
-export const battleTeam = (g: GuardianWorld) => teamMembers(g.beasts.team);
+export const battleTeam = (g: BackpackWorld) => teamMembers(g.beasts.team);
 
-export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
+export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
   const events: GameEvent[] = [];
   g.beasts.battle = null;
   for (const t of o.team) {
@@ -56,7 +56,7 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
   if (win) {
     for (const b of battleTeam(g)) {
       if (b.ko) continue;
-      const xp = xpReward(o.foe.form, o.foe.level, b.level, !!w?.guardian); // each by its own level, like Pokémon
+      const xp = xpReward(o.foe.form, o.foe.level, b.level); // each by its own level, like Pokémon
       gainXp(b, b.uid === o.lastActive ? xp : Math.floor(xp * XP_RULES.benchShare), events);
     }
     const m = g.beasts.mount;
@@ -82,9 +82,7 @@ export function finishBattle(g: GuardianWorld, o: BattleOutcome): GameEvent[] {
     events.push({ type: 'tamed', uid: b.uid, toTeam: b.inTeam });
   }
   if (w) {
-    if (win && w.storyBoss) w.beaten = o.over === 'caught' ? 'caught' : 'won';
-    else if (win && w.guardian) guardianDefeated(g, o.over === 'caught', events);
-    else if (win) {
+    if (win) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
       // a resident of the endless sea: its place stays empty for a while (beasts/residents.ts)
       if (w.spawn.resident) residentGone(g.beasts.residents, w.spawn.resident, g.rng);
@@ -106,15 +104,15 @@ export interface BattleSetup {
   state: BattleState;
   wildId: number;
   first: 'you' | 'foe' | 'normal';
-  /** Guardians and named beasts: no fleeing, like a trainer battle. */
+  /** Named beasts: no fleeing, like a trainer battle. */
   noFlee: boolean;
-  /** Its title, if it has one (a Guardian, the Vedova's crocodile). */
+  /** Its title, if it has one (a named beast). */
   title?: string;
   /** Which background the battle uses. */
   place: BattlePlace;
 }
 
-export function battleSetup(g: GuardianWorld): BattleSetup | null {
+export function battleSetup(g: BackpackWorld): BattleSetup | null {
   const req = g.beasts.battle;
   const w = req && g.beasts.wilds.find((x) => x.id === req.wildId);
   if (!req || !w) return null;
@@ -128,7 +126,7 @@ export function battleSetup(g: GuardianWorld): BattleSetup | null {
     first: req.first,
     noFlee: !!w.boss,
     title: w.boss,
-    place: battlePlace(speciesOf(w.form).region, !!w.guardian),
+    place: battlePlace(speciesOf(w.form).region),
   };
 }
 

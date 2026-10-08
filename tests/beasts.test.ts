@@ -160,9 +160,9 @@ describe('beasts in the sea are drawn', () => {
       expect(SPRITE_KEYS, id).toContain(id);
       expect(loaded, id).toContain(id);
     }
-    // the Guardians join your team when tamed: their pictures must be loaded too (the Piovra was invisible)
-    for (const sp of SPECIES.filter((s) => s.guardian && SPRITE_KEYS.includes(s.id)))
-      expect(loaded, sp.id).toContain(sp.id);
-    expect(loaded).toContain('piovra');
+    // the beasts of the paused story are not loaded (owner, 8 ottobre)
+    expect(loaded).not.toContain('piovra');
+    expect(loaded).not.toContain('re_corallo');
+    expect(loaded).not.toContain('sfregiato');
   });
 });

@@ -1,11 +1,9 @@
-// The expedition ship (data/ship.ts): Aurelio's gift at the end of chapter 4, your home at sea. At the helm the
+// The expedition ship (data/ship.ts): Aurelio's gift at Porto Fango, your home at sea. At the helm the
 // levers drive it (helm.ts): heavy, it speeds up and slows down slowly; the direction lever the other way turns it
 // round once slow. It breaks the ice (slower), stops in shallow water and never gets stuck on what sticks out of
 // the water: it sails round it, on the far lane, behind it. With the hatch open it does not move. Pure logic;
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP, SHIP_UPGRADES, type ShipUpgradeDef } from '../../data/ship';
-import { STORY_STEPS, type StoryStep } from '../../data/story';
-import { WRECK } from '../../data/chapter4';
 import { PORTO_FANGO } from '../../data/economy';
 import type { GameEvent } from '../events';
 import { litresFor } from '../fuelBurn';
@@ -86,7 +84,7 @@ export function newShip(saved: SavedShip | null): ShipState {
   const bay = saved?.bay ?? 'none';
   return {
     owned: !!saved,
-    x: saved?.x ?? WRECK.x,
+    x: saved?.x ?? PORTO_FANGO.shipDock,
     face: saved?.face ?? 1,
     speed: 0,
     hatch: saved?.hatchOpen ? 1 : 0,
@@ -124,20 +122,16 @@ export function saveShip(s: ShipState): SavedShip | null {
 export interface ShipWorld {
   ship: ShipState;
   map: TileMap;
-  story: { step: StoryStep };
   sub: { owned: boolean; aboard: boolean };
   diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 };
 }
 
-/** Aurelio's gift: once chapter 4 is over (also for saves made after it), with the submarine in its hold. */
-export function giftShip(g: ShipWorld, events: GameEvent[]): void {
+/** Aurelio's gift at Porto Fango (story.ts): moored at the trading harbour, with the submarine in its hold. */
+export function giftShip(g: Pick<ShipWorld, 'ship' | 'sub'>, events: GameEvent[]): void {
   const s = g.ship;
-  if (s.owned || STORY_STEPS.indexOf(g.story.step) < STORY_STEPS.indexOf('chapter4Done')) return;
+  if (s.owned) return;
   s.owned = true;
-  // above the galleon of the Foresta Sommersa, where chapter 4 ends; an older save far from there finds it at the
-  // nearest harbour
-  const spots = [Math.max(WRECK.x, SHIP_WEST_X), PORTO_FANGO.shipDock];
-  s.x = spots.reduce((a, b) => (Math.abs(b - g.diver.x) < Math.abs(a - g.diver.x) ? b : a));
+  s.x = PORTO_FANGO.shipDock;
   s.bay = !g.sub.owned ? 'none' : g.sub.aboard ? 'out' : 'docked';
   s.bayT = s.bay === 'out' ? 1 : 0;
   events.push({ type: 'shipGiven' });
@@ -162,7 +156,6 @@ export function sailShip(
   far: (x: number) => boolean,
 ): number[] {
   const s = g.ship;
-  giftShip(g, events);
   if (!s.owned) return [];
   s.shallowWarn = Math.max(0, s.shallowWarn - dt);
   s.hatch = Math.max(0, Math.min(1, s.hatch + ((s.hatchOpen ? 1 : -1) * dt) / SHIP.hatchSeconds));

@@ -110,7 +110,7 @@ export const HELM = {
 
 export const SHIP_TEXT = {
   given:
-    'Aurelio è arrivato con una nave da spedizione e ha caricato il tuo sottomarino nella stiva. Avvicinati in superficie e premi A bordo.',
+    'La nave è tua, con il sottomarino nella stiva. Avvicinati al fianco in superficie e premi A bordo.',
   aboard: 'Al timone. Leva a sinistra: il gas (resta dove la lasci). Leva a destra: la direzione.',
   hatchMoving: 'Ferma la nave per aprire il portellone.',
   launched: 'Il sottomarino è in acqua. Per rientrare torna sotto il portellone e premi Aggancia.',

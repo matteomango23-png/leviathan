@@ -14,7 +14,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 16;
+export const SAVE_VERSION = 17;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -53,7 +53,7 @@ export interface SaveData {
   team: SavedBeast[]; // team and reserve (v2)
   brokenTiles: number[]; // tiles broken open, e.g. the bone wall (v2)
   gear: SavedGear | null; // teeth, bag, suits, weapons, items, backpack, swarms, wrecks, missions (v3)
-  story: SavedStory | null; // where the story is (v5); null = older save, picked up from progress
+  story: SavedStory | null; // where the story is (v5, the new start v17); null = older save, picked up from progress
   homePort: string; // the last harbour you came into: you wake up there (v7)
   sub: SavedSub | null; // your submarine: where it waits, its model, the ones you own, its hull (v11); null = not yours yet
   legendsGone: string[]; // legends defeated: gone forever (v10)
@@ -218,7 +218,46 @@ export const MIGRATIONS: Migration[] = [
   },
   // v15 → v16 (4 ottobre 2026): the hunting diary, empty
   { from: 15, migrate: (o) => ({ ...o, hunts: {} }) },
+  // v16 → v17 (8 ottobre 2026): the story is paused. Its beasts leave the team (owner), the chapters are gone:
+  // with the ship the sea is open, without it Aurelio waits at Porto Fango with ship and submarine.
+  { from: 16, migrate: migrateTo17 },
 ];
+
+function migrateTo17(o: Record<string, unknown>): Record<string, unknown> {
+  const storySpecies = ['re_corallo', 'piovra'];
+  const storyUniques = ['sfregiato'];
+  const isStoryBeast = (b: unknown): boolean => {
+    const f = isObject(b) && isObject(b.form) ? b.form : null;
+    return !!f && (storySpecies.includes(String(f.speciesId)) || storyUniques.includes(String(f.unique)));
+  };
+  let team = o.team;
+  if (Array.isArray(team)) {
+    // a beast of the team that leaves: the first ones of the reserve take its place
+    let free = team.filter((b) => isStoryBeast(b) && isObject(b) && b.inTeam).length;
+    team = team
+      .filter((b) => !isStoryBeast(b))
+      .map((b) => {
+        if (free > 0 && isObject(b) && !b.inTeam) {
+          free--;
+          return { ...b, inTeam: true };
+        }
+        return b;
+      });
+  }
+  let story: unknown = null;
+  if (isObject(o.story)) {
+    const old = o.story;
+    const seen = Array.isArray(old.seen) && old.seen.includes('starter') ? ['starter'] : [];
+    if (old.step === 'intro' || old.step === 'tutorial') {
+      // the old guided dive had four tasks: swim, fish, dash, surface (a fifth, tame, comes before surface)
+      const t = typeof old.tutorial === 'number' ? old.tutorial : 0;
+      story = { step: old.step, tutorial: t >= 3 ? t + 1 : t, count: 0, seen };
+    } else story = { step: o.ship ? 'free' : 'toPortoFango', tutorial: 0, count: 0, seen };
+  }
+  const gear = isObject(o.gear) ? { ...o.gear } : o.gear;
+  if (isObject(gear)) delete gear.guardians;
+  return { ...o, team, story, gear };
+}
 
 export class SaveError extends Error {}
 

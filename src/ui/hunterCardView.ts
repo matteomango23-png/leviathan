@@ -1,5 +1,4 @@
-// The hunter's card on screen, like Pokémon's trainer card: the numbers of your journey and a badge for each
-// Guardian beaten (systems/hunterCard.ts).
+// The hunter's card on screen, like Pokémon's trainer card: the numbers of your journey (systems/hunterCard.ts).
 import { hunterCard } from '../systems/hunterCard';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
@@ -29,11 +28,4 @@ export function openHunterCard(parent: HTMLElement, g: GameState): void {
   row('Tempo di gioco', formatTime(c.playTime));
   row('Immersione più profonda', `${c.deepestM} m`);
   row('Reliquie', `${c.relics}/${c.relicsTotal}`);
-  el('h3', 'hcard-sub', card, 'Guardiani battuti');
-  const badges = el('div', 'hcard-badges', card);
-  for (const b of c.badges) {
-    const badge = el('div', `hcard-badge${b.beaten ? ' on' : ''}`, badges);
-    el('span', 'hcard-medal', badge, b.beaten ? '★' : '?');
-    el('span', 'hcard-name', badge, b.beaten ? b.name : '???');
-  }
 }

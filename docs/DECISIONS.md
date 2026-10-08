@@ -676,3 +676,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** tra la vista del timone e la tua non c'è più nessuna transizione di zoom o di posizione: al cambio la telecamera salta subito e tutte e tre le telecamere ripartono dal buio (`fadeIn` di Phaser, `CAMERA.cutFadeMs`).
 - **Motivo:** il proprietario non vuole mai vedere scorrere la vista; la vista a distanza dalla nave (v0.45) teneva la nave al centro troppo a lungo. Lo stacco senza effetti (v0.43) funzionava ma era brusco: la dissolvenza lo addolcisce.
+
+## 8 ottobre 2026 — La storia in pausa, il nuovo inizio (v0.47.0)
+
+- **Decisione:** tolti i capitoli 1–4 (sistemi, dati, viste e test: `chapter2/3/4`, `chapters`, `guardian`, `portJobs`). Restano i luoghi come scenario (`data/scenery.ts`: grotta delle ossa, anfiteatro, galeone; disegnati da `views/sceneryView.ts`). La storia ha cinque passi: `off`, `intro`, `tutorial`, `toPortoFango`, `free`. Nave e sottomarino si ricevono chiudendo il dialogo di Aurelio a Porto Fango (`giftSub` e poi `giftShip`, chiamati da `story.ts`), non più per indice di capitolo.
+- **Motivo:** al proprietario la storia non piaceva; sarà ripensata da capo nel blocco 10 (`docs/BACKLOG.md`). Intanto il gioco deve partire semplice e portare subito alla nave.
+- **Bestie della storia:** campo `storyOnly` in `SpeciesDef` e `UniqueVariantDef` (Re Corallo, Piovra, Sfregiato) invece di cancellarle: dati, mosse e immagini restano per la storia nuova, ma fuori da mare, bestiario (`GAME_SPECIES`), tessera e immagini caricate. Il campo `guardian` è sparito; il Calamaro colossale è una bestia normale ma non compare finché non ha le immagini.
+- **Salvataggio v17:** toglie dalla squadra le bestie della storia (la riserva prende il loro posto), porta la storia a `free` se la nave c'è già, altrimenti a `toPortoFango`; un tutorial a metà resta allo stesso compito (il nuovo compito "doma" sta prima di "torna al molo"). Tolto `gear.guardians`.
+- **Zona protetta:** dalla costa (Baia e Delta) tolti squalo bianco e coccodrillo marino; un test controlla che lì non ci siano specie con pericolo 4 o 5.
+- **Test:** il limite di tempo di Vitest passa a 20 s: alcuni test simulano minuti di gioco e con tutti i file in parallelo superavano i 5 s su questo PC.

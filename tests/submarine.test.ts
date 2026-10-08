@@ -1,4 +1,4 @@
-// Your submarine (tappa 16, owner's decisions of 3 ottobre 2026): Aurelio's gift at the end of chapter 1; under
+// Your submarine (tappa 16, owner's decisions of 3 ottobre 2026): Aurelio's gift at Porto Fango; under
 // water down to its model's depth (under the icebergs); it waits where you leave it; inside you rest and fish but
 // do not fight: ordinary beasts slip away, big hunters ram it; broken it is towed home; ports repair it; better
 // ones are bought; saved (v11, the old boat becomes the bathyscaphe).
@@ -14,6 +14,7 @@ import { buySub, canBoard, ramSub, subFloorY, subModel } from '../src/systems/su
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { giveSub, giveVessels } from './helpers/vessels';
 
 let map: TileMap;
 beforeAll(() => {
@@ -37,18 +38,18 @@ const levers = (throttle: number, dir: 1 | -1 = 1, dive = 0): InputState => ({
   helm: { throttle, dir, dive },
 });
 
-/** After chapter 1: the submarine is yours and you float next to it. */
-function afterChapter1(): GameState {
+/** The submarine is yours (moored past the pier) and you float next to it. */
+function withSub(): GameState {
   const g = createGame(map, null, 4);
-  g.story.step = 'chapter1Done';
   giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
+  giveSub(g);
   run(g, DT);
   Object.assign(g.diver, { x: g.sub.x + 8, y: g.sub.y + 4, vx: 0, vy: 0 });
   return g;
 }
 /** Inside it, somewhere in open water. */
 function inside(x: number, y: number): GameState {
-  const g = afterChapter1();
+  const g = withSub();
   Object.assign(g.sub, { x, y });
   Object.assign(g.diver, { x: x + 6, y });
   press(g);
@@ -57,22 +58,18 @@ function inside(x: number, y: number): GameState {
 }
 
 describe('the submarine', () => {
-  it('is Aurelio’s gift at the end of chapter 1, waiting past the pier', () => {
+  it('is Aurelio’s gift at Porto Fango, in the hold of the ship, with its full hull', () => {
     const g = createGame(map, null, 4);
-    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
-    g.story.step = 'findShark';
-    run(g, DT);
     expect(g.sub.owned).toBe(false);
-    g.story.step = 'chapter1Done';
-    const ev = run(g, DT);
+    giveVessels(g);
     expect(g.sub.owned).toBe(true);
-    expect(g.sub.x).toBe(SUBMARINE.mooredX);
+    expect(g.ship.bay).toBe('docked');
     expect(g.sub.model).toBe(SUB_MODELS[0]!.id);
-    expect(ev.some((e) => e.type === 'subGiven')).toBe(true);
+    expect(g.sub.hull).toBe(SUB_MODELS[0]!.hull);
   });
 
   it('you climb in next to it at any depth; inside you breathe but nobody heals; you get out and it waits', () => {
-    const g = afterChapter1();
+    const g = withSub();
     expect(canBoard(g)).toBe(true);
     g.beasts.team[0]!.hp = 1;
     g.diver.hp = 1;
@@ -115,7 +112,7 @@ describe('the submarine', () => {
 
   it('inside you do not fight: an ordinary shark slips away instead of starting a battle', () => {
     const g = inside(SUBMARINE.mooredX + 300, 120);
-    const w = g.beasts.wilds.find((x) => !x.arena)!;
+    const w = g.beasts.wilds[0]!;
     spawnWild(w, { speciesId: 'squalo_bianco', variant: 'comune' }, 15, g.sub.x + 40, g.sub.y, -1);
     const before = Math.hypot(w.x - g.sub.x, w.y - g.sub.y);
     run(g, 0.5);
@@ -128,7 +125,7 @@ describe('the submarine', () => {
   it('a big hunter rams it; broken, it is towed back to Portofosco; the port repairs it for teeth', () => {
     const g = inside(SUBMARINE.mooredX + 600, 150);
     g.gear.teeth = 1000;
-    const w = g.beasts.wilds.find((x) => !x.arena)!;
+    const w = g.beasts.wilds[0]!;
     spawnWild(w, { speciesId: 'orca', variant: 'comune' }, 30, g.sub.x + 30, g.sub.y, -1);
     const max = g.sub.hull;
     let ev: GameEvent[] = [];
@@ -150,7 +147,7 @@ describe('the submarine', () => {
   });
 
   it('better ones are bought at the port; you can switch back', () => {
-    const g = afterChapter1();
+    const g = withSub();
     g.gear.teeth = 100;
     expect(buySub(g, 'squalo_ferro').ok).toBe(false);
     g.gear.teeth = 5000;
@@ -164,7 +161,7 @@ describe('the submarine', () => {
   });
 
   it('is saved (v11); an older save’s boat becomes the bathyscaphe where the boat was', () => {
-    const g = afterChapter1();
+    const g = withSub();
     g.gear.teeth = 5000;
     buySub(g, 'squalo_ferro');
     Object.assign(g.sub, { x: 9000, y: 200, hull: 50 });
@@ -241,7 +238,7 @@ describe('urti del sottomarino (4 ottobre: niente muro invisibile)', () => {
 
 describe('pressione del sottomarino (4 ottobre: niente fondo invisibile)', () => {
   it('scende oltre la profondità del modello, ma la pressione schiaccia lo scafo', () => {
-    const limitY = subFloorY(afterChapter1().sub);
+    const limitY = subFloorY(withSub().sub);
     // open water wide enough for the hull, from above its limit to well below it
     const fits = (x: number, y: number) =>
       SUBMARINE.body.every(([dx, r]) => !map.hitCircle(x + dx, y, r + 2));

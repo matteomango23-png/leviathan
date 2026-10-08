@@ -1,7 +1,6 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
-import { stepPortJobs } from './portJobs';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
@@ -26,11 +25,7 @@ import { diverModifiers, newGear, sellBag } from './economy/gear';
 import { feedBeast, fishXp, gainXp, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
-import { createGuardian, guardianReturns, stepGuardian, teamHasGuardian } from './guardian';
-import { createStory, stepShip, stepStory, storyHoldsDiver } from './story';
-import { createChapter2, hitAnchor, stepChapter2 } from './chapter2';
-import { createChapter3, hitChain, stepChapter3 } from './chapter3';
-import { createChapter4, hitBell, stepChapter4, type Chapter4World } from './chapter4';
+import { createStory, stepStory, storyHoldsDiver, type StoryWorld } from './story';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
@@ -47,7 +42,7 @@ import {
 import { PORT, PORTS, type PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createFish, stepFish, takeFish, type FishState } from './fish';
-import { BASE_HARPOON, createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
+import { createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
 import type { InputState } from './input';
 import { makeRng } from './math';
 import { newSave, type SaveData } from './save/saveData';
@@ -81,7 +76,7 @@ import { createTemples, hitLever, stepTemples, type TempleState } from './temple
 
 export { toSave } from './save/convert';
 
-export interface GameState extends Chapter4World {
+export interface GameState extends StoryWorld {
   time: number;
   playTime: number;
   zone: string;
@@ -95,9 +90,9 @@ export interface GameState extends Chapter4World {
   port: PortDef | null;
   /** The last harbour you came into: you wake up there without a ship (saved). */
   homePort: PortDef['id'];
-  /** Your submarine (from the end of chapter 1; saved). */
+  /** Your submarine (Aurelio's gift at Porto Fango; saved). */
   sub: SubState;
-  /** Your expedition ship (from the end of chapter 4; saved). */
+  /** Your expedition ship (Aurelio's gift at Porto Fango; saved). */
   ship: ShipState;
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
@@ -148,7 +143,6 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     fishCaught: { ...s.fishCaught },
     seen: new Set(s.seen),
     beasts,
-    guardian: createGuardian(beasts),
     brokenTiles: [...s.brokenTiles],
     gear,
     swarmCooldowns: {},
@@ -165,10 +159,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     huntPinned: s.huntPinned ?? null,
     dens,
     temples: createTemples(),
-    chapter2: createChapter2(map),
-    chapter3: createChapter3(beasts, s.story?.seen ?? []),
-    chapter4: createChapter4(beasts, s.story?.seen ?? []),
-    story: createStory(map, s.story, save !== null, teamHasGuardian(beasts.team)),
+    story: createStory(s.story, save !== null, !!s.ship),
   };
   return g;
 }
@@ -242,11 +233,7 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
 export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);
   // the sea waits while a dialogue is on screen, a battle is on or you are choosing your first beast
-  if (g.story.dialogue || g.beasts.battle || needsStarter(g)) {
-    // the ship sails on while Aurelio talks and while you choose your first beast
-    if (g.story.dialogue || needsStarter(g)) stepShip(g, dt);
-    return events;
-  }
+  if (g.story.dialogue || g.beasts.battle || needsStarter(g)) return events;
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;
@@ -297,16 +284,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
   if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
-  const hitBeast = (x: number, y: number, dmg: number): boolean =>
-    hitAnchor(g, x, y, dmg, events) ||
-    hitChain(g, x, y, dmg, events) ||
-    hitBell(g, x, y, events) ||
-    hitLever(g, x, y, events) ||
-    weaponHitsBeast(g, x, y, events);
+  const hitBeast = (x: number, y: number): boolean =>
+    hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events);
   const fishMark = events.length; // fish caught from here on are experience (below)
-  const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, (x, y) =>
-    hitBeast(x, y, BASE_HARPOON.damage),
-  );
+  const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, hitBeast);
   if (caught) catchFish(g, caught, events);
   stepProjectiles(g.weapons, g.fish, g.map, dt, {
     catchFish: (f) => catchFish(g, f, events),
@@ -316,7 +297,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
   // …and the beasts slide along it too: wild ones, and yours when it swims with you
-  for (const w of g.beasts.wilds) if (isInWater(w) && !w.arena) pushOutOfVehicles(g, w, bodyCircles(w));
+  for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w));
   const follower = g.beasts.mount;
   if (follower && !g.beasts.riding) pushOutOfVehicles(g, follower, bodyCircles(follower));
   events.push(...beastEvents);
@@ -325,7 +306,6 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     if (e.type === 'subRammedBy') ramSub(g, e.lengthM, e.x, e.y, events); // a big beast against the hull
   }
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
-  stepGuardian(g, dt, events);
   stepHunts(g, events);
 
   const eater = activeBeast(g);
@@ -360,10 +340,6 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
-  if (g.story.step === 'portJobs' && !g.story.dialogue) stepPortJobs(g, events);
-  stepChapter2(g, events);
-  stepChapter3(g, dt, events);
-  stepChapter4(g, input, dt, events);
   stepTemples(g, events);
   for (const e of events) if (e.type === 'gateOpened') g.brokenTiles.push(...e.tiles);
   const zone = zoneAt(d.x, d.y);
@@ -408,7 +384,6 @@ export function enterPort(g: GameState, events: GameEvent[] = []): void {
   repairSub(g, events);
   if (g.port) hearRumours(g.hunts, g.port, events); // the people of the harbour talk
   g.gear.shopBought = {};
-  guardianReturns(g);
 }
 
 /** Resting at the port (also the "Riposa" button): you and the team healed, you wake up here next time. */

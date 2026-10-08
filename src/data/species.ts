@@ -27,7 +27,7 @@ export interface SpeciesDef {
   lengthM: number;             // standard adult length in metres (diver = 2 m): sprites are scaled from this at runtime
   trait: string;               // one-line description for the card
   abilities?: Ability[];
-  guardian?: boolean;          // chapter boss; tameable after being defeated
+  storyOnly?: boolean;         // a beast of the paused story (owner, 8 ottobre): kept for later, out of the game
   iconic?: boolean;            // reaches a final form at level 50
   finalFormName?: string;
   albinoFinalFormName?: string; // the albino variant has its own final form (only where defined); the alpha has none
@@ -163,7 +163,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'megattera', name: 'Megattera', type: 'glaciale', role: 'cavalcatura', region: 'barriera', wildLevel: [9, 14], rarity: 4, size: 'colossale', lengthM: 16, trait: 'Il suo canto cura la squadra; con lei non consumi ossigeno',
     abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Megattera Cantore',
     artPrompt: 'a colossal humpback whale with long white pectoral fins and a knobby head, singing, icy bubbles' },
-  { id: 're_corallo', name: 'Re Corallo', type: 'corazzato', role: 'compagno', region: 'barriera', wildLevel: [20, 20], rarity: 4, size: 'grande', lengthM: 5, trait: 'Incassa per tutta la squadra', guardian: true,
+  { id: 're_corallo', name: 'Re Corallo', type: 'corazzato', role: 'compagno', region: 'barriera', wildLevel: [20, 20], rarity: 4, size: 'grande', lengthM: 5, trait: 'Incassa per tutta la squadra', storyOnly: true,
     artPrompt: 'a colossal ancient crab whose shell is a living red coral reef, one claw locked in a rusted iron collar' },
 
   // ---- Foresta Sommersa (10-15)
@@ -176,7 +176,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a heavy tiger shark with dark stripes and stained jaws, fish bones drifting around it' },
   { id: 'polpo_gigante', name: 'Polpo gigante', type: 'abissale', role: 'supporto', region: 'foresta', wildLevel: [13, 15], rarity: 3, size: 'media', lengthM: 6, trait: 'Nube d\u2019inchiostro: i nemici perdono le tue tracce',
     artPrompt: 'a giant red-brown octopus releasing a cloud of black ink, eyes glinting with cyan light' },
-  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', guardian: true, rideSpeedMult: 0.9, riderForward: 0.3, // owner, 4 ottobre: you ride it (too big to swim at your side), sitting on its head
+  { id: 'piovra', name: 'La Piovra', type: 'abissale', role: 'compagno', region: 'foresta', wildLevel: [25, 25], rarity: 4, size: 'colossale', lengthM: 15, trait: 'Afferra e immobilizza', storyOnly: true, rideSpeedMult: 0.9, riderForward: 0.3, // owner, 4 ottobre: you ride it (too big to swim at your side), sitting on its head
     artPrompt: 'a monstrous ancient octopus with scarred tentacles wrapped around a shipwreck, rusted iron collar and broken chains' },
 
   // ---- Mare di Ghiaccio (15-20)
@@ -202,7 +202,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'capodoglio', name: 'Capodoglio', type: 'abissale', role: 'cavalcatura', region: 'fossa', wildLevel: [25, 27], rarity: 4, size: 'colossale', lengthM: 18, trait: 'Apnea ed ecolocalizzazione',
     abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Capodoglio Bianco dei Mari',
     artPrompt: 'a colossal sperm whale with a massive square head covered in circular sucker scars' },
-  { id: 'calamaro_colossale', name: 'Calamaro colossale', type: 'abissale', role: 'compagno', region: 'fossa', wildLevel: [30, 30], rarity: 4, size: 'colossale', lengthM: 20, trait: 'Stritola e oscura con l\u2019inchiostro', guardian: true,
+  { id: 'calamaro_colossale', name: 'Calamaro colossale', type: 'abissale', role: 'compagno', region: 'fossa', wildLevel: [30, 30], rarity: 4, size: 'colossale', lengthM: 20, trait: 'Stritola e oscura con l\u2019inchiostro',
     artPrompt: 'a nightmarish colossal squid with rotating hooks on its tentacles and one huge glowing eye, dragging broken iron chains' },
 
   // ---- Abisso del Tempio (28-35)
@@ -232,6 +232,7 @@ export const SPECIES: SpeciesDef[] = [
 /** Unique Guardian variants of existing species (tameable after the chapter boss fight). */
 export interface UniqueVariantDef { id: string; speciesId: string; name: string; level: number; statMult: number; sizeMult: number; // sizeMult × species lengthM
   region: RegionId; artPrompt: string;
+  storyOnly?: boolean;         // a beast of the paused story (owner, 8 ottobre): kept for later, out of the game
   // ---- legends (tappa 13, owner's decisions of 2 ottobre 2026): one in the whole world; each time its species
   // comes, in its place only, it may come instead; tamed it is yours, defeated it is gone forever
   chance?: number;             // share of its species' comings (in its place) that are the legend instead
@@ -242,7 +243,7 @@ export interface UniqueVariantDef { id: string; speciesId: string; name: string;
   wildLevel?: [number, number]; // a legend met by chance is always very strong (owner, 4 ottobre: 50 to 100)
 }
 export const UNIQUE_VARIANTS: UniqueVariantDef[] = [
-  { id: 'sfregiato', speciesId: 'squalo_bianco', name: 'Lo Sfregiato', level: 8, statMult: 1.35, sizeMult: 1.25, region: 'baia',
+  { id: 'sfregiato', speciesId: 'squalo_bianco', name: 'Lo Sfregiato', level: 8, statMult: 1.35, sizeMult: 1.25, region: 'baia', storyOnly: true,
     artPrompt: 'a colossal great white shark covered in deep scars, a rusted iron collar embedded in its neck, broken chains trailing' },
   { id: 'coccodrillo_marino_leggendario', speciesId: 'coccodrillo_marino', name: 'Coccodrillo albino leggendario', level: 14, statMult: 1.5, sizeMult: 1.3, region: 'delta',
     wildLevel: [50, 65], chance: 0.03, place: 'Delta delle Mangrovie, tra i coccodrilli', // not as rare as the others (owner)
@@ -277,3 +278,5 @@ export function swimSpeedOf(species: SpeciesDef, variant: 'comune' | 'albino' | 
 }
 
 export const speciesById = (id: string) => SPECIES.find((s) => s.id === id);
+/** The beasts in the game now: all but those of the paused story (bestiary, hunter's card). */
+export const GAME_SPECIES = SPECIES.filter((s) => !s.storyOnly);
