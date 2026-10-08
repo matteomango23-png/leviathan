@@ -155,18 +155,4 @@ describe('ricompense delle spedizioni', () => {
     expect(teeth('relitto_abisso_1')).toBeGreaterThan(teeth('relitto_barriera_esterna_1'));
     expect(teeth('relitto_mare_blu_3')).toBeGreaterThan(teeth('relitto_mare_blu_1'));
   });
-
-  it('i pezzi della nave: serbatoio più grande, motori più veloci', async () => {
-    const { buyShipUpgrade, shipTank, shipTopSpeed } = await import('../src/systems/ship/ship');
-    const g = game();
-    g.gear.teeth = 10000;
-    const tank = shipTank(g.ship);
-    const top = shipTopSpeed(g.ship);
-    expect(buyShipUpgrade(g, 'serbatoio').ok).toBe(true);
-    expect(buyShipUpgrade(g, 'motori').ok).toBe(true);
-    expect(shipTank(g.ship)).toBeGreaterThan(tank);
-    expect(shipTopSpeed(g.ship)).toBeGreaterThan(top);
-    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
-    expect(back.ship.upgrades).toEqual(['serbatoio', 'motori']);
-  });
 });

@@ -2,6 +2,7 @@
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
 import { BAG, MARKET } from '../data/economy';
 import { renderFuel } from './portSubs';
+import { renderShipyard } from './shipyardPanel';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
 import { restAtPort, sellAtPort, type GameState } from '../systems/game';
@@ -15,10 +16,11 @@ import { askAurelio } from '../systems/story';
 
 export { slotName } from './portTabs';
 
-type Tab = 'mercato' | 'mute' | 'zaino' | 'bacheca' | 'recinto';
+type Tab = 'mercato' | 'mute' | 'navi' | 'zaino' | 'bacheca' | 'recinto';
 const TABS: [Tab, string, IconName][] = [
   ['mercato', 'Mercato', 'coins'],
-  ['mute', 'Mute', 'suit'], // suits, then the submarines (portSubs.ts)
+  ['mute', 'Mute', 'suit'], // fuel, then the suits (portSubs.ts)
+  ['navi', 'Navi', 'trident'], // the shipyard, only at Porto Fango (shipyardPanel.ts)
   ['zaino', 'Zaino', 'backpack'],
   ['bacheca', 'Bacheca', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
@@ -69,6 +71,7 @@ export class PortMenu {
     });
     const rail = el('div', 'port-rail', this.root);
     for (const [id, label, ic] of TABS) {
+      if (id === 'navi' && g.port?.id !== 'fango') continue; // the shipyard is at Porto Fango
       const b = el('button', 'port-tab', rail);
       b.append(icon(ic), el('span', '', undefined, label));
       b.addEventListener('click', () => {
@@ -111,7 +114,8 @@ export class PortMenu {
       renderFuel(b, ctx); // first: an expedition starts with full tanks
       el('h3', '', b, 'Mute');
       this.renderSuits(b);
-    } else if (this.tab === 'zaino') renderBackpack(b, ctx);
+    } else if (this.tab === 'navi') renderShipyard(b, ctx);
+    else if (this.tab === 'zaino') renderBackpack(b, ctx);
     else if (this.tab === 'bacheca') renderBoard(b, ctx);
     else renderTeamPanel(b, this.g, true);
     this.body.scrollTop = keep;

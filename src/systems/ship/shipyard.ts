@@ -18,10 +18,10 @@ export interface ShipyardWorld {
 export const tradeIn = (s: ShipState): number =>
   s.owned ? Math.round(shipModel(s).price * TRADE_IN_SHARE) : 0;
 
-/** The teeth to pay for this model now (its price less your ship's trade-in). */
+/** The teeth to pay for this model now: its price less your ship's trade-in (below zero, the yard pays you). */
 export function shipCost(g: ShipyardWorld, id: string): number {
   const m = SHIP_MODELS.find((x) => x.id === id);
-  return m ? Math.max(0, m.price - tradeIn(g.ship)) : Infinity;
+  return m ? m.price - tradeIn(g.ship) : Infinity;
 }
 
 export function buyShip(g: ShipyardWorld, id: string): { ok: boolean; reason?: string } {

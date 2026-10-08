@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.49.0 — La flotta, prima parte: il cantiere di Porto Fango (8 ottobre 2026)
+
+- **Cantiere navale a Porto Fango:** nel porto c'è la nuova scheda **Navi** con le card delle 8 navi, i loro mezzi e i numeri (lunghezza, velocità, serbatoio, sonar, vasca).
+  - Puoi comprare l'**Expedition Hunter 1** (6.000 denti): pesante, 26 nodi, 600 L, con lo **Squalo d'acciaio**, il sottomarino più veloce del mare (250 m, ma consuma tanto e non ha sonar).
+  - Le altre sei sono "in cantiere": arrivano nelle prossime versioni.
+  - Una nave alla volta: la vecchia viene ritirata per un quarto del suo prezzo e il carburante passa nella nuova.
+- **Ogni nave è diversa:** lunghezza vera (le grandi si vedono grandi, e la vista del timone si allarga), velocità, quanto ci mette a partire e a fermarsi, serbatoio e consumi, e fino a che velocità sente il sonar.
+- **Carburante da pianificare:**
+  - costa 1 dente al litro (prima 0,25);
+  - l'Aurelia ha 300 L, circa 30 km a tutto gas: non fa andata e ritorno su tutto il mare senza rifornirsi agli avamposti.
+- **Tolti i potenziamenti** (Serbatoio grande, Sonar profondo, Motori) e i sottomarini venduti a parte: ogni sottomarino ora viene con la sua nave. Quelli che avevi comprato ti vengono **rimborsati in denti**.
+- Il cockpit mostra le schede della nave che hai.
+
 ## v0.48.0 — Correzioni dopo la prova lunga (8 ottobre 2026)
 
 - **Motore della nave:**

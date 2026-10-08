@@ -22,6 +22,12 @@ import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
+import { shipLength, shipRates, shipTopSpeed, sonarMaxKnots } from '../src/systems/ship/model';
+
+/** The first ship's numbers (data/fleet.ts). */
+const AURELIA = { model: 'aurelia' };
+const AURELIA_TOP = shipTopSpeed(AURELIA);
+const AURELIA_LENGTH = shipLength(AURELIA);
 
 let map: TileMap;
 beforeAll(() => {
@@ -77,18 +83,18 @@ describe('la nave da spedizione', () => {
     input.helm.throttle = 1;
     run(g, 1, input);
     expect(g.ship.speed).toBeGreaterThan(0);
-    expect(g.ship.speed).toBeLessThan(SHIP.maxSpeed / 2); // heavy: it takes time
+    expect(g.ship.speed).toBeLessThan(AURELIA_TOP / 2); // heavy: it takes time
     run(g, 12, input);
-    expect(g.ship.speed).toBeCloseTo(SHIP.maxSpeed, 0);
-    expect(knotsOf(SHIP.maxSpeed)).toBeCloseTo(24, 0);
+    expect(g.ship.speed).toBeCloseTo(AURELIA_TOP, 0);
+    expect(knotsOf(AURELIA_TOP)).toBeCloseTo(24, 0);
     // throttle down: it coasts, it does not stop at once
     input.helm.throttle = 0;
     run(g, 1, input);
-    expect(g.ship.speed).toBeGreaterThan(SHIP.maxSpeed / 2);
+    expect(g.ship.speed).toBeGreaterThan(AURELIA_TOP / 2);
   });
 
   it('la leva della direzione al contrario frena, e da ferma la nave si gira', () => {
-    const rates = { ...SHIP };
+    const rates = shipRates(AURELIA);
     let h = { face: 1 as 1 | -1, speed: 100 };
     const helm = { throttle: 1, dir: -1 as const, dive: 0 };
     for (let t = 0; t < 1; t += DT) h = stepHeading(h.face, h.speed, helm, 200, rates, DT);
@@ -190,7 +196,7 @@ describe('la nave da spedizione', () => {
     expect(ev.some((e) => e.type === 'sonarPing')).toBe(true);
     input.helm.throttle = 1;
     run(g, 12, input);
-    expect(knotsOf(g.ship.speed)).toBeGreaterThan(SHIP.sonar.maxKnots);
+    expect(knotsOf(g.ship.speed)).toBeGreaterThan(sonarMaxKnots(AURELIA));
     expect(sonarActive(g.ship)).toBe(false);
     ev = run(g, 3, input);
     expect(ev.some((e) => e.type === 'sonarPing')).toBe(false);
@@ -247,7 +253,7 @@ describe('la nave non si blocca mai', () => {
   function sail(x: number, face: 1 | -1, seconds: number, goal = Infinity, dt = 1 / 15) {
     const g: ShipWorld = {
       ship: {
-        ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true, fuel: 1e9, upgrades: [] }),
+        ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true, fuel: 1e9, model: 'aurelia' }),
       },
       map,
       sub: { owned: true, aboard: false },
@@ -269,7 +275,7 @@ describe('la nave non si blocca mai', () => {
 
   it('da Porto Fango a 30 km verso est: mare libero, senza mai fermarsi', { timeout: 60000 }, () => {
     // the sea ends 30 km from the beach: the ship gets there, to the last metre
-    const goal = SEA_END_X - SHIP.length / 2 - 1;
+    const goal = SEA_END_X - AURELIA_LENGTH / 2 - 1;
     const { g, events } = sail(PORTO_FANGO.shipDock, 1, 1200, goal);
     expect(g.ship.x).toBeGreaterThan(goal);
     for (let i = 0; i < 30; i++) sailShip(g, { throttle: 1, dir: 1, dive: 0 }, 1 / 15, events, () => true);
@@ -291,9 +297,11 @@ describe('la nave non si blocca mai', () => {
     const { g, events, lanes } = sail(at - 700, 1, 12);
     expect(events.some((e) => e.type === 'iceCracked')).toBe(true);
     // in the middle of the ice field it keeps its speed: only icebergs slow it down (owner, 8 ottobre)
-    const inIce = lanes.filter((l) => l.x + SHIP.length / 2 > at + 130 && l.x + SHIP.length / 2 < at + 200);
+    const inIce = lanes.filter(
+      (l) => l.x + AURELIA_LENGTH / 2 > at + 130 && l.x + AURELIA_LENGTH / 2 < at + 200,
+    );
     expect(inIce.length).toBeGreaterThan(0);
-    expect(Math.max(...inIce.map((l) => l.speed))).toBeGreaterThan(SHIP.maxSpeed * SHIP.iceMult + 1);
+    expect(Math.max(...inIce.map((l) => l.speed))).toBeGreaterThan(AURELIA_TOP * SHIP.iceMult + 1);
     const broken = [...g.ship.broken];
     expect(broken.length).toBeGreaterThan(0);
     const { tx, ty } = map.tileOf(broken[0]!.i);

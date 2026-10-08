@@ -5,7 +5,7 @@ I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blo
 1. ✅ Nuovo inizio senza storia (v0.47.0)
 2. ✅ Correzioni rapide (v0.48.0)
 3. ✅ Decisioni di design (scritte nel GDD, sezione "Decisioni di design")
-4. La flotta (navi, sottomarini, mezzi nei portelloni, concessionario)
+4. La flotta — 4a ✅ (v0.49.0: cantiere, modelli, EH1); 4b mezzi di superficie; 4c U-Boat; 4d Ocean's Nightmare
 5. Sonar e spedizioni
 6. Cattura e combattimento
 7. Ruoli delle bestie, nuoto, cavalcature (+ prova del megalodonte da video)

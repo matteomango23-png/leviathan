@@ -16,6 +16,11 @@ import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveSub, giveVessels } from './helpers/vessels';
+import { shipTank } from '../src/systems/ship/model';
+
+/** The first ship's numbers (data/fleet.ts). */
+const AURELIA = { model: 'aurelia' };
+const AURELIA_TANK = shipTank(AURELIA);
 
 let map: TileMap;
 beforeAll(() => {
@@ -59,7 +64,7 @@ describe('carburante', () => {
   it('la nave consuma navigando, e a secco si ferma e lo dice una volta sola', () => {
     const { g, input } = atTheHelm();
     const full = g.ship.fuel;
-    expect(full).toBe(SHIP.fuel.tank);
+    expect(full).toBe(AURELIA_TANK);
     input.helm.throttle = 1;
     run(g, 8, input);
     expect(g.ship.fuel).toBeLessThan(full);
@@ -108,8 +113,8 @@ describe('carburante', () => {
     g.gear.teeth = 1000;
     const r = buyFuel(g, 'ship');
     expect(r.ok).toBe(true);
-    expect(g.ship.fuel).toBe(SHIP.fuel.tank);
-    expect(r.cost).toBe(Math.ceil((SHIP.fuel.tank - 100) * FUEL.pricePerLitre));
+    expect(g.ship.fuel).toBe(AURELIA_TANK);
+    expect(r.cost).toBe(Math.ceil((AURELIA_TANK - 100) * FUEL.pricePerLitre));
     expect(g.gear.teeth).toBe(1000 - r.cost);
     g.port = OUTPOSTS[0]!; // another harbour: the ship is not there
     expect(canRefuel(g, 'ship')).toBe(false);
