@@ -10,7 +10,7 @@ import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
 import { migrate, parseSave, SAVE_VERSION } from '../src/systems/save/saveData';
-import { buySub, canBoard, ramSub, subFloorY, subModel } from '../src/systems/submarine';
+import { canBoard, ramSub, subFloorY, subModel } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -146,28 +146,11 @@ describe('the submarine', () => {
     expect(out).toContainEqual({ type: 'subRepaired', cost: max * SUBMARINE.repairPerPoint });
   });
 
-  it('better ones are bought at the port; you can switch back', () => {
-    const g = withSub();
-    g.gear.teeth = 100;
-    expect(buySub(g, 'squalo_ferro').ok).toBe(false);
-    g.gear.teeth = 5000;
-    expect(buySub(g, 'squalo_ferro').ok).toBe(true);
-    expect(g.gear.teeth).toBe(5000 - SUB_MODELS[1]!.price);
-    expect(g.sub.model).toBe('squalo_ferro');
-    expect(g.sub.hull).toBe(SUB_MODELS[1]!.hull);
-    expect(subFloorY(g.sub)).toBeGreaterThan(WORLD.surfaceY + SUB_MODELS[0]!.maxDepthM * U);
-    expect(buySub(g, 'batiscafo').ok).toBe(true);
-    expect(g.gear.teeth).toBe(5000 - SUB_MODELS[1]!.price); // already yours: free
-  });
-
   it('is saved (v11); an older save’s boat becomes the bathyscaphe where the boat was', () => {
     const g = withSub();
-    g.gear.teeth = 5000;
-    buySub(g, 'squalo_ferro');
     Object.assign(g.sub, { x: 9000, y: 200, hull: 50 });
     const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
-    expect(back.sub).toMatchObject({ owned: true, x: 9000, y: 200, hull: 50, model: 'squalo_ferro' });
-    expect(back.sub.models).toEqual(['batiscafo', 'squalo_ferro']);
+    expect(back.sub).toMatchObject({ owned: true, x: 9000, y: 200, hull: 50, model: 'batiscafo' });
     expect(SAVE_VERSION).toBeGreaterThanOrEqual(11);
     const old = migrate({ game: 'leviatano', version: 10, boat: { x: 777 } }) as {
       sub: unknown;

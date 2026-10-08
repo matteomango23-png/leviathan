@@ -11,12 +11,14 @@ import { renderBridge } from './bridgePanel';
 import { el } from './dom';
 import { icon, type IconName } from './icons';
 import { renderBackpack, type TabContext } from './portTabs';
+import type { CockpitTab } from '../data/fleet';
+import { shipModel } from '../systems/ship/model';
 import { renderSonar } from './sonarScreen';
 import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
 
-type Tab = 'plancia' | 'sonar' | 'diario' | 'recinto' | 'zaino';
+type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
   ['sonar', 'Sonar', 'dive'],
   ['plancia', 'Plancia', 'lamp'],
@@ -64,7 +66,8 @@ export class Cockpit {
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
     back.addEventListener('click', () => onClose());
     const rail = el('div', 'port-rail', this.root);
-    for (const [id, label, ic] of TABS) {
+    const own = shipModel(g.ship).cockpit; // each ship its own instruments (owner, 8 ottobre)
+    for (const [id, label, ic] of TABS.filter(([t]) => own.includes(t))) {
       const b = el('button', 'port-tab', rail);
       b.append(icon(ic), el('span', '', undefined, label));
       b.addEventListener('click', () => {

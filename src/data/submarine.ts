@@ -1,8 +1,8 @@
 // Leviatano — your submarine (tappa 16, owner's decisions of 3 ottobre 2026: it replaces the boat). Nonno Aurelio
-// gives you his old bathyscaphe at the end of chapter 1. It travels under water (under the icebergs), each model
-// down to its own depth and at its own speed; better ones are bought at the port. Inside you breathe (you heal only on the ship and at the port)
-// (fishing from it was removed on 4 ottobre, to be rethought), but you cannot fight: ordinary beasts slip away
-// from it, the big aggressive ones ram it and break it.
+// gives you his old bathyscaphe with the ship at Porto Fango. It travels under water (under the icebergs), each
+// model down to its own depth and at its own speed; since 8 ottobre each comes with its ship (data/fleet.ts), none
+// is sold on its own. Inside you breathe (you heal only on the ship and at the port), but you cannot fight:
+// ordinary beasts slip away from it, the big aggressive ones ram it and break it.
 // It stays where you leave it. Values marked "tuning" are a first pass: change them here, never in systems.
 import { PORT } from './economy';
 import { WORLD } from './worldLayout';
@@ -10,12 +10,13 @@ import { WORLD } from './worldLayout';
 export interface SubModel {
   id: string;
   name: string;
-  price: number; // teeth (0: Aurelio's gift)
   speed: number; // units/s (you swim at 42)
   maxDepthM: number;
   hull: number; // hits it takes (each ram takes SUBMARINE.ram.damage × the beast's size)
   tank: number; // litres of fuel (owner, 4 ottobre: bought at the port). Tuning
   perKm: number; // litres per km at full throttle (less going slowly: FUEL.idleShare). Tuning
+  /** It has a sonar of its own (block 5 makes it work). */
+  sonar: boolean;
   note: string;
   art: string; // its picture in public/world
 }
@@ -24,38 +25,27 @@ export const SUB_MODELS: SubModel[] = [
   {
     id: 'batiscafo',
     name: 'Batiscafo di Aurelio',
-    price: 0,
     speed: 70, // tuning: less than twice your swimming
     maxDepthM: 80,
     hull: 60,
     tank: 120,
     perKm: 8,
+    sonar: false,
     note: 'Vecchio e lento, ma tiene l’acqua fuori',
     art: 'sottomarino_1',
   },
   {
-    id: 'squalo_ferro',
-    name: 'Squalo di ferro',
-    price: 1800,
-    speed: 110,
+    // the Expedition Hunter 1's (owner, 8 ottobre): the fastest of the sea, a small tank, no sonar
+    id: 'squalo_acciaio',
+    name: 'Squalo d’acciaio',
+    speed: 190,
     maxDepthM: 250,
-    hull: 120,
-    tank: 180,
-    perKm: 8,
-    note: 'Più veloce e più profondo, scafo rinforzato',
-    art: 'sottomarino_1',
-  },
-  {
-    id: 'leviatano_ottone',
-    name: 'Leviatano d’ottone',
-    price: 6000,
-    speed: 160,
-    maxDepthM: 900,
-    hull: 240,
-    tank: 260,
-    perKm: 9,
-    note: 'Per le zone più lontane e le fosse',
-    art: 'sottomarino_1',
+    hull: 100,
+    tank: 90,
+    perKm: 11,
+    sonar: false,
+    note: 'Il sottomarino più veloce: consuma tanto e non ha sonar',
+    art: 'sottomarino_eh1',
   },
 ];
 

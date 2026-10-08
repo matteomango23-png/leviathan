@@ -1,35 +1,16 @@
-// Leviatano — the expedition ship (owner's decisions of 4 ottobre 2026): your home at sea. Aurelio brings it at the
-// end of chapter 4 with your submarine in its hold. It sails on the surface east of the trading harbour of Porto
+// Leviatano — the expedition ship (owner's decisions of 4 ottobre 2026): your home at sea. Aurelio gives you the
+// first at Porto Fango with your submarine in its hold; each model's own numbers are in data/fleet.ts, the rules
+// they share are here. It sails on the surface east of the trading harbour of Porto
 // Fango, breaks the ice and finds nothing in its way (owner, 5 ottobre); stopped, its side hatch opens, the
 // submarine slides down the ramp to mid-water under it and docks again only in front of the hatch. Open, the ship
 // does not move. You drive it, and the submarine, with levers (HELM). Values marked "tuning" are a first pass.
 
 export const SHIP = {
-  art: 'nave_1', // public/world: hatch closed…
-  artOpen: 'nave_1_aperta', // …and open (same frame, so they line up)
-  length: 180, // units ≈ 30 m: the whole picture's width
-  /** Where things are on the picture (1379×752, bow on the right), as shares of its width and height. Tuning. */
-  picture: {
-    aspect: 752 / 1379, // height / width
-    waterline: 0.57, // the sea surface crosses the hull here
-    keel: 0.79, // bottom of the hull (rudder and sonar dome hang a little lower)
-    hatchX: 0.45, // middle of the hatch, from the stern (left edge)
-    hatchY: 0.62, // middle of the hatch opening
-    rampEnd: 0.93, // lowest point of the open ramp
-    helmX: 0.35, // the wheelhouse: where you stand at the helm
-    deckY: 0.38,
-    propX: 0.15, // the propeller (bubbles when it turns)
-    propY: 0.72,
-  },
-  maxSpeed: 220, // units/s at full throttle (~1 km in 27 s). Tuning: fast, not extreme
-  accel: 38, // units/s² while speeding up: a heavy hull
-  coast: 22, // units/s² it slows down by itself, throttle down (inertia)
-  brake: 60, // units/s² when the lever points the other way
   stillBelow: 4, // units/s: slower than this it counts as still (the instruments show 0 knots)
   turnBelow: 12, // units/s: slower than this, a lever the other way turns it round (at once: owner's choice)
-  /** Fuel (owner, 4 ottobre: bought at the port, planned for the expedition). Tuning. */
-  /** idlePerMinute: litres burnt by a running engine even with the ship still (owner, 8 ottobre: switch it off). */
-  fuel: { tank: 500, perKm: 10, idlePerMinute: 0.5 },
+  /** Fuel: tank and use are each ship's (data/fleet.ts). idlePerMinute: litres burnt by a running engine even
+   *  with the ship still (owner, 8 ottobre: switch it off). */
+  fuel: { idlePerMinute: 0.5 },
   /** Breaking the ice: slower, and the channel freezes again later, far from you. */
   iceMult: 0.4,
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
@@ -47,8 +28,8 @@ export const SHIP = {
 
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
-  /** The sonar (owner, 5 ottobre): switched on at the helm, it hears only under this speed; it pings this often. */
-  sonar: { maxKnots: 10, pingSeconds: 2.6, cruiseKnots: 8 }, // cruise: "Avanti adagio" in the cockpit
+  /** The sonar (owner, 5 ottobre): switched on at the helm, it pings this often. */
+  sonar: { pingSeconds: 2.6, cruiseKnots: 8 }, // up to which speed it hears: each ship's (fleet.ts); cruise: "Avanti adagio"
   /** The chart of the bridge: km shown each side of the ship (owner, 5 ottobre: "i prossimi 2 km"). */
   chart: { halfKm: 2 },
   hatchSeconds: 1.4, // opening or closing
@@ -67,30 +48,15 @@ export const SHIP = {
   dockReachOutpost: 280,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   /** The view at the helm (getting on or off cuts to it behind a short fade: CAMERA.cutFadeMs). */
-  camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
+  /** The view grows with the ship (viewHeightUnits is for a 180-unit ship), up to maxScale. Tuning. */
+  camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16, refLength: 180, maxScale: 2.2 },
 };
-
-/** Parts for the ship, bought at the harbours (owner, 4 ottobre: the rewards of the far seas). Tuning. */
-export interface ShipUpgradeDef {
-  id: string;
-  name: string;
-  price: number;
-  text: string;
-  tankExtra?: number; // litres more in the tank
-  sonarMult?: number; // × the range of the anomalous echoes
-  speedMult?: number; // × top speed
-}
-export const SHIP_UPGRADES: ShipUpgradeDef[] = [
-  { id: 'serbatoio', name: 'Serbatoio grande', price: 900, text: '300 litri in più: spedizioni più lunghe', tankExtra: 300 },
-  { id: 'sonar_profondo', name: 'Sonar profondo', price: 1500, text: 'Sente le echi anomale dal doppio della distanza', sonarMult: 2 },
-  { id: 'motori', name: 'Motori potenziati', price: 2500, text: 'Il 20% più veloce', speedMult: 1.2 },
-];
 
 /** Fuel of the ship and the submarine: how much going slowly saves, the price, the transfer between them. */
 export const FUEL = {
   /** Litres per km = perKm × (idleShare + (1 − idleShare) × throttle): going slowly lasts longer. Tuning. */
   idleShare: 0.5,
-  pricePerLitre: 0.25, // teeth. Tuning
+  pricePerLitre: 1, // teeth (owner, 8 ottobre: fuel to plan for; was 0.25). Tuning
   transferStep: 25, // litres per tap in the cockpit
   /** The submarine fills up at a harbour when it is moored this close to the pier (units). */
   portReach: 320,

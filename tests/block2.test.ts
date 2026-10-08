@@ -76,7 +76,7 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
       bay: 'docked',
       aboard: true,
       fuel: 100,
-      upgrades: [],
+      model: 'aurelia',
       engineOn,
     }),
     map,
@@ -118,10 +118,10 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
       aboard: false,
       fuel: 9,
     };
-    expect(saveShip({ ...newShip({ ...base, upgrades: [], engineOn: true }), owned: true })?.engineOn).toBe(
-      true,
-    );
-    expect(newShip({ ...base, upgrades: [] }).engineOn).toBe(false);
+    expect(
+      saveShip({ ...newShip({ ...base, model: 'aurelia', engineOn: true }), owned: true })?.engineOn,
+    ).toBe(true);
+    expect(newShip({ ...base, model: 'aurelia' }).engineOn).toBe(false);
   });
 
   it('you hear it only while it runs, less the farther you swim', () => {

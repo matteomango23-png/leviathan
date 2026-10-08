@@ -697,3 +697,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Avamposti:** `shipAlongside` (in `economy/places.ts`) vale per il pulsante Porto e per il rifornimento.
 - **Evoluzione:** tolta `EvolutionShow` (la seconda animazione con le card); lo stile dello schermo rimasto è in `screens.css`.
 - **Ghiaccio:** rallenta solo `icebergAcross` (iceberg dipinti); per ora nel mare aperto non ce ne sono (`ICEBERGS_PER_STRETCH = 0`).
+
+## 8 ottobre 2026 — La flotta, parte 4a (v0.49.0)
+
+- **Decisione:** le navi sono modelli (`data/fleet.ts`, `SHIP_MODELS`) con i numeri della tabella corretta dal proprietario; `ship.model` è salvato. Tutto ciò che prima leggeva `SHIP.length/picture/maxSpeed/fuel/art` passa da `systems/ship/model.ts` (`shipModel`, `shipLength`, `shipTopSpeed`, `shipRates`, `shipTank`, `sonarRange`, `sonarMaxKnots`); `data/ship.ts` tiene solo le regole comuni. La geometria (`ship/geometry.ts`) è fatta di funzioni del modello al posto delle costanti.
+- **Lunghezze vere:** metri × `WORLD.unitsPerMetre`; la vista del timone cresce con la lunghezza (`SHIP.camera.refLength`, fino a `maxScale`).
+- **Cantiere:** `systems/ship/shipyard.ts`. Una nave alla volta; la vecchia vale `TRADE_IN_SHARE` del prezzo (se vale più della nuova, la differenza torna a te); il carburante passa nella nuova; il sottomarino della nave arriva nuovo nella stiva. Solo le navi `ready` si comprano (Aurelia, EH1): le altre aspettano le parti 4b–4d.
+- **Tolti** potenziamenti e sottomarini venduti a parte; **salvataggio v18** li rimborsa ai prezzi della v0.48.0.
+- **Immagini:** le navi sul fondo verde passano da `npm run art` (nomi `nave_<id>`, `nave_<id>_aperta`, `sottomarino_<id>`, card `<nome>_card`); le immagini con la prua a sinistra si girano copiandole in `art-inbox/`. Effetto noto: le scritte dipinte sullo scafo si leggono al contrario quando la nave va verso est.

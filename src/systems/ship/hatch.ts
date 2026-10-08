@@ -6,7 +6,7 @@ import { SHIP } from '../../data/ship';
 import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
 import { repairSub, restAboard, type SubWorld } from '../submarine';
-import { bayPath, dockPoint, helmPoint, holdPoint, shipSpan, SHIP_DRAFT } from './geometry';
+import { bayPath, dockPoint, helmPoint, holdPoint, shipDraft, shipSpan } from './geometry';
 import { hatchCanMove, type ShipState } from './ship';
 
 export interface HatchWorld extends SubWorld {
@@ -130,7 +130,7 @@ export function canBoardShip(g: HatchWorld & { diver: { dead: boolean } }): bool
   if (!s.owned || s.aboard || g.sub.aboard || d.dead) return false;
   const { x0, x1 } = shipSpan(s);
   const r = SHIP.boardReach;
-  return d.x > x0 - r && d.x < x1 + r && d.y < WORLD.surfaceY + SHIP_DRAFT + r;
+  return d.x > x0 - r && d.x < x1 + r && d.y < WORLD.surfaceY + shipDraft(g.ship) + r;
 }
 
 export function boardShip(g: HatchWorld, events: GameEvent[]): void {
@@ -150,6 +150,6 @@ export function diveFromShip(g: HatchWorld, events: GameEvent[]): void {
   }
   s.aboard = false;
   const x = helmPoint(s).x;
-  Object.assign(g.diver, { x, y: WORLD.surfaceY + SHIP_DRAFT + 8, vx: 0, vy: 10 });
+  Object.assign(g.diver, { x, y: WORLD.surfaceY + shipDraft(g.ship) + 8, vx: 0, vy: 10 });
   events.push({ type: 'dove' });
 }

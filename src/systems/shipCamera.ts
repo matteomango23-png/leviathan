@@ -5,6 +5,7 @@
 import { CAMERA } from '../data/diver';
 import { SHIP } from '../data/ship';
 import type { ShipState } from './ship/ship';
+import { shipLength, shipTopSpeed } from './ship/model';
 
 export interface CameraAim {
   x: number;
@@ -27,11 +28,13 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
   const s = g.ship;
   if (atHelmView(g)) {
     const C = SHIP.camera;
+    // a bigger ship, a wider view (owner, 8 ottobre: the big ones must look majestic), up to maxScale
+    const k = Math.min(C.maxScale, Math.max(1, shipLength(s) / C.refLength));
     return {
-      x: s.x + s.face * C.lookAhead * (s.speed / SHIP.maxSpeed),
-      y: C.y,
-      viewH: C.viewHeightUnits,
-      minY: C.minY,
+      x: s.x + s.face * C.lookAhead * k * (s.speed / shipTopSpeed(s)),
+      y: C.y * k,
+      viewH: C.viewHeightUnits * k,
+      minY: C.minY * k,
     };
   }
   const d = g.diver;

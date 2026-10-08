@@ -1,0 +1,88 @@
+/* The shipyard of Porto Fango (ui/shipyardPanel.ts): one wide card per ship, its painting on the left. */
+.yard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
+}
+.yard-card {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(40, 60, 66, 0.55), rgba(8, 16, 22, 0.9));
+  border: 1px solid rgba(176, 138, 74, 0.35);
+}
+.yard-card.mine {
+  border-color: #c9a86a;
+}
+.yard-card.building .yard-ship {
+  filter: grayscale(0.6) brightness(0.75);
+}
+.yard-pics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.yard-ship {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.yard-bays {
+  display: flex;
+  gap: 4px;
+}
+.yard-bay {
+  width: calc(50% - 2px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  opacity: 0.9;
+}
+.yard-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.yard-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.yard-name {
+  font-weight: 800;
+  font-size: 16px;
+}
+.yard-note {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.yard-stats {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+}
+.yard-row {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 6px;
+}
+.yard-k {
+  color: #c9a86a;
+}
+.yard-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.yard-was {
+  font-size: 11px;
+  opacity: 0.6;
+  text-decoration: line-through;
+}

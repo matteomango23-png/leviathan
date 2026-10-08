@@ -1,5 +1,5 @@
 // What the levers drive now and what the instruments show, read from the game (ui/helmControls.ts draws them).
-import { SHIP } from '../data/ship';
+import { shipModel, sonarMaxKnots } from '../systems/ship/model';
 import { WORLD } from '../data/worldLayout';
 import { autonomyKm } from '../systems/fuelBurn';
 import type { GameState } from '../systems/game';
@@ -16,7 +16,7 @@ import type { HelmInfo } from './helmControls';
 function sonarLine(g: GameState): string {
   const r = sonarReadout(g, 2);
   if (r.status === 'off') return 'Sonar spento · tocca per accenderlo';
-  if (r.status === 'fast') return `Sonar: troppo veloce (sotto ${SHIP.sonar.maxKnots} nodi)`;
+  if (r.status === 'fast') return `Sonar: troppo veloce (sotto ${sonarMaxKnots(g.ship)} nodi)`;
   // the den's echo first, then how many beasts it hears (owner, 5 ottobre: the sea is full now)
   const odd = r.echoes
     .filter((e) => e.label === 'eco anomala')
@@ -44,7 +44,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       face: s.face,
       knots: knotsOf(s.speed),
       fuel: s.fuel,
-      rangeKm: autonomyKm(s.fuel, SHIP.fuel.perKm, throttle),
+      rangeKm: autonomyKm(s.fuel, shipModel(s).perKm, throttle),
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
       objective: objectiveLine(g),

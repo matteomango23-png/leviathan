@@ -205,7 +205,7 @@ Le risposte del proprietario alle domande del blocco 3 di `docs/BACKLOG.md`, pri
     1. ✅ nuovo inizio senza storia, zona protetta sulla costa (v0.47.0);
     2. ✅ correzioni rapide (v0.48.0);
     3. ✅ decisioni di design (sezione sopra);
-    4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario);
+    4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario): parte 4a ✅ (v0.49.0), poi 4b, 4c, 4d;
     5. sonar e spedizioni;
     6. cattura e combattimento;
     7. ruoli delle bestie, nuoto, cavalcature;

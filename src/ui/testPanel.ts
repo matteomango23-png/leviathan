@@ -65,10 +65,10 @@ export function renderTestPanel(
     goToPortoFango(g);
     done("Sei a Porto Fango, sull'Isola delle Mangrovie.");
   });
-  const teeth = el('button', 'menu-btn small', grid, '+2000 denti');
+  const teeth = el('button', 'menu-btn small', grid, '+5000 denti');
   teeth.addEventListener('click', () => {
-    g.gear.teeth += 2000;
-    done('2000 denti aggiunti: prova il mercato al porto.');
+    g.gear.teeth += 5000;
+    done('5000 denti aggiunti: prova il mercato e il cantiere navale di Porto Fango.');
   });
   if (skipWeather) {
     const sky = el('button', 'menu-btn small', grid, 'Cambia il meteo');

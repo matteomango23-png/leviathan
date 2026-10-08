@@ -1,5 +1,20 @@
 # Progressi
 
+## Blocco 4a — La flotta, prima parte (8 ottobre 2026) → v0.49.0
+
+**Fatto:** cantiere navale a Porto Fango (scheda Navi) con le 8 navi; le navi sono modelli con lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar; Expedition Hunter 1 comprabile con il suo sottomarino squalo; carburante a 1 dente/L; via potenziamenti e sottomarini a parte (rimborsati, salvataggio v18); cockpit con le schede della nave; strumento di prova +5000 denti.
+
+**Prossimo: parte 4b** — secondo portellone e mezzi di superficie (motoscafo, moto d'acqua): Expedition Hunter 2, Poseidon, Imperium VI. Serviranno le loro immagini di profilo (sono nelle cartelle del desktop: da riconoscere e copiare in `art-inbox/` come per l'EH1) e le posizioni sull'immagine (`picture` in `data/fleet.ts`). Poi 4c (U-Boat) e 4d (Ocean's Nightmare, con il sonar del blocco 5).
+
+**Da provare sull'iPhone (v0.49.0):**
+1. Prima di aggiornare, esporta il salvataggio. Dopo: se avevi comprato potenziamenti o sottomarini, ti sono tornati i denti; la nave è l'Aurelia col Batiscafo.
+2. A Porto Fango, al timone accanto al molo, premi Porto → scheda **Navi**: le 8 card.
+3. Con abbastanza denti (o con lo strumento di prova "+5000 denti"), compra l'Expedition Hunter 1: compare al molo, più lunga. Senti quanto è lenta a partire e a fermarsi.
+4. Apri il portellone e cala lo Squalo d'acciaio: velocissimo, ma il serbatoio è piccolo.
+5. Controlla il carburante dell'Aurelia: circa 30 km a tutto gas.
+
+**Da sapere:** le scritte dipinte sullo scafo dell'EH1 ("EXPEDITION HUNTER") si leggono al contrario quando la nave va verso est (l'immagine è stata girata perché la prua guardasse a destra come le altre).
+
 ## Blocco 3 — Decisioni di design (8 ottobre 2026), solo documenti
 
 **Fatto:** le risposte del proprietario alle 11 domande sono nel GDD, nella sezione "Decisioni di design (8 ottobre 2026)". Nel BACKLOG ogni blocco futuro ha la sua riga "Deciso l'8 ottobre". Corrette anche le parti superate del GDD (santuari, vecchio minigioco della domatura, ruoli). Nessuna modifica al gioco: la versione resta la 0.48.0.
