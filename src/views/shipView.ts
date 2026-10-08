@@ -12,6 +12,7 @@ import { SHIP_MODELS, type ShipPicture } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
+import { ShipFx } from './shipFx';
 
 const UNDERWATER_TINT = 0x6f97a6;
 const FAR_TINT = 0x7f8c94;
@@ -75,11 +76,8 @@ export class ShipView {
    *  on top, the open hatch hid it). */
   private readonly pics = new Map<string, ShipPictures | null>();
   private readonly fx: Phaser.GameObjects.Graphics;
-  /** The smoke of the stacks, behind the ship (owner, 8 ottobre: a little overlap with the painting does not show). */
-  private readonly smoke: Phaser.GameObjects.Graphics;
-  /** The puffs in the air (look only), and how many each stack owes (a fraction of a puff carried over). */
-  private puffs: { x: number; y: number; vy: number; r: number; age: number; seed: number }[] = [];
-  private readonly smokeDue: number[] = [];
+  /** Smoke (behind the ship), the bow wave and ice shards (views/shipFx.ts). */
+  private readonly effects: ShipFx;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
   private readonly tug: Phaser.GameObjects.Image | null;
@@ -87,9 +85,9 @@ export class ShipView {
   private tugFrom = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
-    this.smoke = scene.add.graphics();
+    const smoke = scene.add.graphics(); // behind the ship
     this.fallback = scene.add.graphics();
-    layer.add([this.smoke, this.fallback]);
+    layer.add([smoke, this.fallback]);
     for (const m of SHIP_MODELS) {
       const art = m.art;
       if (!art || this.pics.has(art.closed)) continue;
@@ -101,6 +99,7 @@ export class ShipView {
       : null;
     if (this.tug) layer.add(this.tug);
     this.fx = scene.add.graphics();
+    this.effects = new ShipFx(smoke, this.fx);
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     layer.add([this.fx, this.glow]);
   }
@@ -123,7 +122,6 @@ export class ShipView {
     this.fx.clear();
     this.glow.clear();
     this.fallback.clear();
-    this.smoke.clear();
     if (!s.owned) {
       for (const p of this.pics.values()) p?.hide();
       this.tug?.setVisible(false);
@@ -142,63 +140,11 @@ export class ShipView {
     const pics = this.picsOf(s);
     if (pics) pics.place(s, s.x, top, 1, pitch, 0);
     else this.drawFallback(s, top);
-    this.drawSmoke(s, top, dt);
+    this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt);
     this.drawWake(s, k, planing, time, heave);
+    this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
-  }
-
-  /**
-   * Smoke from the stacks while the engine runs, like a steam train: each puff is born at the stack and then stays
-   * in the air (only rising and drifting with the wind), so when the ship sails the puffs left behind make a long
-   * trail; they swell and fade from near black to grey. The throttle makes more of them; off, none are born and the
-   * last ones fade away.
-   */
-  private drawSmoke(s: ShipState, top: number, dt: number): void {
-    const S = SHIP.smoke;
-    const scale = shipLength(s) / 180; // bigger ships, bigger smoke
-    if (s.engineOn) {
-      const rate = S.idleRate + (S.fullRate - S.idleRate) * s.prop;
-      for (const [i, st] of (shipArt(s).stacks ?? []).entries()) {
-        this.smokeDue[i] = (this.smokeDue[i] ?? 0) + rate * st.size * dt;
-        const base = this.at(s, top, st.u, st.v);
-        while ((this.smokeDue[i] ?? 0) >= 1 && this.puffs.length < S.max) {
-          this.smokeDue[i]! -= 1;
-          this.puffs.push({
-            x: base.x + (Math.random() - 0.5) * 2,
-            y: base.y,
-            vy: -S.lift * (0.7 + 0.6 * s.prop) * (0.8 + Math.random() * 0.4),
-            r: S.size * st.size * scale * (0.5 + 0.5 * s.prop) * (0.8 + Math.random() * 0.4), // more gas, bigger puffs
-            age: 0,
-            seed: Math.random() * 10,
-          });
-        }
-      }
-    }
-    for (const p of this.puffs) {
-      p.age += dt / S.life;
-      p.x += S.wind * dt;
-      p.y += p.vy * dt;
-      p.vy *= Math.exp(-S.liftDrag * dt);
-    }
-    this.puffs = this.puffs.filter((p) => p.age < 1);
-    // oldest first, so the young dark puffs at the stack are drawn on top
-    for (const p of this.puffs) {
-      const r = p.r * (1 + p.age * S.swell);
-      const shade = Math.round(0x26 + (0x7a - 0x26) * Math.min(1, p.age * 1.6));
-      const color = (shade << 16) | ((shade - 2) << 8) | (shade - 6);
-      const alpha = S.alpha * (1 - p.age) * Math.min(1, p.age * 12);
-      this.smoke.fillStyle(color, alpha);
-      // a little cloud of three overlapping lumps, not a single disc
-      for (let k = 0; k < 3; k++) {
-        const a = p.seed + k * 2.1;
-        this.smoke.fillCircle(
-          p.x + Math.cos(a) * r * 0.45,
-          p.y + Math.sin(a) * r * 0.3,
-          r * (0.75 + 0.1 * k),
-        );
-      }
-    }
   }
 
   /** A point of the picture (shares) in the world, at this top. */
@@ -274,7 +220,7 @@ export class ShipView {
     this.drawPropBubbles(s, time);
     if (k < 0.03) return;
     const L = shipLength(s);
-    const bow = s.x + s.face * L * 0.47;
+    const bow = s.x + s.face * L * (shipPicture(s).bowU - 0.5); // where the bow meets the water
     const stern = s.x - s.face * L * 0.46;
     const y = WORLD.surfaceY + heave * 0.3;
     for (let i = 0; i < 14; i++) {
@@ -282,16 +228,9 @@ export class ShipView {
       const wx = stern - s.face * t * (40 + 120 * k);
       g.fillStyle(0xe8f2f4, 0.35 * k * (1 - t));
       g.fillEllipse(wx, y + Math.sin(i * 1.7) * 1.2, 6 + t * 14, 1.6 + t * 1.2);
-      const bx = bow - s.face * t * 10;
-      g.fillStyle(0xf4fafb, 0.5 * k * (1 - t));
-      g.fillEllipse(bx, y - 1 + t * 0.5, 3 + t * 6, 1.4);
     }
-    if (planing > 0)
-      for (let i = 0; i < 8; i++) {
-        const t = (time * 2.2 + i / 8) % 1;
-        g.fillStyle(0xffffff, 0.45 * planing * (1 - t));
-        g.fillCircle(bow + s.face * (2 + t * 8), y - 2 - t * 9 + t * t * 8, 0.8 + t * 1.6);
-      }
+    // in the ice the bow breaks ice, not waves (owner, 8 ottobre)
+    if (s.iceT <= 0) this.effects.bowWave(s, bow, y, k, planing, time);
   }
 
   /** Bubbles churned by the propeller, only while it turns (owner, 8 ottobre: not while the ship coasts). */

@@ -714,3 +714,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Elica:** `ship.prop` (0…1, non salvato) segue la spinta del motore; immagine `art.moving` (facoltativa) e bolle dell'elica dipendono da essa, la scia dalla velocità.
 - **Accensione e spegnimento:** eventi `engineStarted` / `engineStopped`, suono sintetizzato (`ENGINE_SOUND.startStop`).
 - **Cantiere:** `tier` 1–5 per nave (colori di `RARITY`); pagina della nave in `ui/shipPage.ts` con galleria a scorrimento.
+
+## 8 ottobre 2026 — Onda di prua e ghiaccio (v0.50.3)
+
+- **Prua sull'acqua:** `picture.bowU` dice dove la prua tocca l'acqua (la parte sopra l'acqua sporge, es. la mascella dell'EH1); onda, schegge e rottura del ghiaccio partono da lì.
+- **Ghiaccio rotto dietro la prua** (`SHIP.iceBehindBow`, da 8 a 40 unità dietro): prima si rompeva 10 unità davanti, e la lastra spariva prima del contatto.
+- **Schegge:** `ship.iceT` (non salvato) resta acceso `SHIP.iceCrackSeconds` dopo ogni rottura; la vista lancia le schegge e intanto non disegna l'onda di prua.
+- **`views/shipFx.ts`:** fumo, onda e schegge separati da `shipView.ts`, che superava le 300 righe.

@@ -14,6 +14,9 @@ export const SHIP = {
   /** Breaking the ice: slower, and the channel freezes again later, far from you. */
   iceMult: 0.4,
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
+  /** The ice sheet breaks this far behind the bow (units, near…far): under the hull, never ahead of it. */
+  iceBehindBow: [8, 40] as [number, number],
+  iceCrackSeconds: 0.4, // after the last ice broken, the bow still counts as in the ice this long (look only)
   refreezeSeconds: 40,
   refreezeDistance: 420, // units from you and the ship before the ice closes again (never on screen)
   /** Smoke from the stacks while the engine runs, like a steam train (owner, 8 ottobre): puffs born at the stack

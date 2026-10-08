@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.50.3 — Onda di prua e ghiaccio che si spacca (8 ottobre 2026)
+
+- **Onda di prua:** davanti allo scafo l'acqua si alza e si infrange in schiuma e spruzzi; più vai veloce, più è alta e lunga. Parte da dove la prua tocca l'acqua (sull'EH1 sotto la mascella dello squalo).
+- **Il ghiaccio si rompe al passaggio della prua**, non prima: davanti alla nave la lastra resta intera finché la prua non ci passa sopra.
+- **Schegge di ghiaccio:** entrando nel ghiaccio volano pezzetti che ricadono e galleggiano. Nel ghiaccio non c'è l'onda di prua.
+- Il fumo comparirà anche sulle altre navi con la ciminiera appena arriveranno le loro immagini di profilo.
+
 ## v0.50.2 — Fumo da treno a vapore, attracco automatico (8 ottobre 2026)
 
 - **Fumo come un treno a vapore:** nuvolette che escono quasi nere e restano nell'aria dove sono uscite, salgono, si gonfiano e diventano grigie. In corsa formano una scia lunga dietro la nave. Più gas, più fumo e più denso; da fermi esce un filo leggero.

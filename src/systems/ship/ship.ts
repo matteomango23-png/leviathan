@@ -13,7 +13,15 @@ import { knotsOf, stepHeading, type HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
 import { helmPoint, shipDraft, shipSpan } from './geometry';
 import { breakIce, refreeze, SEA_END_X, SHIP_WEST_X, type BrokenIce } from './surface';
-import { shipLength, shipModel, shipRates, shipTank, shipTopSpeed, sonarMaxKnots } from './model';
+import {
+  shipLength,
+  shipModel,
+  shipPicture,
+  shipRates,
+  shipTank,
+  shipTopSpeed,
+  sonarMaxKnots,
+} from './model';
 import { icebergAcross } from '../world/icebergs';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
@@ -43,6 +51,8 @@ export interface ShipState {
   /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
    *  the propeller picture and its bubbles follow it). */
   prop: number;
+  /** Seconds the bow keeps breaking ice (not saved; > 0 while it cuts): shards fly, the bow wave is gone. */
+  iceT: number;
   /** Slowing down by itself into the harbour (not saved: says it once per approach). */
   approaching: boolean;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
@@ -87,6 +97,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     engineOn: saved?.engineOn ?? false,
     prop: 0,
     approaching: false,
+    iceT: 0,
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : shipTank({ model: FIRST_SHIP }),
     fuelWarned: false,
     sonarOn: false,
@@ -221,10 +232,24 @@ export function sailShip(
     events.push({ type: 'fuelOut', vehicle: 'ship' });
   }
 
+  s.iceT = Math.max(0, s.iceT - dt);
   const changed: number[] = [];
   if (s.speed > 0.5) {
-    const cut = breakIce(g.map, bow - 10, bow + 10, s.broken, shipDraft(s));
-    if (cut.length) events.push({ type: 'iceCracked', x: bow, speed: s.speed });
+    // the ice breaks under the hull, just behind the bow where the ship covers it (owner, 8 ottobre: it broke
+    // ahead of the bow, before the ship touched it)
+    const nose = s.x + s.face * shipLength(s) * (shipPicture(s).bowU - 0.5); // where the bow meets the water, now
+    const [near, far] = SHIP.iceBehindBow;
+    const cut = breakIce(
+      g.map,
+      Math.min(nose - s.face * near, nose - s.face * far),
+      Math.max(nose - s.face * near, nose - s.face * far),
+      s.broken,
+      shipDraft(s),
+    );
+    if (cut.length) {
+      events.push({ type: 'iceCracked', x: nose, speed: s.speed });
+      s.iceT = SHIP.iceCrackSeconds;
+    }
     changed.push(...cut);
   }
   changed.push(...refreeze(g.map, s.broken, dt, far));

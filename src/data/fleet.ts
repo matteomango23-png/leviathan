@@ -16,6 +16,8 @@ export interface ShipPicture {
   deckY: number;
   propX: number; // the propeller (bubbles when it turns)
   propY: number;
+  /** Where the bow meets the water (the painted bow may stick out above it): the bow wave starts here. */
+  bowU: number;
 }
 
 /** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
@@ -109,6 +111,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         deckY: 0.38,
         propX: 0.15,
         propY: 0.72,
+        bowU: 0.96,
       },
     },
   },
@@ -147,6 +150,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         deckY: 0.39,
         propX: 0.12,
         propY: 0.68,
+        bowU: 0.88, // the shark's jaw: its snout sticks out over the water
       },
     },
   },
