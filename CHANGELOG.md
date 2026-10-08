@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.6 — Pulsanti del timone senza pezzi disegnati a metà (9 ottobre 2026)
+
+- Sull'iPhone i pulsanti che svanivano restavano disegnati a metà. Ora svaniscono tutti insieme come un unico riquadro e alla fine vengono nascosti del tutto.
+
 ## v0.53.5 — Pulsanti del timone che svaniscono insieme (9 ottobre 2026)
 
 - I pulsanti dei portelloni e "Tuffati" svaniscono **tutti insieme appena dai gas**, in mezzo secondo, invece di sparire uno alla volta qualche secondo dopo. Ricompaiono insieme quando la nave si è fermata e il gas è a zero.
