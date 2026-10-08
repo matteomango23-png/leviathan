@@ -18,6 +18,13 @@ export interface ShipPicture {
   propY: number;
 }
 
+/** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
+export interface ShipStack {
+  u: number;
+  v: number;
+  size: number;
+}
+
 /** What a hatch holds (a submarine model id of data/submarine.ts, or a boat of the next parts). */
 export type BayKind = 'sub' | 'boat' | 'jetski' | 'drone' | 'sphere';
 export interface BayDef {
@@ -59,7 +66,7 @@ export interface ShipModelDef {
   card: string; // public/art/<card>.webp
   /** Its painting in public/world (hatch closed and open, and the propeller turning if painted: same frame) and
    *  where things are on it. */
-  art?: { closed: string; open: string; picture: ShipPicture; moving?: string };
+  art?: { closed: string; open: string; picture: ShipPicture; moving?: string; stacks?: ShipStack[] };
 }
 
 const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
@@ -87,6 +94,10 @@ export const SHIP_MODELS: ShipModelDef[] = [
     art: {
       closed: 'nave_1',
       open: 'nave_1_aperta',
+      stacks: [
+        { u: 0.527, v: 0.17, size: 1 },
+        { u: 0.276, v: 0.11, size: 0.45 },
+      ],
       picture: {
         aspect: 752 / 1379,
         waterline: 0.57,
@@ -124,6 +135,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
       closed: 'nave_eh1',
       open: 'nave_eh1_aperta',
       moving: 'nave_eh1_moto', // the propeller turning (owner, 8 ottobre)
+      stacks: [{ u: 0.267, v: 0.09, size: 1.3 }],
       picture: {
         aspect: 768 / 1376,
         waterline: 0.6,

@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.50.1 — Fumo dalle ciminiere (8 ottobre 2026)
+
+- **Fumo dalle ciminiere** quando il motore è acceso: sale piano da fermi, e in corsa il vento lo spinge all'indietro. Spegnendo il motore gli ultimi sbuffi si dissolvono. È disegnato dietro la nave.
+- **Sottomarino:** tolte le due lucine disegnate a mano, che non combaciavano con i sottomarini nuovi; la luce è il cono della lampada.
+
 ## v0.50.0 — Ritocchi alla flotta (8 ottobre 2026)
 
 - **Le navi grandi si vedono grandi:** la vista del timone si allarga meno di quanto cresce la nave, così l'Expedition Hunter 1 appare più grande dell'Aurelia (e le navi da 90 m quasi il doppio).

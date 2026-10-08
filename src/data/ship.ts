@@ -16,6 +16,9 @@ export const SHIP = {
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
   refreezeSeconds: 40,
   refreezeDistance: 420, // units from you and the ship before the ice closes again (never on screen)
+  /** Smoke from the stacks while the engine runs (owner, 8 ottobre), drawn behind the ship: puffs at a time, how
+   *  long each lives (s), how high it rises and how far the wind of the ship's speed pushes it back (units). Tuning. */
+  smoke: { puffs: 14, life: 3.2, rise: 46, drift: 120, idleDrift: 14, size: 7, alpha: 0.32 },
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
   /** Rocking on the waves (look only), scaled by the weather's waves. */
