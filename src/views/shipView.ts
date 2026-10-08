@@ -75,6 +75,10 @@ export class ShipView {
    *  on top, the open hatch hid it). */
   private readonly pics = new Map<string, ShipPictures | null>();
   private readonly fx: Phaser.GameObjects.Graphics;
+  /** The smoke of the stacks, behind the ship (owner, 8 ottobre: a little overlap with the painting does not show). */
+  private readonly smoke: Phaser.GameObjects.Graphics;
+  /** How much smoke now, 0…1: it builds up when the engine starts and dies away when it stops. */
+  private smokeLevel = 0;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
   private readonly tug: Phaser.GameObjects.Image | null;
@@ -82,8 +86,9 @@ export class ShipView {
   private tugFrom = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+    this.smoke = scene.add.graphics();
     this.fallback = scene.add.graphics();
-    layer.add(this.fallback);
+    layer.add([this.smoke, this.fallback]);
     for (const m of SHIP_MODELS) {
       const art = m.art;
       if (!art || this.pics.has(art.closed)) continue;
@@ -117,6 +122,7 @@ export class ShipView {
     this.fx.clear();
     this.glow.clear();
     this.fallback.clear();
+    this.smoke.clear();
     if (!s.owned) {
       for (const p of this.pics.values()) p?.hide();
       this.tug?.setVisible(false);
@@ -135,9 +141,35 @@ export class ShipView {
     const pics = this.picsOf(s);
     if (pics) pics.place(s, s.x, top, 1, pitch, 0);
     else this.drawFallback(s, top);
+    this.drawSmoke(s, top, time, dt);
     this.drawWake(s, k, planing, time, heave);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
+  }
+
+  /**
+   * Smoke from the stacks while the engine runs: puffs rise and swell, pushed back by the wind of the ship's speed
+   * (and a little drift when still); off, the last puffs fade away. Each puff's age comes from the time, so nothing
+   * is kept per puff.
+   */
+  private drawSmoke(s: ShipState, top: number, time: number, dt: number): void {
+    const target = s.engineOn ? 0.55 + 0.45 * s.prop : 0;
+    this.smokeLevel += (target - this.smokeLevel) * Math.min(1, dt * 0.8);
+    if (this.smokeLevel < 0.02) return;
+    const S = SHIP.smoke;
+    const wind = S.idleDrift + S.drift * Math.min(1, s.speed / shipTopSpeed(s));
+    const scale = shipLength(s) / 180; // bigger ships, bigger smoke
+    for (const st of shipArt(s).stacks ?? []) {
+      const base = this.at(s, top, st.u, st.v);
+      for (let i = 0; i < S.puffs; i++) {
+        const age = (time / S.life + i / S.puffs + st.u) % 1;
+        const r = (S.size + age * S.size * 2.2) * st.size * scale;
+        const x = base.x - s.face * wind * age * scale + Math.sin(i * 2.3 + time * 0.7) * 2 * age;
+        const y = base.y - S.rise * age * scale * (1 - 0.35 * Math.min(1, s.speed / shipTopSpeed(s)));
+        this.smoke.fillStyle(age < 0.15 ? 0x3a3835 : 0x5b5955, S.alpha * this.smokeLevel * (1 - age));
+        this.smoke.fillCircle(x, y, r);
+      }
+    }
   }
 
   /** A point of the picture (shares) in the world, at this top. */

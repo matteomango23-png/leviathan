@@ -1,5 +1,5 @@
-// Your submarine (tappa 16): the owner's painting, facing where it goes, rocking gently; its portholes glow when
-// you are inside; bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
+// Your submarine (tappa 16): the owner's painting, facing where it goes, rocking gently (its light is the lamp cone);
+// bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
 // left for a few seconds, then fades; badly damaged it trails dark smoke.
 import Phaser from 'phaser';
 import { SUBMARINE } from '../data/submarine';
@@ -9,7 +9,6 @@ import { subLength, subModel, type SubState } from '../systems/submarine';
 export class SubmarineView {
   private readonly img: Phaser.GameObjects.Image;
   private readonly g: Phaser.GameObjects.Graphics;
-  private readonly glow: Phaser.GameObjects.Graphics;
   private readonly bar: Phaser.GameObjects.Graphics;
   private lastHull = NaN;
   private barLeft = 0;
@@ -17,15 +16,13 @@ export class SubmarineView {
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.g = scene.add.graphics();
-    this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.bar = scene.add.graphics();
-    layer.add([this.img, this.g, this.glow, this.bar]);
+    layer.add([this.img, this.g, this.bar]);
   }
 
   /** @param hidden in the ship's hold behind the closed hatch */
   update(s: SubState, time: number, dt: number, hidden = false): void {
     const g = this.g.clear();
-    this.glow.clear();
     this.bar.clear();
     if (!s.owned || hidden) {
       this.img.setVisible(false);
@@ -50,13 +47,8 @@ export class SubmarineView {
       g.fillStyle(0x23262a, 1).fillEllipse(s.x, y, L, L * 0.34);
       g.fillRect(s.x - L * 0.08, y - L * 0.3, L * 0.18, L * 0.16);
     }
-    // portholes lit while you are inside
-    if (s.aboard) {
-      this.glow.fillStyle(0xffc86a, 0.25 + 0.08 * Math.sin(time * 3));
-      // the two portholes on the tower of the picture
-      this.glow.fillCircle(s.x + s.face * L * 0.13, y - L * 0.17, 1.6);
-      this.glow.fillCircle(s.x + s.face * L * 0.21, y - L * 0.17, 1.6);
-    }
+    // (the lit portholes drawn over the picture are gone, owner 8 ottobre: they did not match the new submarines;
+    // its lamp cone is the light)
     // bubbles behind the propeller when it moves
     const speed = Math.hypot(s.vx, s.vy);
     if (speed > 8)

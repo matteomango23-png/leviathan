@@ -1,5 +1,11 @@
 # Progressi
 
+## Fumo dalle ciminiere (8 ottobre 2026) → v0.50.1
+
+**Fatto:** fumo dalle ciminiere a motore acceso (dietro la nave, spinto indietro dal vento della corsa; posizioni in `stacks` di `data/fleet.ts`, numeri in `SHIP.smoke`); tolte le lucine dipinte a mano del sottomarino.
+
+**Da provare sull'iPhone:** accendi il motore e guarda il fumo; dai gas e il fumo va indietro; spegni e si dissolve.
+
 ## Ritocchi alla flotta (8 ottobre 2026) → v0.50.0
 
 **Fatto:** le richieste del proprietario dopo la prova dell'EH1 (dettagli nel CHANGELOG): grandezze di navi e sottomarini, sottomarino davanti al portellone, elica che gira e bolle solo quando spinge, suoni di accensione e spegnimento, cantiere con le cornici di rarità e la pagina della nave con la galleria.
