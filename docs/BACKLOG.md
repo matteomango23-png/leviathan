@@ -4,7 +4,7 @@ I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blo
 
 1. ✅ Nuovo inizio senza storia (v0.47.0)
 2. ✅ Correzioni rapide (v0.48.0)
-3. Decisioni di design (le domande del punto 14, scritte nel GDD)
+3. ✅ Decisioni di design (scritte nel GDD, sezione "Decisioni di design")
 4. La flotta (navi, sottomarini, mezzi nei portelloni, concessionario)
 5. Sonar e spedizioni
 6. Cattura e combattimento
@@ -40,7 +40,7 @@ Ogni 3 blocchi: una sessione di pulizia.
 - Salendo sulla nave il personaggio entra/gira dal lato sbagliato.
 - Evoluzione del Roccaguscio: due animazioni; tenere quella sull'immagine della bestia (non quella con le card) per tutte le evoluzioni.
 
-## Blocco 3 — Decisioni di design (prima delle funzioni grandi)
+## Blocco 3 — Decisioni di design ✅ (risposte dell'8 ottobre nel GDD, "Decisioni di design")
 1. Funzione delle cavalcature.
 2. Funzione del nuoto (zone strette, raccolta, superficie, furtività, interazioni?) — vera modalità o transizione?
 3. Funzione delle bestie di supporto (oggi sembrano inutili): ruoli cavalcatura / compagno / supporto / solo battaglia? Non tutte cavalcabili.
@@ -54,6 +54,8 @@ Ogni 3 blocchi: una sessione di pulizia.
 11. Chi modifica le bestie: il villain o anche noi? (vedi blocco 10)
 
 ## Blocco 4 — La flotta
+
+- **Deciso l'8 ottobre:** ogni nave ha una **vasca** (posti per scambiare la squadra in mare; le navi grandi ne hanno di più); i sottomarini migliori hanno scafi più resistenti; le cure in nave richiedono qualche decina di secondi.
 - Al porto principale (Porto Fango) un **concessionario**: card delle navi con le statistiche, più card dei sottomarini e dei motoscafi (venduti a parte o in dotazione).
 - Ogni nave si compra con il suo equipaggiamento dentro (portelloni con sottomarino, motoscafo, moto d'acqua, drone…).
 - Statistiche: grandezza, peso, motori e consumi, autonomia, sonar, abilità speciali; distacco netto tra navi base e premium. **Lunghezze reali** visibili in gioco (la maestosità delle navi grandi).
@@ -73,6 +75,8 @@ Ogni 3 blocchi: una sessione di pulizia.
 - Suono del motore diverso per ogni nave.
 
 ## Blocco 5 — Sonar e spedizioni
+
+- **Deciso l'8 ottobre:** navigazione a due andature (trasferimento veloce e sordo, ricerca lenta col sonar); col mare mosso a tutta velocità consuma di più e rovina lo scafo; il tracker si mette a nuoto o dal sottomarino; lo scafo del sottomarino è il rischio della caccia (speronate).
 - La ricerca col sonar è una delle cose più belle, ma da sola è poco: renderla il centro della ricerca delle bestie (brainstorming).
 - Sonar più dettagliato (oggi piccolo / grande / leggendario): più classi di dimensione su alcune navi e sottomarini.
 - Aiutare a capire cosa si cerca (es. un capodoglio: habitat, profondità, zona); le percentuali della mappa più utili senza diventare una lista da spuntare.
@@ -83,6 +87,8 @@ Ogni 3 blocchi: una sessione di pulizia.
 - Orientamento col sottomarino (ci si perde): sottomarini premium.
 
 ## Blocco 6 — Cattura e combattimento
+
+- **Deciso l'8 ottobre:** arpione in mare che indebolisce fino a metà vita (la bestia si arrabbia o scappa); conchiglie di qualità diverse; pastura sì, pesca con la canna rimandata; Nutri dà un piccolo vantaggio per un po'; squadra cambiabile al porto e nella vasca della nave.
 - Pastura; pesca dalla nave (tieni premuto e rilascia); arpioni; arpionare e sfiancare le bestie per combatterle con meno vita e favorire la cattura (o rende il ciclo troppo macchinoso? da provare prima).
 - Più tipi di Conchiglia del domatore (come le Poké Ball).
 - Animazioni diverse per le mosse (oggi tutte uguali).
@@ -90,6 +96,8 @@ Ogni 3 blocchi: una sessione di pulizia.
 - Zona iniziale: bestie fino a circa livello 30 per imparare e far crescere le bestie basse.
 
 ## Blocco 7 — Ruoli delle bestie, nuoto, cavalcature
+
+- **Deciso l'8 ottobre:** cavalcature = mezzo per esplorare (solo le specie che rendono bene in groppa); nuoto = modalità di dettaglio (posti stretti, raccolta, silenzio); supporto = un potere in mare ciascuna.
 - Cosa si può fare a nuoto, in groppa, col motoscafo, col sottomarino.
 - Posizione del sub sulle bestie grandi (brutta su alcune, da vedere una per una).
 - Megalodonte cavalcabile: manca l'immagine. Sul desktop c'è un nuovo squalo preistorico (immagini e video di nuoto e virata) come possibile sostituto: **prova della virata da video** su una pagina separata (link) prima di metterlo nel gioco. Su iPhone: fotogrammi scontornati della sola virata, non il video intero.
