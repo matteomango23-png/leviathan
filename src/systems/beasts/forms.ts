@@ -1,7 +1,15 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
 import { BODY_SHAPES } from '../../data/bodyShapes.generated';
-import { ABILITIES, DANGER_LEVELS, DANGER_RULES, SPECIES_DANGER, type Danger } from '../../data/beasts';
+import {
+  ABILITIES,
+  CETACEANS,
+  DANGER_LEVELS,
+  DANGER_RULES,
+  SIDE_TAIL_UNIQUES,
+  SPECIES_DANGER,
+  type Danger,
+} from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
 import { SPECIES, UNIQUE_VARIANTS, statsAt, type SpeciesDef, type Stats } from '../../data/species';
@@ -212,3 +220,7 @@ export function shapeOfForm(form: BeastForm): readonly (readonly [number, number
     );
   return shapeCache.get(key);
 }
+
+/** Whales and dolphins beat the tail up and down; a few of their uniques swim like a shark (SIDE_TAIL_UNIQUES). */
+export const tailUpDown = (form: BeastForm): boolean =>
+  CETACEANS.includes(form.speciesId) && !SIDE_TAIL_UNIQUES.includes(form.unique ?? '');

@@ -33,6 +33,7 @@ export class Cockpit {
   private readonly tabs: HTMLButtonElement[] = [];
   private tab: Tab = 'sonar';
   private readonly engine: HTMLButtonElement;
+  private readonly engineOff: HTMLButtonElement;
   private readonly speed: HTMLSpanElement;
   private tick = 0;
   private ticks = 0;
@@ -53,6 +54,11 @@ export class Cockpit {
     this.speed = el('span', 'cockpit-speed', top);
     this.engine = el('button', 'console-btn cockpit-engine', top);
     this.engine.addEventListener('click', () => this.toggleEngine());
+    // switched off it burns nothing (owner, 8 ottobre); the throttle starts it again
+    this.engineOff = el('button', 'console-btn cockpit-engine', top);
+    this.engineOff.addEventListener('click', () => {
+      if (this.g.ship.engineOn) this.session.input.helmCmd = 'engine';
+    });
     this.teeth = el('span', 'port-teeth', top);
     const back = el('button', 'pbtn primary', top);
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
@@ -95,6 +101,8 @@ export class Cockpit {
     this.speed.textContent = `${kn} nodi`;
     this.engine.textContent = going ? '■ Ferma i motori' : `▶ Avanti adagio (${SHIP.sonar.cruiseKnots} nodi)`;
     this.engine.classList.toggle('on', going);
+    this.engineOff.textContent = this.g.ship.engineOn ? '⏻ Spegni motore' : '⏻ Motore spento';
+    this.engineOff.disabled = !this.g.ship.engineOn;
     if (this.tab === 'plancia' && this.ticks++ % 2 === 1) this.render();
   }
 

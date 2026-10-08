@@ -4,7 +4,7 @@ import { WORLD } from '../data/worldLayout';
 import { autonomyKm } from '../systems/fuelBurn';
 import type { GameState } from '../systems/game';
 import { knotsOf } from '../systems/helm';
-import { canLaunch } from '../systems/ship/hatch';
+import { launchShown } from '../systems/ship/hatch';
 import { hatchCanMove } from '../systems/ship/ship';
 import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
@@ -50,7 +50,8 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       objective: objectiveLine(g),
       hatchCanMove: hatchCanMove(s),
       hatchOpen: s.hatchOpen,
-      canLaunch: canLaunch(g),
+      canLaunch: launchShown(g),
+      engineOn: s.engineOn,
     };
   if (g.sub.aboard && !onRamp(g))
     return {

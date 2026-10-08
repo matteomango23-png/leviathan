@@ -275,7 +275,10 @@ export const WILD_RULES = {
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';
-export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; surface?: boolean; school?: number }> = {
+export const BEAST_TEMPER: Record<
+  string,
+  { temper: Temper; speedMult?: number; surface?: boolean; floor?: boolean; school?: number }
+> = {
   squalo_bianco: { temper: 'aggressive' },
   barracuda: { temper: 'aggressive', school: 3 }, // swims in a small school (the others follow the leader)
   tartaruga_marina: { temper: 'calm', speedMult: 0.6 },
@@ -294,9 +297,9 @@ export const BEAST_TEMPER: Record<string, { temper: Temper; speedMult?: number; 
   chimera: { temper: 'shy', speedMult: 0.7 },
   squalo_capopiatto: { temper: 'aggressive', speedMult: 0.8 },
   dragone_nero: { temper: 'aggressive', speedMult: 0.9 },
-  granchio_ragno: { temper: 'calm', speedMult: 0.4 },
+  granchio_ragno: { temper: 'calm', speedMult: 0.4, floor: true }, // crabs walk on the floor (owner, 8 ottobre)
   rana_pescatrice: { temper: 'aggressive', speedMult: 0.5 },
-  isopode_gigante: { temper: 'calm', speedMult: 0.4 },
+  isopode_gigante: { temper: 'calm', speedMult: 0.4, floor: true }, // it crawls on the floor too
   squalo_goblin: { temper: 'aggressive', speedMult: 0.9 },
   calamaro_gigante: { temper: 'aggressive', speedMult: 0.9 },
   polpo_gigante: { temper: 'shy', speedMult: 0.7 },
@@ -411,6 +414,9 @@ export const BEAST_SPRITE = {
 
 /** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */
 export const CETACEANS: readonly string[] = ['megattera', 'capodoglio', 'livyatan', 'orca', 'beluga', 'narvalo', 'delfino'];
+/** Uniques of a whale species that swim like a shark, the tail side to side (owner, 8 ottobre: the prehistoric albino
+ *  orca). Their air while you ride them stays a whale's. */
+export const SIDE_TAIL_UNIQUES: readonly string[] = ['orca_preistorica_albina'];
 
 /**
  * Riding a whale (owner, 4 ottobre): the air bar is the whale's, bigger and lasting longer than yours, but it too

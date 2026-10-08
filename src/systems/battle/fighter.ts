@@ -159,3 +159,18 @@ export const named = (f: Fighter): Named => ({
   name: formName(f.form),
   f: FEMININE_SPECIES.includes(f.form.speciesId),
 });
+
+/**
+ * What one hit of this move does to that target now, from the lowest to the highest roll, without critical hits
+ * (owner, 8 ottobre: the damage looked different every time; it is the Pokémon roll, shown as a range). Null for a
+ * move that does no damage.
+ */
+export function damageRange(att: Fighter, def: Fighter, move: BattleMoveDef): [number, number] | null {
+  if (move.power <= 0) return null;
+  // the first number decides the critical hit (never), the second the roll (lowest, then highest)
+  const rolls = (roll: number): Rng => {
+    const seq = [1, roll];
+    return () => seq.shift() ?? 0.5;
+  };
+  return [hitDamage(att, def, move, rolls(0)).damage, hitDamage(att, def, move, rolls(1 - 1e-9)).damage];
+}

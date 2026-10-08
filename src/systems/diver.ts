@@ -91,9 +91,12 @@ function updateOxygen(
   events: GameEvent[],
   drainMult: number,
   air: AirTank | undefined,
+  /** Riding: how far above you the beast's back reaches (≤ 0). The surface counts from it: a sperm whale's body kept
+   *  its rider just under the band, and its air never came back (owner, 8 ottobre). */
+  topOffset = 0,
 ): void {
   const o = DIVER.oxygen;
-  if (d.y < map.surfaceY + o.surfaceBand + DIVER.radius) {
+  if (d.y + topOffset < map.surfaceY + o.surfaceBand + DIVER.radius) {
     d.o2 = Math.min(d.maxO2, d.o2 + o.surfaceRefill * dt);
     if (air) air.o2 = Math.min(air.max, air.o2 + o.surfaceRefill * (air.max / d.maxO2) * dt);
   } else {
@@ -222,7 +225,8 @@ export function stepDiver(
     d.invulnerable = 0;
     hurtDiver(d, 1, events);
   }
-  updateOxygen(d, map, dt, events, drainMult, opt.air);
+  const topOffset = opt.body ? Math.min(0, ...opt.body.map((c) => c.dy - c.r)) : 0;
+  updateOxygen(d, map, dt, events, drainMult, opt.air, topOffset);
 
   d.bubbleTime -= dt;
   if (d.bubbleTime <= 0 && d.y > map.surfaceY + 6) {

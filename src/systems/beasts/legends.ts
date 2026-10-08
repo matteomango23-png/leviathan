@@ -11,3 +11,9 @@ export const LEGENDS: UniqueVariantDef[] = UNIQUE_VARIANTS.filter((u) =>
 
 export const isLegend = (uniqueId: string | undefined): boolean =>
   !!uniqueId && LEGENDS.some((u) => u.id === uniqueId);
+
+/** The prehistoric giants with a hunt (megalodon, Livyatan): species, not uniques, but legends in the bestiary
+ *  too (owner, 8 ottobre: the megalodon was missing there). */
+export const LEGEND_GIANTS: { speciesId: string; name: string }[] = HUNTS.filter((h) => !h.form.unique).map(
+  (h) => ({ speciesId: h.form.speciesId, name: h.name }),
+);

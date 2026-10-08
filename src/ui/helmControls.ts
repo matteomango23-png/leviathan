@@ -1,7 +1,7 @@
-// The levers of the ship and the submarine (owner, 4 ottobre 2026: no joystick in a vehicle). Left: the throttle,
-// it stays where you leave it. Right: the direction (west / east) and, in the submarine, the dive lever (it stays
-// too, and snaps to the middle near it). At the bottom: the instruments (knots, throttle, depth) and, at the helm
-// of the ship, its buttons (hatch, lower the submarine, dive off). Keyboard: W/S throttle, A/D direction,
+// The levers of the ship and the submarine (owner, 4 ottobre 2026: no joystick in a vehicle). Left: the throttle;
+// on the ship it stays where you leave it, in the submarine it springs back to zero (owner, 8 ottobre). Right: the
+// direction (west / east) and, in the submarine, the dive lever (it springs back to the middle). At the bottom:
+// the instruments (knots, throttle, depth) and, at the helm of the ship, its buttons (hatch, lower the submarine, dive off). Keyboard: W/S throttle, A/D direction,
 // arrows up/down to rise and sink.
 import { HELM } from '../data/ship';
 import type { Session } from '../scenes/session';
@@ -30,6 +30,8 @@ export interface HelmInfo {
   hatchCanMove?: boolean;
   hatchOpen?: boolean;
   canLaunch?: boolean;
+  /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */
+  engineOn?: boolean;
 }
 
 const TRACK = 150; // px: travel of the vertical levers
@@ -49,6 +51,7 @@ export class HelmControls {
   private readonly buttons: HTMLDivElement;
   private readonly hatchBtn: HTMLButtonElement;
   private readonly launchBtn: HTMLButtonElement;
+  private readonly engineBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   private readonly objective: HTMLDivElement;
@@ -90,6 +93,7 @@ export class HelmControls {
     // the sonar's line is its switch too
     this.sonar = el('button', 'helm-sonar', panel);
     this.buttons = el('div', 'helm-buttons', this.root);
+    this.engineBtn = el('button', 'helm-btn', this.buttons, 'Spegni motore');
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
     this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
@@ -101,11 +105,12 @@ export class HelmControls {
     this.listen(this.diveTrack, 'pointerdown', (e) => this.grab(e, 'dive'));
     this.listen(window, 'pointermove', (e) => this.drag(e));
     for (const t of ['pointerup', 'pointercancel'] as const)
-      this.listen(window, t, (e) => this.dragging.delete(e.pointerId));
+      this.listen(window, t, (e) => this.letGo(e.pointerId));
     this.tap(this.west, () => (this.session.input.helm.dir = -1));
     this.tap(this.east, () => (this.session.input.helm.dir = 1));
     this.tap(this.hatchBtn, () => (this.session.input.helmCmd = 'hatch'));
     this.tap(this.launchBtn, () => (this.session.input.helmCmd = 'launch'));
+    this.tap(this.engineBtn, () => (this.session.input.helmCmd = 'engine'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
@@ -159,7 +164,19 @@ export class HelmControls {
     else helm.dive = diveOf(1 - share * 2); // top = rise (−1), bottom = sink (1)
   }
 
+  /** A finger leaves its lever. In the submarine the levers spring back (owner, 8 ottobre): the gas to zero, the dive
+   *  lever to the middle; the ship's throttle stays where you leave it. */
+  private letGo(pointerId: number): void {
+    const lever = this.dragging.get(pointerId);
+    this.dragging.delete(pointerId);
+    if (!lever || this.mode !== 'sub') return;
+    const helm = this.session.input.helm;
+    if (lever === 'throttle') helm.throttle = 0;
+    else helm.dive = 0;
+  }
+
   releaseAll(): void {
+    if (this.mode === 'sub') Object.assign(this.session.input.helm, { throttle: 0, dive: 0 });
     this.dragging.clear();
     this.keys.clear();
   }
@@ -178,6 +195,9 @@ export class HelmControls {
     const k = this.keys;
     if (k.has('w')) helm.throttle = Math.min(1, helm.throttle + HELM.keyThrottlePerSec * dt);
     if (k.has('s')) helm.throttle = Math.max(0, helm.throttle - HELM.keyThrottlePerSec * dt);
+    // the submarine's gas springs back to zero when W is let go (and no finger holds it)
+    const holdingGas = k.has('w') || [...this.dragging.values()].includes('throttle');
+    if (info.mode === 'sub' && !holdingGas) helm.throttle = 0;
     // keyboard: the arrows hold the dive lever up or down; let go, it goes back to the middle
     const held = k.has('arrowup') || k.has('arrowdown');
     if (info.mode === 'sub' && ![...this.dragging.values()].includes('dive')) {
@@ -211,7 +231,7 @@ export class HelmControls {
       this.sonar.classList.toggle('anomaly', info.sonar.includes('anomala'));
     }
     this.buttons.classList.toggle('sub', info.mode !== 'ship');
-    for (const b of [this.hatchBtn, this.launchBtn, this.diveBtn, this.cockpitBtn])
+    for (const b of [this.engineBtn, this.hatchBtn, this.launchBtn, this.diveBtn, this.cockpitBtn])
       b.hidden = info.mode !== 'ship';
     this.sonar.classList.toggle('on', !!info.sonarOn);
     this.objective.hidden = !info.objective;
@@ -220,6 +240,7 @@ export class HelmControls {
     this.hatchBtn.textContent = info.hatchOpen ? 'Chiudi portellone' : 'Apri portellone';
     this.hatchBtn.classList.toggle('off', !info.hatchCanMove);
     this.launchBtn.hidden = !info.canLaunch;
+    this.engineBtn.textContent = info.engineOn ? 'Spegni motore' : 'Accendi motore';
     this.rescueBtn.hidden = info.fuel > 0;
     this.gauges.classList.toggle('dry', info.fuel <= 0);
   }

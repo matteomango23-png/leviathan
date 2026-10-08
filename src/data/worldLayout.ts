@@ -238,6 +238,9 @@ export const ZONES: ZoneDef[] = [
   { name: 'Baia di Portofosco', xMin: LAYOUT.bay.x0, xMax: LAYOUT.delta.x0, yMin: -Infinity, yMax: 420 },
   { name: 'Delta delle Mangrovie', xMin: LAYOUT.delta.x0, xMax: LAYOUT.island.x0, yMin: -Infinity, yMax: 420 },
   { name: 'Isola delle Mangrovie', xMin: LAYOUT.island.x0, xMax: LAYOUT.island.x1, yMin: -Infinity, yMax: 420 },
+  // the trading harbour on the island's east shore (owner, 8 ottobre: it said "Barriera Rossa"); PORTO_FANGO is at
+  // island.x1 + 190, its ship's berth at + 330
+  { name: 'Porto Fango', xMin: LAYOUT.island.x1, xMax: LAYOUT.island.x1 + 480, yMin: -Infinity, yMax: 150 },
   { name: 'Barriera Rossa', xMin: OPEN_SEA_X, xMax: east(4020), yMin: -Infinity, yMax: 420 },
   { name: 'Foresta Sommersa', xMin: east(4020), xMax: east(5220), yMin: -Infinity, yMax: 420 },
   { name: 'Mare di Ghiaccio', xMin: east(5220), xMax: Infinity, yMin: -Infinity, yMax: 420 },

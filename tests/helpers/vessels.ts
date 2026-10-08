@@ -8,6 +8,7 @@ import { giftSub } from '../../src/systems/submarine';
 
 export function giveVessels(g: GameState): void {
   g.story.step = 'free';
+  g.story.seen.push('starter'); // no first-beast choice in the way of the test
   giftSub(g.sub, PORTO_FANGO.shipDock);
   giftShip(g, []);
 }

@@ -3,11 +3,12 @@
 // cockpit (the submarine in the hold), and far away the rescue flare tows you home for a share of your teeth.
 // Numbers in data/ship.ts (SHIP.fuel, FUEL, RESCUE) and data/submarine.ts (tank, perKm of each model).
 import { PORTS, type PortDef } from '../data/economy';
-import { FUEL, RESCUE, SHIP } from '../data/ship';
+import { FUEL, RESCUE } from '../data/ship';
 import { SUBMARINE } from '../data/submarine';
 import type { GameEvent } from './events';
 export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
+import { shipAlongside } from './economy/places';
 import { SHIP_WEST_X } from './ship/surface';
 import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
@@ -56,7 +57,7 @@ export function transferFuel(g: FuelWorld, toSub: boolean): number {
 export function canRefuel(g: FuelWorld, which: 'ship' | 'sub'): boolean {
   const p = g.port;
   if (!p) return false;
-  const shipHere = g.ship.owned && Math.abs(g.ship.x - p.shipDock) < SHIP.dockReachPort;
+  const shipHere = g.ship.owned && shipAlongside(g.ship.x, p);
   if (which === 'ship') return shipHere;
   if (!g.sub.owned) return false;
   return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;

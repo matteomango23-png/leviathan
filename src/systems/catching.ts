@@ -1,7 +1,9 @@
 // Catching fish: a fish that reaches the diver heals a missing heart (or refills the air), otherwise it
-// goes into the bag to sell. Also: new creatures for the bestiary.
+// goes into the bag to sell (while there is room, BAG). Also: new creatures for the bestiary.
+import { BAG } from '../data/economy';
 import { FISH } from '../data/world';
 import { checkSwarmBinding, type BackpackWorld } from './economy/backpack';
+import { bagCount } from './economy/gear';
 import type { GameEvent } from './events';
 import { takeFish, type Fish } from './fish';
 
@@ -29,7 +31,10 @@ export function catchFish(g: CatchWorld, f: Fish, events: GameEvent[]): void {
   } else if (def?.effect === 'ossigeno' && g.diver.o2 < g.diver.maxO2) {
     g.diver.o2 = g.diver.maxO2;
     healed = true;
-  } else g.gear.bag[kind] = (g.gear.bag[kind] ?? 0) + 1;
+  } else if (bagCount(g.gear) < BAG.capacity) {
+    g.gear.bag[kind] = (g.gear.bag[kind] ?? 0) + 1;
+    if (bagCount(g.gear) === BAG.capacity) events.push({ type: 'bagFull' }); // said once, as it fills up
+  }
   markSeen(g, kind, events);
   events.push({ type: 'fishCaught', fishId: kind, count, healed });
   checkSwarmBinding(g, g.fishCaught, events);

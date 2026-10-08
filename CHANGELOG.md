@@ -2,6 +2,34 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.48.0 — Correzioni dopo la prova lunga (8 ottobre 2026)
+
+- **Motore della nave:**
+  - nuovo pulsante **Spegni motore / Accendi motore**, al timone e nel cockpit;
+  - acceso, il motore consuma un po' anche da fermo; spento non consuma niente e la nave si ferma per inerzia;
+  - muovere il gas lo riaccende.
+- **Suono del motore:** non si sente più in pausa né in battaglia; allontanandoti dalla nave cala fino a sparire. Prima una "pulsazione" del motore restava udibile anche a motore fermo.
+- **Ghiaccio:** la nave rompe la lastra della Banchisa senza rallentare. Rallenta solo passando accanto agli iceberg, che per ora nel mare aperto non ci sono.
+- **Sottomarino:**
+  - le leve tornano da sole: il gas a zero e "Sali/Scendi" al centro quando alzi il dito;
+  - dopo un urto contro la roccia il gas non resta più bloccato;
+  - quando rientra nella stiva (anche trainato rotto) la nave lo ripara, pagando in denti come al porto;
+  - se non hai denti, "Cala sottomarino" te lo dice.
+- **Salendo a bordo o agganciando** la nave e il sottomarino non si girano più dalla parte opposta.
+- **Aria dei cetacei:** in groppa a capodoglio e Livyatan l'aria ora si ricarica in superficie. Prima il loro corpo ti teneva appena sotto la superficie.
+- **Avamposti:** il pulsante Porto compare con la nave su qualsiasi lato della chiatta.
+- **Battaglia:** nel dettaglio di una mossa ora c'è il **Danno** che farà alla bestia che hai davanti (per esempio "52–61"). Il danno cambia un po' a ogni colpo, come in Pokémon.
+- **Bestiario:** il Megalodonte e il Livyatan sono tra le Leggende.
+- **Sardine e denti:**
+  - una sardina vale 1 dente (prima 2);
+  - la sacca tiene 30 pesci: piena, i pesci ti curano e nutrono le bestie ma non li tieni.
+- **Livelli:** un boccone di un banco intero vale al massimo come 2 pesci, quindi la megattera non sale più di livello a manciate.
+- **Bestie:**
+  - l'orca preistorica albina muove la coda di lato, come uno squalo;
+  - granchi e isopodi camminano sul fondale.
+- **Evoluzione:** una sola animazione, quella con l'immagine della bestia.
+- A Porto Fango il nome della zona è "Porto Fango", non più "Barriera Rossa".
+
 ## v0.47.0 — Nuovo inizio: la storia è in pausa (8 ottobre 2026)
 
 - **La vecchia storia non c'è più** (la Compagnia dell'Olio Nero, la Vedova Nera, i capitoli 1–4): verrà ripensata da capo più avanti. Spariti anche il molo in fiamme, le tracce, i lavoretti di Aurelio e le navi nere.

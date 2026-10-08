@@ -205,6 +205,10 @@ export const MISSIONS: MissionDef[] = [
 ];
 export const MAX_ACTIVE_MISSIONS = 3;
 
+/** The bag of fish to sell (owner, 8 ottobre: the sardines made thousands of teeth in minutes). Full, a fish still
+ *  heals and feeds your beasts, but it is not kept. Tuning. */
+export const BAG = { capacity: 30 };
+
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */
 export const MARKET = {
   items: [

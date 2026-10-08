@@ -10,7 +10,7 @@ import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
-import { LEGENDS } from '../systems/beasts/legends';
+import { LEGEND_GIANTS, LEGENDS } from '../systems/beasts/legends';
 
 export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   const root = el('div', 'sheet bestiary', parent);
@@ -126,7 +126,23 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
         openBeastSheet(parent, form, mine?.level ?? u.wildLevel?.[0] ?? u.level),
       );
   }
-  // rare versions you own (albino, alfa, Guardians, final forms)
+  // the hunted giants (megalodon, Livyatan): species, but legends all the same
+  for (const giant of LEGEND_GIANTS) {
+    const form: BeastForm = { speciesId: giant.speciesId, variant: 'comune' };
+    const mine = team.find((b) => b.form.speciesId === giant.speciesId && !b.form.unique);
+    const met = g.seen.has(giant.speciesId) || !!mine;
+    const card = el('button', `beast-tile legend ${mine ? 'tamed' : met ? 'seen' : 'unknown'}`, lg);
+    card.style.setProperty('--rarity', RARITY[5].color);
+    if (met) {
+      const img = el('img', '', card);
+      setArt(img, form);
+      img.alt = '';
+    } else card.append(icon('paw'));
+    el('span', 'tile-name', card, met ? giant.name : '???');
+    el('span', 'tile-sub', card, mine ? 'domata' : 'gigante preistorico');
+    if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level));
+  }
+  // rare versions you own (albino, alfa, final forms)
   const specials = team.filter((b) => b.form.variant !== 'comune' || b.form.unique || b.form.final);
   if (specials.length) {
     el('h3', '', body, 'Versioni rare domate');

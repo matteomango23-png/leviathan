@@ -20,12 +20,17 @@ export class EngineSound {
   ) {
     this.ship = this.motor('sawtooth', ENGINE_SOUND.ship.cutoff);
     this.sub = this.motor('triangle', ENGINE_SOUND.sub.cutoff);
-    // the diesel's throb: a slow wobble of the ship's volume
+    // the diesel's throb: a slow wobble of the ship's volume, on its own stage after the volume (owner, 8 ottobre: added
+    // straight to the volume, the wobble was heard even with the engine off)
+    const wobble = ctx.createGain();
+    wobble.gain.value = 1;
+    this.ship.gain.disconnect();
+    this.ship.gain.connect(wobble).connect(dest);
     this.throb = ctx.createOscillator();
     this.throb.frequency.value = ENGINE_SOUND.ship.throbHz;
     const depth = ctx.createGain();
     depth.gain.value = 0.35;
-    this.throb.connect(depth).connect(this.ship.gain.gain);
+    this.throb.connect(depth).connect(wobble.gain);
     this.throb.start();
   }
 
@@ -42,24 +47,28 @@ export class EngineSound {
     return { osc, gain, filter };
   }
 
-  /** @param ship 0…1 throttle at the helm of the ship (null: not at its helm); @param sub the same for the submarine */
-  update(ship: number | null, sub: number | null): void {
+  /**
+   * @param ship 0…1 how hard the ship's engine works (null: off); @param sub the same for the submarine (null: not in it)
+   * @param shipNear 1 next to the ship … 0 out of earshot
+   */
+  update(ship: number | null, sub: number | null, shipNear = 1): void {
     const t = this.ctx.currentTime;
     const set = (
       m: Motor,
       def: { freq: [number, number]; volume: [number, number] },
       v: number | null,
+      near = 1,
     ): void => {
       const on = v !== null;
       const k = Math.max(0, Math.min(1, v ?? 0));
       m.osc.frequency.setTargetAtTime(def.freq[0] + (def.freq[1] - def.freq[0]) * k, t, ENGINE_SOUND.glide);
       m.gain.gain.setTargetAtTime(
-        on ? def.volume[0] + (def.volume[1] - def.volume[0]) * k : 0,
+        on ? (def.volume[0] + (def.volume[1] - def.volume[0]) * k) * near : 0,
         t,
         ENGINE_SOUND.glide,
       );
     };
-    set(this.ship, ENGINE_SOUND.ship, ship);
+    set(this.ship, ENGINE_SOUND.ship, ship, shipNear);
     set(this.sub, ENGINE_SOUND.sub, sub);
   }
 

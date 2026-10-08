@@ -685,3 +685,15 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Salvataggio v17:** toglie dalla squadra le bestie della storia (la riserva prende il loro posto), porta la storia a `free` se la nave c'è già, altrimenti a `toPortoFango`; un tutorial a metà resta allo stesso compito (il nuovo compito "doma" sta prima di "torna al molo"). Tolto `gear.guardians`.
 - **Zona protetta:** dalla costa (Baia e Delta) tolti squalo bianco e coccodrillo marino; un test controlla che lì non ci siano specie con pericolo 4 o 5.
 - **Test:** il limite di tempo di Vitest passa a 20 s: alcuni test simulano minuti di gioco e con tutti i file in parallelo superavano i 5 s su questo PC.
+
+## 8 ottobre 2026 — Correzioni del blocco 2 (v0.48.0)
+
+- **Motore acceso o spento:** `ship.engineOn` (salvato come campo facoltativo, senza nuova versione del salvataggio). Il gas lo accende; acceso consuma `SHIP.fuel.idlePerMinute` anche da fermo; il pulsante (comando `engine`) lo spegne e azzera il gas.
+- **Suono:** `engineHeard` (sistema puro) dà intensità e vicinanza; `SoundEngine.silence()` alla pausa e all'inizio di una battaglia. La pulsazione del diesel ora modula un nodo a valle del volume: prima si sommava al volume e si sentiva anche a volume zero.
+- **Leve dei mezzi:** a ogni salita (nave, sottomarino, aggancio, traino) le leve ripartono da `freshHelm(direzione del mezzo)` nella logica (`vehicles.ts`), non più solo nell'interfaccia un fotogramma dopo.
+- **Rimbalzo del sottomarino:** sotto `SUBMARINE.bounceStop` finisce (il decadimento esponenziale non arrivava mai a zero).
+- **Aria in groppa:** la superficie si misura dal punto più alto del corpo della bestia (`topOffset` in `updateOxygen`).
+- **Economia:** sacca da `BAG.capacity` pesci; sardina 1 dente; esperienza per boccone limitata da `XP_RULES.fishPerBiteMax`.
+- **Avamposti:** `shipAlongside` (in `economy/places.ts`) vale per il pulsante Porto e per il rifornimento.
+- **Evoluzione:** tolta `EvolutionShow` (la seconda animazione con le card); lo stile dello schermo rimasto è in `screens.css`.
+- **Ghiaccio:** rallenta solo `icebergAcross` (iceberg dipinti); per ora nel mare aperto non ce ne sono (`ICEBERGS_PER_STRETCH = 0`).

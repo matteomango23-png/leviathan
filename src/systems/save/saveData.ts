@@ -431,6 +431,7 @@ function checkedShip(raw: unknown): SavedShip | null {
     bay,
     aboard: raw.aboard === true,
     fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : SHIP.fuel.tank, // newShip caps it at its tank
+    engineOn: raw.engineOn === true,
     upgrades: Array.isArray(raw.upgrades)
       ? raw.upgrades.filter((u): u is string => SHIP_UPGRADES.some((x) => x.id === u))
       : [],

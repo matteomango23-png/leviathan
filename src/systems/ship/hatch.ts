@@ -5,7 +5,7 @@
 import { SHIP } from '../../data/ship';
 import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
-import { restAboard, type SubWorld } from '../submarine';
+import { repairSub, restAboard, type SubWorld } from '../submarine';
 import { bayPath, dockPoint, helmPoint, holdPoint, shipSpan, SHIP_DRAFT } from './geometry';
 import { hatchCanMove, type ShipState } from './ship';
 
@@ -29,8 +29,18 @@ export function toggleHatch(g: HatchWorld, events: GameEvent[]): void {
 export const canLaunch = (g: HatchWorld): boolean =>
   g.ship.aboard && g.ship.hatch === 1 && g.ship.bay === 'docked' && g.sub.hull > 0;
 
+/** The button shows with the hatch open and the submarine in the hold, broken too (pressed, it says how to mend it). */
+export const launchShown = (g: HatchWorld): boolean =>
+  g.ship.aboard && g.ship.hatch === 1 && g.ship.bay === 'docked';
+
 /** "Cala il sottomarino": you climb in and it slides down the ramp. */
 export function launchSub(g: HatchWorld, events: GameEvent[]): void {
+  // still broken in the hold (no teeth when it came back): it is mended now if you have them
+  if (g.ship.aboard && g.ship.bay === 'docked' && g.sub.hull <= 0) repairSub(g, events);
+  if (g.ship.aboard && g.ship.bay === 'docked' && g.sub.hull <= 0) {
+    events.push({ type: 'shipHint', text: 'subBroken' }); // owner, 8 ottobre: nothing said how to mend it
+    return;
+  }
   if (!canLaunch(g)) return;
   g.ship.aboard = false;
   g.ship.bay = 'launching';
@@ -108,6 +118,7 @@ export function stepBay(g: HatchWorld, dt: number, events: GameEvent[]): boolean
   s.aboard = true;
   Object.assign(g.diver, helmPoint(s), { vx: 0, vy: 0 });
   restAboard(g);
+  repairSub(g, events); // the crew mends the hull, for teeth, like a port
   events.push({ type: 'subDocked' });
   return false;
 }

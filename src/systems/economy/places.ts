@@ -1,5 +1,6 @@
 // Places you interact with: the piers of Portofosco and Porto Fango, and the wrecks/chests on the sea floor.
 import { OUTPOSTS, PORTS, WRECKS, WRECK_REACH, type PortDef, type WreckDef } from '../../data/economy';
+import { SHIP } from '../../data/ship';
 import type { GameEvent } from '../events';
 import type { TileMap } from '../world/tileMap';
 import type { GearState } from './gear';
@@ -77,3 +78,8 @@ export function discoverOutposts(g: { seen: Set<string>; diver: { x: number } },
     events.push({ type: 'outpostFound', name: p.name });
   }
 }
+
+/** The ship (its middle at x) is alongside this harbour: by the pier's berth, or on either side of an outpost's
+ *  barge (owner, 8 ottobre: only its right side counted). */
+export const shipAlongside = (x: number, p: PortDef): boolean =>
+  p.outpost ? Math.abs(x - p.x) < SHIP.dockReachOutpost : Math.abs(x - p.shipDock) < SHIP.dockReachPort;

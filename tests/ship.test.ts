@@ -282,7 +282,7 @@ describe('la nave non si blocca mai', () => {
     expect(g.ship.x).toBe(SHIP_WEST_X);
   });
 
-  it('nel ghiaccio rallenta e lo rompe; il canale si richiude solo lontano', () => {
+  it('rompe la lastra di ghiaccio senza rallentare (8 ottobre); il canale si richiude solo lontano', () => {
     // an ice field of the Banchisa
     let at = 0;
     for (let x = ENDLESS.startX; x < 400000 && !at; x += 50)
@@ -290,10 +290,10 @@ describe('la nave non si blocca mai', () => {
     expect(at).toBeGreaterThan(0);
     const { g, events, lanes } = sail(at - 700, 1, 12);
     expect(events.some((e) => e.type === 'iceCracked')).toBe(true);
-    // in the middle of the ice field it goes at a fraction of its speed
+    // in the middle of the ice field it keeps its speed: only icebergs slow it down (owner, 8 ottobre)
     const inIce = lanes.filter((l) => l.x + SHIP.length / 2 > at + 130 && l.x + SHIP.length / 2 < at + 200);
     expect(inIce.length).toBeGreaterThan(0);
-    for (const l of inIce) expect(l.speed).toBeLessThanOrEqual(SHIP.maxSpeed * SHIP.iceMult + 1);
+    expect(Math.max(...inIce.map((l) => l.speed))).toBeGreaterThan(SHIP.maxSpeed * SHIP.iceMult + 1);
     const broken = [...g.ship.broken];
     expect(broken.length).toBeGreaterThan(0);
     const { tx, ty } = map.tileOf(broken[0]!.i);

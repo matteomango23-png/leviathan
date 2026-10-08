@@ -28,7 +28,8 @@ export const SHIP = {
   stillBelow: 4, // units/s: slower than this it counts as still (the instruments show 0 knots)
   turnBelow: 12, // units/s: slower than this, a lever the other way turns it round (at once: owner's choice)
   /** Fuel (owner, 4 ottobre: bought at the port, planned for the expedition). Tuning. */
-  fuel: { tank: 500, perKm: 10 },
+  /** idlePerMinute: litres burnt by a running engine even with the ship still (owner, 8 ottobre: switch it off). */
+  fuel: { tank: 500, perKm: 10, idlePerMinute: 0.5 },
   /** Breaking the ice: slower, and the channel freezes again later, far from you. */
   iceMult: 0.4,
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
@@ -61,6 +62,9 @@ export const SHIP = {
   boardReach: 18, // units beyond the hull (sideways) or under the surface where A bordo appears
   /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
+  /** An outpost is a barge in open water: alongside it on either side counts (owner, 8 ottobre: only its right side
+   *  did). Half the barge (OUTPOST_ART.width) + half the ship + a margin. */
+  dockReachOutpost: 280,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   /** The view at the helm (getting on or off cuts to it behind a short fade: CAMERA.cutFadeMs). */
   camera: { viewHeightUnits: 230, minY: -150, lookAhead: 70, y: -16 },
@@ -119,10 +123,11 @@ export const SHIP_TEXT = {
   // owner, 5 ottobre: diving off a moving ship (or out of a moving submarine) left you behind
   stopToDive: 'Ferma la nave prima di tuffarti.',
   stopToLeave: 'Fermati prima di uscire dal sottomarino.',
+  subBroken: 'Il sottomarino è rotto e non hai denti per ripararlo: vendi i pesci al porto, poi riprova.',
   fuelOutShip: 'La nave è senza carburante: si ferma. Nel cockpit c’è il razzo di soccorso.',
   fuelOutSub: 'Il sottomarino è senza carburante. Puoi uscire e nuotare, o usare il razzo di soccorso.',
   rescued: (where: string, teeth: number): string =>
     `Razzo di soccorso: un rimorchiatore ti porta ${where}${teeth ? `. Paghi ${teeth} denti` : ''}.`,
   wreckedToShip: (teeth: number): string =>
-    `Lo scafo del sottomarino cede. Ti rimorchiano alla nave${teeth ? `: perdi ${teeth} denti` : ''}. Riparalo al porto.`,
+    `Lo scafo del sottomarino cede. Ti rimorchiano alla nave${teeth ? `: perdi ${teeth} denti` : ''}.`,
 };

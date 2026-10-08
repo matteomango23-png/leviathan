@@ -176,8 +176,11 @@ function bump(g: SubWorld, speed: number, events: GameEvent[]): void {
  */
 function steer(s: SubState, helm: HelmState, top: number, dt: number): void {
   const along = s.vx * s.face;
-  if (along < 0) s.vx -= s.vx * SUBMARINE.drag * dt;
-  else {
+  if (along < 0) {
+    s.vx -= s.vx * SUBMARINE.drag * dt;
+    // the bounce never reaches exactly zero: below a small speed it is over, or the levers would never drive again
+    if (Math.abs(s.vx) < SUBMARINE.bounceStop) s.vx = 0;
+  } else {
     const rates = {
       accel: SUBMARINE.accel,
       coast: SUBMARINE.coast,
