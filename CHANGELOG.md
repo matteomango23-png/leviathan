@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.3 — Schermata del timone più pulita (9 ottobre 2026)
+
+- Alla guida di nave, sottomarino o motoscafo spariscono **vita, ossigeno e gli animali** in alto. Restano i denti.
+- **Barra del carburante** in alto a sinistra, sopra i denti: verde se il serbatoio è pieno, arancione da metà, rossa quando è quasi vuoto.
+- **Tasto rotondo del motore** accanto a Cockpit: verde se è acceso, rosso se è spento.
+- Velocità, consumo e sonar salgono in alto al centro; i pulsanti a destra salgono anche loro.
+- **In movimento** i pulsanti che non si possono usare (portelloni, cala, tuffati) spariscono; tornano a nave ferma.
+- **Più bolle dalle eliche** delle navi grandi, più grosse e più lontane.
+
 ## v0.53.2 — Motoscafo e moto d'acqua più vicini (9 ottobre 2026)
 
 - **Vista più vicina** sul motoscafo e sulla moto d'acqua, come col sottomarino: si vedono grandi, e più vai veloce più la vista guarda avanti.

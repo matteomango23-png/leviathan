@@ -1742,7 +1742,7 @@ img.albino-art {
 .helm-panel {
   position: absolute;
   left: 50%;
-  top: calc(58px + var(--safe-t));
+  top: calc(8px + var(--safe-t)); /* at the top: the team's portraits hide at the helm (owner, 9 ottobre) */
   transform: translateX(-50%);
   width: max-content;
   max-width: calc(100vw - 2 * var(--side));
@@ -1791,7 +1791,7 @@ img.albino-art {
 .helm-buttons {
   position: absolute;
   right: calc(16px + var(--safe-r));
-  top: calc(58px + var(--safe-t));
+  top: calc(50px + var(--safe-t));
   max-width: calc(var(--side) - 24px);
   display: flex;
   flex-direction: column;
@@ -1823,14 +1823,79 @@ img.albino-art {
   border-color: #e2553f;
   color: #ffd2c8;
 }
-/* the cockpit next to the pause button */
-.helm-cockpit {
+/* the engine's on/off and the cockpit, in a row left of the pause button */
+.helm-corner {
   position: absolute;
   top: calc(8px + var(--safe-t));
   right: calc(58px + var(--safe-r));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.helm-cockpit {
   height: 34px;
   padding: 0 12px;
   border-radius: 6px;
+}
+.helm-power {
+  pointer-events: auto;
+  touch-action: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+  color: #ffd2c8;
+  background: radial-gradient(circle at 50% 35%, #8e2a1e, #4a120b);
+  border: 2px solid #e2553f;
+  box-shadow: 0 0 8px rgba(226, 85, 63, 0.5);
+}
+.helm-power.on {
+  color: #d9ffe6;
+  background: radial-gradient(circle at 50% 35%, #2f8a4f, #0f3a20);
+  border-color: #5fe08e;
+  box-shadow: 0 0 8px rgba(95, 224, 142, 0.55);
+}
+/* driving a vehicle (owner, 9 ottobre): no hearts, air or team; the fuel bar over your teeth */
+.at-helm .hud-hearts,
+.at-helm .hud-o2:not(.hud-press),
+.at-helm .team-slots {
+  display: none;
+}
+.at-helm .hud {
+  top: calc(26px + var(--safe-t));
+}
+.helm-fuel {
+  position: absolute;
+  top: calc(8px + var(--safe-t));
+  left: calc(12px + var(--safe-l));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.helm-fuel-bar {
+  width: 120px;
+  height: 9px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+.helm-fuel-fill {
+  height: 100%;
+  background: #5fe08e;
+  box-shadow: 0 0 6px #5fe08e;
+}
+.helm-fuel[data-level='half'] .helm-fuel-fill {
+  background: #f0a23c;
+  box-shadow: 0 0 6px #f0a23c;
+}
+.helm-fuel[data-level='low'] .helm-fuel-fill {
+  background: var(--blood);
+  box-shadow: 0 0 6px var(--blood);
 }
 .helm-objective {
   /* where the chapter line is when swimming (hidden at the helm) */

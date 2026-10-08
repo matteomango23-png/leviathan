@@ -258,13 +258,17 @@ export class ShipView {
       x: s.x + s.face * (P.propX - 0.5) * L,
       y: WORLD.surfaceY + (P.propY - P.waterline) * shipHeight(s),
     };
-    for (let i = 0; i < 16; i++) {
-      const t = (time * (1.2 + k * 2) + i / 16) % 1;
-      g.lineStyle(0.5, 0xdff8ff, 0.7 * k * (1 - t));
+    // a big ship churns much more water (owner, 9 ottobre): more bubbles, bigger, a longer and taller plume
+    const size = Math.max(1, L / SHIP.camera.refLength);
+    const n = Math.round(16 + 26 * (size - 1));
+    for (let i = 0; i < n; i++) {
+      const t = (time * (1.2 + k * 2) + i / n) % 1;
+      const spread = Math.sin(i * 2.7) * 3 * size + Math.cos(i * 1.3) * 2 * (size - 1);
+      g.lineStyle(0.5 + 0.2 * (size - 1), 0xdff8ff, 0.7 * k * (1 - t));
       g.strokeCircle(
-        prop.x - s.face * t * (30 + 50 * k),
-        prop.y - t * 10 + Math.sin(i * 2.7) * 3,
-        0.7 + t * 1.4,
+        prop.x - s.face * t * (30 + 50 * k) * Math.sqrt(size),
+        prop.y - t * 10 * Math.sqrt(size) + spread,
+        (0.7 + t * 1.4) * (0.8 + 0.35 * size) * (0.6 + ((i * 0.37) % 1) * 0.8),
       );
     }
   }

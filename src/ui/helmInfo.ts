@@ -10,6 +10,7 @@ import { boatBay } from '../systems/ship/model';
 import { boatLaunchShown, boatName, boatOnRamp } from '../systems/ship/boatBay';
 import { boatModel } from '../systems/boat';
 import { SHIP_MODELS } from '../data/fleet';
+import { SHIP } from '../data/ship';
 import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
@@ -64,6 +65,8 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       face: s.face,
       knots: knotsOf(s.speed),
       fuel: s.fuel,
+      tank: shipModel(s).tank,
+      still: s.speed < SHIP.stillBelow,
       rangeKm: autonomyKm(s.fuel, shipModel(s).perKm, throttle),
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
@@ -84,6 +87,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       face: b.face,
       knots: knotsOf(b.speed),
       fuel: b.fuel,
+      tank: boatModel(b.model).tank,
       rangeKm: autonomyKm(b.fuel, boatModel(b.model).perKm, throttle),
       drums: [b.drums, boatModel(b.model).drums],
       engineOn: b.engineOn,
@@ -94,6 +98,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       face: g.sub.face,
       knots: knotsOf(Math.hypot(g.sub.vx, g.sub.vy)),
       fuel: g.sub.fuel,
+      tank: subModel(g.sub.model).tank,
       rangeKm: autonomyKm(g.sub.fuel, subModel(g.sub.model).perKm, throttle),
       depthM: Math.max(0, (g.sub.y - WORLD.surfaceY) / WORLD.unitsPerMetre),
       maxDepthM: subModel(g.sub.model).maxDepthM,
