@@ -1,5 +1,6 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
 import { FEMININE_SPECIES } from '../data/battleText';
+import { BOAT_TEXT } from '../data/boats';
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { PROGRESSION } from '../data/rules';
 import { SHIP_TEXT } from '../data/ship';
@@ -103,7 +104,13 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'shipHint':
       return [SHIP_TEXT[e.text], 2.5];
     case 'fuelOut':
+      if (e.vehicle === 'boat') return [BOAT_TEXT.dry, 4];
       return [e.vehicle === 'ship' ? SHIP_TEXT.fuelOutShip : SHIP_TEXT.fuelOutSub, 5];
+    case 'boatLaunched':
+    case 'boatDocked':
+      return [e.text, 4];
+    case 'boatIce':
+      return [BOAT_TEXT.ice, 3];
     case 'rescued':
       return [SHIP_TEXT.rescued(e.where, e.teeth), 5];
     case 'subLaunched':

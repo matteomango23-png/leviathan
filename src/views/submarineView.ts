@@ -8,6 +8,8 @@ import { subLength, subModel, type SubState } from '../systems/submarine';
 
 export class SubmarineView {
   private readonly img: Phaser.GameObjects.Image;
+  /** The propeller turning (its model's `moving` picture, same box), over the still one while it moves. */
+  private readonly turning: Phaser.GameObjects.Image;
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly bar: Phaser.GameObjects.Graphics;
   private lastHull = NaN;
@@ -15,15 +17,17 @@ export class SubmarineView {
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
+    this.turning = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.g = scene.add.graphics();
     this.bar = scene.add.graphics();
-    layer.add([this.img, this.g, this.bar]);
+    layer.add([this.img, this.turning, this.g, this.bar]);
   }
 
   /** @param hidden in the ship's hold behind the closed hatch */
   update(s: SubState, time: number, dt: number, hidden = false): void {
     const g = this.g.clear();
     this.bar.clear();
+    this.turning.setVisible(false);
     if (!s.owned || hidden) {
       this.img.setVisible(false);
       return;
@@ -31,7 +35,8 @@ export class SubmarineView {
     const L = subLength(s);
     const rock = Math.sin(time * 1.3) * 0.02;
     const y = s.y + Math.sin(time * 1.1) * 0.8;
-    const art = subModel(s.model).art;
+    const { art, moving } = subModel(s.model);
+    const speed = Math.hypot(s.vx, s.vy);
     if (WORLD_ART_KEYS.includes(art)) {
       const key = `world-${art}`;
       if (this.img.texture.key !== key) this.img.setTexture(key);
@@ -41,6 +46,17 @@ export class SubmarineView {
         .setPosition(s.x, y)
         .setRotation(rock)
         .setScale(sc * s.face, sc);
+      if (moving && WORLD_ART_KEYS.includes(moving)) {
+        const key2 = `world-${moving}`;
+        if (this.turning.texture.key !== key2) this.turning.setTexture(key2);
+        const run = Math.min(1, Math.max(0, (speed - 8) / 30));
+        this.turning
+          .setVisible(run > 0.01)
+          .setAlpha(run)
+          .setPosition(s.x, y)
+          .setRotation(rock)
+          .setScale((L / this.turning.width) * s.face, L / this.turning.width);
+      }
     } else {
       // no picture: a dark hull with a tower
       this.img.setVisible(false);
@@ -50,7 +66,6 @@ export class SubmarineView {
     // (the lit portholes drawn over the picture are gone, owner 8 ottobre: they did not match the new submarines;
     // its lamp cone is the light)
     // bubbles behind the propeller when it moves
-    const speed = Math.hypot(s.vx, s.vy);
     if (speed > 8)
       for (let i = 0; i < 6; i++) {
         const t = (time * 2 + i / 6) % 1;

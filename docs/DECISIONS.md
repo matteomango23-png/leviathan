@@ -725,3 +725,15 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 8 ottobre 2026 — Via l'onda di prua (v0.50.4)
 
 - Tolta l'onda di prua disegnata sopra il mare (cerchi di schiuma e gocce): al proprietario sembrava un layer di puntini. Se torna, dovrà essere la superficie del mare a deformarsi e schiumare. `bowU` resta per il ghiaccio.
+
+## 8 ottobre 2026 — Blocco 4b: secondo portellone e mezzi di superficie (v0.51.0)
+
+- **Un portellone per vano:** `ship.hatches: {t, open}[]` (stesso ordine di `bays` in `data/fleet.ts`) al posto di `hatch/hatchOpen`; la posizione di ogni portellone sta nel suo vano (`BayDef.hatch`), non più nel `picture`. La nave spinge solo con tutti chiusi.
+- **Immagini dei portelloni:** con due vani ogni vano ha la sua immagine "solo lui aperto" (`BayDef.open`) e `art.open` è "tutti aperti"; la vista sfuma ciascuna con il suo portellone e quella con tutti aperti col prodotto.
+- **Motoscafo e moto d'acqua = un solo sistema** (`systems/boat.ts`, dati in `data/boats.ts`): cambiano solo i numeri e l'immagine. Stato a parte (`g.boat`), come il sottomarino; usa le leve del timone e `stepHeading`.
+- **Fusti (scelta del proprietario):** il carburante comprato nei fusti si travasa nella nave in automatico all'aggancio, e il serbatoio del motoscafo si riempie dalla nave. Niente tuffi dal motoscafo (si esplora dalla nave).
+- **A secco** il motoscafo va al 15% della velocità (`BOAT.dryCrawl`): niente razzo di soccorso, non resta mai bloccato. Svenendo, l'equipaggio lo riporta nella stiva.
+- **Aggancio e porto** sotto ~3 nodi (`BOAT.stillBelow`): la leva del gas raramente sta esattamente a zero.
+- **Suono:** il motore del motoscafo usa la voce del sottomarino (più acuta), senza codice audio nuovo.
+- **Immagini:** `npm run art` accetta `nave_<id>_aperta_1/_2`, `motoscafo_*`, `moto_*` (non ritagliati, come le navi) e `sottomarino_<id>_moto` (ritagliato con lo stesso riquadro del sottomarino fermo). Le immagini della stessa nave sono state portate alla stessa larghezza prima dello scontorno.
+- **Salvataggio v19:** `hatches` e `boat`.

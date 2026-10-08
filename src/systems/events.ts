@@ -41,9 +41,9 @@ export type GameEvent =
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRepaired'; cost: number }
   | { type: 'bagFull' }
-  | { type: 'engineStarted' }
+  | { type: 'engineStarted'; vehicle?: 'boat' }
   | { type: 'harbourApproach' }
-  | { type: 'engineStopped' }
+  | { type: 'engineStopped'; vehicle?: 'boat' }
   | { type: 'subTooDeep' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }
@@ -73,7 +73,14 @@ export type GameEvent =
   /** The bow breaks the ice at x (chunks fly). */
   | { type: 'iceCracked'; x: number; speed: number }
   /** A vehicle ran dry (fuel.ts). */
-  | { type: 'fuelOut'; vehicle: 'ship' | 'sub' }
+  | { type: 'fuelOut'; vehicle: 'ship' | 'sub' | 'boat' }
+  // the speedboat or jet ski (boat.ts, ship/boatBay.ts)
+  | { type: 'boatLaunching' }
+  | { type: 'boatLaunched'; text: string }
+  | { type: 'boatDocking' }
+  | { type: 'boatDocked'; text: string }
+  /** The ice sheet or an iceberg stopped it. */
+  | { type: 'boatIce' }
   /** The rescue flare: towed somewhere, for some teeth. */
   | { type: 'rescued'; where: string; teeth: number }
   /** Tiles changed (ice broken or frozen again): to redraw. */

@@ -21,6 +21,8 @@ export interface SubModel {
   sonar: boolean;
   note: string;
   art: string; // its picture in public/world
+  /** The picture with the propeller turning (same box), shown while it moves. */
+  moving?: string;
 }
 
 export const SUB_MODELS: SubModel[] = [
@@ -50,6 +52,35 @@ export const SUB_MODELS: SubModel[] = [
     sonar: false,
     note: 'Il sottomarino più veloce: consuma tanto e non ha sonar',
     art: 'sottomarino_eh1',
+  },
+  {
+    // the Expedition Hunter 2's (owner, 8 ottobre): a sonar, not the best, not the fastest
+    id: 'eh2_sub',
+    name: 'Sottomarino con sonar',
+    lengthM: 13,
+    speed: 120,
+    maxDepthM: 300,
+    hull: 140,
+    tank: 140,
+    perKm: 9,
+    sonar: true,
+    note: 'Robusto, con il sonar: né il più veloce né il migliore',
+    art: 'sottomarino_eh2',
+  },
+  {
+    // the Imperium Explorer VI's (owner, 8 ottobre): an excellent sonar
+    id: 'imperium_sub',
+    name: 'Sottomarino imperiale',
+    lengthM: 9.5,
+    speed: 140,
+    maxDepthM: 350,
+    hull: 130,
+    tank: 130,
+    perKm: 9,
+    sonar: true,
+    note: 'Ottimo sonar, veloce e profondo',
+    art: 'sottomarino_imperium',
+    moving: 'sottomarino_imperium_moto',
   },
 ];
 

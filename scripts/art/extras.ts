@@ -7,6 +7,9 @@
 //                                          public/world/<name>.json: its waterline and a solid mask for collisions)
 //   nave_<n>.jpg, nave_<n>_aperta.jpg  → public/world/<name>.webp      (background read from the edges, green or
 //                                          white; NOT cropped, so the closed and open hatch stay in register)
+//   motoscafo_<n>, moto_<n> (+ _moto)  → public/world/<name>.webp      (the boats: like the ships, not cropped)
+//   sottomarino_<n>_moto.jpg           → cropped by the same box as sottomarino_<n> (the propeller turning)
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
@@ -55,9 +58,42 @@ async function raw(src: string, maxW: number, inset = 0): Promise<Raw> {
   return { data, width: info.width, height: info.height };
 }
 
-/** The cut-out pixels cropped to what is visible, as a PNG buffer. */
-async function cropped(pixels: Uint8ClampedArray, img: Raw): Promise<{ png: Buffer; w: number; h: number }> {
-  const box = opaqueBox(pixels, img.width, img.height) ?? {
+type Box = { x0: number; y0: number; x1: number; y1: number };
+const union = (a: Box, b: Box): Box => ({
+  x0: Math.min(a.x0, b.x0),
+  y0: Math.min(a.y0, b.y0),
+  x1: Math.max(a.x1, b.x1),
+  y1: Math.max(a.y1, b.y1),
+});
+
+/** Ships and boats: pictures that share one frame (hatches, the engine running), never cropped. */
+const shipLike = (id: string): boolean => /^(nave|motoscafo|moto)_/.test(id);
+
+/**
+ * A submarine and its picture with the propeller turning (`<id>_moto`) are cropped by the same box, or they would
+ * not line up: the visible box of the other one, if it is in the inbox too.
+ */
+async function pairBox(src: string, id: string, img: Raw): Promise<Box | null> {
+  const other = id.endsWith('_moto')
+    ? src.replace(/_moto(.[a-z]+)$/i, '$1')
+    : src.replace(/(.[a-z]+)$/i, '_moto$1');
+  if (!existsSync(other)) return null;
+  const o = await raw(other, img.width);
+  if (o.width !== img.width || o.height !== img.height) return null;
+  const cut = onGreenScreen(o)
+    ? removeGreenBackground(o)
+    : removeDarkBackground(o, borderColor(o), 3, { low: 2, high: 9, soft: 14 });
+  return opaqueBox(cut, o.width, o.height);
+}
+
+/** The cut-out pixels cropped to what is visible (and to its pair's box), as a PNG buffer. */
+async function cropped(
+  pixels: Uint8ClampedArray,
+  img: Raw,
+  pair: Box | null = null,
+): Promise<{ png: Buffer; w: number; h: number }> {
+  const own = opaqueBox(pixels, img.width, img.height);
+  const box = (own && pair ? union(own, pair) : own) ?? {
     x0: 0,
     y0: 0,
     x1: img.width - 1,
@@ -164,7 +200,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
       if (n > best) [best, line] = [n, y];
     }
   }
-  if (id.startsWith('nave')) return makeShip(img, dest);
+  if (shipLike(id)) return makeShip(img, dest);
   const radius = Math.max(3, Math.round(img.width * 0.004));
   // icebergs are pale: a loose cut; the walls are dark rock: a tight one, or the rock turns see-through
   const opt = iceberg ? { low: 8, high: 30, soft: 40 } : { low: 2, high: 9, soft: 14 };
@@ -190,7 +226,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   }
   const box = opaqueBox(cut, img.width, img.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno');
-  if (id.startsWith('nave')) {
+  if (shipLike(id)) {
     // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
     await mkdir(dirname(dest), { recursive: true });
     await sharp(Buffer.from(cut.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
@@ -198,7 +234,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
       .toFile(dest);
     return `nave ${img.width}×${img.height}, senza ritaglio`;
   }
-  const c = await cropped(cut, img);
+  const c = await cropped(cut, img, id.startsWith('sottomarino') ? await pairBox(src, id, img) : null);
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);
   if (!iceberg) return `parete ${c.w}×${c.h}`;

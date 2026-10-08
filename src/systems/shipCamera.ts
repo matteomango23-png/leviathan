@@ -6,6 +6,7 @@ import { CAMERA } from '../data/diver';
 import { SHIP } from '../data/ship';
 import type { ShipState } from './ship/ship';
 import { shipLength, shipTopSpeed } from './ship/model';
+import { boatTopSpeed, type BoatState } from './boat';
 
 export interface CameraAim {
   x: number;
@@ -17,11 +18,13 @@ export interface CameraAim {
 
 interface AimWorld {
   ship: ShipState;
+  /** In the speedboat the helm's view follows it (it is fast: you see ahead). */
+  boat: BoatState;
   diver: { x: number; y: number; face: 1 | -1 };
 }
 
 /** Which view: the helm's or the swimming one (a change cuts, behind a fade). */
-export const atHelmView = (g: AimWorld): boolean => g.ship.aboard;
+export const atHelmView = (g: AimWorld): boolean => g.ship.aboard || g.boat.aboard;
 
 /** The camera's aim; `ahead` is how far the swimming view looks where you face. */
 export function cameraAim(g: AimWorld, ahead: number): CameraAim {
@@ -30,8 +33,12 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
     const C = SHIP.camera;
     // a bigger ship, a wider view, but less than the ship grows: on screen it looks bigger (owner, 8 ottobre)
     const k = Math.min(C.maxScale, Math.max(1, (shipLength(s) / C.refLength) ** C.growth));
+    const b = g.boat;
+    const v = b.aboard
+      ? { x: b.x, face: b.face, run: b.speed / boatTopSpeed(b) }
+      : { ...s, run: s.speed / shipTopSpeed(s) };
     return {
-      x: s.x + s.face * C.lookAhead * k * (s.speed / shipTopSpeed(s)),
+      x: v.x + v.face * C.lookAhead * k * v.run * (b.aboard ? 2 : 1),
       y: C.y * k,
       viewH: C.viewHeightUnits * k,
       minY: C.minY * k,

@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.51.0 — Motoscafi, moto d'acqua e tre navi nuove (8 ottobre 2026)
+
+- **Tre navi nuove al cantiere di Porto Fango:**
+  - **Expedition Hunter 2** (90 m): due portelloni, con un sottomarino con il sonar e un motoscafo da gara;
+  - **Poseidon Yacht**: la nave più veloce, con il motoscafo più veloce del mare (e i reattori che si accendono col gas);
+  - **Imperium Explorer VI**: due vani, il sottomarino imperiale (con l'elica che gira) e una moto d'acqua che esce dalla poppa.
+- **Due portelloni:** sulle navi con due vani ogni portellone ha il suo pulsante ("Apri sottomarino", "Apri motoscafo"); la nave riparte solo con tutti e due chiusi.
+- **Motoscafo e moto d'acqua:** a nave ferma e portellone aperto premi "Cala motoscafo": scende in acqua e lo guidi con le leve, molto più veloce di qualsiasi nave. Non si immerge e non rompe il ghiaccio. A secco va avanti piano con la riserva.
+- **Fusti di carburante:** fermo al molo di un porto o di un avamposto, dal menu Porto compri il pieno del motoscafo e **carichi i fusti**. Tornato davanti al portellone aperto premi Aggancia: i fusti finiscono nella nave e il motoscafo fa il pieno dalla nave. Così la nave fa rifornimento senza muoversi.
+- Comprando una nave senza sottomarino (Poseidon), il vecchio sottomarino resta con la vecchia nave.
+
 ## v0.50.4 — Via l'onda di prua (8 ottobre 2026)
 
 - **Tolta l'onda di prua** (schiuma e spruzzi): sembrava uno strato di puntini sopra il mare. Tornerà quando la schiuma potrà essere il mare stesso.

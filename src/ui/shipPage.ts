@@ -1,6 +1,7 @@
 // A ship's page in the shipyard (owner, 8 ottobre 2026): a gallery to swipe through (the ship, then each vehicle in
 // its hatches) with dots under it, and all its numbers and those of its vehicles; buy it from here.
 import { RARITY } from '../data/cards';
+import { BOAT_MODELS } from '../data/boats';
 import { assetUrl } from '../data/assets';
 import type { ShipModelDef } from '../data/fleet';
 import { ART_KEYS } from '../data/sprites.generated';
@@ -32,6 +33,14 @@ function rows(m: ShipModelDef): [string, string][] {
   ];
   if (m.special) out.push(['Speciale', m.special]);
   for (const b of m.bays) {
+    const boat = BOAT_MODELS.find((x) => x.id === b.model);
+    if (boat) {
+      out.push([
+        b.name,
+        `${boat.lengthM} m · ${boat.knots} nodi · ${boat.tank} L · fusti da ${boat.drums} L per la nave`,
+      ]);
+      continue;
+    }
     const s = b.kind === 'sub' ? subModel(b.model) : null;
     if (!s || s.id !== b.model) {
       out.push([b.name, 'arriverà con le prossime versioni']); // not in the game yet

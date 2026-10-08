@@ -72,7 +72,7 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
     ship: newShip({
       x: 20000,
       face: 1,
-      hatchOpen: false,
+      hatches: [],
       bay: 'docked',
       aboard: true,
       fuel: 100,
@@ -113,7 +113,7 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
     const base = {
       x: 20000,
       face: 1 as const,
-      hatchOpen: false,
+      hatches: [],
       bay: 'none' as const,
       aboard: false,
       fuel: 9,
@@ -176,7 +176,7 @@ describe('the submarine', () => {
   it('broken and no teeth: Cala says how to mend it', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
-    Object.assign(g.ship, { aboard: true, hatch: 1, hatchOpen: true });
+    Object.assign(g.ship, { aboard: true, hatches: [{ t: 1, open: true }] });
     g.sub.hull = 0;
     g.gear.teeth = 0;
     expect(launchShown(g)).toBe(true);

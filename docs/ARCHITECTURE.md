@@ -33,12 +33,14 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `submarine.ts` | Il tuo sottomarino (al posto della barca): regalo a fine capitolo 1, Sali/Esci a qualsiasi profondità, guida con le leve fino alla profondità del modello, cure e risveglio accanto, urti delle bestie grandi, rimorchio e riparazione al porto, modelli in vendita (`data/submarine.ts`). |
 | `helm.ts` | Le leve di nave e sottomarino: gas che resta, direzione (con la leva al contrario frena e da fermo si gira), Sali/Scendi; nodi mostrati. |
 | `ship/ship.ts` | La nave da spedizione: regalo di Aurelio a Porto Fango, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
-| `ship/hatch.ts` | Portellone, rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
+| `ship/hatch.ts` | Portelloni (uno per vano), rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
+| `ship/boatBay.ts` | Il vano del motoscafo o della moto d'acqua: cala sull'acqua, Aggancia, travaso dei fusti nella nave all'aggancio. |
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave del modello (linea d'acqua, portellone, rampa, timone, scafo). |
 | `ship/model.ts` | La nave che hai (`data/fleet.ts`): lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar, immagine. |
-| `ship/shipyard.ts` | Il cantiere navale di Porto Fango: comprare una nave (permuta, carburante, sottomarino nuovo nella stiva). |
+| `ship/shipyard.ts` | Il cantiere navale di Porto Fango: comprare una nave (permuta, carburante, sottomarino e motoscafo nuovi nella stiva). |
 | `ship/surface.ts` | Cosa incontra la nave in superficie: terra, iceberg, scogli, spiaggia; rompe il ghiaccio e lo fa richiudere lontano. |
-| `vehicles.ts` | Nave e sottomarino insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone, risveglio sulla nave. |
+| `vehicles.ts` | Nave, sottomarino e motoscafo insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone o dal motoscafo, risveglio sulla nave. |
+| `boat.ts` | Il motoscafo o la moto d'acqua (`data/boats.ts`): guida in superficie con le leve, fermo davanti al ghiaccio, riserva a secco, fusti, salvataggio. |
 | `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
 | `hunts.ts` | Le cacce alle leggende: tane, voci nei porti, eco anomala col sonar, tracce, comparsa col tempo giusto; lettura del sonar al timone. |
 | `beasts/residents.ts` | Gli abitanti fissi del mare aperto: chi vive in ogni tratto, dove si trova, chi è uscito o è stato preso. |
@@ -128,6 +130,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
 | `shipFx.ts` (views) | Effetti intorno alla nave: fumo delle ciminiere (dietro la nave), schegge di ghiaccio. Solo aspetto. |
+| `boatView.ts` (views) | Il motoscafo o la moto d'acqua: immagine sulla linea d'acqua, beccheggio, immagine "accesa" col gas, scia e bolle. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |
 | `seaMapPanel.ts` | La mappa del mare nel menu di pausa (zone esplorate, bestie e rarità); i dati li calcola `systems/seaMap.ts`. |
 

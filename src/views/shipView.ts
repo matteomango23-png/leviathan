@@ -1,5 +1,5 @@
-// The expedition ship (its model in data/fleet.ts): the owner's two paintings (hatch closed and open, the same frame, so the
-// open one fades in while the hatch opens). Its waterline sits on the sea surface; the hull under it is drawn
+// The expedition ship (its model in data/fleet.ts): the owner's paintings (hatches closed and open, the same frame, so
+// an open one fades in while its hatch opens). Its waterline sits on the sea surface; the hull under it is drawn
 // darker and bluer, as seen through the water. It rocks with the waves (more in bad weather), lifts its bow and
 // leaves a wake and bubbles behind its propeller. A soft light glows under the hull
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
@@ -8,35 +8,43 @@ import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { SHIP_MODELS, type ShipPicture } from '../data/fleet';
+import { SHIP_MODELS, type ShipModelDef } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
-import type { ShipState } from '../systems/ship/ship';
+import { hatchT, type ShipState } from '../systems/ship/ship';
 import { ShipFx } from './shipFx';
 
 const UNDERWATER_TINT = 0x6f97a6;
 const FAR_TINT = 0x7f8c94;
 
 /**
- * One copy of the ship: the closed, open and (if painted) propeller-turning pictures, each cut at the waterline
- * (above / below). Parts in pairs: 0–1 closed, 2–3 open, 4–5 moving.
+ * One copy of the ship: its pictures, each cut at the waterline (above / below), in pairs. Closed first; then,
+ * with two hatches, each one open alone and both open; with one, it open; last the propeller turning, if painted.
  */
 class ShipPictures {
   readonly parts: Phaser.GameObjects.Image[];
+  /** For each pair of parts: how open it shows (from the hatches), or the propeller turning. */
+  private readonly roles: ('closed' | number | 'all' | 'moving')[] = [];
 
   constructor(
     scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
-    art: { closed: string; open: string; picture: ShipPicture; moving?: string },
+    art: NonNullable<ShipModelDef['art']>,
+    bays: ShipModelDef['bays'],
   ) {
     const make = (key: string): Phaser.GameObjects.Image => scene.add.image(0, 0, key).setVisible(false);
-    const closed = `world-${art.closed}`;
-    const open = `world-${art.open}`;
-    this.parts = [make(closed), make(closed), make(open), make(open)];
-    if (art.moving && WORLD_ART_KEYS.includes(art.moving)) {
-      const moving = `world-${art.moving}`;
-      this.parts.push(make(moving), make(moving));
-    }
+    this.parts = [];
+    const add = (key: string, role: (typeof this.roles)[number]): void => {
+      if (!WORLD_ART_KEYS.includes(key)) return;
+      this.parts.push(make(`world-${key}`), make(`world-${key}`));
+      this.roles.push(role);
+    };
+    add(art.closed, 'closed');
+    if (bays.length > 1) {
+      for (const [i, bay] of bays.entries()) if (bay.open) add(bay.open, i);
+      add(art.open, 'all');
+    } else add(art.open, 0);
+    if (art.moving) add(art.moving, 'moving');
     layer.add(this.parts);
     for (const [i, im] of this.parts.entries()) {
       const below = i % 2 === 1;
@@ -51,14 +59,22 @@ class ShipPictures {
     for (const im of this.parts) im.setVisible(false);
   }
 
-  /** Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), open share, darkening. */
+  /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
+   *  propeller over all while it pushes. */
+  private alphaOf(s: ShipState, role: (typeof this.roles)[number]): number {
+    if (role === 'closed') return 1;
+    if (typeof role === 'number') return hatchT(s, role);
+    const most = Math.max(0, ...s.hatches.map((h) => h.t));
+    if (role === 'all') return s.hatches.reduce((a, h) => a * h.t, 1);
+    return Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - most);
+  }
+
+  /** Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), darkening. */
   place(s: ShipState, x: number, top: number, scale: number, pitch: number, dark: number): void {
     const w = shipLength(s) * scale;
     const h = w * shipPicture(s).aspect;
     for (const [i, im] of this.parts.entries()) {
-      // the open hatch fades in over the closed one; the turning propeller over both while it pushes
-      const turning = Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - s.hatch);
-      const alpha = i >= 4 ? turning : i >= 2 ? s.hatch : 1;
+      const alpha = this.alphaOf(s, this.roles[i >> 1]!);
       const sc = w / im.width;
       im.setVisible(alpha > 0.01)
         .setPosition(x, top + h / 2)
@@ -92,7 +108,7 @@ export class ShipView {
       const art = m.art;
       if (!art || this.pics.has(art.closed)) continue;
       const painted = WORLD_ART_KEYS.includes(art.closed) && WORLD_ART_KEYS.includes(art.open);
-      this.pics.set(art.closed, painted ? new ShipPictures(scene, layer, art) : null);
+      this.pics.set(art.closed, painted ? new ShipPictures(scene, layer, art, m.bays) : null);
     }
     this.tug = WORLD_ART_KEYS.includes(SHIP.tug.art)
       ? scene.add.image(0, 0, `world-${SHIP.tug.art}`).setVisible(false)

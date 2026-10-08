@@ -7,31 +7,36 @@ import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
 import { repairSub, restAboard, type SubWorld } from '../submarine';
 import { bayPath, dockPoint, helmPoint, holdPoint, shipDraft, shipSpan } from './geometry';
-import { hatchCanMove, type ShipState } from './ship';
+import { subBay } from './model';
+import { hatchCanMove, hatchT, type ShipState } from './ship';
 
 export interface HatchWorld extends SubWorld {
   ship: ShipState;
 }
 
-/** The hatch button at the helm: opens or closes it (only with the ship still). */
-export function toggleHatch(g: HatchWorld, events: GameEvent[]): void {
+/**
+ * A hatch button at the helm: opens or closes that hatch (only with the ship still, nothing on its ramps).
+ * `busy`: the boat is on its ramp (systems/boat.ts).
+ */
+export function toggleHatch(g: HatchWorld, bay: number, events: GameEvent[], busy = false): void {
   const s = g.ship;
-  if (!s.aboard) return;
-  if (!hatchCanMove(s)) {
+  const h = s.hatches[bay];
+  if (!s.aboard || !h) return;
+  if (!hatchCanMove(s) || busy) {
     events.push({ type: 'shipHint', text: 'hatchMoving' });
     return;
   }
-  s.hatchOpen = !s.hatchOpen;
-  events.push({ type: 'hatchMoved', open: s.hatchOpen });
+  h.open = !h.open;
+  events.push({ type: 'hatchMoved', open: h.open });
 }
 
 /** Can the submarine go down the ramp now? */
 export const canLaunch = (g: HatchWorld): boolean =>
-  g.ship.aboard && g.ship.hatch === 1 && g.ship.bay === 'docked' && g.sub.hull > 0;
+  g.ship.aboard && hatchT(g.ship, subBay(g.ship)) === 1 && g.ship.bay === 'docked' && g.sub.hull > 0;
 
 /** The button shows with the hatch open and the submarine in the hold, broken too (pressed, it says how to mend it). */
 export const launchShown = (g: HatchWorld): boolean =>
-  g.ship.aboard && g.ship.hatch === 1 && g.ship.bay === 'docked';
+  g.ship.aboard && hatchT(g.ship, subBay(g.ship)) === 1 && g.ship.bay === 'docked';
 
 /** "Cala il sottomarino": you climb in and it slides down the ramp. */
 export function launchSub(g: HatchWorld, events: GameEvent[]): void {
@@ -53,7 +58,7 @@ export function launchSub(g: HatchWorld, events: GameEvent[]): void {
 /** In the submarine, in front of the open hatch (anywhere from under the ramp up to the hatch): "Aggancia". */
 export function canDock(g: HatchWorld): boolean {
   const s = g.ship;
-  if (!g.sub.aboard || s.bay !== 'out' || s.hatch < 1) return false;
+  if (!g.sub.aboard || s.bay !== 'out' || hatchT(s, subBay(s)) < 1) return false;
   const p = dockPoint(s);
   const top = holdPoint(s).y;
   return Math.abs(g.sub.x - p.x) < SHIP.dockReach && g.sub.y > top - 10 && g.sub.y < p.y + SHIP.dockReach;
