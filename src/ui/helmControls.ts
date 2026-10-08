@@ -18,8 +18,9 @@ export interface HelmInfo {
   sonarOn?: boolean;
   /** The hunt you follow (pinned in the diary), shown at the helm. */
   objective?: string;
-  /** Litres left, and how far they take you at the throttle you have now. */
+  /** Litres left, the full tank, and how far they take you at the throttle you have now. */
   fuel: number;
+  tank: number;
   rangeKm: number;
   /** Submarine only: depth and the model's limit (m). */
   depthM?: number;
@@ -37,6 +38,8 @@ export interface HelmInfo {
   drums?: [number, number];
   /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */
   engineOn?: boolean;
+  /** Ship only: it is still (owner, 9 ottobre: the hatch and dive buttons show only then). */
+  still?: boolean;
 }
 
 const TRACK = 150; // px: travel of the vertical levers
@@ -61,6 +64,9 @@ export class HelmControls {
   private readonly engineBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
+  /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
+  private readonly fuelBar: HTMLDivElement;
+  private readonly fuelFill: HTMLDivElement;
   private readonly objective: HTMLDivElement;
   private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
@@ -100,14 +106,19 @@ export class HelmControls {
     // the sonar's line is its switch too
     this.sonar = el('button', 'helm-sonar', panel);
     this.buttons = el('div', 'helm-buttons', this.root);
-    this.engineBtn = el('button', 'helm-btn', this.buttons, 'Spegni motore');
+    // the engine: a round on/off button left of the cockpit (owner, 9 ottobre), green running, red off
+    const corner = el('div', 'helm-corner', this.root);
+    this.engineBtn = el('button', 'helm-power', corner, '⏻');
+    this.cockpitBtn = el('button', 'helm-btn helm-cockpit', corner, 'Cockpit');
+    this.fuelBar = el('div', 'helm-fuel', this.root);
+    el('span', 'helm-fuel-ico', this.fuelBar, '⛽');
+    this.fuelFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.fuelBar));
     this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.hatch2Btn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
     this.launchBoatBtn = el('button', 'helm-btn', this.buttons, 'Cala motoscafo');
     this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
-    this.cockpitBtn = el('button', 'helm-btn helm-cockpit', this.root, 'Cockpit');
     this.objective = el('div', 'helm-objective', this.root);
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
@@ -202,6 +213,8 @@ export class HelmControls {
       this.dragging.clear();
     }
     this.root.hidden = !info;
+    // driving a vehicle: no hearts, air or team on screen (owner, 9 ottobre), only what the vehicle needs
+    this.root.parentElement?.classList.toggle('at-helm', !!info);
     if (!info) return;
     const k = this.keys;
     if (k.has('w')) helm.throttle = Math.min(1, helm.throttle + HELM.keyThrottlePerSec * dt);
@@ -243,14 +256,19 @@ export class HelmControls {
       this.sonar.classList.toggle('anomaly', info.sonar.includes('anomala'));
     }
     this.buttons.classList.toggle('sub', info.mode !== 'ship');
-    for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn, this.cockpitBtn])
-      b.hidden = info.mode !== 'ship';
+    // under way the hatches and the dive cannot be used: they show only with the ship still (owner, 9 ottobre)
+    const still = info.mode === 'ship' && info.still !== false;
+    for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn]) b.hidden = !still;
+    this.cockpitBtn.hidden = info.mode !== 'ship';
     this.engineBtn.hidden = info.mode === 'sub';
+    const share = Math.max(0, Math.min(1, info.fuel / Math.max(1, info.tank)));
+    this.fuelFill.style.width = `${Math.round(share * 100)}%`;
+    this.fuelBar.dataset.level = share > 0.5 ? 'ok' : share > 0.2 ? 'half' : 'low';
     this.sonar.classList.toggle('on', !!info.sonarOn);
     this.objective.hidden = !info.objective;
     if (info.objective && this.objective.textContent !== info.objective)
       this.objective.textContent = info.objective;
-    const hatches = info.hatches ?? [];
+    const hatches = still ? (info.hatches ?? []) : [];
     for (const [i, btn] of [this.hatchBtn, this.hatch2Btn].entries()) {
       const h = hatches[i];
       if (!h) {
@@ -260,11 +278,12 @@ export class HelmControls {
       if (btn.textContent !== h.text) btn.textContent = h.text;
       btn.classList.toggle('off', !info.hatchCanMove);
     }
-    this.launchBtn.hidden = !info.canLaunch;
-    this.launchBoatBtn.hidden = !info.canLaunchBoat;
+    this.launchBtn.hidden = !still || !info.canLaunch;
+    this.launchBoatBtn.hidden = !still || !info.canLaunchBoat;
     const boatLabel = `Cala ${info.boatName ?? 'motoscafo'}`;
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;
-    this.engineBtn.textContent = info.engineOn ? 'Spegni motore' : 'Accendi motore';
+    this.engineBtn.classList.toggle('on', !!info.engineOn);
+    this.engineBtn.title = info.engineOn ? 'Spegni il motore' : 'Accendi il motore';
     this.rescueBtn.hidden = info.fuel > 0 || info.mode === 'boat'; // dry, the boat crawls on its reserve
     this.gauges.classList.toggle('dry', info.fuel <= 0);
   }
