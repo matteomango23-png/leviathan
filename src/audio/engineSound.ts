@@ -93,4 +93,37 @@ export class EngineSound {
       osc.stop(at + p.seconds + 0.05);
     }
   }
+
+  /**
+   * The ship's engine starting (owner, 8 ottobre): a few uneven coughs of the starter, then a rumble rising to the
+   * idle; or stopping: the rumble sinking to nothing. near: 1 aboard … 0 out of earshot.
+   */
+  startStop(start: boolean, near: number): void {
+    if (near <= 0) return;
+    const S = ENGINE_SOUND.startStop;
+    const at = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const g = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    filter.type = 'lowpass';
+    filter.frequency.value = ENGINE_SOUND.ship.cutoff;
+    const [lo, hi] = S.freq;
+    osc.frequency.setValueAtTime(start ? lo : hi, at);
+    osc.frequency.exponentialRampToValueAtTime(start ? hi : lo, at + S.seconds);
+    g.gain.setValueAtTime(0, at);
+    if (start)
+      // the starter's coughs: short bursts, then the engine catches
+      for (let k = 0; k < S.coughs; k++) {
+        const c = at + k * S.coughGap;
+        g.gain.linearRampToValueAtTime(S.volume * near, c + 0.03);
+        g.gain.linearRampToValueAtTime(S.volume * near * 0.2, c + S.coughGap * 0.8);
+      }
+    else g.gain.linearRampToValueAtTime(S.volume * near, at + 0.05);
+    g.gain.linearRampToValueAtTime(start ? S.volume * near : 0.0001, at + S.seconds);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + S.seconds + 0.25);
+    osc.connect(filter).connect(g).connect(this.dest);
+    osc.start(at);
+    osc.stop(at + S.seconds + 0.3);
+  }
 }

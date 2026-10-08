@@ -705,3 +705,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Cantiere:** `systems/ship/shipyard.ts`. Una nave alla volta; la vecchia vale `TRADE_IN_SHARE` del prezzo (se vale più della nuova, la differenza torna a te); il carburante passa nella nuova; il sottomarino della nave arriva nuovo nella stiva. Solo le navi `ready` si comprano (Aurelia, EH1): le altre aspettano le parti 4b–4d.
 - **Tolti** potenziamenti e sottomarini venduti a parte; **salvataggio v18** li rimborsa ai prezzi della v0.48.0.
 - **Immagini:** le navi sul fondo verde passano da `npm run art` (nomi `nave_<id>`, `nave_<id>_aperta`, `sottomarino_<id>`, card `<nome>_card`); le immagini con la prua a sinistra si girano copiandole in `art-inbox/`. Effetto noto: le scritte dipinte sullo scafo si leggono al contrario quando la nave va verso est.
+
+## 8 ottobre 2026 — Ritocchi alla flotta (v0.50.0)
+
+- **Vista del timone:** cresce come (lunghezza / 180) ^ `SHIP.camera.growth` (0,4): crescendo quanto la nave, tutte le navi apparivano grandi uguali.
+- **Sottomarini:** `lengthM` per modello; collisioni e disegno scalati da `SUBMARINE.body` (`subLength`, `subBody`).
+- **Ordine di disegno:** le immagini di tutte le navi si creano nel costruttore di `ShipView`, prima del sottomarino (create dopo, finivano sopra di lui).
+- **Elica:** `ship.prop` (0…1, non salvato) segue la spinta del motore; immagine `art.moving` (facoltativa) e bolle dell'elica dipendono da essa, la scia dalla velocità.
+- **Accensione e spegnimento:** eventi `engineStarted` / `engineStopped`, suono sintetizzato (`ENGINE_SOUND.startStop`).
+- **Cantiere:** `tier` 1–5 per nave (colori di `RARITY`); pagina della nave in `ui/shipPage.ts` con galleria a scorrimento.

@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { subModel, type SubState } from '../systems/submarine';
+import { subLength, subModel, type SubState } from '../systems/submarine';
 
 export class SubmarineView {
   private readonly img: Phaser.GameObjects.Image;
@@ -31,7 +31,7 @@ export class SubmarineView {
       this.img.setVisible(false);
       return;
     }
-    const L = SUBMARINE.length;
+    const L = subLength(s);
     const rock = Math.sin(time * 1.3) * 0.02;
     const y = s.y + Math.sin(time * 1.1) * 0.8;
     const art = subModel(s.model).art;
@@ -70,7 +70,7 @@ export class SubmarineView {
 
   /** The hull bar after a blow (then it fades), and dark smoke when little is left. */
   private drawDamage(s: SubState, y: number, time: number, dt: number): void {
-    const L = SUBMARINE.length;
+    const L = subLength(s);
     const max = subModel(s.model).hull;
     if (s.hull < this.lastHull) this.barLeft = SUBMARINE.hullBarSeconds;
     this.lastHull = s.hull;

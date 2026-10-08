@@ -1,75 +1,192 @@
-/* The shipyard of Porto Fango (ui/shipyardPanel.ts): one wide card per ship, its painting on the left. */
+/* The shipyard of Porto Fango (ui/shipyardPanel.ts): big cards framed in the colour of their rarity. */
 .yard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
 }
 .yard-card {
-  display: grid;
-  grid-template-columns: 112px 1fr;
-  gap: 10px;
-  padding: 10px;
+  position: relative;
+  padding: 0;
+  aspect-ratio: 2 / 3;
   border-radius: 12px;
-  background: linear-gradient(160deg, rgba(40, 60, 66, 0.55), rgba(8, 16, 22, 0.9));
-  border: 1px solid rgba(176, 138, 74, 0.35);
+  overflow: hidden;
+  border: 3px solid var(--rarity, #8a8f92);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--rarity, #8a8f92) 45%, transparent);
+  background: #0a1216;
+  color: #f1e9da;
+  cursor: pointer;
+  font: inherit;
 }
 .yard-card.mine {
-  border-color: #c9a86a;
+  outline: 2px solid #f1e9da;
+  outline-offset: 2px;
 }
 .yard-card.building .yard-ship {
-  filter: grayscale(0.6) brightness(0.75);
-}
-.yard-pics {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  filter: grayscale(0.55) brightness(0.7);
 }
 .yard-ship {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 2 / 3;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
 }
-.yard-bays {
-  display: flex;
-  gap: 4px;
-}
-.yard-bay {
-  width: calc(50% - 2px);
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  border-radius: 6px;
-  opacity: 0.9;
-}
-.yard-body {
+.yard-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.yard-top {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 2px;
+  padding: 18px 8px 8px;
+  text-align: left;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85) 45%);
 }
 .yard-name {
   font-weight: 800;
-  font-size: 16px;
+  font-size: 14px;
+  line-height: 1.15;
 }
-.yard-note {
+.yard-sub {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   font-size: 12px;
-  opacity: 0.8;
+  color: var(--rarity, #c9a86a);
 }
-.yard-stats {
+.yard-sub svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* a ship's page (ui/shipPage.ts): the gallery on the left, the numbers on the right */
+.ship-page {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(8px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right))
+    calc(8px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+  background: rgba(1, 4, 8, 0.85);
+  pointer-events: auto;
+  color: #f1e9da;
+}
+.ship-page-card {
+  position: relative;
   display: grid;
-  gap: 2px;
-  font-size: 12px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  width: min(820px, 100%);
+  max-height: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 3px solid var(--rarity);
+  background: linear-gradient(160deg, rgba(40, 60, 66, 0.6), rgba(8, 16, 22, 0.96));
+}
+.ship-page-card .sheet-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+.ship-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 0;
+}
+.ship-gallery-view {
+  position: relative;
+  width: 100%;
+  max-height: calc(100vh - 110px);
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.ship-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.ship-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f1e9da;
+  font-size: 26px;
+  cursor: pointer;
+}
+.ship-arrow.left {
+  left: 4px;
+}
+.ship-arrow.right {
+  right: 4px;
+}
+.ship-gallery-caption {
+  font-size: 13px;
+  font-weight: 700;
+}
+.ship-gallery-dots {
+  display: flex;
+  gap: 6px;
+}
+.ship-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(241, 233, 218, 0.3);
+  cursor: pointer;
+}
+.ship-dot.on {
+  background: var(--rarity);
+}
+.ship-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.ship-info-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-right: 34px;
+}
+.ship-info-name {
+  margin: 0;
+  font-size: 20px;
+}
+.ship-info-note {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.ship-info-rows {
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
 }
 .yard-row {
   display: grid;
-  grid-template-columns: 74px 1fr;
-  gap: 6px;
+  grid-template-columns: 96px 1fr;
+  gap: 8px;
 }
 .yard-k {
   color: #c9a86a;
@@ -79,10 +196,6 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-}
-.yard-was {
-  font-size: 11px;
-  opacity: 0.6;
-  text-decoration: line-through;
+  gap: 10px;
+  padding-top: 6px;
 }

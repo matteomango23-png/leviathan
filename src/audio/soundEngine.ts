@@ -61,6 +61,11 @@ export class SoundEngine {
     this.engines?.update(null, null);
   }
 
+  /** The ship's engine starting or stopping, heard as near as you are (1 aboard … 0 far). */
+  engineStartStop(start: boolean, near: number): void {
+    if (this.ctx?.state === 'running' && !this.battle) this.engines?.startStop(start, near);
+  }
+
   /** The sonar's ping. */
   sonarPing(): void {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.ping();

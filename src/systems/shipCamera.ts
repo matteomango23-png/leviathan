@@ -28,8 +28,8 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
   const s = g.ship;
   if (atHelmView(g)) {
     const C = SHIP.camera;
-    // a bigger ship, a wider view (owner, 8 ottobre: the big ones must look majestic), up to maxScale
-    const k = Math.min(C.maxScale, Math.max(1, shipLength(s) / C.refLength));
+    // a bigger ship, a wider view, but less than the ship grows: on screen it looks bigger (owner, 8 ottobre)
+    const k = Math.min(C.maxScale, Math.max(1, (shipLength(s) / C.refLength) ** C.growth));
     return {
       x: s.x + s.face * C.lookAhead * k * (s.speed / shipTopSpeed(s)),
       y: C.y * k,

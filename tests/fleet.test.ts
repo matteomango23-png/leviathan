@@ -13,6 +13,9 @@ import { stepHeading } from '../src/systems/helm';
 import { migrate } from '../src/systems/save/saveData';
 import { shipLength, shipRates, shipTopSpeed } from '../src/systems/ship/model';
 import { buyShip } from '../src/systems/ship/shipyard';
+import { newShip, sailShip, type ShipWorld } from '../src/systems/ship/ship';
+import { subLength } from '../src/systems/submarine';
+import type { GameEvent } from '../src/systems/events';
 import { cameraAim } from '../src/systems/shipCamera';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
@@ -132,5 +135,54 @@ describe('saves before the fleet (v17 → v18)', () => {
     expect((o.ship as Record<string, unknown>).upgrades).toBeUndefined();
     expect(o.sub).toMatchObject({ model: 'batiscafo', models: ['batiscafo'] });
     expect((o.gear as { teeth: number }).teeth).toBe(100 + 900 + 2500 + 1800);
+  });
+});
+
+describe('after the first try (owner, 8 ottobre)', () => {
+  it('a bigger ship looks bigger on screen: the view grows less than the ship', () => {
+    const g = createGame(map, null, 4);
+    giveVessels(g);
+    g.ship.aboard = true;
+    const share = (): number => shipLength(g.ship) / cameraAim(g, 0).viewH;
+    const small = share();
+    g.ship.model = 'eh1';
+    expect(share()).toBeGreaterThan(small * 1.2);
+  });
+
+  it('each submarine has its own length', () => {
+    expect(subLength({ model: 'batiscafo' })).toBe(9 * WORLD.unitsPerMetre);
+    expect(subLength({ model: 'squalo_acciaio' })).toBe(12 * WORLD.unitsPerMetre);
+  });
+
+  it('the propeller turns only while the engine pushes; starting and stopping are heard', () => {
+    const w: ShipWorld = {
+      ship: newShip({
+        x: 20000,
+        face: 1,
+        hatchOpen: false,
+        bay: 'docked',
+        aboard: true,
+        fuel: 100,
+        model: 'eh1',
+      }),
+      map,
+      sub: { owned: true, aboard: false },
+      diver: { x: 20000, y: 0, vx: 0, vy: 0, face: 1 },
+    };
+    const ev: GameEvent[] = [];
+    for (let t = 0; t < 3; t += 0.1) sailShip(w, { throttle: 1, dir: 1, dive: 0 }, 0.1, ev, () => false);
+    expect(ev).toContainEqual({ type: 'engineStarted' });
+    expect(w.ship.prop).toBeGreaterThan(0.8);
+    // the throttle down: the ship coasts on, the propeller stops
+    for (let t = 0; t < 4; t += 0.1) sailShip(w, { throttle: 0, dir: 1, dive: 0 }, 0.1, ev, () => false);
+    expect(w.ship.speed).toBeGreaterThan(0);
+    expect(w.ship.prop).toBeLessThan(0.05);
+  });
+
+  it('every ship has a rarity, the dearest the rarest', () => {
+    const byPrice = [...SHIP_MODELS].sort((a, b) => a.price - b.price);
+    for (let i = 1; i < byPrice.length; i++)
+      expect(byPrice[i]!.tier).toBeGreaterThanOrEqual(byPrice[i - 1]!.tier);
+    expect(SHIP_MODELS.find((m) => m.id === 'nightmare')!.tier).toBe(5);
   });
 });

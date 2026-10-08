@@ -41,6 +41,8 @@ export type GameEvent =
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRepaired'; cost: number }
   | { type: 'bagFull' }
+  | { type: 'engineStarted' }
+  | { type: 'engineStopped' }
   | { type: 'subTooDeep' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }

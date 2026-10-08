@@ -10,6 +10,8 @@ import { WORLD } from './worldLayout';
 export interface SubModel {
   id: string;
   name: string;
+  /** Its length in metres (owner, 8 ottobre: the first ones looked too small). */
+  lengthM: number;
   speed: number; // units/s (you swim at 42)
   maxDepthM: number;
   hull: number; // hits it takes (each ram takes SUBMARINE.ram.damage × the beast's size)
@@ -25,6 +27,7 @@ export const SUB_MODELS: SubModel[] = [
   {
     id: 'batiscafo',
     name: 'Batiscafo di Aurelio',
+    lengthM: 9,
     speed: 70, // tuning: less than twice your swimming
     maxDepthM: 80,
     hull: 60,
@@ -38,6 +41,7 @@ export const SUB_MODELS: SubModel[] = [
     // the Expedition Hunter 1's (owner, 8 ottobre): the fastest of the sea, a small tank, no sonar
     id: 'squalo_acciaio',
     name: 'Squalo d’acciaio',
+    lengthM: 12,
     speed: 190,
     maxDepthM: 250,
     hull: 100,
@@ -53,7 +57,7 @@ export const SUBMARINE = {
   stillBelow: 4, // units/s: slower than this it counts as still (you may get out)
   mooredX: PORT.x + 110, // where Aurelio leaves it: past the pier of Portofosco (out of the port's reach)
   restY: WORLD.surfaceY + 10, // at the port it floats just under the surface
-  length: 46, // units, as drawn (~7.5 m)
+  length: 46, // units: the length SUBMARINE.body is drawn for (each model's own is lengthM)
   /** Its body against rock: circles along the hull (offset from the middle, radius), slimmer at bow and stern so
    *  it touches where the picture touches (owner: it stopped at an invisible wall). */
   body: [
