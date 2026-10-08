@@ -1,14 +1,13 @@
 // A ship's page in the shipyard (owner, 8 ottobre 2026): a gallery to swipe through (the ship, then each vehicle in
 // its hatches) with dots under it, and all its numbers and those of its vehicles; buy it from here.
 import { RARITY } from '../data/cards';
-import { BOAT_MODELS } from '../data/boats';
 import { assetUrl } from '../data/assets';
 import type { ShipModelDef } from '../data/fleet';
 import { ART_KEYS } from '../data/sprites.generated';
-import { autonomyKm } from '../systems/fuelBurn';
 import type { GameState } from '../systems/game';
-import { buyShip, shipCost } from '../systems/ship/shipyard';
-import { subModel } from '../systems/submarine';
+import { buyShip, ownsShip, sellPrice, sellShip, shipCost, switchShip } from '../systems/ship/shipyard';
+import { shipModel } from '../systems/ship/model';
+import { renderShipStats } from './shipStats';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 
@@ -17,41 +16,6 @@ function slides(m: ShipModelDef): { card: string; title: string }[] {
   return [{ card: m.card, title: m.name }, ...m.bays.map((b) => ({ card: b.card, title: b.name }))].filter(
     (s) => ART_KEYS.includes(s.card),
   );
-}
-
-/** Every number of the ship, then those of what it carries. */
-function rows(m: ShipModelDef): [string, string][] {
-  const out: [string, string][] = [
-    ['Rarità', RARITY[m.tier].name],
-    ['Lunghezza', `${Math.round(m.lengthM * 0.95)} m`],
-    ['Velocità', `${m.knots} nodi`],
-    ['Serbatoio', `${m.tank} L`],
-    ['Consumo', `${m.perKm} L/km a tutto gas`],
-    ['Autonomia', `${Math.round(autonomyKm(m.tank, m.perKm))} km a tutto gas`],
-    ['Sonar', `${m.sonar.name}, sente fino a ${m.sonar.maxKnots} nodi`],
-    ['Vasca', m.pool ? `${m.pool} posti per la squadra` : 'nessuna'],
-  ];
-  if (m.special) out.push(['Speciale', m.special]);
-  for (const b of m.bays) {
-    const boat = BOAT_MODELS.find((x) => x.id === b.model);
-    if (boat) {
-      out.push([
-        b.name,
-        `${boat.lengthM} m · ${boat.knots} nodi · ${boat.tank} L · fusti da ${boat.drums} L per la nave`,
-      ]);
-      continue;
-    }
-    const s = b.kind === 'sub' ? subModel(b.model) : null;
-    if (!s || s.id !== b.model) {
-      out.push([b.name, 'arriverà con le prossime versioni']); // not in the game yet
-      continue;
-    }
-    out.push([
-      b.name,
-      `${s.lengthM} m · fino a ${s.maxDepthM} m · scafo ${s.hull} · ${s.tank} L · ${s.sonar ? 'con sonar' : 'senza sonar'}`,
-    ]);
-  }
-  return out;
 }
 
 /** Opens the page; `changed` runs after a purchase (the shipyard redraws). */
@@ -105,28 +69,57 @@ export function openShipPage(
   const info = el('div', 'ship-info', card);
   const head = el('div', 'ship-info-head', info);
   el('h2', 'ship-info-name', head, m.name);
-  const mine = g.ship.owned && g.ship.model === m.id;
-  if (mine) el('span', 'pcard-badge', head, 'la tua');
-  else if (!m.ready) el('span', 'pcard-badge', head, 'in cantiere');
-  el('p', 'ship-info-note', info, m.note);
+  const inUse = g.ship.owned && g.ship.model === m.id;
+  const owned = ownsShip(g, m.id);
+  el(
+    'span',
+    'pcard-badge',
+    head,
+    `${RARITY[m.tier].name}${inUse ? ' · in uso' : owned ? ' · posseduta' : !m.ready ? ' · in cantiere' : ''}`,
+  );
+  el('p', 'ship-info-note', info, m.special ? `${m.note}. ${m.special}.` : m.note);
   const table = el('div', 'ship-info-rows', info);
-  for (const [k, v] of rows(m)) {
-    const r = el('div', 'yard-row', table);
-    el('span', 'yard-k', r, k);
-    el('span', 'yard-v', r, v);
-  }
+  renderShipStats(table, m, g.ship.owned ? shipModel(g.ship) : null);
+
   const foot = el('div', 'yard-foot', info);
-  if (!mine && g.ship.owned) {
+  const act = (
+    label: string,
+    primary: boolean,
+    disabled: boolean,
+    run: () => { ok: boolean; reason?: string },
+    done: string,
+  ): void => {
+    const btn = el('button', `pbtn${primary ? ' primary' : ''}`, foot, label);
+    btn.disabled = disabled;
+    btn.addEventListener('click', () => {
+      const r = run();
+      say(r.ok ? done : (r.reason ?? ''), !r.ok);
+      if (r.ok) root.remove();
+      changed();
+    });
+  };
+  if (inUse) el('button', 'pbtn primary', foot, 'In uso').toggleAttribute('disabled', true);
+  else if (owned) {
+    act(
+      'Usa questa nave',
+      true,
+      false,
+      () => switchShip(g, m.id),
+      `${m.name}: ti aspetta al molo, con i suoi mezzi.`,
+    );
+    const price = sellPrice(m.id);
+    if (price > 0)
+      act(`Vendi (+${price})`, false, false, () => sellShip(g, m.id), `${m.name} venduta: +${price} denti.`);
+  } else {
     const cost = shipCost(g, m.id);
-    const p = el('span', 'price', foot);
-    p.append(icon('tooth'), document.createTextNode(cost < 0 ? ` +${-cost}` : ` ${cost}`));
+    if (m.ready && g.ship.owned)
+      el('span', 'price', foot).append(icon('tooth'), document.createTextNode(` ${cost}`));
+    act(
+      m.ready ? 'Compra' : 'In cantiere',
+      true,
+      !m.ready || !g.ship.owned || g.gear.teeth < cost,
+      () => buyShip(g, m.id),
+      `${m.name}: è tua, col pieno. Ti aspetta al molo; la vecchia resta ormeggiata qui.`,
+    );
   }
-  const buy = el('button', 'pbtn primary', foot, mine ? 'La tua' : m.ready ? 'Compra' : 'In cantiere');
-  buy.disabled = mine || !m.ready || !g.ship.owned || g.gear.teeth < shipCost(g, m.id);
-  buy.addEventListener('click', () => {
-    const r = buyShip(g, m.id);
-    say(r.ok ? `${m.name}: è la tua nave. Ti aspetta al molo.` : (r.reason ?? ''), !r.ok);
-    if (r.ok) root.remove();
-    changed();
-  });
 }

@@ -204,7 +204,7 @@ describe('the speedboat', () => {
     const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
     expect(back.boat).toMatchObject({ owned: true, model: 'motoscafo_eh2', bay: 'out', drums: 77 });
     expect(back.ship.hatches.map((h) => h.open)).toEqual([false, true]);
-    expect(SAVE_VERSION).toBe(19);
+    expect(SAVE_VERSION).toBeGreaterThanOrEqual(19);
     const old = migrate({
       game: 'leviatano',
       version: 18,

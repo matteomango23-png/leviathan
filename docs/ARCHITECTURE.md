@@ -37,7 +37,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/boatBay.ts` | Il vano del motoscafo o della moto d'acqua: cala sull'acqua, Aggancia, travaso dei fusti nella nave all'aggancio. |
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave del modello (linea d'acqua, portellone, rampa, timone, scafo). |
 | `ship/model.ts` | La nave che hai (`data/fleet.ts`): lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar, immagine. |
-| `ship/shipyard.ts` | Il cantiere navale di Porto Fango: comprare una nave (permuta, carburante, sottomarino e motoscafo nuovi nella stiva). |
+| `ship/shipyard.ts` | Il cantiere navale di Porto Fango: più navi possedute (`g.fleet`, ormeggiate col loro carburante e i loro mezzi), comprare (col pieno), cambiare nave, vendere a metà prezzo. |
+| `ship/stats.ts` | I numeri confrontabili di una nave e dei suoi mezzi (ripresa in secondi, autonomia in km, sonar in metri), barre e differenze con la nave in uso. |
 | `ship/surface.ts` | Cosa incontra la nave in superficie: terra, iceberg, scogli, spiaggia; rompe il ghiaccio e lo fa richiudere lontano. |
 | `vehicles.ts` | Nave, sottomarino e motoscafo insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone o dal motoscafo, risveglio sulla nave. |
 | `boat.ts` | Il motoscafo o la moto d'acqua (`data/boats.ts`): guida in superficie con le leve, fermo davanti al ghiaccio, riserva a secco, fusti, salvataggio. |

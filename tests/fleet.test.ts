@@ -2,21 +2,22 @@
 // real lengths, fuel to plan for, the save v18.
 import { describe, expect, it } from 'vitest';
 import { PORT, PORTO_FANGO } from '../src/data/economy';
-import { SHIP_MODELS, TRADE_IN_SHARE } from '../src/data/fleet';
+import { SELL_SHARE, SHIP_MODELS } from '../src/data/fleet';
 import { FUEL } from '../src/data/ship';
 import { ART_KEYS, WORLD_ART_KEYS } from '../src/data/sprites.generated';
 import { SUB_MODELS } from '../src/data/submarine';
 import { WORLD } from '../src/data/worldLayout';
 import { autonomyKm } from '../src/systems/fuelBurn';
-import { createGame } from '../src/systems/game';
+import { createGame, toSave } from '../src/systems/game';
 import { stepHeading } from '../src/systems/helm';
-import { migrate } from '../src/systems/save/saveData';
+import { migrate, parseSave } from '../src/systems/save/saveData';
 import { shipLength, shipRates, shipTopSpeed } from '../src/systems/ship/model';
-import { buyShip } from '../src/systems/ship/shipyard';
+import { buyShip, ownsShip, sellShip, switchShip } from '../src/systems/ship/shipyard';
 import { newShip, sailShip, type ShipWorld } from '../src/systems/ship/ship';
 import { subLength } from '../src/systems/submarine';
 import type { GameEvent } from '../src/systems/events';
 import { cameraAim } from '../src/systems/shipCamera';
+import { shipStats, statDiff, statShare } from '../src/systems/ship/stats';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
 
@@ -86,18 +87,59 @@ describe('the shipyard of Porto Fango', () => {
     return g;
   };
 
-  it('a new ship: paid less the trade-in, at the pier, with its own submarine in the hold and your fuel', () => {
+  it('a new ship: paid in full, at the pier with a full tank and its own submarine; the old one stays yours', () => {
     const g = atYard();
     g.gear.teeth = 10000;
     g.ship.fuel = 250;
     expect(buyShip(g, 'eh1').ok).toBe(true);
-    expect(g.gear.teeth).toBe(10000 - 6000); // the Aurelia is a gift: worth nothing
-    expect(g.ship).toMatchObject({ model: 'eh1', x: PORTO_FANGO.shipDock, bay: 'docked', fuel: 250 });
+    expect(g.gear.teeth).toBe(10000 - 6000);
+    expect(g.ship).toMatchObject({ model: 'eh1', x: PORTO_FANGO.shipDock, bay: 'docked', fuel: 600 });
     expect(g.sub.model).toBe('squalo_acciaio');
     expect(g.sub.hull).toBe(SUB_MODELS.find((s) => s.id === 'squalo_acciaio')!.hull);
-    // back to the Aurelia: the EH1 is traded in for a share of its price
-    expect(buyShip(g, 'aurelia').ok).toBe(true);
-    expect(g.gear.teeth).toBe(4000 + 6000 * TRADE_IN_SHARE);
+    expect(g.fleet).toEqual([{ model: 'aurelia', fuel: 250, sub: { hull: 60, fuel: 120 } }]);
+    expect(buyShip(g, 'aurelia').ok).toBe(false); // already yours
+  });
+
+  it('switching ships: each keeps its fuel and its vehicles as you left them', () => {
+    const g = atYard();
+    g.gear.teeth = 100000;
+    expect(buyShip(g, 'eh2').ok).toBe(true);
+    Object.assign(g.ship, { fuel: 777 });
+    Object.assign(g.boat, { fuel: 12, drums: 90 });
+    g.sub.hull = 33;
+    expect(switchShip(g, 'aurelia').ok).toBe(true);
+    expect(g.ship.model).toBe('aurelia');
+    expect(g.sub.model).toBe('batiscafo');
+    expect(g.boat.owned).toBe(false);
+    expect(switchShip(g, 'eh2').ok).toBe(true);
+    expect(g.ship).toMatchObject({ model: 'eh2', fuel: 777 });
+    expect(g.boat).toMatchObject({ owned: true, fuel: 12, drums: 90 });
+    expect(g.sub).toMatchObject({ model: 'eh2_sub', hull: 33 });
+    expect(g.fleet.map((m) => m.model)).toEqual(['aurelia']);
+    // not with the submarine out of its hold
+    g.ship.bay = 'out';
+    expect(switchShip(g, 'aurelia').ok).toBe(false);
+  });
+
+  it('selling: half the price; never the Aurelia, never the ship in use', () => {
+    const g = atYard();
+    g.gear.teeth = 6000;
+    buyShip(g, 'eh1');
+    expect(sellShip(g, 'eh1').ok).toBe(false); // in use
+    expect(sellShip(g, 'aurelia').ok).toBe(false); // Aurelio's gift
+    switchShip(g, 'aurelia');
+    expect(sellShip(g, 'eh1')).toMatchObject({ ok: true, teeth: 6000 * SELL_SHARE });
+    expect(g.gear.teeth).toBe(6000 * SELL_SHARE);
+    expect(ownsShip(g, 'eh1')).toBe(false);
+  });
+
+  it('saved with the moored ships (v20)', () => {
+    const g = atYard();
+    g.gear.teeth = 6000;
+    buyShip(g, 'eh1');
+    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
+    expect(back.fleet).toEqual(g.fleet);
+    expect(migrate({ game: 'leviatano', version: 19 })).toMatchObject({ fleet: [] });
   });
 
   it('only at Porto Fango, only ships that are ready, only with the teeth', () => {
@@ -217,5 +259,33 @@ describe('coming into Porto Fango (owner: at full speed you crashed into it ever
     expect(Math.abs(w.ship.x - PORTO_FANGO.shipDock)).toBeLessThan(25);
     expect(w.ship.speed).toBeLessThan(1);
     expect(worstDrop).toBeLessThan(10); // a gentle slowing down, not a crash (units/s in 1/20 s)
+  });
+});
+
+describe('the numbers of the ships, comparable (owner, 8 ottobre)', () => {
+  const stats = (id: string) => shipStats(SHIP_MODELS.find((m) => m.id === id)!);
+  const row = (id: string, key: string) => stats(id).find((r) => r.key === key)!;
+
+  it('real values: getting going in seconds, the range in km, the sonar in metres', () => {
+    expect(row('aurelia', 'accel').value).toBeCloseTo(220 / 38, 1);
+    expect(row('aurelia', 'range').value).toBe(30);
+    expect(row('aurelia', 'sonar').text).toContain('150 m');
+    expect(stats('aurelia').some((r) => /debole|buono|normale/.test(r.text))).toBe(false);
+  });
+
+  it('the EH1 against the Aurelia: faster, more range, a better sonar, a pool', () => {
+    const mine = stats('aurelia');
+    const d = (key: string) => statDiff(row('eh1', key), mine)!;
+    expect(d('knots')).toEqual({ text: '+2 nodi', good: true });
+    expect(d('range').good).toBe(true);
+    expect(d('sonar').good).toBe(true);
+    expect(d('pool').good).toBe(true);
+    expect(d('accel').good).toBe(false); // heavier: slower to get going
+  });
+
+  it('the bars: the best ship of each row fills it', () => {
+    expect(statShare(row('poseidon', 'knots'))).toBe(1);
+    expect(statShare(row('nightmare', 'sonar'))).toBe(1);
+    expect(statShare(row('whale', 'accel'))).toBe(1); // the small U-Boat is the quickest to get going
   });
 });

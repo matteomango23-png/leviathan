@@ -62,6 +62,7 @@ import { addHuntSlots, hearRumours, placeDens, stepHunts, type Den, type HuntsSt
 import { createWeather, type WeatherState } from './weather';
 import { newShip, type ShipState } from './ship/ship';
 import { newBoat, type BoatState } from './boat';
+import type { MooredShip } from './ship/shipyard';
 import { helmPoint } from './ship/geometry';
 import { canDock } from './ship/hatch';
 import {
@@ -98,6 +99,8 @@ export interface GameState extends StoryWorld {
   ship: ShipState;
   /** Its speedboat or jet ski (block 4b; saved). */
   boat: BoatState;
+  /** Your other ships, moored at Porto Fango (saved). */
+  fleet: MooredShip[];
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
@@ -157,6 +160,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     sub: newSub(s.sub),
     ship: newShip(s.ship),
     boat: newBoat(s.boat),
+    fleet: structuredClone(s.fleet ?? []),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
     weather: createWeather(),

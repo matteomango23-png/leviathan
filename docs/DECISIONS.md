@@ -737,3 +737,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Suono:** il motore del motoscafo usa la voce del sottomarino (più acuta), senza codice audio nuovo.
 - **Immagini:** `npm run art` accetta `nave_<id>_aperta_1/_2`, `motoscafo_*`, `moto_*` (non ritagliati, come le navi) e `sottomarino_<id>_moto` (ritagliato con lo stesso riquadro del sottomarino fermo). Le immagini della stessa nave sono state portate alla stessa larghezza prima dello scontorno.
 - **Salvataggio v19:** `hatches` e `boat`.
+
+## 8 ottobre 2026 — Più navi e statistiche confrontabili (v0.52.0)
+
+- **Flotta (scelte del proprietario):** più navi; quella in uso vive in `g.ship`/`g.sub`/`g.boat` come prima, le altre in `g.fleet` (`MooredShip`: modello, carburante, scafo e serbatoio del sottomarino, serbatoio e fusti del motoscafo), sempre a Porto Fango. Cambiare nave scambia i due stati. Si fa solo col sottomarino e il motoscafo nella stiva.
+- **Niente permuta:** la nave nuova costa il prezzo pieno e arriva col pieno. Si vende a metà prezzo (`SELL_SHARE`); l'Aurelia mai (`KEEP_FOREVER`), così c'è sempre una nave.
+- **Categorie:** `category` per nave (`SHIP_CATEGORIES`); il cantiere apre sulla scheda "Possedute".
+- **Statistiche:** calcolate in `systems/ship/stats.ts` dai dati, mai a mano. Ripresa = velocità / accelerazione, frenata = velocità / frenata, sonar in metri (`HUNT_RULES.bigEchoRange` e `sonarRange` × la portata). La barra è rispetto alla nave migliore di quella riga; la differenza è con la nave in uso (per i mezzi, con il mezzo dello stesso tipo). Il nome del sonar ("buono") non si mostra più.
+- **Salvataggio v20:** `fleet`.

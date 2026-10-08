@@ -7,6 +7,7 @@ import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
 import type { SavedBoat } from '../boat';
+import { checkedFleet, type MooredShip } from '../ship/shipyard';
 import { BOAT_MODELS } from '../../data/boats';
 import { FIRST_SHIP, SHIP_MODELS } from '../../data/fleet';
 import { HUNTS } from '../../data/hunts';
@@ -16,7 +17,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 19;
+export const SAVE_VERSION = 20;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -61,6 +62,7 @@ export interface SaveData {
   legendsGone: string[]; // legends defeated: gone forever (v10)
   ship: SavedShip | null; // your expedition ship: where it is, its hatches, the submarine in its hold (v14, v19)
   boat: SavedBoat | null; // its speedboat or jet ski (v19); null = the ship has none
+  fleet: MooredShip[]; // your other ships, moored at Porto Fango (v20)
   hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
   huntPinned?: string | null; // the hunt you follow (added 5 ottobre; missing = none)
 }
@@ -83,6 +85,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     legendsGone: [],
     ship: null,
     boat: null,
+    fleet: [],
     hunts: {},
     huntPinned: null,
   };
@@ -237,6 +240,8 @@ export const MIGRATIONS: Migration[] = [
       return { ...o, ship, boat: null };
     },
   },
+  // v19 → v20 (8 ottobre 2026): you may own several ships (the shipyard keeps the others moored)
+  { from: 19, migrate: (o) => ({ ...o, fleet: [] }) },
 ];
 
 function migrateTo18(o: Record<string, unknown>): Record<string, unknown> {
@@ -364,6 +369,7 @@ export function validate(data: Record<string, unknown>): SaveData {
       : [],
     ship: checkedShip(data.ship),
     boat: checkedBoat(data.boat),
+    fleet: checkedFleet(data.fleet, isObject(data.ship) ? String(data.ship.model) : null),
     hunts: checkedHunts(data.hunts),
     huntPinned: HUNTS.some((h) => h.id === data.huntPinned) ? (data.huntPinned as string) : null,
   };
