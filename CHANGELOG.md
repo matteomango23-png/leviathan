@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.1 — Elica dell'EH2 più visibile (8 ottobre 2026)
+
+- Expedition Hunter 2: nuova immagine con l'elica che gira, più visibile.
+
 ## v0.53.0 — Cockpit a vapore, eliche dell'EH2 (8 ottobre 2026)
 
 - **Nuovo cockpit "a vapore"** per Expedition Hunter 1 e 2, ricreato dai concept del proprietario:
