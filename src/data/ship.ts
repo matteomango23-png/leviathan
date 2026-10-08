@@ -16,9 +16,15 @@ export const SHIP = {
   iceBite: 180, // units/s² it slows down when the bow hits the ice too fast
   refreezeSeconds: 40,
   refreezeDistance: 420, // units from you and the ship before the ice closes again (never on screen)
-  /** Smoke from the stacks while the engine runs (owner, 8 ottobre), drawn behind the ship: puffs at a time, how
-   *  long each lives (s), how high it rises and how far the wind of the ship's speed pushes it back (units). Tuning. */
-  smoke: { puffs: 14, life: 3.2, rise: 46, drift: 120, idleDrift: 14, size: 7, alpha: 0.32 },
+  /** Smoke from the stacks while the engine runs, like a steam train (owner, 8 ottobre): puffs born at the stack
+   *  stay in the air where they were born, so at speed they stretch into a long trail behind; they rise, swell and
+   *  turn from near black to grey. More throttle, more smoke. Rates in puffs per second per stack, life in seconds,
+   *  lift in units/s (slowing by liftDrag per second), size and swell (× size over its life), wind drift (units/s).
+   *  Tuning. */
+  smoke: { idleRate: 1.5, fullRate: 30, life: 5.5, lift: 45, liftDrag: 0.6, size: 7, swell: 4.5, alpha: 0.8, wind: 5, max: 360 },
+  /** Coming into Porto Fango (and to the end of the sea): within range (units) it slows down by itself at decel
+   *  (units/s²) so that it stops at the berth (owner, 8 ottobre). Tuning. */
+  approach: { range: 1800, decel: 30 }, // from 1800 units the curve allows ~330 u/s: above the fastest ship
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
   /** Rocking on the waves (look only), scaled by the weather's waves. */

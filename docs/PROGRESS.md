@@ -1,5 +1,11 @@
 # Progressi
 
+## Fumo a vapore e attracco (8 ottobre 2026) → v0.50.2
+
+**Fatto:** fumo a nuvolette che restano nell'aria (view con stato, `SHIP.smoke`); attracco automatico a Porto Fango e alla fine del mare (`SHIP.approach`: la velocità segue la curva di frenata).
+
+**Da provare sull'iPhone:** a tutto gas guarda la scia di fumo; torna a Porto Fango a tutta velocità: la nave rallenta da sola e si ferma al molo.
+
 ## Fumo dalle ciminiere (8 ottobre 2026) → v0.50.1
 
 **Fatto:** fumo dalle ciminiere a motore acceso (dietro la nave, spinto indietro dal vento della corsa; posizioni in `stacks` di `data/fleet.ts`, numeri in `SHIP.smoke`); tolte le lucine dipinte a mano del sottomarino.

@@ -77,8 +77,9 @@ export class ShipView {
   private readonly fx: Phaser.GameObjects.Graphics;
   /** The smoke of the stacks, behind the ship (owner, 8 ottobre: a little overlap with the painting does not show). */
   private readonly smoke: Phaser.GameObjects.Graphics;
-  /** How much smoke now, 0…1: it builds up when the engine starts and dies away when it stops. */
-  private smokeLevel = 0;
+  /** The puffs in the air (look only), and how many each stack owes (a fraction of a puff carried over). */
+  private puffs: { x: number; y: number; vy: number; r: number; age: number; seed: number }[] = [];
+  private readonly smokeDue: number[] = [];
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
   private readonly tug: Phaser.GameObjects.Image | null;
@@ -141,33 +142,61 @@ export class ShipView {
     const pics = this.picsOf(s);
     if (pics) pics.place(s, s.x, top, 1, pitch, 0);
     else this.drawFallback(s, top);
-    this.drawSmoke(s, top, time, dt);
+    this.drawSmoke(s, top, dt);
     this.drawWake(s, k, planing, time, heave);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
   }
 
   /**
-   * Smoke from the stacks while the engine runs: puffs rise and swell, pushed back by the wind of the ship's speed
-   * (and a little drift when still); off, the last puffs fade away. Each puff's age comes from the time, so nothing
-   * is kept per puff.
+   * Smoke from the stacks while the engine runs, like a steam train: each puff is born at the stack and then stays
+   * in the air (only rising and drifting with the wind), so when the ship sails the puffs left behind make a long
+   * trail; they swell and fade from near black to grey. The throttle makes more of them; off, none are born and the
+   * last ones fade away.
    */
-  private drawSmoke(s: ShipState, top: number, time: number, dt: number): void {
-    const target = s.engineOn ? 0.55 + 0.45 * s.prop : 0;
-    this.smokeLevel += (target - this.smokeLevel) * Math.min(1, dt * 0.8);
-    if (this.smokeLevel < 0.02) return;
+  private drawSmoke(s: ShipState, top: number, dt: number): void {
     const S = SHIP.smoke;
-    const wind = S.idleDrift + S.drift * Math.min(1, s.speed / shipTopSpeed(s));
     const scale = shipLength(s) / 180; // bigger ships, bigger smoke
-    for (const st of shipArt(s).stacks ?? []) {
-      const base = this.at(s, top, st.u, st.v);
-      for (let i = 0; i < S.puffs; i++) {
-        const age = (time / S.life + i / S.puffs + st.u) % 1;
-        const r = (S.size + age * S.size * 2.2) * st.size * scale;
-        const x = base.x - s.face * wind * age * scale + Math.sin(i * 2.3 + time * 0.7) * 2 * age;
-        const y = base.y - S.rise * age * scale * (1 - 0.35 * Math.min(1, s.speed / shipTopSpeed(s)));
-        this.smoke.fillStyle(age < 0.15 ? 0x3a3835 : 0x5b5955, S.alpha * this.smokeLevel * (1 - age));
-        this.smoke.fillCircle(x, y, r);
+    if (s.engineOn) {
+      const rate = S.idleRate + (S.fullRate - S.idleRate) * s.prop;
+      for (const [i, st] of (shipArt(s).stacks ?? []).entries()) {
+        this.smokeDue[i] = (this.smokeDue[i] ?? 0) + rate * st.size * dt;
+        const base = this.at(s, top, st.u, st.v);
+        while ((this.smokeDue[i] ?? 0) >= 1 && this.puffs.length < S.max) {
+          this.smokeDue[i]! -= 1;
+          this.puffs.push({
+            x: base.x + (Math.random() - 0.5) * 2,
+            y: base.y,
+            vy: -S.lift * (0.7 + 0.6 * s.prop) * (0.8 + Math.random() * 0.4),
+            r: S.size * st.size * scale * (0.5 + 0.5 * s.prop) * (0.8 + Math.random() * 0.4), // more gas, bigger puffs
+            age: 0,
+            seed: Math.random() * 10,
+          });
+        }
+      }
+    }
+    for (const p of this.puffs) {
+      p.age += dt / S.life;
+      p.x += S.wind * dt;
+      p.y += p.vy * dt;
+      p.vy *= Math.exp(-S.liftDrag * dt);
+    }
+    this.puffs = this.puffs.filter((p) => p.age < 1);
+    // oldest first, so the young dark puffs at the stack are drawn on top
+    for (const p of this.puffs) {
+      const r = p.r * (1 + p.age * S.swell);
+      const shade = Math.round(0x26 + (0x7a - 0x26) * Math.min(1, p.age * 1.6));
+      const color = (shade << 16) | ((shade - 2) << 8) | (shade - 6);
+      const alpha = S.alpha * (1 - p.age) * Math.min(1, p.age * 12);
+      this.smoke.fillStyle(color, alpha);
+      // a little cloud of three overlapping lumps, not a single disc
+      for (let k = 0; k < 3; k++) {
+        const a = p.seed + k * 2.1;
+        this.smoke.fillCircle(
+          p.x + Math.cos(a) * r * 0.45,
+          p.y + Math.sin(a) * r * 0.3,
+          r * (0.75 + 0.1 * k),
+        );
       }
     }
   }
