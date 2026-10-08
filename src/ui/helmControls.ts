@@ -113,11 +113,14 @@ export class HelmControls {
     this.fuelBar = el('div', 'helm-fuel', this.root);
     el('span', 'helm-fuel-ico', this.fuelBar, '⛽');
     this.fuelFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.fuelBar));
-    this.hatchBtn = el('button', 'helm-btn still-only', this.buttons, 'Apri portellone');
-    this.hatch2Btn = el('button', 'helm-btn still-only', this.buttons, 'Apri portellone');
-    this.launchBtn = el('button', 'helm-btn still-only', this.buttons, 'Cala sottomarino');
-    this.launchBoatBtn = el('button', 'helm-btn still-only', this.buttons, 'Cala motoscafo');
-    this.diveBtn = el('button', 'helm-btn still-only', this.buttons, 'Tuffati');
+    // the buttons that work only with the ship still, in one group that fades as a whole (owner, 9 ottobre: on the
+    // iPhone fading them one by one over the game left them half drawn)
+    const still = el('div', 'helm-still', this.buttons);
+    this.hatchBtn = el('button', 'helm-btn', still, 'Apri portellone');
+    this.hatch2Btn = el('button', 'helm-btn', still, 'Apri portellone');
+    this.launchBtn = el('button', 'helm-btn', still, 'Cala sottomarino');
+    this.launchBoatBtn = el('button', 'helm-btn', still, 'Cala motoscafo');
+    this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.objective = el('div', 'helm-objective', this.root);
 

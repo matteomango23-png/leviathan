@@ -756,3 +756,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Vista:** nel motoscafo la telecamera è come quella del sub e del sottomarino (`BOAT.camera`), non quella del timone. Salendo sul motoscafo la vista cambia con la dissolvenza, come tra nave e sottomarino.
 - **Faro:** `lampAim` usa il verso del motoscafo; parte dalla prua e gira subito, senza la rotazione morbida della lampada del sub.
 - **Stiva:** `boatAfloat` tiene il mezzo mai sotto la superficie; nella stiva sale con l'apertura del suo portellone.
+
+## 9 ottobre 2026 — Dissolvenza dei pulsanti del timone (v0.53.6)
+
+- Sull'iPhone (Safari) sfumare l'opacità di singoli pulsanti sopra il canvas del gioco lasciava pezzi disegnati a metà. I pulsanti che funzionano solo a nave ferma stanno in un gruppo (`.helm-still`) con un suo livello (`will-change`, `translateZ(0)`), sfumato intero e poi nascosto con `visibility` a fine transizione.
