@@ -163,7 +163,7 @@ describe('the submarine', () => {
       models: ['batiscafo'],
       hull: 60,
     });
-    expect(old.boat).toBeUndefined();
+    expect(old.boat).toBeNull(); // the tappa-12 boat is gone; v19's `boat` is the speedboat (none)
   });
 });
 

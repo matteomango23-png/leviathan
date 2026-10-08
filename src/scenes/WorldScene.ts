@@ -2,7 +2,10 @@
 import Phaser from 'phaser';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
-import { engineHeard } from '../systems/ship/ship';
+import { engineHeard, hatchT } from '../systems/ship/ship';
+import { boatBay, subBay } from '../systems/ship/model';
+import { boatEngineLevel } from '../systems/boat';
+import { BoatView } from '../views/boatView';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
 import { diverModifiers } from '../systems/economy/gear';
@@ -59,6 +62,7 @@ export class WorldScene extends Phaser.Scene {
   private temple!: TempleView;
   private worldArt!: WorldArtView;
   private sub!: SubmarineView;
+  private boat!: BoatView;
   private ship!: ShipView;
   private helmView = false;
   private hunts!: HuntView;
@@ -115,6 +119,7 @@ export class WorldScene extends Phaser.Scene {
     this.worldArt = new WorldArtView(this, L.world, map);
     this.ship = new ShipView(this, L.world);
     this.hunts = new HuntView(this, L.world);
+    this.boat = new BoatView(this, L.world);
     this.sub = new SubmarineView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
@@ -247,7 +252,10 @@ export class WorldScene extends Phaser.Scene {
       else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
         const g = this.state;
         const near =
-          engineHeard({ ...g.ship, engineOn: true }, g.diver, 0, ENGINE_SOUND.ship.hearRange)?.near ?? 0;
+          e.vehicle === 'boat'
+            ? 1
+            : (engineHeard({ ...g.ship, engineOn: true }, g.diver, 0, ENGINE_SOUND.ship.hearRange)?.near ??
+              0);
         this.session.sound.engineStartStop(e.type === 'engineStarted', near);
       } else if (e.type === 'rescued' && g.ship.aboard) this.ship.towed(g.ship);
       else if (e.type === 'portArrived') {
@@ -289,7 +297,7 @@ export class WorldScene extends Phaser.Scene {
     const shipSound = engineHeard(g.ship, g.diver, lever.throttle, ENGINE_SOUND.ship.hearRange);
     this.session.sound.updateEngines(
       shipSound?.level ?? null,
-      g.sub.aboard ? Math.max(lever.throttle, Math.abs(lever.dive)) : null,
+      g.sub.aboard ? Math.max(lever.throttle, Math.abs(lever.dive)) : boatEngineLevel(g.boat, lever.throttle),
       shipSound?.near ?? 0,
     );
 
@@ -330,7 +338,13 @@ export class WorldScene extends Phaser.Scene {
     this.worldArt.update(view);
     this.ship.update(g.ship, g.time, dt, sky.waves);
     this.hunts.update(g, view, g.time);
-    this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && g.ship.hatch < 0.6);
+    this.boat.update(
+      g.boat,
+      g.time,
+      g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6,
+      sky.waves,
+    );
+    this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && hatchT(g.ship, subBay(g.ship)) < 0.6);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);

@@ -5,11 +5,13 @@ import { SHIP_MODELS, TRADE_IN_SHARE } from '../../data/fleet';
 import { SUBMARINE } from '../../data/submarine';
 import { subModel, type SubState } from '../submarine';
 import { shipModel, shipTank } from './model';
-import type { ShipState } from './ship';
+import { freshHatches, type ShipState } from './ship';
+import { boatFromYard, type BoatState } from '../boat';
 
 export interface ShipyardWorld {
   ship: ShipState;
   sub: SubState;
+  boat: BoatState;
   gear: { teeth: number };
   port: { id: string } | null;
 }
@@ -32,7 +34,7 @@ export function buyShip(g: ShipyardWorld, id: string): { ok: boolean; reason?: s
     return { ok: false, reason: 'Le navi si comprano al cantiere di Porto Fango.' };
   if (!g.ship.owned) return { ok: false, reason: 'Prima Aurelio ti deve dare la tua prima nave.' };
   if (g.ship.model === id) return { ok: false, reason: 'È già la tua nave.' };
-  if (g.sub.aboard) return { ok: false, reason: 'Esci dal sottomarino, prima.' };
+  if (g.sub.aboard || g.boat.aboard) return { ok: false, reason: 'Torna a bordo della nave, prima.' };
   const cost = shipCost(g, id);
   if (g.gear.teeth < cost) return { ok: false, reason: `Servono ${cost} denti (ne hai ${g.gear.teeth}).` };
   g.gear.teeth -= cost;
@@ -43,8 +45,7 @@ export function buyShip(g: ShipyardWorld, id: string): { ok: boolean; reason?: s
     model: id,
     x: PORTO_FANGO.shipDock,
     speed: 0,
-    hatch: 0,
-    hatchOpen: false,
+    hatches: freshHatches({ model: id }),
     dockFrom: null,
     engineOn: false,
     broken: [],
@@ -67,6 +68,12 @@ export function buyShip(g: ShipyardWorld, id: string): { ok: boolean; reason?: s
     });
     s.bay = 'docked';
     s.bayT = 0;
-  } else s.bay = 'none';
+  } else {
+    s.bay = 'none';
+    g.sub.owned = false; // the old submarine goes with the old ship
+  }
+  // its speedboat or jet ski, new, in its hold (or none)
+  const boat = m.bays.find((b) => b.kind === 'boat' || b.kind === 'jetski');
+  boatFromYard(g.boat, boat?.model ?? null);
   return { ok: true };
 }

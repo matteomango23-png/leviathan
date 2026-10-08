@@ -159,7 +159,7 @@ describe('after the first try (owner, 8 ottobre)', () => {
       ship: newShip({
         x: 20000,
         face: 1,
-        hatchOpen: false,
+        hatches: [],
         bay: 'docked',
         aboard: true,
         fuel: 100,
@@ -193,7 +193,7 @@ describe('coming into Porto Fango (owner: at full speed you crashed into it ever
       ship: newShip({
         x: PORTO_FANGO.shipDock + 1600,
         face: -1,
-        hatchOpen: false,
+        hatches: [],
         bay: 'docked',
         aboard: true,
         fuel: 300,

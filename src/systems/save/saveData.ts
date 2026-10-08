@@ -6,6 +6,8 @@ import { PROGRESSION } from '../../data/rules';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
+import type { SavedBoat } from '../boat';
+import { BOAT_MODELS } from '../../data/boats';
 import { FIRST_SHIP, SHIP_MODELS } from '../../data/fleet';
 import { HUNTS } from '../../data/hunts';
 import { SPECIES, UNIQUE_VARIANTS } from '../../data/species';
@@ -14,7 +16,7 @@ import { validateStory, type SavedStory } from './storySave';
 
 export type { SavedGear } from './gearSave';
 
-export const SAVE_VERSION = 18;
+export const SAVE_VERSION = 19;
 export const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
@@ -57,7 +59,8 @@ export interface SaveData {
   homePort: string; // the last harbour you came into: you wake up there (v7)
   sub: SavedSub | null; // your submarine: where it waits, its model, the ones you own, its hull (v11); null = not yours yet
   legendsGone: string[]; // legends defeated: gone forever (v10)
-  ship: SavedShip | null; // your expedition ship: where it is, its hatch, the submarine in its hold (v14)
+  ship: SavedShip | null; // your expedition ship: where it is, its hatches, the submarine in its hold (v14, v19)
+  boat: SavedBoat | null; // its speedboat or jet ski (v19); null = the ship has none
   hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
   huntPinned?: string | null; // the hunt you follow (added 5 ottobre; missing = none)
 }
@@ -79,6 +82,7 @@ export function newSave(start: { x: number; y: number }): SaveData {
     sub: null,
     legendsGone: [],
     ship: null,
+    boat: null,
     hunts: {},
     huntPinned: null,
   };
@@ -224,6 +228,15 @@ export const MIGRATIONS: Migration[] = [
   // v17 → v18 (8 ottobre 2026): the fleet. Your ship is the Aurelia; the parts bought for it and the submarines
   // bought on their own are gone, their teeth given back; the submarine is the Aurelia's bathyscaphe again.
   { from: 17, migrate: migrateTo18 },
+  // v18 → v19 (8 ottobre 2026, block 4b): a hatch per bay (`hatches`), and the speedboat (none yet in v18 ships)
+  {
+    from: 18,
+    migrate: (o) => {
+      const ship = isObject(o.ship) ? { ...o.ship, hatches: [o.ship.hatchOpen === true] } : o.ship;
+      if (isObject(ship)) delete ship.hatchOpen;
+      return { ...o, ship, boat: null };
+    },
+  },
 ];
 
 function migrateTo18(o: Record<string, unknown>): Record<string, unknown> {
@@ -350,6 +363,7 @@ export function validate(data: Record<string, unknown>): SaveData {
       ? [...new Set(data.legendsGone.filter((x): x is string => typeof x === 'string'))]
       : [],
     ship: checkedShip(data.ship),
+    boat: checkedBoat(data.boat),
     hunts: checkedHunts(data.hunts),
     huntPinned: HUNTS.some((h) => h.id === data.huntPinned) ? (data.huntPinned as string) : null,
   };
@@ -447,6 +461,21 @@ function checkedSub(raw: unknown): SavedSub | null {
   return { x: raw.x, y: raw.y, model, models, hull, fuel };
 }
 
+/** The saved speedboat, checked: a broken one is dropped (the next shipyard visit gives none: newBoat). */
+function checkedBoat(raw: unknown): SavedBoat | null {
+  if (!isObject(raw) || !BOAT_MODELS.some((m) => m.id === raw.model)) return null;
+  const num = (v: unknown): number => (isFiniteNumber(v) ? Math.max(0, v) : 0);
+  return {
+    model: String(raw.model),
+    x: num(raw.x),
+    face: raw.face === -1 ? -1 : 1,
+    fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : Infinity, // newBoat caps it at its tank
+    drums: num(raw.drums),
+    out: raw.out === true,
+    aboard: raw.aboard === true,
+  };
+}
+
 /** The saved ship, checked: a broken one is dropped (the story gives it again at Porto Fango). */
 function checkedShip(raw: unknown): SavedShip | null {
   if (!isObject(raw) || !isFiniteNumber(raw.x)) return null;
@@ -454,7 +483,7 @@ function checkedShip(raw: unknown): SavedShip | null {
   return {
     x: raw.x,
     face: raw.face === -1 ? -1 : 1,
-    hatchOpen: raw.hatchOpen === true,
+    hatches: Array.isArray(raw.hatches) ? raw.hatches.map((h) => h === true) : [],
     bay,
     aboard: raw.aboard === true,
     fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : Infinity, // newShip caps it at its tank

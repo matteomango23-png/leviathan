@@ -12,11 +12,13 @@ import { shipAlongside } from './economy/places';
 import { SHIP_WEST_X } from './ship/surface';
 import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
+import { boatModel, type BoatState } from './boat';
 import type { TeamBeast } from './beasts/team';
 
 export interface FuelWorld {
   ship: ShipState;
   sub: SubState;
+  boat: BoatState;
   port: PortDef | null;
   gear: { teeth: number };
   diver: {
@@ -52,13 +54,21 @@ export function transferFuel(g: FuelWorld, toSub: boolean): number {
   return l;
 }
 
+/** What the harbour's pump fills: a tank, or the speedboat's drums (for the ship, block 4b). */
+export type FuelTarget = 'ship' | 'sub' | 'boat' | 'drums';
+
 /** Can this vehicle fill up at the harbour you are in? The ship alongside its pier; the submarine in its hold
- *  there, or moored by the pier. */
-export function canRefuel(g: FuelWorld, which: 'ship' | 'sub'): boolean {
+ *  there, or moored by the pier; the speedboat at its pier, or in the hold of the ship there. */
+export function canRefuel(g: FuelWorld, which: FuelTarget): boolean {
   const p = g.port;
   if (!p) return false;
   const shipHere = g.ship.owned && shipAlongside(g.ship.x, p);
   if (which === 'ship') return shipHere;
+  if (which === 'boat' || which === 'drums') {
+    const b = g.boat;
+    if (!b.owned) return false;
+    return (b.bay === 'docked' && shipHere) || (b.bay === 'out' && shipAlongside(b.x, p));
+  }
   if (!g.sub.owned) return false;
   return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;
 }
@@ -71,28 +81,43 @@ export interface FuelBuy {
 }
 
 /** Fills the tank as far as your teeth go. */
-export function buyFuel(g: FuelWorld, which: 'ship' | 'sub'): FuelBuy {
-  if (!canRefuel(g, which))
-    return {
-      ok: false,
-      litres: 0,
-      cost: 0,
-      reason: which === 'ship' ? 'La nave non è attraccata qui.' : 'Il sottomarino non è qui.',
-    };
-  const tank = which === 'ship' ? shipTank(g.ship) : subModel(g.sub.model).tank;
-  const now = which === 'ship' ? g.ship.fuel : g.sub.fuel;
+/** Litres now and the most it holds, for each target. */
+export function fuelLevel(g: FuelWorld, which: FuelTarget): [number, number] {
+  if (which === 'ship') return [g.ship.fuel, shipTank(g.ship)];
+  if (which === 'sub') return [g.sub.fuel, subModel(g.sub.model).tank];
+  const m = boatModel(g.boat.model);
+  return which === 'boat' ? [g.boat.fuel, m.tank] : [g.boat.drums, m.drums];
+}
+
+const NOT_HERE: Record<FuelTarget, string> = {
+  ship: 'La nave non è attraccata qui.',
+  sub: 'Il sottomarino non è qui.',
+  boat: 'Il motoscafo non è qui.',
+  drums: 'Il motoscafo non è qui.',
+};
+
+export function buyFuel(g: FuelWorld, which: FuelTarget): FuelBuy {
+  if (!canRefuel(g, which)) return { ok: false, litres: 0, cost: 0, reason: NOT_HERE[which] };
+  const [now, tank] = fuelLevel(g, which);
   const litres = Math.min(tank - now, Math.floor(g.gear.teeth / FUEL.pricePerLitre));
   if (litres <= 0)
     return {
       ok: false,
       litres: 0,
       cost: 0,
-      reason: now >= tank ? 'Il serbatoio è pieno.' : 'Non hai denti.',
+      reason:
+        now >= tank
+          ? which === 'drums'
+            ? 'I fusti sono pieni.'
+            : 'Il serbatoio è pieno.'
+          : 'Non hai denti.',
     };
   const cost = Math.ceil(litres * FUEL.pricePerLitre);
   g.gear.teeth -= cost;
   if (which === 'ship') g.ship.fuel += litres;
-  else g.sub.fuel += litres;
+  else if (which === 'sub') g.sub.fuel += litres;
+  else if (which === 'boat') g.boat.fuel += litres;
+  else g.boat.drums += litres;
   return { ok: true, litres, cost };
 }
 

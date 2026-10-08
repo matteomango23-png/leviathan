@@ -5,7 +5,11 @@ import { autonomyKm } from '../systems/fuelBurn';
 import type { GameState } from '../systems/game';
 import { knotsOf } from '../systems/helm';
 import { launchShown } from '../systems/ship/hatch';
-import { hatchCanMove } from '../systems/ship/ship';
+import { hatchCanMove, hatchOpening } from '../systems/ship/ship';
+import { boatBay } from '../systems/ship/model';
+import { boatLaunchShown, boatName, boatOnRamp } from '../systems/ship/boatBay';
+import { boatModel } from '../systems/boat';
+import { SHIP_MODELS } from '../data/fleet';
 import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
@@ -35,6 +39,22 @@ function objectiveLine(g: GameState): string | undefined {
   return `🎯 ${h.name}: ${huntNextStep(h, g.hunts[h.id])}`;
 }
 
+/** The hatch buttons: "Apri portellone", or with two bays which one, short ("Apri motoscafo"). */
+function hatchButtons(g: GameState): { text: string; open: boolean }[] {
+  const s = g.ship;
+  const bays = (SHIP_MODELS.find((m) => m.id === s.model) ?? SHIP_MODELS[0]!).bays;
+  return s.hatches.map((_, i) => {
+    const open = hatchOpening(s, i);
+    const what =
+      bays.length < 2
+        ? 'portellone'
+        : i === boatBay(s)
+          ? boatName(s).replace(/^(Il|La) /, '')
+          : 'sottomarino';
+    return { text: `${open ? 'Chiudi' : 'Apri'} ${what}`, open };
+  });
+}
+
 /** @param throttle where the throttle lever is now (the autonomy is at that pace) */
 export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
   const s = g.ship;
@@ -48,10 +68,25 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
       objective: objectiveLine(g),
-      hatchCanMove: hatchCanMove(s),
-      hatchOpen: s.hatchOpen,
+      hatchCanMove: hatchCanMove(s) && !boatOnRamp(g),
+      hatches: hatchButtons(g),
       canLaunch: launchShown(g),
+      canLaunchBoat: boatLaunchShown(g),
+      boatName: boatName(s)
+        .replace(/^(Il|La) /, '')
+        .toLowerCase(),
       engineOn: s.engineOn,
+    };
+  const b = g.boat;
+  if (b.aboard && !boatOnRamp(g))
+    return {
+      mode: 'boat',
+      face: b.face,
+      knots: knotsOf(b.speed),
+      fuel: b.fuel,
+      rangeKm: autonomyKm(b.fuel, boatModel(b.model).perKm, throttle),
+      drums: [b.drums, boatModel(b.model).drums],
+      engineOn: b.engineOn,
     };
   if (g.sub.aboard && !onRamp(g))
     return {

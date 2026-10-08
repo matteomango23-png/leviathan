@@ -61,6 +61,7 @@ import { rescue } from './fuel';
 import { addHuntSlots, hearRumours, placeDens, stepHunts, type Den, type HuntsState } from './hunts';
 import { createWeather, type WeatherState } from './weather';
 import { newShip, type ShipState } from './ship/ship';
+import { newBoat, type BoatState } from './boat';
 import { helmPoint } from './ship/geometry';
 import { canDock } from './ship/hatch';
 import {
@@ -95,6 +96,8 @@ export interface GameState extends StoryWorld {
   sub: SubState;
   /** Your expedition ship (Aurelio's gift at Porto Fango; saved). */
   ship: ShipState;
+  /** Its speedboat or jet ski (block 4b; saved). */
+  boat: BoatState;
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
@@ -153,6 +156,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
     sub: newSub(s.sub),
     ship: newShip(s.ship),
+    boat: newBoat(s.boat),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
     weather: createWeather(),
@@ -186,6 +190,7 @@ export function currentAction(g: GameState): Action {
   if (g.ship.aboard) return shipPort(g) ? 'porto' : null; // the rest is on the helm's own buttons
   if (onRamp(g)) return null;
   if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
+  if (g.boat.aboard) return vehicleAction(g) ?? (shipPort(g) ? 'porto' : null);
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
   const beast = contextAction(g);
@@ -338,7 +343,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     }
   }
 
-  g.port = g.ship.aboard ? shipPort(g) : portAt(d, g.map);
+  g.port = g.ship.aboard || g.boat.aboard ? shipPort(g) : portAt(d, g.map);
   discoverOutposts(g, events);
   g.atPort = g.port !== null;
   stepProgress(g, events);

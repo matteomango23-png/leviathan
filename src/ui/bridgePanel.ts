@@ -2,6 +2,8 @@
 // of the next 2 km each side, the dials (fuel of the ship and of the submarine, speed), the weather, moving fuel
 // between the two and the rescue flare.
 import { HUNTS } from '../data/hunts';
+import { boatModel } from '../systems/boat';
+import { boatName } from '../systems/ship/boatBay';
 import { FUEL, RESCUE, SHIP } from '../data/ship';
 import type { WeatherId } from '../data/weather';
 import { OPEN_SEA_X } from '../data/worldLayout';
@@ -139,6 +141,27 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
       ctx.say(`${Math.round(transferFuel(g, false))} L passati alla nave.`);
       ctx.redraw();
     });
+  }
+
+  if (g.boat.owned) {
+    // the speedboat (block 4b): its tank fills from the ship and its drums pour into it when it docks
+    const b = g.boat;
+    const m = boatModel(b.model);
+    const bp = panel(wrap, boatName(ship));
+    el(
+      'div',
+      'bridge-hint',
+      bp,
+      `Serbatoio ${Math.round(b.fuel)} / ${m.tank} L · fusti ${Math.round(b.drums)} / ${m.drums} L`,
+    );
+    el(
+      'div',
+      'bridge-hint',
+      bp,
+      b.bay === 'docked'
+        ? 'Nella stiva. Riempi i fusti a un avamposto: quando rientra li travasa nella nave.'
+        : 'È fuori: rientra dal suo portellone aperto con Aggancia.',
+    );
   }
 
   const cost = Math.min(

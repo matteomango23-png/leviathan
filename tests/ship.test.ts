@@ -110,14 +110,14 @@ describe('la nave da spedizione', () => {
     input.helm.throttle = 1;
     run(g, 2, input);
     const ev = cmd(g, 'hatch', input);
-    expect(g.ship.hatchOpen).toBe(false);
+    expect(g.ship.hatches[0]!.open).toBe(false);
     expect(ev.some((e) => e.type === 'shipHint')).toBe(true);
     input.helm.throttle = 0;
     run(g, 15, input);
     expect(g.ship.speed).toBe(0);
     cmd(g, 'hatch', input);
     run(g, SHIP.hatchSeconds + 0.1, input);
-    expect(g.ship.hatch).toBe(1);
+    expect(g.ship.hatches[0]!.t).toBe(1);
     const x = g.ship.x;
     input.helm.throttle = 1;
     run(g, 3, input);
@@ -253,7 +253,7 @@ describe('la nave non si blocca mai', () => {
   function sail(x: number, face: 1 | -1, seconds: number, goal = Infinity, dt = 1 / 15) {
     const g: ShipWorld = {
       ship: {
-        ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true, fuel: 1e9, model: 'aurelia' }),
+        ...newShip({ x, face, hatches: [], bay: 'docked', aboard: true, fuel: 1e9, model: 'aurelia' }),
       },
       map,
       sub: { owned: true, aboard: false },
@@ -304,7 +304,7 @@ describe('la nave non si blocca mai', () => {
       ship: newShip({
         x: at - 700,
         face: 1,
-        hatchOpen: false,
+        hatches: [],
         bay: 'docked',
         aboard: true,
         fuel: 1e9,

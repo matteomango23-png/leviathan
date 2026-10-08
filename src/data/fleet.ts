@@ -1,7 +1,7 @@
 // Leviatano — the fleet (owner, 8 ottobre 2026, block 4 of docs/BACKLOG.md): eight ships, each bought at the
 // shipyard of Porto Fango with its own vehicles inside. Their numbers come from the table the owner corrected
 // (bigger ones slow to speed up and to stop, the Poseidon quick; the advanced sonars hear at higher speeds).
-// Only the `ready` ones sail yet: the others show in the shipyard as "In cantiere" (parts 4b–4d).
+// Only the `ready` ones sail yet: the others show in the shipyard as "In cantiere" (parts 4c–4d).
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
 /** Where things are on a ship's picture (bow on the right), as shares of its width and height. */
@@ -9,9 +9,6 @@ export interface ShipPicture {
   aspect: number; // height / width
   waterline: number; // the sea surface crosses the hull here
   keel: number; // bottom of the hull
-  hatchX: number; // middle of the hatch, from the stern (left edge)
-  hatchY: number; // middle of the hatch opening
-  rampEnd: number; // lowest point of the open ramp
   helmX: number; // the wheelhouse: where you stand at the helm
   deckY: number;
   propX: number; // the propeller (bubbles when it turns)
@@ -27,14 +24,27 @@ export interface ShipStack {
   size: number;
 }
 
-/** What a hatch holds (a submarine model id of data/submarine.ts, or a boat of the next parts). */
+/** What a hatch holds: a submarine (data/submarine.ts), a speedboat or a jet ski (data/boats.ts), or part 4d's. */
 export type BayKind = 'sub' | 'boat' | 'jetski' | 'drone' | 'sphere';
+
+/** Where a hatch is on the ship's picture (shares): the middle of its opening, and the foot of its open ramp
+ *  (`rampX`: when the ramp reaches out sideways, like the Imperium's stern). */
+export interface BayHatch {
+  x: number;
+  y: number;
+  rampEnd: number;
+  rampX?: number;
+}
+
 export interface BayDef {
   kind: BayKind;
-  /** Its model (SUB_MODELS id for a submarine) and its card in public/art. */
+  /** Its model (SUB_MODELS / BOAT_MODELS id) and its card in public/art. */
   model: string;
   name: string;
   card: string;
+  hatch: BayHatch;
+  /** The picture with only this hatch open (ships with two hatches; `art.open` has them all open). */
+  open?: string;
 }
 
 /** The tabs of its cockpit (owner, 8 ottobre: each ship its own; new instruments come with parts 4b–4d). */
@@ -66,12 +76,14 @@ export interface ShipModelDef {
   note: string;
   cockpit: CockpitTab[];
   card: string; // public/art/<card>.webp
-  /** Its painting in public/world (hatch closed and open, and the propeller turning if painted: same frame) and
-   *  where things are on it. */
+  /** Its painting in public/world (hatches closed and all open, and the propeller turning if painted: same frame)
+   *  and where things are on it. */
   art?: { closed: string; open: string; picture: ShipPicture; moving?: string; stacks?: ShipStack[] };
 }
 
 const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
+/** A hatch not placed on a picture yet (ships of part 4d). */
+const HULL_MIDDLE: BayHatch = { x: 0.5, y: 0.6, rampEnd: 0.9 };
 
 export const SHIP_MODELS: ShipModelDef[] = [
   {
@@ -89,7 +101,15 @@ export const SHIP_MODELS: ShipModelDef[] = [
     perKm: 10,
     sonar: { range: 1, maxKnots: 10, name: 'debole' },
     pool: 0,
-    bays: [{ kind: 'sub', model: 'batiscafo', name: 'Batiscafo di Aurelio', card: 'sottomarino_batiscafo' }],
+    bays: [
+      {
+        kind: 'sub',
+        model: 'batiscafo',
+        name: 'Batiscafo di Aurelio',
+        card: 'sottomarino_batiscafo',
+        hatch: { x: 0.45, y: 0.62, rampEnd: 0.93 },
+      },
+    ],
     note: 'La vecchia nave di Aurelio: lenta, pesante, ma tiene il mare',
     cockpit: ALL_TABS,
     card: 'nave_aurelia',
@@ -104,9 +124,6 @@ export const SHIP_MODELS: ShipModelDef[] = [
         aspect: 752 / 1379,
         waterline: 0.57,
         keel: 0.79,
-        hatchX: 0.45,
-        hatchY: 0.62,
-        rampEnd: 0.93,
         helmX: 0.35,
         deckY: 0.38,
         propX: 0.15,
@@ -130,7 +147,15 @@ export const SHIP_MODELS: ShipModelDef[] = [
     perKm: 14,
     sonar: { range: 1.2, maxKnots: 10, name: 'normale' },
     pool: 2,
-    bays: [{ kind: 'sub', model: 'squalo_acciaio', name: 'Squalo d’acciaio', card: 'sottomarino_eh1' }],
+    bays: [
+      {
+        kind: 'sub',
+        model: 'squalo_acciaio',
+        name: 'Squalo d’acciaio',
+        card: 'sottomarino_eh1',
+        hatch: { x: 0.48, y: 0.6, rampEnd: 0.92 },
+      },
+    ],
     note: 'Nave da caccia pesante, un portellone. Il suo sottomarino squalo è il più veloce del mare',
     cockpit: ALL_TABS,
     card: 'nave_eh1',
@@ -143,9 +168,6 @@ export const SHIP_MODELS: ShipModelDef[] = [
         aspect: 768 / 1376,
         waterline: 0.6,
         keel: 0.78,
-        hatchX: 0.48,
-        hatchY: 0.6,
-        rampEnd: 0.92,
         helmX: 0.35,
         deckY: 0.39,
         propX: 0.12,
@@ -179,7 +201,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     id: 'imperium',
     tier: 3,
     name: 'Imperium Explorer VI',
-    ready: false,
+    ready: true,
     price: 15000,
     lengthM: 60,
     knots: 28,
@@ -191,13 +213,45 @@ export const SHIP_MODELS: ShipModelDef[] = [
     sonar: { range: 1.6, maxKnots: 16, name: 'ottimo' },
     pool: 3,
     bays: [
-      { kind: 'sub', model: 'imperium_sub', name: 'Sottomarino imperiale', card: 'sottomarino_imperium' },
-      { kind: 'jetski', model: 'moto_imperium', name: 'Moto d’acqua', card: 'moto_imperium' },
+      {
+        kind: 'sub',
+        model: 'imperium_sub',
+        name: 'Sottomarino imperiale',
+        card: 'sottomarino_imperium',
+        hatch: { x: 0.46, y: 0.74, rampEnd: 0.9 },
+        open: 'nave_imperium_aperta_1',
+      },
+      {
+        kind: 'jetski',
+        model: 'moto_imperium',
+        name: 'Moto d’acqua',
+        card: 'moto_imperium',
+        hatch: { x: 0.15, y: 0.68, rampEnd: 0.83, rampX: 0.07 }, // the stern ramp reaches out behind
+        open: 'nave_imperium_aperta_2',
+      },
     ],
     special: 'Il compromesso perfetto: veloce, autonoma, ottima tecnologia',
     note: 'Ispirata all’impero romano: grande e alta, due vani',
     cockpit: ALL_TABS,
     card: 'nave_imperium',
+    art: {
+      closed: 'nave_imperium',
+      open: 'nave_imperium_aperta',
+      stacks: [
+        { u: 0.335, v: 0.27, size: 1 },
+        { u: 0.43, v: 0.26, size: 0.8 },
+      ],
+      picture: {
+        aspect: 781 / 1400,
+        waterline: 0.7,
+        keel: 0.83,
+        helmX: 0.55,
+        deckY: 0.4,
+        propX: 0.25,
+        propY: 0.8,
+        bowU: 0.86,
+      },
+    },
   },
   {
     id: 'stormtrooper',
@@ -224,7 +278,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     id: 'poseidon',
     tier: 4,
     name: 'Poseidon Yacht',
-    ready: false,
+    ready: true,
     price: 22000,
     lengthM: 50,
     knots: 34,
@@ -235,17 +289,44 @@ export const SHIP_MODELS: ShipModelDef[] = [
     perKm: 20,
     sonar: { range: 1.3, maxKnots: 12, name: 'medio' },
     pool: 2,
-    bays: [{ kind: 'boat', model: 'motoscafo_poseidon', name: 'Motoscafo', card: 'motoscafo_poseidon' }],
+    bays: [
+      {
+        kind: 'boat',
+        model: 'motoscafo_poseidon',
+        name: 'Motoscafo',
+        card: 'motoscafo_poseidon',
+        hatch: { x: 0.44, y: 0.7, rampEnd: 0.83 },
+      },
+    ],
     special: 'La nave più veloce, con il motoscafo più veloce del mare',
     note: 'Yacht a tre reattori',
     cockpit: ALL_TABS,
     card: 'nave_poseidon',
+    art: {
+      closed: 'nave_poseidon',
+      open: 'nave_poseidon_aperta',
+      moving: 'nave_poseidon_moto', // the three reactors burning (owner, 8 ottobre)
+      stacks: [
+        { u: 0.22, v: 0.13, size: 1.1 },
+        { u: 0.165, v: 0.23, size: 0.8 },
+      ],
+      picture: {
+        aspect: 781 / 1400,
+        waterline: 0.68,
+        keel: 0.84,
+        helmX: 0.42,
+        deckY: 0.33,
+        propX: 0.13,
+        propY: 0.78,
+        bowU: 0.86,
+      },
+    },
   },
   {
     id: 'eh2',
     tier: 4,
     name: 'Expedition Hunter 2',
-    ready: false,
+    ready: true,
     price: 30000,
     lengthM: 90,
     knots: 24,
@@ -257,13 +338,45 @@ export const SHIP_MODELS: ShipModelDef[] = [
     sonar: { range: 1.6, maxKnots: 14, name: 'buono' },
     pool: 4,
     bays: [
-      { kind: 'sub', model: 'eh2_sub', name: 'Sottomarino con sonar', card: 'sottomarino_eh2' },
-      { kind: 'boat', model: 'motoscafo_eh2', name: 'Motoscafo da gara', card: 'motoscafo_eh2' },
+      {
+        kind: 'sub',
+        model: 'eh2_sub',
+        name: 'Sottomarino con sonar',
+        card: 'sottomarino_eh2',
+        hatch: { x: 0.365, y: 0.62, rampEnd: 0.76 },
+        open: 'nave_eh2_aperta_1',
+      },
+      {
+        kind: 'boat',
+        model: 'motoscafo_eh2',
+        name: 'Motoscafo da gara',
+        card: 'motoscafo_eh2',
+        hatch: { x: 0.57, y: 0.62, rampEnd: 0.76 },
+        open: 'nave_eh2_aperta_2',
+      },
     ],
     special: 'Rompighiaccio formidabile',
     note: 'Nave da spedizione enorme e tecnologica, due portelloni',
     cockpit: ALL_TABS,
     card: 'nave_eh2',
+    art: {
+      closed: 'nave_eh2',
+      open: 'nave_eh2_aperta',
+      stacks: [
+        { u: 0.175, v: 0.19, size: 1.3 },
+        { u: 0.135, v: 0.24, size: 1 },
+      ],
+      picture: {
+        aspect: 781 / 1400,
+        waterline: 0.58,
+        keel: 0.7,
+        helmX: 0.33,
+        deckY: 0.38,
+        propX: 0.06,
+        propY: 0.6,
+        bowU: 0.94,
+      },
+    },
   },
   {
     id: 'nightmare',
@@ -281,8 +394,9 @@ export const SHIP_MODELS: ShipModelDef[] = [
     sonar: { range: 2, maxKnots: 18, name: 'il migliore' },
     pool: 5,
     bays: [
-      { kind: 'drone', model: 'drone_nightmare', name: 'Drone sottomarino', card: 'drone_nightmare' },
-      { kind: 'sphere', model: 'sfera_nightmare', name: 'Sfera blocca-bestie', card: 'sfera_nightmare' },
+      // hatches placed on its picture in part 4d
+      { kind: 'drone', model: 'drone_nightmare', name: 'Drone sottomarino', card: 'drone_nightmare', hatch: HULL_MIDDLE },
+      { kind: 'sphere', model: 'sfera_nightmare', name: 'Sfera blocca-bestie', card: 'sfera_nightmare', hatch: HULL_MIDDLE },
     ],
     special: 'U-Boat gigante, si immerge fino a 500 m',
     note: 'La regina delle spedizioni: non la più veloce, ma la più forte',

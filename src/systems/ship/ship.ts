@@ -1,7 +1,7 @@
 // The expedition ship (data/ship.ts): Aurelio's gift at Porto Fango, your home at sea. At the helm the
 // levers drive it (helm.ts): heavy, it speeds up and slows down slowly; the direction lever the other way turns it
 // round once slow. It breaks the ice (slower), stops in shallow water and never gets stuck on what sticks out of
-// the water: it sails round it, on the far lane, behind it. With the hatch open it does not move. Pure logic;
+// the water: it sails round it, on the far lane, behind it. With a hatch open it does not move. Pure logic;
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP } from '../../data/ship';
 import { FIRST_SHIP } from '../../data/fleet';
@@ -35,9 +35,9 @@ export interface ShipState {
   face: 1 | -1;
   /** Speed along where it points (≥ 0). */
   speed: number;
-  /** 0 = hatch closed … 1 = open; `hatchOpen` is where it is going. */
-  hatch: number;
-  hatchOpen: boolean;
+  /** Its hatches, one per bay of its model (data/fleet.ts): `t` 0 = closed … 1 = open; `open` is where it goes. */
+  hatches: HatchState[];
+  /** Where the submarine is (its own hatch): see `Bay`. */
   bay: Bay;
   /** Along the ramp: 0 = in the hold … 1 = at mid-water under the hatch. */
   bayT: number;
@@ -67,10 +67,16 @@ export interface ShipState {
   broken: BrokenIce[];
 }
 
+export interface HatchState {
+  t: number;
+  open: boolean;
+}
+
 export interface SavedShip {
   x: number;
   face: 1 | -1;
-  hatchOpen: boolean;
+  /** Which hatches are open (v19; before, one `hatchOpen`). */
+  hatches: boolean[];
   bay: 'none' | 'docked' | 'out';
   aboard: boolean;
   fuel: number;
@@ -80,6 +86,17 @@ export interface SavedShip {
 
 export { shipTank, shipTopSpeed } from './model';
 
+/** The hatches of a model, closed (or as saved). */
+export const freshHatches = (s: { model: string }, open: readonly boolean[] = []): HatchState[] =>
+  shipModel(s).bays.map((_, i) => ({ t: open[i] ? 1 : 0, open: !!open[i] }));
+
+/** How open a hatch is (0…1), and whether it is opening. A bay the model lacks: shut. */
+export const hatchT = (s: ShipState, bay: number): number => s.hatches[bay]?.t ?? 0;
+export const hatchOpening = (s: ShipState, bay: number): boolean => s.hatches[bay]?.open ?? false;
+
+/** All its hatches shut: only then the engine drives it. */
+export const hatchesShut = (s: ShipState): boolean => s.hatches.every((h) => !h.open && h.t === 0);
+
 export function newShip(saved: SavedShip | null): ShipState {
   const bay = saved?.bay ?? 'none';
   return {
@@ -88,8 +105,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     x: saved?.x ?? PORTO_FANGO.shipDock,
     face: saved?.face ?? 1,
     speed: 0,
-    hatch: saved?.hatchOpen ? 1 : 0,
-    hatchOpen: saved?.hatchOpen ?? false,
+    hatches: freshHatches({ model: saved?.model ?? FIRST_SHIP }, saved?.hatches),
     bay,
     bayT: bay === 'out' ? 1 : 0,
     dockFrom: null,
@@ -115,7 +131,7 @@ export function saveShip(s: ShipState): SavedShip | null {
   return {
     x: Math.round(s.x),
     face: s.face,
-    hatchOpen: s.hatchOpen,
+    hatches: s.hatches.map((h) => h.open),
     bay,
     aboard: s.aboard,
     fuel,
@@ -163,7 +179,8 @@ export function sailShip(
   const s = g.ship;
   if (!s.owned) return [];
   s.shallowWarn = Math.max(0, s.shallowWarn - dt);
-  s.hatch = Math.max(0, Math.min(1, s.hatch + ((s.hatchOpen ? 1 : -1) * dt) / SHIP.hatchSeconds));
+  for (const h of s.hatches)
+    h.t = Math.max(0, Math.min(1, h.t + ((h.open ? 1 : -1) * dt) / SHIP.hatchSeconds));
   // the sonar pings while it is on and the ship slow enough to hear
   if (sonarActive(s) && s.aboard) {
     s.sonarT -= dt;
@@ -188,13 +205,14 @@ export function sailShip(
     s.engineOn = false;
     events.push({ type: 'engineStopped' });
   }
-  const push = helm && s.engineOn && !s.hatchOpen && s.hatch === 0 ? helm.throttle : 0;
+  const shut = hatchesShut(s);
+  const push = helm && s.engineOn && shut ? helm.throttle : 0;
   s.prop += (push - s.prop) * Math.min(1, dt * 2); // the propeller speeds up and slows down gently
-  if (helm && s.engineOn && !s.hatchOpen && s.hatch === 0) {
+  if (helm && s.engineOn && shut) {
     const h = stepHeading(s.face, s.speed, helm, top, shipRates(s), dt);
     s.face = h.face;
     s.speed = h.speed;
-  } else s.speed = Math.max(0, s.speed - (s.hatchOpen ? shipRates(s).brake : shipRates(s).coast) * dt);
+  } else s.speed = Math.max(0, s.speed - (shut ? shipRates(s).coast : shipRates(s).brake) * dt);
   if (s.speed > top) s.speed = Math.max(top, s.speed - SHIP.iceBite * dt); // into the ice: it bites
 
   // its waters (owner, 5 ottobre): from the trading harbour of Porto Fango east to the end of the known sea, with
@@ -223,7 +241,7 @@ export function sailShip(
       s.shallowWarn = 6;
     }
   }
-  const engine = helm && s.engineOn && !s.hatchOpen ? helm.throttle : 0;
+  const engine = helm && s.engineOn && shut ? helm.throttle : 0;
   const idle = s.engineOn ? (SHIP.fuel.idlePerMinute / 60) * dt : 0; // running, it burns a little even still
   s.fuel = Math.max(0, s.fuel - idle - litresFor(Math.abs(s.x - from), engine, shipModel(s).perKm));
   if (s.fuel > 0) s.fuelWarned = false;

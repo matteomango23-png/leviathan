@@ -1,5 +1,19 @@
 # Progressi
 
+## Blocco 4b — Motoscafi e moto d'acqua (8 ottobre 2026) → v0.51.0
+
+**Fatto:** EH2, Poseidon e Imperium comprabili, con le immagini (portelloni uno per volta e insieme, reattori del Poseidon, elica del sottomarino imperiale); un portellone per vano (`ship.hatches`); motoscafo e moto d'acqua (`systems/boat.ts`, `ship/boatBay.ts`, `data/boats.ts`) con fusti di carburante per la nave; salvataggio v19.
+
+**Da provare sull'iPhone:**
+1. Al cantiere compra l'EH2 (con lo strumento di prova "+5000 denti" più volte, o giocando). Apri i due portelloni uno alla volta.
+2. Cala il motoscafo e corri al primo avamposto a est. Fermo al molo premi Porto → Carburante → "Carica i fusti".
+3. Torna alla nave, fermati davanti al portellone aperto e premi Aggancia: il carburante della nave sale.
+4. Prova anche Poseidon (reattori accesi col gas) e Imperium (moto d'acqua dalla poppa, sottomarino con l'elica che gira).
+
+**Da sapere:** le scritte dipinte su EH2, Poseidon e i loro mezzi si leggono al contrario andando a est (immagini girate, come l'EH1). La moto d'acqua va da sola (il sub seduto arriverà con il suo sprite).
+
+**Prossimo:** parte 4c (U-Boat Whale e Stormtrooper: si immergono), in Plan mode.
+
 ## Via l'onda di prua (8 ottobre 2026) → v0.50.4
 
 **Fatto:** tolta l'onda di prua (al proprietario non piaceva: la schiuma deve essere il mare stesso, non puntini sopra). Da rifare più avanti, magari deformando la superficie del mare. Ghiaccio e schegge restano.

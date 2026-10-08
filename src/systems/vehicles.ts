@@ -1,5 +1,6 @@
-// The ship and the submarine together (data/ship.ts, data/submarine.ts): the helm buttons, the ship, the submarine
-// on its ramp or in the sea, their solid hulls, and what the context button does about them. game.ts calls these.
+// The ship, the submarine and the speedboat together (data/ship.ts, data/submarine.ts, data/boats.ts): the helm
+// buttons, the ship, the submarine and the boat on their ramps or out, their solid hulls, and what the context
+// button does about them. game.ts calls these.
 import { PORTS, type PortDef } from '../data/economy';
 import { shipAlongside } from './economy/places';
 import { SHIP } from '../data/ship';
@@ -21,15 +22,25 @@ import {
 } from './ship/hatch';
 import { sailShip, type ShipWorld } from './ship/ship';
 import { repairSub, restAboard, stepSub, subHull } from './submarine';
+import { BOAT } from '../data/boats';
+import { sailBoat, type BoatState } from './boat';
+import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
+import { boatBay } from './ship/model';
 
-export type VehicleWorld = HatchWorld & ShipWorld & { diver: { dead: boolean } };
+export type VehicleWorld = HatchWorld & ShipWorld & { boat: BoatState; diver: { dead: boolean } };
 
 /** You are carried by a vehicle (no swimming): at the helm, in the submarine, or on the ramp. */
 export const inVehicle = (g: VehicleWorld): boolean =>
-  g.ship.aboard || g.sub.aboard || g.ship.bay === 'launching' || g.ship.bay === 'docking';
+  g.ship.aboard ||
+  g.sub.aboard ||
+  g.boat.aboard ||
+  g.ship.bay === 'launching' ||
+  g.ship.bay === 'docking' ||
+  boatOnRamp(g);
 
 /** The submarine is on the ramp: nothing to press until it gets there. */
-export const onRamp = (g: VehicleWorld): boolean => g.ship.bay === 'launching' || g.ship.bay === 'docking';
+export const onRamp = (g: VehicleWorld): boolean =>
+  g.ship.bay === 'launching' || g.ship.bay === 'docking' || boatOnRamp(g);
 
 /**
  * One step of the helm buttons, the ship, the ramp and the submarine. Returns true while a vehicle moves you.
@@ -42,9 +53,19 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   const freshLevers = (face: 1 | -1): void => void Object.assign(input.helm, freshHelm(face));
   if (events.some((e) => e.type === 'shipBoarded')) freshLevers(ship.face);
   if (events.some((e) => e.type === 'boarded')) freshLevers(g.sub.face);
-  if (input.helmCmd === 'hatch') toggleHatch(g, events);
-  else if (input.helmCmd === 'launch') launchSub(g, events);
-  else if (input.helmCmd === 'dive') diveFromShip(g, events);
+  if (events.some((e) => e.type === 'boatLaunching')) freshLevers(ship.face);
+  const boat = g.boat;
+  // the first hatch, and the second (ships with two bays); a hatch waits while its boat is on the ramp
+  if (input.helmCmd === 'hatch' || input.helmCmd === 'hatch2') {
+    const bay = input.helmCmd === 'hatch' ? 0 : 1;
+    toggleHatch(g, bay, events, bay === boatBay(ship) && boatOnRamp(g));
+  } else if (input.helmCmd === 'launch') launchSub(g, events);
+  else if (input.helmCmd === 'launchBoat') launchBoat(g, events);
+  else if (input.helmCmd === 'engine' && boat.aboard) {
+    boat.engineOn = !boat.engineOn;
+    if (!boat.engineOn) input.helm.throttle = 0;
+    events.push({ type: boat.engineOn ? 'engineStarted' : 'engineStopped', vehicle: 'boat' });
+  } else if (input.helmCmd === 'dive') diveFromShip(g, events);
   else if (input.helmCmd === 'sonar' && ship.aboard) ship.sonarOn = !ship.sonarOn;
   else if (input.helmCmd === 'engine' && ship.aboard) {
     // the engine button (owner, 8 ottobre): off, the throttle goes back to zero; on, it idles
@@ -58,7 +79,9 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far);
   if (tiles.length) events.push({ type: 'tilesChanged', tiles });
   const ramp = stepBay(g, dt, events);
-  if (events.some((e) => e.type === 'subDocked')) freshLevers(ship.face);
+  const boatRamp = stepBoatBay(g, dt, events);
+  sailBoat(g, boat.aboard ? input.helm : null, dt, events);
+  if (events.some((e) => e.type === 'subDocked' || e.type === 'boatDocked')) freshLevers(ship.face);
   const inSub = !ramp && stepSub(g, input, dt, events);
   // broken, the submarine is towed to the ship's hold (not to Portofosco), you back at the helm
   const wreck = events.find((e) => e.type === 'subWrecked');
@@ -71,7 +94,7 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     freshLevers(ship.face);
     repairSub(g, events); // in the hold the crew mends it, for teeth, like a port
   }
-  return ship.aboard || ramp || inSub;
+  return ship.aboard || ramp || inSub || boatRamp || boat.aboard;
 }
 
 /** The solid hulls in the sea now: the submarine (unless in the hold) and the ship. */
@@ -90,22 +113,27 @@ export function pushOutOfVehicles(
   if (hulls.length) pushOutOfHull(hulls, b, circles);
 }
 
-/** At the helm, still, alongside a harbour's pier: the port is there. */
+/** At the helm, still, alongside a harbour's pier: the port is there. In the boat, the same at its pier. */
 export function shipPort(g: VehicleWorld): PortDef | null {
   const s = g.ship;
+  const b = g.boat;
+  if (b.aboard && b.bay === 'out')
+    return b.speed < BOAT.stillBelow ? (PORTS.find((p) => shipAlongside(b.x, p)) ?? null) : null;
   if (!s.aboard || s.speed >= SHIP.stillBelow) return null;
   return PORTS.find((p) => shipAlongside(s.x, p)) ?? null;
 }
 
 /** What the context button does about the vehicles (null: nothing here). */
 export function vehicleAction(g: VehicleWorld): 'aggancia' | 'abordo' | null {
-  if (canDock(g)) return 'aggancia';
+  if (canDock(g) || canDockBoat(g)) return 'aggancia';
+  if (g.boat.aboard) return null; // in the boat you go back aboard only through its hatch
   if (canBoardShip(g)) return 'abordo';
   return null;
 }
 
 export function doVehicleAction(g: VehicleWorld, act: 'aggancia' | 'abordo', events: GameEvent[]): void {
-  if (act === 'aggancia') startDock(g, events);
+  if (act === 'aggancia' && canDockBoat(g)) startDockBoat(g, events);
+  else if (act === 'aggancia') startDock(g, events);
   else boardShip(g, events);
 }
 
@@ -115,6 +143,7 @@ export function wakeOnShip(g: VehicleWorld, events: GameEvent[]): boolean {
   if (!s.owned) return false;
   if (onRamp(g)) s.bay = 'docked'; // it was on the ramp: back in the hold
   g.sub.aboard = false; // out in the sea it stays where it was
+  boatHome(g.boat); // the crew brings the boat back
   s.aboard = true;
   Object.assign(g.diver, helmPoint(s), { vx: 0, vy: 0 });
   restAboard(g);

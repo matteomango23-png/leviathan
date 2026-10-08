@@ -3,7 +3,7 @@
 import { SHIP } from '../../data/ship';
 import { WORLD } from '../../data/worldLayout';
 import type { HullPart } from '../hull';
-import { shipLength, shipPicture } from './model';
+import { bayHatch, shipLength, shipPicture, subBay } from './model';
 
 export interface ShipPose {
   x: number;
@@ -32,18 +32,26 @@ export function shipSpan(s: ShipPose): { x0: number; x1: number } {
   return { x0: s.x - half, x1: s.x + half };
 }
 
-/** Inside the hold, behind the hatch: where the docked submarine waits. */
-export const holdPoint = (s: ShipPose): { x: number; y: number } =>
-  shipPoint(s, shipPicture(s).hatchX, shipPicture(s).hatchY);
+/** Inside the hold, behind a hatch (the submarine's unless said): where the docked vehicle waits. */
+export const holdPoint = (s: ShipPose, bay = subBay(s)): { x: number; y: number } =>
+  shipPoint(s, bayHatch(s, bay).x, bayHatch(s, bay).y);
 
-/** The foot of the open ramp. */
-export const rampFoot = (s: ShipPose): { x: number; y: number } =>
-  shipPoint(s, shipPicture(s).hatchX, shipPicture(s).rampEnd);
+/** The foot of a hatch's open ramp. */
+export function rampFoot(s: ShipPose, bay = subBay(s)): { x: number; y: number } {
+  const h = bayHatch(s, bay);
+  return shipPoint(s, h.rampX ?? h.x, h.rampEnd);
+}
 
 /** Mid-water under the hatch: where the submarine stops after the ramp, and where it docks again. */
-export const dockPoint = (s: ShipPose): { x: number; y: number } => ({
-  x: shipPoint(s, shipPicture(s).hatchX, 0).x,
+export const dockPoint = (s: ShipPose, bay = subBay(s)): { x: number; y: number } => ({
+  x: shipPoint(s, bayHatch(s, bay).x, 0).x,
   y: WORLD.surfaceY + Math.max(SHIP.launchDepth, shipDraft(s) + 20), // under the keel of a big ship
+});
+
+/** On the surface below a boat's ramp: where the speedboat or jet ski lands, and where it docks again. */
+export const boatPoint = (s: ShipPose, bay: number): { x: number; y: number } => ({
+  x: rampFoot(s, bay).x,
+  y: WORLD.surfaceY,
 });
 
 /** At the helm: the wheelhouse. */
@@ -67,10 +75,10 @@ export function shipHull(s: ShipPose): HullPart[] {
  * Where the submarine is along the ramp: 0 = in the hold, 1 = at mid-water under the hatch (out along the
  * ramp to its foot, then straight down).
  */
-export function bayPath(s: ShipPose, t: number): { x: number; y: number } {
-  const a = holdPoint(s);
-  const b = rampFoot(s);
-  const c = dockPoint(s);
+export function bayPath(s: ShipPose, t: number, bay = subBay(s)): { x: number; y: number } {
+  const a = holdPoint(s, bay);
+  const b = rampFoot(s, bay);
+  const c = dockPoint(s, bay);
   const k = 0.45;
   if (t <= k) {
     const q = t / k;
@@ -79,4 +87,12 @@ export function bayPath(s: ShipPose, t: number): { x: number; y: number } {
   const q = (t - k) / (1 - k);
   const e = q * q * (3 - 2 * q); // eases in and out
   return { x: b.x + (c.x - b.x) * e, y: b.y + (c.y - b.y) * e };
+}
+
+/** Where a boat is along its ramp: 0 = in the hold … 1 = on the water below the ramp. */
+export function boatPath(s: ShipPose, t: number, bay: number): { x: number; y: number } {
+  const a = holdPoint(s, bay);
+  const b = boatPoint(s, bay);
+  const e = t * t * (3 - 2 * t);
+  return { x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e };
 }
