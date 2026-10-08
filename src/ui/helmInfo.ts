@@ -20,7 +20,7 @@ import type { HelmInfo } from './helmControls';
 /** The sonar line at the helm: off, too fast, or the floor under the ship and the nearest echoes. */
 function sonarLine(g: GameState): string {
   const r = sonarReadout(g, 2);
-  if (r.status === 'off') return 'Sonar spento · tocca per accenderlo';
+  if (r.status === 'off') return 'Sonar'; // owner, 9 ottobre: just its name; lit up and talking when on
   if (r.status === 'fast') return `Sonar: troppo veloce (sotto ${sonarMaxKnots(g.ship)} nodi)`;
   // the den's echo first, then how many beasts it hears (owner, 5 ottobre: the sea is full now)
   const odd = r.echoes
