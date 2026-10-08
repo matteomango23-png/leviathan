@@ -1,5 +1,13 @@
 # Progressi
 
+## Cockpit a vapore (8 ottobre 2026) → v0.53.0
+
+**Fatto:** `cockpitStyle: 'vapore'` in `data/fleet.ts` per EH1 ed EH2, stile in `ui/cockpitSteam.css` (solo CSS e SVG, niente immagini); immagine `nave_eh2_moto` con le eliche.
+
+**Da provare sull'iPhone:** con l'EH1 o l'EH2 apri il Cockpit e passa tutte le schede; con l'EH2 dai gas e guarda le eliche.
+
+**Prossimo:** decidere lo stile del cockpit delle altre navi; poi la parte 4c (U-Boat).
+
 ## ⚠️ Da togliere prima della fine: strumenti di prova sulla Home (v0.52.1)
 
 Il proprietario ha chiesto di ricordarlo: `toggleTestMode` in `systems/testTools.ts` e i 5 tocchi sulla versione in `ui/pauseMenu.ts` accendono gli strumenti di prova anche senza il link `?prove`. Togliere entrambi (e la chiave `leviatano-prove` resta innocua) quando le prove non servono più.

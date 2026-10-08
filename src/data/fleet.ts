@@ -77,6 +77,9 @@ export interface ShipModelDef {
   special?: string;
   note: string;
   cockpit: CockpitTab[];
+  /** The look of its cockpit (owner, 8 ottobre): 'vapore' = rusted plates, copper pipes, brass dials (his Gemini
+   *  concepts); missing = the navy bridge. */
+  cockpitStyle?: 'vapore';
   card: string; // public/art/<card>.webp
   /** Its painting in public/world (hatches closed and all open, and the propeller turning if painted: same frame)
    *  and where things are on it. */
@@ -163,6 +166,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'Nave da caccia pesante, un portellone. Il suo sottomarino squalo è il più veloce del mare',
     cockpit: ALL_TABS,
     card: 'nave_eh1',
+    cockpitStyle: 'vapore',
     art: {
       closed: 'nave_eh1',
       open: 'nave_eh1_aperta',
@@ -368,9 +372,11 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'Nave da spedizione enorme e tecnologica, due portelloni',
     cockpit: ALL_TABS,
     card: 'nave_eh2',
+    cockpitStyle: 'vapore',
     art: {
       closed: 'nave_eh2',
       open: 'nave_eh2_aperta',
+      moving: 'nave_eh2_moto', // the propellers turning (owner, 8 ottobre)
       stacks: [
         { u: 0.175, v: 0.19, size: 1.3 },
         { u: 0.135, v: 0.24, size: 1 },
