@@ -721,3 +721,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Ghiaccio rotto dietro la prua** (`SHIP.iceBehindBow`, da 8 a 40 unità dietro): prima si rompeva 10 unità davanti, e la lastra spariva prima del contatto.
 - **Schegge:** `ship.iceT` (non salvato) resta acceso `SHIP.iceCrackSeconds` dopo ogni rottura; la vista lancia le schegge e intanto non disegna l'onda di prua.
 - **`views/shipFx.ts`:** fumo, onda e schegge separati da `shipView.ts`, che superava le 300 righe.
+
+## 8 ottobre 2026 — Via l'onda di prua (v0.50.4)
+
+- Tolta l'onda di prua disegnata sopra il mare (cerchi di schiuma e gocce): al proprietario sembrava un layer di puntini. Se torna, dovrà essere la superficie del mare a deformarsi e schiumare. `bowU` resta per il ghiaccio.

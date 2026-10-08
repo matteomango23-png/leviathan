@@ -1,7 +1,7 @@
 // The expedition ship (its model in data/fleet.ts): the owner's two paintings (hatch closed and open, the same frame, so the
 // open one fades in while the hatch opens). Its waterline sits on the sea surface; the hull under it is drawn
 // darker and bluer, as seen through the water. It rocks with the waves (more in bad weather), lifts its bow and
-// throws foam when it planes at speed, leaves a wake and bubbles behind its propeller. A soft light glows under the hull
+// leaves a wake and bubbles behind its propeller. A soft light glows under the hull
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
@@ -141,7 +141,7 @@ export class ShipView {
     if (pics) pics.place(s, s.x, top, 1, pitch, 0);
     else this.drawFallback(s, top);
     this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt);
-    this.drawWake(s, k, planing, time, heave);
+    this.drawWake(s, k, time, heave);
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
@@ -214,13 +214,12 @@ export class ShipView {
     g.fillStyle(0x1f2a30, 1).fillRect(s.x - L * 0.42, wl, L * 0.84, (P.keel - P.waterline) * H);
   }
 
-  /** Foam at the bow and the stern, a wake behind, spray when it planes, bubbles behind the propeller. */
-  private drawWake(s: ShipState, k: number, planing: number, time: number, heave: number): void {
+  /** Foam at the stern, a wake behind, bubbles behind the propeller. */
+  private drawWake(s: ShipState, k: number, time: number, heave: number): void {
     const g = this.fx;
     this.drawPropBubbles(s, time);
     if (k < 0.03) return;
     const L = shipLength(s);
-    const bow = s.x + s.face * L * (shipPicture(s).bowU - 0.5); // where the bow meets the water
     const stern = s.x - s.face * L * 0.46;
     const y = WORLD.surfaceY + heave * 0.3;
     for (let i = 0; i < 14; i++) {
@@ -229,8 +228,7 @@ export class ShipView {
       g.fillStyle(0xe8f2f4, 0.35 * k * (1 - t));
       g.fillEllipse(wx, y + Math.sin(i * 1.7) * 1.2, 6 + t * 14, 1.6 + t * 1.2);
     }
-    // in the ice the bow breaks ice, not waves (owner, 8 ottobre)
-    if (s.iceT <= 0) this.effects.bowWave(s, bow, y, k, planing, time);
+    // (the bow wave is gone, owner 8 ottobre: foam should be the sea itself, not dots over it; for now none)
   }
 
   /** Bubbles churned by the propeller, only while it turns (owner, 8 ottobre: not while the ship coasts). */

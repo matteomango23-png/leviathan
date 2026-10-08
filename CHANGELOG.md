@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.50.4 — Via l'onda di prua (8 ottobre 2026)
+
+- **Tolta l'onda di prua** (schiuma e spruzzi): sembrava uno strato di puntini sopra il mare. Tornerà quando la schiuma potrà essere il mare stesso.
+- Restano la rottura del ghiaccio e le schegge.
+
 ## v0.50.3 — Onda di prua e ghiaccio che si spacca (8 ottobre 2026)
 
 - **Onda di prua:** davanti allo scafo l'acqua si alza e si infrange in schiuma e spruzzi; più vai veloce, più è alta e lunga. Parte da dove la prua tocca l'acqua (sull'EH1 sotto la mascella dello squalo).

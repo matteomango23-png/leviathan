@@ -1,5 +1,5 @@
 // Effects around the ship (owner, 8 ottobre 2026): smoke from the stacks like a steam train (drawn behind the
-// ship), the wave breaking on the bow, and shards of ice flung up while the bow breaks the sheet. Look only.
+// ship) and shards of ice flung up while the bow breaks the sheet. Look only.
 import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
@@ -76,59 +76,6 @@ export class ShipFx {
         const a = p.seed + k * 2.1;
         this.back.fillCircle(p.x + Math.cos(a) * r * 0.45, p.y + Math.sin(a) * r * 0.3, r * (0.75 + 0.1 * k));
       }
-    }
-  }
-
-  /**
-   * The wave breaking on the bow (owner, 8 ottobre: one puff of foam was not enough): the water pushed up into a
-   * mound along the front of the hull, rippling, its crest white with foam, and spray thrown forward and up. All of
-   * it grows with the speed.
-   */
-  bowWave(s: ShipState, bow: number, y: number, k: number, planing: number, time: number): void {
-    const g = this.front;
-    const f = s.face;
-    const scale = shipLength(s) / 180;
-    const len = (18 + 70 * k) * scale; // how far back along the hull the mound runs
-    const H = (2 + 14 * k) * Math.sqrt(scale); // its height at the bow
-    const height = (t: number): number => {
-      const swell = Math.sin(Math.PI * Math.min(1, t * 1.15 + 0.08)); // up at the bow, down along the hull
-      const ripple = 1 + 0.18 * Math.sin(t * 11 - time * 9) + 0.08 * Math.sin(t * 23 + time * 14);
-      return H * swell * ripple;
-    };
-    const N = 30; // points along the crest: close enough for the foam to read as one frothing line
-    const crest: { x: number; y: number }[] = [];
-    for (let i = 0; i <= N; i++) {
-      const t = i / N;
-      crest.push({ x: bow + f * 2 - f * t * len, y: y - height(t) });
-    }
-    // the mound of water, green-blue and see-through
-    g.fillStyle(0x9fc8d4, 0.45 * Math.min(1, k * 1.6));
-    g.fillPoints(
-      [{ x: bow + f * 3, y }, ...crest, { x: bow - f * len, y: y + 1 }].map(
-        (p) => new Phaser.Math.Vector2(p.x, p.y),
-      ),
-      true,
-    );
-    // its crest: foam that froths and breaks, thicker near the bow
-    for (const [i, p] of crest.entries()) {
-      const t = i / N;
-      const froth = 0.6 + 0.4 * Math.sin(time * 13 + i * 1.9);
-      g.fillStyle(0xf4fbfc, (0.75 - 0.5 * t) * Math.min(1, k * 1.8) * froth);
-      g.fillCircle(p.x, p.y + 0.4, (1.2 + 2.4 * k * (1 - t)) * Math.sqrt(scale));
-    }
-    // spray thrown forward and up, falling back (each drop's flight comes from the time)
-    const drops = Math.round(6 + 22 * k + 10 * planing);
-    for (let i = 0; i < drops; i++) {
-      const seed = (i * 0.618) % 1;
-      const t = (time * (1.4 + k) + seed) % 1;
-      const fly = t * 0.7;
-      const vx = f * (8 + 45 * k) * (0.4 + seed);
-      const vy = -(15 + 55 * k) * (0.5 + ((i * 0.37) % 1));
-      const px = bow + f * 2 + vx * fly;
-      const py = y - H * 0.5 + vy * fly + 0.5 * 140 * fly * fly;
-      if (py > y + 1) continue;
-      g.fillStyle(0xffffff, 0.75 * (1 - t) * Math.min(1, k * 2));
-      g.fillCircle(px, py, (0.5 + 0.9 * k * (1 - t)) * Math.sqrt(scale));
     }
   }
 
