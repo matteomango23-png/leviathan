@@ -1,5 +1,9 @@
 # Progressi
 
+## Via l'onda di prua (8 ottobre 2026) → v0.50.4
+
+**Fatto:** tolta l'onda di prua (al proprietario non piaceva: la schiuma deve essere il mare stesso, non puntini sopra). Da rifare più avanti, magari deformando la superficie del mare. Ghiaccio e schegge restano.
+
 ## Onda di prua e ghiaccio (8 ottobre 2026) → v0.50.3
 
 **Fatto:** onda di prua che cresce con la velocità, schegge di ghiaccio entrando nella banchisa (senza onda nel ghiaccio), il ghiaccio si rompe dietro la prua (`SHIP.iceBehindBow`, `bowU` in `picture` di `data/fleet.ts`). Gli effetti stanno in `views/shipFx.ts`.
