@@ -62,7 +62,7 @@ describe('wild beasts in the open sea', () => {
   it('appear in the bay, in the dark, away from you', () => {
     const g = bay();
     const ev = run(g, 12);
-    const out = g.beasts.wilds.filter((w) => w.motion === 'roam' && !w.arena);
+    const out = g.beasts.wilds.filter((w) => w.motion === 'roam');
     expect(out.length).toBeGreaterThan(0);
     expect(ev.some((e) => e.type === 'wildAppeared')).toBe(true);
   });
@@ -85,7 +85,7 @@ describe('wild beasts in the open sea', () => {
 
   it('an aggressive one comes at you: when it touches you a battle starts, it strikes first', () => {
     const g = bay();
-    place(g, 'squalo_bianco', X + 70, 200, -1);
+    place(g, 'squalo_tigre', X + 70, 200, -1);
     const ev = run(g, 6);
     const start = ev.find((e) => e.type === 'battleStart');
     expect(start).toBeDefined();
@@ -117,7 +117,7 @@ describe('wild beasts in the open sea', () => {
       b.ko = true;
     }
     g.gear.teeth = 100;
-    place(g, 'squalo_bianco', X + 60, 200, -1);
+    place(g, 'squalo_tigre', X + 60, 200, -1);
     const ev = run(g, 4);
     expect(ev.some((e) => e.type === 'blackout')).toBe(true);
     expect(g.beasts.battle).toBeNull();

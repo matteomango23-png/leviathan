@@ -1,5 +1,5 @@
 // What lives inside the sunken temples, drawn over the carved stone: levers, runes (lit or dark), the mosaic with
-// the order of the runes, the Company's broken chains, the air vents and the glowing relic.
+// the order of the runes, the broken chains, the air vents and the glowing relic.
 import Phaser from 'phaser';
 import { ENDLESS } from '../data/endless';
 import { RUNE_GLYPHS } from '../data/temples';

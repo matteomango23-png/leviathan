@@ -30,8 +30,6 @@ export interface BeastState {
   nextUid: number;
   /** A swarm summoned from the backpack around the diver. */
   decoy: Decoy | null;
-  /** A Guardian fight is on: no other wild beast comes. */
-  arena: boolean;
   /** Set when a battle must start (the World scene opens it and pauses the sea). */
   battle: BattleRequest | null;
   /** Legends defeated: gone forever (saved). */
@@ -73,7 +71,6 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     riding: false,
     nextUid: maxUid + 1,
     decoy: null,
-    arena: false,
     battle: null,
     boneHintT: 0,
     lure: null,

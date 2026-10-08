@@ -15,7 +15,7 @@ import {
   type ZoneShapeDef,
 } from '../../data/worldLayout';
 import { fbm, smoothstep } from '../math';
-import { LAIR } from '../../data/guardians';
+import { LAIR } from '../../data/scenery';
 import { inLairCave, inLairShaft, inLairShell } from './lair';
 import { inArena, inArenaShell } from './arena';
 import { TileMap } from './tileMap';

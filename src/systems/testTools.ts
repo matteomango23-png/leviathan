@@ -1,5 +1,4 @@
 // Tools for the test panel (open the game with ?prove in the link). Not part of normal play.
-import { LAIR } from '../data/guardians';
 import { DELTA } from '../data/worldLayout';
 import { PORTO_FANGO } from '../data/economy';
 import { portStart } from './economy/places';
@@ -12,7 +11,7 @@ import { spawnWild } from './beasts/wildState';
 
 /** Makes a wild beast of this form appear a little ahead of the diver, wherever the diver is. */
 export function spawnTestBeast(g: GameState, form: BeastForm, level = 5): void {
-  const w = g.beasts.wilds.find((x) => !x.arena && x.spawn.speciesId === form.speciesId) ?? g.beasts.wilds[0];
+  const w = g.beasts.wilds.find((x) => x.spawn.speciesId === form.speciesId) ?? g.beasts.wilds[0];
   if (!w) return;
   const d = g.diver;
   w.spawn = { ...w.spawn, area: [d.x - 600, d.y - 300, d.x + 600, d.y + 300] };
@@ -54,12 +53,6 @@ export function raiseTeam(g: GameState, levels: number): void {
   const c = g.beasts.mount;
   const b = g.beasts.team.find((x) => x.uid === c?.uid);
   if (c && b) c.length = formLengthUnits(b.form, b.level);
-}
-
-/** Straight into the Guardian's lair (the fight starts at once). */
-export function goToLair(g: GameState): void {
-  Object.assign(g.diver, { x: LAIR.x - LAIR.rx * 0.6, y: LAIR.y, vx: 0, vy: 0 });
-  g.guardian.ready = true;
 }
 
 /** Into the Delta delle Mangrovie, under the middle island. */

@@ -100,7 +100,6 @@ export const SUBMARINE = {
 };
 
 export const SUB_TEXT = {
-  given: 'Aurelio ti lascia il suo vecchio batiscafo, ormeggiato oltre il molo. Avvicinati e premi Sali.',
   boarded:
     'Dentro il sottomarino respiri, ma qui non si guarisce e non si combatte. Leva a sinistra: il gas. A destra: direzione e Sali/Scendi.',
   rammed: (hull: number, max: number): string => `Uno schianto contro lo scafo! (${hull}/${max})`,

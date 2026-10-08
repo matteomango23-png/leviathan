@@ -140,7 +140,6 @@ export const SKINS: SkinDef[] = [
   { id: 'tigre_preistorico', species: 'squalo_tigre', name: 'Squalo tigre preistorico', price: 1500, bonus: { stat: 'hp', mult: 1.05 } },
 ];
 
-export const GUARDIAN_TEETH_REWARD = 800; // tuning
 
 /**
  * Swarms (Sciami): creatures that live in schools are not tamed one by one.

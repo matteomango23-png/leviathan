@@ -39,8 +39,7 @@ import { WorldArtView } from '../views/worldArtView';
 import { SubmarineView } from '../views/submarineView';
 import { LightView } from '../views/lightView';
 import { StoryView } from '../views/storyView';
-import { Chapter3View } from '../views/chapter3View';
-import { Chapter4View } from '../views/chapter4View';
+import { SceneryView } from '../views/sceneryView';
 import { DeltaView } from '../views/deltaView';
 import { TerrainView } from '../views/terrainView';
 import { BirdsView } from '../views/birdsView';
@@ -65,8 +64,6 @@ export class WorldScene extends Phaser.Scene {
   private beasts!: BeastsLayer;
   private places!: PlacesView;
   private story!: StoryView;
-  private chapter3!: Chapter3View;
-  private chapter4!: Chapter4View;
   private gearFx!: GearFxView;
   private diverView!: DiverView;
   private effects!: EffectsView;
@@ -108,8 +105,7 @@ export class WorldScene extends Phaser.Scene {
     this.terrain = new TerrainView(this, L.world, map);
     this.places = new PlacesView(this, L.world, g.wrecks);
     this.story = new StoryView(this, L.world);
-    this.chapter3 = new Chapter3View(this, L.world);
-    this.chapter4 = new Chapter4View(this, L.world);
+    new SceneryView(this, L.world);
     new DeltaView(this, L.world, L.front);
     this.kelp = new KelpView(this, L.world, L.front, map);
     this.vents = new VentView(this, L.world);
@@ -333,9 +329,7 @@ export class WorldScene extends Phaser.Scene {
     this.birdsView.update(this.birds, view);
     this.effects.update(view, g.time, dt, sky.waves);
     this.places.update(g.gear, g.time);
-    this.story.update(g.story, g.chapter2.anchors, g.time);
-    this.chapter3.update(g, g.time);
-    this.chapter4.update(g, g.time);
+    this.story.update(g.story);
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
     this.gearFx.update(g, rider ?? d, g.time);
 
@@ -350,8 +344,6 @@ export class WorldScene extends Phaser.Scene {
     const lamp = rider ?? d;
     const glows = [
       ...this.places.glowSpots(g.gear),
-      ...this.story.glowSpots(g.story, g.chapter2.anchors),
-      ...this.chapter3.glowSpots(g),
       ...this.beasts.glowSpots(g),
       ...this.ship.glowSpots(g.ship),
     ];

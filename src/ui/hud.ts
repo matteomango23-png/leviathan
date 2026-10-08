@@ -3,7 +3,7 @@ import { DIVER } from '../data/diver';
 import { airShown, pressureShown } from '../systems/rideAir';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
-import { currentObjective } from '../systems/chapters';
+import { currentObjective } from '../systems/story';
 import { el } from './dom';
 import { messageFor } from './eventMessages';
 

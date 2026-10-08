@@ -15,6 +15,7 @@ import { migrate, parseSave } from '../src/systems/save/saveData';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { giveSub, giveVessels } from './helpers/vessels';
 
 let map: TileMap;
 beforeAll(() => {
@@ -32,13 +33,11 @@ function run(g: GameState, seconds: number, input: InputState = emptyInput()): G
   return all;
 }
 
-/** After chapter 4, at the helm of the ship in open water (the submarine in the hold). */
+/** With Aurelio's gifts, at the helm of the ship in open water (the submarine in the hold). */
 function atTheHelm(x = OPEN_SEA_X + 1200): { g: GameState; input: InputState } {
   const g = createGame(map, null, 4);
-  g.story.step = 'chapter1Done';
   giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
-  run(g, DT);
-  g.story.step = 'chapter4Done';
+  giveVessels(g);
   run(g, DT);
   g.ship.x = x;
   Object.assign(g.diver, { x, y: WORLD.surfaceY + 6, vx: 0, vy: 0 });
@@ -146,8 +145,8 @@ describe('razzo di soccorso', () => {
     expect(g.sub.aboard).toBe(false);
 
     const lone = createGame(map, null, 4);
-    lone.story.step = 'chapter1Done';
     giveTestBeast(lone, { speciesId: 'zanna', variant: 'comune' }, 8);
+    giveSub(lone);
     run(lone, DT);
     Object.assign(lone.sub, { x: 3000, y: 200, aboard: true });
     rescue(lone, []);

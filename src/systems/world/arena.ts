@@ -1,6 +1,6 @@
-// Shape of the Re Corallo's amphitheatre (ARENA in data/chapter3.ts): a stepped bowl carved into the reef floor,
+// Shape of the coral amphitheatre (ARENA in data/scenery.ts): a stepped bowl carved into the reef floor,
 // open to the sea above, with solid rock under its terraces.
-import { ARENA } from '../../data/chapter3';
+import { ARENA } from '../../data/scenery';
 
 /** The floor of the bowl at x (world y), or null outside it: deeper towards the middle, in terraces. */
 export function arenaFloor(x: number): number | null {
@@ -21,7 +21,3 @@ export function inArenaShell(x: number, y: number): boolean {
   const f = arenaFloor(x);
   return f !== null && y >= f && y < ARENA.y0 + ARENA.depth + 30;
 }
-
-/** Inside the bowl, below its rim: where the Re Corallo fights you. */
-export const inArenaBowl = (x: number, y: number, margin = 0): boolean =>
-  Math.abs(x - ARENA.x) < ARENA.rx - margin && y > ARENA.y0 + margin && y < ARENA.y0 + ARENA.depth;

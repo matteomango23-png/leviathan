@@ -1,4 +1,4 @@
-// The expedition ship (owner's decisions of 4 ottobre 2026): Aurelio's gift at the end of chapter 4 with the
+// The expedition ship (owner's decisions of 4 ottobre 2026): Aurelio's gift at Porto Fango with the
 // submarine in its hold; levers (the throttle stays where you leave it); the hatch opens only with the ship still,
 // and open it does not move; the submarine slides down the ramp to mid-water and docks only in front of the
 // hatch; the ship breaks the ice and never gets stuck; it sails from Porto Fango east to the end of the sea with
@@ -21,6 +21,7 @@ import { ENDLESS } from '../src/data/endless';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { giveVessels } from './helpers/vessels';
 
 let map: TileMap;
 beforeAll(() => {
@@ -46,13 +47,11 @@ const cmd = (g: GameState, c: 'hatch' | 'launch' | 'dive', input: InputState): G
   return run(g, DT, input);
 };
 
-/** After chapter 4: the ship is yours, the submarine in its hold, and you are at the helm. */
+/** The ship is yours, the submarine in its hold, and you are at the helm. */
 function atTheHelm(x = 20000 /* open sea, before any ice */): { g: GameState; input: InputState } {
   const g = createGame(map, null, 4);
-  g.story.step = 'chapter1Done';
   giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
-  run(g, DT);
-  g.story.step = 'chapter4Done';
+  giveVessels(g);
   run(g, DT);
   g.ship.x = x;
   Object.assign(g.diver, { x, y: WORLD.surfaceY + 6, vx: 0, vy: 0 });
@@ -64,17 +63,13 @@ function atTheHelm(x = 20000 /* open sea, before any ice */): { g: GameState; in
 }
 
 describe('la nave da spedizione', () => {
-  it('arriva a fine capitolo 4 con il sottomarino nella stiva', () => {
+  it('arriva a Porto Fango con il sottomarino nella stiva', () => {
     const g = createGame(map, null, 4);
-    g.story.step = 'chapter1Done';
-    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 8);
-    run(g, DT);
     expect(g.ship.owned).toBe(false);
-    g.story.step = 'chapter4Done';
-    const ev = run(g, DT);
+    giveVessels(g);
     expect(g.ship.owned).toBe(true);
+    expect(g.ship.x).toBe(PORTO_FANGO.shipDock);
     expect(g.ship.bay).toBe('docked');
-    expect(ev.some((e) => e.type === 'shipGiven')).toBe(true);
   });
 
   it('al timone il gas resta dove lo lasci: accelera piano fino alla velocità massima (~24 nodi)', () => {
@@ -255,7 +250,6 @@ describe('la nave non si blocca mai', () => {
         ...newShip({ x, face, hatchOpen: false, bay: 'docked', aboard: true, fuel: 1e9, upgrades: [] }),
       },
       map,
-      story: { step: 'chapter4Done' },
       sub: { owned: true, aboard: false },
       diver: { x, y: 0, vx: 0, vy: 0, face },
     };

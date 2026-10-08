@@ -1,12 +1,12 @@
 // Leviatano — the sunken temples (tappa 14, owner's decisions of 2 ottobre 2026: "vedi tu" for the puzzles). The
 // first one lies on the floor of the open sea, ~3 km from the coast: four halls in a row, a puzzle each, and at
-// the end a relic. The Company has been here before you (the hook for chapter 3). Laid out by hand below: one
+// the end a relic. Someone has been here before you (a hook for the story to come). Laid out by hand below: one
 // character per cell of `cell` units. Values marked "tuning" are a first pass.
 //   #  carved stone          .  water
 //   1 2 3  gates (stone that slides away when opened)
 //   L  a lever (hit it with a weapon)         a b  the twin levers (both within `twinWindow` seconds)
 //   w x y z  runes (swim to them in the order of the mosaic)   M  the mosaic showing the order
-//   V  an air vent (a column of bubbles)      C  the relic      N  the Company's chains (a note)
+//   V  an air vent (a column of bubbles)      C  the relic      N  broken chains (a note)
 export interface TempleDef {
   id: string;
   name: string;
@@ -69,7 +69,7 @@ export const RELICS: { id: string; name: string; text: string; o2DrainMult?: num
 
 export const TEMPLE_TEXT = {
   entered: (name: string): string => `${name}: colonne spezzate, porte di pietra e rune che nessuno legge da secoli.`,
-  chains: 'Catene spezzate e segni di argani, freschi: la Compagnia dell’Olio Nero è stata qui. Cosa cerca la Vedova Nera nei templi?',
+  chains: 'Catene spezzate e segni di argani, ancora freschi. Qualcuno è stato qui prima di te.',
   lever: 'Un meccanismo antico si muove: una porta di pietra scivola via.',
   twinFirst: 'La leva scatta… e torna su piano piano. Forse c’è un’altra leva da colpire subito dopo.',
   twinDone: 'Le due leve insieme: la porta si apre.',

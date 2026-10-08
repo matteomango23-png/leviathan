@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.47.0 — Nuovo inizio: la storia è in pausa (8 ottobre 2026)
+
+- **La vecchia storia non c'è più** (la Compagnia dell'Olio Nero, la Vedova Nera, i capitoli 1–4): verrà ripensata da capo più avanti. Spariti anche il molo in fiamme, le tracce, i lavoretti di Aurelio e le navi nere.
+- **Un inizio semplice:**
+  - sulla barca di Aurelio ricevi arpione e Conchiglia e scegli il tuo primo compagno, come prima;
+  - immersione guidata a Portofosco: nuota, cattura 5 sardine, scatta, doma una bestia, torna al molo;
+  - Aurelio ti dà appuntamento a **Porto Fango**, oltre il Delta (a nuoto si passa sotto l'isola);
+  - a Porto Fango ti consegna **la nave con il sottomarino nella stiva** e ti spiega come calarlo. Da lì il mare è aperto.
+- **Costa più tranquilla:** tra Portofosco e Porto Fango non ci sono più squali bianchi né coccodrilli marini: solo bestie innocue o mediamente pericolose. Quelle pericolose vivono in mare aperto, sempre con livelli alti.
+- **Lo Sfregiato, il Re Corallo e la Piovra** sono messi da parte per la storia nuova: escono dalla squadra e dal bestiario. Anche le medaglie dei Guardiani nella tessera non ci sono più.
+- **I templi sommersi restano**, senza riferimenti alla vecchia storia. Restano anche la grotta delle ossa nella Baia, l'anfiteatro di corallo e il galeone nella Foresta, come luoghi da esplorare.
+- **La tua partita** si aggiorna da sola (salvataggio versione 17): se hai già la nave, resti dove sei con nave e sottomarino; se non ce l'hai, Aurelio ti aspetta a Porto Fango.
+- Nuovo file `docs/BACKLOG.md` con tutti i tuoi feedback divisi in blocchi.
+
 ## v0.46.0 — Stacco netto della telecamera, zaino al suo posto (5 ottobre 2026)
 
 - **Telecamera: mai più scorrimento.** Salendo o scendendo dalla nave, calando o agganciando il sottomarino, la vista passa di colpo da quella della nave alla tua (e viceversa), con una breve dissolvenza dal buio (un quarto di secondo) che nasconde lo stacco. Niente zoom né movimenti in mezzo. Tolta la vista "larga" della v0.45 che restava sulla nave finché non scendevi in profondità.

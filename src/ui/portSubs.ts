@@ -43,7 +43,7 @@ export function renderSubs(b: HTMLElement, ctx: TabContext): void {
   const s = ctx.g.sub;
   el('h3', '', b, 'Sottomarini');
   if (!s.owned) {
-    el('p', 'port-hint', b, 'Il primo sottomarino te lo lascerà Aurelio, alla fine del capitolo 1.');
+    el('p', 'port-hint', b, 'Il primo sottomarino te lo darà Aurelio a Porto Fango, insieme alla nave.');
     return;
   }
   const grid = el('div', 'pcard-grid', b);

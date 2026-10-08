@@ -46,7 +46,7 @@ describe('the first beast', () => {
 
   it('is offered to an older game with no beasts', () => {
     const g = createGame(map, null, 1);
-    g.story.step = 'findShark';
+    g.story.step = 'toPortoFango';
     expect(needsStarter(g)).toBe(true);
   });
 

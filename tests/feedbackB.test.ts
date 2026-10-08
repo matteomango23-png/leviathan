@@ -74,13 +74,13 @@ describe('shells', () => {
 });
 
 describe('baits', () => {
-  it('a blood bait brings the white shark of the bay in seconds, even with the sea crowded', () => {
+  it('a blood bait brings a shark of the bay in seconds, even with the sea crowded', () => {
     const g = game();
     giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 5);
     g.gear.inventory.esca_sangue = 1;
     g.gear.backpack[0] = 'esca_sangue';
     for (const w of g.beasts.wilds) w.respawn = 999;
-    const shark = g.beasts.wilds.find((w) => w.spawn.speciesId === 'squalo_bianco')!;
+    const shark = g.beasts.wilds.find((w) => w.spawn.speciesId === 'squalo_tigre')!; // no white sharks on the coast (8 ottobre)
     const input = { ...emptyInput(), slot: 0 };
     let came = false;
     for (let t = 0; t < 10 && !came; t += DT) {
@@ -96,13 +96,13 @@ describe('baits', () => {
 });
 
 describe('wild beasts', () => {
-  const bayShark = () => WILD_SPAWNS.find((s) => s.speciesId === 'squalo_bianco')!;
+  const bayShark = () => WILD_SPAWNS.find((s) => s.speciesId === 'squalo_tigre')!;
 
   it('a hunter follows you out of its waters, but not too far', () => {
     const g = game();
-    const w = g.beasts.wilds.find((x) => x.spawn.speciesId === 'squalo_bianco')!;
+    const w = g.beasts.wilds.find((x) => x.spawn.speciesId === 'squalo_tigre')!;
     const [, , x1] = bayShark().area;
-    spawnWild(w, { speciesId: 'squalo_bianco', variant: 'comune' }, 15, x1 - 40, 200, 1);
+    spawnWild(w, { speciesId: 'squalo_tigre', variant: 'comune' }, 15, x1 - 40, 200, 1);
     const diver = { x: x1 + 40, y: 200, dead: false };
     w.mood = 'chase';
     let farthest = 0;

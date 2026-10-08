@@ -37,7 +37,6 @@ export interface GearState {
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   mythicStock: number;
   deepestM: number;
-  guardians: string[]; // Guardians beaten (their reward is given once)
   relics: string[]; // relics found in the sunken temples (tappa 14): their effect lasts for ever
 }
 
@@ -58,7 +57,6 @@ export function newGear(): GearState {
     shopBought: {},
     mythicStock: MARKET.mythicHarpoonStock,
     deepestM: 0,
-    guardians: [],
     relics: [],
   };
 }

@@ -92,7 +92,7 @@ export function runesLit(g: TempleWorld, t: TempleSite): string[] {
   return gateOpen(g.map, t, GATE_OF.rune!) ? [...t.def.runeOrder] : (g.temples.runes[t.def.id] ?? []);
 }
 
-/** Swimming in the temple: runes, the mosaic, the Company's chains, the relic. */
+/** Swimming in the temple: runes, the mosaic, the broken chains, the relic. */
 export function stepTemples(g: TempleWorld, events: GameEvent[]): void {
   const d = g.diver;
   const t = d.dead ? null : templeAt(d.x, d.y);

@@ -51,7 +51,8 @@ export interface WildSpawnDef {
 }
 
 // Each entry is one beast that comes and goes; a species listed twice can be met two at a time.
-// The sea is full of common beasts (barracudas, turtles, rays), some sharks, the white shark rarer (tuning).
+// The sea is full of common beasts (barracudas, turtles, rays) and some sharks; the coast up to Porto Fango has
+// no superpredators (owner, 8 ottobre: a protected first zone; white sharks and sea crocodiles live out east).
 const BAY: [number, number, number, number] = [LAYOUT.bay.x0, 60, bay(1900), 380];
 const BAY_HIGH: [number, number, number, number] = [LAYOUT.shoreX + 200, 40, bay(1800), 320]; // also over the beach
 const REEF: [number, number, number, number] = [east(2480), 40, east(4000), 420];
@@ -72,11 +73,8 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'torpedine', area: BAY, respawnSeconds: [25, 50] },
   { speciesId: 'squalo_martello', area: BAY, respawnSeconds: [60, 120] }, // visitors from the reef
   { speciesId: 'squalo_tigre', area: BAY, respawnSeconds: [80, 150] },
-  { speciesId: 'squalo_bianco', area: BAY, respawnSeconds: [120, 220] }, // rarer
   { speciesId: 'tonno', area: BAY_HIGH, respawnSeconds: [20, 45] }, // a school of bluefin tuna
   { speciesId: 'delfino', area: BAY, respawnSeconds: [40, 80] },
-  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [150, 300] }, // the Delta: a superpredator, rare (4 ottobre)
-  { speciesId: 'coccodrillo_marino', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [240, 420] },
   { speciesId: 'varano_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [35, 70] },
   { speciesId: 'coccodrillo_nilo', area: [delta(1960), 30, delta(2440), 215], respawnSeconds: [90, 160] },
   // the Mare di Ghiaccio (hand-made, before the endless sea)
