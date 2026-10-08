@@ -750,3 +750,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Uno stile di cockpit per nave** (`cockpitStyle` in `data/fleet.ts`, classe `style-<nome>` sul cockpit): EH1 ed EH2 hanno "vapore", dai concept di Gemini del proprietario.
 - **Solo CSS e SVG** (`ui/cockpitSteam.css`): la ruggine è rumore SVG (`feTurbulence`) in un data URI, i rivetti sono sfumature radiali agli angoli, ottone e rame sono sfumature lineari, la leva e i tubi sono pseudo-elementi o div decorativi. Niente immagini nuove: è leggero, si adatta a ogni schermo e i testi restano veri. Lasciati fuori i draghi incisi dei concept: servirebbero immagini (eventualmente da Gemini, senza testo).
+
+## 9 ottobre 2026 — Ritocchi al motoscafo (v0.53.2)
+
+- **Vista:** nel motoscafo la telecamera è come quella del sub e del sottomarino (`BOAT.camera`), non quella del timone. Salendo sul motoscafo la vista cambia con la dissolvenza, come tra nave e sottomarino.
+- **Faro:** `lampAim` usa il verso del motoscafo; parte dalla prua e gira subito, senza la rotazione morbida della lampada del sub.
+- **Stiva:** `boatAfloat` tiene il mezzo mai sotto la superficie; nella stiva sale con l'apertura del suo portellone.

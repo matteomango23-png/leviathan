@@ -4,7 +4,7 @@
 import { BOAT, BOAT_TEXT } from '../../data/boats';
 import { boatModel, type BoatState } from '../boat';
 import type { GameEvent } from '../events';
-import { boatPath, boatPoint, helmPoint } from './geometry';
+import { boatAfloat, boatPath, boatPoint, helmPoint, holdPoint } from './geometry';
 import { boatBay, shipModel, shipTank } from './model';
 import { hatchT, type ShipState } from './ship';
 import { SHIP } from '../../data/ship';
@@ -83,7 +83,11 @@ export function stepBoatBay(g: BoatBayWorld, dt: number, events: GameEvent[]): b
   if (!s.owned || !b.owned) return false;
   const bay = boatBay(s);
   if (b.bay === 'docked') {
-    Object.assign(b, boatPath(s, 0, bay), { speed: 0, face: s.face, prop: 0 });
+    // in the hold; as its hatch opens it rises to float at the surface (before "Cala" is pressed)
+    const hold = holdPoint(s, bay);
+    const afloat = boatAfloat(s, bay);
+    const t = hatchT(s, bay);
+    Object.assign(b, { x: hold.x, y: hold.y + (afloat.y - hold.y) * t, speed: 0, face: s.face, prop: 0 });
     return false;
   }
   if (b.bay !== 'launching' && b.bay !== 'docking') return false;

@@ -89,9 +89,16 @@ export function bayPath(s: ShipPose, t: number, bay = subBay(s)): { x: number; y
   return { x: b.x + (c.x - b.x) * e, y: b.y + (c.y - b.y) * e };
 }
 
-/** Where a boat is along its ramp: 0 = in the hold … 1 = on the water below the ramp. */
+/** Where a boat floats in its hold with the hatch open: never under the sea surface (owner, 8 ottobre: in the
+ *  Expedition Hunter 2's hold it sat as low as the submarine, half under water). */
+export function boatAfloat(s: ShipPose, bay: number): { x: number; y: number } {
+  const h = holdPoint(s, bay);
+  return { x: h.x, y: Math.min(h.y, WORLD.surfaceY) };
+}
+
+/** Where a boat is along its ramp: 0 = afloat in the hold … 1 = on the water below the ramp. */
 export function boatPath(s: ShipPose, t: number, bay: number): { x: number; y: number } {
-  const a = holdPoint(s, bay);
+  const a = boatAfloat(s, bay);
   const b = boatPoint(s, bay);
   const e = t * t * (3 - 2 * t);
   return { x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e };

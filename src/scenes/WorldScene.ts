@@ -4,7 +4,7 @@ import { CAMERA, DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard, hatchT } from '../systems/ship/ship';
 import { boatBay, subBay } from '../systems/ship/model';
-import { boatEngineLevel } from '../systems/boat';
+import { boatEngineLevel, boatLength } from '../systems/boat';
 import { BoatView } from '../views/boatView';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
@@ -359,12 +359,17 @@ export class WorldScene extends Phaser.Scene {
     let da = lampAim(g) - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
     while (da < -Math.PI) da += Math.PI * 2;
-    this.lampAngle += da * Math.min(1, dt * 6);
+    // the boat's headlight turns with it at once (owner, 8 ottobre: "direttamente"), the diver's lamp gently
+    this.lampAngle += g.boat.aboard ? da : da * Math.min(1, dt * 6);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
-    const lamp = rider ?? d;
+    // in the speedboat the headlight sits on its bow
+    const b = g.boat;
+    const lamp = b.aboard
+      ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
+      : (rider ?? d);
     const glows = [
       ...this.places.glowSpots(g.gear),
       ...this.beasts.glowSpots(g),

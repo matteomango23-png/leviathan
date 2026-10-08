@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.2 — Motoscafo e moto d'acqua più vicini (9 ottobre 2026)
+
+- **Vista più vicina** sul motoscafo e sulla moto d'acqua, come col sottomarino: si vedono grandi, e più vai veloce più la vista guarda avanti.
+- **Il faro gira col mezzo:** parte dalla prua e punta subito dove vai, anche a sinistra.
+- **Motoscafo nella stiva:** aprendo il suo portellone sale a pelo d'acqua, invece di restare mezzo sommerso.
+
 ## v0.53.1 — Elica dell'EH2 più visibile (8 ottobre 2026)
 
 - Expedition Hunter 2: nuova immagine con l'elica che gira, più visibile.
