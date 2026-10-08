@@ -5,7 +5,7 @@ import { SaveError } from '../systems/save/saveData';
 import { toSave } from '../systems/game';
 import type { Session } from '../scenes/session';
 import { replayIntro } from '../systems/story';
-import { testMode } from '../systems/testTools';
+import { testMode, toggleTestMode } from '../systems/testTools';
 import { el } from './dom';
 import { openSeaMap } from './seaMapPanel';
 import { openBestiary } from './bestiary';
@@ -97,7 +97,18 @@ export class PauseMenu {
         'spostarli tra Safari, il gioco installato sulla Home e un altro telefono (hanno salvataggi separati). ' +
         'Prima di eliminare il gioco dalla Home esporta sempre: eliminandolo, il salvataggio si cancella.',
     );
-    el('p', 'menu-version', panel, `Versione ${pkg.version}`); // to check that the phone has the latest one
+    const version = el('p', 'menu-version', panel, `Versione ${pkg.version}`); // to check that the phone has the latest one
+    // TEMPORARY (owner, 8 ottobre): 5 taps on the version switch the test tools on or off (testTools.ts)
+    let taps = 0;
+    version.addEventListener('click', () => {
+      if (++taps < 5) return;
+      taps = 0;
+      this.say(
+        toggleTestMode()
+          ? 'Strumenti di prova accesi: chiudi e riapri la pausa, li trovi qui sopra.'
+          : 'Strumenti di prova spenti.',
+      );
+    });
 
     resume.addEventListener('click', onResume);
     exp.addEventListener('click', () => void this.doExport());
