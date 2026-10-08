@@ -113,11 +113,11 @@ export class HelmControls {
     this.fuelBar = el('div', 'helm-fuel', this.root);
     el('span', 'helm-fuel-ico', this.fuelBar, '⛽');
     this.fuelFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.fuelBar));
-    this.hatchBtn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
-    this.hatch2Btn = el('button', 'helm-btn', this.buttons, 'Apri portellone');
-    this.launchBtn = el('button', 'helm-btn', this.buttons, 'Cala sottomarino');
-    this.launchBoatBtn = el('button', 'helm-btn', this.buttons, 'Cala motoscafo');
-    this.diveBtn = el('button', 'helm-btn', this.buttons, 'Tuffati');
+    this.hatchBtn = el('button', 'helm-btn still-only', this.buttons, 'Apri portellone');
+    this.hatch2Btn = el('button', 'helm-btn still-only', this.buttons, 'Apri portellone');
+    this.launchBtn = el('button', 'helm-btn still-only', this.buttons, 'Cala sottomarino');
+    this.launchBoatBtn = el('button', 'helm-btn still-only', this.buttons, 'Cala motoscafo');
+    this.diveBtn = el('button', 'helm-btn still-only', this.buttons, 'Tuffati');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.objective = el('div', 'helm-objective', this.root);
 
@@ -258,7 +258,10 @@ export class HelmControls {
     this.buttons.classList.toggle('sub', info.mode !== 'ship');
     // under way the hatches and the dive cannot be used: they show only with the ship still (owner, 9 ottobre)
     const still = info.mode === 'ship' && info.still !== false;
-    for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn]) b.hidden = !still;
+    // they fade out under way and back in once still (owner, 9 ottobre: they popped in and out at once)
+    const ship = info.mode === 'ship';
+    for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn]) b.hidden = !ship;
+    this.buttons.classList.toggle('under-way', ship && !still);
     this.cockpitBtn.hidden = info.mode !== 'ship';
     this.engineBtn.hidden = info.mode === 'sub';
     const share = Math.max(0, Math.min(1, info.fuel / Math.max(1, info.tank)));
@@ -268,7 +271,7 @@ export class HelmControls {
     this.objective.hidden = !info.objective;
     if (info.objective && this.objective.textContent !== info.objective)
       this.objective.textContent = info.objective;
-    const hatches = still ? (info.hatches ?? []) : [];
+    const hatches = ship ? (info.hatches ?? []) : [];
     for (const [i, btn] of [this.hatchBtn, this.hatch2Btn].entries()) {
       const h = hatches[i];
       if (!h) {
@@ -278,8 +281,8 @@ export class HelmControls {
       if (btn.textContent !== h.text) btn.textContent = h.text;
       btn.classList.toggle('off', !info.hatchCanMove);
     }
-    this.launchBtn.hidden = !still || !info.canLaunch;
-    this.launchBoatBtn.hidden = !still || !info.canLaunchBoat;
+    this.launchBtn.hidden = !info.canLaunch;
+    this.launchBoatBtn.hidden = !info.canLaunchBoat;
     const boatLabel = `Cala ${info.boatName ?? 'motoscafo'}`;
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;
     this.engineBtn.classList.toggle('on', !!info.engineOn);

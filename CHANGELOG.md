@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.4 — Ritocchi alla schermata del timone (9 ottobre 2026)
+
+- La barra del carburante e i denti non si sovrappongono più.
+- Il sonar spento dice solo "Sonar"; acceso si illumina e mostra fondale e animali.
+- I pulsanti dei portelloni, "Cala" e "Tuffati" spariscono e ricompaiono **con una dissolvenza** quando parti e quando ti fermi.
+- Il tasto del motore ha lo stile degli altri pulsanti: bordo e simbolo dorati da spento, tutto pieno d'oro con il simbolo scuro da acceso.
+
 ## v0.53.3 — Schermata del timone più pulita (9 ottobre 2026)
 
 - Alla guida di nave, sottomarino o motoscafo spariscono **vita, ossigeno e gli animali** in alto. Restano i denti.
