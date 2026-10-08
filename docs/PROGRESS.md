@@ -1,5 +1,13 @@
 # Progressi
 
+## Cantiere: più navi e statistiche (8 ottobre 2026) → v0.52.0
+
+**Fatto:** flotta posseduta (`g.fleet`, salvataggio v20), cambio nave e vendita a metà prezzo (non l'Aurelia), categorie al cantiere, statistiche confrontabili con barre e differenze (`systems/ship/stats.ts`, `ui/shipStats.ts`).
+
+**Da provare sull'iPhone:** al cantiere guarda la scheda "Possedute". Compra l'EH1 e apri la sua pagina prima di comprarla: si vede il confronto con l'Aurelia. Poi "Usa questa nave" sull'Aurelia e "Vendi" sull'EH1.
+
+**Prossimo:** parte 4c (U-Boat), in Plan mode.
+
 ## Blocco 4b — Motoscafi e moto d'acqua (8 ottobre 2026) → v0.51.0
 
 **Fatto:** EH2, Poseidon e Imperium comprabili, con le immagini (portelloni uno per volta e insieme, reattori del Poseidon, elica del sottomarino imperiale); un portellone per vano (`ship.hatches`); motoscafo e moto d'acqua (`systems/boat.ts`, `ship/boatBay.ts`, `data/boats.ts`) con fusti di carburante per la nave; salvataggio v19.

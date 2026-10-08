@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.52.0 — Più navi, categorie, statistiche chiare (8 ottobre 2026)
+
+- **Puoi avere più navi.** Comprandone una nuova la vecchia resta tua, ormeggiata a Porto Fango con il suo carburante e i suoi mezzi. Al cantiere, su una nave posseduta, "Usa questa nave" la porta al molo.
+- **Vendere:** una nave posseduta che non usi si vende a metà del prezzo. L'Aurelia, regalo del nonno, non si vende.
+- **La nave nuova arriva col pieno.** Non c'è più la permuta.
+- **Categorie al cantiere:** Possedute · Navi da spedizione · Yacht · U-Boat. Sulle card c'è scritto "in uso" o "posseduta", e tre numeri chiave: velocità, autonomia, portata del sonar.
+- **Statistiche confrontabili:** ogni numero ha la sua barra e la differenza con la nave che usi, in verde se è meglio e in rosso se è peggio. Ripresa e frenata sono in secondi, l'autonomia in km. Il sonar dice in metri fino a dove sente le bestie grandi e le tane, e fino a che velocità funziona. Lo stesso confronto vale per i sottomarini e i motoscafi.
+
 ## v0.51.0 — Motoscafi, moto d'acqua e tre navi nuove (8 ottobre 2026)
 
 - **Tre navi nuove al cantiere di Porto Fango:**

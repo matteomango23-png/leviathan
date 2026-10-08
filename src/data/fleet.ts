@@ -55,6 +55,8 @@ export interface ShipModelDef {
   name: string;
   /** How premium it is, 1…5: the colour of its frame, like the rarity of the beasts (data/cards.ts RARITY). */
   tier: 1 | 2 | 3 | 4 | 5;
+  /** Its tab in the shipyard. */
+  category: ShipCategory;
   /** Sails in the game now (the others are shown in the shipyard, not sold yet). */
   ready: boolean;
   price: number; // teeth (0: Aurelio's gift)
@@ -88,6 +90,7 @@ const HULL_MIDDLE: BayHatch = { x: 0.5, y: 0.6, rampEnd: 0.9 };
 export const SHIP_MODELS: ShipModelDef[] = [
   {
     id: 'aurelia',
+    category: 'spedizione',
     tier: 1,
     name: 'Aurelia',
     ready: true,
@@ -134,6 +137,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'eh1',
+    category: 'spedizione',
     tier: 2,
     name: 'Expedition Hunter 1',
     ready: true,
@@ -178,6 +182,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'whale',
+    category: 'uboat',
     tier: 2,
     name: 'U-Boat Whale Exploration',
     ready: false,
@@ -199,6 +204,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'imperium',
+    category: 'spedizione',
     tier: 3,
     name: 'Imperium Explorer VI',
     ready: true,
@@ -255,6 +261,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'stormtrooper',
+    category: 'uboat',
     tier: 3,
     name: 'U-Boat Stormtrooper',
     ready: false,
@@ -276,6 +283,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'poseidon',
+    category: 'yacht',
     tier: 4,
     name: 'Poseidon Yacht',
     ready: true,
@@ -324,6 +332,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'eh2',
+    category: 'spedizione',
     tier: 4,
     name: 'Expedition Hunter 2',
     ready: true,
@@ -380,6 +389,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'nightmare',
+    category: 'uboat',
     tier: 5,
     name: 'Ocean’s Nightmare',
     ready: false,
@@ -408,5 +418,16 @@ export const SHIP_MODELS: ShipModelDef[] = [
 /** The ship you get from Aurelio. */
 export const FIRST_SHIP = 'aurelia';
 
-/** Trading in your ship for a new one: this share of its price comes back. Tuning. */
-export const TRADE_IN_SHARE = 0.25;
+/** Selling a ship you own (not the one in use): this share of its price comes back (owner, 8 ottobre). Tuning. */
+export const SELL_SHARE = 0.5;
+
+/** Aurelio's gift: it is never sold, so you always have a ship (owner, 8 ottobre). */
+export const KEEP_FOREVER = 'aurelia';
+
+/** The kinds of ship, the shipyard's tabs (owner, 8 ottobre), after "Possedute". */
+export type ShipCategory = 'spedizione' | 'yacht' | 'uboat';
+export const SHIP_CATEGORIES: { id: ShipCategory; name: string }[] = [
+  { id: 'spedizione', name: 'Navi da spedizione' },
+  { id: 'yacht', name: 'Yacht' },
+  { id: 'uboat', name: 'U-Boat' },
+];

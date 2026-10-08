@@ -3,6 +3,7 @@ import { START } from '../../data/worldLayout';
 import { saveSub, subWakePoint, type SubState } from '../submarine';
 import { saveShip, type ShipState } from '../ship/ship';
 import { saveBoat, type BoatState } from '../boat';
+import type { MooredShip } from '../ship/shipyard';
 import { PORTS, type PortDef } from '../../data/economy';
 import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
@@ -24,6 +25,7 @@ export interface SaveSource extends Pick<
   sub: SubState;
   ship: ShipState;
   boat: BoatState;
+  fleet: MooredShip[];
   hunts: SaveData['hunts'];
   huntPinned: string | null;
   playTime: number;
@@ -97,6 +99,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.sub = saveSub(g.sub);
   s.ship = saveShip(g.ship);
   s.boat = saveBoat(g.boat);
+  s.fleet = g.fleet.map((m) => structuredClone(m));
   s.hunts = structuredClone(g.hunts);
   s.huntPinned = g.huntPinned;
   s.legendsGone = [...g.beasts.gone];

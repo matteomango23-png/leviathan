@@ -1,4 +1,29 @@
 /* The shipyard of Porto Fango (ui/shipyardPanel.ts): big cards framed in the colour of their rarity. */
+.yard-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.yard-tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 106, 0.5);
+  background: transparent;
+  color: #f1e9da;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.yard-tab.on {
+  background: #c9a86a;
+  color: #14181a;
+  font-weight: 800;
+}
+.yard-keys {
+  font-size: 11px;
+  opacity: 0.85;
+}
 .yard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -183,13 +208,54 @@
   gap: 3px;
   font-size: 13px;
 }
-.yard-row {
+/* the numbers (ui/shipStats.ts): value, a bar against the best of the fleet, the difference from yours */
+.stat-compare {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.stat-group {
+  margin-top: 6px;
+  font-weight: 800;
+  color: #f1e9da;
+}
+.stat-row {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 92px 1fr auto;
+  align-items: center;
   gap: 8px;
 }
-.yard-k {
+.stat-k {
   color: #c9a86a;
+}
+.stat-v {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.stat-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(241, 233, 218, 0.12);
+  overflow: hidden;
+}
+.stat-fill {
+  height: 100%;
+  background: var(--rarity, #c9a86a);
+}
+.stat-diff {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+.stat-diff.good {
+  color: #6fd38f;
+  opacity: 1;
+}
+.stat-diff.bad {
+  color: #e2705a;
+  opacity: 1;
 }
 .yard-foot {
   margin-top: auto;
