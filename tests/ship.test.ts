@@ -289,11 +289,48 @@ describe('la nave non si blocca mai', () => {
     expect(Math.abs(g.ship.x - PORTO_FANGO.shipDock)).toBeLessThan(25);
   });
 
-  it('rompe la lastra di ghiaccio senza rallentare (8 ottobre); il canale si richiude solo lontano', () => {
-    // an ice field of the Banchisa
+  /** The start of an ice field of the Banchisa. */
+  function iceField(): number {
     let at = 0;
     for (let x = ENDLESS.startX; x < 400000 && !at; x += 50)
       if (Array.from({ length: 10 }, (_, i) => x + i * 20).every((c) => iceIn(map, c, c + 20))) at = x;
+    return at;
+  }
+
+  it('il ghiaccio si rompe dietro la prua, non davanti, e lancia schegge (8 ottobre)', () => {
+    const at = iceField();
+    expect(at).toBeGreaterThan(0);
+    const g: ShipWorld = {
+      ship: newShip({
+        x: at - 700,
+        face: 1,
+        hatchOpen: false,
+        bay: 'docked',
+        aboard: true,
+        fuel: 1e9,
+        model: 'aurelia',
+      }),
+      map,
+      sub: { owned: true, aboard: false },
+      diver: { x: at - 700, y: 0, vx: 0, vy: 0, face: 1 },
+    };
+    const events: GameEvent[] = [];
+    for (let t = 0; t < 12 && !events.some((e) => e.type === 'iceCracked'); t += 1 / 30)
+      sailShip(g, { throttle: 1, dir: 1, dive: 0 }, 1 / 30, events, () => false);
+    const crack = events.find((e) => e.type === 'iceCracked') as { x: number } | undefined;
+    expect(crack).toBeDefined();
+    // the bow is already over the ice when it cracks; the ice just ahead of it is still whole
+    expect(crack!.x).toBeGreaterThan(at);
+    expect(iceIn(map, crack!.x + 2, crack!.x + 6)).toBe(true);
+    // and every broken tile is behind the bow
+    for (const b of g.ship.broken) expect(map.tileOf(b.i).tx * WORLD.tileSize).toBeLessThan(crack!.x);
+    // shards fly for a moment (the view reads iceT)
+    expect(g.ship.iceT).toBeGreaterThan(0);
+    expect(g.ship.iceT).toBeLessThanOrEqual(SHIP.iceCrackSeconds);
+  });
+
+  it('rompe la lastra di ghiaccio senza rallentare (8 ottobre); il canale si richiude solo lontano', () => {
+    const at = iceField();
     expect(at).toBeGreaterThan(0);
     const { g, events, lanes } = sail(at - 700, 1, 12);
     expect(events.some((e) => e.type === 'iceCracked')).toBe(true);

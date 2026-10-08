@@ -1,5 +1,13 @@
 # Progressi
 
+## Onda di prua e ghiaccio (8 ottobre 2026) → v0.50.3
+
+**Fatto:** onda di prua che cresce con la velocità, schegge di ghiaccio entrando nella banchisa (senza onda nel ghiaccio), il ghiaccio si rompe dietro la prua (`SHIP.iceBehindBow`, `bowU` in `picture` di `data/fleet.ts`). Gli effetti stanno in `views/shipFx.ts`.
+
+**Da provare sull'iPhone:** a tutto gas guarda l'onda davanti alla prua (più alta veloce, piccola piano); vai verso est fino al Mare di Ghiaccio: la lastra si rompe al passaggio della prua e volano le schegge.
+
+**Per le altre navi:** quando arrivano le loro immagini di profilo, aggiungere in `data/fleet.ts` le ciminiere (`stacks`) e il punto della prua sull'acqua (`bowU`): fumo e onda arrivano da soli.
+
 ## Fumo a vapore e attracco (8 ottobre 2026) → v0.50.2
 
 **Fatto:** fumo a nuvolette che restano nell'aria (view con stato, `SHIP.smoke`); attracco automatico a Porto Fango e alla fine del mare (`SHIP.approach`: la velocità segue la curva di frenata).
