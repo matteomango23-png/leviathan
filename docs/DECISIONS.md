@@ -745,3 +745,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Categorie:** `category` per nave (`SHIP_CATEGORIES`); il cantiere apre sulla scheda "Possedute".
 - **Statistiche:** calcolate in `systems/ship/stats.ts` dai dati, mai a mano. Ripresa = velocità / accelerazione, frenata = velocità / frenata, sonar in metri (`HUNT_RULES.bigEchoRange` e `sonarRange` × la portata). La barra è rispetto alla nave migliore di quella riga; la differenza è con la nave in uso (per i mezzi, con il mezzo dello stesso tipo). Il nome del sonar ("buono") non si mostra più.
 - **Salvataggio v20:** `fleet`.
+
+## 8 ottobre 2026 — Cockpit a vapore (v0.53.0)
+
+- **Uno stile di cockpit per nave** (`cockpitStyle` in `data/fleet.ts`, classe `style-<nome>` sul cockpit): EH1 ed EH2 hanno "vapore", dai concept di Gemini del proprietario.
+- **Solo CSS e SVG** (`ui/cockpitSteam.css`): la ruggine è rumore SVG (`feTurbulence`) in un data URI, i rivetti sono sfumature radiali agli angoli, ottone e rame sono sfumature lineari, la leva e i tubi sono pseudo-elementi o div decorativi. Niente immagini nuove: è leggero, si adatta a ogni schermo e i testi restano veri. Lasciati fuori i draghi incisi dei concept: servirebbero immagini (eventualmente da Gemini, senza testo).

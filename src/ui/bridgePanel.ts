@@ -125,7 +125,7 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
     const m = subModel(sub.model);
     const docked = ship.bay === 'docked';
     const step = FUEL.transferStep;
-    const tp = panel(wrap, 'Travaso carburante');
+    const tp = panel(wrap, 'Travaso carburante', 'transfer');
     if (!docked)
       el('div', 'bridge-hint', tp, 'Il sottomarino è fuori dalla stiva: il travaso si fa con lui a bordo.');
     const row = el('div', 'bridge-buttons', tp);

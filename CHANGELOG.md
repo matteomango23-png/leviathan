@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.53.0 — Cockpit a vapore, eliche dell'EH2 (8 ottobre 2026)
+
+- **Nuovo cockpit "a vapore"** per Expedition Hunter 1 e 2, ricreato dai concept del proprietario:
+  - lamiere arrugginite con i rivetti, tubi di rame con la valvola, titolo in ottone;
+  - schede a placca, con quella aperta in ottone acceso;
+  - strumenti rotondi con la ghiera d'ottone, il quadrante crema e la lancetta rossa; il meteo nella ghiera di rame;
+  - carta nautica e sonar in cornici metalliche, card del diario a placca;
+  - una leva accanto al travaso e il razzo di soccorso rosso.
+
+  Le altre navi tengono il cockpit di prima.
+- **Expedition Hunter 2:** quando dai gas si vedono le eliche che girano.
+
 ## v0.52.2 — Pagina della nave sistemata (8 ottobre 2026)
 
 - La pagina della nave al cantiere ora sta dentro lo schermo dell'iPhone e **scorre col dito**; prima le righe uscivano dal riquadro e non si potevano raggiungere.

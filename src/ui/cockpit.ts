@@ -17,6 +17,7 @@ import { renderSonar } from './sonarScreen';
 import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
+import './cockpitSteam.css';
 
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
@@ -48,7 +49,15 @@ export class Cockpit {
     private readonly g: GameState,
     private readonly onClose: () => void,
   ) {
-    this.root = el('div', 'port cockpit', parent);
+    const look = shipModel(g.ship).cockpitStyle;
+    this.root = el('div', `port cockpit${look ? ` style-${look}` : ''}`, parent);
+    if (look === 'vapore') {
+      // copper pipes and a valve wheel along the walls (cockpitSteam.css): look only
+      const pipes = el('div', 'steam-pipes', this.root);
+      el('div', 'pipe-v', pipes);
+      el('div', 'pipe-h', pipes);
+      el('div', 'valve', pipes);
+    }
     parent.classList.add('in-port'); // the sea's controls hide while the cockpit is open
     const top = el('div', 'port-top', this.root);
     el('span', '', el('div', 'port-title', top), 'Cockpit');
