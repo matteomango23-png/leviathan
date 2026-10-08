@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.52.1 — Strumenti di prova dal gioco sulla Home (8 ottobre 2026)
+
+- **Temporaneo:** toccando 5 volte "Versione …" in fondo al menu di pausa si accendono (o spengono) gli strumenti di prova, anche nel gioco installato sulla Home. Nuovo pulsante "+50.000 denti" per provare tutte le navi. Da togliere prima della fine del gioco.
+
 ## v0.52.0 — Più navi, categorie, statistiche chiare (8 ottobre 2026)
 
 - **Puoi avere più navi.** Comprandone una nuova la vecchia resta tua, ormeggiata a Porto Fango con il suo carburante e i suoi mezzi. Al cantiere, su una nave posseduta, "Usa questa nave" la porta al molo.

@@ -40,11 +40,28 @@ export function healAll(g: GameState): void {
 
 export const testMode = (): boolean => {
   try {
-    return new URLSearchParams(window.location.search).has('prove');
+    return new URLSearchParams(window.location.search).has('prove') || localStorage.getItem(TEST_KEY) === '1';
   } catch {
     return false;
   }
 };
+
+/**
+ * TEMPORARY (owner, 8 ottobre 2026: "ricordiamoci di toglierlo"): the test tools switched on from inside the game
+ * installed on the Home screen, where no ?prove link reaches (5 taps on the version in the pause menu). Remove
+ * before the game is finished: see docs/PROGRESS.md.
+ */
+const TEST_KEY = 'leviatano-prove';
+export function toggleTestMode(): boolean {
+  try {
+    const on = localStorage.getItem(TEST_KEY) !== '1';
+    if (on) localStorage.setItem(TEST_KEY, '1');
+    else localStorage.removeItem(TEST_KEY);
+    return on;
+  } catch {
+    return false;
+  }
+}
 
 /** Every team beast gains levels (for trying moves, growth and final forms). */
 export function raiseTeam(g: GameState, levels: number): void {

@@ -1,5 +1,11 @@
 # Progressi
 
+## ⚠️ Da togliere prima della fine: strumenti di prova sulla Home (v0.52.1)
+
+Il proprietario ha chiesto di ricordarlo: `toggleTestMode` in `systems/testTools.ts` e i 5 tocchi sulla versione in `ui/pauseMenu.ts` accendono gli strumenti di prova anche senza il link `?prove`. Togliere entrambi (e la chiave `leviatano-prove` resta innocua) quando le prove non servono più.
+
+**Da provare sull'iPhone:** pausa → scorri in fondo → tocca 5 volte "Versione 0.52.1" → chiudi e riapri la pausa → "+50.000 denti".
+
 ## Cantiere: più navi e statistiche (8 ottobre 2026) → v0.52.0
 
 **Fatto:** flotta posseduta (`g.fleet`, salvataggio v20), cambio nave e vendita a metà prezzo (non l'Aurelia), categorie al cantiere, statistiche confrontabili con barre e differenze (`systems/ship/stats.ts`, `ui/shipStats.ts`).
