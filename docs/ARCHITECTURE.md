@@ -35,6 +35,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/ship.ts` | La nave da spedizione: regalo di Aurelio a Porto Fango, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
 | `ship/hatch.ts` | Portelloni (uno per vano), rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
 | `ship/boatBay.ts` | Il vano del motoscafo o della moto d'acqua: cala sull'acqua, Aggancia, travaso dei fusti nella nave all'aggancio. |
+| `ship/gadgets.ts` | L'Ocean's Nightmare: il drone (che è anche il suo sottomarino) fa la ricognizione da solo degli animali a portata del sonar e porta il resoconto; la bestia scelta diventa il bersaglio e la sfera va a bloccarla per un minuto, poi torna e si ricarica. Numeri in `data/nightmare.ts`. |
+| `tracking.ts` | Il bersaglio seguito (residente del mare aperto o bestia della costa): dov'è ora, gli animali a portata del sonar, la bussola, il salvataggio del bersaglio. |
 | `ship/uboat.ts` | Gli U-Boat: immersione con la leva fino alla profondità del modello, scafo che urta le rocce, aria (avviso, risalita automatica, ricarica a galla), passaggio sotto il ghiaccio. |
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave del modello (linea d'acqua, portellone, rampa, timone, scafo). |
 | `ship/model.ts` | La nave che hai (`data/fleet.ts`): lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar, immagine. |
@@ -106,6 +108,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | File | Cosa fa |
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
+| `compass.ts`, `reconPanel.ts`, `gadgets.css` | La bussola verso la bestia seguita e il resoconto del drone dell'Ocean's Nightmare. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
 | `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca: schede, scheda completa, "Segui". |
 | `cockpit.ts`, `cockpit.css` | Il cockpit della nave: Plancia, Sonar, Diario, Recinto e Zaino. |

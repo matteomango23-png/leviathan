@@ -91,8 +91,6 @@ export interface ShipModelDef {
 }
 
 const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
-/** A hatch not placed on a picture yet (ships of part 4d). */
-const HULL_MIDDLE: BayHatch = { x: 0.5, y: 0.6, rampEnd: 0.9 };
 
 export const SHIP_MODELS: ShipModelDef[] = [
   {
@@ -439,7 +437,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     category: 'uboat',
     tier: 5,
     name: 'Ocean’s Nightmare',
-    ready: false,
+    ready: true,
     price: 50000,
     lengthM: 90,
     knots: 22,
@@ -451,14 +449,47 @@ export const SHIP_MODELS: ShipModelDef[] = [
     sonar: { range: 2, maxKnots: 18, name: 'il migliore' },
     pool: 5,
     bays: [
-      // hatches placed on its picture in part 4d
-      { kind: 'drone', model: 'drone_nightmare', name: 'Drone sottomarino', card: 'drone_nightmare', hatch: HULL_MIDDLE },
-      { kind: 'sphere', model: 'sfera_nightmare', name: 'Sfera blocca-bestie', card: 'sfera_nightmare', hatch: HULL_MIDDLE },
+      // the drone is a submarine too (owner, 9 ottobre: you can also drive it by hand); on its own it scouts the
+      // beasts the sonar hears (systems/ship/recon.ts)
+      {
+        kind: 'sub',
+        model: 'drone_nightmare',
+        name: 'Drone sottomarino',
+        card: 'drone_nightmare',
+        hatch: { x: 0.59, y: 0.47, rampEnd: 0.7 },
+        open: 'nave_nightmare_aperta_1',
+      },
+      // the sphere goes by itself to the beast you pick from the drone's report and holds it (systems/ship/sphere.ts)
+      {
+        kind: 'sphere',
+        model: 'sfera_nightmare',
+        name: 'Sfera blocca-bestie',
+        card: 'sfera_nightmare',
+        hatch: { x: 0.35, y: 0.47, rampEnd: 0.67 },
+        open: 'nave_nightmare_aperta_2',
+      },
     ],
-    special: 'U-Boat gigante, si immerge fino a 500 m',
+    special: 'U-Boat gigante, fino a 500 m: drone da ricognizione e sfera che blocca le bestie',
     note: 'La regina delle spedizioni: non la più veloce, ma la più forte',
     cockpit: ALL_TABS,
     card: 'nave_nightmare',
+    dive: { maxDepthM: 500, airSeconds: 480, sinkSpeed: 20, riseSpeed: 25 },
+    art: {
+      closed: 'nave_nightmare',
+      open: 'nave_nightmare_aperta',
+      moving: 'nave_nightmare_moto',
+      stacks: [],
+      picture: {
+        aspect: 781 / 1400,
+        waterline: 0.48,
+        keel: 0.64,
+        helmX: 0.37,
+        deckY: 0.29,
+        propX: 0.03,
+        propY: 0.5,
+        bowU: 0.96,
+      },
+    },
   },
 ];
 

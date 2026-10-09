@@ -1,0 +1,130 @@
+/* The Ocean's Nightmare's compass and the drone's report (part 4d). */
+#ui .compass {
+  position: absolute;
+  left: 50%;
+  top: calc(10px + var(--safe-t));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 2 * var(--side));
+  box-sizing: border-box;
+  padding: 4px 6px 4px 10px;
+  border-radius: 18px;
+  background: rgba(30, 6, 6, 0.72);
+  border: 1px solid rgba(255, 70, 60, 0.6);
+  color: #ffd2c8;
+  font-size: 13px;
+  pointer-events: auto;
+}
+#ui.driving .compass {
+  top: calc(84px + var(--safe-t));
+}
+#ui .compass-arrow {
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  font-size: 18px;
+  color: #ff5a4a;
+  text-shadow: 0 0 6px rgba(255, 60, 40, 0.8);
+  transition: transform 0.15s linear;
+}
+#ui .compass-arrow.here {
+  animation: compass-here 1s ease-in-out infinite;
+}
+@keyframes compass-here {
+  50% {
+    opacity: 0.35;
+  }
+}
+#ui .compass-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#ui .compass-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 70, 60, 0.5);
+  background: transparent;
+  color: #ffd2c8;
+  font-size: 15px;
+  padding: 0;
+}
+
+#ui .recon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px - var(--safe-l) - var(--safe-r)));
+  max-height: calc(100vh - 32px - var(--safe-t) - var(--safe-b));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(10, 4, 4, 0.94);
+  border: 1px solid rgba(255, 70, 60, 0.55);
+  box-shadow: 0 0 30px rgba(255, 40, 30, 0.25);
+  color: var(--ink);
+  pointer-events: auto;
+  z-index: 20;
+}
+#ui .recon-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#ui .recon-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ff8a7a;
+  letter-spacing: 1px;
+}
+#ui .recon-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 70, 60, 0.5);
+  background: transparent;
+  color: #ffd2c8;
+  font-size: 18px;
+}
+#ui .recon-note {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+#ui .recon-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+#ui .recon-card {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 90, 74, 0.35);
+  background: rgba(60, 12, 10, 0.55);
+  color: var(--ink);
+  font: inherit;
+}
+#ui .recon-card.on {
+  border-color: #ff5a4a;
+  box-shadow: 0 0 10px rgba(255, 60, 40, 0.5);
+}
+#ui .recon-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffd2c8;
+}
+#ui .recon-line {
+  font-size: 11px;
+  color: var(--muted);
+}

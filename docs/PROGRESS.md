@@ -1,5 +1,31 @@
 # Progressi
 
+## Parte 4d — Ocean's Nightmare (9 ottobre 2026) → v0.57.0
+
+**Fatto:**
+- **Immagini** dalla cartella del desktop, girate con la prua a destra:
+  - chiusa (eliche ferme prese da un'altra immagine), in movimento, aperta, aperta 1 (drone), aperta 2 (sfera);
+  - la scritta "OCEAN'S NIGHTMARE" rigirata per leggersi andando verso est (verso ovest l'immagine si specchia, come tutte le navi);
+  - `sottomarino_drone`, `sfera_nightmare` (nuovo tipo `sfera_` in `npm run art`).
+- **Dati:** `data/fleet.ts` (`ready`, `dive` 500 m / 8 min, portelloni misurati), `data/submarine.ts` (`drone_nightmare`, `recon: true`), `data/nightmare.ts` (`RECON`, `SPHERE`, `COMPASS`).
+- **Sistemi:**
+  - `systems/ship/gadgets.ts`: ricognizione, sfera, bersaglio;
+  - `systems/tracking.ts`: dov'è il bersaglio, animali a portata, bussola, bersaglio salvato;
+  - `BeastState.held`: bestia bloccata in `encounters.ts`; i residenti addormentati restano fermi tramite `residentsNear(..., held)`.
+- **Interfaccia e vista:** `ui/compass.ts`, `ui/reconPanel.ts`, `views/nightmareView.ts`; pulsanti "Ricognizione" e "Resoconto (N)" al timone.
+- **Test:** `tests/nightmare.test.ts` (7).
+
+**Da provare sull'iPhone:**
+1. Con i +50.000 denti di prova compra l'Ocean's Nightmare e vai in mare aperto.
+2. "Ricognizione", poi "Resoconto": scegli un animale.
+3. Guarda la sfera che parte.
+4. Tuffati e segui la bussola: l'animale deve essere fermo, con le scosse rosse.
+5. Prova "Cala drone" per guidarlo a mano.
+
+**Da regolare a gusto** (`data/nightmare.ts`): velocità del drone e della sfera, durata del blocco (60 s), ricarica (180 s).
+
+**Prossimo:** blocco 5 (sonar a 360° e strumenti), in Plan mode. Rimane da studiare il cockpit dipinto.
+
 ## Molo di Porto Fango solo in superficie (9 ottobre 2026) → v0.56.2
 
 **Fatto:** in `sailShip` (`systems/ship/ship.ts`) la frenata d'arrivo abbassa anche `helm.throttle` (`velocità / massima`). Frenata e limite ovest (`SHIP_WEST_X`) valgono solo se la nave non è `submerged`. A galla oltre il limite si può solo tornare a est. Due test in `tests/uboat.test.ts`.

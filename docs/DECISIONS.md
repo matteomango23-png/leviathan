@@ -796,3 +796,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Problema:** il meteo ripartiva sempre dal sereno con lo stesso seme. Sul PC, aperto a lungo, arrivavano pioggia e nebbia; sull'iPhone, che ricarica spesso, quasi solo sereno.
 - **Ora:** l'inizio è a caso, pesato e mai in tempesta, con un seme nuovo per ogni sessione. Lo stato (`from`, `to`, `blend`, `left`) va nel salvataggio come campo facoltativo: i salvataggi vecchi partono a caso. Il generatore non si salva: dopo il tempo in corso la sequenza è nuova.
+
+## 9 ottobre 2026 — Ocean's Nightmare: drone, sfera, bussola (v0.57.0)
+
+- **Il drone è il sottomarino della nave** (vano `kind: 'sub'`, modello con `recon`): calarlo, guidarlo e riagganciarlo usano il codice già esistente. La ricognizione funziona solo con il drone nella stiva. Mentre è fuori, il drone è disegnato da `nightmareView` e non può essere calato.
+- **Il drone passa attraverso le rocce:** va in linea retta, perché è quasi sempre fuori schermo e il viaggio deve durare poco (circa 10 s).
+- **Bersaglio per identità:** per i residenti del mare aperto si usa l'id (`r<tratto>.<n>`), così è lo stesso animale sia "addormentato" sia uscito davvero; per le bestie della costa si usa posto e specie. Se l'animale viene catturato, sconfitto o sparisce, compare "Traccia persa". Si salvano solo i bersagli residenti.
+- **Blocco:** `BeastState.held` (uno alla volta). La bestia bloccata non nuota e non attacca, ma si può combattere o domare. Un residente non ancora uscito resta fermo dove l'ha preso la sfera.
+- **Ricarica della sfera:** 3 minuti, aggiunta perché senza sarebbe troppo forte. Il proprietario non l'aveva chiesta: si cambia in `SPHERE.cooldownSeconds`.

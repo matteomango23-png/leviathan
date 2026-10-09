@@ -29,6 +29,8 @@ export interface SessionEvents {
   openPort: () => void;
   /** The Cockpit button at the helm of the ship. */
   openCockpit: () => void;
+  /** The Ocean's Nightmare: show the drone's report. */
+  openRecon: () => void;
 }
 
 export class Session {

@@ -1,6 +1,14 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
+import {
+  clearTarget,
+  newGadgets,
+  pickTarget,
+  startRecon,
+  stepGadgets,
+  type GadgetsState,
+} from './ship/gadgets';
 import { XP_RULES } from '../data/progression';
 import { DIVER, SARDINE } from '../data/diver';
 import { START, TILE, WORLD } from '../data/worldLayout';
@@ -114,6 +122,8 @@ export interface GameState extends StoryWorld {
   dens: Den[];
   /** The hunt you follow (pinned in the diary; saved). */
   huntPinned: string | null;
+  /** The Ocean's Nightmare's drone and sphere, and the beast you follow (ship/gadgets.ts; the beast saved). */
+  gadgets: GadgetsState;
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -166,6 +176,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     weather: createWeather(undefined, s.weather),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,
+    gadgets: newGadgets(s.target ?? null),
     dens,
     temples: createTemples(),
     story: createStory(s.story, save !== null, !!s.ship),
@@ -255,6 +266,11 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   if (input.action) doAction(g, events);
   if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
+  if (input.helmCmd === 'recon') startRecon(g, events);
+  const picked = g.gadgets.recon.report?.[input.pickTarget];
+  if (picked) pickTarget(g, picked, events);
+  if (input.clearTarget) clearTarget(g);
+  stepGadgets(g, dt, events);
   if (input.slot >= 0) useSlot(g, input.slot, events);
   stepSwarmCooldowns(g, dt);
 

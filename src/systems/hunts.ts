@@ -2,6 +2,7 @@
 // dens and are found in four steps, kept in the hunting diary (saved): the rumour heard at a harbour or an outpost,
 // the anomalous echo on the ship's sonar (close enough, in its weather), the traces under water by the den, then
 // the beast itself, which comes out of its den only in its weather. Also the sonar's readout at the helm.
+import type { Held } from './beastState';
 import { CONDITION_TEXT, HUNT_RULES, HUNTS, type HuntDef } from '../data/hunts';
 import { WILD_SPAWNS, type WildSpawnDef } from '../data/beasts';
 import { SEA_REGIONS } from '../data/regions';
@@ -109,7 +110,13 @@ export interface HuntWorld {
   weather: { from: WeatherId; to: WeatherId; blend: number };
   ship: ShipState;
   diver: { x: number; y: number; dead: boolean };
-  beasts: { wilds: WildBeast[]; gone: string[]; team: TeamBeast[]; residents: ResidentsState };
+  beasts: {
+    wilds: WildBeast[];
+    gone: string[];
+    team: TeamBeast[];
+    residents: ResidentsState;
+    held?: Held | null;
+  };
 }
 
 /**
@@ -198,7 +205,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
     if (isInWater(w) && Math.abs(w.x - x) <= range && w.y > WORLD.surfaceY)
       dot(formLengthM(w.form), w.x, w.y);
   const res = g.beasts.residents;
-  for (const c of residentsNear(res, x, range))
+  for (const c of residentsNear(res, x, range, g.beasts.held))
     if (res.awake[c.r.id] === undefined)
       dot(formLengthM({ speciesId: c.r.speciesId, variant: 'comune' }), c.x, c.y);
   HUNTS.forEach((h, i) => {
