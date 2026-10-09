@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.59.1 — Galleggiamento vero (9 ottobre 2026)
+
+- **Niente più "binario":** barche e navi galleggiano come corpi con un peso. L'acqua spinge su prua e poppa, la gravità le tira giù.
+- **Barche leggere:** veloci contro un'onda ripida vengono lanciate in aria, ricadono di poppa e piantano il muso in acqua, poi risalgono.
+- **Ribaltamento:** se la barca si ribalta diventa trasparente per un attimo e si raddrizza nello stesso punto; lo scafo perde un po'.
+- **Navi grandi:** sono pesanti. L'onda le alza e le abbassa lentamente, non si ribaltano, piantano la prua nelle creste e sollevano spruzzi bianchi.
+- **Onde come quelle vere:** creste appuntite e cavi larghi, sempre più marcati con il mare grosso.
+- **Linea dell'acqua:** non c'è più nessuna riga dritta. L'acqua davanti agli scafi segue l'onda, e scia e bollicine stanno sulla superficie mossa.
+- **Sottomarino in superficie:** galleggia anche lui sulle onde. Sott'acqua resta tranquillo come prima.
+- **Telecamera del motoscafo:** segue la barca quando vola.
+
 ## v0.59.0 — Il mare vivo (9 ottobre 2026)
 
 - **Le onde crescono col meteo:** quasi piatte col sereno, alte circa 3 m in tempesta. Si vedono alzarsi sull'orizzonte.

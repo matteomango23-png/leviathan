@@ -36,9 +36,10 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
     const C = BOAT.camera;
     return {
       x: b.x + b.face * (ahead + C.lookAhead * Math.min(1, b.speed / boatTopSpeed(b))),
-      y: b.y,
+      // it follows the boat up when a wave throws it in the air (ride.ts), so it never flies out of the view
+      y: b.y - Math.max(0, b.ride.h) * 0.7,
       viewH: C.viewHeightUnits,
-      minY: C.minY,
+      minY: C.minY - Math.max(0, b.ride.h) * 1.2,
     };
   }
   if (atHelmView(g)) {

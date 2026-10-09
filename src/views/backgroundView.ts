@@ -1,6 +1,7 @@
 // Screen-space background behind the rock: water colour by depth, sky, light rays,
 // distant painted ridges with parallax and drifting marine snow (prototype/prova-realistica.html).
 import Phaser from 'phaser';
+import { troughDepth } from '../systems/sea';
 import { SEA } from '../data/diver';
 import { WEATHER } from '../data/weather';
 import { WORLD } from '../data/worldLayout';
@@ -45,6 +46,7 @@ export class BackgroundView {
   private readonly flakes: { x: number; y: number; z: number; a: number }[] = [];
   private lastWaterY = NaN;
   private lastClouds = 0;
+  private lastWaves = NaN;
   private lastSize = '';
 
   constructor(
@@ -159,7 +161,9 @@ export class BackgroundView {
   }
 
   /** Water by depth and the sky above it, greyer and darker under clouds (0..1). */
-  private paintWater(v: ViewInfo, clouds: number): void {
+  /** @param below how far under the resting line the sky goes on (the deepest trough: the waves' view draws the
+   *  sea above it) */
+  private paintWater(v: ViewInfo, clouds: number, below: number): void {
     const g = this.waterTex.context;
     const top = v.cy - v.h / 2 / v.zoom;
     const span = v.h / v.zoom;
@@ -175,7 +179,7 @@ export class BackgroundView {
     for (let i = 0; i < WATER_ROWS; i++) {
       const wy = top + ((i + 0.5) / WATER_ROWS) * span;
       let c: [number, number, number];
-      if (wy < WORLD.surfaceY) {
+      if (wy < WORLD.surfaceY + below) {
         // from the horizon up to the top of the view, however wide it is (owner, 9 ottobre: with the big ships'
         // far view, all but a thin strip of it was the darkest colour)
         const t = Phaser.Math.Clamp(1 - (WORLD.surfaceY - wy) / skySpan, 0, 1);
@@ -195,7 +199,7 @@ export class BackgroundView {
   update(
     v: ViewInfo,
     time: number,
-    weather: { clouds: number; rays: number } = { clouds: 0, rays: 1 },
+    weather: { clouds: number; rays: number; waves?: number; wind?: number } = { clouds: 0, rays: 1 },
   ): void {
     const size = `${v.w}x${v.h}`;
     if (size !== this.lastSize) {
@@ -204,10 +208,16 @@ export class BackgroundView {
       this.paintRidge(this.mid, 5, v.w, v.h, 'mid');
       this.lastWaterY = NaN;
     }
-    if (!(Math.abs(v.cy - this.lastWaterY) < 0.5) || Math.abs(weather.clouds - this.lastClouds) > 0.02) {
+    const waves = weather.waves ?? 1;
+    if (
+      !(Math.abs(v.cy - this.lastWaterY) < 0.5) ||
+      Math.abs(weather.clouds - this.lastClouds) > 0.02 ||
+      Math.abs(waves - this.lastWaves) > 0.02
+    ) {
       this.lastWaterY = v.cy;
       this.lastClouds = weather.clouds;
-      this.paintWater(v, weather.clouds);
+      this.lastWaves = waves;
+      this.paintWater(v, weather.clouds, troughDepth({ waves: weather.waves ?? 1, wind: weather.wind ?? 0 }));
     }
     this.water.setDisplaySize(v.w, v.h);
     this.placeRidge(this.far, v, 'far');

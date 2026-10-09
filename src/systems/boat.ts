@@ -3,6 +3,7 @@
 // never breaks ice; dry, it crawls home on its reserve. Pure logic; ship/boatBay.ts moves it on its ramp,
 // views/boatView.ts draws it.
 import { BOAT, BOAT_MODELS, BOAT_TEXT, type BoatModel } from '../data/boats';
+import { newRide, settleRide, stepRide, type RideState } from './ride';
 import { SEA_STATE } from '../data/sea';
 import { boatWear, CALM_SEA, currentMult, type SeaWeather } from './sea';
 import { HELM } from '../data/ship';
@@ -43,6 +44,8 @@ export interface BoatState {
   iceWarn: number;
   /** Its hull (data/sea.ts boatWear; saved): at zero it goes back broken to the hold. */
   hull: number;
+  /** How it rides the waves now (ride.ts; not saved). */
+  ride: RideState;
 }
 
 export interface SavedBoat {
@@ -82,6 +85,7 @@ export function newBoat(saved: SavedBoat | null): BoatState {
     prop: 0,
     iceWarn: 0,
     hull: clamp(saved?.hull ?? m.hull, m.hull),
+    ride: newRide(),
   };
 }
 
@@ -126,9 +130,13 @@ export function sailBoat(
   dt: number,
   events: GameEvent[],
   sea: SeaWeather = CALM_SEA,
+  t = 0,
 ): void {
   const b = g.boat;
-  if (!b.owned || b.bay !== 'out') return;
+  if (!b.owned || b.bay !== 'out') {
+    settleRide(b.ride);
+    return;
+  }
   const m = boatModel(b.model);
   b.iceWarn = Math.max(0, b.iceWarn - dt);
   if (helm && helm.throttle > 0 && !b.engineOn) {
@@ -175,9 +183,16 @@ export function sailBoat(
     b.fuelWarned = true;
     events.push({ type: 'fuelOut', vehicle: 'boat' });
   }
+  const was = b.hull;
+  // light and short, fast into a wave it flies (ride.ts); flipped over, it stops and its hull takes the blow
+  if (stepRide(b.ride, b.x, b.face, boatLength(b), sea, t, dt)) {
+    b.speed = 0;
+    b.hull = Math.max(0, b.hull - m.hull * SEA_STATE.capsizeDamage);
+    events.push({ type: 'boatCapsized' });
+  }
+  if (b.ride.flipped > 0) b.speed = 0;
   if (b.aboard) Object.assign(g.diver, { x: b.x, y: b.y - 4, vx: b.face * b.speed, vy: 0, face: b.face });
   // fast through a rough sea the hull wears: half gone, a warning; gone, it goes back broken to the hold (vehicles.ts)
-  const was = b.hull;
   if (b.aboard) b.hull = Math.max(0, b.hull - boatWear(b.speed / boatTopSpeed(b), sea, dt));
   if (was > m.hull / 2 && b.hull <= m.hull / 2) events.push({ type: 'boatHullHalf' });
   if (was > 0 && b.hull <= 0) events.push({ type: 'boatWrecked' });

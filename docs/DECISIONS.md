@@ -832,3 +832,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Le onde si disegnano dietro i mezzi** (`seaSurfaceView`): sopra la linea di riposo il mare, sotto il cielo. La linea della superficie non passa più sopra gli scafi.
 - **La torbidità riusa il "murk" del Delta** (lampada più corta, acqua più scura e verdastra): il Delta resta il massimo. Le bestie lontane diventano sagome con una tinta quasi nera.
 - **Una partita nuova parte col sereno;** i salvataggi tengono il loro meteo. In questo modo i test, che creano partite nuove, non dipendono dal meteo a caso.
+
+## 9 ottobre 2026 — Galleggiamento su due punti (v0.59.1)
+
+- **Il proprietario:** "non è un binario", con i suoi video (barca lanciata da un'onda, petroliera che sfonda le onde, onde orbitali Nortek).
+- **Modello:** ogni scafo galleggia su due punti, prua e poppa, con una forza d'acqua proporzionale all'immersione e uno smorzamento sulla velocità relativa all'acqua. La velocità comprende il correre contro l'onda: una barca veloce viene lanciata da una cresta. Per il resto c'è solo la gravità.
+  - Rigidità e smorzamento passano da "moto d'acqua" a "nave di 90 m" secondo la lunghezza: le barche leggere possono superare l'inclinazione limite e si ribaltano, le navi no.
+  - Passi piccoli (1/120 s) per la stabilità.
+- **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.

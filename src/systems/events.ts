@@ -55,6 +55,8 @@ export type GameEvent =
   | { type: 'boatLeft' }
   /** Rough seas wear the small boats' hulls (sea.ts): half gone, gone (back to the hold), mended at a harbour. */
   | { type: 'boatHullHalf' }
+  /** A wave flipped the boat over (ride.ts): set upright a moment later, its hull worse. */
+  | { type: 'boatCapsized' }
   | { type: 'boatWrecked' }
   | { type: 'boatRepaired'; cost: number }
   | { type: 'boatBroken' }

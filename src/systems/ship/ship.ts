@@ -4,6 +4,7 @@
 // the water: it sails round it, on the far lane, behind it. With a hatch open it does not move. Pure logic;
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP } from '../../data/ship';
+import { newRide, settleRide, stepRide, type RideState } from '../ride';
 import { CALM_SEA, currentMult, type SeaWeather } from '../sea';
 import { FIRST_SHIP } from '../../data/fleet';
 import { PORTO_FANGO } from '../../data/economy';
@@ -53,6 +54,8 @@ export interface ShipState {
   /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
    *  the propeller picture and its bubbles follow it). */
   prop: number;
+  /** How it rides the waves now (ride.ts; not saved). */
+  ride: RideState;
   /** Seconds the bow keeps breaking ice (not saved; > 0 while it cuts): shards fly, the bow wave is gone. */
   iceT: number;
   /** U-Boats (block 4c, ship/uboat.ts): units under its floating line (0 = afloat), and seconds of air left. */
@@ -119,6 +122,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     aboard: saved?.aboard ?? false,
     engineOn: saved?.engineOn ?? false,
     prop: 0,
+    ride: newRide(),
     approaching: false,
     iceT: 0,
     dive: Math.max(0, saved?.dive ?? 0),
@@ -186,6 +190,7 @@ export function sailShip(
   events: GameEvent[],
   far: (x: number) => boolean,
   sea: SeaWeather = CALM_SEA,
+  t = 0,
 ): number[] {
   const s = g.ship;
   if (!s.owned) return [];
@@ -292,6 +297,9 @@ export function sailShip(
     changed.push(...cut);
   }
   changed.push(...stepDive(g.map, s, helm, dt, events));
+  // on the waves: a body floating on its bow and stern (ride.ts); under water a U-Boat no longer feels them
+  if (submerged(s)) settleRide(s.ride);
+  else stepRide(s.ride, s.x, s.face, shipLength(s), sea, t, dt);
   changed.push(...refreeze(g.map, s.broken, dt, far));
 
   if (s.aboard) {

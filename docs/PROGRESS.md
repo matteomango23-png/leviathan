@@ -1,5 +1,22 @@
 # Progressi
 
+## Galleggiamento vero (9 ottobre 2026) → v0.59.1
+
+**Fatto:**
+- `systems/ride.ts`: corpo su due punti (prua e poppa), spinta dell'acqua che dipende da quanto è immerso e dalla velocità relativa all'onda, gravità.
+  - Rigidità e smorzamento secondo la lunghezza (`SEA_STATE.ride`).
+  - Ribaltamento delle barche leggere (`flipped`, `boatCapsized`, −20% di scafo).
+  - `plunge` per gli spruzzi.
+- **Onde:** trocoidali (`sharpness`).
+- **Superficie:** `troughDepth`. Lo sfondo dipinge il cielo fino al cavo più profondo e `seaSurfaceView` disegna il mare pieno dalla linea dell'onda in giù, quindi niente righe dritte.
+- **Scafi:** `views/seaFx.ts`: `waterOver` (acqua davanti agli scafi lungo l'onda) e spruzzi. Scie sulle onde.
+- **Sottomarino:** `SubmarineView` lo fa galleggiare in superficie.
+
+**Da provare sull'iPhone:**
+1. In tempesta, motoscafo a tutta velocità: salti, atterraggi di muso, ribaltamenti.
+2. La nave grande a tutta velocità: prua nelle creste, spruzzi.
+3. Controlla che non si veda nessuna linea dritta dell'acqua.
+
 ## Il mare vivo (9 ottobre 2026) → v0.59.0
 
 **Fatto:**
