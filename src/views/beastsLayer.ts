@@ -3,7 +3,7 @@
 // battle, not in the open sea.
 import Phaser from 'phaser';
 import { CLARITY } from '../data/sea';
-import { isShape } from '../systems/clarity';
+import { shapeShare } from '../systems/clarity';
 import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, formKey, speciesOf, tailUpDown, type BeastForm } from '../systems/beasts/forms';
@@ -30,12 +30,22 @@ const SCHOOL_PLACES: [number, number][] = [
 
 const MAX_SCHOOL = Math.max(0, ...Object.values(BEAST_TEMPER).map((t) => t.school ?? 0));
 
+/** A colour between two (0 … 1). */
+function mixTint(a: number, b: number, t: number): number {
+  const ch = (sh: number): number =>
+    Math.round(((a >> sh) & 255) + (((b >> sh) & 255) - ((a >> sh) & 255)) * t);
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
 export class BeastsLayer {
   private readonly wild: BeastSprite[];
   /** The rest of a school (barracudas): drawn around the leader, who is the one you fight. */
   private readonly school: BeastSprite[][];
   private readonly mount: BeastSprite;
   private readonly glow: Phaser.GameObjects.Graphics;
+  /** How much each wild beast shows as a dark shape now (easing towards the water's own), and the last time. */
+  private readonly shapeNow: number[] = [];
+  private lastTime = NaN;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
     this.glow = scene.add.graphics();
@@ -75,8 +85,8 @@ export class BeastsLayer {
   /** @param shapes murky water (clarity.ts): how murky, and where your light is (the beasts far from it are dark
    *  shapes) */
   update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
-    const shade = (x: number, y: number): number | undefined =>
-      shapes && isShape(shapes.murk, Math.hypot(x - shapes.x, y - shapes.y)) ? CLARITY.shapeTint : undefined;
+    const dt = Number.isNaN(this.lastTime) ? 1 : Math.max(0, Math.min(1, time - this.lastTime));
+    this.lastTime = time;
     this.glow.clear();
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
@@ -84,8 +94,15 @@ export class BeastsLayer {
       if (!isInWater(w)) {
         s.hide();
         for (const m of mates) m.hide();
+        this.shapeNow[i] = NaN;
         return;
       }
+      // a dark shape little by little (owner, 9 ottobre: seen, then a shape a second later at a stroke)
+      const want = shapes ? shapeShare(shapes.murk, Math.hypot(w.x - shapes.x, w.y - shapes.y)) : 0;
+      const was = this.shapeNow[i] ?? NaN;
+      const now = Number.isNaN(was) ? want : was + (want - was) * Math.min(1, dt * CLARITY.shapesEase);
+      this.shapeNow[i] = now;
+      const shade = now > 0.01 ? mixTint(0xffffff, CLARITY.shapeTint, now) : undefined;
       if (isRare(w)) {
         const pulse = 0.5 + 0.5 * Math.sin(time * 2.4 + w.id);
         this.glow.fillStyle(0xdff6ff, 0.05 + 0.05 * pulse);
@@ -115,7 +132,7 @@ export class BeastsLayer {
         whale: tailUpDown(w.form),
         flash: w.flash,
         alpha: 1,
-        shade: shade(w.x, w.y),
+        shade,
       });
       // the school: behind and around the leader, each a little out of step
       const schoolSize = BEAST_TEMPER[w.form.speciesId]?.school ?? 0;
@@ -140,7 +157,7 @@ export class BeastsLayer {
           whale: tailUpDown(w.form),
           flash: w.flash,
           alpha: 1,
-          shade: shade(w.x, w.y),
+          shade,
         });
       });
     });

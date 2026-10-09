@@ -63,13 +63,20 @@ export const CLARITY = {
   zoneKm: 1.5,
   periodS: 300,
   jitter: 0.3,
-  cycleMax: 0.65,
+  cycleMax: 0.45,
   /** Murk from the weather: from its waves (1 calm … 3.2 storm) and its rain. */
-  fromWaves: 0.5,
-  fromRain: 0.3,
-  /** From this murk on the beasts away from your lamp show as dark shapes (and this far from you, units). */
-  shapesFrom: 0.55,
+  fromWaves: 0.3,
+  fromRain: 0.2,
+  /** The open sea is never murkier than this (owner, 9 ottobre: in a rainy storm "you see nothing, unplayable"):
+   *  murky enough that the far beasts are shapes. Only the Delta goes beyond. */
+  max: 0.55,
+  /** From this murk on the beasts away from your lamp turn into dark shapes, fully `soft` higher, and this far from
+   *  you (units, also over `soft`×100 units): little by little, never at a stroke (owner, 9 ottobre). */
+  shapesFrom: 0.38,
   shapesBeyond: 90,
+  shapesSoft: 0.12,
+  /** How fast a beast turns into a shape or back (per second). */
+  shapesEase: 1.2,
   shapeTint: 0x0b0f10,
 };
 

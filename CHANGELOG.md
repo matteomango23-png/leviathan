@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.4 — Torbidità più giocabile (9 ottobre 2026)
+
+- **Meno torbido al massimo:** anche in tempesta con la pioggia l'acqua aperta non diventa più quasi nera. Resta difficile vedere: le bestie lontane sono sagome scure, ma la lampada arriva e il mare si vede. Solo il Delta resta torbido come prima.
+- **Sagome che arrivano piano:** le bestie diventano sagome scure (e tornano visibili) poco a poco, mai di colpo.
+
 ## v0.60.3 — Bestie fuori inquadratura, acqua torbida sfumata (9 ottobre 2026)
 
 - **Le bestie non compaiono più sullo schermo:** escono dal buio e ci tornano solo fuori dall'inquadratura, anche con la vista larga delle navi e dell'U-Boat. Viaggiando veloce le trovi già lì quando entrano nello schermo. Lo stesso per i banchi di sardine del mare aperto.

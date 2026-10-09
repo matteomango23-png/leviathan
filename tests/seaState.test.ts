@@ -10,7 +10,7 @@ import { WEATHERS } from '../src/data/weather';
 import { DELTA, WORLD } from '../src/data/worldLayout';
 import { boatModel as boatModelById, boatTopSpeed, sailBoat } from '../src/systems/boat';
 import { canBoardBoat, canDiveFromBoat } from '../src/systems/boatCrew';
-import { cycleMurk, isShape, turbidityAt } from '../src/systems/clarity';
+import { cycleMurk, shapeShare, turbidityAt } from '../src/systems/clarity';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
@@ -182,8 +182,19 @@ describe('the water’s clarity', () => {
   });
 
   it('at its murkiest the beasts away from your light are dark shapes', () => {
-    expect(isShape(0.9, CLARITY.shapesBeyond + 10)).toBe(true);
-    expect(isShape(0.9, 10)).toBe(false);
-    expect(isShape(0.1, 500)).toBe(false);
+    expect(shapeShare(CLARITY.max, 500)).toBe(1); // the open sea's worst is enough
+    expect(shapeShare(CLARITY.max, 10)).toBe(0);
+    expect(shapeShare(0.1, 500)).toBe(0);
+    // and little by little: halfway, half a shape
+    const half = shapeShare(CLARITY.shapesFrom + CLARITY.shapesSoft / 2, 500);
+    expect(half).toBeGreaterThan(0.3);
+    expect(half).toBeLessThan(0.7);
+  });
+
+  it('the open sea is never murkier than its limit, even in a rainy storm (only the Delta is)', () => {
+    for (let t = 0; t < 900; t += 30)
+      expect(turbidityAt(60000, WORLD.surfaceY + 200, t, { waves: 3.2, precip: 1 })).toBeLessThanOrEqual(
+        CLARITY.max,
+      );
   });
 });
