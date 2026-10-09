@@ -287,5 +287,27 @@ async function makeShip(img: Raw, dest: string): Promise<string> {
   await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
     .webp({ quality: 88, alphaQuality: 95 })
     .toFile(dest);
+  if (GLOW_SHIPS.some((n) => dest.endsWith(`${n}.webp`)))
+    await makeGlow(out, img, dest.replace(/\.webp$/, '_glow.webp'));
   return `nave ${img.width}×${img.height}, senza ritaglio`;
+}
+
+/** Ships whose red lights glow and pulse in the game (owner, 9 ottobre: the Ocean's Nightmare's runes). */
+const GLOW_SHIPS = ['nave_nightmare'];
+
+/** Only the lit red of the picture (its runes and lamps), softly blurred, on transparent: drawn added and pulsing. */
+async function makeGlow(cut: Uint8ClampedArray, img: Raw, dest: string): Promise<void> {
+  const out = new Uint8ClampedArray(cut.length);
+  for (let o = 0; o < cut.length; o += 4) {
+    const r = cut[o]!;
+    const other = Math.max(cut[o + 1]!, cut[o + 2]!);
+    out[o] = r;
+    out[o + 1] = Math.round(cut[o + 1]! * 0.6);
+    out[o + 2] = Math.round(cut[o + 2]! * 0.6);
+    out[o + 3] = r > 140 && r > other * 1.8 && cut[o + 3]! > 0 ? Math.min(255, (r - other) * 2) : 0;
+  }
+  await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
+    .blur(1.2)
+    .webp({ quality: 85, alphaQuality: 90 })
+    .toFile(dest);
 }

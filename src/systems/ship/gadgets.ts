@@ -206,7 +206,8 @@ function stepSphere(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
     const at = t && locate(g, t);
     if (h) h.left -= dt;
     if (!h || h.left <= 0 || !at) {
-      if (at) events.push({ type: 'sphereFree', name: g.gadgets.targetName });
+      // its minute is over (a battle that started on it lets it go quietly)
+      if (h && at) events.push({ type: 'sphereFree', name: g.gadgets.targetName });
       g.beasts.held = null;
       sp.phase = 'back';
     } else {

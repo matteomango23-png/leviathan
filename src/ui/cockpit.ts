@@ -27,10 +27,10 @@ type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
   ['sonar', 'Sonar', 'dive'],
   ['plancia', 'Plancia', 'lamp'],
+  ['drone', 'Drone', 'school'], // the Nightmare's drone report, above the diary (owner, 9 ottobre)
   ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
-  ['drone', 'Drone', 'school'],
 ];
 
 export class Cockpit {

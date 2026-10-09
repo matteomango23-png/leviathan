@@ -11,6 +11,7 @@ import { createGame, toSave, type GameState } from '../src/systems/game';
 import { parseSave } from '../src/systems/save/saveData';
 import { stepWildSpawns } from '../src/systems/encounters';
 import { spawnWild } from '../src/systems/beasts/wildState';
+import { makeTeamBeast } from '../src/systems/beasts/team';
 import {
   canRecon,
   canSendSphere,
@@ -146,6 +147,30 @@ describe('the Ocean’s Nightmare', () => {
     expect(g.beasts.battle).toBeNull();
   });
 
+  it('a held beast: swim up to it and the battle starts, you striking first (owner, 9 ottobre)', () => {
+    const g = nightmare();
+    const w = g.beasts.wilds.find((x) => !x.spawn.endless)!;
+    spawnWild(w, { speciesId: w.spawn.speciesId, variant: 'comune' }, 5, g.diver.x + 4, g.diver.y + 40, -1);
+    g.diver.y = w.y;
+    g.diver.x = w.x;
+    g.beasts.held = { wild: w.id, x: w.x, y: w.y, left: 10 };
+    g.beasts.team.push(makeTeamBeast('b1', { speciesId: 'squalo_bianco', variant: 'comune' }, 10, true));
+    stepWildSpawns(g, DT, []);
+    expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'you' });
+  });
+
+  it('the sphere does not go with its bay shut', () => {
+    const g = nightmare();
+    const c = beastsInRange(g, g.ship)[0]!;
+    pickTarget(
+      g,
+      { target: c.target, name: c.name, speciesId: c.speciesId, lengthM: 1, depthM: 1, dxM: 1 },
+      [],
+    );
+    sendSphere(g, []);
+    expect(g.gadgets.sphere.phase).toBe('dock');
+  });
+
   it('a beast caught or gone: the trail is lost', () => {
     const g = nightmare();
     const c = beastsInRange(g, g.ship).find((x) => 'resident' in x.target)!;
@@ -158,6 +183,13 @@ describe('the Ocean’s Nightmare', () => {
     const ev = run(g, DT);
     expect(ev.some((e) => e.type === 'targetLost')).toBe(true);
     expect(g.gadgets.target).toBeNull();
+  });
+
+  it('a save whose submarine is not its ship’s gets the drone back', () => {
+    const g = nightmare();
+    Object.assign(g.sub, { model: 'batiscafo', models: ['batiscafo'] });
+    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
+    expect(back.sub.model).toBe('drone_nightmare');
   });
 
   it('the beast you follow is saved', () => {

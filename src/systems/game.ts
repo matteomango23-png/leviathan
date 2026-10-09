@@ -64,7 +64,8 @@ import { regionAt } from './world/stretches';
 import { ENDLESS } from '../data/endless';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import { board, canBoard, leaveSub, newSub, ramSub, repairSub, type SubState } from './submarine';
+import { shipModel } from './ship/model';
+import { board, canBoard, leaveSub, newSub, ramSub, repairSub, subModel, type SubState } from './submarine';
 import { dismount } from './beastState';
 import { rescue } from './fuel';
 import { addHuntSlots, hearRumours, placeDens, stepHunts, type Den, type HuntsState } from './hunts';
@@ -182,7 +183,16 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     temples: createTemples(),
     story: createStory(s.story, save !== null, !!s.ship),
   };
+  matchSubToShip(g);
   return g;
+}
+
+/** Each ship comes with its own submarine (8 ottobre): a save whose submarine is not its ship's gets its ship's. */
+function matchSubToShip(g: GameState): void {
+  const bay = g.ship.owned ? shipModel(g.ship).bays.find((b) => b.kind === 'sub') : undefined;
+  if (!bay || !g.sub.owned || g.sub.model === bay.model) return;
+  const m = subModel(bay.model);
+  Object.assign(g.sub, { model: m.id, models: [m.id], hull: m.hull, fuel: m.tank, air: m.airSeconds });
 }
 
 /** Where you wake up (owner, 4 ottobre: you heal only on the ship and at the port): your ship, or your harbour. */

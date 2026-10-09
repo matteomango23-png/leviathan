@@ -470,7 +470,8 @@ function checkedSub(raw: unknown): SavedSub | null {
   const hull = isFiniteNumber(raw.hull) ? Math.max(0, Math.min(max, raw.hull)) : max;
   const tank = SUB_MODELS.find((m) => m.id === model)!.tank;
   const fuel = isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(tank, raw.fuel)) : tank;
-  return { x: raw.x, y: raw.y, model, models, hull, fuel };
+  const air = isFiniteNumber(raw.air) ? Math.max(0, raw.air) : undefined;
+  return { x: raw.x, y: raw.y, model, models, hull, fuel, ...(air !== undefined ? { air } : {}) };
 }
 
 /** The saved speedboat, checked: a broken one is dropped (the next shipyard visit gives none: newBoat). */

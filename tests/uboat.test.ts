@@ -127,6 +127,18 @@ describe('the U-Boats dive', () => {
     expect(w.ship.x).toBeLessThan(SHIP_WEST_X - 100);
   });
 
+  it('with a hatch open it stays where it is: no diving nor rising (owner, 9 ottobre)', () => {
+    const w = world('nightmare', deepWater(), 100);
+    w.ship.hatches = [
+      { open: true, t: 1 },
+      { open: false, t: 0 },
+    ];
+    run(w, 3, { throttle: 0, dir: 1, dive: 1 });
+    expect(w.ship.dive).toBe(100);
+    run(w, 3, { throttle: 0, dir: 1, dive: -1 });
+    expect(w.ship.dive).toBe(100);
+  });
+
   it('a ship that is not a U-Boat never dives', () => {
     const w = world('eh1', 20000);
     run(w, 5, { throttle: 0, dir: 1, dive: 1 });

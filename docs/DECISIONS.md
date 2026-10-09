@@ -810,3 +810,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Su richiesta del proprietario,** drone e sfera non aprono più i portelloni da soli: li apri tu, dai il comando ("Ricognizione", "Cala drone", "Invia sfera") e li richiudi quando sono tornati. Mentre sono fuori il pulsante "Chiudi" non compare.
 - **Il resoconto è una scheda del cockpit** e non più un pannello sopra il gioco.
 - **I pulsanti del timone sono in una griglia** di 3 per colonna, con le colonne da destra a sinistra (`direction: rtl`), perché un'unica colonna lunga copriva le frecce e la leva.
+
+## 9 ottobre 2026 — Aria a tempo nei mezzi (v0.58.0)
+
+- **Il proprietario:** le immersioni lunghe sono il vantaggio di sottomarini e U-Boat. Sottomarini 120-170 s (più grandi, più aria), U-Boat 300-600 s. I cetacei non prestano più aria: `RIDE_AIR.bySpecies` è vuoto ma il meccanismo resta. Le mute danno solo un po' d'aria in più (`o2Mult` 0,7-0,85).
+- **Il sottomarino** ricarica l'aria in superficie (sopra `restY + underBelow`) o nella stiva. A zero risale da solo: la sua velocità verticale va verso l'alto, ma avanti e indietro restano comandabili.
+- **La luce delle rune** è un'immagine a parte, estratta dai pixel rosso acceso del dipinto, disegnata in ADD. Così ogni nave può avere le sue luci senza ridipingere niente.

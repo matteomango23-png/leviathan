@@ -1,5 +1,25 @@
 # Progressi
 
+## Aria a tempo, rune rosse, sfera nel vano (9 ottobre 2026) → v0.58.0
+
+**Fatto:**
+- **Aria:**
+  - `SubModel.airSeconds` e `SUBMARINE.air`, logica in `systems/subAir.ts`, `SubState.air` salvata;
+  - U-Boat 300 / 480 / 600 s;
+  - `RIDE_AIR.bySpecies` vuoto (i cetacei non danno aria), `o2Mult` delle mute tra 0,7 e 0,85;
+  - barra al timone `.helm-air`, `#ui.helm-has-air`.
+- **Sfera e bestia bloccata:** `SPHERE.sizeM` 19 (con gli spunzoni), visibile nel vano aperto. Bestia bloccata: toccata, battaglia con `first: 'you'`; non sparisce mentre è bloccata.
+- **Rune:** `nave_nightmare_glow.webp` fatta da `npm run art` (`GLOW_SHIPS`), `art.glow` disegnato in ADD e pulsante in `ShipView`.
+- **U-Boat:** con un portellone aperto `stepDive` ignora la leva.
+- **Salvataggi:** `matchSubToShip` all'avvio dà alla nave il suo sottomarino (un salvataggio di prova aveva il batiscafo al posto del drone).
+
+**Da provare sull'iPhone:**
+1. In sottomarino scendi e guarda la barra dell'aria; lasciala finire e verifica che risale da solo.
+2. Con un U-Boat apri un portellone: non deve salire né scendere.
+3. Cavalca un cetaceo sott'acqua: ora usi la tua aria.
+4. Blocca una bestia con la sfera, nuota fino a lei: battaglia, con il primo attacco tuo.
+5. Guarda le rune dell'Ocean's Nightmare e la sfera nel vano aperto.
+
 ## Ritocchi all'Ocean's Nightmare (9 ottobre 2026) → v0.57.1
 
 **Fatto:**
