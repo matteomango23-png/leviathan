@@ -51,6 +51,14 @@ export type GameEvent =
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }
   | { type: 'boarded' }
+  /** Off the speedboat or jet ski into the sea, and back at its wheel (boatCrew.ts). */
+  | { type: 'boatLeft' }
+  /** Rough seas wear the small boats' hulls (sea.ts): half gone, gone (back to the hold), mended at a harbour. */
+  | { type: 'boatHullHalf' }
+  | { type: 'boatWrecked' }
+  | { type: 'boatRepaired'; cost: number }
+  | { type: 'boatBroken' }
+  | { type: 'boatBoarded' }
   | { type: 'dove' }
   // the expedition ship (data/ship.ts)
   | { type: 'shipGiven' }

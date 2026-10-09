@@ -39,3 +39,9 @@ export const ENGINE_SOUND = {
   glide: 0.4,
   ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },
 };
+
+/** Rain and thunder (owner, 9 ottobre: storms): the rain's hiss at full rain, the thunder's crack and rumble. */
+export const STORM_SOUND = {
+  rain: { volume: 0.12, freq: 4200 },
+  thunder: { volume: 0.55, crackHz: 1800, rumbleHz: 110, seconds: 3.5, delay: [0.4, 2.2] as [number, number] },
+};

@@ -1,5 +1,6 @@
 // What the levers drive now and what the instruments show, read from the game (ui/helmControls.ts draws them).
 import { shipModel, sonarMaxKnots } from '../systems/ship/model';
+import { canDiveFromBoat } from '../systems/boatCrew';
 import { WORLD } from '../data/worldLayout';
 import { autonomyKm } from '../systems/fuelBurn';
 import type { GameState } from '../systems/game';
@@ -121,6 +122,8 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       rangeKm: autonomyKm(b.fuel, boatModel(b.model).perKm, throttle),
       drums: [b.drums, boatModel(b.model).drums],
       engineOn: b.engineOn,
+      canDiveOff: canDiveFromBoat(g),
+      hull: [b.hull, boatModel(b.model).hull],
     };
   if (g.sub.aboard && !onRamp(g))
     return {

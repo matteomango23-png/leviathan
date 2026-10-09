@@ -5,6 +5,7 @@
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
+import { rideWaves, type SeaWeather } from '../systems/sea';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
@@ -149,8 +150,8 @@ export class ShipView {
     this.tugFrom = s.x;
   }
 
-  /** @param waves the weather's surface waves (1 = calm) */
-  update(s: ShipState, time: number, dt: number, waves: number): void {
+  /** @param sea the weather's waves and wind: it rides them (systems/sea.ts) */
+  update(s: ShipState, time: number, dt: number, sea: SeaWeather): void {
     this.fx.clear();
     this.glow.clear();
     this.fallback.clear();
@@ -161,10 +162,10 @@ export class ShipView {
     }
     const k = Math.min(1, s.speed / shipTopSpeed(s));
     // rocking on the swell (more in bad weather), planing at speed
-    const R = SHIP.rock;
-    const sea = Math.min(3, waves);
-    const heave = Math.sin(time * Math.PI * 2 * R.hz) * R.heave * sea;
-    const roll = Math.sin(time * Math.PI * 2 * R.hz * 0.8 + 1.3) * R.pitch * sea;
+    // on the waves under its bow, middle and stern: a long ship rides them slow and heavy (owner, 9 ottobre)
+    const ride = rideWaves(s.x, shipLength(s), s.face, time, sea);
+    const heave = -ride.heave;
+    const roll = ride.pitch;
     const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
     const pitch = roll + planing * SHIP.plane.pitch;
     const lift = planing * SHIP.plane.lift;

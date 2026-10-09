@@ -1,7 +1,8 @@
 // The game's sound: one Web Audio context, a master volume with the on/off switch, the sea ambience (with the open
 // sea's music beyond a kilometre) and the battle music crossfading. Browsers (iPhone above all) only start sound after a touch: the context is
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
-import { AUDIO } from '../data/audio';
+import { AUDIO, STORM_SOUND } from '../data/audio';
+import { StormSound } from './stormSound';
 import { SEA_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
@@ -14,6 +15,7 @@ export class SoundEngine {
   private sea: SeaAmbience | null = null;
   private music: BattleMusic | null = null;
   private openSea: SeaMusic | null = null;
+  private storm: StormSound | null = null;
   private engines: EngineSound | null = null;
   private battle = false;
   private on = readEnabled();
@@ -64,11 +66,24 @@ export class SoundEngine {
   /** The sea stops (pause, menus): the engines fall silent at once (they are not updated while it waits). */
   silence(): void {
     this.engines?.update(null, null);
+    this.storm?.setRain(0);
   }
 
   /** The ship's engine starting or stopping, heard as near as you are (1 aboard … 0 far). */
   engineStartStop(start: boolean, near: number): void {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.startStop(start, near);
+  }
+
+  /** The rain where you are, 0 … 1 (muffled under water: the caller lowers it). */
+  setRain(level: number): void {
+    if (this.ctx?.state === 'running') this.storm?.setRain(this.battle ? 0 : level);
+  }
+
+  /** Thunder after a flash, a moment later (sound is slower than light), `near` 0 … 1. */
+  thunder(near: number): void {
+    if (this.ctx?.state !== 'running' || this.battle) return;
+    const [a, b] = STORM_SOUND.thunder.delay;
+    this.storm?.thunder(a + Math.random() * (b - a), near);
   }
 
   /** The sonar's ping. */
@@ -103,6 +118,7 @@ export class SoundEngine {
     this.music = new BattleMusic(this.ctx, this.master);
     this.engines = new EngineSound(this.ctx, this.master);
     this.openSea = new SeaMusic(this.ctx, this.master);
+    this.storm = new StormSound(this.ctx, this.master);
     if (this.battle) {
       this.sea.fadeTo(0, this.ctx.currentTime, 0.01);
       this.music.play(this.ctx.currentTime);

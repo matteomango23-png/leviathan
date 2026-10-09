@@ -63,7 +63,7 @@ export const WEATHERS: Record<WeatherId, WeatherDef> = {
     name: 'Tempesta',
     coldName: 'Bufera di neve',
     minutes: [1.5, 3],
-    look: { clouds: 1, precip: 1, fog: 0.25, wind: 1, waves: 3.2, lightningPerMin: 5, rays: 0.15, dim: 0.28, birds: 0 },
+    look: { clouds: 1, precip: 1, fog: 0.25, wind: 1, waves: 3.2, lightningPerMin: 8, rays: 0.15, dim: 0.28, birds: 0 },
   },
   nebbia: {
     id: 'nebbia',
@@ -96,7 +96,7 @@ export const WEATHER = {
   rainDrops: 170,
   snowFlakes: 140,
   /** Colours: the sky of today and the sky under full clouds, the mist, the clouds, the flash. */
-  skyStorm: { top: '#06090d', bottom: '#151d24' },
+  skyStorm: { top: '#030405', bottom: '#0b1014' }, // owner, 9 ottobre: a storm's sky is black
   fogColor: 0x8d9ca4,
   cloudColor: 0x55636e, // lighter than the night sky, so the clouds show
   rainColor: 0xa9bcc6,

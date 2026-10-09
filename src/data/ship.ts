@@ -34,8 +34,6 @@ export const SHIP = {
   approach: { range: 1800, decel: 30 }, // from 1800 units the curve allows ~330 u/s: above the fastest ship
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
-  /** Rocking on the waves (look only), scaled by the weather's waves. */
-  rock: { pitch: 0.012, heave: 1.1, hz: 0.35 },
   /** Its lights (owner, 5 ottobre): lit windows and lanterns of the painting (shares of the picture, radius in
    *  units) and a floodlight under the hull shining down this far (units). Tuning. */
   /** A soft light under the hull, like the submarine's (owner, 5 ottobre: the lit windows and the floodlight

@@ -1,5 +1,6 @@
 // At a harbour (game.ts calls them, and the port menu): arriving, resting, selling the fish.
 import type { GameState } from './newGame';
+import { repairBoat } from './boat';
 import { sellBag } from './economy/gear';
 import { maxHpOf } from './beasts/team';
 import { signalMissions } from './economy/missions';
@@ -11,6 +12,7 @@ import { hearRumours } from './hunts';
 export function enterPort(g: GameState, events: GameEvent[] = []): void {
   restAtPort(g);
   repairSub(g, events);
+  repairBoat(g, events);
   if (g.port) hearRumours(g.hunts, g.port, events); // the people of the harbour talk
   g.gear.shopBought = {};
 }

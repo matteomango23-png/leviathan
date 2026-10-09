@@ -111,7 +111,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     fleet: structuredClone(s.fleet ?? []),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
-    weather: createWeather(undefined, s.weather),
+    // a brand new game starts under a clear sky; a save goes on with its weather (an old one: a random start)
+    weather: createWeather(undefined, s.weather, save === null),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,
     gadgets: newGadgets(s.target ?? null),

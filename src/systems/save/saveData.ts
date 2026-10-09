@@ -271,6 +271,7 @@ function checkedBoat(raw: unknown): SavedBoat | null {
     drums: num(raw.drums),
     out: raw.out === true,
     aboard: raw.aboard === true,
+    ...(isFiniteNumber(raw.hull) ? { hull: Math.max(0, raw.hull) } : {}),
   };
 }
 

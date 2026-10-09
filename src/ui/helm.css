@@ -368,3 +368,17 @@
 .driving.helm-diving .act-ctx {
   right: calc(52px + 18px + 79px + var(--safe-r)); /* over the arrows, left of the dive lever */
 }
+
+/* the boat's hull bar (owner, 9 ottobre): where the air bar is, green, orange, red */
+.helm-hullbar .helm-fuel-fill {
+  background: #5fe08e;
+  box-shadow: 0 0 6px #5fe08e;
+}
+.helm-hullbar[data-level='half'] .helm-fuel-fill {
+  background: #f0a23c;
+  box-shadow: 0 0 6px #f0a23c;
+}
+.helm-hullbar[data-level='low'] .helm-fuel-fill {
+  background: var(--blood);
+  box-shadow: 0 0 6px var(--blood);
+}

@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.59.0 — Il mare vivo (9 ottobre 2026)
+
+- **Le onde crescono col meteo:** quasi piatte col sereno, alte circa 3 m in tempesta. Si vedono alzarsi sull'orizzonte.
+- **Ogni mezzo le cavalca a modo suo:** moto d'acqua e motoscafi si impennano su ogni onda, le navi lunghe ondeggiano lente e pesanti.
+- **Correnti:** col vento forte le barche piccole vanno molto più piano (in tempesta il motoscafo da 40 a circa 22 nodi), la nave un po' meno, e anche a nuoto vicino alla superficie si va più lenti.
+- **Scafo delle barche:** in tempesta, a tutta velocità, motoscafo e moto d'acqua si rovinano. C'è la barra dello scafo al timone e un avviso a metà. A zero tornano rotti nella stiva e si riparano al porto.
+- **Tempesta:** cielo nero, più fulmini, il tuono un attimo dopo il lampo e il fruscio della pioggia (attutiti sott'acqua).
+- **Acqua torbida:** ogni tratto di mare ha i suoi momenti limpidi e torbidi, e il mare mosso la intorbidisce. Torbida, la lampada arriva meno lontano e le bestie lontane sono sagome scure.
+- **Tuffo dalla barca:** dal motoscafo e dalla moto d'acqua fermi ci si tuffa ("Tuffati"); vicino alla barca "A bordo" ti rimette alla guida.
+- **Fumo del motoscafo dell'Expedition Hunter 2:** esce dai reattori posteriori e lascia una scia.
+- **Partita nuova:** comincia col bel tempo.
+
 ## v0.58.6 — Pulizia (9 ottobre 2026)
 
 - **Nessun cambiamento nel gioco:** solo ordine nel codice dopo il blocco della flotta.

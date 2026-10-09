@@ -4,6 +4,7 @@
 // the water: it sails round it, on the far lane, behind it. With a hatch open it does not move. Pure logic;
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP } from '../../data/ship';
+import { CALM_SEA, currentMult, type SeaWeather } from '../sea';
 import { FIRST_SHIP } from '../../data/fleet';
 import { PORTO_FANGO } from '../../data/economy';
 import { WORLD } from '../../data/worldLayout';
@@ -184,6 +185,7 @@ export function sailShip(
   dt: number,
   events: GameEvent[],
   far: (x: number) => boolean,
+  sea: SeaWeather = CALM_SEA,
 ): number[] {
   const s = g.ship;
   if (!s.owned) return [];
@@ -204,7 +206,8 @@ export function sailShip(
   // the ice sheet breaks under the bow without slowing it; an iceberg slows it down (owner, 8 ottobre: entering the
   // Banchisa capped the ship at 10 knots)
   const icy = icebergAcross(Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
-  const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1); // dry, it drifts to a stop
+  // dry, it drifts to a stop; a storm's current holds it back a little (owner, 9 ottobre)
+  const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1) * currentMult('ship', sea);
   // the throttle off zero starts the engine; dry, it stops (owner, 8 ottobre)
   if (helm && helm.throttle > 0 && s.fuel > 0 && !s.engineOn) {
     s.engineOn = true;
