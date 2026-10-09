@@ -163,7 +163,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     fleet: structuredClone(s.fleet ?? []),
     timers: { feed: 0, vent: 0 },
     rideTanks: {},
-    weather: createWeather(),
+    weather: createWeather(undefined, s.weather),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,
     dens,

@@ -791,3 +791,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Soglia:** il proprietario ha detto "circa 1 km", ma Porto Fango è proprio a 1,03 km. Allora la musica entra a 1,25 km ed esce sotto 1,15 km (isteresi, niente accendi/spegni sul confine).
 - **Battaglia:** ostinato di due note a mezzo tono (fa2 e fa#2) con un'ottava sotto, ottoni con filtro che si apre, timpani, tremolo acuto; un'introduzione che si fa più fitta, poi il giro.
 - **Le bestie non sentono lo scafo della nave:** con gli U-Boat che salgono e scendono, la spinta le schiacciava contro le rocce. Ora navi e U-Boat ci passano attraverso. Il sottomarino resta solido per tutti, la nave per il sub.
+
+## 9 ottobre 2026 — Il meteo si salva e parte a caso (v0.56.1)
+
+- **Problema:** il meteo ripartiva sempre dal sereno con lo stesso seme. Sul PC, aperto a lungo, arrivavano pioggia e nebbia; sull'iPhone, che ricarica spesso, quasi solo sereno.
+- **Ora:** l'inizio è a caso, pesato e mai in tempesta, con un seme nuovo per ogni sessione. Lo stato (`from`, `to`, `blend`, `left`) va nel salvataggio come campo facoltativo: i salvataggi vecchi partono a caso. Il generatore non si salva: dopo il tempo in corso la sequenza è nuova.

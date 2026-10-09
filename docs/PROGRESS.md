@@ -1,5 +1,11 @@
 # Progressi
 
+## Meteo a caso e salvato (9 ottobre 2026) → v0.56.1
+
+**Fatto:** `createWeather` parte da `WEATHER.startWeights` con un seme diverso a ogni sessione; `SaveData.weather` (facoltativo, senza cambiare versione) con `saveWeather` e `checkedWeather` in `systems/weather.ts`.
+
+**Da provare sull'iPhone:** apri e chiudi il gioco qualche volta, il tempo all'inizio cambia; con la pioggia in corso salva, chiudi e riapri: piove ancora.
+
 ## Musiche e bestie (9 ottobre 2026) → v0.56.0
 
 **Fatto:**

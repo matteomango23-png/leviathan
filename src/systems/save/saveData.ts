@@ -3,6 +3,7 @@
 // from the previous version below. Never edit an existing migration.
 
 import { PROGRESSION } from '../../data/rules';
+import { checkedWeather, type SavedWeather } from '../weather';
 import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import type { SavedSub } from '../submarine';
 import type { SavedShip } from '../ship/ship';
@@ -65,6 +66,7 @@ export interface SaveData {
   fleet: MooredShip[]; // your other ships, moored at Porto Fango (v20)
   hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
   huntPinned?: string | null; // the hunt you follow (added 5 ottobre; missing = none)
+  weather?: SavedWeather | null; // the weather above the sea (added 9 ottobre; missing = a random start)
 }
 
 export function newSave(start: { x: number; y: number }): SaveData {
@@ -372,6 +374,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     fleet: checkedFleet(data.fleet, isObject(data.ship) ? String(data.ship.model) : null),
     hunts: checkedHunts(data.hunts),
     huntPinned: HUNTS.some((h) => h.id === data.huntPinned) ? (data.huntPinned as string) : null,
+    ...(checkedWeather(data.weather) ? { weather: checkedWeather(data.weather) } : {}),
   };
 }
 
