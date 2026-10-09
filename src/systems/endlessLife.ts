@@ -8,6 +8,8 @@ import type { GameEvent } from './events';
 import type { FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 import type { Rng } from './math';
+import { onScreen, type ViewRect } from './beastState';
+import { WILD_RULES } from '../data/beasts';
 
 /** Sardine schools of the endless sea left far behind you are moved near you again (out of sight). */
 export function stepEndlessSchools(
@@ -15,12 +17,19 @@ export function stepEndlessSchools(
   map: TileMap,
   diver: { x: number; y: number },
   rng: Rng,
+  view: ViewRect | null = null,
 ): void {
   if (diver.x < ENDLESS.startX) return;
+  // never moved while on screen, nor to a place on screen (owner, 9 ottobre: things popped up in the U-Boat's view)
+  const m = WILD_RULES.viewMargin;
+  const half = view ? view.width / 2 + m : 0;
   for (const s of fish.schools) {
-    if (!s.roaming || Math.hypot(s.x - diver.x, s.y - diver.y) < ENDLESS.schoolFar) continue;
+    if (!s.roaming || Math.hypot(s.x - diver.x, s.y - diver.y) < Math.max(ENDLESS.schoolFar, half + 300))
+      continue;
+    if (onScreen(view, s.x, s.y, m)) continue;
     const side = rng() < 0.75 ? 1 : -1; // mostly ahead: you usually swim out to sea
-    const x = diver.x + side * (300 + rng() * 300);
+    const centre = view ? view.x + view.width / 2 : diver.x;
+    const x = centre + side * (Math.max(300, half + 60) + rng() * 300);
     const floor = endlessFloor(x);
     const top = WORLD.surfaceY + 20;
     const p = map.randomOpen(rng, x - 60, top, x + 60, Math.min(floor - 30, top + 260), 4);

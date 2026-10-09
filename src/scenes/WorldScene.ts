@@ -56,6 +56,9 @@ import { BirdsView } from '../views/birdsView';
 import { WeatherView, weatherReach } from '../views/weatherView';
 import type { SceneData, Session } from './session';
 
+/** How fast the murk on screen eases towards the water's own (per second). */
+const MURK_EASE = 0.8;
+
 export class WorldScene extends Phaser.Scene {
   private session!: Session;
   private state!: GameState;
@@ -82,6 +85,8 @@ export class WorldScene extends Phaser.Scene {
   private weatherView!: WeatherView;
   private nightmare!: NightmareView;
   private surface!: SeaSurfaceView;
+  /** The murk tinting the screen, easing towards the water's own. */
+  private murkShown = NaN;
   private birdsView!: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
@@ -289,6 +294,7 @@ export class WorldScene extends Phaser.Scene {
       this.session.tapScreen = null;
     }
     const dashBefore = g.diver.dashTime;
+    g.beasts.view = this.rig.worldView(); // beasts come out of the dark only off screen
     const events = stepGame(g, input, dt);
     consumePresses(input);
     this.handleEvents(events);
@@ -397,7 +403,12 @@ export class WorldScene extends Phaser.Scene {
     // the murk tints the whole screen: only as much as the view is under water (owner, 9 ottobre: launching a boat
     // the screen turned another colour while the camera dipped under the surface, then snapped back)
     const viewWet = Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / (info.h / 2 / info.zoom), 0, 1);
-    const murk = turbidityAt(info.cx, info.cy, g.time, sky) * viewWet;
+    const murkNow = turbidityAt(info.cx, info.cy, g.time, sky) * viewWet;
+    // and it changes softly: no jump on screen whatever changes it (owner, 9 ottobre)
+    this.murkShown = Number.isNaN(this.murkShown)
+      ? murkNow
+      : this.murkShown + (murkNow - this.murkShown) * Math.min(1, dt * MURK_EASE);
+    const murk = this.murkShown;
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },

@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.3 — Bestie fuori inquadratura, acqua torbida sfumata (9 ottobre 2026)
+
+- **Le bestie non compaiono più sullo schermo:** escono dal buio e ci tornano solo fuori dall'inquadratura, anche con la vista larga delle navi e dell'U-Boat. Viaggiando veloce le trovi già lì quando entrano nello schermo. Lo stesso per i banchi di sardine del mare aperto.
+- **Acqua torbida sfumata:** passando da un tratto di mare all'altro la torbidità cambia piano, senza stacco netto, e sullo schermo il colore si adegua con dolcezza.
+
 ## v0.60.2 — U-Boat che si scurisce piano (9 ottobre 2026)
 
 - **Niente più scatto da chiaro a scuro:** scendendo con l'U-Boat, la parte sott'acqua si scurisce un po' alla volta, mentre la fascia d'acqua chiara della superficie sfuma via.

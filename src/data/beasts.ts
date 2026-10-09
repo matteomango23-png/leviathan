@@ -259,6 +259,9 @@ export const WILD_RULES = {
   maxPresent: 8, // owner, 3 ottobre: more life (was 5)
   /** A wild beast counts as seen (bestiary) only this close to you, in your light (units). */
   seenRadius: 90,
+  /** Beasts come out of the dark and go back into it only this far (units) beyond the edge of the screen, so you
+   *  never see one pop up or vanish (owner, 9 ottobre: in the U-Boat they appeared on screen). */
+  viewMargin: 90,
   /**
    * Who comes when there is room (owner, 4 ottobre: "you always see the same beasts"): a fair draw among the beasts
    * ready to come, not the first of the list. Weight by stars (common ones much more often)…
