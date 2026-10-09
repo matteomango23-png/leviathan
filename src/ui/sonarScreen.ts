@@ -6,6 +6,7 @@ import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
 import { sonarMaxKnots } from '../systems/ship/model';
 import { el } from './dom';
+import { WORLD } from '../data/worldLayout';
 
 const GREEN = '#5dff9e';
 const SWEEP_SECONDS = SHIP.sonar.pingSeconds;
@@ -69,7 +70,9 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     ctx.fillStyle = '#020c08';
     ctx.fillRect(0, 0, W, H);
     const on = r.status === 'on';
-    const maxDepth = Math.max(60, ...r.profile, ...r.echoes.map((e) => e.depthM)) * 1.12;
+    // the ship where it is: a U-Boat under water is drawn at its depth (owner, 9 ottobre)
+    const shipM = g.ship.dive / WORLD.unitsPerMetre;
+    const maxDepth = Math.max(60, shipM + 10, ...r.profile, ...r.echoes.map((e) => e.depthM)) * 1.12;
     const px = (dxM: number): number => W / 2 + (dxM / r.rangeM) * (W / 2 - 12 * dpr);
     const py = (dM: number): number => 14 * dpr + (dM / maxDepth) * (H - 30 * dpr);
 
@@ -105,9 +108,9 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     ctx.fillText(`◀ ${r.rangeM} m`, 6 * dpr, H - 6 * dpr);
     const rt = `${r.rangeM} m ▶`;
     ctx.fillText(rt, W - ctx.measureText(rt).width - 6 * dpr, H - 6 * dpr);
-    // the ship at the top, in the middle
+    // the ship in the middle: at the top afloat, at its depth when it dives
     ctx.fillStyle = '#cfe8d8';
-    ctx.fillRect(W / 2 - 14 * dpr, py(0) - 6 * dpr, 28 * dpr, 6 * dpr);
+    ctx.fillRect(W / 2 - 14 * dpr, py(shipM) - 6 * dpr, 28 * dpr, 6 * dpr);
 
     if (!on) return;
     // the sweep: a line going from one side to the other, leaving a glow behind

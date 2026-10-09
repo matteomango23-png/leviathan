@@ -7,8 +7,8 @@ import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
 import type { HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
-import { shipDraft, shipHull, shipSpan } from './geometry';
-import { shipModel } from './model';
+import { shipDraft, shipHeight, shipHull, shipSpan } from './geometry';
+import { shipModel, shipPicture } from './model';
 import { breakIce, type BrokenIce } from './surface';
 
 interface DiveShip {
@@ -23,6 +23,13 @@ interface DiveShip {
 
 /** Under water (deeper than counts as afloat). */
 export const submerged = (s: { dive?: number }): boolean => (s.dive ?? 0) > SHIP.dive.afloatBelow;
+
+/**
+ * How far into its dive, 0 (afloat) … 1 (its whole picture under): the swell fades, the light under the hull turns
+ * into the headlight's cone, gradually (owner, 9 ottobre: they snapped).
+ */
+export const diveShare = (s: { model: string; dive?: number }): number =>
+  Math.max(0, Math.min(1, (s.dive ?? 0) / Math.max(1, shipHeight(s) * shipPicture(s).waterline)));
 
 /** The deepest it goes: its keel at its model's depth (units under its floating line). */
 export function maxDive(s: { model: string }): number {

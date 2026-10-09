@@ -242,6 +242,8 @@ export class HelmControls {
 
     this.throttleKnob.style.transform = `translateY(${-helm.throttle * TRACK}px)`;
     this.diveWrap.hidden = info.mode !== 'sub' && !info.canDive;
+    // with the dive lever at the far right, the context button (Porto, Esci) moves left over the arrows
+    this.root.parentElement?.classList.toggle('helm-diving', !this.diveWrap.hidden);
     this.diveKnob.style.transform = `translateY(${-((1 - helm.dive) / 2) * TRACK}px)`;
     this.west.classList.toggle('on', helm.dir === -1);
     this.east.classList.toggle('on', helm.dir === 1);

@@ -7,6 +7,7 @@ import { BOAT_MODELS, type BoatModel } from '../data/boats';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { WORLD } from '../data/worldLayout';
 import { boatLength, boatModel, boatTopSpeed, type BoatState } from '../systems/boat';
+import { ShipFx } from './shipFx';
 
 const UNDERWATER_TINT = 0x6f97a6;
 
@@ -35,16 +36,22 @@ class BoatPictures {
 export class BoatView {
   private readonly pics = new Map<string, BoatPictures>();
   private readonly fx: Phaser.GameObjects.Graphics;
+  /** Smoke from its reactors (behind it). */
+  private readonly smoke: ShipFx;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+    const back = scene.add.graphics();
+    layer.add(back);
     for (const m of BOAT_MODELS) this.pics.set(m.id, new BoatPictures(scene, layer, m));
     this.fx = scene.add.graphics();
     layer.add(this.fx);
+    this.smoke = new ShipFx(back, this.fx);
   }
 
   /** @param hidden in the hold behind its closed hatch @param waves the weather's waves (1 = calm) */
-  update(b: BoatState, time: number, hidden: boolean, waves: number): void {
+  update(b: BoatState, time: number, hidden: boolean, waves: number, dt = 1 / 60): void {
     this.fx.clear();
+    this.puffs(b, hidden, dt);
     for (const [id, p] of this.pics) if (id !== b.model || !b.owned || hidden) p.hide();
     const pics = this.pics.get(b.model);
     if (!b.owned || hidden || !pics?.parts.length) return;
@@ -69,6 +76,23 @@ export class BoatView {
         .setAlpha(alpha);
     }
     if (onWater) this.drawWake(b, m, L, H, top, k, time);
+  }
+
+  /** Its reactors smoke while it pushes, on the water (owner, 9 ottobre). */
+  private puffs(b: BoatState, hidden: boolean, dt: number): void {
+    const m = boatModel(b.model);
+    const L = boatLength(b);
+    const H = L * m.picture.aspect;
+    const top = b.y - m.picture.waterline * H;
+    const on = b.owned && !hidden && b.bay === 'out' && b.prop > 0.05;
+    const sources = on
+      ? (m.reactors ?? []).map((r) => ({
+          x: b.x + b.face * (r.u - 0.5) * L,
+          y: top + r.v * H,
+          size: r.size * b.prop,
+        }))
+      : [];
+    this.smoke.puff(sources, b.prop, L / 180, dt);
   }
 
   /** The wake behind it, and bubbles where its engine churns the water. */

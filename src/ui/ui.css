@@ -1681,6 +1681,7 @@ img.albino-art {
 }
 .helm-dive {
   position: static;
+  order: 2; /* at the far right, after the arrows (owner, 9 ottobre), the same in the submarine and the U-Boats */
 }
 .helm-dir {
   display: flex;
@@ -1943,4 +1944,7 @@ img.albino-art {
 .driving .act-ctx {
   right: calc(52px + var(--safe-r));
   bottom: calc(92px + var(--safe-b));
+}
+.driving.helm-diving .act-ctx {
+  right: calc(52px + 18px + 79px + var(--safe-r)); /* over the arrows, left of the dive lever */
 }

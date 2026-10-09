@@ -30,6 +30,8 @@ export interface BoatModel {
   art: string;
   moving?: string;
   picture: BoatPicture;
+  /** Its reactors' nozzles on the picture: they smoke while the engine pushes (owner, 9 ottobre). */
+  reactors?: { u: number; v: number; size: number }[];
 }
 
 const PICTURE = { aspect: 781 / 1400, waterline: 0.62, keel: 0.74 };
@@ -48,8 +50,12 @@ export const BOAT_MODELS: BoatModel[] = [
     drums: 200,
     note: 'Serbatoio piccolo, velocissimo: va a prendere carburante e conchiglie all’avamposto',
     art: 'motoscafo_eh2',
-    moving: 'motoscafo_eh2_moto', // the jets burning
+    // (its picture with the jets on fire is gone, owner 9 ottobre: they smoke instead)
     picture: { ...PICTURE, propX: 0.04, propY: 0.62 },
+    reactors: [
+      { u: 0.04, v: 0.3, size: 0.8 },
+      { u: 0.03, v: 0.6, size: 0.8 },
+    ],
   },
   {
     id: 'motoscafo_poseidon',

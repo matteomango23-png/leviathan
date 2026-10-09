@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.55.1 — Ritocchi agli U-Boat e ai reattori (9 ottobre 2026)
+
+- **Linea dell'acqua graduale:** un U-Boat che scende si scurisce solo sotto il pelo dell'acqua; la parte ancora fuori resta chiara, come una nave vera.
+- **Niente scatti:** scendendo il dondolio sulle onde svanisce piano. La luce sotto lo scafo sfuma mentre cresce piano il faro di prua.
+- **Nuove immagini:**
+  - Whale da fermo senza fiamme (quella con i reattori accesi compare quando va, anche sott'acqua);
+  - Stormtrooper con le eliche che girano.
+- **Reattori:** tolte le immagini con il fuoco del Poseidon e del motoscafo dell'Expedition Hunter 2. Ora, quando vanno in superficie, i reattori fanno fumo. Le ciminiere sott'acqua non fumano.
+- **Sonar:** la nave compare alla sua profondità, non più sempre in alto.
+- **Leva "Sali / Scendi" all'estrema destra,** uguale nel sottomarino e negli U-Boat; "Porto" ed "Esci" stanno sopra le frecce.
+
 ## v0.55.0 — Gli U-Boat si immergono (9 ottobre 2026)
 
 - **Due navi nuove al cantiere,** nella categoria U-Boat:

@@ -22,6 +22,8 @@ export interface ShipStack {
   u: number;
   v: number;
   size: number;
+  /** A reactor's nozzle, not a chimney: it smokes only while the engine pushes (owner, 9 ottobre). */
+  reactor?: boolean;
 }
 
 /** What a hatch holds: a submarine (data/submarine.ts), a speedboat or a jet ski (data/boats.ts), or part 4d's. */
@@ -210,6 +212,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     art: {
       closed: 'nave_whale',
       open: 'nave_whale', // no hatch
+      moving: 'nave_whale_moto', // its reactors burning: the owner likes it, under water too (9 ottobre)
       stacks: [
         { u: 0.38, v: 0.24, size: 0.7 },
         { u: 0.74, v: 0.2, size: 0.5 },
@@ -308,6 +311,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     art: {
       closed: 'nave_stormtrooper',
       open: 'nave_stormtrooper', // no hatch
+      moving: 'nave_stormtrooper_moto', // the propellers turning
       picture: {
         aspect: 692 / 1400,
         waterline: 0.56,
@@ -352,10 +356,13 @@ export const SHIP_MODELS: ShipModelDef[] = [
     art: {
       closed: 'nave_poseidon',
       open: 'nave_poseidon_aperta',
-      moving: 'nave_poseidon_moto', // the three reactors burning (owner, 8 ottobre)
+      // (its picture with the reactors on fire is gone, owner 9 ottobre: they smoke instead)
       stacks: [
         { u: 0.22, v: 0.13, size: 1.1 },
         { u: 0.165, v: 0.23, size: 0.8 },
+        { u: 0.03, v: 0.5, size: 0.9, reactor: true },
+        { u: 0.03, v: 0.58, size: 0.9, reactor: true },
+        { u: 0.03, v: 0.67, size: 0.9, reactor: true },
       ],
       picture: {
         aspect: 781 / 1400,

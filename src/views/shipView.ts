@@ -12,7 +12,7 @@ import { SHIP_MODELS, type ShipModelDef } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import { hatchT, type ShipState } from '../systems/ship/ship';
-import { submerged } from '../systems/ship/uboat';
+import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 
 const UNDERWATER_TINT = 0x6f97a6;
@@ -46,13 +46,7 @@ class ShipPictures {
     } else add(art.open, 0);
     if (art.moving) add(art.moving, 'moving');
     layer.add(this.parts);
-    for (const [i, im] of this.parts.entries()) {
-      const below = i % 2 === 1;
-      const h = im.height;
-      const cut = Math.round(art.picture.waterline * h);
-      if (below) im.setCrop(0, cut, im.width, h - cut).setTint(UNDERWATER_TINT);
-      else im.setCrop(0, 0, im.width, cut);
-    }
+    for (const [i, im] of this.parts.entries()) if (i % 2 === 1) im.setTint(UNDERWATER_TINT);
   }
 
   hide(): void {
@@ -69,8 +63,12 @@ class ShipPictures {
     return Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - most);
   }
 
-  /** Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), darkening. */
-  place(s: ShipState, x: number, top: number, scale: number, pitch: number, dark: number): void {
+  /**
+   * Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), and where the sea surface crosses
+   * it (share of its height from the top): above, the picture as it is; below, seen through the water. A U-Boat
+   * diving moves that line up its picture little by little (owner, 9 ottobre: it went all dark at once).
+   */
+  place(s: ShipState, x: number, top: number, scale: number, pitch: number, water: number): void {
     const w = shipLength(s) * scale;
     const h = w * shipPicture(s).aspect;
     for (const [i, im] of this.parts.entries()) {
@@ -81,9 +79,9 @@ class ShipPictures {
         .setScale(sc * s.face, sc)
         .setRotation(-s.face * pitch)
         .setAlpha(alpha);
-      if (dark > 0)
-        im.setTint(UNDERWATER_TINT); // under water all of it
-      else if (i % 2 === 0) im.clearTint();
+      const cut = Math.round(Math.max(0, Math.min(1, water)) * im.height);
+      if (i % 2 === 1) im.setCrop(0, cut, im.width, im.height - cut);
+      else im.setCrop(0, 0, im.width, cut).setVisible(alpha > 0.01 && cut > 0);
     }
   }
 }
@@ -153,14 +151,14 @@ export class ShipView {
     const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
     const pitch = roll + planing * SHIP.plane.pitch;
     const lift = planing * SHIP.plane.lift;
-    // a U-Boat under water: deeper, still (no swell), all of it seen through the water, no smoke nor wake
+    // a U-Boat diving: deeper, the swell fading little by little, the sea line climbing its picture, no wake
     const sunk = submerged(s);
-    const top =
-      WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (sunk ? 0 : heave - lift);
+    const calm = 1 - diveShare(s);
+    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
     const pics = this.picsOf(s);
-    if (pics) pics.place(s, s.x, top, 1, sunk ? 0 : pitch, sunk ? 1 : 0);
+    if (pics) pics.place(s, s.x, top, 1, pitch * calm, (WORLD.surfaceY - top) / shipHeight(s));
     else this.drawFallback(s, top);
-    this.effects.smoke(sunk ? { ...s, engineOn: false } : s, (u, v) => this.at(s, top, u, v), dt);
+    this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt); // a stack under water does not smoke
     if (sunk) this.drawPropBubbles(s, time);
     else this.drawWake(s, k, time, heave);
     this.effects.iceShards(s, dt);
@@ -185,7 +183,9 @@ export class ShipView {
   /** A faint, soft wash of light under the hull (no hard shapes): many wide, nearly clear layers. */
   private drawLights(s: ShipState, top: number, time: number): void {
     const L = SHIP.lights.under;
-    const pulse = 0.9 + 0.1 * Math.sin(time * 1.3);
+    // diving, it fades as the headlight's cone takes over (owner, 9 ottobre: the circles snapped off)
+    const pulse = (0.9 + 0.1 * Math.sin(time * 1.3)) * (1 - diveShare(s));
+    if (pulse <= 0.01) return;
     for (const p of this.underSpots(s, top))
       for (let k = 6; k >= 1; k--)
         this.glow
@@ -197,7 +197,9 @@ export class ShipView {
   glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
-    return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
+    const fade = 1 - diveShare(s);
+    if (fade <= 0.01) return [];
+    return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius * fade }));
   }
 
   /** The tug after a rescue flare: ahead of the bow, a towline to it, then it sails away. */
