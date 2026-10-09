@@ -106,6 +106,10 @@ export interface SubWorld {
 /** Its length in world units (each model its own: owner, 8 ottobre, it looked too small). */
 export const subLength = (s: { model: string }): number => subModel(s.model).lengthM * WORLD.unitsPerMetre;
 
+/** The highest it goes (world y of its middle): surfaced, deck and tower out of the water. */
+export const subTopY = (s: { model: string }): number =>
+  WORLD.surfaceY - SUBMARINE.surfaceFloat * subLength(s);
+
 /** Its body: the circles of SUBMARINE.body (drawn for SUBMARINE.length), scaled to its model's length. */
 export const subBody = (s: { model: string }): [number, number][] => {
   const k = subLength(s) / SUBMARINE.length;

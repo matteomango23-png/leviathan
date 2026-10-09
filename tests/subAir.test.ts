@@ -8,7 +8,10 @@ import { WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, toSave } from '../src/systems/game';
 import { parseSave } from '../src/systems/save/saveData';
+import { emptyInput } from '../src/systems/input';
 import { restSubAir, stepSubAir, subUnder } from '../src/systems/subAir';
+import { stepSub } from '../src/systems/submarine';
+import { subTopY } from '../src/systems/subState';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveSub } from './helpers/vessels';
 
@@ -52,5 +55,16 @@ describe('the submarine’s air', () => {
     expect(g.sub.air).toBeLessThan(full);
     const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
     expect(back.sub.air).toBeCloseTo(Math.round(g.sub.air), 0);
+  });
+});
+
+describe('surfaced (owner, 9 ottobre: "a block kept them under the water line")', () => {
+  it('near the surface, the dive lever let go, it rises with its deck and tower out of the water', () => {
+    const g = createGame(generateWorld(), null, 4);
+    giveSub(g, 2600);
+    Object.assign(g.sub, { aboard: true, y: SUBMARINE.restY + 4, vy: 0 });
+    for (let t = 0; t < 4; t += DT) stepSub(g, emptyInput(), DT, []);
+    expect(g.sub.y).toBeLessThan(WORLD.surfaceY);
+    expect(g.sub.y).toBeCloseTo(subTopY(g.sub), 0);
   });
 });

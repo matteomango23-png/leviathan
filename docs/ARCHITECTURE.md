@@ -67,6 +67,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `newGame.ts` | Lo stato di una partita (`GameState`) e come comincia: nuova o da un salvataggio (`createGame`, `applySave`). |
 | `port.ts` | Al porto: arrivo, riposo, vendita del pesce. |
 | `sea.ts` | Lo stato del mare: altezza delle onde, come i mezzi le cavalcano (su e giù, beccheggio secondo la lunghezza), correnti, usura delle barche in tempesta (`data/sea.ts`). |
+| `waterColumns.ts` | Il mare che risponde agli scafi: fila di colonne d'acqua a molle attorno alla telecamera, spinte da prua e atterraggi, sommate alle onde (`seaHeight`). |
 | `ride.ts` | Come uno scafo galleggia sulle onde: corpo su prua e poppa, salti, atterraggi di muso, ribaltamento delle barche leggere, spruzzi. |
 | `clarity.ts` | La limpidezza dell'acqua: ciclo per tratto di mare, meteo, Delta sempre torbido; sagome delle bestie lontane. |
 | `boatCrew.ts` | Tuffarsi da motoscafo e moto d'acqua e risalire a bordo. |

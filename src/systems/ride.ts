@@ -72,6 +72,7 @@ export function stepRide(
   const k = mix(R.small.k, R.big.k, z);
   const c = mix(R.small.c, R.big.c, z);
   const pitchMax = mix(R.small.pitchMax, R.big.pitchMax, z);
+  const follow = mix(R.small.follow, R.big.follow, z);
   const g = R.gravity;
   const rest = g / k; // how deep each point sits when still
   const off = length * R.pointsAt;
@@ -82,6 +83,8 @@ export function stepRide(
     const tt = t - dt + (i + 1) * h;
     const cos = Math.cos(r.p);
     const sin = Math.sin(r.p);
+    // the open sea's waves only: a hull riding the water it pushes itself would bounce on its own bow wave (owner,
+    // 9 ottobre: a "trampoline" under the ship at full speed)
     const sb = waveHeight(x + face * off * cos, tt, sea);
     const ss = waveHeight(x - face * off * cos, tt, sea);
     // the water's vertical speed under each end, as the hull sees it (it runs into the wave)
@@ -94,7 +97,8 @@ export function stepRide(
     const force = (surface: number, vSurface: number, y: number, v: number): number => {
       const under = surface - y + rest;
       if (under <= 0) return 0;
-      const vs = Math.max(-R.maxV, Math.min(R.maxV, vSurface));
+      // a light hull is thrown by the wave it runs into; a heavy one cuts into it and buries its bow
+      const vs = Math.max(-R.maxV, Math.min(R.maxV, vSurface * follow));
       return k * Math.min(under, R.maxUnder * rest) - c * (v - vs);
     };
     const fb = force(sb, vsb, yb, r.vh + off * cos * r.vp);

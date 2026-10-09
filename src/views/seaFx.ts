@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { rampColor } from '../systems/math';
-import { waveHeight, type SeaWeather } from '../systems/sea';
+import { seaHeight, type SeaNow } from '../systems/sea';
 
 interface Drop {
   x: number;
@@ -65,8 +65,10 @@ export class SeaFx {
 }
 
 /**
- * The sea in front of a hull, from x0 to x1: from the wave's surface down to `bottom`, the colour of the water near
- * the surface, half see-through, so what is under the waves looks under water whatever their shape.
+ * The sea in front of a hull, from x0 to x1: just under the wave's surface, the colour of the water near the
+ * surface, half see-through and fading with depth and towards the hull's ends (owner, 9 ottobre: a flat block of
+ * another colour under the boats), so the hull looks sunk in the water whatever the waves' shape. Its edges follow
+ * the wave: no straight line anywhere.
  */
 export function waterOver(
   g: Phaser.GameObjects.Graphics,
@@ -74,26 +76,29 @@ export function waterOver(
   x1: number,
   bottom: number,
   time: number,
-  sea: SeaWeather,
+  sea: SeaNow,
 ): void {
   const c = rampColor(SEA.waterByY, WORLD.surfaceY + 12);
-  g.fillStyle(Phaser.Display.Color.GetColor(c[0], c[1], c[2]), 0.55);
+  const colour = Phaser.Display.Color.GetColor(c[0], c[1], c[2]);
   const step = 4;
+  const bands = 6;
+  const band = 2.5; // units each
+  const span = Math.max(1, x1 - x0);
+  const ends = span * 0.15;
   for (let x = x0; x < x1; x += step) {
-    const a = WORLD.surfaceY - waveHeight(x, time, sea);
-    const b = WORLD.surfaceY - waveHeight(Math.min(x1, x + step), time, sea);
     const xe = Math.min(x1, x + step);
-    if (bottom <= Math.min(a, b)) continue;
-    g.fillTriangle(x, a, xe, b, xe, bottom);
-    g.fillTriangle(x, a, xe, bottom, x, bottom);
+    const a = WORLD.surfaceY - seaHeight(x, time, sea, sea.water);
+    const b = WORLD.surfaceY - seaHeight(xe, time, sea, sea.water);
+    const mid = (x + xe) / 2;
+    const edge = Math.min(1, Math.min(mid - x0, x1 - mid) / ends);
+    for (let j = 0; j < bands; j++) {
+      const top = j * band;
+      if (Math.min(a, b) + top >= bottom) break;
+      const alpha = 0.5 * edge * (1 - j / bands);
+      if (alpha < 0.01) continue;
+      g.fillStyle(colour, alpha);
+      g.fillTriangle(x, a + top, xe, b + top, xe, b + top + band);
+      g.fillTriangle(x, a + top, xe, b + top + band, x, a + top + band);
+    }
   }
-  // the bright line of the surface over it
-  g.lineStyle(0.8, 0xc8e4ec, 0.5);
-  g.beginPath();
-  for (let x = x0; x <= x1; x += step) {
-    const y = WORLD.surfaceY - waveHeight(x, time, sea);
-    if (x === x0) g.moveTo(x, y);
-    else g.lineTo(x, y);
-  }
-  g.strokePath();
 }

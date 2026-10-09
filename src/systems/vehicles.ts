@@ -2,6 +2,7 @@
 // buttons, the ship, the submarine and the boat on their ramps or out, their solid hulls, and what the context
 // button does about them. game.ts calls these.
 import { PORTS, type PortDef } from '../data/economy';
+import { followColumns, hullOnWater, stepColumns, type WaterColumns } from './waterColumns';
 import { CALM_SEA } from './sea';
 import { weatherLook, type WeatherState } from './weather';
 import { boardBoat, canBoardBoat, diveFromBoat } from './boatCrew';
@@ -27,13 +28,19 @@ import { sailShip, type ShipWorld } from './ship/ship';
 import { repairSub, restAboard, stepSub, subHull, subModel } from './submarine';
 import { restSubAir } from './subAir';
 import { BOAT } from '../data/boats';
-import { sailBoat, type BoatState } from './boat';
+import { boatLength, sailBoat, type BoatState } from './boat';
 import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
-import { boatBay } from './ship/model';
+import { boatBay, shipLength } from './ship/model';
 import { submerged } from './ship/uboat';
 
 export type VehicleWorld = HatchWorld &
-  ShipWorld & { boat: BoatState; diver: { dead: boolean }; weather?: WeatherState; time?: number };
+  ShipWorld & {
+    boat: BoatState;
+    diver: { dead: boolean };
+    weather?: WeatherState;
+    time?: number;
+    water?: WaterColumns;
+  };
 
 /** You are carried by a vehicle (no swimming): at the helm, in the submarine, or on the ramp. */
 export const inVehicle = (g: VehicleWorld): boolean =>
@@ -87,11 +94,21 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;
   const sea = g.weather ? weatherLook(g.weather) : CALM_SEA; // its waves and its currents (sea.ts)
   const t = g.time ?? 0; // the waves' clock (the views draw the same waves)
+  const water = g.water ?? null;
   const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far, sea, t);
   if (tiles.length) events.push({ type: 'tilesChanged', tiles });
   const ramp = stepBay(g, dt, events);
   const boatRamp = stepBoatBay(g, dt, events);
   sailBoat(g, boat.aboard ? input.helm : null, dt, events, sea, t);
+  // the water answers the hulls afloat: bow waves, the slam of a landing (waterColumns.ts)
+  if (water) {
+    followColumns(water, g.diver.x);
+    if (ship.owned && !submerged(ship))
+      hullOnWater(water, ship.x, ship.face, shipLength(ship), ship.speed, Math.max(0, -ship.ride.vh), dt);
+    if (boat.owned && boat.bay === 'out')
+      hullOnWater(water, boat.x, boat.face, boatLength(boat), boat.speed, Math.max(0, -boat.ride.vh), dt);
+    stepColumns(water, dt);
+  }
   // its hull gave way: back broken to its hold, you at the ship's helm (mended at a harbour)
   if (events.some((e) => e.type === 'boatWrecked') && ship.owned) {
     Object.assign(boat, { aboard: false, bay: 'docked', bayT: 0, speed: 0, prop: 0 });

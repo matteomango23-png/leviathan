@@ -3,7 +3,7 @@
 // "running" picture fades in (the jets of the Expedition Hunter 2's boat). A wake and bubbles behind it, no foam
 // dots (owner, 8 ottobre). Look only: systems/boat.ts moves it.
 import Phaser from 'phaser';
-import { waveHeight, type SeaWeather } from '../systems/sea';
+import { seaHeight, type SeaNow } from '../systems/sea';
 import { airborne } from '../systems/ride';
 import { SeaFx, waterOver } from './seaFx';
 import { BOAT_MODELS, type BoatModel } from '../data/boats';
@@ -48,7 +48,7 @@ export class BoatView {
   }
 
   /** @param hidden in the hold behind its closed hatch @param sea the weather's waves and wind: it rides them */
-  update(b: BoatState, time: number, hidden: boolean, sea: SeaWeather, dt = 1 / 60): void {
+  update(b: BoatState, time: number, hidden: boolean, sea: SeaNow, dt = 1 / 60): void {
     this.fx.clear();
     this.puffs(b, hidden, dt);
     for (const [id, p] of this.pics) if (id !== b.model || !b.owned || hidden) p.hide();
@@ -111,11 +111,11 @@ export class BoatView {
     top: number,
     k: number,
     time: number,
-    sea: SeaWeather,
+    sea: SeaNow,
   ): void {
     const g = this.fx;
     const stern = b.x + b.face * (m.picture.propX - 0.5) * L;
-    const surface = (x: number): number => WORLD.surfaceY - waveHeight(x, time, sea);
+    const surface = (x: number): number => WORLD.surfaceY - seaHeight(x, time, sea, sea.water);
     if (k > 0.03)
       for (let i = 0; i < 12; i++) {
         const t = (time * (1 + k * 1.5) + i / 12) % 1;
