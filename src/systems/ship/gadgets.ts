@@ -10,7 +10,8 @@ import { subModel, type SubState } from '../submarine';
 import { beastsInRange, holdOf, locate, type Contact, type Target } from '../tracking';
 import { holdPoint } from './geometry';
 import { shipModel, subBay } from './model';
-import type { ShipState } from './ship';
+import { hatchT, type ShipState } from './ship';
+import { SHIP } from '../../data/ship';
 
 /** One beast in the drone's report, as it found it. */
 export interface ReconEntry {
@@ -68,11 +69,14 @@ export const hasDrone = (g: { ship: ShipState }): boolean => {
   return !!bay && !!subModel(bay.model).recon;
 };
 
-/** The drone can scout now: in its hold, whole, not already out. */
+/** The drone can scout now: in its hold behind its open hatch (owner, 9 ottobre: open it, then scout or launch),
+ *  whole, the ship still, not already out. */
 export const canRecon = (g: GadgetsWorld): boolean =>
   g.ship.owned &&
   hasDrone(g) &&
   g.ship.bay === 'docked' &&
+  hatchT(g.ship, subBay(g.ship)) === 1 &&
+  g.ship.speed < SHIP.stillBelow &&
   !g.sub.aboard &&
   g.sub.hull > 0 &&
   g.gadgets.recon.phase === 'idle';
@@ -114,7 +118,6 @@ function glide(
 function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
   const r = g.gadgets.recon;
   if (r.phase === 'idle') return;
-  const bay = subBay(g.ship);
   const home = holdPoint(g.ship);
   const was = r.x;
   if (r.phase === 'out') {
@@ -147,17 +150,13 @@ function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
     events.push({ type: 'reconDone', count: r.found.length });
   }
   if (r.x !== was) r.face = r.x > was ? 1 : -1;
-  // its hatch opens while it goes out and comes back in
-  const h = g.ship.hatches[bay];
-  if (h) h.open = r.phase !== 'idle' && Math.hypot(r.x - home.x, r.y - home.y) < RECON.hatchNear;
 }
 
-/** You pick a beast from the report: the compass follows it and the sphere goes to hold it. */
+/** You pick a beast from the report (the cockpit's Drone tab): the compass follows it. */
 export function pickTarget(g: GadgetsWorld, e: ReconEntry, events: GameEvent[]): void {
   g.gadgets.target = e.target;
   g.gadgets.targetName = e.name;
   events.push({ type: 'targetSet', name: e.name });
-  sendSphere(g, events);
 }
 
 export function clearTarget(g: GadgetsWorld): void {
@@ -165,10 +164,20 @@ export function clearTarget(g: GadgetsWorld): void {
   g.gadgets.targetName = '';
 }
 
-function sendSphere(g: GadgetsWorld, events: GameEvent[]): void {
+/** "Invia sfera" shows: its bay open (owner, 9 ottobre: open it, send it, close it when it is back), a beast
+ *  picked, the sphere home. */
+export const canSendSphere = (g: GadgetsWorld): boolean => {
+  const bay = sphereBay(g.ship);
+  return bay >= 0 && hatchT(g.ship, bay) === 1 && !!g.gadgets.target && g.gadgets.sphere.phase === 'dock';
+};
+
+/** The sphere is away (its bay cannot be closed meanwhile). */
+export const sphereOut = (g: { gadgets: GadgetsState }): boolean => g.gadgets.sphere.phase !== 'dock';
+
+export function sendSphere(g: GadgetsWorld, events: GameEvent[]): void {
   const sp = g.gadgets.sphere;
   const bay = sphereBay(g.ship);
-  if (bay < 0 || !g.gadgets.target) return;
+  if (!canSendSphere(g)) return;
   if (sp.phase !== 'dock') return void events.push({ type: 'sphereBusy' });
   if (sp.cooldown > 0) return void events.push({ type: 'sphereCharging', seconds: sp.cooldown });
   Object.assign(sp, { phase: 'go', ...holdPoint(g.ship, bay) });
@@ -209,12 +218,6 @@ function stepSphere(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
     sp.phase = 'dock';
     sp.cooldown = SPHERE.cooldownSeconds;
   }
-  const h = g.ship.hatches[bay];
-  if (h)
-    h.open =
-      sp.phase !== 'dock' &&
-      sp.phase !== 'hold' &&
-      Math.hypot(sp.x - home.x, sp.y - home.y) < SPHERE.hatchNear;
 }
 
 /** Every step: the drone's round, the sphere, and the beast you follow (lost when caught, beaten or gone). */

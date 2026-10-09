@@ -1456,7 +1456,7 @@ export const ASSET_HASHES: Readonly<Record<string, string>> = {
   'world/nave_nightmare_aperta.webp': '643384ab',
   'world/nave_nightmare_aperta_1.webp': '7dcc8f77',
   'world/nave_nightmare_aperta_2.webp': 'd8552158',
-  'world/nave_nightmare_moto.webp': '34406be1',
+  'world/nave_nightmare_moto.webp': '2a4f3c0c',
   'world/nave_poseidon.webp': '63609a06',
   'world/nave_poseidon_aperta.webp': 'a8a7a5aa',
   'world/nave_stormtrooper.webp': '8348be1b',

@@ -50,7 +50,7 @@ export interface BayDef {
 }
 
 /** The tabs of its cockpit (owner, 8 ottobre: each ship its own; new instruments come with parts 4b–4d). */
-export type CockpitTab = 'sonar' | 'plancia' | 'diario' | 'recinto' | 'zaino';
+export type CockpitTab = 'sonar' | 'plancia' | 'diario' | 'recinto' | 'zaino' | 'drone';
 
 export interface ShipModelDef {
   id: string;
@@ -471,7 +471,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     ],
     special: 'U-Boat gigante, fino a 500 m: drone da ricognizione e sfera che blocca le bestie',
     note: 'La regina delle spedizioni: non la più veloce, ma la più forte',
-    cockpit: ALL_TABS,
+    cockpit: [...ALL_TABS, 'drone'], // the drone's report (owner, 9 ottobre)
     card: 'nave_nightmare',
     dive: { maxDepthM: 500, airSeconds: 480, sinkSpeed: 20, riseSpeed: 25 },
     art: {

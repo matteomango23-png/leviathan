@@ -12,7 +12,7 @@ import { boatModel } from '../systems/boat';
 import { SHIP_MODELS } from '../data/fleet';
 import { SHIP } from '../data/ship';
 import { keelDepthM } from '../systems/ship/uboat';
-import { canRecon, hasDrone, reconOut } from '../systems/ship/gadgets';
+import { canRecon, canSendSphere, hasDrone, reconOut, sphereBay, sphereOut } from '../systems/ship/gadgets';
 import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
@@ -43,19 +43,32 @@ function objectiveLine(g: GameState): string | undefined {
 }
 
 /** What its submarine is called: the Ocean's Nightmare's is a drone. */
+/** "Invia sfera", or the time left to recharge it. */
+function sphereButton(g: GameState): { text: string; ready: boolean } {
+  const c = Math.ceil(g.gadgets.sphere.cooldown);
+  return c > 0
+    ? { text: `Sfera ${Math.floor(c / 60)}:${String(c % 60).padStart(2, '0')}`, ready: false }
+    : { text: 'Invia sfera', ready: true };
+}
+
 const subName = (g: GameState): string => (hasDrone(g) ? 'drone' : 'sottomarino');
 
-/** The hatch buttons: "Apri portellone", or with two bays which one, short ("Apri motoscafo"); the sphere's hatch
- *  has none (it opens by itself, part 4d). */
+/** The hatch buttons: "Apri portellone", or with two bays which one, short ("Apri motoscafo", "Apri sfera"). */
 function hatchButtons(g: GameState): ({ text: string; open: boolean } | null)[] {
   const s = g.ship;
   const bays = (SHIP_MODELS.find((m) => m.id === s.model) ?? SHIP_MODELS[0]!).bays;
   return s.hatches.map((_, i) => {
-    // the sphere's hatch opens by itself, and the drone's while it is out on its round
-    if (bays[i]?.kind === 'sphere' || (i === subBay(s) && reconOut(g))) return null;
+    // the drone's and the sphere's hatches stay open while they are out (you close them once they are back)
+    if ((i === subBay(s) && reconOut(g)) || (i === sphereBay(s) && sphereOut(g))) return null;
     const open = hatchOpening(s, i);
     const what =
-      bays.length < 2 ? 'portellone' : i === boatBay(s) ? boatName(s).replace(/^(Il|La) /, '') : subName(g);
+      bays.length < 2
+        ? 'portellone'
+        : i === boatBay(s)
+          ? boatName(s).replace(/^(Il|La) /, '')
+          : i === sphereBay(s)
+            ? 'sfera'
+            : subName(g);
     return { text: `${open ? 'Chiudi' : 'Apri'} ${what}`, open };
   });
 }
@@ -80,7 +93,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       canLaunch: launchShown(g) && !reconOut(g),
       subName: subName(g),
       canRecon: canRecon(g),
-      reportCount: g.gadgets.recon.report?.length ?? 0,
+      ...(canSendSphere(g) ? { sphere: sphereButton(g) } : {}),
       canLaunchBoat: boatLaunchShown(g),
       boatName: boatName(s)
         .replace(/^(Il|La) /, '')

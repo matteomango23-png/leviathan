@@ -29,7 +29,17 @@ export interface InputState {
   helm: HelmState;
   /** A button of the helm pressed this frame: the hatch, lower the submarine, dive off the ship, the flare. */
   helmCmd:
-    'hatch' | 'hatch2' | 'launch' | 'launchBoat' | 'dive' | 'rescue' | 'sonar' | 'engine' | 'recon' | null;
+    | 'hatch'
+    | 'hatch2'
+    | 'launch'
+    | 'launchBoat'
+    | 'dive'
+    | 'rescue'
+    | 'sonar'
+    | 'engine'
+    | 'recon'
+    | 'sphere'
+    | null;
   /** The Ocean's Nightmare (part 4d): the beast picked from the drone's report (its index), or -1; or the compass
    *  put away. */
   pickTarget: number;

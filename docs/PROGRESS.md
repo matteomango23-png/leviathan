@@ -1,5 +1,20 @@
 # Progressi
 
+## Ritocchi all'Ocean's Nightmare (9 ottobre 2026) → v0.57.1
+
+**Fatto:**
+- **Drone** 14 m. `canRecon` vuole il portellone del drone aperto e la nave ferma.
+- **Sfera** partita solo con "Invia sfera" (`helmCmd 'sphere'`, `canSendSphere`); nessun portellone si apre o si chiude da solo.
+- **Resoconto** nella scheda "Drone" del cockpit (`renderReconTab` in `ui/reconPanel.ts`, `CockpitTab 'drone'`); bussola sotto i ritratti.
+- **Pulsanti del timone** su griglia: 3 per colonna (`.helm-still`).
+- **Nuova** `nave_nightmare_moto`.
+
+**Da provare sull'iPhone:**
+1. Apri il portellone del drone: "Ricognizione", poi richiudilo.
+2. Cockpit, scheda Drone: scegli un animale.
+3. Apri il vano della sfera e tocca "Invia sfera"; dopo il minuto, quando la sfera è tornata, chiudi il vano.
+4. Controlla che con le altre navi i pulsanti del timone siano ancora a posto.
+
 ## Parte 4d — Ocean's Nightmare (9 ottobre 2026) → v0.57.0
 
 **Fatto:**

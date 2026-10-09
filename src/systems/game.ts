@@ -5,6 +5,7 @@ import {
   clearTarget,
   newGadgets,
   pickTarget,
+  sendSphere,
   startRecon,
   stepGadgets,
   type GadgetsState,
@@ -267,6 +268,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (input.action) doAction(g, events);
   if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
   if (input.helmCmd === 'recon') startRecon(g, events);
+  if (input.helmCmd === 'sphere') sendSphere(g, events);
   const picked = g.gadgets.recon.report?.[input.pickTarget];
   if (picked) pickTarget(g, picked, events);
   if (input.clearTarget) clearTarget(g);

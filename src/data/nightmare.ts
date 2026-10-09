@@ -12,8 +12,6 @@ export const RECON = {
   reach: 30,
   /** Seconds it chases one beast before giving it up (it swims off too fast). */
   giveUpSeconds: 10,
-  /** The hatch opens while the drone is this close to it (units). */
-  hatchNear: 90,
 };
 
 export const SPHERE = {
@@ -26,7 +24,6 @@ export const SPHERE = {
   /** Its red glow: pulses per second; a red shock through the beast every this many seconds. */
   pulseHz: 1.2,
   shockEvery: 1.4,
-  hatchNear: 90,
   /** Its size on screen (metres across). */
   sizeM: 3,
 };

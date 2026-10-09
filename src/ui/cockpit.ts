@@ -21,6 +21,7 @@ import './cockpitSteam.css';
 import { STEAM_BRIDGE, STEAM_FRAME, STEAM_LIST, STEAM_SONAR, type Rect } from '../data/cockpitSteam';
 import { renderBridgeSteam } from './bridgeSteam';
 import { crop, place } from './steamStage';
+import { renderReconTab } from './reconPanel';
 
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
@@ -29,6 +30,7 @@ const TABS: [Tab, string, IconName][] = [
   ['diario', 'Diario', 'scroll'],
   ['recinto', 'Recinto', 'pen'],
   ['zaino', 'Zaino', 'backpack'],
+  ['drone', 'Drone', 'school'],
 ];
 
 export class Cockpit {
@@ -38,6 +40,7 @@ export class Cockpit {
   private readonly msg: HTMLDivElement;
   private readonly tabs: HTMLButtonElement[] = [];
   private tab: Tab = 'sonar';
+  private droneSeen = '';
   private readonly engine: HTMLButtonElement;
   private readonly engineOff: HTMLButtonElement;
   private readonly speed: HTMLSpanElement;
@@ -130,6 +133,11 @@ export class Cockpit {
     this.engineOff.textContent = this.g.ship.engineOn ? '⏻ Spegni motore' : '⏻ Motore spento';
     this.engineOff.disabled = !this.g.ship.engineOn;
     if (this.tab === 'plancia' && this.ticks++ % 2 === 1) this.render();
+    // the drone's report shows as soon as it is back
+    const r = this.g.gadgets.recon;
+    const drone = `${r.phase}:${r.report?.length ?? -1}`;
+    if (this.tab === 'drone' && drone !== this.droneSeen) this.render();
+    this.droneSeen = drone;
   }
 
   private say(text: string, error = false): void {
@@ -161,6 +169,7 @@ export class Cockpit {
     else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, redraw);
     else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
+    else if (this.tab === 'drone') renderReconTab(this.body, this.g, this.session, (t) => this.say(t));
     else renderTeamPanel(this.body, this.g, true);
     if (this.stage) this.dressSteam();
     this.body.scrollTop = keep;

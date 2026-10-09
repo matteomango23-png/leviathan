@@ -1,64 +1,52 @@
-// The Ocean's Nightmare drone's report (part 4d, owner 9 ottobre 2026): the beasts it found, one card each (name,
-// size, level when known, depth, how far and which side). A tap picks it: the compass follows it and the sphere goes
-// to hold it. The sea goes on meanwhile.
+// The Ocean's Nightmare drone's report, in its own cockpit tab "Drone" (owner, 9 ottobre 2026): the beasts it found,
+// one card each (name, size, level when known, depth, how far and which side). A tap picks it: the compass shows it
+// from then on; "Invia sfera" at the helm (with the sphere's bay open) sends the sphere to hold it.
 import type { Session } from '../scenes/session';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
+import './gadgets.css';
 
-export class ReconPanel {
-  private readonly root: HTMLDivElement;
-  private readonly list: HTMLDivElement;
-
-  constructor(
-    parent: HTMLElement,
-    private readonly session: Session,
-  ) {
-    this.root = el('div', 'recon', parent);
-    const head = el('div', 'recon-head', this.root);
-    el('div', 'recon-title', head, 'Resoconto del drone');
-    const close = el('button', 'recon-close', head, '×');
-    close.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.close();
+export function renderReconTab(
+  body: HTMLElement,
+  g: GameState,
+  session: Session,
+  say: (t: string) => void,
+): void {
+  const box = el('div', 'recon', body);
+  el('div', 'recon-title', box, 'Resoconto del drone');
+  const report = g.gadgets.recon.report;
+  const out = g.gadgets.recon.phase !== 'idle';
+  el(
+    'div',
+    'recon-note',
+    box,
+    out
+      ? 'Il drone è in ricognizione: il resoconto arriva quando torna.'
+      : report
+        ? 'Scegli un animale: la bussola ti porta da lui. Con il vano della sfera aperto, "Invia sfera" lo blocca per un minuto.'
+        : 'Nessun resoconto: al timone apri il portellone del drone e tocca "Ricognizione".',
+  );
+  if (!report?.length) return;
+  const list = el('div', 'recon-list', box);
+  const same = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
+  const cards: HTMLElement[] = [];
+  report.forEach((e, i) => {
+    const card = el('button', 'recon-card', list);
+    cards.push(card);
+    card.classList.toggle('on', !!g.gadgets.target && same(g.gadgets.target, e.target));
+    el('div', 'recon-name', card, e.name);
+    const size = `${Math.round(e.lengthM * 10) / 10} m${e.level !== undefined ? ` · liv. ${e.level}` : ''}`;
+    el('div', 'recon-line', card, size);
+    el(
+      'div',
+      'recon-line',
+      card,
+      `${e.dxM < 0 ? '◀' : '▶'} ${Math.abs(e.dxM)} m · a ${e.depthM} m di profondità`,
+    );
+    card.addEventListener('click', () => {
+      session.input.pickTarget = i;
+      for (const c of cards) c.classList.toggle('on', c === card);
+      say(`Bussola su: ${e.name}`);
     });
-    el('div', 'recon-note', this.root, 'Scegli un animale: la bussola lo segue e la sfera va a bloccarlo.');
-    this.list = el('div', 'recon-list', this.root);
-    this.root.hidden = true;
-  }
-
-  get isOpen(): boolean {
-    return !this.root.hidden;
-  }
-
-  open(g: GameState): void {
-    const report = g.gadgets.recon.report ?? [];
-    this.list.replaceChildren();
-    report.forEach((e, i) => {
-      const card = el('button', 'recon-card', this.list);
-      if (g.gadgets.target && JSON.stringify(g.gadgets.target) === JSON.stringify(e.target))
-        card.classList.add('on');
-      el('div', 'recon-name', card, e.name);
-      const size = `${Math.round(e.lengthM * 10) / 10} m${e.level !== undefined ? ` · liv. ${e.level}` : ''}`;
-      el('div', 'recon-line', card, size);
-      el(
-        'div',
-        'recon-line',
-        card,
-        `${e.dxM < 0 ? '◀' : '▶'} ${Math.abs(e.dxM)} m · a ${e.depthM} m di profondità`,
-      );
-      card.addEventListener('pointerdown', (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        this.session.input.pickTarget = i;
-        this.close();
-      });
-    });
-    if (!report.length) el('div', 'recon-note', this.list, 'Nessun animale nel resoconto.');
-    this.root.hidden = false;
-  }
-
-  close(): void {
-    this.root.hidden = true;
-  }
+  });
 }

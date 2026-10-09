@@ -11,8 +11,16 @@ import { createGame, toSave, type GameState } from '../src/systems/game';
 import { parseSave } from '../src/systems/save/saveData';
 import { stepWildSpawns } from '../src/systems/encounters';
 import { spawnWild } from '../src/systems/beasts/wildState';
-import { canRecon, pickTarget, startRecon, stepGadgets } from '../src/systems/ship/gadgets';
-import { shipModel } from '../src/systems/ship/model';
+import {
+  canRecon,
+  canSendSphere,
+  pickTarget,
+  sendSphere,
+  sphereBay,
+  startRecon,
+  stepGadgets,
+} from '../src/systems/ship/gadgets';
+import { shipModel, subBay } from '../src/systems/ship/model';
 import { buyShip } from '../src/systems/ship/shipyard';
 import { maxDive } from '../src/systems/ship/uboat';
 import { beastsInRange, compassTo, locate } from '../src/systems/tracking';
@@ -34,6 +42,10 @@ function nightmare(): GameState {
   Object.assign(g.diver, { x, y: WORLD.surfaceY });
   return g;
 }
+
+/** Opens a hatch all the way (the drone's: 0, the sphere's: 1). */
+const openHatch = (g: GameState, i: number): void =>
+  void Object.assign(g.ship.hatches[i]!, { open: true, t: 1 });
 
 function run(g: GameState, seconds: number, ev: GameEvent[] = []): GameEvent[] {
   for (let t = 0; t < seconds; t += DT) {
@@ -57,6 +69,8 @@ describe('the Ocean’s Nightmare', () => {
     const g = nightmare();
     const near = beastsInRange(g, g.ship);
     expect(near.length).toBeGreaterThan(0);
+    expect(canRecon(g)).toBe(false); // owner, 9 ottobre: open its hatch first
+    openHatch(g, subBay(g.ship));
     expect(canRecon(g)).toBe(true);
     const ev: GameEvent[] = [];
     startRecon(g, ev);
@@ -68,11 +82,12 @@ describe('the Ocean’s Nightmare', () => {
     expect(report.length).toBe(Math.min(RECON.maxBeasts, near.length));
     for (const e of report) expect(g.seen.has(e.speciesId)).toBe(true);
     expect(g.gadgets.recon.phase).toBe('idle');
-    expect(g.ship.hatches.every((h) => !h.open)).toBe(true);
+    expect(g.ship.hatches[subBay(g.ship)]!.open).toBe(true); // you close it yourself
   });
 
   it('the drone scouts only from its hold', () => {
     const g = nightmare();
+    openHatch(g, subBay(g.ship));
     g.ship.bay = 'out';
     const ev: GameEvent[] = [];
     startRecon(g, ev);
@@ -80,8 +95,9 @@ describe('the Ocean’s Nightmare', () => {
     expect(g.gadgets.recon.phase).toBe('idle');
   });
 
-  it('the beast picked: the compass follows it, the sphere holds it a minute, comes back and recharges', () => {
+  it('the beast picked: the compass follows it; sent from its open bay, the sphere holds it a minute, comes back and recharges', () => {
     const g = nightmare();
+    openHatch(g, subBay(g.ship));
     startRecon(g, []);
     run(g, 120);
     const e = g.gadgets.recon.report![0]!;
@@ -89,6 +105,11 @@ describe('the Ocean’s Nightmare', () => {
     pickTarget(g, e, ev);
     expect(g.gadgets.target).toEqual(e.target);
     expect(compassTo(g, g.gadgets.target, g.diver)).not.toBeNull();
+    expect(canSendSphere(g)).toBe(false); // its bay is shut
+    run(g, 5, ev);
+    expect(g.gadgets.sphere.phase).toBe('dock');
+    openHatch(g, sphereBay(g.ship));
+    sendSphere(g, ev);
     run(g, 30, ev);
     expect(ev.some((x) => x.type === 'sphereHold')).toBe(true);
     const at = locate(g, e.target)!;
@@ -100,8 +121,9 @@ describe('the Ocean’s Nightmare', () => {
     run(g, 40, ev);
     expect(g.gadgets.sphere.phase).toBe('dock');
     expect(g.gadgets.sphere.cooldown).toBeGreaterThan(0);
+    expect(g.ship.hatches[sphereBay(g.ship)]!.open).toBe(true); // you close it yourself
     const again: GameEvent[] = [];
-    pickTarget(g, e, again);
+    sendSphere(g, again);
     expect(again.some((x) => x.type === 'sphereCharging')).toBe(true);
   });
 

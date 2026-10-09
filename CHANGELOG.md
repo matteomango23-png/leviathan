@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.57.1 — Ocean's Nightmare: portelloni, cockpit e drone più grosso (9 ottobre 2026)
+
+- **Drone più grosso:** da 7 a 14 m.
+- **Ricognizione dal portellone:** apri il portellone del drone e scegli "Ricognizione" oppure "Cala drone". Quando il drone torna, il portellone lo chiudi tu (mentre è fuori non si può chiudere).
+- **Resoconto nel cockpit,** nella nuova scheda "Drone": scegli un animale e compare la bussola.
+- **Sfera a comando:** apri il vano della sfera e tocca "Invia sfera". Dopo il minuto torna e il vano lo chiudi tu. In ricarica il pulsante mostra il tempo che manca.
+- **Bussola più in basso,** sotto i ritratti della squadra.
+- **Pulsanti del timone su due colonne** quando sono tanti (a destra il drone, a sinistra la sfera e "Tuffati"), così non coprono più le frecce.
+- **Nuova immagine dell'Ocean's Nightmare in movimento.**
+
 ## v0.57.0 — Ocean's Nightmare (9 ottobre 2026)
 
 - **La nave più forte è in vendita** al cantiere (50.000 denti, categoria U-Boat). È enorme e lenta, si immerge fino a 500 m per 8 minuti e ha due portelloni.
