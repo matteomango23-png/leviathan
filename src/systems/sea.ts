@@ -1,6 +1,5 @@
-// The state of the sea (data/sea.ts; owner 9 ottobre 2026): the height of the waves at a point and time, how a
-// vehicle of a given length rides them (heave and pitch: a jet ski rides every wave, a long ship averages the short
-// ones out, like real hulls), the currents that slow you, the wear of the small boats in a storm. Pure logic.
+// The state of the sea (data/sea.ts; owner 9 ottobre 2026): the height of the waves at a point and time (the hulls
+// ride them: ride.ts), the currents that slow you, the wear of the small boats in a storm. Pure logic.
 import { SEA_STATE } from '../data/sea';
 import type { WeatherLook } from '../data/weather';
 
@@ -16,26 +15,24 @@ export const CALM_SEA: SeaWeather = { waves: 1, wind: 0 };
 export function waveHeight(x: number, t: number, w: SeaWeather): number {
   const amp = S.waves.amp * w.waves * w.waves;
   const { long, short } = S.waves;
-  const a = Math.sin(((x - long.speed * t) / long.length) * Math.PI * 2);
-  const b = Math.sin(((x - short.speed * t) / short.length) * Math.PI * 2 + 1.3);
-  return amp * (long.share * a + short.share * b);
+  // like real sea waves (the water turns in circles under them): sharp crests, broad flat troughs, more so the
+  // rougher the sea (a second-order wave: + q·cos 2θ)
+  const q = S.waves.sharpness * Math.min(1, Math.max(0, (w.waves - 0.8) / 2.4));
+  const wave = (x0: number, len: number, speed: number, shift: number): number => {
+    const s = Math.sin(((x0 - speed * t) / len) * Math.PI * 2 + shift);
+    return s + q * (2 * s * s - 1);
+  };
+  return (
+    amp *
+    (long.share * wave(x, long.length, long.speed, 0) + short.share * wave(x, short.length, short.speed, 1.3))
+  );
 }
 
-/** A vehicle of this length (units) on the waves at x: how high it rides and how much its bow is up (radians, bow
- *  up > 0 for `face`). */
-export function rideWaves(
-  x: number,
-  length: number,
-  face: 1 | -1,
-  t: number,
-  w: SeaWeather,
-): { heave: number; pitch: number } {
-  const half = length / 2;
-  const bow = waveHeight(x + face * half, t, w);
-  const mid = waveHeight(x, t, w);
-  const stern = waveHeight(x - face * half, t, w);
-  const pitch = Math.max(-S.pitchMax, Math.min(S.pitchMax, Math.atan2(bow - stern, length)));
-  return { heave: (bow + 2 * mid + stern) / 4, pitch };
+/** How far under its resting line the sea's surface can dip now (units): the painted water starts there, the waves
+ *  above it are drawn by the view (no straight line anywhere). */
+export function troughDepth(w: SeaWeather): number {
+  const q = S.waves.sharpness * Math.min(1, Math.max(0, (w.waves - 0.8) / 2.4));
+  return S.waves.amp * w.waves * w.waves * (1 + q) + 1;
 }
 
 /** How strong the current is now, 0 (calm) … 1 (full storm). */

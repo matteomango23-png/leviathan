@@ -74,6 +74,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
+    case 'boatCapsized':
+      return ['Ribaltato dall’onda! La barca si raddrizza, ma lo scafo ne risente.', 3.5];
     case 'boatHullHalf':
       return ['Il mare grosso sta rovinando lo scafo della barca: rallenta o torna alla nave.', 4];
     case 'boatWrecked':

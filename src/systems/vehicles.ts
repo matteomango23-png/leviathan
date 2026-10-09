@@ -33,7 +33,7 @@ import { boatBay } from './ship/model';
 import { submerged } from './ship/uboat';
 
 export type VehicleWorld = HatchWorld &
-  ShipWorld & { boat: BoatState; diver: { dead: boolean }; weather?: WeatherState };
+  ShipWorld & { boat: BoatState; diver: { dead: boolean }; weather?: WeatherState; time?: number };
 
 /** You are carried by a vehicle (no swimming): at the helm, in the submarine, or on the ramp. */
 export const inVehicle = (g: VehicleWorld): boolean =>
@@ -86,11 +86,12 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   const far = (x: number): boolean =>
     Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;
   const sea = g.weather ? weatherLook(g.weather) : CALM_SEA; // its waves and its currents (sea.ts)
-  const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far, sea);
+  const t = g.time ?? 0; // the waves' clock (the views draw the same waves)
+  const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far, sea, t);
   if (tiles.length) events.push({ type: 'tilesChanged', tiles });
   const ramp = stepBay(g, dt, events);
   const boatRamp = stepBoatBay(g, dt, events);
-  sailBoat(g, boat.aboard ? input.helm : null, dt, events, sea);
+  sailBoat(g, boat.aboard ? input.helm : null, dt, events, sea, t);
   // its hull gave way: back broken to its hold, you at the ship's helm (mended at a harbour)
   if (events.some((e) => e.type === 'boatWrecked') && ship.owned) {
     Object.assign(boat, { aboard: false, bay: 'docked', bayT: 0, speed: 0, prop: 0 });

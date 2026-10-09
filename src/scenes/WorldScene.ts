@@ -351,7 +351,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.surface.update(view, g.time, sky, sky.clouds);
+    this.surface.update(view, g.time, sky);
     this.ship.update(g.ship, g.time, dt, sky);
     this.hunts.update(g, view, g.time);
     this.boat.update(
@@ -363,7 +363,7 @@ export class WorldScene extends Phaser.Scene {
     );
     // the drone away on its round is drawn by the Nightmare's view, not in the hold
     const inHold = g.ship.bay === 'docked' && (hatchT(g.ship, subBay(g.ship)) < 0.6 || reconOut(g));
-    this.sub.update(g.sub, g.time, dt, inHold);
+    this.sub.update(g.sub, g.time, dt, inHold, sky);
     this.nightmare.update(g, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
     // murky water (clarity.ts): the beasts far from you are dark shapes

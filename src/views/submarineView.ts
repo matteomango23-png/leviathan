@@ -2,6 +2,9 @@
 // bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
 // left for a few seconds, then fades; badly damaged it trails dark smoke.
 import Phaser from 'phaser';
+import { CALM_SEA, type SeaWeather } from '../systems/sea';
+import { newRide, settleRide, stepRide } from '../systems/ride';
+import { subUnder } from '../systems/subAir';
 import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { subLength, subModel, type SubState } from '../systems/submarine';
@@ -37,6 +40,8 @@ export class SubmarineView {
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly bar: Phaser.GameObjects.Graphics;
   private lastHull = NaN;
+  /** How it floats on the waves at the surface (look only). */
+  private readonly ride = newRide();
   private barLeft = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
@@ -49,7 +54,8 @@ export class SubmarineView {
   }
 
   /** @param hidden in the ship's hold behind the closed hatch */
-  update(s: SubState, time: number, dt: number, hidden = false): void {
+  /** @param sea the weather's waves: at the surface it floats on them (ride.ts); under water it is still */
+  update(s: SubState, time: number, dt: number, hidden = false, sea: SeaWeather = CALM_SEA): void {
     const g = this.g.clear();
     this.bar.clear();
     this.turning.setVisible(false);
@@ -59,8 +65,10 @@ export class SubmarineView {
       return;
     }
     const L = subLength(s);
-    const rock = Math.sin(time * 1.3) * 0.02;
-    const y = s.y + Math.sin(time * 1.1) * 0.8;
+    if (subUnder(s)) settleRide(this.ride);
+    else stepRide(this.ride, s.x, s.face, L, sea, time, dt);
+    const rock = Math.sin(time * 1.3) * 0.02 - s.face * this.ride.p;
+    const y = s.y + Math.sin(time * 1.1) * 0.8 - this.ride.h;
     const { art, moving } = subModel(s.model);
     const speed = Math.hypot(s.vx, s.vy);
     if (WORLD_ART_KEYS.includes(art)) {

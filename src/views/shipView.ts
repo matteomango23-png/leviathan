@@ -5,7 +5,8 @@
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
-import { rideWaves, type SeaWeather } from '../systems/sea';
+import { waveHeight, type SeaWeather } from '../systems/sea';
+import { SeaFx, waterOver } from './seaFx';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
@@ -111,6 +112,8 @@ export class ShipView {
   private readonly fx: Phaser.GameObjects.Graphics;
   /** Smoke (behind the ship), the bow wave and ice shards (views/shipFx.ts). */
   private readonly effects: ShipFx;
+  /** Spray where its bow buries itself in the sea. */
+  private readonly spray: SeaFx;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly fallback: Phaser.GameObjects.Graphics;
   private readonly tug: Phaser.GameObjects.Image | null;
@@ -133,6 +136,7 @@ export class ShipView {
     if (this.tug) layer.add(this.tug);
     this.fx = scene.add.graphics();
     this.effects = new ShipFx(smoke, this.fx);
+    this.spray = new SeaFx(this.fx);
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     layer.add([this.fx, this.glow]);
   }
@@ -161,11 +165,9 @@ export class ShipView {
       return;
     }
     const k = Math.min(1, s.speed / shipTopSpeed(s));
-    // rocking on the swell (more in bad weather), planing at speed
-    // on the waves under its bow, middle and stern: a long ship rides them slow and heavy (owner, 9 ottobre)
-    const ride = rideWaves(s.x, shipLength(s), s.face, time, sea);
-    const heave = -ride.heave;
-    const roll = ride.pitch;
+    // floating on the waves (systems/ride.ts): lifted and dropped, its bow buried in the crests; planing at speed
+    const heave = -s.ride.h;
+    const roll = s.ride.p;
     const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
     const pitch = roll + planing * SHIP.plane.pitch;
     const lift = planing * SHIP.plane.lift;
@@ -174,11 +176,30 @@ export class ShipView {
     const calm = 1 - diveShare(s);
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
     const pics = this.picsOf(s);
-    if (pics) pics.place(s, s.x, top, 1, pitch * calm, (WORLD.surfaceY - top) / shipHeight(s), time);
+    // afloat, the whole painting, and in front of it the sea cut by the wave itself (no straight line, owner 9
+    // ottobre); diving, the old cut at the sea line climbing its picture
+    const afloat = diveShare(s) < 0.02;
+    const water = afloat ? 1 : (WORLD.surfaceY - top) / shipHeight(s);
+    if (pics) pics.place(s, s.x, top, 1, pitch * calm, water, time);
     else this.drawFallback(s, top);
+    if (afloat) {
+      const { x0, x1 } = { x0: s.x - shipLength(s) / 2, x1: s.x + shipLength(s) / 2 };
+      waterOver(this.fx, x0, x1, top + shipHeight(s) * 1.05, time, sea);
+      // its bow buried in a crest throws the sea up (his clip of the tanker)
+      if (s.ride.plunge > 0.5)
+        this.spray.spray(
+          s.x + s.face * shipLength(s) * 0.42,
+          s.ride.plunge,
+          s.speed,
+          s.face,
+          shipLength(s) / 180,
+          dt,
+        );
+    }
+    this.spray.update(dt);
     this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt); // a stack under water does not smoke
     if (sunk) this.drawPropBubbles(s, time);
-    else this.drawWake(s, k, time, heave);
+    else this.drawWake(s, k, time, sea);
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
@@ -256,18 +277,22 @@ export class ShipView {
   }
 
   /** Foam at the stern, a wake behind, bubbles behind the propeller. */
-  private drawWake(s: ShipState, k: number, time: number, heave: number): void {
+  private drawWake(s: ShipState, k: number, time: number, sea: SeaWeather): void {
     const g = this.fx;
     this.drawPropBubbles(s, time);
     if (k < 0.03) return;
     const L = shipLength(s);
     const stern = s.x - s.face * L * 0.46;
-    const y = WORLD.surfaceY + heave * 0.3;
     for (let i = 0; i < 14; i++) {
       const t = (time * (0.8 + k) + i / 14) % 1;
       const wx = stern - s.face * t * (40 + 120 * k);
       g.fillStyle(0xe8f2f4, 0.35 * k * (1 - t));
-      g.fillEllipse(wx, y + Math.sin(i * 1.7) * 1.2, 6 + t * 14, 1.6 + t * 1.2);
+      g.fillEllipse(
+        wx,
+        WORLD.surfaceY - waveHeight(wx, time, sea) + Math.sin(i * 1.7) * 1.2,
+        6 + t * 14,
+        1.6 + t * 1.2,
+      );
     }
     // (the bow wave is gone, owner 8 ottobre: foam should be the sea itself, not dots over it; for now none)
   }

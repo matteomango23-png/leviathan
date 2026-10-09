@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { BOAT } from '../src/data/boats';
 import { PORTO_FANGO } from '../src/data/economy';
-import { CLARITY } from '../src/data/sea';
+import { CLARITY, SEA_STATE } from '../src/data/sea';
 import { SHIP } from '../src/data/ship';
 import { WEATHERS } from '../src/data/weather';
 import { DELTA, WORLD } from '../src/data/worldLayout';
@@ -16,7 +16,8 @@ import { createGame, enterPort, stepGame, toSave, type GameState } from '../src/
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
 import { parseSave } from '../src/systems/save/saveData';
 import { buyShip } from '../src/systems/ship/shipyard';
-import { CALM_SEA, currentMult, diverCurrentMult, rideWaves, waveHeight } from '../src/systems/sea';
+import { CALM_SEA, currentMult, diverCurrentMult, waveHeight } from '../src/systems/sea';
+import { airborne, newRide, stepRide } from '../src/systems/ride';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
 
@@ -62,14 +63,40 @@ describe('the waves', () => {
     expect(peak(STORM)).toBeGreaterThan(12); // two metres and more
   });
 
-  it('a short hull pitches on every wave, a long ship rides them slow and heavy', () => {
-    let short = 0;
-    let long = 0;
-    for (let t = 0; t < 20; t += 0.25) {
-      short = Math.max(short, Math.abs(rideWaves(500, 60, 1, t, STORM).pitch));
-      long = Math.max(long, Math.abs(rideWaves(500, 540, 1, t, STORM).pitch));
-    }
-    expect(short).toBeGreaterThan(long * 3);
+  it('a light boat fast into a storm leaves the water at times; a long heavy ship never tilts past its limit', () => {
+    const ride = (length: number, speed: number) => {
+      const r = newRide();
+      let x = 5000;
+      let flew = false;
+      let most = 0;
+      for (let t = 0; t < 40; t += DT) {
+        x += speed * DT;
+        stepRide(r, x, 1, length, STORM, t, DT);
+        if (airborne(r)) flew = true;
+        if (r.flipped === 0) most = Math.max(most, Math.abs(r.p));
+      }
+      return { flew, most };
+    };
+    expect(ride(84, 280).flew).toBe(true); // the racing speedboat at 40 knots
+    expect(ride(540, 140).most).toBeLessThanOrEqual(SEA_STATE.ride.big.pitchMax + 1e-9);
+  });
+
+  it('in a calm sea it barely moves', () => {
+    const r = newRide();
+    for (let t = 0; t < 20; t += DT) stepRide(r, 5000, 1, 84, CALM, t, DT);
+    expect(Math.abs(r.h)).toBeLessThan(6);
+    expect(Math.abs(r.p)).toBeLessThan(0.15);
+  });
+
+  it('tipped past its limit a light boat flips over, shows see-through a moment and is set upright', () => {
+    const r = newRide();
+    r.p = 1.3;
+    r.vp = 3;
+    expect(stepRide(r, 5000, 1, 84, CALM, 0, DT)).toBe(true);
+    expect(r.flipped).toBeGreaterThan(0);
+    for (let t = 0; t < SEA_STATE.ride.flipSeconds + 0.2; t += DT) stepRide(r, 5000, 1, 84, CALM, t, DT);
+    expect(r.flipped).toBe(0);
+    expect(Math.abs(r.p)).toBeLessThan(0.2);
   });
 
   it('the currents hold the small boats back most; deep down a diver no longer feels them', () => {
