@@ -112,6 +112,11 @@ export const SUBMARINE = {
   stillBelow: 4, // units/s: slower than this it counts as still (you may get out)
   mooredX: PORT.x + 110, // where Aurelio leaves it: past the pier of Portofosco (out of the port's reach)
   restY: WORLD.surfaceY + 10, // at the port it floats just under the surface
+  /** Surfaced, it floats with its deck and tower out of the water (owner, 9 ottobre: "a block kept them under"):
+   *  its middle this share of its length above the surface; with the dive lever not pushing down, near the
+   *  surface it rises there by itself at this speed (units/s). */
+  surfaceFloat: 0.06,
+  floatUp: 22,
   length: 46, // units: the length SUBMARINE.body is drawn for (each model's own is lengthM)
   /** Its body against rock: circles along the hull (offset from the middle, radius), slimmer at bow and stern so
    *  it touches where the picture touches (owner: it stopped at an invisible wall). */

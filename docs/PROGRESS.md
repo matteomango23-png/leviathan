@@ -7,13 +7,16 @@
 - `systems/waterColumns.ts`: fila di colonne d'acqua a molle attorno alla telecamera (`COLUMNS`), spinte dagli scafi (`hullOnWater`: onda di prua, cavo dietro, atterraggio). Il galleggiamento (`ride.ts`) legge `seaHeight`.
 - `views/seaSurfaceView.ts` riscritta: mare pieno senza contorno, luce sulle creste, schiuma sulle creste ripide, onde lontane solo col mare mosso. Tolto il contorno anche in `waterOver`.
 - Nave più morbida (`ride.big` k 11, c 1.5, `follow` 0.15). Gli scafi leggono solo `waveHeight` (niente trampolino); colonne limitate a `COLUMNS.maxHeight`.
+- Sottomarino: sale fino a `subTopY` (`SUBMARINE.surfaceFloat`), vicino alla superficie risale da solo (`floatUp`); ormeggio e rimorchio lo lasciano lì.
 - Pioggia e neve si fermano sulle onde (`weatherView`), `waterOver` è una fascia che sfuma, il mare sfuma sotto il cavo (`FADE`), torbidità dello schermo pesata (`viewWet` in `WorldScene`).
 - Test: `tests/waves.test.ts`.
 
 **Da provare sull'iPhone:**
 1. Col sereno: nessuna linea dritta sulla superficie.
 2. In tempesta con la nave a tutta velocità: onda di prua, schiuma, spruzzi; la nave sale e scende morbida.
-3. Motoscafo vicino alla nave: sente le onde che lei crea.
+3. Varo del motoscafo e del sottomarino in tempesta: niente filtro colore.
+4. Sottomarino: risali in superficie e lascia la leva: deve galleggiare con ponte e torretta fuori.
+5. La pioggia cade fino alle onde, nessuna riga dritta.
 
 **Da regolare a gusto** (`data/sea.ts`): `swell`, `amp`, `steepStorm`, `COLUMNS.bowWave`, `ride.big`.
 

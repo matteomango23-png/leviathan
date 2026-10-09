@@ -12,6 +12,7 @@ import { shipAlongside } from './economy/places';
 import { SHIP_WEST_X } from './ship/surface';
 import { shipTank, type ShipState } from './ship/ship';
 import { restAboard, subModel, type SubState } from './submarine';
+import { subTopY } from './subState';
 import { boatModel, type BoatState } from './boat';
 import type { TeamBeast } from './beasts/team';
 
@@ -156,7 +157,7 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
     }
     Object.assign(g.diver, helmPoint(s), { vx: 0, vy: 0 });
   } else {
-    Object.assign(g.sub, { x: SUBMARINE.mooredX, y: SUBMARINE.restY, vx: 0, vy: 0 });
+    Object.assign(g.sub, { x: SUBMARINE.mooredX, y: subTopY(g.sub), vx: 0, vy: 0 });
     Object.assign(g.diver, { x: g.sub.x, y: g.sub.y, vx: 0, vy: 0 });
     where = 'a Portofosco';
   }

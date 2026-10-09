@@ -15,7 +15,7 @@ import { stepPressure } from './breath';
 import { HELM } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
-import { subBody, subModel, type SubState, type SubWorld } from './subState';
+import { subBody, subModel, subTopY, type SubState, type SubWorld } from './subState';
 export * from './subState';
 
 /** Close enough to climb in (at any depth). */
@@ -151,7 +151,12 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
     s.vx = -s.vx * SUBMARINE.bump.bounce;
   } else s.x = nx;
   // no invisible floor any more (owner, 4 ottobre): deeper than its model, the pressure crushes the hull
-  const ny = Math.max(SUBMARINE.restY, s.y + s.vy * dt); // it stays under the surface
+  // near the surface and not driven down it floats up, deck and tower out of the water
+  if (s.y < SUBMARINE.restY + SUBMARINE.air.underBelow && diveOf(input.helm.dive) <= 0 && s.air > 0)
+    s.vy = Math.min(s.vy, -SUBMARINE.floatUp);
+  const topY = subTopY(s);
+  const ny = Math.max(topY, s.y + s.vy * dt);
+  if (ny <= topY) s.vy = Math.max(0, s.vy);
   if (hits(g.map, s, s.x, ny)) {
     bump(g, Math.abs(s.vy), events);
     s.vy = -s.vy * SUBMARINE.bump.bounce;
@@ -201,7 +206,7 @@ function damageHull(
   // broken: towed home, you with it (a price in teeth, like losing your senses)
   const teeth = Math.floor(g.gear.teeth * SUBMARINE.wreckTeethLoss);
   g.gear.teeth -= teeth;
-  Object.assign(s, { x: SUBMARINE.mooredX, y: SUBMARINE.restY, vx: 0, vy: 0 });
+  Object.assign(s, { x: SUBMARINE.mooredX, y: subTopY(s), vx: 0, vy: 0 });
   Object.assign(g.diver, { x: s.x, y: s.y });
   events.push({ type: 'subWrecked', teeth });
 }
