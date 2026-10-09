@@ -5,6 +5,8 @@ import { diverCurrentMult } from './sea';
 import { weatherLook } from './weather';
 import { depthMetres } from './world/zones';
 import { clearTarget, pickTarget, reconOut, sendSphere, startRecon, stepGadgets } from './ship/gadgets';
+import { shootTracker, stepTracker } from './trackerDart';
+import { stepScan } from './sonarScan';
 import { XP_RULES } from '../data/progression';
 import { DIVER, SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
@@ -156,7 +158,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const picked = g.gadgets.recon.report?.[input.pickTarget];
   if (picked) pickTarget(g, picked, events);
   if (input.clearTarget) clearTarget(g);
+  if (input.helmCmd === 'tracker') shootTracker(g, events);
   stepGadgets(g, dt, events);
+  stepTracker(g, dt, events); // the trace of the beast you follow (trackerDart.ts)
+  stepScan(g, dt, events); // the sonar's analysis of an echo (sonarScan.ts)
   if (input.slot >= 0) useSlot(g, input.slot, events);
   stepSwarmCooldowns(g, dt);
 

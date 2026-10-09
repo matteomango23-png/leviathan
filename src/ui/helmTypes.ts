@@ -41,6 +41,8 @@ export interface HelmInfo {
   drums?: [number, number];
   /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */
   engineOn?: boolean;
+  /** Submarine only (block 5a): a wild beast close in front, the tracker dart can be fired. */
+  canTrack?: boolean;
   /** Ship only: it is still (owner, 9 ottobre: the hatch and dive buttons show only then). */
   still?: boolean;
 }

@@ -81,6 +81,10 @@ export type GameEvent =
   | { type: 'sphereCharging'; seconds: number }
   | { type: 'sphereBusy' }
   | { type: 'targetSet'; name: string }
+  | { type: 'scanDone'; text: string; known: boolean }
+  | { type: 'scanLost' }
+  | { type: 'trackerHit'; name: string }
+  | { type: 'trackerExpired'; name: string }
   | { type: 'targetLost'; name: string }
   /** An outpost of the open sea found (economy/places.ts). */
   | { type: 'outpostFound'; name: string }

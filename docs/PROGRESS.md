@@ -1,5 +1,20 @@
 # Progressi
 
+## Blocco 5a — Sonar al centro della caccia (9 ottobre 2026) → v0.61.0
+
+**Fatto:**
+- `data/hunts.ts`: `SONAR` (classi, nomi per sonar, `analyzeSeconds`), `TRACKER`; `data/fleet.ts`: `sonar.classes` per nave.
+- `systems/echoClass.ts`, `sonarScan.ts` (`g.sonarScan`, non salvato), `sonarNotes.ts` (`g.sonarNotes`, salvato), `trackerDart.ts` (`gadgets.trackLeft`, salvato per le residenti).
+- `sonarReadout`: ogni eco ha `cls` e `target`. Schermo del sonar: punti per grandezza, tocco = analisi con anello. Diario: "Avvistamenti col sonar" (`ui/sonarNotes.ts`). Pulsante Tracker nel sottomarino (i pulsanti del sottomarino ora stanno a sinistra della leva). Bussola con "traccia N min".
+- Test: `tests/sonar5a.test.ts`.
+
+**Da provare sull'iPhone:**
+1. Cockpit → Sonar acceso, nave ferma: tocca un punto grande e aspetta l'anello. Poi Diario, in fondo.
+2. Con l'Ocean's Nightmare o l'EH2 guarda le grandezze diverse dei punti.
+3. Nel sottomarino avvicinati a una bestia, premi Tracker, torna alla nave: la bussola la segue.
+
+**Prossimo:** blocco 5b (luce sotto la nave che attira bestie curiose, branchi), in Plan mode.
+
 ## U-Boat a ovest di Porto Fango (9 ottobre 2026) → v0.60.5
 
 - `sailShip`: l'arrivo al molo frena solo se il molo è davanti; a galla a ovest del porto (`x < SHIP_WEST_X`, ci arriva solo un U-Boat passando sotto) si naviga libero, con un muro verso est al molo (ripassarlo solo immersi).

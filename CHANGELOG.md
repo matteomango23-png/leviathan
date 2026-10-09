@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.61.0 — Il sonar al centro della caccia (9 ottobre 2026)
+
+- **Echi di grandezze diverse:** sul sonar del cockpit più grande è il punto, più grande è la bestia. Il sonar debole distingue solo piccole e grandi; quelli migliori anche medie ed enormi; il sonar dell'Ocean's Nightmare riconosce anche le leggende (punto dorato). Al timone: "19 animali (5 grandi, 1 enorme)".
+- **Analizza un'eco:** nel Sonar tocca un punto e resta lento: un anello si riempie e poi vicino al punto compare il nome della bestia (e il livello), o, se non l'hai mai vista, degli indizi: tipo e lunghezza.
+- **Avvistamenti nel Diario:** ogni bestia analizzata ha la sua schedina: dove l'hai sentita, a che profondità, quanto è grande. Si completa man mano e si salva.
+- **Tracker:** dal sottomarino, con una bestia vicina davanti, il pulsante "Tracker" la segna. La bussola la segue per 30 minuti di gioco: il tempo di tornare alla nave e ripartire.
+
 ## v0.60.5 — U-Boat libero a ovest di Porto Fango (9 ottobre 2026)
 
 - **Niente più frenata sbagliata:** passato sotto il molo di Porto Fango e risalito dall'altra parte, l'U-Boat naviga in superficie verso Portofosco senza "in avvicinamento a Porto Fango" e senza essere fermato. Per ripassare il molo verso est si va sott'acqua.

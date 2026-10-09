@@ -18,6 +18,7 @@ import { newSave, type SaveData, type SavedGear } from './saveData';
 import { saveStory, type StoryState } from '../story';
 import { saveWeather, type WeatherState } from '../weather';
 import type { GadgetsState } from '../ship/gadgets';
+import type { SonarNotes } from '../sonarNotes';
 
 /** The parts of the game that are saved. */
 export interface SaveSource extends Pick<
@@ -32,6 +33,7 @@ export interface SaveSource extends Pick<
   huntPinned: string | null;
   weather: WeatherState;
   gadgets: GadgetsState;
+  sonarNotes: SonarNotes;
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
@@ -108,7 +110,11 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.huntPinned = g.huntPinned;
   s.weather = saveWeather(g.weather);
   const t = g.gadgets.target;
-  if (t && 'resident' in t) s.target = { target: { ...t }, name: g.gadgets.targetName };
+  if (t && 'resident' in t) {
+    s.target = { target: { ...t }, name: g.gadgets.targetName };
+    if (g.gadgets.trackLeft !== null) s.trackLeft = Math.round(g.gadgets.trackLeft);
+  }
+  if (Object.keys(g.sonarNotes).length) s.sonarNotes = structuredClone(g.sonarNotes);
   s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
   if (g.sub.aboard && !d.dead) s.diver = subWakePoint(g.sub); // saved inside: you start next to it

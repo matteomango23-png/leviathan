@@ -8,6 +8,7 @@ import { huntNextStep, huntOpen, huntRegionName } from '../systems/hunts';
 import { kmFromCoast } from '../systems/world/endless';
 import { el } from './dom';
 import { ICONS } from './icons';
+import { renderSonarNotes } from './sonarNotes';
 
 const STEPS = ['Voce', 'Eco', 'Tracce', 'Bestia'] as const;
 
@@ -110,4 +111,5 @@ export function renderDiary(b: HTMLElement, g: GameState, redraw: () => void): v
   }
   const left = HUNTS.length - heard.length;
   if (left > 0) el('p', 'port-hint', b, `Altre ${left} voci da scoprire, più lontano.`);
+  renderSonarNotes(b, g); // what the sonar taught you (block 5a)
 }

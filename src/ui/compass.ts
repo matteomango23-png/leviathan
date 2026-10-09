@@ -35,9 +35,12 @@ export class Compass {
     this.arrow.classList.toggle('here', c.here);
     const deep =
       c.dyM > 3 ? ` · ${Math.round(c.dyM)} m più giù` : c.dyM < -3 ? ` · ${Math.round(-c.dyM)} m più su` : '';
+    // a tracker's trace: how long it lasts still (block 5a)
+    const left = g.gadgets.trackLeft;
+    const trace = left === null ? '' : ` · traccia ${Math.max(1, Math.ceil(left / 60))} min`;
     const text = c.here
-      ? `${g.gadgets.targetName}: è qui`
-      : `${g.gadgets.targetName} · ${Math.round(c.distM)} m${deep}`;
+      ? `${g.gadgets.targetName}: è qui${trace}`
+      : `${g.gadgets.targetName} · ${Math.round(c.distM)} m${deep}${trace}`;
     if (text !== this.shown) this.text.textContent = this.shown = text;
   }
 }

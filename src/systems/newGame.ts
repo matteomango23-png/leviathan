@@ -1,5 +1,7 @@
 // The whole state of a game, and how one starts: new, or from a save (game.ts steps it).
 import { newGadgets, type GadgetsState } from './ship/gadgets';
+import { newScan, type ScanState } from './sonarScan';
+import { checkedNotes, type SonarNotes } from './sonarNotes';
 import { newColumns, type WaterColumns } from './waterColumns';
 import { DIVER } from '../data/diver';
 import { START, TILE } from '../data/worldLayout';
@@ -65,6 +67,10 @@ export interface GameState extends StoryWorld {
   huntPinned: string | null;
   /** The Ocean's Nightmare's drone and sphere, and the beast you follow (ship/gadgets.ts; the beast saved). */
   gadgets: GadgetsState;
+  /** The echo the sonar is analysing and what it found this outing (sonarScan.ts; not saved). */
+  sonarScan: ScanState;
+  /** What the sonar taught you about each species (sonarNotes.ts; saved). */
+  sonarNotes: SonarNotes;
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -119,7 +125,9 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     water: newColumns(s.diver.x),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,
-    gadgets: newGadgets(s.target ?? null),
+    gadgets: newGadgets(s.target ?? null, s.trackLeft ?? null),
+    sonarScan: newScan(),
+    sonarNotes: checkedNotes(s.sonarNotes),
     dens,
     temples: createTemples(),
     story: createStory(s.story, save !== null, !!s.ship),

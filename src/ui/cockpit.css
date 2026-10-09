@@ -641,3 +641,14 @@
 .theme-nightmare .diary-rows dt {
   color: #ff8a78;
 }
+
+/* the sonar's sightings in the hunting diary (block 5a) */
+.diary-section {
+  margin: 18px 0 6px;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--amber, #e8c98a);
+}
+.diary-card.sonar-note {
+  cursor: default;
+}

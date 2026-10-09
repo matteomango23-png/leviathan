@@ -34,6 +34,7 @@ export class HelmControls {
   private readonly diveBtn: HTMLButtonElement;
   private readonly reconBtn: HTMLButtonElement;
   private readonly sphereBtn: HTMLButtonElement;
+  private readonly trackerBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly bars: HelmBars;
@@ -95,6 +96,7 @@ export class HelmControls {
     this.sphereBtn = el('button', 'helm-btn', still, 'Invia sfera');
     this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
+    this.trackerBtn = el('button', 'helm-btn helm-tracker', this.buttons, 'Tracker');
     this.objective = el('div', 'helm-objective', this.root);
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
@@ -112,6 +114,7 @@ export class HelmControls {
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
     this.tap(this.reconBtn, () => (this.session.input.helmCmd = 'recon'));
     this.tap(this.sphereBtn, () => (this.session.input.helmCmd = 'sphere'));
+    this.tap(this.trackerBtn, () => (this.session.input.helmCmd = 'tracker'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
@@ -275,6 +278,7 @@ export class HelmControls {
     const subLabel = `Cala ${info.subName ?? 'sottomarino'}`;
     if (this.launchBtn.textContent !== subLabel) this.launchBtn.textContent = subLabel;
     this.reconBtn.hidden = !info.canRecon;
+    this.trackerBtn.hidden = !info.canTrack;
     this.sphereBtn.hidden = !info.sphere;
     if (info.sphere && this.sphereBtn.textContent !== info.sphere.text)
       this.sphereBtn.textContent = info.sphere.text;

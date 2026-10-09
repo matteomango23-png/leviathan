@@ -76,6 +76,8 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 
 ## Blocco 5 — Sonar e spedizioni
 
+- **Diviso in 3 parti (9 ottobre).** 5a ✅ v0.61.0: echi in 2–5 grandezze secondo il sonar della nave, analisi di un'eco (specie se vista, indizi se nuova), avvistamenti nel Diario, tracker dal sottomarino per 30 minuti. 5b: luce sotto la nave che attira, branchi. 5c: sonar a 360° e orientamento per i sottomarini premium.
+
 - **Deciso l'8 ottobre:** navigazione a due andature (trasferimento veloce e sordo, ricerca lenta col sonar); col mare mosso a tutta velocità consuma di più e rovina lo scafo; il tracker si mette a nuoto o dal sottomarino; lo scafo del sottomarino è il rischio della caccia (speronate).
 - La ricerca col sonar è una delle cose più belle, ma da sola è poco: renderla il centro della ricerca delle bestie (brainstorming).
 - Sonar più dettagliato (oggi piccolo / grande / leggendario): più classi di dimensione su alcune navi e sottomarini.
