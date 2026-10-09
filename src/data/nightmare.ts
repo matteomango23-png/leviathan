@@ -25,7 +25,7 @@ export const SPHERE = {
   pulseHz: 1.2,
   shockEvery: 1.4,
   /** Its size on screen (metres across). */
-  sizeM: 11, // the picture with its spikes, inside its bay (owner, 9 ottobre: 19 was far too big)
+  sizeM: 9, // the picture with its spikes, inside its bay (owner, 9 ottobre: 19 far too big, 11 a little)
 };
 
 export const COMPASS = {

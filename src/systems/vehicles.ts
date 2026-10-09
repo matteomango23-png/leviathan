@@ -8,7 +8,7 @@ import type { GameEvent } from './events';
 import { pushOutOfHull, type HullPart } from './hull';
 import type { InputState } from './input';
 import { freshHelm } from './helm';
-import { helmPoint, shipHull } from './ship/geometry';
+import { dockPoint, helmPoint, shipHull } from './ship/geometry';
 import {
   boardShip,
   canBoardShip,
@@ -85,6 +85,7 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   sailBoat(g, boat.aboard ? input.helm : null, dt, events);
   if (events.some((e) => e.type === 'subDocked' || e.type === 'boatDocked')) freshLevers(ship.face);
   const inSub = !ramp && stepSub(g, input, dt, events);
+  freeSubFromHull(g);
   // waiting, or in the ship's hold: the submarine breathes again (subAir.ts)
   if (g.sub.owned && !g.sub.aboard)
     restSubAir(g.sub, subModel(g.sub.model).airSeconds, g.ship.bay === 'docked', dt);
@@ -100,6 +101,18 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     repairSub(g, events); // in the hold the crew mends it, for teeth, like a port
   }
   return ship.aboard || ramp || inSub || boatRamp || boat.aboard;
+}
+
+/**
+ * The submarine waiting out of its hold must never be inside the ship's hull, where you cannot reach it (owner, 9
+ * ottobre: launched under a diving U-Boat, then the U-Boat came up around it): it goes down under the keel, where
+ * it docks.
+ */
+function freeSubFromHull(g: VehicleWorld): void {
+  const sub = g.sub;
+  if (!g.ship.owned || !sub.owned || sub.aboard || g.ship.bay !== 'out') return;
+  if (!shipHull(g.ship).some((p) => Math.hypot(sub.x - p.x, sub.y - p.y) < p.r + 4)) return;
+  sub.y = Math.max(sub.y, dockPoint(g.ship).y);
 }
 
 /**

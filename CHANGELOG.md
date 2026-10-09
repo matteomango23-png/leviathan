@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.2 — Sottomarino calato in profondità (9 ottobre 2026)
+
+- **Corretto:** calato da un U-Boat sott'acqua, il sottomarino (o il drone) schizzava quasi in superficie e non si poteva più riagganciare. Ora si ferma sotto la nave, alla sua profondità, e si riaggancia lì.
+- **Corretto:** se il sottomarino era rimasto dentro lo scafo di un U-Boat tornato a galla non si riusciva più a raggiungerlo. Ora scende da solo sotto la chiglia, dove lo raggiungi e lo riagganci. Anche il salvataggio rimasto bloccato si sistema da solo.
+- **La sfera** è ancora un po' più piccola (−20%).
+
 ## v0.58.1 — Ritocchi al Nightmare (9 ottobre 2026)
 
 - **La sfera** è più piccola (circa il 40% in meno) e sta dentro il suo vano.

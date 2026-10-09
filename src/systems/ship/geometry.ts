@@ -44,10 +44,11 @@ export function rampFoot(s: ShipPose, bay = subBay(s)): { x: number; y: number }
   return shipPoint(s, h.rampX ?? h.x, h.rampEnd);
 }
 
-/** Mid-water under the hatch: where the submarine stops after the ramp, and where it docks again. */
+/** Mid-water under the hatch: where the submarine stops after the ramp, and where it docks again; under a diving
+ *  U-Boat that much deeper (owner, 9 ottobre: launched at depth it shot up near the surface and could not dock). */
 export const dockPoint = (s: ShipPose, bay = subBay(s)): { x: number; y: number } => ({
   x: shipPoint(s, bayHatch(s, bay).x, 0).x,
-  y: WORLD.surfaceY + Math.max(SHIP.launchDepth, shipDraft(s) + 20), // under the keel of a big ship
+  y: WORLD.surfaceY + (s.dive ?? 0) + Math.max(SHIP.launchDepth, shipDraft(s) + 20), // under the keel of a big ship
 });
 
 /** On the surface below a boat's ramp: where the speedboat or jet ski lands, and where it docks again. */
