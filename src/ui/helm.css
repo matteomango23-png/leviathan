@@ -187,6 +187,10 @@
   align-items: flex-end;
   gap: 6px;
 }
+/* in the submarine the dive lever stands at the right: its buttons (Tracker, the flare) left of it (block 5a) */
+.helm-buttons.sub {
+  right: calc(100px + var(--safe-r));
+}
 .helm-btn {
   pointer-events: auto;
   touch-action: none;

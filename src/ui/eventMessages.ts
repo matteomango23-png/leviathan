@@ -131,6 +131,19 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [`Bussola su: ${e.name}. Immergiti e seguila.`, 3.5];
     case 'targetLost':
       return [`Traccia persa: ${e.name}.`, 3.5];
+    case 'scanDone':
+      return [
+        e.known
+          ? `Sonar: analisi finita. È ${e.text}. Annotato nel Diario.`
+          : `Sonar: analisi finita. ${e.text}: una bestia che non hai mai visto. Annotata nel Diario.`,
+        4,
+      ];
+    case 'scanLost':
+      return ['Sonar: eco persa, analisi interrotta.', 3];
+    case 'trackerHit':
+      return [`Tracker piantato: ${e.name}. La bussola la segue per 30 minuti.`, 4];
+    case 'trackerExpired':
+      return [`Il tracker si è spento: traccia di ${e.name} finita.`, 3.5];
     case 'harbourApproach':
       return ['In avvicinamento a Porto Fango: la nave rallenta da sola per attraccare.', 3.5];
     case 'shipWest':

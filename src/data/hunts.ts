@@ -124,10 +124,35 @@ export const HUNT_RULES = {
   /** The beast comes out of its den when you are this close (its waters, units). */
   denHalfWidth: 300,
   denHalfHeight: 110,
-  /** Echoes of big beasts on the sonar: at least this long (m), this close (units). */
-  bigEchoM: 4,
+  /** Echoes of beasts on the sonar: this close (units, × the sonar's range; their sizes: SONAR). */
   bigEchoRange: 900,
 };
+
+/** The sonar at the centre of the hunt (block 5a, owner 9 ottobre 2026): echoes of five sizes, each ship's sonar
+ *  telling apart as many as it is good for; touched on the cockpit's screen an echo is analysed (this many seconds,
+ *  ÷ the sonar's range): a species you have seen is named, a new one gives clues. Tuning. */
+export type EchoClass = 'piccola' | 'media' | 'grande' | 'enorme' | 'leggendaria';
+export const SONAR = {
+  /** By length (m, from), smallest first; 'leggendaria' is for the unique beasts and the legends. */
+  classes: [
+    ['piccola', 0],
+    ['media', 2],
+    ['grande', 4],
+    ['enorme', 9],
+  ] as [EchoClass, number][],
+  /** What a sonar telling apart this many classes can name (the others join the nearest smaller one it names). */
+  named: {
+    2: ['piccola', 'grande'],
+    3: ['piccola', 'media', 'grande'],
+    4: ['piccola', 'media', 'grande', 'enorme'],
+    5: ['piccola', 'media', 'grande', 'enorme', 'leggendaria'],
+  } as Record<number, EchoClass[]>,
+  analyzeSeconds: 8,
+};
+
+/** The tracker dart (block 5a): shot from any submarine at a wild beast this close in front (m), it follows the beast
+ *  for this many seconds of play (owner: about 30 minutes, time to go back, refuel and set out again). Tuning. */
+export const TRACKER = { reachM: 25, seconds: 1800 };
 
 export const CONDITION_TEXT: Record<HuntCondition, string> = {
   sereno: 'solo col cielo sereno',

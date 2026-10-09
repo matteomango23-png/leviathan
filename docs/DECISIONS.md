@@ -841,6 +841,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 9 ottobre 2026 — Blocco 5a: il sonar al centro della caccia (v0.61.0)
+
+- **Risposte del proprietario:** 5 in tre parti; echi da identificare (analisi); tracker di circa 30 minuti di gioco; indizi nel Diario di caccia.
+- **Le grandezze dipendono dalla nave** (`sonar.classes`, da 2 a 5): il sonar debole dell'Aurelia resta "piccola/grande" come prima; quelli migliori distinguono di più, l'Ocean's Nightmare anche le leggende. Una classe non distinta si unisce alla più vicina più piccola.
+- **L'analisi è nel cockpit** (si tocca l'eco sullo schermo) e vuole la nave lenta col sonar acceso: rende il sonar il centro della ricerca senza dare tutto subito. Gli avvistamenti si salvano per specie (`sonarNotes`, facoltativo nel salvataggio, senza cambiare versione): mostrano solo quello che hai scoperto, non una lista da spuntare.
+- **Il tracker usa la bussola già fatta per il drone** (`g.gadgets.target`) con un tempo (`trackLeft`); per ora non costa nulla ed è uno alla volta. Per le bestie della costa non si salva (come il bersaglio del drone): solo le residenti del mare aperto.
+
 ## 9 ottobre 2026 — U-Boat a galla a ovest di Porto Fango (v0.60.5)
 
 - **La regola "la nave non va a ovest del porto" vale a est del molo:** un U-Boat che ci passa sotto e risale dall'altra parte naviga libero in superficie (il proprietario lo vuole portare verso Portofosco). Il molo resta un muro a galla in entrambe le direzioni.

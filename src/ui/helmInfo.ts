@@ -19,6 +19,8 @@ import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
 import { HUNTS } from '../data/hunts';
 import type { HelmInfo } from './helmTypes';
+import { CLASS_PLURAL } from '../systems/echoClass';
+import { trackerTarget } from '../systems/trackerDart';
 
 /** The sonar line at the helm: off, too fast, or the floor under the ship and the nearest echoes. */
 function sonarLine(g: GameState): string {
@@ -30,9 +32,15 @@ function sonarLine(g: GameState): string {
     .filter((e) => e.label === 'eco anomala')
     .slice(0, 1)
     .map((e) => `eco anomala ${e.dx < 0 ? '◀' : '▶'} ${Math.abs(e.dx)} m, a ${e.depthM} m`);
-  const big = r.echoes.filter((e) => e.label === 'eco grande').length;
-  const all = r.echoes.filter((e) => e.label !== 'eco anomala').length;
-  const life = all ? [`${all} animali${big ? ` (${big} grandi)` : ''}`] : [];
+  // how many of each big size, as far as this ship's sonar tells (block 5a)
+  const beasts = r.echoes.filter((e) => e.cls);
+  const sizes = (['grande', 'enorme', 'leggendaria'] as const)
+    .map((c) => [c, beasts.filter((e) => e.cls === c).length] as const)
+    .filter(([, n]) => n > 0)
+    .map(([c, n]) => `${n} ${n === 1 ? c : CLASS_PLURAL[c]}`);
+  const life = beasts.length
+    ? [`${beasts.length} animali${sizes.length ? ` (${sizes.join(', ')})` : ''}`]
+    : [];
   return [`Sonar: fondale ${r.floorM} m`, ...life, ...odd].join(' · ');
 }
 
@@ -138,6 +146,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       hull: [g.sub.hull, subModel(g.sub.model).hull],
       air: g.sub.air,
       airMax: subModel(g.sub.model).airSeconds,
+      canTrack: !!trackerTarget(g),
     };
   return null;
 }

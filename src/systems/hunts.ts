@@ -11,10 +11,13 @@ import type { WeatherId } from '../data/weather';
 import type { PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
-import { formLengthM } from './beasts/forms';
+import type { BeastForm } from './beasts/forms';
+import { heardClass, trueClass } from './echoClass';
+import type { Target } from './tracking';
+import type { EchoClass } from '../data/hunts';
 import { residentsNear, type ResidentsState } from './beasts/residents';
 import { sonarActive, type ShipState } from './ship/ship';
-import { sonarRange } from './ship/model';
+import { shipModel, sonarRange } from './ship/model';
 import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
@@ -169,6 +172,9 @@ export interface SonarEcho {
   /** Metres ahead (+ east) and depth. */
   dx: number;
   depthM: number;
+  /** A beast's echo (not a den's): its size as this sonar names it, and which beast it is (block 5a). */
+  cls?: EchoClass;
+  target?: Target;
 }
 
 export interface SonarReadout {
@@ -197,17 +203,31 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
   for (let i = 0; i < samples; i++) out.profile.push(floorAt(x - range + (2 * range * i) / (samples - 1)));
   // every beast down there is a dot (owner, 5 ottobre): the ones out for real, and the residents of the endless
   // sea living round the ship even with nobody near them (beasts/residents.ts)
-  const dot = (lengthM: number, bx: number, by: number): void => {
-    const label = lengthM >= HUNT_RULES.bigEchoM ? 'eco grande' : 'eco piccola';
-    out.echoes.push({ label, dx: m(bx - x), depthM: m(by - WORLD.surfaceY) });
+  // each a size as this ship's sonar names it (block 5a: from 2 to 5 sizes), and which beast it is (to analyse it)
+  const classes = shipModel(g.ship).sonar.classes;
+  const dot = (form: BeastForm, target: Target, bx: number, by: number): void => {
+    const cls = heardClass(trueClass(form), classes);
+    out.echoes.push({ label: `eco ${cls}`, cls, target, dx: m(bx - x), depthM: m(by - WORLD.surfaceY) });
   };
   for (const w of g.beasts.wilds)
     if (isInWater(w) && Math.abs(w.x - x) <= range && w.y > WORLD.surfaceY)
-      dot(formLengthM(w.form), w.x, w.y);
+      dot(
+        w.form,
+        w.spawn.resident
+          ? { resident: w.spawn.resident, speciesId: w.spawn.speciesId }
+          : { wild: w.id, speciesId: w.spawn.speciesId },
+        w.x,
+        w.y,
+      );
   const res = g.beasts.residents;
   for (const c of residentsNear(res, x, range, g.beasts.held))
     if (res.awake[c.r.id] === undefined)
-      dot(formLengthM({ speciesId: c.r.speciesId, variant: 'comune' }), c.x, c.y);
+      dot(
+        { speciesId: c.r.speciesId, variant: 'comune' },
+        { resident: c.r.id, speciesId: c.r.speciesId },
+        c.x,
+        c.y,
+      );
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
     if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarRange(g.ship)) return;

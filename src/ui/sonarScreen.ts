@@ -1,6 +1,8 @@
 // The sonar screen of the cockpit (owner, 5 ottobre): green curves of the floor under the ship within its range,
 // a sweep going back and forth, the echoes as dots (no shapes), the limit each side, and a switch. It hears only
 // switched on and under its ship's sonar speed (systems/hunts.ts sonarReadout); the ship pings (sonarPing).
+// Block 5a: the dots are as big as the echo sounds (as many sizes as the ship's sonar tells apart), and touching one
+// analyses it (systems/sonarScan.ts): a ring fills round it, then its name or its clues stay written by it.
 import { SHIP } from '../data/ship';
 import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
@@ -8,6 +10,13 @@ import { shipModel, sonarMaxKnots } from '../systems/ship/model';
 import { sonarPalette } from './cockpitTheme';
 import { el } from './dom';
 import { WORLD } from '../data/worldLayout';
+import type { EchoClass } from '../data/hunts';
+import { lockEcho, scanSeconds, targetKey } from '../systems/sonarScan';
+import type { Target } from '../systems/tracking';
+
+/** Each size's dot (radius, css px) and the legends' colour. */
+const DOT: Record<EchoClass, number> = { piccola: 2.4, media: 3.4, grande: 4.6, enorme: 6, leggendaria: 6.5 };
+const LEGEND = '255,206,110';
 
 const SWEEP_SECONDS = SHIP.sonar.pingSeconds;
 
@@ -30,7 +39,22 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
   const canvas = el('canvas', 'sonar-canvas', frame);
   const legend = el('div', 'sonar-legend', b);
   legend.innerHTML =
-    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>bestia grande</span><span><i class="lg small"></i>animale</span><span><i class="lg odd"></i>eco anomala (tana)</span>';
+    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>più grande il punto, più grande la bestia</span><span><i class="lg odd"></i>eco anomala (tana)</span><span>tocca un’eco per analizzarla</span>';
+  // touching an echo analyses it (the same one again lets it go)
+  let hits: { x: number; y: number; target: Target }[] = [];
+  canvas.addEventListener('pointerdown', (ev) => {
+    const box = canvas.getBoundingClientRect();
+    const sx = ((ev.clientX - box.left) / box.width) * canvas.width;
+    const sy = ((ev.clientY - box.top) / box.height) * canvas.height;
+    const reach = (24 * canvas.width) / Math.max(1, box.width);
+    let best: (typeof hits)[number] | null = null;
+    let bestD = reach;
+    for (const h of hits) {
+      const d = Math.hypot(h.x - sx, h.y - sy);
+      if (d < bestD) [best, bestD] = [h, d];
+    }
+    if (best) lockEcho(g.sonarScan, best.target);
+  });
 
   // the ship sails on under the cockpit: fresh readings twice a second
   let r: SonarReadout = sonarReadout(g);
@@ -41,7 +65,9 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
         ? 'Sonar spento: accendilo per sentire il fondale e le bestie sotto la nave.'
         : r.status === 'fast'
           ? `Troppo veloce: il sonar sente solo sotto ${sonarMaxKnots(g.ship)} nodi.`
-          : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m`;
+          : g.sonarScan.lock
+            ? `Analisi dell’eco in corso… resta lento e vicino (${Math.round((100 * g.sonarScan.t) / scanSeconds(g.ship))}%)`
+            : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m · tocca un’eco per analizzarla`;
     status.classList.toggle('warn', r.status !== 'on');
   };
   read();
@@ -148,22 +174,42 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       ctx.stroke();
     }
     ctx.shadowBlur = 0;
-    // the echoes: dots that light up when the sweep passes and fade after
+    // the echoes: dots that light up when the sweep passes and fade after, as big as they sound
+    const scan = g.sonarScan;
+    hits = [];
     r.echoes.forEach((e, i) => {
       const ex = px(e.dx);
       if (Math.abs(ex - sxp) < 10 * dpr) seen.set(i, t);
       const age = t - (seen.get(i) ?? -99);
       const a = Math.max(0.25, 1 - age / (SWEEP_SECONDS * 1.6));
       const odd = e.label === 'eco anomala';
-      ctx.fillStyle = odd ? `rgba(${P.odd},${a})` : `rgba(${P.dot},${a})`;
-      ctx.shadowColor = odd ? P.oddHex : P.mainHex;
+      const legend = e.cls === 'leggendaria';
+      const ey = py(e.depthM);
+      ctx.fillStyle = odd ? `rgba(${P.odd},${a})` : legend ? `rgba(${LEGEND},${a})` : `rgba(${P.dot},${a})`;
+      ctx.shadowColor = odd ? P.oddHex : legend ? `rgb(${LEGEND})` : P.mainHex;
       ctx.shadowBlur = 12 * dpr * a;
       ctx.beginPath();
-      ctx.arc(ex, py(e.depthM), (odd ? 6 : e.label === 'eco grande' ? 4.5 : 2.6) * dpr, 0, Math.PI * 2);
+      ctx.arc(ex, ey, (odd ? 6 : DOT[e.cls ?? 'piccola']) * dpr, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = `rgba(${P.text},${a * 0.9})`;
-      ctx.fillText(`${e.depthM} m`, ex + 8 * dpr, py(e.depthM) + 4 * dpr);
+      const key = e.target ? targetKey(e.target) : '';
+      if (e.target) hits.push({ x: ex, y: ey, target: e.target });
+      // the one being analysed: a ring filling round it
+      if (e.target && scan.lock && targetKey(scan.lock) === key) {
+        const k = Math.min(1, scan.t / scanSeconds(g.ship));
+        ctx.strokeStyle = `rgba(${P.main},0.35)`;
+        ctx.lineWidth = 2 * dpr;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 12 * dpr, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = P.mainHex;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 12 * dpr, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2);
+        ctx.stroke();
+      }
+      const found = key ? scan.results[key] : undefined;
+      ctx.fillStyle = found ? `rgba(${P.text},1)` : `rgba(${P.text},${a * 0.9})`;
+      ctx.fillText(found ? `${found} · ${e.depthM} m` : `${e.depthM} m`, ex + 14 * dpr, ey + 4 * dpr);
     });
   };
   raf = requestAnimationFrame(draw);

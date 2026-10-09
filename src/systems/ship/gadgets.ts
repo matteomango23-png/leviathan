@@ -42,6 +42,8 @@ export interface GadgetsState {
   /** The beast you follow (saved when it is a resident of the endless sea) and its name. */
   target: Target | null;
   targetName: string;
+  /** Followed by a tracker dart (block 5a): seconds before its trace runs out (null: no limit, the drone's pick). */
+  trackLeft: number | null;
 }
 
 export interface GadgetsWorld {
@@ -52,12 +54,16 @@ export interface GadgetsWorld {
   gadgets: GadgetsState;
 }
 
-export function newGadgets(target: { target: Target; name: string } | null = null): GadgetsState {
+export function newGadgets(
+  target: { target: Target; name: string } | null = null,
+  trackLeft: number | null = null,
+): GadgetsState {
   return {
     recon: { phase: 'idle', x: 0, y: 0, face: 1, queue: [], t: 0, found: [], report: null },
     sphere: { phase: 'dock', x: 0, y: 0, cooldown: 0 },
     target: target?.target ?? null,
     targetName: target?.name ?? '',
+    trackLeft: target ? trackLeft : null,
   };
 }
 
@@ -156,12 +162,14 @@ function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
 export function pickTarget(g: GadgetsWorld, e: ReconEntry, events: GameEvent[]): void {
   g.gadgets.target = e.target;
   g.gadgets.targetName = e.name;
+  g.gadgets.trackLeft = null;
   events.push({ type: 'targetSet', name: e.name });
 }
 
 export function clearTarget(g: GadgetsWorld): void {
   g.gadgets.target = null;
   g.gadgets.targetName = '';
+  g.gadgets.trackLeft = null;
 }
 
 /** "Invia sfera" shows: its bay open (owner, 9 ottobre: open it, send it, close it when it is back), a beast

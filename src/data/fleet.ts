@@ -74,8 +74,9 @@ export interface ShipModelDef {
   brake: number;
   tank: number; // litres
   perKm: number; // litres per km at full throttle
-  /** The sonar: how far it hears (× the base range) and up to which speed (knots). */
-  sonar: { range: number; maxKnots: number; name: string };
+  /** The sonar: how far it hears (× the base range), up to which speed (knots), and how many sizes of echo it
+   *  tells apart (2 … 5, data/hunts.ts SONAR). */
+  sonar: { range: number; maxKnots: number; name: string; classes: 2 | 3 | 4 | 5 };
   /** U-Boats only (block 4c): how deep and how long it dives, and how fast it sinks and rises (units/s). Tuning. */
   dive?: { maxDepthM: number; airSeconds: number; sinkSpeed: number; riseSpeed: number };
   /** Places in its tank for beasts of the team (owner, 8 ottobre; it works from block 6). */
@@ -117,7 +118,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 60,
     tank: 300,
     perKm: 10,
-    sonar: { range: 1, maxKnots: 10, name: 'debole' },
+    sonar: { range: 1, maxKnots: 10, name: 'debole', classes: 2 },
     pool: 0,
     bays: [
       {
@@ -164,7 +165,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 42,
     tank: 600,
     perKm: 14,
-    sonar: { range: 1.2, maxKnots: 10, name: 'normale' },
+    sonar: { range: 1.2, maxKnots: 10, name: 'normale', classes: 3 },
     pool: 2,
     bays: [
       {
@@ -209,7 +210,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 75,
     tank: 400,
     perKm: 8,
-    sonar: { range: 1, maxKnots: 10, name: 'di prossimità, a 360°' },
+    sonar: { range: 1, maxKnots: 10, name: 'di prossimità, a 360°', classes: 3 },
     pool: 1,
     bays: [],
     special: 'Si immerge: fino a 150 m per 3 minuti',
@@ -251,7 +252,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 55,
     tank: 900,
     perKm: 15,
-    sonar: { range: 1.6, maxKnots: 16, name: 'ottimo' },
+    sonar: { range: 1.6, maxKnots: 16, name: 'ottimo', classes: 4 },
     pool: 3,
     bays: [
       {
@@ -308,7 +309,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 38,
     tank: 1200,
     perKm: 16,
-    sonar: { range: 1.6, maxKnots: 14, name: 'a 360°, forte' },
+    sonar: { range: 1.6, maxKnots: 14, name: 'a 360°, forte', classes: 4 },
     pool: 3,
     bays: [],
     special: 'Si immerge: fino a 300 m per 6 minuti. Troppo lungo per i passaggi stretti',
@@ -346,7 +347,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 90,
     tank: 1000,
     perKm: 20,
-    sonar: { range: 1.3, maxKnots: 12, name: 'medio' },
+    sonar: { range: 1.3, maxKnots: 12, name: 'medio', classes: 3 },
     pool: 2,
     bays: [
       {
@@ -398,7 +399,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 30,
     tank: 2000,
     perKm: 25,
-    sonar: { range: 1.6, maxKnots: 14, name: 'buono' },
+    sonar: { range: 1.6, maxKnots: 14, name: 'buono', classes: 4 },
     pool: 4,
     bays: [
       {
@@ -456,7 +457,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 24,
     tank: 2500,
     perKm: 28,
-    sonar: { range: 2, maxKnots: 18, name: 'il migliore' },
+    sonar: { range: 2, maxKnots: 18, name: 'il migliore', classes: 5 },
     pool: 5,
     bays: [
       // the drone is a submarine too (owner, 9 ottobre: you can also drive it by hand); on its own it scouts the

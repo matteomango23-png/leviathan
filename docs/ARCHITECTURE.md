@@ -48,6 +48,10 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `vehicles.ts` | Nave, sottomarino e motoscafo insieme per `game.ts`: pulsanti del timone, scafi solidi, azioni (A bordo, Aggancia), porto dal timone o dal motoscafo, risveglio sulla nave. |
 | `boat.ts` | Il motoscafo o la moto d'acqua (`data/boats.ts`): guida in superficie con le leve, fermo davanti al ghiaccio, riserva a secco, fusti, salvataggio. |
 | `fuel.ts`, `fuelBurn.ts` | Carburante di nave e sottomarino: consumo e autonomia, travaso, rifornimento al porto, razzo di soccorso. |
+| `echoClass.ts` | Le grandezze delle eco al sonar (piccola, media, grande, enorme, leggendaria) e quante ne distingue ogni sonar. |
+| `sonarScan.ts` | L'analisi di un'eco toccata sul sonar del cockpit: avanza lenti e a portata, poi nome o indizi, e l'annotazione nel diario. |
+| `sonarNotes.ts` | Gli avvistamenti col sonar per specie (luoghi, profondità, grandezza, tipo), salvati. |
+| `trackerDart.ts` | Il tracker sparato dal sottomarino: la bussola segue la bestia per 30 minuti di gioco. |
 | `hunts.ts` | Le cacce alle leggende: tane, voci nei porti, eco anomala col sonar, tracce, comparsa col tempo giusto; lettura del sonar al timone. |
 | `beasts/residents.ts` | Gli abitanti fissi del mare aperto: chi vive in ogni tratto, dove si trova, chi è uscito o è stato preso. |
 | `shipCamera.ts` | Dove guarda la telecamera: vista del timone a bordo, la tua altrimenti (il cambio è uno stacco con dissolvenza). |
