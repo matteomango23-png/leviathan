@@ -18,6 +18,9 @@ import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
 import './cockpitSteam.css';
+import { STEAM_BRIDGE, STEAM_FRAME, STEAM_LIST, STEAM_SONAR, type Rect } from '../data/cockpitSteam';
+import { renderBridgeSteam } from './bridgeSteam';
+import { crop, place } from './steamStage';
 
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
@@ -42,6 +45,8 @@ export class Cockpit {
   private ticks = 0;
   private msgTimer = 0;
   private stopSonar: (() => void) | null = null;
+  /** The steam cockpit's stage (its painted screens), when the ship has one. */
+  private readonly stage: HTMLDivElement | null = null;
 
   constructor(
     parent: HTMLElement,
@@ -51,15 +56,14 @@ export class Cockpit {
   ) {
     const look = shipModel(g.ship).cockpitStyle;
     this.root = el('div', `port cockpit${look ? ` style-${look}` : ''}`, parent);
+    // the steam cockpit: everything on the owner's painted screens, on a stage of their shape (cockpitSteam.ts)
     if (look === 'vapore') {
-      // copper pipes and a valve wheel along the walls (cockpitSteam.css): look only
-      const pipes = el('div', 'steam-pipes', this.root);
-      el('div', 'pipe-v', pipes);
-      el('div', 'pipe-h', pipes);
-      el('div', 'valve', pipes);
+      crop(el('div', 'steam-backdrop', this.root), 'dragons', [0, 0, 100, 100]);
+      this.stage = el('div', 'steam-stage', this.root);
     }
+    const host = this.stage ?? this.root;
     parent.classList.add('in-port'); // the sea's controls hide while the cockpit is open
-    const top = el('div', 'port-top', this.root);
+    const top = el('div', 'port-top', host);
     el('span', '', el('div', 'port-title', top), 'Cockpit');
     // the engine from here: slow ahead (the sonar still hears) or stop
     this.speed = el('span', 'cockpit-speed', top);
@@ -74,7 +78,7 @@ export class Cockpit {
     const back = el('button', 'pbtn primary', top);
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
     back.addEventListener('click', () => onClose());
-    const rail = el('div', 'port-rail', this.root);
+    const rail = el('div', 'port-rail', host);
     const own = shipModel(g.ship).cockpit; // each ship its own instruments (owner, 8 ottobre)
     for (const [id, label, ic] of TABS.filter(([t]) => own.includes(t))) {
       const b = el('button', 'port-tab', rail);
@@ -86,8 +90,18 @@ export class Cockpit {
       b.dataset.tab = id;
       this.tabs.push(b);
     }
-    this.body = el('div', 'port-body', this.root);
+    this.body = el('div', 'port-body', host);
     this.msg = el('div', 'port-msg', this.root);
+    if (this.stage) {
+      const F = STEAM_FRAME;
+      place(top.querySelector('.port-title') as HTMLElement, F.title);
+      place(this.speed, F.top.speed);
+      place(this.engine, F.top.cruise);
+      place(this.engineOff, F.top.engine);
+      place(this.teeth, F.top.teeth);
+      crop(place(back, F.top.helm), F.brass.art as 'chart', F.brass.rect);
+      this.tabs.forEach((b, i) => place(b, F.tabs[i] ?? F.tabs[F.tabs.length - 1]!));
+    }
     this.render();
     this.live();
     this.tick = window.setInterval(() => this.live(), 500);
@@ -137,7 +151,7 @@ export class Cockpit {
     const redraw = (): void => this.render();
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw };
     if (this.tab === 'plancia')
-      renderBridge(this.body, {
+      (this.stage ? renderBridgeSteam : renderBridge)(this.body, {
         ...ctx,
         fired: () => {
           this.session.emit('saveNow');
@@ -148,7 +162,35 @@ export class Cockpit {
     else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else renderTeamPanel(this.body, this.g, true);
+    if (this.stage) this.dressSteam();
     this.body.scrollTop = keep;
+  }
+
+  /** The steam cockpit: the picture behind this tab, the lit tab, and where the tab's content sits on it. */
+  private dressSteam(): void {
+    const stage = this.stage!;
+    const F = STEAM_FRAME;
+    crop(stage, this.tab === 'plancia' ? 'chart' : 'frame', [0, 0, 100, 100]);
+    for (const t of this.tabs) {
+      const on = t.dataset.tab === this.tab;
+      crop(t, 'frame', on ? F.tabOn.rect : F.tabOff.rect);
+    }
+    const b = this.body;
+    b.dataset.steam = this.tab;
+    b.style.backgroundImage = '';
+    if (this.tab === 'sonar') {
+      place(b, [0, 0, 100, 100]);
+      const S = STEAM_SONAR;
+      const at = (sel: string, r: Rect): void => {
+        const e = b.querySelector<HTMLElement>(sel);
+        if (e) place(e, r);
+      };
+      at('.sonar-status', S.status);
+      at('.sonar-switch', S.switch);
+      at('.sonar-frame', S.screen);
+      at('.sonar-legend', [S.screen[0] + 1, S.screen[3] - 4.5, S.screen[2] - 1, S.screen[3] - 0.5]);
+    } else if (this.tab === 'plancia') place(b, STEAM_BRIDGE.window);
+    else crop(place(b, STEAM_LIST.window), 'dragons', STEAM_LIST.dragons);
   }
 
   destroy(): void {

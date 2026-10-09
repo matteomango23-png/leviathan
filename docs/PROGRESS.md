@@ -6,7 +6,7 @@
 
 **Da provare sull'iPhone:** con l'EH1 o l'EH2 apri il Cockpit e passa tutte le schede; con l'EH2 dai gas e guarda le eliche.
 
-**Da rifare:** al proprietario lo stile fatto col codice non piace. Le immagini dei pezzi (lotto 4, `docs/GEMINI-LOTTO-4.md`, nomi `cockpit_vapore_*`) le genera lui con Gemini; quando arrivano: `npm run art` (aggiungere i nomi, pannelli allungabili senza deformare gli angoli), montarle in `cockpitSteam.css` / `cockpit.ts` con lancette che ruotano.
+**Fatto dopo (v0.54.0):** il cockpit usa le quattro schermate dipinte di Gemini (`public/bg/cockpit*_far.webp`), con i comandi messi sugli spazi dipinti (`data/cockpitSteam.ts`, `ui/steamStage.ts`, `ui/bridgeSteam.ts`). Il lotto 4 di pezzi separati non serve più per EH1/EH2.
 
 **Prossimo:** il cockpit con le immagini del lotto 4; poi la parte 4c (U-Boat).
 
