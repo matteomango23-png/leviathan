@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.56.0 — Musica del mare aperto e nuova musica di battaglia (9 ottobre 2026)
+
+- **Musica del mare aperto:** passato Porto Fango (circa 1,2 km dalla costa) entra piano una musica lenta e cupa, scritta da noi: un coro di voci basse a bocca chiusa, una voce grave che canta la melodia una volta sì e una no, un bordone profondo e un tamburo lontano, tutto in un'eco lunga. Si spegne piano quando torni verso la costa e tace durante le battaglie.
+- **Nuova musica di battaglia:** al posto del motivetto veloce, due note gravi a mezzo tono di distanza che si avvicinano sempre più fitte, con accordi di ottoni, timpani e un tremolo acuto.
+- **Navi e U-Boat non spingono più le bestie:** ci passano accanto come se le sorpassassero. Scendendo e salendo con l'U-Boat le bestie non vengono più schiacciate contro le rocce. Il sottomarino resta solido per le bestie, la nave resta solida per il sub.
+
 ## v0.55.1 — Ritocchi agli U-Boat e ai reattori (9 ottobre 2026)
 
 - **Linea dell'acqua graduale:** un U-Boat che scende si scurisce solo sotto il pelo dell'acqua; la parte ancora fuori resta chiara, come una nave vera.

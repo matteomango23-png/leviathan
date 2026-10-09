@@ -17,6 +17,7 @@ import { buyShip } from '../src/systems/ship/shipyard';
 import { iceIn } from '../src/systems/ship/surface';
 import { maxDive, submerged } from '../src/systems/ship/uboat';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { pushOutOfVehicles } from '../src/systems/vehicles';
 import { giveVessels } from './helpers/vessels';
 
 const map = generateWorld();
@@ -107,6 +108,22 @@ describe('the U-Boats dive', () => {
     const w = world('eh1', 20000);
     run(w, 5, { throttle: 0, dir: 1, dive: 1 });
     expect(w.ship.dive).toBe(0);
+  });
+
+  it('beasts are not pushed by its hull (owner, 9 ottobre: it pressed them into the rock); you still are', () => {
+    const g = createGame(map, null, 4);
+    giveVessels(g);
+    g.port = PORTO_FANGO;
+    g.gear.teeth = 100000;
+    expect(buyShip(g, 'whale').ok).toBe(true);
+    Object.assign(g.ship, { aboard: false, x: deepWater(), dive: 200 });
+    const part = shipHull(g.ship)[0]!;
+    const beast = { x: part.x, y: part.y, vx: 0, vy: 0 };
+    pushOutOfVehicles(g, beast, [{ dx: 0, dy: 0, r: 8 }], true);
+    expect(beast).toMatchObject({ x: part.x, y: part.y });
+    const you = { x: part.x, y: part.y, vx: 0, vy: 0 };
+    pushOutOfVehicles(g, you, [{ dx: 0, dy: 0, r: 8 }]);
+    expect(Math.hypot(you.x - part.x, you.y - part.y)).toBeGreaterThan(1);
   });
 
   it('you swim out at its depth and climb back in by its hull; saved with its depth and air', () => {

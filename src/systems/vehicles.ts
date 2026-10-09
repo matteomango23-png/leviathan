@@ -98,19 +98,24 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   return ship.aboard || ramp || inSub || boatRamp || boat.aboard;
 }
 
-/** The solid hulls in the sea now: the submarine (unless in the hold) and the ship. */
-export function vehicleHulls(g: VehicleWorld): HullPart[] {
+/**
+ * The solid hulls in the sea now: the submarine (unless in the hold) and, with `ship`, the ship. The beasts only
+ * feel the submarine (owner, 9 ottobre: ships and U-Boats pass them by as if overtaking; diving, a U-Boat pressed
+ * them into the rock).
+ */
+export function vehicleHulls(g: VehicleWorld, ship = true): HullPart[] {
   const sub = g.ship.bay === 'docked' || onRamp(g) ? [] : subHull(g.sub);
-  return g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
+  return ship && g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
 }
 
-/** Pushes a body (you, your beast, a wild one) out of the hulls. */
+/** Pushes a body (you, your beast, a wild one) out of the hulls; a `beast` goes through the ship's. */
 export function pushOutOfVehicles(
   g: VehicleWorld,
   b: { x: number; y: number; vx: number; vy: number },
   circles: readonly { dx: number; dy: number; r: number }[],
+  beast = false,
 ): void {
-  const hulls = vehicleHulls(g);
+  const hulls = vehicleHulls(g, !beast);
   if (hulls.length) pushOutOfHull(hulls, b, circles);
 }
 

@@ -9,6 +9,8 @@ export interface SeaMoment {
   depthM: number;
   /** True on the frame you dash. */
   dash: boolean;
+  /** How far from the coast (the open sea's music beyond a kilometre). */
+  km: number;
 }
 
 export class SeaAmbience {

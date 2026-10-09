@@ -783,3 +783,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Reattori:** le immagini "accese" col fuoco (Poseidon, motoscafo EH2) non piacevano. Sono tolte dal gioco (originali in `art-inbox/_*`); al loro posto il fumo dai reattori (`ShipStack.reactor`, `BoatModel.reactors`), solo mentre il motore spinge e solo sopra l'acqua. Il Whale tiene la sua immagine coi reattori accesi, anche sott'acqua.
 - **Fumo generico:** `ShipFx.puff(sorgenti, spinta, scala)`, usato da navi e motoscafi.
 - **Leva della profondità** all'estrema destra (`order: 2`) e pulsante contestuale spostato sopra le frecce (`.helm-diving`).
+
+## 9 ottobre 2026 — Musiche originali sintetizzate (v0.56.0)
+
+- **Il proprietario** voleva per il mare aperto qualcosa come "Hoist the Colours" e per le battaglie qualcosa che ricordi lo Squalo. Per il copyright sono **composizioni nostre**: stesso carattere, note e ritmo diversi. Nessuna melodia né parola copiata, nessun file audio, nessuna licenza.
+- **Mare aperto:** canto lento in re minore e in 3/4. Coro fatto con dente di sega e tre filtri a formante (vocale "u" per il coro, "a" per la voce solista), vibrato lento e piccoli ritardi tra le voci. Eco con un `ConvolverNode` e una risposta di rumore che si spegne in 4,5 s, generata al volo.
+- **Soglia:** il proprietario ha detto "circa 1 km", ma Porto Fango è proprio a 1,03 km. Allora la musica entra a 1,25 km ed esce sotto 1,15 km (isteresi, niente accendi/spegni sul confine).
+- **Battaglia:** ostinato di due note a mezzo tono (fa2 e fa#2) con un'ottava sotto, ottoni con filtro che si apre, timpani, tremolo acuto; un'introduzione che si fa più fitta, poi il giro.
+- **Le bestie non sentono lo scafo della nave:** con gli U-Boat che salgono e scendono, la spinta le schiacciava contro le rocce. Ora navi e U-Boat ci passano attraverso. Il sottomarino resta solido per tutti, la nave per il sub.

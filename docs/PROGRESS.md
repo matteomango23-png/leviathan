@@ -1,5 +1,23 @@
 # Progressi
 
+## Musiche e bestie (9 ottobre 2026) → v0.56.0
+
+**Fatto:**
+- Musica del mare aperto (`audio/seaMusic.ts`): coro sintetizzato con filtri a formante, voce solista, bordone, tamburo ed eco a convoluzione. Entra oltre `SEA_MUSIC.fromKm` (1,25 km, appena oltre Porto Fango) ed esce sotto 1,15 km.
+- Nuova musica di battaglia (`audio/battleMusic.ts`): ostinato a mezzo tono, ottoni, timpani, tremolo; un'introduzione che si avvicina e poi un giro di 8 battute.
+- I numeri di tutte e due stanno in `data/music.ts` (nuovo), i suoni del mare restano in `data/audio.ts`.
+- Le bestie (selvatiche e compagno) urtano solo lo scafo del sottomarino, non quello della nave (`pushOutOfVehicles(..., beast)`).
+
+**Da provare sull'iPhone:**
+1. Col suono acceso, allontanati da Porto Fango verso il mare aperto: la musica entra piano (circa 8 secondi).
+2. Torna verso il porto: sfuma.
+3. Entra in una battaglia: nuova musica; finita la battaglia, torna il mare.
+4. Con l'U-Boat scendi e sali tra le bestie: non devono essere spinte né restare incastrate nelle rocce.
+
+**Da regolare a orecchio:** il volume della musica del mare (`SEA_MUSIC.volume`) e di quella di battaglia (`BATTLE_MUSIC.volume`) in `data/music.ts`.
+
+**Prossimo:** parte 4d (Ocean's Nightmare, con drone e sfera), in Plan mode.
+
 ## Cockpit a vapore (8 ottobre 2026) → v0.53.0
 
 **Fatto:** `cockpitStyle: 'vapore'` in `data/fleet.ts` per EH1 ed EH2, stile in `ui/cockpitSteam.css` (solo CSS e SVG, niente immagini); immagine `nave_eh2_moto` con le eliche.

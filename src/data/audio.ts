@@ -1,7 +1,6 @@
-// Leviatano — sound (first pass, synthesized in code: no audio files, works offline, no licences).
-// The sea: a low muffled rumble that gets darker with depth, bubbles while you swim. Battles: a short
-// looping tune in the spirit of the Pokémon battle themes (minor key, fast, bass + lead + arpeggio + drums).
-// Values are tuning: change them here.
+// Leviatano — sound (synthesized in code: no audio files, works offline, no licences).
+// The sea: a low muffled rumble that gets darker with depth, bubbles while you swim; the engines and the sonar.
+// The music (open sea, battles) is in data/music.ts. Values are tuning: change them here.
 
 export const AUDIO = {
   master: 0.7,
@@ -40,41 +39,3 @@ export const ENGINE_SOUND = {
   glide: 0.4,
   ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },
 };
-
-/** Semitones from A3 (220 Hz); null = rest. Each pattern is 16 steps (one bar of sixteenth notes). */
-type Steps = (number | null)[];
-
-// i – VI – VII – V in A minor (Am, F, G, E): four bars, then it loops
-const BASS: Steps[] = [
-  [-12, null, -12, 0, -12, null, -12, 0, -12, null, -12, 0, -12, -12, 0, -12],
-  [-16, null, -16, -4, -16, null, -16, -4, -16, null, -16, -4, -16, -16, -4, -16],
-  [-14, null, -14, -2, -14, null, -14, -2, -14, null, -14, -2, -14, -14, -2, -14],
-  [-17, null, -17, -5, -17, null, -17, -5, -17, -5, -17, -5, -17, -5, -6, -5],
-];
-const ARP: Steps[] = [
-  [12, 15, 19, 24, 12, 15, 19, 24, 12, 15, 19, 24, 12, 15, 19, 24],
-  [8, 12, 15, 20, 8, 12, 15, 20, 8, 12, 15, 20, 8, 12, 15, 20],
-  [10, 14, 17, 22, 10, 14, 17, 22, 10, 14, 17, 22, 10, 14, 17, 22],
-  [7, 11, 14, 19, 7, 11, 14, 19, 7, 11, 14, 19, 7, 11, 14, 19],
-];
-const LEAD: Steps[] = [
-  [24, null, null, 27, null, 26, 24, null, 22, null, 24, null, 19, null, null, null],
-  [20, null, null, 24, null, 22, 20, null, 19, null, 20, null, 15, null, 17, null],
-  [22, null, null, 26, null, 24, 22, null, 19, null, 22, null, 26, null, 29, null],
-  [31, null, 30, null, 31, null, 26, null, 23, null, 26, null, 23, null, null, null],
-];
-// drums: k = kick, s = snare, h = hi-hat, . = nothing
-const DRUMS = ['k.h.s.h.k.khs.hh', 'k.h.s.h.k.khs.hh', 'k.h.s.h.k.khs.hh', 'k.h.s.hkk.ks.sss'];
-
-export const BATTLE_MUSIC = {
-  bpm: 152,
-  volume: 0.32,
-  bass: { pattern: BASS, wave: 'triangle' as OscillatorType, volume: 0.5, length: 0.85 }, // length × step
-  arp: { pattern: ARP, wave: 'square' as OscillatorType, volume: 0.07, length: 0.5 },
-  lead: { pattern: LEAD, wave: 'sawtooth' as OscillatorType, volume: 0.16, length: 1.6, cutoff: 2600 },
-  drums: { pattern: DRUMS, kick: 0.7, snare: 0.28, hat: 0.08 },
-  lookahead: 0.12, // seconds scheduled in advance
-};
-
-/** Frequency of a note given in semitones from A3. */
-export const noteHz = (semitones: number): number => 220 * Math.pow(2, semitones / 12);
