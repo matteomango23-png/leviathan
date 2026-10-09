@@ -23,6 +23,8 @@ import {
   stepGadgets,
 } from '../src/systems/ship/gadgets';
 import { shipModel, subBay } from '../src/systems/ship/model';
+import { canDock, launchSub } from '../src/systems/ship/hatch';
+import { shipHull } from '../src/systems/ship/geometry';
 import { buyShip } from '../src/systems/ship/shipyard';
 import { maxDive } from '../src/systems/ship/uboat';
 import { beastsInRange, compassTo, locate } from '../src/systems/tracking';
@@ -103,6 +105,29 @@ describe('the Ocean’s Nightmare', () => {
     input.helmCmd = 'dive';
     stepGame(g, input, DT);
     expect(g.ship.aboard).toBe(false);
+  });
+
+  it('launched at depth, the drone stops under the U-Boat, not near the surface, and docks again there', () => {
+    const g = nightmare();
+    g.ship.dive = 300;
+    openHatch(g, subBay(g.ship));
+    launchSub(g, []);
+    for (let t = 0; t < 8; t += DT) stepGame(g, emptyInput(), DT);
+    expect(g.ship.bay).toBe('out');
+    expect(g.sub.y).toBeGreaterThan(WORLD.surfaceY + 300);
+    expect(canDock(g)).toBe(true);
+  });
+
+  it('a submarine left inside the hull of a U-Boat that came up goes down under its keel, where you reach it', () => {
+    const g = nightmare();
+    openHatch(g, subBay(g.ship));
+    g.ship.bay = 'out';
+    g.ship.aboard = false;
+    const part = shipHull(g.ship)[4]!;
+    Object.assign(g.sub, { aboard: false, x: part.x, y: part.y });
+    Object.assign(g.diver, { x: part.x, y: part.y + 200 });
+    stepGame(g, emptyInput(), DT);
+    expect(shipHull(g.ship).some((q) => Math.hypot(g.sub.x - q.x, g.sub.y - q.y) < q.r)).toBe(false);
   });
 
   it('the drone scouts only from its hold', () => {

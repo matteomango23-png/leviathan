@@ -1,5 +1,17 @@
 # Progressi
 
+## Sottomarino calato in profondità (9 ottobre 2026) → v0.58.2
+
+**Fatto:**
+- `dockPoint` (`ship/geometry.ts`) tiene conto di `dive`.
+- `freeSubFromHull` in `vehicles.ts` sposta sotto la chiglia un sottomarino fuori dalla stiva rimasto dentro lo scafo.
+- `SPHERE.sizeM` 9. Due test nuovi in `tests/nightmare.test.ts`.
+
+**Da provare sull'iPhone:**
+1. Riapri il gioco: il sottomarino bloccato deve trovarsi sotto la nave.
+2. Nuota fino a lui, sali, riaggancialo.
+3. Poi prova di nuovo: scendi con l'Ocean's Nightmare, apri il portellone e cala il drone; deve fermarsi sotto la nave e riagganciarsi lì.
+
 ## Ritocchi al Nightmare (9 ottobre 2026) → v0.58.1
 
 **Fatto:**
