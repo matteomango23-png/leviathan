@@ -327,9 +327,11 @@ export function lampAim(g: {
   sub: SubState;
   diver: { aim: number };
   boat?: { aboard: boolean; face: 1 | -1 };
+  ship?: { aboard: boolean; face: 1 | -1; dive?: number };
 }): number {
   // in a vehicle its headlight points where it goes (owner, 8 ottobre: the boat's stayed to the right)
   if (g.boat?.aboard) return g.boat.face > 0 ? 0 : Math.PI;
+  if (g.ship?.aboard && (g.ship.dive ?? 0) > 0) return g.ship.face > 0 ? 0 : Math.PI; // a U-Boat under water
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
 

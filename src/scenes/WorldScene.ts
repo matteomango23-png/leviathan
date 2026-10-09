@@ -3,7 +3,9 @@ import Phaser from 'phaser';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard, hatchT } from '../systems/ship/ship';
-import { boatBay, subBay } from '../systems/ship/model';
+import { boatBay, shipPicture, subBay } from '../systems/ship/model';
+import { shipPoint } from '../systems/ship/geometry';
+import { submerged } from '../systems/ship/uboat';
 import { boatEngineLevel, boatLength } from '../systems/boat';
 import { BoatView } from '../views/boatView';
 import type { GameEvent } from '../systems/events';
@@ -367,9 +369,13 @@ export class WorldScene extends Phaser.Scene {
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
     // in the speedboat the headlight sits on its bow
     const b = g.boat;
+    // a U-Boat under water lights the way from its bow (block 4c)
+    const sunk = g.ship.aboard && submerged(g.ship);
     const lamp = b.aboard
       ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
-      : (rider ?? d);
+      : sunk
+        ? shipPoint(g.ship, shipPicture(g.ship).bowU, shipPicture(g.ship).waterline)
+        : (rider ?? d);
     const glows = [
       ...this.places.glowSpots(g.gear),
       ...this.beasts.glowSpots(g),
@@ -386,7 +392,9 @@ export class WorldScene extends Phaser.Scene {
         face: d.face,
         // no lamp while sitting on the boat; shorter in murky water
         lengthMult:
-          storyHoldsDiver(g) || g.ship.aboard ? 0 : mods.coneMult * (1 - (1 - DELTA.murk.lampMult) * murk),
+          storyHoldsDiver(g) || (g.ship.aboard && !sunk)
+            ? 0
+            : (sunk ? 1.6 : mods.coneMult) * (1 - (1 - DELTA.murk.lampMult) * murk),
         widthMult: mods.coneWidthMult,
       },
       Math.max(this.hurtFlash, lowO2),

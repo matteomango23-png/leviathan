@@ -10,6 +10,25 @@
 
 **Prossimo:** il cockpit con le immagini del lotto 4; poi la parte 4c (U-Boat).
 
+## Blocco 4c — Gli U-Boat (9 ottobre 2026) → v0.55.0
+
+**Fatto:**
+- Whale e Stormtrooper comprabili, con le immagini girate (`nave_whale`, `nave_stormtrooper`, `open` uguale a `closed`).
+- Immersione in `systems/ship/uboat.ts` (`ship.dive`, `ship.air`, salvati) e `dive` in `data/fleet.ts`, regole in `SHIP.dive`.
+- La geometria segue `dive`: timone, scafo solido, vista, faro di prua.
+- Tuffo e rientro in profondità; passaggio sotto il ghiaccio, sfondato nella risalita d'emergenza.
+
+**Da provare sull'iPhone:**
+1. Compra il Whale (+50.000 denti di prova) e scendi con la leva "Sali / Scendi".
+2. Lascia finire l'aria: arriva l'avviso, poi risale da solo.
+3. Immerso, vai sotto il Mare di Ghiaccio.
+4. Fermo in profondità, premi "Tuffati" e poi rientra con "A bordo".
+5. Prova lo Stormtrooper vicino al fondale: è più lento e più grande.
+
+**Rimandati come deciso:** il sonar a 360° (blocco 5) e gli urti delle bestie contro l'U-Boat (blocco 6).
+
+**Prossimo:** parte 4d (Ocean's Nightmare, con drone e sfera), in Plan mode.
+
 ## ⚠️ Da togliere prima della fine: strumenti di prova sulla Home (v0.52.1)
 
 Il proprietario ha chiesto di ricordarlo: `toggleTestMode` in `systems/testTools.ts` e i 5 tocchi sulla versione in `ui/pauseMenu.ts` accendono gli strumenti di prova anche senza il link `?prove`. Togliere entrambi (e la chiave `leviatano-prove` resta innocua) quando le prove non servono più.

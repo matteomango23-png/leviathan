@@ -12,10 +12,10 @@ import { SHIP_MODELS, type ShipModelDef } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import { hatchT, type ShipState } from '../systems/ship/ship';
+import { submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 
 const UNDERWATER_TINT = 0x6f97a6;
-const FAR_TINT = 0x7f8c94;
 
 /**
  * One copy of the ship: its pictures, each cut at the waterline (above / below), in pairs. Closed first; then,
@@ -81,7 +81,8 @@ class ShipPictures {
         .setScale(sc * s.face, sc)
         .setRotation(-s.face * pitch)
         .setAlpha(alpha);
-      if (dark > 0) im.setTint(i % 2 ? UNDERWATER_TINT : FAR_TINT);
+      if (dark > 0)
+        im.setTint(UNDERWATER_TINT); // under water all of it
       else if (i % 2 === 0) im.clearTint();
     }
   }
@@ -152,12 +153,16 @@ export class ShipView {
     const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
     const pitch = roll + planing * SHIP.plane.pitch;
     const lift = planing * SHIP.plane.lift;
-    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + heave - lift;
+    // a U-Boat under water: deeper, still (no swell), all of it seen through the water, no smoke nor wake
+    const sunk = submerged(s);
+    const top =
+      WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (sunk ? 0 : heave - lift);
     const pics = this.picsOf(s);
-    if (pics) pics.place(s, s.x, top, 1, pitch, 0);
+    if (pics) pics.place(s, s.x, top, 1, sunk ? 0 : pitch, sunk ? 1 : 0);
     else this.drawFallback(s, top);
-    this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt);
-    this.drawWake(s, k, time, heave);
+    this.effects.smoke(sunk ? { ...s, engineOn: false } : s, (u, v) => this.at(s, top, u, v), dt);
+    if (sunk) this.drawPropBubbles(s, time);
+    else this.drawWake(s, k, time, heave);
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
     this.drawTug(s, top, dt);
@@ -191,7 +196,7 @@ export class ShipView {
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
   glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
-    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s);
+    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
     return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
   }
 
@@ -256,7 +261,7 @@ export class ShipView {
     const P = shipPicture(s);
     const prop = {
       x: s.x + s.face * (P.propX - 0.5) * L,
-      y: WORLD.surfaceY + (P.propY - P.waterline) * shipHeight(s),
+      y: WORLD.surfaceY + s.dive + (P.propY - P.waterline) * shipHeight(s),
     };
     // a big ship churns much more water (owner, 9 ottobre): more bubbles, bigger, a longer and taller plume
     const size = Math.max(1, L / SHIP.camera.refLength);

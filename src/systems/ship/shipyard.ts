@@ -9,6 +9,7 @@ import { boatFromYard, boatModel, type BoatState } from '../boat';
 import { subModel, type SubState } from '../submarine';
 import { shipModel, shipTank } from './model';
 import { freshHatches, type ShipState } from './ship';
+import { fullAir, submerged } from './uboat';
 
 /** A ship you own and do not use: moored at Porto Fango with its fuel and its vehicles' state. */
 export interface MooredShip {
@@ -48,6 +49,7 @@ function yardReady(g: ShipyardWorld): Result {
     return { ok: false, reason: 'Le navi si comprano al cantiere di Porto Fango.' };
   if (!g.ship.owned) return { ok: false, reason: 'Prima Aurelio ti deve dare la tua prima nave.' };
   if (g.sub.aboard || g.boat.aboard) return { ok: false, reason: 'Torna a bordo della nave, prima.' };
+  if (submerged(g.ship)) return { ok: false, reason: 'Riemergi, prima.' };
   if (g.sub.owned && g.ship.bay !== 'docked')
     return { ok: false, reason: 'Riporta il sottomarino nella stiva, prima.' };
   if (g.boat.owned && g.boat.bay !== 'docked')
@@ -77,6 +79,8 @@ function bringIn(g: ShipyardWorld, m: ShipModelDef, from: MooredShip | null): vo
     engineOn: false,
     prop: 0,
     broken: [],
+    dive: 0,
+    air: fullAir({ model: m.id }),
   });
   s.fuel = Math.min(shipTank(s), from ? from.fuel : shipTank(s));
   const subBay = m.bays.find((b) => b.kind === 'sub');

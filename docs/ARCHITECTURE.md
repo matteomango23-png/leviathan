@@ -35,6 +35,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/ship.ts` | La nave da spedizione: regalo di Aurelio a Porto Fango, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
 | `ship/hatch.ts` | Portelloni (uno per vano), rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
 | `ship/boatBay.ts` | Il vano del motoscafo o della moto d'acqua: cala sull'acqua, Aggancia, travaso dei fusti nella nave all'aggancio. |
+| `ship/uboat.ts` | Gli U-Boat: immersione con la leva fino alla profondità del modello, scafo che urta le rocce, aria (avviso, risalita automatica, ricarica a galla), passaggio sotto il ghiaccio. |
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave del modello (linea d'acqua, portellone, rampa, timone, scafo). |
 | `ship/model.ts` | La nave che hai (`data/fleet.ts`): lunghezza vera, velocità, ripresa e frenata, serbatoio, sonar, immagine. |
 | `ship/shipyard.ts` | Il cantiere navale di Porto Fango: più navi possedute (`g.fleet`, ormeggiate col loro carburante e i loro mezzi), comprare (col pieno), cambiare nave, vendere a metà prezzo. |

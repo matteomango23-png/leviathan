@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.55.0 — Gli U-Boat si immergono (9 ottobre 2026)
+
+- **Due navi nuove al cantiere,** nella categoria U-Boat:
+  - **U-Boat Whale Exploration**: piccolo e maneggevole, fino a 150 m per 3 minuti;
+  - **U-Boat Stormtrooper**: grosso e lento, fino a 300 m per 6 minuti, troppo lungo per i passaggi stretti.
+- **È la nave stessa che va sott'acqua:** al timone compare la leva "Sali / Scendi". Negli strumenti trovi profondità e aria; scendendo la vista segue la nave, che prende il blu dell'acqua e accende un faro sulla prua.
+- **L'aria:** sott'acqua cala; 30 secondi prima della fine un avviso; finita, l'U-Boat risale da solo. A galla si ricarica, e per rimmergersi ne servono almeno 40 secondi.
+- **Sotto il ghiaccio:** immerso, l'U-Boat passa sotto la lastra del Mare di Ghiaccio senza romperla. Se l'aria finisce là sotto, la sfonda risalendo.
+- **Uscire a nuotare in profondità:** fermo, "Tuffati" ti fa uscire sotto lo scafo alla sua profondità; vicino allo scafo "A bordo" ti fa rientrare.
+- Lo scafo intero urta il fondale e le rocce.
+- Le statistiche del cantiere mostrano anche l'immersione.
+
 ## v0.54.1 — Cockpit di nuovo quello di prima (9 ottobre 2026)
 
 - L'Expedition Hunter 1 e 2 tornano al cockpit di tutte le altre navi: quello dipinto va studiato meglio.

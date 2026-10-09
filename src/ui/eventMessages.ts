@@ -111,6 +111,12 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [e.text, 4];
     case 'boatIce':
       return [BOAT_TEXT.ice, 3];
+    case 'diveAir':
+      return ['Aria per 30 secondi: risali con la leva!', 4];
+    case 'diveSurfacing':
+      return ['Aria finita: l’U-Boat risale da solo.', 4];
+    case 'diveTooDeep':
+      return ['Più giù lo scafo non regge.', 2.5];
     case 'rescued':
       return [SHIP_TEXT.rescued(e.where, e.teeth), 5];
     case 'subLaunched':

@@ -8,15 +8,17 @@ import { bayHatch, shipLength, shipPicture, subBay } from './model';
 export interface ShipPose {
   x: number;
   face: 1 | -1;
+  /** U-Boats (block 4c): units under its floating line (0 or missing: afloat). */
+  dive?: number;
   /** Its model (data/fleet.ts): size and picture. */
   model: string;
 }
 
 /** Height of the picture in world units. */
 export const shipHeight = (s: { model: string }): number => shipLength(s) * shipPicture(s).aspect;
-/** World y of the top of the picture (its waterline on the surface). */
-export const shipTop = (s: { model: string }): number =>
-  WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s);
+/** World y of the top of the picture (its waterline on the surface; a U-Boat's that much deeper when it dives). */
+export const shipTop = (s: { model: string; dive?: number }): number =>
+  WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + (s.dive ?? 0);
 /** Depth of the keel under the surface (units). */
 export const shipDraft = (s: { model: string }): number =>
   (shipPicture(s).keel - shipPicture(s).waterline) * shipHeight(s);
@@ -66,7 +68,7 @@ export function shipHull(s: ShipPose): HullPart[] {
   for (let k = 0; k < n; k++) {
     const u = 0.1 + (k / (n - 1)) * 0.8;
     const taper = k === 0 || k === n - 1 ? 0.7 : 1;
-    parts.push({ ...shipPoint(s, u, 0), y: WORLD.surfaceY + r, r: r * taper });
+    parts.push({ ...shipPoint(s, u, 0), y: WORLD.surfaceY + (s.dive ?? 0) + r, r: r * taper });
   }
   return parts;
 }

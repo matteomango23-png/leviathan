@@ -22,7 +22,10 @@ export interface HelmInfo {
   fuel: number;
   tank: number;
   rangeKm: number;
-  /** Submarine only: depth and the model's limit (m). */
+  /** A U-Boat at the helm (block 4c): the dive lever shows, and the air left (seconds). */
+  canDive?: boolean;
+  air?: number;
+  /** Submarine and U-Boat: depth and the model's limit (m). */
   depthM?: number;
   maxDepthM?: number;
   /** The submarine's hull, now and whole (shown in its instruments). */
@@ -77,6 +80,8 @@ export class HelmControls {
   private gaugeText = '';
   /** The arrow keys were held last frame (to let the dive lever go back to the middle when released). */
   private keyDive = false;
+  /** The ship at the helm is a U-Boat: its dive lever works like the submarine's. */
+  private canDive = false;
 
   constructor(
     parent: HTMLElement,
@@ -194,10 +199,11 @@ export class HelmControls {
   private letGo(pointerId: number): void {
     const lever = this.dragging.get(pointerId);
     this.dragging.delete(pointerId);
-    if (!lever || this.mode !== 'sub') return;
+    if (!lever) return;
     const helm = this.session.input.helm;
-    if (lever === 'throttle') helm.throttle = 0;
-    else helm.dive = 0;
+    // the dive lever springs back in the submarine and in a U-Boat; only the submarine's gas does
+    if (lever === 'dive' && (this.mode === 'sub' || this.canDive)) helm.dive = 0;
+    else if (lever === 'throttle' && this.mode === 'sub') helm.throttle = 0;
   }
 
   releaseAll(): void {
@@ -227,14 +233,15 @@ export class HelmControls {
     if (info.mode === 'sub' && !holdingGas) helm.throttle = 0;
     // keyboard: the arrows hold the dive lever up or down; let go, it goes back to the middle
     const held = k.has('arrowup') || k.has('arrowdown');
-    if (info.mode === 'sub' && ![...this.dragging.values()].includes('dive')) {
+    this.canDive = !!info.canDive;
+    if ((info.mode === 'sub' || this.canDive) && ![...this.dragging.values()].includes('dive')) {
       if (held) helm.dive = k.has('arrowup') ? -1 : 1;
       else if (this.keyDive) helm.dive = 0;
     }
     this.keyDive = held;
 
     this.throttleKnob.style.transform = `translateY(${-helm.throttle * TRACK}px)`;
-    this.diveWrap.hidden = info.mode !== 'sub';
+    this.diveWrap.hidden = info.mode !== 'sub' && !info.canDive;
     this.diveKnob.style.transform = `translateY(${-((1 - helm.dive) / 2) * TRACK}px)`;
     this.west.classList.toggle('on', helm.dir === -1);
     this.east.classList.toggle('on', helm.dir === 1);
@@ -245,6 +252,8 @@ export class HelmControls {
       `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
     ];
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
+    if (info.air !== undefined)
+      parts.push(`aria ${Math.floor(info.air / 60)}:${String(Math.floor(info.air % 60)).padStart(2, '0')}`);
     if (info.hull) parts.push(`scafo ${Math.round(info.hull[0])}/${info.hull[1]}`);
     if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
     const text = parts.join(' · ');

@@ -11,6 +11,7 @@ import { boatLaunchShown, boatName, boatOnRamp } from '../systems/ship/boatBay';
 import { boatModel } from '../systems/boat';
 import { SHIP_MODELS } from '../data/fleet';
 import { SHIP } from '../data/ship';
+import { keelDepthM } from '../systems/ship/uboat';
 import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
@@ -79,6 +80,14 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
         .replace(/^(Il|La) /, '')
         .toLowerCase(),
       engineOn: s.engineOn,
+      ...(shipModel(s).dive
+        ? {
+            canDive: true,
+            depthM: keelDepthM(s), // its keel: what the model's limit counts
+            maxDepthM: shipModel(s).dive!.maxDepthM,
+            air: s.air,
+          }
+        : {}),
     };
   const b = g.boat;
   if (b.aboard && !boatOnRamp(g))

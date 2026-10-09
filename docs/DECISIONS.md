@@ -767,3 +767,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Posizioni misurate una volta** in percentuale delle immagini (`data/cockpitSteam.ts`); `ui/steamStage.ts` mette gli elementi sugli spazi (`place`) e incolla ritagli delle immagini (`crop`): placca accesa/spenta sulle schede, targa d'ottone su "Al timone", qualunque sia l'immagine sotto.
 - **Plancia:** una finestra che scorre su due parti dipinte (schermata con la carta, poi i pannelli di travaso ed emergenza dell'altra schermata). Le lancette sono div ruotati da -135° a +135° sulle tacche dipinte.
 - Le regole del palco sono prefissate con `#ui`: `#ui button { font-size: inherit }` vinceva sulle classi.
+
+## 9 ottobre 2026 — Gli U-Boat (v0.55.0)
+
+- **La nave si immerge** (scelta del proprietario: niente sottomarino a bordo). `ship.dive` (unità sotto la linea di galleggiamento) entra in `shipTop`/`shipHull`: timone, scafo solido, vista, punto di risveglio e sonar seguono la nave senza codice a parte.
+- **Collisioni:** sott'acqua i cerchi dello scafo contro le piastrelle (`hullBlocked`); a galla la nave resta nelle sue corsie come prima. Il ghiaccio è solido: immerso ci passa sotto, solo la risalita d'emergenza lo rompe.
+- **Aria (scelte del proprietario):** avviso a 30 s, poi risalita automatica. A galla si ricarica; per rimmergersi ne servono `SHIP.dive.minAir` secondi, sennò dopo l'emergenza si poteva subito tornare giù.
+- **Faro:** immerso, l'U-Boat accende la luce dalla prua (al timone in superficie no).
+- **Salvataggio:** `dive` e `air` facoltativi in `SavedShip`, senza cambiare versione.

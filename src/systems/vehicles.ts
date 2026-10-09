@@ -26,6 +26,7 @@ import { BOAT } from '../data/boats';
 import { sailBoat, type BoatState } from './boat';
 import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
 import { boatBay } from './ship/model';
+import { submerged } from './ship/uboat';
 
 export type VehicleWorld = HatchWorld & ShipWorld & { boat: BoatState; diver: { dead: boolean } };
 
@@ -119,7 +120,7 @@ export function shipPort(g: VehicleWorld): PortDef | null {
   const b = g.boat;
   if (b.aboard && b.bay === 'out')
     return b.speed < BOAT.stillBelow ? (PORTS.find((p) => shipAlongside(b.x, p)) ?? null) : null;
-  if (!s.aboard || s.speed >= SHIP.stillBelow) return null;
+  if (!s.aboard || s.speed >= SHIP.stillBelow || submerged(s)) return null;
   return PORTS.find((p) => shipAlongside(s.x, p)) ?? null;
 }
 
