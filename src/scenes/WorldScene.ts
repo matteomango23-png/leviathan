@@ -394,7 +394,10 @@ export class WorldScene extends Phaser.Scene {
       ...this.ship.glowSpots(g.ship),
       ...this.nightmare.glowSpots(g),
     ];
-    const murk = turbidityAt(info.cx, info.cy, g.time, sky);
+    // the murk tints the whole screen: only as much as the view is under water (owner, 9 ottobre: launching a boat
+    // the screen turned another colour while the camera dipped under the surface, then snapped back)
+    const viewWet = Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / (info.h / 2 / info.zoom), 0, 1);
+    const murk = turbidityAt(info.cx, info.cy, g.time, sky) * viewWet;
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },
@@ -404,6 +407,6 @@ export class WorldScene extends Phaser.Scene {
       murk,
       sky.dim * weatherReach(info.cy),
     );
-    this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt);
+    this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea);
   }
 }

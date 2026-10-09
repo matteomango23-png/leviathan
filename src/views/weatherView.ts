@@ -5,6 +5,7 @@ import { CAMERA } from '../data/diver';
 import { WEATHER, type WeatherLook } from '../data/weather';
 import { WORLD } from '../data/worldLayout';
 import { hash2 } from '../systems/math';
+import { CALM_SEA, seaHeight, troughDepth, type SeaNow } from '../systems/sea';
 import { depthMetres } from '../systems/world/zones';
 import type { ViewInfo } from './backgroundView';
 
@@ -71,7 +72,14 @@ export class WeatherView {
     }
   }
 
-  update(v: ViewInfo, look: WeatherLook, cold: number, time: number, dt: number): void {
+  update(
+    v: ViewInfo,
+    look: WeatherLook,
+    cold: number,
+    time: number,
+    dt: number,
+    sea: SeaNow = CALM_SEA,
+  ): void {
     const reach = weatherReach(v.cy);
     // the sky's top: where the swimming camera stops, or the top of the screen when the view is wider than that (the
     // big ships' far view: owner, 9 ottobre, the mist ended in a hard line across the sky)
@@ -107,7 +115,11 @@ export class WeatherView {
     // rain or snow, down to the surface
     const g = this.fall;
     g.clear();
-    if (skyVisible) this.drawFall(g, v, look, cold, skyTop, Math.min(surface, v.h), time, dt);
+    // the drops stop on the moving waves, not on the resting line (owner, 9 ottobre: the rain drew that line)
+    const waveAt = (sx: number): number =>
+      surface - seaHeight(v.cx + (sx - v.w / 2) / v.zoom, time, sea, sea.water) * v.zoom;
+    const lowest = surface + troughDepth(sea) * v.zoom;
+    if (skyVisible) this.drawFall(g, v, look, cold, skyTop, Math.min(lowest, v.h), waveAt, time, dt);
 
     // lightning: a bolt in the sky and a flash over the whole screen, fading with depth
     this.flashLeft = Math.max(0, this.flashLeft - dt);
@@ -127,6 +139,7 @@ export class WeatherView {
     cold: number,
     top: number,
     bottom: number,
+    waveAt: (screenX: number) => number,
     time: number,
     dt: number,
   ): void {
@@ -149,15 +162,19 @@ export class WeatherView {
         const x = ((((d.x - v.cx * v.zoom * 0.0004) % 1) + 1) % 1) * v.w;
         const y = top + d.y * span;
         const len = 9 * px * d.z;
-        g.lineBetween(x, y, x - slant * len, y - len);
+        const sea = waveAt(x);
+        if (y - len >= sea) continue; // already in the sea
+        g.lineBetween(x, Math.min(y, sea), x - slant * len, y - len);
       }
       // little splashes where the drops hit the water
-      if (bottom < v.h) {
+      {
         g.lineStyle(Math.max(1, px * 0.6), WEATHER.rainColor, 0.4);
         const n = Math.round(rain * 0.2);
         for (let i = 0; i < n; i++) {
           const x = hash2(i, Math.floor(time * 12)) * v.w;
           const w = 2.5 * px;
+          const bottom = waveAt(x);
+          if (bottom > v.h || bottom < 0) continue;
           g.lineBetween(x - w, bottom - px, x - w * 0.3, bottom - 2.5 * px);
           g.lineBetween(x + w, bottom - px, x + w * 0.3, bottom - 2.5 * px);
         }
@@ -175,6 +192,7 @@ export class WeatherView {
         const sway = Math.sin(time * 1.3 + i) * 6 * px;
         const x = ((((d.x - v.cx * v.zoom * 0.0004) % 1) + 1) % 1) * v.w + sway;
         const y = top + d.y * span;
+        if (y >= waveAt(x)) continue;
         g.fillStyle(WEATHER.snowColor, 0.5 + 0.35 * (d.z - 0.5));
         g.fillCircle(x, y, 1.3 * px * d.z);
       }

@@ -4,7 +4,9 @@
 // bow wave than a slow or a light one.
 import { describe, expect, it } from 'vitest';
 import { WEATHERS } from '../src/data/weather';
-import { waveHeight } from '../src/systems/sea';
+import { COLUMNS } from '../src/data/sea';
+import { newRide, stepRide } from '../src/systems/ride';
+import { troughDepth, waveHeight } from '../src/systems/sea';
 import { columnHeight, hullOnWater, newColumns, pushColumns, stepColumns } from '../src/systems/waterColumns';
 
 const STORM = WEATHERS.tempesta.look;
@@ -46,5 +48,34 @@ describe('the water answering the hulls', () => {
     };
     expect(bowWave(500, 150)).toBeGreaterThan(bowWave(500, 40));
     expect(bowWave(500, 150)).toBeGreaterThan(bowWave(84, 150));
+  });
+});
+
+describe('no trampoline (owner, 9 ottobre: at full speed the ship was thrown 20 m up and down)', () => {
+  it('a heavy ship at full speed in a storm stays within the waves, it never bounces far above or below them', () => {
+    const r = newRide();
+    let hi = -Infinity;
+    let lo = Infinity;
+    const deep = troughDepth(STORM);
+    for (let t = 0, x = 0; t < 30; t += 1 / 60) {
+      x += 150 / 60;
+      stepRide(r, x, 1, 540, STORM, t, 1 / 60);
+      if (t > 3) {
+        hi = Math.max(hi, r.h);
+        lo = Math.min(lo, r.h);
+      }
+    }
+    expect(hi).toBeLessThan(deep);
+    expect(lo).toBeGreaterThan(-deep * 1.3);
+  });
+
+  it('the water a hull pushes never piles up past its limit', () => {
+    const c = newColumns(0);
+    for (let t = 0; t < 5; t += 1 / 60) {
+      hullOnWater(c, 0, 1, 540, 200, 80, 1 / 60);
+      stepColumns(c, 1 / 60);
+    }
+    for (let x = -1300; x < 1300; x += 8)
+      expect(Math.abs(columnHeight(c, x))).toBeLessThanOrEqual(COLUMNS.maxHeight);
   });
 });

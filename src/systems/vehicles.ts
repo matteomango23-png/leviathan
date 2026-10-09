@@ -95,11 +95,11 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   const sea = g.weather ? weatherLook(g.weather) : CALM_SEA; // its waves and its currents (sea.ts)
   const t = g.time ?? 0; // the waves' clock (the views draw the same waves)
   const water = g.water ?? null;
-  const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far, sea, t, water);
+  const tiles = sailShip(g, ship.aboard ? input.helm : null, dt, events, far, sea, t);
   if (tiles.length) events.push({ type: 'tilesChanged', tiles });
   const ramp = stepBay(g, dt, events);
   const boatRamp = stepBoatBay(g, dt, events);
-  sailBoat(g, boat.aboard ? input.helm : null, dt, events, sea, t, water);
+  sailBoat(g, boat.aboard ? input.helm : null, dt, events, sea, t);
   // the water answers the hulls afloat: bow waves, the slam of a landing (waterColumns.ts)
   if (water) {
     followColumns(water, g.diver.x);

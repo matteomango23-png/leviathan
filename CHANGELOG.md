@@ -6,7 +6,12 @@ Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta 
 
 - **Onde vere:** non più due onde uguali che scorrono, ma otto treni d'onde di lunghezza diversa. Le lunghe corrono più veloci delle corte, come nel mare vero: si formano gruppi, ogni tanto un'onda più alta, mai due tratti di mare uguali.
 - **Forma:** creste strette e appuntite, cavi larghi; col mare grosso le creste si fanno ripide e schiumano.
-- **Il mare risponde agli scafi:** la prua solleva un'onda che cresce con velocità e peso della nave e si allarga ai lati; una barca che atterra da un salto scava l'acqua e la fa risalire intorno. Le barche sentono anche le onde fatte dalla nave.
+- **Il mare risponde agli scafi:** la prua solleva un'onda che cresce con velocità e peso della nave e si allarga ai lati; una barca che atterra da un salto scava l'acqua e la fa risalire intorno.
+- **Niente "trampolino":** a tutta velocità la nave non viene più sparata su e giù dalla sua stessa onda; le navi pesanti tagliano le creste invece di rimbalzarci contro come su un muro, le barche leggere invece vengono ancora lanciate.
+- **Pioggia:** cade fino alle onde, non più fino a una riga dritta.
+- **Sotto le barche** non c'è più il riquadro di un altro colore: solo una fascia d'acqua che sfuma lungo l'onda.
+- **Varo in tempesta:** niente più filtro colore mentre motoscafo o sottomarino scendono in acqua.
+- **Sotto la superficie** il mare sfuma nel fondale dipinto, senza bordo.
 - **Nave meno "incatenata":** galleggia più morbida, con un'onda lunga di fondo sempre presente; in tempesta pianta la prua nelle creste e alza spruzzi.
 - **Nessuna linea:** tolto anche il sottile contorno che restava sulla superficie e davanti agli scafi; il mare è pieno fino al cavo più profondo, le onde lontane dietro compaiono solo col mare mosso.
 

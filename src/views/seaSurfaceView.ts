@@ -11,6 +11,8 @@ import { seaHeight, troughDepth, waveHeight, type SeaNow } from '../systems/sea'
 
 const STEP = 4; // units between the points of the wave line
 const BACK = { shift: 1700, slow: 0.75, scale: 0.6, haze: 0.35 };
+/** Under the deepest trough the sea melts into the painted water below in thin steps (no edge): units. */
+const FADE = { depth: 48, steps: 16 };
 
 const colour = (c: [number, number, number]): number => Phaser.Display.Color.GetColor(c[0], c[1], c[2]);
 const mixRgb = (a: number[], b: number[], t: number): [number, number, number] => [
@@ -31,7 +33,7 @@ export class SeaSurfaceView {
     const g = this.g.clear();
     const y0 = WORLD.surfaceY;
     const deep = y0 + troughDepth(sea);
-    if (view.y > deep + 4 || view.bottom < y0 - 80) return;
+    if (view.y > deep + FADE.depth || view.bottom < y0 - 80) return;
     const water = rampColor(SEA.waterByY, deep + 6);
     const sky = Phaser.Display.Color.HexStringToColor(SEA.skyBottom);
     const x0 = Math.floor(view.x / STEP) * STEP - STEP;
@@ -43,13 +45,21 @@ export class SeaSurfaceView {
     g.fillStyle(colour(mixRgb(water, [sky.red, sky.green, sky.blue], BACK.haze)), rough);
     const back = (x: number): number =>
       y0 - waveHeight(x + BACK.shift, time * BACK.slow, sea) * BACK.scale - 1;
-    if (rough > 0.05) for (let x = x0; x < x1; x += STEP) this.column(x, back(x), back(x + STEP), deep + 12);
+    if (rough > 0.05) for (let x = x0; x < x1; x += STEP) this.column(x, back(x), back(x + STEP), deep);
 
     // the sea itself, from its moving surface down
     g.fillStyle(colour(water), 1);
     const ys: number[] = [];
     for (let x = x0; x <= x1 + STEP; x += STEP) ys.push(y0 - seaHeight(x, time, sea, sea.water));
-    for (let i = 0; i + 1 < ys.length; i++) this.column(x0 + i * STEP, ys[i]!, ys[i + 1]!, deep + 12);
+    for (let i = 0; i + 1 < ys.length; i++) this.column(x0 + i * STEP, ys[i]!, ys[i + 1]!, deep + 1);
+    // then it melts into the painted water (its light rays and rocks start under it, owner 9 ottobre: "as if nothing
+    // existed above that line")
+    const w = x1 + STEP - x0;
+    const h = FADE.depth / FADE.steps;
+    for (let j = 0; j < FADE.steps; j++) {
+      g.fillStyle(colour(water), 1 - (j + 1) / (FADE.steps + 1));
+      g.fillRect(x0, deep + 1 + j * h, w, h);
+    }
 
     // the light through the crests: brighter where a wave stands up
     const lit = colour(mixRgb(water, [150, 205, 215], 0.35));

@@ -54,6 +54,10 @@ export function stepColumns(c: WaterColumns, dt: number): void {
     for (let i = 0; i < n; i++) {
       c.v[i]! += (-C.stiffness * c.h[i]! - C.damping * c.v[i]!) * h;
       c.h[i]! += c.v[i]! * h;
+      if (Math.abs(c.h[i]!) > C.maxHeight) {
+        c.h[i] = Math.sign(c.h[i]!) * C.maxHeight;
+        c.v[i] = 0;
+      }
     }
     for (let pass = 0; pass < C.passes; pass++) {
       for (let i = 0; i < n; i++) {

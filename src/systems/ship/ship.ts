@@ -4,7 +4,6 @@
 // the water: it sails round it, on the far lane, behind it. With a hatch open it does not move. Pure logic;
 // hatch.ts opens the hatch and moves the submarine, views/shipView.ts draws it.
 import { SHIP } from '../../data/ship';
-import type { WaterColumns } from '../waterColumns';
 import { newRide, settleRide, stepRide, type RideState } from '../ride';
 import { CALM_SEA, currentMult, type SeaWeather } from '../sea';
 import { FIRST_SHIP } from '../../data/fleet';
@@ -192,7 +191,6 @@ export function sailShip(
   far: (x: number) => boolean,
   sea: SeaWeather = CALM_SEA,
   t = 0,
-  water: WaterColumns | null = null,
 ): number[] {
   const s = g.ship;
   if (!s.owned) return [];
@@ -301,7 +299,7 @@ export function sailShip(
   changed.push(...stepDive(g.map, s, helm, dt, events));
   // on the waves: a body floating on its bow and stern (ride.ts); under water a U-Boat no longer feels them
   if (submerged(s)) settleRide(s.ride);
-  else stepRide(s.ride, s.x, s.face, shipLength(s), sea, t, dt, water);
+  else stepRide(s.ride, s.x, s.face, shipLength(s), sea, t, dt);
   changed.push(...refreeze(g.map, s.broken, dt, far));
 
   if (s.aboard) {

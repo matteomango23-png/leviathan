@@ -30,9 +30,10 @@ export const SEA_STATE = {
     gravity: 59,
     pointsAt: 0.38,
     /** A light short hull: lively, it can stand on its stern and flip; a long heavy ship: slow, it never tilts past
-     *  its limit (radians). */
-    small: { length: 60, k: 50, c: 2.6, pitchMax: 1.35 },
-    big: { length: 540, k: 11, c: 1.5, pitchMax: 0.3 },
+     *  its limit (radians). `follow`: how much the wave it runs into throws it up (1: all of it, a light boat is
+   *  launched; a heavy ship cuts into the crest instead of bouncing off it as off something hard). */
+    small: { length: 60, k: 50, c: 2.6, pitchMax: 1.35, follow: 1 },
+    big: { length: 540, k: 11, c: 1.5, pitchMax: 0.3, follow: 0.15 },
     pitchGain: 7,
     maxV: 150,
     /** The water's push stops growing this many times deeper than it rests (a buried bow is not shot out). */
@@ -83,8 +84,10 @@ export const COLUMNS = {
   passes: 4,
   passSpeed: 60,
   maxStep: 1 / 60,
-  /** The bow wave: push (units/s per second) at `speedRef` units/s for the heaviest hull (`heavyLength` units). */
-  bowWave: 260,
+  /** The bow wave: push (units/s per second) at `speedRef` units/s for the heaviest hull (`heavyLength` units).
+   *  The water a hull raises is only seen (the hulls ride the open sea's waves): at most `maxHeight` units. */
+  bowWave: 40,
+  maxHeight: 5,
   speedRef: 160,
   heavyLength: 500,
   /** Landing faster than this (units/s downward) drives the water down. */
