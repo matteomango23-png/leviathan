@@ -58,6 +58,17 @@ export type GameEvent =
   | { type: 'shipWest' }
   /** The sonar pings (a sound). */
   | { type: 'sonarPing' }
+  // the Ocean's Nightmare's drone and sphere (part 4d)
+  | { type: 'reconStart' }
+  | { type: 'reconEmpty' }
+  | { type: 'reconDone'; count: number }
+  | { type: 'sphereGo'; name: string }
+  | { type: 'sphereHold'; name: string; seconds: number }
+  | { type: 'sphereFree'; name: string }
+  | { type: 'sphereCharging'; seconds: number }
+  | { type: 'sphereBusy' }
+  | { type: 'targetSet'; name: string }
+  | { type: 'targetLost'; name: string }
   /** An outpost of the open sea found (economy/places.ts). */
   | { type: 'outpostFound'; name: string }
   // the hunts (hunts.ts)

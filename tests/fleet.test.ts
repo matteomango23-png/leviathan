@@ -142,10 +142,10 @@ describe('the shipyard of Porto Fango', () => {
     expect(migrate({ game: 'leviatano', version: 19 })).toMatchObject({ fleet: [] });
   });
 
-  it('only at Porto Fango, only ships that are ready, only with the teeth', () => {
+  it('only at Porto Fango, only with the teeth', () => {
     const g = atYard();
     g.gear.teeth = 100000;
-    expect(buyShip(g, 'nightmare').ok).toBe(false); // in cantiere
+    expect(buyShip(g, 'nightmare').ok).toBe(true); // part 4d: the last of the fleet is sold too
     g.port = PORT;
     expect(buyShip(g, 'eh1').ok).toBe(false);
     g.port = PORTO_FANGO;

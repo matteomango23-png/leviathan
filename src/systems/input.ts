@@ -28,7 +28,12 @@ export interface InputState {
   /** The levers of the ship or the submarine (they stay where you leave them). */
   helm: HelmState;
   /** A button of the helm pressed this frame: the hatch, lower the submarine, dive off the ship, the flare. */
-  helmCmd: 'hatch' | 'hatch2' | 'launch' | 'launchBoat' | 'dive' | 'rescue' | 'sonar' | 'engine' | null;
+  helmCmd:
+    'hatch' | 'hatch2' | 'launch' | 'launchBoat' | 'dive' | 'rescue' | 'sonar' | 'engine' | 'recon' | null;
+  /** The Ocean's Nightmare (part 4d): the beast picked from the drone's report (its index), or -1; or the compass
+   *  put away. */
+  pickTarget: number;
+  clearTarget: boolean;
 }
 
 export const emptyInput = (): InputState => ({
@@ -46,6 +51,8 @@ export const emptyInput = (): InputState => ({
   slot: -1,
   helm: freshHelm(),
   helmCmd: null,
+  pickTarget: -1,
+  clearTarget: false,
 });
 
 /** Clears the one-frame presses after a game step. */
@@ -58,4 +65,6 @@ export function consumePresses(input: InputState): void {
   input.tameTap = false;
   input.slot = -1;
   input.helmCmd = null;
+  input.pickTarget = -1;
+  input.clearTarget = false;
 }

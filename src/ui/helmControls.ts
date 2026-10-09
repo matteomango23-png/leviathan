@@ -32,8 +32,13 @@ export interface HelmInfo {
   hull?: [number, number];
   /** Ship only: which buttons work now; its hatches (one or two) and what they say. */
   hatchCanMove?: boolean;
-  hatches?: { text: string; open: boolean }[];
+  hatches?: ({ text: string; open: boolean } | null)[];
   canLaunch?: boolean;
+  /** "sottomarino", "drone": for "Cala …". */
+  subName?: string;
+  /** The Ocean's Nightmare (part 4d): its drone can scout now; the beasts in its last report. */
+  canRecon?: boolean;
+  reportCount?: number;
   canLaunchBoat?: boolean;
   /** "motoscafo", "moto d’acqua": for "Cala …". */
   boatName?: string;
@@ -66,6 +71,8 @@ export class HelmControls {
   private readonly launchBoatBtn: HTMLButtonElement;
   private readonly engineBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
+  private readonly reconBtn: HTMLButtonElement;
+  private readonly reportBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly fuelBar: HTMLDivElement;
@@ -126,6 +133,8 @@ export class HelmControls {
     this.launchBtn = el('button', 'helm-btn', still, 'Cala sottomarino');
     this.launchBoatBtn = el('button', 'helm-btn', still, 'Cala motoscafo');
     this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
+    this.reconBtn = el('button', 'helm-btn', still, 'Ricognizione');
+    this.reportBtn = el('button', 'helm-btn helm-report', this.buttons, 'Resoconto');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.objective = el('div', 'helm-objective', this.root);
 
@@ -142,6 +151,8 @@ export class HelmControls {
     this.tap(this.launchBoatBtn, () => (this.session.input.helmCmd = 'launchBoat'));
     this.tap(this.engineBtn, () => (this.session.input.helmCmd = 'engine'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
+    this.tap(this.reconBtn, () => (this.session.input.helmCmd = 'recon'));
+    this.tap(this.reportBtn, () => this.session.emit('openRecon'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
@@ -298,6 +309,12 @@ export class HelmControls {
       btn.classList.toggle('off', !info.hatchCanMove);
     }
     this.launchBtn.hidden = !info.canLaunch;
+    const subLabel = `Cala ${info.subName ?? 'sottomarino'}`;
+    if (this.launchBtn.textContent !== subLabel) this.launchBtn.textContent = subLabel;
+    this.reconBtn.hidden = !info.canRecon;
+    this.reportBtn.hidden = !info.reportCount;
+    const report = `Resoconto (${info.reportCount ?? 0})`;
+    if (this.reportBtn.textContent !== report) this.reportBtn.textContent = report;
     this.launchBoatBtn.hidden = !info.canLaunchBoat;
     const boatLabel = `Cala ${info.boatName ?? 'motoscafo'}`;
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;

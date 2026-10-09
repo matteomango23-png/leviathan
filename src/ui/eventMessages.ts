@@ -92,6 +92,28 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [`Tracce: ${e.text}`, 5];
     case 'outpostFound':
       return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'reconStart':
+      return ['Drone in ricognizione: va da tutti gli animali a portata del sonar.', 3.5];
+    case 'reconEmpty':
+      return ['Il sonar non sente animali: il drone resta nella stiva.', 3.5];
+    case 'reconDone':
+      return [`Il drone è tornato: resoconto pronto, ${e.count} animali. Tocca "Resoconto".`, 4];
+    case 'sphereGo':
+      return [`La sfera parte verso: ${e.name}.`, 3];
+    case 'sphereHold':
+      return [`La sfera blocca ${e.name} per ${Math.round(e.seconds)} secondi.`, 4];
+    case 'sphereFree':
+      return [`${e.name} si libera: la sfera torna alla nave.`, 3.5];
+    case 'sphereCharging': {
+      const s = Math.ceil(e.seconds);
+      return [`Sfera in ricarica: ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}.`, 3];
+    }
+    case 'sphereBusy':
+      return ['La sfera è già fuori.', 2.5];
+    case 'targetSet':
+      return [`Bussola su: ${e.name}. Immergiti e seguila.`, 3.5];
+    case 'targetLost':
+      return [`Traccia persa: ${e.name}.`, 3.5];
     case 'harbourApproach':
       return ['In avvicinamento a Porto Fango: la nave rallenta da sola per attraccare.', 3.5];
     case 'shipWest':

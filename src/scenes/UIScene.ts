@@ -13,6 +13,8 @@ import { canDashNow } from '../systems/game';
 import { storyHoldsDiver } from '../systems/story';
 import { needsStarter } from '../systems/starter';
 import { StarterPicker } from '../ui/starterPicker';
+import { Compass } from '../ui/compass';
+import { ReconPanel } from '../ui/reconPanel';
 import type { SceneData, Session } from './session';
 
 export class UIScene extends Phaser.Scene {
@@ -25,6 +27,8 @@ export class UIScene extends Phaser.Scene {
   private backpack!: BackpackBar;
   private dialogue!: DialogueBox;
   private starter!: StarterPicker;
+  private compass!: Compass;
+  private recon!: ReconPanel;
 
   constructor() {
     super('UI');
@@ -44,6 +48,8 @@ export class UIScene extends Phaser.Scene {
     this.backpack = new BackpackBar(this.root, this.session);
     this.dialogue = new DialogueBox(this.root);
     this.starter = new StarterPicker(this.root, () => this.session.game);
+    this.compass = new Compass(this.root, this.session);
+    this.recon = new ReconPanel(this.root, this.session);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -54,6 +60,7 @@ export class UIScene extends Phaser.Scene {
     this.session.on('openPort', this.openPort, this);
     this.session.on('openCockpit', this.openCockpit, this);
     this.session.on('battle', this.onBattle, this);
+    this.session.on('openRecon', this.openRecon, this);
     this.events.once('shutdown', () => {
       this.session.off('gameEvents', this.onGameEvents, this);
       this.session.off('toast', this.onToast, this);
@@ -61,6 +68,7 @@ export class UIScene extends Phaser.Scene {
       this.session.off('openPort', this.openPort, this);
       this.session.off('openCockpit', this.openCockpit, this);
       this.session.off('battle', this.onBattle, this);
+      this.session.off('openRecon', this.openRecon, this);
       this.controls.destroy();
       this.helm.destroy();
       this.dialogue.destroy();
@@ -78,6 +86,10 @@ export class UIScene extends Phaser.Scene {
   private onGameEvents(events: GameEvent[]): void {
     if (!this.session.game) return;
     this.hud.onEvents(events, this.session.game);
+  }
+
+  private openRecon(): void {
+    if (this.session.game) this.recon.open(this.session.game);
   }
 
   private onToast(text: string): void {
@@ -144,5 +156,7 @@ export class UIScene extends Phaser.Scene {
     this.root.classList.toggle('in-scene', !!g.story.dialogue || storyHoldsDiver(g));
     this.beastUi.update(g);
     this.backpack.update(g);
+    this.compass.update(g);
+    if (this.recon.isOpen && !g.ship.aboard) this.recon.close();
   }
 }

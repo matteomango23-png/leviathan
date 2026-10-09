@@ -9,6 +9,7 @@
 //                                          white; NOT cropped, so the closed and open hatch stay in register)
 //   motoscafo_<n>, moto_<n> (+ _moto)  → public/world/<name>.webp      (the boats: like the ships, not cropped)
 //   sottomarino_<n>_moto.jpg           → cropped by the same box as sottomarino_<n> (the propeller turning)
+//   sfera_<n>.jpg                      → public/world/<name>.webp      (the Ocean's Nightmare's sphere, cropped)
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';

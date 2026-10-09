@@ -88,18 +88,20 @@ export function residentAt(r: Resident, clock: number): { x: number; y: number }
   return { x: r.homeX + Math.sin(a) * R.roamX, y: Math.max(r.top, Math.min(r.bottom, y)) };
 }
 
-/** The residents living (not gone) within `reach` units of x, with where they are now. */
+/** The residents living (not gone) within `reach` units of x, with where they are now (`held`: the one the
+ *  Ocean's Nightmare's sphere holds stays where it was caught). */
 export function residentsNear(
   s: ResidentsState,
   x: number,
   reach: number,
+  held?: { resident?: string; x: number; y: number; left: number } | null,
 ): { r: Resident; x: number; y: number }[] {
   const out: { r: Resident; x: number; y: number }[] = [];
   for (let k = stretchAt(x - reach - R.roamX); k <= stretchAt(x + reach + R.roamX); k++)
     for (const r of residentsOf(k)) {
       if ((s.gone[r.id] ?? -1) > s.clock) continue;
-      const p = residentAt(r, s.clock);
-      if (Math.abs(p.x - x) <= reach) out.push({ r, ...p });
+      const p = held && held.left > 0 && held.resident === r.id ? held : residentAt(r, s.clock);
+      if (Math.abs(p.x - x) <= reach) out.push({ r, x: p.x, y: p.y });
     }
   return out;
 }
@@ -111,6 +113,12 @@ export const residentArea = (r: Resident): [number, number, number, number] => [
   r.homeX + R.roamX + 120,
   Math.max(r.top + 40, r.bottom),
 ];
+
+/** A resident by its id (`r<stretch>.<n>`), or undefined. */
+export function residentById(id: string): Resident | undefined {
+  const k = Number(/^r(-?\d+)\./.exec(id)?.[1]);
+  return Number.isInteger(k) ? residentsOf(k).find((r) => r.id === id) : undefined;
+}
 
 /** Caught or beaten: its place stays empty for a while. */
 export function residentGone(s: ResidentsState, id: string, rng: () => number): void {

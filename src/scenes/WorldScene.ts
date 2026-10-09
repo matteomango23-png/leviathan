@@ -1,5 +1,7 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
+import { NightmareView } from '../views/nightmareView';
+import { reconOut } from '../systems/ship/gadgets';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard, hatchT } from '../systems/ship/ship';
@@ -78,6 +80,7 @@ export class WorldScene extends Phaser.Scene {
   private effects!: EffectsView;
   private light!: LightView;
   private weatherView!: WeatherView;
+  private nightmare!: NightmareView;
   private birdsView!: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
@@ -124,6 +127,7 @@ export class WorldScene extends Phaser.Scene {
     this.hunts = new HuntView(this, L.world);
     this.boat = new BoatView(this, L.world);
     this.sub = new SubmarineView(this, L.world);
+    this.nightmare = new NightmareView(this, L.world);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.birdsView = new BirdsView(this, L.world);
@@ -349,7 +353,10 @@ export class WorldScene extends Phaser.Scene {
       sky.waves,
       dt,
     );
-    this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && hatchT(g.ship, subBay(g.ship)) < 0.6);
+    // the drone away on its round is drawn by the Nightmare's view, not in the hold
+    const inHold = g.ship.bay === 'docked' && (hatchT(g.ship, subBay(g.ship)) < 0.6 || reconOut(g));
+    this.sub.update(g.sub, g.time, dt, inHold);
+    this.nightmare.update(g, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
     this.beasts.update(g, g.time);
     const rider = this.beasts.riderPose(g);
@@ -383,6 +390,7 @@ export class WorldScene extends Phaser.Scene {
       ...this.places.glowSpots(g.gear),
       ...this.beasts.glowSpots(g),
       ...this.ship.glowSpots(g.ship),
+      ...this.nightmare.glowSpots(g),
     ];
     const mods = diverModifiers(g.gear);
     const murk = murkAt(info.cx, info.cy);

@@ -23,6 +23,8 @@ export interface SubModel {
   art: string; // its picture in public/world
   /** The picture with the propeller turning (same box), shown while it moves. */
   moving?: string;
+  /** A drone: it can also scout by itself from its ship (the Ocean's Nightmare's, systems/ship/recon.ts). */
+  recon?: boolean;
 }
 
 export const SUB_MODELS: SubModel[] = [
@@ -81,6 +83,21 @@ export const SUB_MODELS: SubModel[] = [
     note: 'Ottimo sonar, veloce e profondo',
     art: 'sottomarino_imperium',
     moving: 'sottomarino_imperium_moto',
+  },
+  {
+    // the Ocean's Nightmare's drone (owner, 9 ottobre): scouts by itself, or you drive it like a submarine
+    id: 'drone_nightmare',
+    name: 'Drone sottomarino',
+    lengthM: 7,
+    speed: 160,
+    maxDepthM: 500,
+    hull: 90,
+    tank: 80,
+    perKm: 6,
+    sonar: true,
+    note: 'Piccolo e velocissimo: fa la ricognizione da solo, o lo guidi tu fino a 500 m',
+    art: 'sottomarino_drone',
+    recon: true,
   },
 ];
 

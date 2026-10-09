@@ -21,6 +21,18 @@ export interface BattleRequest {
   first: 'you' | 'foe' | 'normal';
 }
 
+/**
+ * A beast held still by the Ocean's Nightmare's sphere (part 4d): a resident of the endless sea (by its id, out for
+ * real or not) or a wild one of the coast (by its slot); where it is held, and for how many seconds more.
+ */
+export interface Held {
+  resident?: string;
+  wild?: number;
+  x: number;
+  y: number;
+  left: number;
+}
+
 export interface BeastState {
   wilds: WildBeast[];
   team: TeamBeast[];
@@ -46,6 +58,8 @@ export interface BeastState {
   recent: string[];
   /** The beasts living in the endless sea: who is out, who is gone (not saved; beasts/residents.ts). */
   residents: ResidentsState;
+  /** The beast the sphere holds still (not saved). */
+  held: Held | null;
 }
 
 export interface BeastWorld {
@@ -79,8 +93,13 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     gone: [...gone],
     recent: [],
     residents: newResidents(),
+    held: null,
   };
 }
+
+/** Is this wild beast the one the sphere holds? */
+export const isHeld = (h: Held | null, w: WildBeast): boolean =>
+  !!h && h.left > 0 && (h.resident ? w.spawn.resident === h.resident : h.wild === w.id);
 
 export const activeBeast = (g: BeastWorld): TeamBeast | undefined =>
   g.beasts.mount ? g.beasts.team.find((b) => b.uid === g.beasts.mount!.uid) : undefined;

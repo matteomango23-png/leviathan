@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.57.0 — Ocean's Nightmare (9 ottobre 2026)
+
+- **La nave più forte è in vendita** al cantiere (50.000 denti, categoria U-Boat). È enorme e lenta, si immerge fino a 500 m per 8 minuti e ha due portelloni.
+- **Drone da ricognizione:** al timone tocca "Ricognizione". Il drone esce da solo, va da tutti gli animali a portata del sonar e torna. Poi "Resoconto" mostra cosa ha trovato: nome, grandezza, livello se lo conosce, profondità e distanza. Gli animali visti dal drone entrano nel bestiario.
+- **Bussola:** tocca un animale del resoconto e in alto compare una freccia rossa con la distanza e quanto più su o più giù si trova. La vedi a nuoto, nel drone e al timone; la × la toglie. Resta anche se chiudi il gioco.
+- **Sfera blocca-bestie:** appena scegli l'animale, la sfera parte da sola, lo raggiunge e lo blocca per 1 minuto. Ha una luce rossa pulsante e scosse rosse che attraversano l'animale. Poi torna alla nave e si ricarica per 3 minuti.
+- **Il drone si guida anche a mano,** come un sottomarino ("Cala drone"), fino a 500 m.
+
 ## v0.56.2 — Arrivo a Porto Fango più naturale (9 ottobre 2026)
 
 - **Leva del gas:** quando la nave rallenta da sola entrando a Porto Fango, anche la leva del gas scende piano fino a zero insieme alla velocità.

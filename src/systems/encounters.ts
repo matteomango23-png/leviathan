@@ -15,7 +15,7 @@ import { SUBMARINE } from '../data/submarine';
 import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
-import type { BattleRequest, BeastWorld } from './beastState';
+import { isHeld, type BattleRequest, type BeastWorld } from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
@@ -101,7 +101,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   const wakeResident = (w: WildBeast): boolean => {
     const lure = g.beasts.lure?.species ?? [];
     const dist = (c: { x: number; y: number }): number => Math.hypot(c.x - d.x, c.y - d.y);
-    const near = residentsNear(res, d.x, R.wakeRadius).filter(
+    const near = residentsNear(res, d.x, R.wakeRadius, g.beasts.held).filter(
       (c) => res.awake[c.r.id] === undefined && dist(c) < R.wakeRadius,
     );
     if (!near.length) return false;
@@ -140,6 +140,15 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (!d.dead && distanceToBody(w, d.x, d.y) < WILD_RULES.seenRadius) {
       g.seen.add(w.spawn.speciesId);
       g.seen.add(formKey(w.form));
+    }
+    // held by the Ocean's Nightmare's sphere: it stops gently where it is, and neither swims nor comes at you
+    if (isHeld(g.beasts.held, w)) {
+      const k = Math.max(0, 1 - dt * 3);
+      w.vx *= k;
+      w.vy *= k;
+      w.x += w.vx * dt;
+      w.y += w.vy * dt;
+      continue;
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
     const rams = aboard && ramsSubmarine(w);

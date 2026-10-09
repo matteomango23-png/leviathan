@@ -5,7 +5,7 @@ I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blo
 1. ✅ Nuovo inizio senza storia (v0.47.0)
 2. ✅ Correzioni rapide (v0.48.0)
 3. ✅ Decisioni di design (scritte nel GDD, sezione "Decisioni di design")
-4. La flotta — 4a ✅ (v0.49.0: cantiere, modelli, EH1); 4b ✅ (v0.51.0: EH2, Poseidon, Imperium, motoscafi, moto d'acqua); 4c ✅ (v0.55.0: U-Boat Whale e Stormtrooper che si immergono); 4d Ocean's Nightmare
+4. La flotta — 4a ✅ (v0.49.0: cantiere, modelli, EH1); 4b ✅ (v0.51.0: EH2, Poseidon, Imperium, motoscafi, moto d'acqua); 4c ✅ (v0.55.0: U-Boat Whale e Stormtrooper che si immergono); 4d ✅ (v0.57.0: Ocean's Nightmare con drone da ricognizione, bussola e sfera blocca-bestie)
 5. Sonar e spedizioni
 6. Cattura e combattimento
 7. Ruoli delle bestie, nuoto, cavalcature (+ prova del megalodonte da video)
