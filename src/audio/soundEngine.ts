@@ -1,16 +1,19 @@
-// The game's sound: one Web Audio context, a master volume with the on/off switch, the sea ambience and the
-// battle music crossfading. Browsers (iPhone above all) only start sound after a touch: the context is
+// The game's sound: one Web Audio context, a master volume with the on/off switch, the sea ambience (with the open
+// sea's music beyond a kilometre) and the battle music crossfading. Browsers (iPhone above all) only start sound after a touch: the context is
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
 import { AUDIO } from '../data/audio';
+import { SEA_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
 import { EngineSound } from './engineSound';
+import { SeaMusic } from './seaMusic';
 
 export class SoundEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private sea: SeaAmbience | null = null;
   private music: BattleMusic | null = null;
+  private openSea: SeaMusic | null = null;
   private engines: EngineSound | null = null;
   private battle = false;
   private on = readEnabled();
@@ -45,6 +48,8 @@ export class SoundEngine {
       return;
     }
     this.sea?.update(m, dt);
+    const o = this.openSea;
+    if (o) o.set(o.playing ? m.km > SEA_MUSIC.offKm : m.km > SEA_MUSIC.fromKm);
   }
 
   /**
@@ -79,6 +84,7 @@ export class SoundEngine {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.sea?.fadeTo(on ? 0 : 1, t, AUDIO.fade);
+    if (on) this.openSea?.set(false, AUDIO.fade); // after the battle the sea brings it back
     if (on) this.music?.play(t);
     else this.music?.stop(t, AUDIO.fade);
   }
@@ -96,6 +102,7 @@ export class SoundEngine {
     this.sea = new SeaAmbience(this.ctx, this.master);
     this.music = new BattleMusic(this.ctx, this.master);
     this.engines = new EngineSound(this.ctx, this.master);
+    this.openSea = new SeaMusic(this.ctx, this.master);
     if (this.battle) {
       this.sea.fadeTo(0, this.ctx.currentTime, 0.01);
       this.music.play(this.ctx.currentTime);

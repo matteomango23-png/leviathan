@@ -306,10 +306,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
-  // …and the beasts slide along it too: wild ones, and yours when it swims with you
-  for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w));
+  // …and the beasts slide along the submarine too (the ship passes them by): wild ones, and yours with you
+  for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w), true);
   const follower = g.beasts.mount;
-  if (follower && !g.beasts.riding) pushOutOfVehicles(g, follower, bodyCircles(follower));
+  if (follower && !g.beasts.riding) pushOutOfVehicles(g, follower, bodyCircles(follower), true);
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);

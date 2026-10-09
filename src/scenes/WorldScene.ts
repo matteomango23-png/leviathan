@@ -26,6 +26,7 @@ import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
 import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres, murkAt } from '../systems/world/zones';
+import { kmFromCoast } from '../systems/world/stretches';
 import { DELTA, WORLD } from '../data/worldLayout';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
@@ -292,6 +293,7 @@ export class WorldScene extends Phaser.Scene {
         speed: d0.dead || inVehicle(g) ? 0 : Math.min(1, Math.hypot(d0.vx, d0.vy) / DIVER.maxSpeed),
         depthM: depthMetres(d0.y),
         dash: d0.dashTime > 0 && dashBefore <= 0,
+        km: kmFromCoast(d0.x),
       },
       dt,
     );
