@@ -841,6 +841,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 9 ottobre 2026 — U-Boat a galla a ovest di Porto Fango (v0.60.5)
+
+- **La regola "la nave non va a ovest del porto" vale a est del molo:** un U-Boat che ci passa sotto e risale dall'altra parte naviga libero in superficie (il proprietario lo vuole portare verso Portofosco). Il molo resta un muro a galla in entrambe le direzioni.
+
 ## 9 ottobre 2026 — Linea d'acqua dell'U-Boat lungo le onde (v0.60.1)
 
 - **Strisce invece di una maschera:** il taglio rettangolare (crop) è sempre dritto. Una maschera di Phaser 4 ridisegnerebbe ogni fotogramma una texture grande quanto la nave, troppo pesante sull'iPhone. Così ogni dipinto ha 40 copie colorate "sott'acqua", ognuna ritagliata su una striscia verticale all'altezza dell'onda: stessa texture, quindi poco costo.

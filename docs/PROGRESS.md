@@ -1,5 +1,10 @@
 # Progressi
 
+## U-Boat a ovest di Porto Fango (9 ottobre 2026) → v0.60.5
+
+- `sailShip`: l'arrivo al molo frena solo se il molo è davanti; a galla a ovest del porto (`x < SHIP_WEST_X`, ci arriva solo un U-Boat passando sotto) si naviga libero, con un muro verso est al molo (ripassarlo solo immersi).
+- **Da provare sull'iPhone:** passa sotto Porto Fango con l'U-Boat, risali e vai verso Portofosco in superficie.
+
 ## Torbidità più giocabile (9 ottobre 2026) → v0.60.4
 
 - `CLARITY.max` 0,55 (tetto del mare aperto; il Delta resta 1), `cycleMax` 0,45, `fromWaves` 0,3, `fromRain` 0,2, `shapesFrom` 0,38.
