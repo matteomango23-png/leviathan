@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.3 — Il cockpit rosso dell'Ocean's Nightmare (9 ottobre 2026)
+
+- **Il cockpit dell'Ocean's Nightmare** ha i colori della nave: ferro scuro arrugginito e rosso che pulsa piano, come le rune. Pulsanti, schede, plancia, carta nautica, quadranti e diario cambiano colore; la disposizione resta la stessa.
+- **Il suo sonar è rosso.** L'eco della tana è in ambra, perché si veda sul rosso.
+
 ## v0.58.2 — Sottomarino calato in profondità (9 ottobre 2026)
 
 - **Corretto:** calato da un U-Boat sott'acqua, il sottomarino (o il drone) schizzava quasi in superficie e non si poteva più riagganciare. Ora si ferma sotto la nave, alla sua profondità, e si riaggancia lì.

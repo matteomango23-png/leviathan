@@ -816,3 +816,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Il proprietario:** le immersioni lunghe sono il vantaggio di sottomarini e U-Boat. Sottomarini 120-170 s (più grandi, più aria), U-Boat 300-600 s. I cetacei non prestano più aria: `RIDE_AIR.bySpecies` è vuoto ma il meccanismo resta. Le mute danno solo un po' d'aria in più (`o2Mult` 0,7-0,85).
 - **Il sottomarino** ricarica l'aria in superficie (sopra `restY + underBelow`) o nella stiva. A zero risale da solo: la sua velocità verticale va verso l'alto, ma avanti e indietro restano comandabili.
 - **La luce delle rune** è un'immagine a parte, estratta dai pixel rosso acceso del dipinto, disegnata in ADD. Così ogni nave può avere le sue luci senza ridipingere niente.
+
+## 9 ottobre 2026 — Colori del cockpit per nave (v0.58.3)
+
+- **`cockpitTheme`** nel modello della nave: stessa struttura, colori diversi. Il CSS lavora sulle variabili del cockpit (`--steel`, `--amber`, `--phosphor`, `--lamp`, `--line`) più pochi colori scritti a mano; il sonar, disegnato su canvas, prende la sua tavolozza da `ui/cockpitTheme.ts`. Per un'altra nave basta un nuovo tema.

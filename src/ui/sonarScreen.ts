@@ -4,15 +4,16 @@
 import { SHIP } from '../data/ship';
 import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
-import { sonarMaxKnots } from '../systems/ship/model';
+import { shipModel, sonarMaxKnots } from '../systems/ship/model';
+import { sonarPalette } from './cockpitTheme';
 import { el } from './dom';
 import { WORLD } from '../data/worldLayout';
 
-const GREEN = '#5dff9e';
 const SWEEP_SECONDS = SHIP.sonar.pingSeconds;
 
 /** Draws the sonar into `b`; returns a function that stops its animation. */
 export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): () => void {
+  const P = sonarPalette(shipModel(g.ship).cockpitTheme);
   const head = el('div', 'sonar-head', b);
   const status = el('div', 'sonar-status', head);
   const sw = el(
@@ -67,7 +68,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     const W = Math.round(canvas.clientWidth * dpr);
     const H = Math.round(canvas.clientHeight * dpr);
     if (canvas.width !== W || canvas.height !== H) Object.assign(canvas, { width: W, height: H });
-    ctx.fillStyle = '#020c08';
+    ctx.fillStyle = P.bg;
     ctx.fillRect(0, 0, W, H);
     const on = r.status === 'on';
     // the ship where it is: a U-Boat under water is drawn at its depth (owner, 9 ottobre)
@@ -78,8 +79,8 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
 
     // grid: depth lines and range rings from the ship
     ctx.lineWidth = 1 * dpr;
-    ctx.strokeStyle = 'rgba(93,255,158,0.12)';
-    ctx.fillStyle = 'rgba(93,255,158,0.45)';
+    ctx.strokeStyle = `rgba(${P.main},0.12)`;
+    ctx.fillStyle = `rgba(${P.main},0.45)`;
     ctx.font = `${10 * dpr}px system-ui, sans-serif`;
     const stepM = maxDepth > 400 ? 100 : maxDepth > 160 ? 50 : 20;
     for (let d = stepM; d < maxDepth; d += stepM) {
@@ -95,7 +96,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       ctx.stroke();
     }
     // the limit each side
-    ctx.strokeStyle = 'rgba(255,190,90,0.6)';
+    ctx.strokeStyle = `rgba(${P.limit},0.6)`;
     ctx.setLineDash([6 * dpr, 6 * dpr]);
     for (const s of [-1, 1]) {
       ctx.beginPath();
@@ -104,12 +105,12 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       ctx.stroke();
     }
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(255,190,90,0.8)';
+    ctx.fillStyle = `rgba(${P.limit},0.8)`;
     ctx.fillText(`◀ ${r.rangeM} m`, 6 * dpr, H - 6 * dpr);
     const rt = `${r.rangeM} m ▶`;
     ctx.fillText(rt, W - ctx.measureText(rt).width - 6 * dpr, H - 6 * dpr);
     // the ship in the middle: at the top afloat, at its depth when it dives
-    ctx.fillStyle = '#cfe8d8';
+    ctx.fillStyle = P.ship;
     ctx.fillRect(W / 2 - 14 * dpr, py(shipM) - 6 * dpr, 28 * dpr, 6 * dpr);
 
     if (!on) return;
@@ -119,11 +120,11 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     const side = ph < 1 ? 1 : -1;
     const sxp = px(sweep * r.rangeM);
     const grad = ctx.createLinearGradient(sxp - side * 120 * dpr, 0, sxp, 0);
-    grad.addColorStop(0, 'rgba(93,255,158,0)');
-    grad.addColorStop(1, 'rgba(93,255,158,0.22)');
+    grad.addColorStop(0, `rgba(${P.main},0)`);
+    grad.addColorStop(1, `rgba(${P.main},0.22)`);
     ctx.fillStyle = grad;
     ctx.fillRect(Math.min(sxp, sxp - side * 120 * dpr), py(0), 120 * dpr, H);
-    ctx.strokeStyle = GREEN;
+    ctx.strokeStyle = P.mainHex;
     ctx.lineWidth = 2 * dpr;
     ctx.beginPath();
     ctx.moveTo(sxp, py(0));
@@ -133,9 +134,9 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     // the floor: a few green curves, the brightest on the floor itself
     const n = r.profile.length;
     for (let layer = 0; layer < 3; layer++) {
-      ctx.strokeStyle = `rgba(93,255,158,${layer === 0 ? 0.95 : 0.35 - layer * 0.1})`;
+      ctx.strokeStyle = `rgba(${P.main},${layer === 0 ? 0.95 : 0.35 - layer * 0.1})`;
       ctx.lineWidth = (layer === 0 ? 2.2 : 1.2) * dpr;
-      ctx.shadowColor = GREEN;
+      ctx.shadowColor = P.mainHex;
       ctx.shadowBlur = layer === 0 ? 8 * dpr : 0;
       ctx.beginPath();
       r.profile.forEach((d, i) => {
@@ -154,14 +155,14 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       const age = t - (seen.get(i) ?? -99);
       const a = Math.max(0.25, 1 - age / (SWEEP_SECONDS * 1.6));
       const odd = e.label === 'eco anomala';
-      ctx.fillStyle = odd ? `rgba(255,120,90,${a})` : `rgba(180,255,210,${a})`;
-      ctx.shadowColor = odd ? '#ff785a' : GREEN;
+      ctx.fillStyle = odd ? `rgba(${P.odd},${a})` : `rgba(${P.dot},${a})`;
+      ctx.shadowColor = odd ? P.oddHex : P.mainHex;
       ctx.shadowBlur = 12 * dpr * a;
       ctx.beginPath();
       ctx.arc(ex, py(e.depthM), (odd ? 6 : e.label === 'eco grande' ? 4.5 : 2.6) * dpr, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = `rgba(207,232,216,${a * 0.9})`;
+      ctx.fillStyle = `rgba(${P.text},${a * 0.9})`;
       ctx.fillText(`${e.depthM} m`, ex + 8 * dpr, py(e.depthM) + 4 * dpr);
     });
   };
