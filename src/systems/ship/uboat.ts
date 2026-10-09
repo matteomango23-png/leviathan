@@ -19,6 +19,7 @@ interface DiveShip {
   air: number;
   speed: number;
   broken: BrokenIce[];
+  hatches: { open: boolean; t: number }[];
 }
 
 /** Under water (deeper than counts as afloat). */
@@ -79,7 +80,9 @@ export function stepDive(
   // has to come up and breathe)
   let rate = 0;
   if (s.air <= 0 && submerged(s)) rate = -D.emergencyRise;
-  else if (helm) rate = helm.dive > 0 ? helm.dive * m.sinkSpeed : helm.dive * m.riseSpeed;
+  // with a hatch open it stays where it is (owner, 9 ottobre: it went up and down with them open)
+  else if (helm && s.hatches.every((h) => !h.open && h.t === 0))
+    rate = helm.dive > 0 ? helm.dive * m.sinkSpeed : helm.dive * m.riseSpeed;
   if (rate > 0 && !submerged(s) && s.air < D.minAir) rate = 0;
   if (rate === 0) return out;
   const deepest = maxDive(s);

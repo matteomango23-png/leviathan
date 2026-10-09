@@ -136,6 +136,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [e.text, 4];
     case 'boatIce':
       return [BOAT_TEXT.ice, 3];
+    case 'subAir':
+      return ['Aria del sottomarino per 30 secondi: risali!', 4];
+    case 'subSurfacing':
+      return ['Aria finita: il sottomarino risale da solo.', 4];
     case 'diveAir':
       return ['Aria per 30 secondi: risali con la leva!', 4];
     case 'diveSurfacing':

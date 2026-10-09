@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.0 — Aria a tempo nei mezzi, rune rosse, sfera nel vano (9 ottobre 2026)
+
+- **Aria a tempo anche nei sottomarini,** più grande il mezzo più aria: da 2 minuti (batiscafo) a quasi 3 (drone). Gli U-Boat durano molto di più: Whale 5 minuti, Stormtrooper 8, Ocean's Nightmare 10.
+  - In alto a sinistra, tra carburante e denti, c'è la barra dell'aria con i minuti.
+  - L'aria si ricarica in superficie o nella stiva. A 30 secondi arriva l'avviso; a zero il mezzo risale da solo.
+- **I cetacei non danno più aria,** e le mute danno solo un po' d'aria in più: per le immersioni lunghe servono sottomarini e U-Boat.
+- **Bestia bloccata dalla sfera:** nuota fino a lei e la battaglia parte, con il primo attacco tuo.
+- **Ocean's Nightmare:**
+  - le rune e le luci rosse pulsano;
+  - la sfera, più grande, si vede nel vano quando lo apri;
+  - la scheda "Drone" del cockpit sta sopra "Diario".
+- **U-Boat con un portellone aperto:** resta fermo, non sale e non scende.
+
 ## v0.57.1 — Ocean's Nightmare: portelloni, cockpit e drone più grosso (9 ottobre 2026)
 
 - **Drone più grosso:** da 7 a 14 m.

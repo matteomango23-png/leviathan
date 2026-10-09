@@ -424,6 +424,8 @@ export const SIDE_TAIL_UNIQUES: readonly string[] = ['orca_preistorica_albina'];
  * again (refillPerSec of its bar). Tuning.
  */
 export const RIDE_AIR = {
-  bySpecies: { megattera: 5, capodoglio: 7, livyatan: 8, orca: 3, beluga: 2.5, narvalo: 2.5 } as Record<string, number>,
+  // owner, 9 ottobre: the whales no longer lend you air (the submarines and U-Boats are for long dives); was
+  // { megattera: 5, capodoglio: 7, livyatan: 8, orca: 3, beluga: 2.5, narvalo: 2.5 }
+  bySpecies: {} as Record<string, number>,
   refillAwayPerSec: 0.05,
 };

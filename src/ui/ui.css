@@ -1901,6 +1901,29 @@ img.albino-art {
 .at-helm .hud {
   top: calc(36px + var(--safe-t)); /* under the fuel bar, not over it */
 }
+/* the air bar under the fuel, your teeth under both (owner, 9 ottobre: well spaced, nothing over anything) */
+.helm-fuel.helm-air {
+  top: calc(32px + var(--safe-t));
+}
+.helm-air-text {
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+  color: #bfe9ff;
+}
+.helm-air .helm-fuel-fill {
+  background: #6fd3ff;
+  box-shadow: 0 0 6px #6fd3ff;
+}
+.helm-air[data-level='low'] .helm-fuel-fill {
+  background: var(--blood);
+  box-shadow: 0 0 6px var(--blood);
+}
+.helm-air[data-level='low'] .helm-air-text {
+  color: #ff9a8a;
+}
+.at-helm.helm-has-air .hud {
+  top: calc(60px + var(--safe-t));
+}
 .helm-fuel {
   position: absolute;
   top: calc(8px + var(--safe-t));

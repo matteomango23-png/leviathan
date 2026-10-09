@@ -25,6 +25,8 @@ class ShipPictures {
   readonly parts: Phaser.GameObjects.Image[];
   /** For each pair of parts: how open it shows (from the hatches), or the propeller turning. */
   private readonly roles: ('closed' | number | 'all' | 'moving')[] = [];
+  /** Its lit red parts, added on top and pulsing (art.glow). */
+  private readonly glow: Phaser.GameObjects.Image | null;
 
   constructor(
     scene: Phaser.Scene,
@@ -46,11 +48,17 @@ class ShipPictures {
     } else add(art.open, 0);
     if (art.moving) add(art.moving, 'moving');
     layer.add(this.parts);
+    this.glow =
+      art.glow && WORLD_ART_KEYS.includes(art.glow)
+        ? make(`world-${art.glow}`).setBlendMode(Phaser.BlendModes.ADD)
+        : null;
+    if (this.glow) layer.add(this.glow);
     for (const [i, im] of this.parts.entries()) if (i % 2 === 1) im.setTint(UNDERWATER_TINT);
   }
 
   hide(): void {
     for (const im of this.parts) im.setVisible(false);
+    this.glow?.setVisible(false);
   }
 
   /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
@@ -68,9 +76,18 @@ class ShipPictures {
    * it (share of its height from the top): above, the picture as it is; below, seen through the water. A U-Boat
    * diving moves that line up its picture little by little (owner, 9 ottobre: it went all dark at once).
    */
-  place(s: ShipState, x: number, top: number, scale: number, pitch: number, water: number): void {
+  place(s: ShipState, x: number, top: number, scale: number, pitch: number, water: number, time = 0): void {
     const w = shipLength(s) * scale;
     const h = w * shipPicture(s).aspect;
+    if (this.glow) {
+      const sc = w / this.glow.width;
+      this.glow
+        .setVisible(true)
+        .setPosition(x, top + h / 2)
+        .setScale(sc * s.face, sc)
+        .setRotation(-s.face * pitch)
+        .setAlpha(0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6)));
+    }
     for (const [i, im] of this.parts.entries()) {
       const alpha = this.alphaOf(s, this.roles[i >> 1]!);
       const sc = w / im.width;
@@ -156,7 +173,7 @@ export class ShipView {
     const calm = 1 - diveShare(s);
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
     const pics = this.picsOf(s);
-    if (pics) pics.place(s, s.x, top, 1, pitch * calm, (WORLD.surfaceY - top) / shipHeight(s));
+    if (pics) pics.place(s, s.x, top, 1, pitch * calm, (WORLD.surfaceY - top) / shipHeight(s), time);
     else this.drawFallback(s, top);
     this.effects.smoke(s, (u, v) => this.at(s, top, u, v), dt); // a stack under water does not smoke
     if (sunk) this.drawPropBubbles(s, time);

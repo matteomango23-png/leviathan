@@ -4,6 +4,7 @@
 // cannot fight: ordinary beasts slip away (encounters.ts), big aggressive ones ram it. A broken submarine is towed
 // back to Portofosco; ports repair it for teeth. Pure logic; views/submarineView.ts draws it.
 import { SUB_MODELS, SUBMARINE, type SubModel } from '../data/submarine';
+import { stepSubAir } from './subAir';
 import { WORLD } from '../data/worldLayout';
 import { maxHpOf, type TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
@@ -41,6 +42,8 @@ export interface SubState {
   /** Deeper than its model allows: 1 = safe … 0 = the hull is crushed little by little (breath.ts). */
   pressure: number;
   pressureHurt: number;
+  /** Seconds of air left under water (subAir.ts; saved). */
+  air: number;
 }
 
 export interface SavedSub {
@@ -50,6 +53,8 @@ export interface SavedSub {
   models: string[];
   hull: number;
   fuel: number;
+  /** Seconds of air (added 9 ottobre; missing = full). */
+  air?: number;
 }
 
 export const subModel = (id: string): SubModel => SUB_MODELS.find((m) => m.id === id) ?? SUB_MODELS[0]!;
@@ -72,6 +77,7 @@ export function newSub(saved: SavedSub | null): SubState {
     fuel: saved ? clamp(saved.fuel, 0, subModel(model).tank) : subModel(model).tank,
     fuelWarned: false,
     ...freshPressure(),
+    air: Math.min(subModel(model).airSeconds, saved?.air ?? subModel(model).airSeconds),
   };
 }
 
@@ -84,6 +90,7 @@ export const saveSub = (s: SubState): SavedSub | null =>
         models: [...s.models],
         hull: Math.round(s.hull),
         fuel: Math.round(s.fuel * 10) / 10,
+        air: Math.round(s.air),
       }
     : null;
 
@@ -236,11 +243,12 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   if (!s.owned) return false;
   s.deepWarn = Math.max(0, s.deepWarn - dt);
   s.bumpWait = Math.max(0, s.bumpWait - dt);
+  const m = subModel(s.model);
   if (!s.aboard) return false;
   const d = g.diver;
-  const m = subModel(s.model);
   const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
   steer(s, input.helm, top, dt);
+  stepSubAir(s, m.airSeconds, dt, events);
   burnFuel(s, input.helm, m.perKm, dt, events);
   const nx = s.x + s.vx * dt;
   if (hits(g.map, s, nx, s.y)) {

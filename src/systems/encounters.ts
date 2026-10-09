@@ -12,6 +12,7 @@ import { distanceToBody } from './beasts/combat';
 import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
 import { SUBMARINE } from '../data/submarine';
+import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
@@ -131,7 +132,9 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       continue;
     }
     // you swam far away from its waters: it goes back into the dark (a hunter on your tail a bit later)
-    if (!inArea(w, d.x, d.y, 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0))) {
+    // (not while the sphere holds it: it waits for you there)
+    const leash = 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0);
+    if (!isHeld(g.beasts.held, w) && !inArea(w, d.x, d.y, leash)) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
     }
@@ -148,6 +151,11 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       w.vy *= k;
       w.x += w.vx * dt;
       w.y += w.vy * dt;
+      // you swim up to it: the battle starts, and you strike first (it cannot move; owner, 9 ottobre)
+      if (!aboard && !d.dead && distanceToBody(w, d.x, d.y) < w.length * ROAM.contactFrac + DIVER.radius) {
+        g.beasts.held = null;
+        requestBattle(g, w, 'you', events);
+      }
       continue;
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;

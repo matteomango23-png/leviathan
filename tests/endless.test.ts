@@ -145,15 +145,16 @@ describe('air in the open sea', () => {
     expect(ventAt(v.x + 200, v.y - 40)).toBeNull();
   });
 
-  it('the long-dive suits give 4 to 5 minutes of air', () => {
+  it('the suits give only a little more air (owner, 9 ottobre: long dives are for submarines and U-Boats)', () => {
     const seconds = (id: string): number => {
       const s = SUITS.find((x) => x.id === id)!;
       const drain = DIVER.oxygen.drainBase + DIVER.oxygen.drainDepthExtra * 0.25; // a usual depth
       return DIVER.maxO2 / (drain * s.o2Mult);
     };
-    expect(seconds('traversata')).toBeGreaterThan(200);
+    const base = seconds('leggera');
+    expect(seconds('traversata')).toBeGreaterThan(base);
     expect(seconds('bombole')).toBeGreaterThan(seconds('traversata'));
-    expect(seconds('bombole')).toBeLessThan(360);
+    for (const s of SUITS) expect(seconds(s.id)).toBeLessThan(base * 1.5);
   });
 });
 

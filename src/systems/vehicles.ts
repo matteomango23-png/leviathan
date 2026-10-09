@@ -21,7 +21,8 @@ import {
   type HatchWorld,
 } from './ship/hatch';
 import { sailShip, type ShipWorld } from './ship/ship';
-import { repairSub, restAboard, stepSub, subHull } from './submarine';
+import { repairSub, restAboard, stepSub, subHull, subModel } from './submarine';
+import { restSubAir } from './subAir';
 import { BOAT } from '../data/boats';
 import { sailBoat, type BoatState } from './boat';
 import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
@@ -84,6 +85,9 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   sailBoat(g, boat.aboard ? input.helm : null, dt, events);
   if (events.some((e) => e.type === 'subDocked' || e.type === 'boatDocked')) freshLevers(ship.face);
   const inSub = !ramp && stepSub(g, input, dt, events);
+  // waiting, or in the ship's hold: the submarine breathes again (subAir.ts)
+  if (g.sub.owned && !g.sub.aboard)
+    restSubAir(g.sub, subModel(g.sub.model).airSeconds, g.ship.bay === 'docked', dt);
   // broken, the submarine is towed to the ship's hold (not to Portofosco), you back at the helm
   const wreck = events.find((e) => e.type === 'subWrecked');
   if (wreck && wreck.type === 'subWrecked' && ship.owned) {

@@ -50,21 +50,12 @@ function riding(speciesId: string, level: number, x: number, y: number): GameSta
   return g;
 }
 
-describe('the air of the whales (owner: up at the surface it did not come back)', () => {
-  it.each(['megattera', 'capodoglio', 'livyatan'])(
-    'riding a %s, its air fills up again at the surface',
-    (id) => {
-      // the sperm whale and the Livyatan kept their rider just under the surface band
-      const g = riding(id, 20, 2600, 200);
-      run(g, DT);
-      const tank = rideTank(g, g.rideTanks, g.diver.maxO2)!;
-      expect(tank).toBeDefined();
-      tank.o2 = tank.max * 0.1;
-      const up = { ...emptyInput(), moveY: -1 };
-      run(g, 8, up); // up to the surface, and stay there
-      expect(tank.o2).toBeGreaterThan(tank.max * 0.5);
-    },
-  );
+describe('the air of the whales (owner, 9 ottobre: they no longer lend you theirs)', () => {
+  it.each(['megattera', 'capodoglio', 'livyatan'])('riding a %s, you breathe your own air', (id) => {
+    const g = riding(id, 20, 2600, 200);
+    run(g, DT);
+    expect(rideTank(g, g.rideTanks, g.diver.maxO2)).toBeUndefined();
+  });
 });
 
 describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing switched it off)', () => {

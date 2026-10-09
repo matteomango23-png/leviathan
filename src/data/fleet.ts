@@ -87,7 +87,15 @@ export interface ShipModelDef {
   card: string; // public/art/<card>.webp
   /** Its painting in public/world (hatches closed and all open, and the propeller turning if painted: same frame)
    *  and where things are on it. */
-  art?: { closed: string; open: string; picture: ShipPicture; moving?: string; stacks?: ShipStack[] };
+  art?: {
+    closed: string;
+    open: string;
+    picture: ShipPicture;
+    moving?: string;
+    stacks?: ShipStack[];
+    /** Its lit red parts alone (made by `npm run art`), glowing and pulsing over it (the Nightmare's runes). */
+    glow?: string;
+  };
 }
 
 const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
@@ -206,7 +214,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'Piccolo U-Boat a forma di balena: il tuttofare per cominciare',
     cockpit: ALL_TABS,
     card: 'nave_whale',
-    dive: { maxDepthM: 150, airSeconds: 180, sinkSpeed: 45, riseSpeed: 55 },
+    dive: { maxDepthM: 150, airSeconds: 300, sinkSpeed: 45, riseSpeed: 55 },
     art: {
       closed: 'nave_whale',
       open: 'nave_whale', // no hatch
@@ -305,7 +313,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'U-Boat grosso e lento, con un buon sonar',
     cockpit: ALL_TABS,
     card: 'nave_stormtrooper',
-    dive: { maxDepthM: 300, airSeconds: 360, sinkSpeed: 25, riseSpeed: 30 },
+    dive: { maxDepthM: 300, airSeconds: 480, sinkSpeed: 25, riseSpeed: 30 },
     art: {
       closed: 'nave_stormtrooper',
       open: 'nave_stormtrooper', // no hatch
@@ -473,11 +481,12 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'La regina delle spedizioni: non la più veloce, ma la più forte',
     cockpit: [...ALL_TABS, 'drone'], // the drone's report (owner, 9 ottobre)
     card: 'nave_nightmare',
-    dive: { maxDepthM: 500, airSeconds: 480, sinkSpeed: 20, riseSpeed: 25 },
+    dive: { maxDepthM: 500, airSeconds: 600, sinkSpeed: 20, riseSpeed: 25 },
     art: {
       closed: 'nave_nightmare',
       open: 'nave_nightmare_aperta',
       moving: 'nave_nightmare_moto',
+      glow: 'nave_nightmare_glow', // its runes and red lights pulse (owner, 9 ottobre)
       stacks: [],
       picture: {
         aspect: 781 / 1400,

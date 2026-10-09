@@ -4,6 +4,7 @@
 // the instruments (knots, throttle, depth) and, at the helm of the ship, its buttons (hatch, lower the submarine, dive off). Keyboard: W/S throttle, A/D direction,
 // arrows up/down to rise and sink.
 import { HELM } from '../data/ship';
+import { SUBMARINE } from '../data/submarine';
 import type { Session } from '../scenes/session';
 import { diveOf, freshHelm } from '../systems/helm';
 import { el } from './dom';
@@ -22,9 +23,10 @@ export interface HelmInfo {
   fuel: number;
   tank: number;
   rangeKm: number;
-  /** A U-Boat at the helm (block 4c): the dive lever shows, and the air left (seconds). */
+  /** A U-Boat at the helm (block 4c): the dive lever shows. Submarine and U-Boat: the air left and full (seconds). */
   canDive?: boolean;
   air?: number;
+  airMax?: number;
   /** Submarine and U-Boat: depth and the model's limit (m). */
   depthM?: number;
   maxDepthM?: number;
@@ -78,6 +80,9 @@ export class HelmControls {
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly fuelBar: HTMLDivElement;
   private readonly fuelFill: HTMLDivElement;
+  private readonly airBar: HTMLDivElement;
+  private readonly airFill: HTMLDivElement;
+  private readonly airText: HTMLSpanElement;
   private readonly objective: HTMLDivElement;
   private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
@@ -126,6 +131,11 @@ export class HelmControls {
     this.fuelBar = el('div', 'helm-fuel', this.root);
     el('span', 'helm-fuel-ico', this.fuelBar, '⛽');
     this.fuelFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.fuelBar));
+    // the air of the submarine or the U-Boat, under the fuel (owner, 9 ottobre)
+    this.airBar = el('div', 'helm-fuel helm-air', this.root);
+    el('span', 'helm-fuel-ico', this.airBar, '🫧');
+    this.airFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.airBar));
+    this.airText = el('span', 'helm-air-text', this.airBar);
     // the buttons that work only with the ship still, in one group that fades as a whole (owner, 9 ottobre: on the
     // iPhone fading them one by one over the game left them half drawn)
     const still = el('div', 'helm-still', this.buttons);
@@ -267,8 +277,6 @@ export class HelmControls {
       `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
     ];
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
-    if (info.air !== undefined)
-      parts.push(`aria ${Math.floor(info.air / 60)}:${String(Math.floor(info.air % 60)).padStart(2, '0')}`);
     if (info.hull) parts.push(`scafo ${Math.round(info.hull[0])}/${info.hull[1]}`);
     if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
     const text = parts.join(' · ');
@@ -296,6 +304,15 @@ export class HelmControls {
     const share = Math.max(0, Math.min(1, info.fuel / Math.max(1, info.tank)));
     this.fuelFill.style.width = `${Math.round(share * 100)}%`;
     this.fuelBar.dataset.level = share > 0.5 ? 'ok' : share > 0.2 ? 'half' : 'low';
+    const air = info.air !== undefined && info.airMax ? info.air : null;
+    this.airBar.hidden = air === null;
+    this.root.parentElement?.classList.toggle('helm-has-air', air !== null);
+    if (air !== null) {
+      this.airFill.style.width = `${Math.round(Math.max(0, Math.min(1, air / info.airMax!)) * 100)}%`;
+      this.airBar.dataset.level = air > SUBMARINE.air.warnAt ? 'ok' : 'low';
+      const t = `${Math.floor(air / 60)}:${String(Math.floor(air % 60)).padStart(2, '0')}`;
+      if (this.airText.textContent !== t) this.airText.textContent = t;
+    }
     this.sonar.classList.toggle('on', !!info.sonarOn);
     this.objective.hidden = !info.objective;
     if (info.objective && this.objective.textContent !== info.objective)

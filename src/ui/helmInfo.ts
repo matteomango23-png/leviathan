@@ -105,6 +105,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
             depthM: keelDepthM(s), // its keel: what the model's limit counts
             maxDepthM: shipModel(s).dive!.maxDepthM,
             air: s.air,
+            airMax: shipModel(s).dive!.airSeconds,
           }
         : {}),
     };
@@ -131,6 +132,8 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       depthM: Math.max(0, (g.sub.y - WORLD.surfaceY) / WORLD.unitsPerMetre),
       maxDepthM: subModel(g.sub.model).maxDepthM,
       hull: [g.sub.hull, subModel(g.sub.model).hull],
+      air: g.sub.air,
+      airMax: subModel(g.sub.model).airSeconds,
     };
   return null;
 }

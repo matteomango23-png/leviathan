@@ -10,6 +10,7 @@ import { isInWater } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
 import { reconOut, sphereBay } from '../systems/ship/gadgets';
 import { subLength, subModel } from '../systems/submarine';
+import { hatchT } from '../systems/ship/ship';
 
 const SPHERE_ART = 'sfera_nightmare';
 const RED = 0xff3a2a;
@@ -49,9 +50,12 @@ export class NightmareView {
       glow.fillStyle(0xbfe8ff, 0.12).fillCircle(r.x + r.face * L * 0.55, r.y, 10);
     }
     const sp = g.gadgets.sphere;
-    const away = g.ship.owned && sphereBay(g.ship) >= 0 && sp.phase !== 'dock';
+    const bay = g.ship.owned ? sphereBay(g.ship) : -1;
+    const away = bay >= 0 && sp.phase !== 'dock';
+    // in its bay it shows as the hatch opens (owner, 9 ottobre: open the bay, see the sphere)
+    const shown = away ? 1 : bay >= 0 ? hatchT(g.ship, bay) : 0;
     this.sphere.setVisible(false);
-    if (!away) return;
+    if (shown <= 0.01) return;
     const size = SPHERE.sizeM * WORLD.unitsPerMetre;
     const pulse = 0.5 + 0.5 * Math.sin(time * Math.PI * 2 * SPHERE.pulseHz);
     if (WORLD_ART_KEYS.includes(SPHERE_ART)) {
@@ -60,14 +64,17 @@ export class NightmareView {
       this.sphere
         .setVisible(true)
         .setPosition(sp.x, sp.y)
-        .setRotation(time * 0.4)
-        .setScale(size / this.sphere.width);
+        .setRotation(away ? time * 0.4 : 0)
+        .setScale(size / this.sphere.width)
+        .setAlpha(shown);
     }
     // its red glow, breathing: many faint rings, so it fades softly into the dark
     const rings = 14;
     for (let i = 0; i < rings; i++) {
-      const k = 3.4 - (i / rings) * 2.6;
-      glow.fillStyle(RED, 0.028 * (0.5 + pulse)).fillCircle(sp.x, sp.y, size * k * (0.9 + 0.1 * pulse));
+      const k = 0.85 - (i / rings) * 0.6;
+      glow
+        .fillStyle(RED, 0.028 * (0.5 + pulse) * shown)
+        .fillCircle(sp.x, sp.y, size * k * (0.9 + 0.1 * pulse));
     }
     if (sp.phase !== 'hold') return;
     // the beast it holds: a red shock runs through it now and then
@@ -99,7 +106,7 @@ export class NightmareView {
     if (g.ship.owned && reconOut(g)) out.push({ x: g.gadgets.recon.x, y: g.gadgets.recon.y, r: 26 });
     const sp = g.gadgets.sphere;
     if (g.ship.owned && sphereBay(g.ship) >= 0 && sp.phase !== 'dock')
-      out.push({ x: sp.x, y: sp.y, r: SPHERE.sizeM * WORLD.unitsPerMetre * 3 });
+      out.push({ x: sp.x, y: sp.y, r: SPHERE.sizeM * WORLD.unitsPerMetre * 0.8 });
     return out;
   }
 }
