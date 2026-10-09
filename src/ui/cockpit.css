@@ -507,3 +507,137 @@
   color: var(--phosphor);
   border-color: var(--phosphor);
 }
+
+/* The Ocean's Nightmare's cockpit (owner, 9 ottobre 2026): its own colours, the same layout. Dark rusty iron and
+   red glowing like its runes, pulsing slowly; its sonar is red too (ui/cockpitTheme.ts). */
+.cockpit.theme-nightmare {
+  --steel: #161112;
+  --steel-2: #211a1a;
+  --bezel: #5a2e2a;
+  --amber: #ff6a55;
+  --phosphor: #ff4a3a;
+  --lamp: #ff9484;
+  --line: rgba(255, 74, 58, 0.5);
+  --glow: #ff4a3a;
+  --muted: #b39a96;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(150, 20, 14, 0.28), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 4px), #0b0707;
+  animation: nightmare-pulse 2.6s ease-in-out infinite;
+}
+@keyframes nightmare-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 40px rgba(255, 40, 30, 0.12);
+  }
+  50% {
+    box-shadow: inset 0 0 90px rgba(255, 40, 30, 0.32);
+  }
+}
+.theme-nightmare .port-top {
+  border-bottom-color: rgba(255, 74, 58, 0.4);
+}
+.theme-nightmare .port-title {
+  text-shadow: 0 0 12px rgba(255, 60, 40, 0.55);
+}
+.theme-nightmare .port-teeth {
+  color: #ffe4de;
+  background: rgba(255, 60, 44, 0.14);
+}
+.theme-nightmare .port-tab {
+  border-color: rgba(255, 74, 58, 0.25);
+}
+.theme-nightmare .port-tab.on,
+.theme-nightmare .pbtn.primary {
+  color: #fff1ee;
+  background: linear-gradient(180deg, #e0352a, #7a1510);
+  border-color: #ff6a55;
+  animation: nightmare-glow 2.6s ease-in-out infinite;
+}
+@keyframes nightmare-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(255, 60, 40, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(255, 60, 40, 0.8);
+  }
+}
+.theme-nightmare .pbtn {
+  background: rgba(60, 26, 26, 0.75);
+}
+.theme-nightmare .sonar-switch.on {
+  background: #3a0f0c;
+}
+.theme-nightmare .sonar-frame {
+  border-color: #5a2e2a;
+  box-shadow:
+    inset 0 0 30px rgba(255, 64, 52, 0.14),
+    0 0 0 4px #161112;
+}
+.theme-nightmare .lg.floor {
+  background: #ff4034;
+}
+.theme-nightmare .lg.big,
+.theme-nightmare .lg.small {
+  background: #ffafa5;
+}
+.theme-nightmare .lg.odd {
+  background: #ffd25a;
+}
+/* its consoles, dials, chart and diary in the same iron and red */
+.theme-nightmare .console-btn {
+  border-color: #6a3a35;
+  background: linear-gradient(180deg, #3a2624, #1d1312);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 190, 0.1),
+    0 2px 0 #0b0505;
+}
+.theme-nightmare .bridge-panel::before,
+.theme-nightmare .bridge-panel::after {
+  background: #7a4a44;
+}
+.theme-nightmare .bridge-step,
+.theme-nightmare .diary-light {
+  border-color: #5a3a36;
+}
+.theme-nightmare .bridge-step.done,
+.theme-nightmare .diary-light.done,
+.theme-nightmare .diary-track-step.done .diary-dot {
+  color: #1a0503;
+  background: #ff4a3a;
+  border-color: #ff4a3a;
+}
+.theme-nightmare .dial-bezel,
+.theme-nightmare .dial.weather {
+  fill: #110a0a;
+  stroke: #7a4a44;
+  background: #110a0a;
+  border-color: #7a4a44;
+}
+.theme-nightmare .dial-track {
+  stroke: #2e1a19;
+}
+.theme-nightmare .chart-svg {
+  background: radial-gradient(100% 140% at 50% 100%, #2a0d0b, #120606);
+  border-color: #4a2a27;
+}
+.theme-nightmare .chart-grid {
+  stroke: rgba(255, 110, 90, 0.08);
+}
+.theme-nightmare .chart-sea {
+  stroke: rgba(255, 110, 90, 0.5);
+}
+.theme-nightmare .diary-card,
+.theme-nightmare .diary-sheet-card {
+  background: linear-gradient(180deg, rgba(44, 28, 27, 0.92), rgba(20, 11, 11, 0.92));
+}
+.theme-nightmare .diary-badge {
+  background: #4a2a27;
+}
+.theme-nightmare .diary-dot {
+  border-color: #6a3a35;
+}
+.theme-nightmare .diary-rows dt {
+  color: #ff8a78;
+}

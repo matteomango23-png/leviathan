@@ -58,7 +58,12 @@ export class Cockpit {
     private readonly onClose: () => void,
   ) {
     const look = shipModel(g.ship).cockpitStyle;
-    this.root = el('div', `port cockpit${look ? ` style-${look}` : ''}`, parent);
+    const theme = shipModel(g.ship).cockpitTheme;
+    this.root = el(
+      'div',
+      `port cockpit${look ? ` style-${look}` : ''}${theme ? ` theme-${theme}` : ''}`,
+      parent,
+    );
     // the steam cockpit: everything on the owner's painted screens, on a stage of their shape (cockpitSteam.ts)
     if (look === 'vapore') {
       crop(el('div', 'steam-backdrop', this.root), 'dragons', [0, 0, 100, 100]);

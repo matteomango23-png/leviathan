@@ -1,7 +1,7 @@
 {
   "name": "leviathan",
   "private": true,
-  "version": "0.58.2",
+  "version": "0.58.3",
   "description": "Leviatano: underwater exploration and beast-taming game (iPhone PWA)",
   "type": "module",
   "scripts": {

@@ -1,5 +1,11 @@
 # Progressi
 
+## Cockpit rosso del Nightmare (9 ottobre 2026) → v0.58.3
+
+**Fatto:** `cockpitTheme: 'nightmare'` in `data/fleet.ts`; la classe `theme-nightmare` in `cockpit.css` ridefinisce variabili e colori; i colori del sonar in `ui/cockpitTheme.ts` (`sonarPalette`).
+
+**Da provare sull'iPhone:** apri il Cockpit dell'Ocean's Nightmare e passa tutte le schede; con un'altra nave il cockpit resta com'era.
+
 ## Sottomarino calato in profondità (9 ottobre 2026) → v0.58.2
 
 **Fatto:**

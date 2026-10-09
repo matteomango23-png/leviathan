@@ -84,6 +84,8 @@ export interface ShipModelDef {
   /** The look of its cockpit: 'vapore' = his painted Gemini screens (ui/cockpitSteam.css, data/cockpitSteam.ts);
    *  missing = the navy bridge. No ship uses it for now (owner, 9 ottobre: not good enough yet, to be studied). */
   cockpitStyle?: 'vapore';
+  /** Its cockpit's colours, same layout (ui/cockpitTheme.ts; owner, 9 ottobre: the Nightmare's red). */
+  cockpitTheme?: 'nightmare';
   card: string; // public/art/<card>.webp
   /** Its painting in public/world (hatches closed and all open, and the propeller turning if painted: same frame)
    *  and where things are on it. */
@@ -480,6 +482,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     special: 'U-Boat gigante, fino a 500 m: drone da ricognizione e sfera che blocca le bestie',
     note: 'La regina delle spedizioni: non la più veloce, ma la più forte',
     cockpit: [...ALL_TABS, 'drone'], // the drone's report (owner, 9 ottobre)
+    cockpitTheme: 'nightmare',
     card: 'nave_nightmare',
     dive: { maxDepthM: 500, airSeconds: 600, sinkSpeed: 20, riseSpeed: 25 },
     art: {
