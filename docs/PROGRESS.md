@@ -1,5 +1,11 @@
 # Progressi
 
+## Nebbia senza taglio (9 ottobre 2026) → v0.58.5
+
+**Fatto:** in `views/weatherView.ts` la cima del cielo è `min(0, CAMERA.minY sullo schermo)` per nebbia, nuvole e pioggia; la texture della nebbia parte da trasparente.
+
+**Da provare sull'iPhone:** con la nebbia, al timone di una nave grande, il cielo deve sfumare senza linee.
+
 ## Cielo e faro (9 ottobre 2026) → v0.58.4
 
 **Fatto:** `paintWater` (`views/backgroundView.ts`) sfuma il cielo su tutta l'altezza visibile, almeno `SEA.skyFade`; `ShipPicture.lampU` (Nightmare 0,88) per il faro degli U-Boat.

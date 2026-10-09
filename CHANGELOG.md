@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.5 — Nebbia senza taglio (9 ottobre 2026)
+
+- **Nebbia, nuvole e pioggia** coprono tutto il cielo visibile anche con la visuale larga delle navi grandi. La nebbia sfuma da zero in alto, senza più la linea netta a metà cielo.
+
 ## v0.58.4 — Cielo e faro dell'U-Boat (9 ottobre 2026)
 
 - **Cielo:** la sfumatura dall'orizzonte (più chiaro) verso l'alto (scuro) ora riempie tutto il cielo che si vede. Con la visuale larga delle navi grandi si vedeva solo una striscia sopra il mare e il resto era tutto del colore più scuro.
