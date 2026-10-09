@@ -10,6 +10,7 @@ import { isInWater } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
 import { reconOut, sphereBay } from '../systems/ship/gadgets';
 import { subLength, subModel } from '../systems/submarine';
+import { placeGlow } from './submarineView';
 import { hatchT } from '../systems/ship/ship';
 
 const SPHERE_ART = 'sfera_nightmare';
@@ -17,16 +18,18 @@ const RED = 0xff3a2a;
 
 export class NightmareView {
   private readonly drone: Phaser.GameObjects.Image;
+  private readonly droneGlow: Phaser.GameObjects.Image;
   private readonly sphere: Phaser.GameObjects.Image;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly shocks: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.drone = scene.add.image(0, 0, '__WHITE').setVisible(false);
+    this.droneGlow = scene.add.image(0, 0, '__WHITE').setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
     this.sphere = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.shocks = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
-    layer.add([this.glow, this.drone, this.sphere, this.shocks]);
+    layer.add([this.glow, this.drone, this.droneGlow, this.sphere, this.shocks]);
   }
 
   update(g: GameState, time: number): void {
@@ -35,6 +38,7 @@ export class NightmareView {
     const r = g.gadgets.recon;
     const out = g.ship.owned && reconOut(g);
     this.drone.setVisible(false);
+    this.droneGlow.setVisible(false);
     if (out) {
       const art = subModel(g.sub.model).art;
       const L = subLength(g.sub);
@@ -42,10 +46,12 @@ export class NightmareView {
         const key = `world-${art}`;
         if (this.drone.texture.key !== key) this.drone.setTexture(key);
         const sc = L / this.drone.width;
+        const y = r.y + Math.sin(time * 3) * 0.6;
         this.drone
           .setVisible(true)
-          .setPosition(r.x, r.y + Math.sin(time * 3) * 0.6)
+          .setPosition(r.x, y)
           .setScale(sc * r.face, sc);
+        placeGlow(this.droneGlow, art, r.x, y, 0, L, r.face, time);
       }
       glow.fillStyle(0xbfe8ff, 0.12).fillCircle(r.x + r.face * L * 0.55, r.y, 10);
     }

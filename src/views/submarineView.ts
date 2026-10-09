@@ -6,10 +6,34 @@ import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { subLength, subModel, type SubState } from '../systems/submarine';
 
+/** A painting's lit red details over it, added and pulsing (shared with the drone on its round, nightmareView). */
+export function placeGlow(
+  im: Phaser.GameObjects.Image,
+  art: string,
+  x: number,
+  y: number,
+  rotation: number,
+  length: number,
+  face: 1 | -1,
+  time: number,
+): void {
+  const key = `${art}_glow`;
+  if (!WORLD_ART_KEYS.includes(key)) return;
+  if (im.texture.key !== `world-${key}`) im.setTexture(`world-${key}`);
+  const sc = length / im.width;
+  im.setVisible(true)
+    .setPosition(x, y)
+    .setRotation(rotation)
+    .setScale(sc * face, sc)
+    .setAlpha(0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6)));
+}
+
 export class SubmarineView {
   private readonly img: Phaser.GameObjects.Image;
   /** The propeller turning (its model's `moving` picture, same box), over the still one while it moves. */
   private readonly turning: Phaser.GameObjects.Image;
+  /** Its lit red details, pulsing (`<art>_glow`, made by npm run art: the Nightmare's drone). */
+  private readonly glow: Phaser.GameObjects.Image;
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly bar: Phaser.GameObjects.Graphics;
   private lastHull = NaN;
@@ -18,9 +42,10 @@ export class SubmarineView {
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.turning = scene.add.image(0, 0, '__WHITE').setVisible(false);
+    this.glow = scene.add.image(0, 0, '__WHITE').setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
     this.g = scene.add.graphics();
     this.bar = scene.add.graphics();
-    layer.add([this.img, this.turning, this.g, this.bar]);
+    layer.add([this.img, this.turning, this.glow, this.g, this.bar]);
   }
 
   /** @param hidden in the ship's hold behind the closed hatch */
@@ -28,6 +53,7 @@ export class SubmarineView {
     const g = this.g.clear();
     this.bar.clear();
     this.turning.setVisible(false);
+    this.glow.setVisible(false);
     if (!s.owned || hidden) {
       this.img.setVisible(false);
       return;
@@ -46,6 +72,7 @@ export class SubmarineView {
         .setPosition(s.x, y)
         .setRotation(rock)
         .setScale(sc * s.face, sc);
+      placeGlow(this.glow, art, s.x, y, rock, L, s.face, time);
       if (moving && WORLD_ART_KEYS.includes(moving)) {
         const key2 = `world-${moving}`;
         if (this.turning.texture.key !== key2) this.turning.setTexture(key2);

@@ -5,6 +5,7 @@ import {
   clearTarget,
   newGadgets,
   pickTarget,
+  reconOut,
   sendSphere,
   startRecon,
   stepGadgets,
@@ -278,6 +279,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (input.action) doAction(g, events);
   if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
   if (input.helmCmd === 'recon') startRecon(g, events);
+  // no diving off while the drone is out: you would see it race through the rock (owner, 9 ottobre)
+  if (input.helmCmd === 'dive' && reconOut(g)) input.helmCmd = null;
   if (input.helmCmd === 'sphere') sendSphere(g, events);
   const picked = g.gadgets.recon.report?.[input.pickTarget];
   if (picked) pickTarget(g, picked, events);

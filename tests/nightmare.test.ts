@@ -7,7 +7,8 @@ import { ENDLESS } from '../src/data/endless';
 import { RECON, SPHERE } from '../src/data/nightmare';
 import { WORLD } from '../src/data/worldLayout';
 import type { GameEvent } from '../src/systems/events';
-import { createGame, toSave, type GameState } from '../src/systems/game';
+import { createGame, stepGame, toSave, type GameState } from '../src/systems/game';
+import { emptyInput } from '../src/systems/input';
 import { parseSave } from '../src/systems/save/saveData';
 import { stepWildSpawns } from '../src/systems/encounters';
 import { spawnWild } from '../src/systems/beasts/wildState';
@@ -84,6 +85,24 @@ describe('the Ocean’s Nightmare', () => {
     for (const e of report) expect(g.seen.has(e.speciesId)).toBe(true);
     expect(g.gadgets.recon.phase).toBe('idle');
     expect(g.ship.hatches[subBay(g.ship)]!.open).toBe(true); // you close it yourself
+  });
+
+  it('while the drone is out you cannot dive off the ship (owner, 9 ottobre)', () => {
+    const g = nightmare();
+    openHatch(g, subBay(g.ship));
+    startRecon(g, []);
+    const input = emptyInput();
+    input.helmCmd = 'dive';
+    stepGame(g, input, DT);
+    expect(g.ship.aboard).toBe(true);
+  });
+
+  it('with the drone home you dive off as usual', () => {
+    const g = nightmare();
+    const input = emptyInput();
+    input.helmCmd = 'dive';
+    stepGame(g, input, DT);
+    expect(g.ship.aboard).toBe(false);
   });
 
   it('the drone scouts only from its hold', () => {

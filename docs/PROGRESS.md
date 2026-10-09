@@ -1,5 +1,19 @@
 # Progressi
 
+## Ritocchi al Nightmare (9 ottobre 2026) → v0.58.1
+
+**Fatto:**
+- `SPHERE.sizeM` 11.
+- Bagliore anche per `sottomarino_drone`: `npm run art` fa `<nome>_glow.webp` per la lista `GLOW`; `placeGlow` in `views/submarineView.ts`, usato anche dal drone in ricognizione.
+- Niente tuffo con il drone fuori: `game.ts` scarta il comando, `HelmInfo.canDiveOff` nasconde "Tuffati".
+- `.helm-has-air .helm-objective` più in basso.
+
+**Da provare sull'iPhone:**
+1. Apri il vano della sfera: deve starci dentro.
+2. Guarda il drone (nella stiva aperta e calato in acqua): i dettagli rossi pulsano.
+3. Durante la ricognizione "Tuffati" non c'è.
+4. Con una caccia seguita, al timone di un U-Boat la scritta non copre più i denti.
+
 ## Aria a tempo, rune rosse, sfera nel vano (9 ottobre 2026) → v0.58.0
 
 **Fatto:**

@@ -40,6 +40,8 @@ export interface HelmInfo {
   subName?: string;
   /** The Ocean's Nightmare (part 4d): its drone can scout now; the beasts in its last report. */
   canRecon?: boolean;
+  /** "Tuffati" shows (not while the drone is out on its round). */
+  canDiveOff?: boolean;
   /** Its sphere's bay open with a beast picked: "Invia sfera" (or the time left to recharge it). */
   sphere?: { text: string; ready: boolean };
   canLaunchBoat?: boolean;
@@ -295,7 +297,8 @@ export class HelmControls {
     const still = info.mode === 'ship' && info.still !== false;
     // they fade out under way and back in once still (owner, 9 ottobre: they popped in and out at once)
     const ship = info.mode === 'ship';
-    for (const b of [this.hatchBtn, this.hatch2Btn, this.diveBtn]) b.hidden = !ship;
+    for (const b of [this.hatchBtn, this.hatch2Btn]) b.hidden = !ship;
+    this.diveBtn.hidden = !ship || info.canDiveOff === false;
     // all together, as soon as the throttle moves (owner, 9 ottobre: they went one by one, seconds later, while a
     // heavy ship slowly got going); back once it is still with the throttle at zero
     this.buttons.classList.toggle('under-way', ship && (!still || helm.throttle > 0.01));

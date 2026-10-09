@@ -93,6 +93,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       canLaunch: launchShown(g) && !reconOut(g),
       subName: subName(g),
       canRecon: canRecon(g),
+      canDiveOff: !reconOut(g),
       ...(canSendSphere(g) ? { sphere: sphereButton(g) } : {}),
       canLaunchBoat: boatLaunchShown(g),
       boatName: boatName(s)

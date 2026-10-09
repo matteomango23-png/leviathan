@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.1 — Ritocchi al Nightmare (9 ottobre 2026)
+
+- **La sfera** è più piccola (circa il 40% in meno) e sta dentro il suo vano.
+- **I dettagli rossi del drone** pulsano come le rune dell'Ocean's Nightmare, nella stiva, in ricognizione e quando lo guidi.
+- **Mentre il drone è in ricognizione non ci si può tuffare** (lo vedresti attraversare le rocce a tutta velocità).
+- **La missione seguita al timone** scende sotto i denti, non li copre più.
+
 ## v0.58.0 — Aria a tempo nei mezzi, rune rosse, sfera nel vano (9 ottobre 2026)
 
 - **Aria a tempo anche nei sottomarini,** più grande il mezzo più aria: da 2 minuti (batiscafo) a quasi 3 (drone). Gli U-Boat durano molto di più: Whale 5 minuti, Stormtrooper 8, Ocean's Nightmare 10.

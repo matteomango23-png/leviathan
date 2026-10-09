@@ -1924,6 +1924,10 @@ img.albino-art {
 .at-helm.helm-has-air .hud {
   top: calc(60px + var(--safe-t));
 }
+/* the hunt you follow, under your teeth (owner, 9 ottobre: with the air bar it went over them) */
+.helm-has-air .helm-objective {
+  top: calc(92px + var(--safe-t));
+}
 .helm-fuel {
   position: absolute;
   top: calc(8px + var(--safe-t));

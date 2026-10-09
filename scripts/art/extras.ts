@@ -238,6 +238,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   const c = await cropped(cut, img, id.startsWith('sottomarino') ? await pairBox(src, id, img) : null);
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);
+  await glowIfListed(dest);
   if (!iceberg) return `parete ${c.w}×${c.h}`;
   const rows = Math.max(4, Math.round((MASK_COLS * c.h) / c.w));
   const mask: string[] = [];
@@ -287,16 +288,25 @@ async function makeShip(img: Raw, dest: string): Promise<string> {
   await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
     .webp({ quality: 88, alphaQuality: 95 })
     .toFile(dest);
-  if (GLOW_SHIPS.some((n) => dest.endsWith(`${n}.webp`)))
-    await makeGlow(out, img, dest.replace(/\.webp$/, '_glow.webp'));
+  await glowIfListed(dest);
   return `nave ${img.width}×${img.height}, senza ritaglio`;
 }
 
-/** Ships whose red lights glow and pulse in the game (owner, 9 ottobre: the Ocean's Nightmare's runes). */
-const GLOW_SHIPS = ['nave_nightmare'];
+/** Pictures whose red lights glow and pulse in the game (owner, 9 ottobre: the Ocean's Nightmare's runes, its
+ *  drone's red details). */
+const GLOW = ['nave_nightmare', 'sottomarino_drone'];
+
+/** For a listed picture, `<name>_glow.webp` next to it. */
+async function glowIfListed(dest: string): Promise<void> {
+  if (GLOW.some((n) => dest.endsWith(`${n}.webp`)))
+    await makeGlow(dest, dest.replace(/\.webp$/, '_glow.webp'));
+}
 
 /** Only the lit red of the picture (its runes and lamps), softly blurred, on transparent: drawn added and pulsing. */
-async function makeGlow(cut: Uint8ClampedArray, img: Raw, dest: string): Promise<void> {
+async function makeGlow(src: string, dest: string): Promise<void> {
+  const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const cut = new Uint8ClampedArray(data.buffer, data.byteOffset, data.length);
+  const img = { width: info.width, height: info.height };
   const out = new Uint8ClampedArray(cut.length);
   for (let o = 0; o < cut.length; o += 4) {
     const r = cut[o]!;
