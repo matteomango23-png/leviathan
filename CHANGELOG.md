@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.5 — U-Boat libero a ovest di Porto Fango (9 ottobre 2026)
+
+- **Niente più frenata sbagliata:** passato sotto il molo di Porto Fango e risalito dall'altra parte, l'U-Boat naviga in superficie verso Portofosco senza "in avvicinamento a Porto Fango" e senza essere fermato. Per ripassare il molo verso est si va sott'acqua.
+
 ## v0.60.4 — Torbidità più giocabile (9 ottobre 2026)
 
 - **Meno torbido al massimo:** anche in tempesta con la pioggia l'acqua aperta non diventa più quasi nera. Resta difficile vedere: le bestie lontane sono sagome scure, ma la lampada arriva e il mare si vede. Solo il Delta resta torbido come prima.

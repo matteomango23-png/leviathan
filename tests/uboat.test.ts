@@ -127,6 +127,23 @@ describe('the U-Boats dive', () => {
     expect(w.ship.x).toBeLessThan(SHIP_WEST_X - 100);
   });
 
+  it('come up west of Porto Fango, it sails on west at the surface without braking (owner, 9 ottobre)', () => {
+    const w = world('whale', SHIP_WEST_X - 200);
+    w.ship.face = -1;
+    w.ship.speed = 60;
+    const ev = run(w, 3, { throttle: 1, dir: -1, dive: 0 });
+    expect(submerged(w.ship)).toBe(false);
+    expect(w.ship.speed).toBeGreaterThan(50);
+    expect(w.ship.x).toBeLessThan(SHIP_WEST_X - 300);
+    expect(ev.some((e) => e.type === 'harbourApproach')).toBe(false);
+  });
+
+  it('afloat on the west side it cannot sail east through the pier: under water it can', () => {
+    const w = world('whale', SHIP_WEST_X - 300);
+    run(w, 10, { throttle: 1, dir: 1, dive: 0 });
+    expect(w.ship.x).toBeLessThan(SHIP_WEST_X);
+  });
+
   it('with a hatch open it stays where it is: no diving nor rising (owner, 9 ottobre)', () => {
     const w = world('nightmare', deepWater(), 100);
     w.ship.hatches = [

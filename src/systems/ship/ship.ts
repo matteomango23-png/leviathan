@@ -242,7 +242,10 @@ export function sailShip(
   // (owner, 9 ottobre). The pier is at the surface: a U-Boat under water passes beneath it, on west.
   const A = SHIP.approach;
   const afloat = !submerged(s);
-  const ahead = s.face < 0 ? (afloat ? s.x - PORTO_FANGO.shipDock : Infinity) : end - s.x;
+  // only with the berth still ahead: a U-Boat that passed beneath it and came up on its west side sails on freely
+  // (owner, 9 ottobre: it braked there, "approaching Porto Fango", with the harbour behind it)
+  const toBerth = Math.max(0, s.x - PORTO_FANGO.shipDock);
+  const ahead = s.face < 0 ? (afloat && s.x >= SHIP_WEST_X ? toBerth : Infinity) : end - s.x;
   if (ahead < A.range && s.speed > 0) {
     const most = Math.sqrt(2 * A.decel * Math.max(0, ahead)); // the speed that stops it right there
     if (s.speed > most) {
@@ -252,14 +255,18 @@ export function sailShip(
       s.approaching = true;
     }
   } else s.approaching = false;
-  // afloat it never goes west of the harbour (a U-Boat that came up out there only sails back east)
-  const west = afloat ? Math.min(SHIP_WEST_X, s.x) : -Infinity;
+  // afloat no ship sails west past the harbour's pier; a U-Boat that went beneath it and came up on its west side
+  // sails on there at the surface (owner, 9 ottobre: it was stopped), and only under water goes back east past it
+  const westSide = afloat && s.x < SHIP_WEST_X;
+  const west = afloat && !westSide ? SHIP_WEST_X : -Infinity;
+  const east = westSide ? SHIP_WEST_X - 1 : end;
   // a U-Boat under water stops against rock with its whole hull (ship/uboat.ts)
   const ahead2 = s.x + s.face * s.speed * dt;
   if (hullBlocked(g.map, s, ahead2, s.dive)) s.speed = 0;
-  else s.x = Math.max(west, Math.min(end, ahead2));
-  const atEdge = s.x >= end ? 'seaEnd' : s.x <= west ? 'shipWest' : null;
-  if (atEdge && s.speed > 0 && s.face > 0 === (atEdge === 'seaEnd')) {
+  else s.x = Math.max(west, Math.min(east, ahead2));
+  const atEdge = s.x >= end ? 'seaEnd' : s.x <= west || (westSide && s.x >= east) ? 'shipWest' : null;
+  const into = atEdge === 'seaEnd' || westSide ? 1 : -1; // the way that runs into it
+  if (atEdge && s.speed > 0 && s.face === into) {
     s.speed = 0;
     if (s.shallowWarn <= 0) {
       events.push({ type: atEdge });
