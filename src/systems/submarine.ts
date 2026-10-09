@@ -3,116 +3,20 @@
 // model's depth, under the icebergs), get out and it waits where you left it. Inside you breathe and rest your team, but you
 // cannot fight: ordinary beasts slip away (encounters.ts), big aggressive ones ram it. A broken submarine is towed
 // back to Portofosco; ports repair it for teeth. Pure logic; views/submarineView.ts draws it.
-import { SUB_MODELS, SUBMARINE, type SubModel } from '../data/submarine';
+import { SUBMARINE } from '../data/submarine';
 import { stepSubAir } from './subAir';
 import { WORLD } from '../data/worldLayout';
-import { maxHpOf, type TeamBeast } from './beasts/team';
+import { maxHpOf } from './beasts/team';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
-import { clamp, type Rng } from './math';
 import type { TileMap } from './world/tileMap';
 import { PRESSURE } from '../data/diver';
-import { freshPressure, stepPressure } from './breath';
+import { stepPressure } from './breath';
 import { HELM } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
-import type { HullPart } from './hull';
-
-export interface SubState {
-  owned: boolean;
-  /** The model you use, and those you own. */
-  model: string;
-  models: string[];
-  /** Where it is (where you left it, or under you). */
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  face: 1 | -1;
-  hull: number;
-  /** Litres of fuel (fuel.ts); dry, it does not move. */
-  fuel: number;
-  /** Already said it is dry (until it gets fuel again). */
-  fuelWarned: boolean;
-  aboard: boolean;
-  /** Seconds before the "too deep" message may show again. */
-  deepWarn: number;
-  /** Seconds before running into rock can damage it again. */
-  bumpWait: number;
-  /** Deeper than its model allows: 1 = safe … 0 = the hull is crushed little by little (breath.ts). */
-  pressure: number;
-  pressureHurt: number;
-  /** Seconds of air left under water (subAir.ts; saved). */
-  air: number;
-}
-
-export interface SavedSub {
-  x: number;
-  y: number;
-  model: string;
-  models: string[];
-  hull: number;
-  fuel: number;
-  /** Seconds of air (added 9 ottobre; missing = full). */
-  air?: number;
-}
-
-export const subModel = (id: string): SubModel => SUB_MODELS.find((m) => m.id === id) ?? SUB_MODELS[0]!;
-
-export function newSub(saved: SavedSub | null): SubState {
-  const model = saved ? subModel(saved.model).id : SUB_MODELS[0]!.id;
-  return {
-    owned: !!saved,
-    model,
-    models: saved ? [...saved.models] : [model],
-    x: saved?.x ?? SUBMARINE.mooredX,
-    y: saved?.y ?? SUBMARINE.restY,
-    vx: 0,
-    vy: 0,
-    face: 1,
-    hull: saved ? clamp(saved.hull, 0, subModel(model).hull) : subModel(model).hull,
-    aboard: false,
-    deepWarn: 0,
-    bumpWait: 0,
-    fuel: saved ? clamp(saved.fuel, 0, subModel(model).tank) : subModel(model).tank,
-    fuelWarned: false,
-    ...freshPressure(),
-    air: Math.min(subModel(model).airSeconds, saved?.air ?? subModel(model).airSeconds),
-  };
-}
-
-export const saveSub = (s: SubState): SavedSub | null =>
-  s.owned
-    ? {
-        x: Math.round(s.x),
-        y: Math.round(s.y),
-        model: s.model,
-        models: [...s.models],
-        hull: Math.round(s.hull),
-        fuel: Math.round(s.fuel * 10) / 10,
-        air: Math.round(s.air),
-      }
-    : null;
-
-export interface SubWorld {
-  sub: SubState;
-  map: TileMap;
-  rng: Rng;
-  diver: {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    face: 1 | -1;
-    o2: number;
-    maxO2: number;
-    hp: number;
-    maxHp: number;
-    dead: boolean;
-  };
-  beasts: { team: TeamBeast[] };
-  gear: { teeth: number };
-}
+import { subBody, subModel, type SubState, type SubWorld } from './subState';
+export * from './subState';
 
 /** Close enough to climb in (at any depth). */
 export function canBoard(g: SubWorld): boolean {
@@ -162,15 +66,6 @@ export function leaveSub(g: SubWorld, events: GameEvent[]): void {
   Object.assign(g.diver, { x: s.x, y: Math.max(WORLD.surfaceY + 4, s.y + below), vx: 0, vy: 0 });
   events.push({ type: 'dove' });
 }
-
-/** Its length in world units (each model its own: owner, 8 ottobre, it looked too small). */
-export const subLength = (s: { model: string }): number => subModel(s.model).lengthM * WORLD.unitsPerMetre;
-
-/** Its body: the circles of SUBMARINE.body (drawn for SUBMARINE.length), scaled to its model's length. */
-const subBody = (s: { model: string }): [number, number][] => {
-  const k = subLength(s) / SUBMARINE.length;
-  return SUBMARINE.body.map(([dx, r]) => [dx * k, r * k]);
-};
 
 /** Its body against rock. */
 function hits(map: TileMap, s: SubState, x: number, y: number): boolean {
@@ -324,12 +219,6 @@ export function repairSub(g: SubWorld, events: GameEvent[]): void {
   events.push({ type: 'subRepaired', cost });
 }
 
-/** Where you wake up when you own it: next to it (then you climb in). */
-export const subWakePoint = (s: SubState): { x: number; y: number } => ({
-  x: s.x,
-  y: Math.max(WORLD.surfaceY + 6, s.y - 14),
-});
-
 /** Where the lamp points: the diver's aim, or in the submarine where its nose points. */
 export function lampAim(g: {
   sub: SubState;
@@ -342,7 +231,3 @@ export function lampAim(g: {
   if (g.ship?.aboard && (g.ship.dive ?? 0) > 0) return g.ship.face > 0 ? 0 : Math.PI; // a U-Boat under water
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
-
-/** Its hull as circles in the world (for pushOutOfHull, hull.ts); none when it is not yours. */
-export const subHull = (s: SubState): HullPart[] =>
-  s.owned ? subBody(s).map(([dx, r]) => ({ x: s.x + dx, y: s.y, r })) : [];

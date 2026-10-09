@@ -1,3 +1,5 @@
+> **Sospeso e tolto dal gioco (v0.58.6, 9 ottobre 2026):** il cockpit dipinto non convinceva ancora. Il codice e le immagini sono nella storia di git (v0.58.5), gli originali in `art-inbox/_bg_cockpit*_far.jpg`. Da riprendere quando lo studieremo meglio.
+
 # Immagini generate in Gemini, lotto 4: il cockpit a vapore (8 ottobre 2026)
 
 Il cockpit dell'Expedition Hunter 1 e 2 deve sembrare **dipinto come i tuoi concept**, non disegnato col codice. Le scritte e i numeri però devono restare veri: cambiano mentre giochi (carburante, nodi, denti). Per questo non uso i concept interi, ma **pezzi separati senza scritte**, che il gioco monta come un puzzle e su cui scrive lui.

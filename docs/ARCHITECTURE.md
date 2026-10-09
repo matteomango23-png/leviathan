@@ -30,6 +30,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `world/endless.ts` | Il mare infinito a est della costa: tratti di 5 tipi (`data/endless.ts`) scelti da un seme fisso, fondale, collinette, ghiaccio, fosse, sfiatatoi; la mappa a tile gli chiede i pezzi quando servono. |
 | `world/icebergs.ts` | Gli iceberg: dove galleggiano e quali punti sono ghiaccio solido (dalla maschera del disegno). |
 | `beasts/legends.ts` | Le leggende: quali sono, dove vivono, quando una compare al posto di una bestia della sua specie. |
+| `subState.ts` | Lo stato del sottomarino, il suo salvataggio, il modello e la forma (scafo, punto di risveglio). |
+| `subAir.ts` | L'aria del sottomarino: cala sott'acqua, si ricarica in superficie o nella stiva, a zero risale. |
 | `submarine.ts` | Il tuo sottomarino (al posto della barca): regalo a fine capitolo 1, Sali/Esci a qualsiasi profondità, guida con le leve fino alla profondità del modello, cure e risveglio accanto, urti delle bestie grandi, rimorchio e riparazione al porto, modelli in vendita (`data/submarine.ts`). |
 | `helm.ts` | Le leve di nave e sottomarino: gas che resta, direzione (con la leva al contrario frena e da fermo si gira), Sali/Scendi; nodi mostrati. |
 | `ship/ship.ts` | La nave da spedizione: regalo di Aurelio a Porto Fango, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
@@ -62,7 +64,11 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
 | `birds.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. |
 | `game.ts` | Un passo di gioco completo + conversione da/verso il salvataggio. |
-| `save/saveData.ts` | Formato del salvataggio con `version`, migrazioni, controllo di validità. |
+| `newGame.ts` | Lo stato di una partita (`GameState`) e come comincia: nuova o da un salvataggio (`createGame`, `applySave`). |
+| `port.ts` | Al porto: arrivo, riposo, vendita del pesce. |
+| `lamp.ts` | Da dove parte la luce e quanto è lungo il cono (sub, cavalcatura, motoscafo, U-Boat immerso). |
+| `save/saveData.ts` | Formato del salvataggio con `version` e controllo di validità. |
+| `save/migrations.ts`, `save/guards.ts` | Le migrazioni dei salvataggi vecchi (mai modificarne una: si aggiunge la successiva) e i piccoli controlli condivisi. |
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
@@ -111,10 +117,10 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `compass.ts`, `reconPanel.ts`, `gadgets.css` | La bussola verso la bestia seguita e il resoconto del drone dell'Ocean's Nightmare. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
 | `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca: schede, scheda completa, "Segui". |
-| `cockpit.ts`, `cockpit.css` | Il cockpit della nave: Plancia, Sonar, Diario, Recinto e Zaino. |
+| `cockpit.ts`, `cockpit.css`, `cockpitTheme.ts` | Il cockpit della nave: Plancia, Sonar, Drone (Nightmare), Diario, Recinto e Zaino; colori per nave (tema rosso del Nightmare). |
 | `bridgePanel.ts`, `instruments.ts` | La plancia: obiettivo seguito, carta nautica ±2 km, quadranti (carburante, velocità), meteo, travaso, razzo. |
 | `sonarScreen.ts` | Lo schermo sonar del cockpit (canvas animato). |
-| `helmControls.ts`, `helmInfo.ts` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
+| `helmControls.ts`, `helmInfo.ts`, `helmTypes.ts`, `helmBars.ts`, `helm.css` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
 | `saveTransfer.ts` | Esporta e importa il salvataggio come file. |

@@ -4,8 +4,6 @@ import w600 from '@fontsource/baloo-2/files/baloo-2-latin-600-normal.woff2?url';
 import w700 from '@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2?url';
 import w800 from '@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2?url';
 
-export const GAME_FONT = '"Baloo 2", system-ui, sans-serif';
-
 /** Registers the font; the promise ends when it is ready (or failed: the system font is used). */
 export function loadGameFont(): Promise<void> {
   if (typeof FontFace === 'undefined') return Promise.resolve();

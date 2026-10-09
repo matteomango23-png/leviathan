@@ -76,17 +76,6 @@ export function movesFor(b: TeamBeast): { move: MoveDef; unlockLevel: number; un
   });
 }
 
-/** Damage to a team beast; returns true when it goes KO. */
-export function damageTeamBeast(b: TeamBeast, dmg: number): boolean {
-  if (b.ko) return false;
-  b.hp = Math.max(0, b.hp - dmg);
-  if (b.hp <= 0) {
-    b.ko = true;
-    return true;
-  }
-  return false;
-}
-
 /** Moves a beast between team and reserve (the team never exceeds its size). */
 export function toggleInTeam(all: TeamBeast[], uid: string): boolean {
   const b = all.find((x) => x.uid === uid);

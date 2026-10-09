@@ -6,7 +6,7 @@ import { TILE } from '../data/worldLayout';
 import type { GearState } from './economy/gear';
 import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
-import { templeAt, templeCells, templeSites, type TempleSite } from './world/templeSite';
+import { templeAt, templeCells, type TempleSite } from './world/templeSite';
 
 /** What the temples remember while you play (not saved: a half-done puzzle starts again). */
 export interface TempleState {
@@ -135,6 +135,3 @@ function takeRelic(g: TempleWorld, id: string, events: GameEvent[]): void {
   g.gear.relics.push(id);
   events.push({ type: 'relicFound', name: r.name, text: r.text });
 }
-
-/** All the temples (for the views). */
-export const allTemples = templeSites;

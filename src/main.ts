@@ -1,6 +1,7 @@
 // Entry point: creates the Phaser game at the device's full resolution (capped at 2×).
 import Phaser from 'phaser';
 import './ui/ui.css';
+import './ui/helm.css';
 import { CAMERA } from './data/diver';
 import { BattleScene } from './scenes/BattleScene';
 import { BootScene } from './scenes/BootScene';

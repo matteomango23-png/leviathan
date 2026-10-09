@@ -84,9 +84,6 @@ export interface ShipModelDef {
   special?: string;
   note: string;
   cockpit: CockpitTab[];
-  /** The look of its cockpit: 'vapore' = his painted Gemini screens (ui/cockpitSteam.css, data/cockpitSteam.ts);
-   *  missing = the navy bridge. No ship uses it for now (owner, 9 ottobre: not good enough yet, to be studied). */
-  cockpitStyle?: 'vapore';
   /** Its cockpit's colours, same layout (ui/cockpitTheme.ts; owner, 9 ottobre: the Nightmare's red). */
   cockpitTheme?: 'nightmare';
   card: string; // public/art/<card>.webp

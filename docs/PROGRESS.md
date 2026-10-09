@@ -1,5 +1,24 @@
 # Progressi
 
+## Pulizia dopo il blocco 4 (9 ottobre 2026) → v0.58.6
+
+**Fatto:**
+- **Tolto:**
+  - il cockpit a vapore (`cockpitSteam.ts`, `steamStage.ts`, `bridgeSteam.ts`, `cockpitSteam.css`, `public/bg/cockpit*_far.webp`, `cockpitStyle`); gli originali sono in `art-inbox/_bg_cockpit*`;
+  - le funzioni mai usate (`rideAbilities`, `powerOf`, `isPhysical`, `isWounded`, `inBiteReach`, `damageTeamBeast`, `allTemples`, `GAME_FONT`).
+- **Divisi:**
+  - `save/migrations.ts` e `save/guards.ts` da `saveData.ts`;
+  - `newGame.ts` (`GameState`, `createGame`, `applySave`) e `port.ts` da `game.ts`, che li riesporta;
+  - `subState.ts` da `submarine.ts`, che lo riesporta;
+  - `helmBars.ts` e `helmTypes.ts` da `helmControls.ts`;
+  - `systems/lamp.ts` da `WorldScene`;
+  - `helm.css` da `ui.css`, importato subito dopo.
+- **Restano un po' sopra le 300 righe:** `WorldScene.ts` (396), `battle.ts` (319), `ship.ts` (315), `saveData.ts` (311).
+
+**Da provare sull'iPhone:** niente di nuovo. Gioca come sempre e segnala se qualcosa non va come prima.
+
+**Prossimo:** blocco 5 (Sonar e spedizioni): prima le domande di design, poi il piano in Plan mode.
+
 ## Nebbia senza taglio (9 ottobre 2026) → v0.58.5
 
 **Fatto:** in `views/weatherView.ts` la cima del cielo è `min(0, CAMERA.minY sullo schermo)` per nebbia, nuvole e pioggia; la texture della nebbia parte da trasparente.

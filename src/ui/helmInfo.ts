@@ -17,7 +17,7 @@ import { subModel } from '../systems/submarine';
 import { onRamp } from '../systems/vehicles';
 import { huntNextStep, huntOpen, sonarReadout } from '../systems/hunts';
 import { HUNTS } from '../data/hunts';
-import type { HelmInfo } from './helmControls';
+import type { HelmInfo } from './helmTypes';
 
 /** The sonar line at the helm: off, too fast, or the floor under the ship and the nearest echoes. */
 function sonarLine(g: GameState): string {

@@ -1,11 +1,11 @@
 // What your beasts can do in the sea (abilities in species.ts, numbers in ABILITIES): ancient bones break under
-// a bone breaker or a beast with Sfondamento (ridden or swimming with you), the humpback lets you breathe.
+// a bone breaker or a beast with Sfondamento (ridden or swimming with you). The whales no longer lend you air (9 ottobre).
 // Other abilities arrive with their regions.
 import { ABILITIES } from '../data/beasts';
 import { TILE } from '../data/worldLayout';
 import { activeBeast, type BeastWorld } from './beastState';
 import { headOf } from './beasts/combat';
-import { breaksBones, speciesOf } from './beasts/forms';
+import { breaksBones } from './beasts/forms';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
@@ -23,12 +23,6 @@ export function breakBones(map: TileMap, x: number, y: number, radius: number): 
     }
   }
   return out;
-}
-
-/** The abilities of the beast you ride (empty on foot). */
-export function rideAbilities(g: BeastWorld): string[] {
-  const b = activeBeast(g);
-  return g.beasts.riding && b ? (speciesOf(b.form).abilities ?? []) : [];
 }
 
 function bonesNear(map: TileMap, x: number, y: number, r: number): boolean {
