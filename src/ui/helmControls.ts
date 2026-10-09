@@ -38,7 +38,8 @@ export interface HelmInfo {
   subName?: string;
   /** The Ocean's Nightmare (part 4d): its drone can scout now; the beasts in its last report. */
   canRecon?: boolean;
-  reportCount?: number;
+  /** Its sphere's bay open with a beast picked: "Invia sfera" (or the time left to recharge it). */
+  sphere?: { text: string; ready: boolean };
   canLaunchBoat?: boolean;
   /** "motoscafo", "moto d’acqua": for "Cala …". */
   boatName?: string;
@@ -72,7 +73,7 @@ export class HelmControls {
   private readonly engineBtn: HTMLButtonElement;
   private readonly diveBtn: HTMLButtonElement;
   private readonly reconBtn: HTMLButtonElement;
-  private readonly reportBtn: HTMLButtonElement;
+  private readonly sphereBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly fuelBar: HTMLDivElement;
@@ -128,13 +129,14 @@ export class HelmControls {
     // the buttons that work only with the ship still, in one group that fades as a whole (owner, 9 ottobre: on the
     // iPhone fading them one by one over the game left them half drawn)
     const still = el('div', 'helm-still', this.buttons);
+    // each hatch with what it lets out under it (the Nightmare's: the drone scouts, the sphere goes)
     this.hatchBtn = el('button', 'helm-btn', still, 'Apri portellone');
-    this.hatch2Btn = el('button', 'helm-btn', still, 'Apri portellone');
     this.launchBtn = el('button', 'helm-btn', still, 'Cala sottomarino');
-    this.launchBoatBtn = el('button', 'helm-btn', still, 'Cala motoscafo');
-    this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
     this.reconBtn = el('button', 'helm-btn', still, 'Ricognizione');
-    this.reportBtn = el('button', 'helm-btn helm-report', this.buttons, 'Resoconto');
+    this.hatch2Btn = el('button', 'helm-btn', still, 'Apri portellone');
+    this.launchBoatBtn = el('button', 'helm-btn', still, 'Cala motoscafo');
+    this.sphereBtn = el('button', 'helm-btn', still, 'Invia sfera');
+    this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.objective = el('div', 'helm-objective', this.root);
 
@@ -152,7 +154,7 @@ export class HelmControls {
     this.tap(this.engineBtn, () => (this.session.input.helmCmd = 'engine'));
     this.tap(this.diveBtn, () => (this.session.input.helmCmd = 'dive'));
     this.tap(this.reconBtn, () => (this.session.input.helmCmd = 'recon'));
-    this.tap(this.reportBtn, () => this.session.emit('openRecon'));
+    this.tap(this.sphereBtn, () => (this.session.input.helmCmd = 'sphere'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
@@ -312,9 +314,10 @@ export class HelmControls {
     const subLabel = `Cala ${info.subName ?? 'sottomarino'}`;
     if (this.launchBtn.textContent !== subLabel) this.launchBtn.textContent = subLabel;
     this.reconBtn.hidden = !info.canRecon;
-    this.reportBtn.hidden = !info.reportCount;
-    const report = `Resoconto (${info.reportCount ?? 0})`;
-    if (this.reportBtn.textContent !== report) this.reportBtn.textContent = report;
+    this.sphereBtn.hidden = !info.sphere;
+    if (info.sphere && this.sphereBtn.textContent !== info.sphere.text)
+      this.sphereBtn.textContent = info.sphere.text;
+    this.sphereBtn.classList.toggle('off', !info.sphere?.ready);
     this.launchBoatBtn.hidden = !info.canLaunchBoat;
     const boatLabel = `Cala ${info.boatName ?? 'motoscafo'}`;
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;

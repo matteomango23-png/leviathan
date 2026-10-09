@@ -804,3 +804,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Bersaglio per identità:** per i residenti del mare aperto si usa l'id (`r<tratto>.<n>`), così è lo stesso animale sia "addormentato" sia uscito davvero; per le bestie della costa si usa posto e specie. Se l'animale viene catturato, sconfitto o sparisce, compare "Traccia persa". Si salvano solo i bersagli residenti.
 - **Blocco:** `BeastState.held` (uno alla volta). La bestia bloccata non nuota e non attacca, ma si può combattere o domare. Un residente non ancora uscito resta fermo dove l'ha preso la sfera.
 - **Ricarica della sfera:** 3 minuti, aggiunta perché senza sarebbe troppo forte. Il proprietario non l'aveva chiesta: si cambia in `SPHERE.cooldownSeconds`.
+
+## 9 ottobre 2026 — Ocean's Nightmare: tutto passa dai portelloni (v0.57.1)
+
+- **Su richiesta del proprietario,** drone e sfera non aprono più i portelloni da soli: li apri tu, dai il comando ("Ricognizione", "Cala drone", "Invia sfera") e li richiudi quando sono tornati. Mentre sono fuori il pulsante "Chiudi" non compare.
+- **Il resoconto è una scheda del cockpit** e non più un pannello sopra il gioco.
+- **I pulsanti del timone sono in una griglia** di 3 per colonna, con le colonne da destra a sinistra (`direction: rtl`), perché un'unica colonna lunga copriva le frecce e la leva.

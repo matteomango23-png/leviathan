@@ -97,7 +97,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'reconEmpty':
       return ['Il sonar non sente animali: il drone resta nella stiva.', 3.5];
     case 'reconDone':
-      return [`Il drone è tornato: resoconto pronto, ${e.count} animali. Tocca "Resoconto".`, 4];
+      return [
+        `Il drone è tornato: resoconto pronto, ${e.count} animali. Leggilo nel Cockpit, scheda Drone.`,
+        4,
+      ];
     case 'sphereGo':
       return [`La sfera parte verso: ${e.name}.`, 3];
     case 'sphereHold':

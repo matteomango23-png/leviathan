@@ -1795,7 +1795,6 @@ img.albino-art {
   position: absolute;
   right: calc(16px + var(--safe-r));
   top: calc(50px + var(--safe-t));
-  max-width: calc(var(--side) - 24px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -1866,17 +1865,24 @@ img.albino-art {
 }
 /* the buttons that work only with the ship still fade out under way and back in (owner, 9 ottobre) */
 .helm-still {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  /* at most three buttons a column, the next column to their left (owner, 9 ottobre: with the Nightmare's hatches
+     open the one long column ran over the arrows); rtl only orders the columns, the buttons read left to right */
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  direction: rtl;
+  justify-items: start; /* rtl: the right edge */
+  align-content: start;
   gap: 6px;
-  max-width: 100%;
   /* its own layer, faded as a whole, then truly hidden: no half-drawn buttons on the iPhone */
   will-change: opacity;
   transform: translateZ(0);
   transition:
     opacity 0.5s ease,
     visibility 0s linear 0s;
+}
+.helm-still > * {
+  direction: ltr;
 }
 .helm-buttons.under-way .helm-still {
   opacity: 0;

@@ -88,7 +88,7 @@ export const SUB_MODELS: SubModel[] = [
     // the Ocean's Nightmare's drone (owner, 9 ottobre): scouts by itself, or you drive it like a submarine
     id: 'drone_nightmare',
     name: 'Drone sottomarino',
-    lengthM: 7,
+    lengthM: 14, // owner, 9 ottobre: at 7 m it was "uno scricciolo"
     speed: 160,
     maxDepthM: 500,
     hull: 90,

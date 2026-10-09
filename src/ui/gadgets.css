@@ -1,8 +1,9 @@
-/* The Ocean's Nightmare's compass and the drone's report (part 4d). */
+/* The Ocean's Nightmare's compass (under the team's portraits, owner 9 ottobre) and the drone's report (its
+   cockpit tab). */
 #ui .compass {
   position: absolute;
   left: 50%;
-  top: calc(10px + var(--safe-t));
+  top: calc(64px + var(--safe-t));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -55,43 +56,13 @@
 }
 
 #ui .recon {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(560px, calc(100vw - 32px - var(--safe-l) - var(--safe-r)));
-  max-height: calc(100vh - 32px - var(--safe-t) - var(--safe-b));
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(10, 4, 4, 0.94);
-  border: 1px solid rgba(255, 70, 60, 0.55);
-  box-shadow: 0 0 30px rgba(255, 40, 30, 0.25);
   color: var(--ink);
-  pointer-events: auto;
-  z-index: 20;
-}
-#ui .recon-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 #ui .recon-title {
   font-size: 17px;
   font-weight: 800;
   color: #ff8a7a;
   letter-spacing: 1px;
-}
-#ui .recon-close {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 70, 60, 0.5);
-  background: transparent;
-  color: #ffd2c8;
-  font-size: 18px;
 }
 #ui .recon-note {
   margin: 4px 0 8px;
