@@ -1,5 +1,10 @@
 # Progressi
 
+## U-Boat lungo le onde (9 ottobre 2026) → v0.60.1
+
+- `views/shipPictures.ts` (spostato da `shipView.ts`): immergendosi, la copia "sott'acqua" di ogni dipinto è disegnata in 40 strisce verticali, ognuna tagliata dove passa l'onda (`seaHeight`), tenendo conto del beccheggio.
+- **Da provare sull'iPhone:** U-Boat che scende di pochi metri in tempesta: lo scuro deve seguire le onde.
+
 ## Onde realistiche (9 ottobre 2026) → v0.60.0
 
 **Fatto:**
