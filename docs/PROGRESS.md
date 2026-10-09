@@ -1,5 +1,10 @@
 # Progressi
 
+## U-Boat che si scurisce piano (9 ottobre 2026) → v0.60.2
+
+- `shipView.ts`: `wet` = `diveShare / UNDER_FADE` (0,5) fa crescere l'opacità delle strisce sott'acqua e sfumare `waterOver` (`strength`).
+- **Da provare sull'iPhone:** scendi e risali di pochi metri con l'U-Boat: nessuno scatto di colore.
+
 ## U-Boat lungo le onde (9 ottobre 2026) → v0.60.1
 
 - `views/shipPictures.ts` (spostato da `shipView.ts`): immergendosi, la copia "sott'acqua" di ogni dipinto è disegnata in 40 strisce verticali, ognuna tagliata dove passa l'onda (`seaHeight`), tenendo conto del beccheggio.
