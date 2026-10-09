@@ -135,7 +135,14 @@ export function canBoardShip(g: HatchWorld & { diver: { dead: boolean } }): bool
   if (!s.owned || s.aboard || g.sub.aboard || d.dead) return false;
   const { x0, x1 } = shipSpan(s);
   const r = SHIP.boardReach;
-  return d.x > x0 - r && d.x < x1 + r && d.y < WORLD.surfaceY + shipDraft(g.ship) + r;
+  // a U-Boat under water: anywhere by its hull, at its depth (owner, 9 ottobre)
+  const dive = g.ship.dive;
+  return (
+    d.x > x0 - r &&
+    d.x < x1 + r &&
+    d.y < WORLD.surfaceY + dive + shipDraft(g.ship) + r &&
+    d.y > WORLD.surfaceY + dive - r - (dive > 0 ? shipDraft(g.ship) : Infinity)
+  );
 }
 
 export function boardShip(g: HatchWorld, events: GameEvent[]): void {
@@ -155,6 +162,7 @@ export function diveFromShip(g: HatchWorld, events: GameEvent[]): void {
   }
   s.aboard = false;
   const x = helmPoint(s).x;
-  Object.assign(g.diver, { x, y: WORLD.surfaceY + shipDraft(g.ship) + 8, vx: 0, vy: 10 });
+  // under its keel (a U-Boat at its depth: you swim out down there, owner 9 ottobre)
+  Object.assign(g.diver, { x, y: WORLD.surfaceY + s.dive + shipDraft(g.ship) + 8, vx: 0, vy: 10 });
   events.push({ type: 'dove' });
 }

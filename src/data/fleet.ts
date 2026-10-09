@@ -71,6 +71,8 @@ export interface ShipModelDef {
   perKm: number; // litres per km at full throttle
   /** The sonar: how far it hears (× the base range) and up to which speed (knots). */
   sonar: { range: number; maxKnots: number; name: string };
+  /** U-Boats only (block 4c): how deep and how long it dives, and how fast it sinks and rises (units/s). Tuning. */
+  dive?: { maxDepthM: number; airSeconds: number; sinkSpeed: number; riseSpeed: number };
   /** Places in its tank for beasts of the team (owner, 8 ottobre; it works from block 6). */
   pool: number;
   bays: BayDef[];
@@ -188,7 +190,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     category: 'uboat',
     tier: 2,
     name: 'U-Boat Whale Exploration',
-    ready: false,
+    ready: true,
     price: 7500,
     lengthM: 28,
     knots: 22,
@@ -204,6 +206,25 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'Piccolo U-Boat a forma di balena: il tuttofare per cominciare',
     cockpit: ALL_TABS,
     card: 'nave_whale',
+    dive: { maxDepthM: 150, airSeconds: 180, sinkSpeed: 45, riseSpeed: 55 },
+    art: {
+      closed: 'nave_whale',
+      open: 'nave_whale', // no hatch
+      stacks: [
+        { u: 0.38, v: 0.24, size: 0.7 },
+        { u: 0.74, v: 0.2, size: 0.5 },
+      ],
+      picture: {
+        aspect: 781 / 1400,
+        waterline: 0.52,
+        keel: 0.78,
+        helmX: 0.48,
+        deckY: 0.27,
+        propX: 0.08,
+        propY: 0.52,
+        bowU: 0.95,
+      },
+    },
   },
   {
     id: 'imperium',
@@ -267,7 +288,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     category: 'uboat',
     tier: 3,
     name: 'U-Boat Stormtrooper',
-    ready: false,
+    ready: true,
     price: 18000,
     lengthM: 75,
     knots: 20,
@@ -283,6 +304,21 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'U-Boat grosso e lento, con un buon sonar',
     cockpit: ALL_TABS,
     card: 'nave_stormtrooper',
+    dive: { maxDepthM: 300, airSeconds: 360, sinkSpeed: 25, riseSpeed: 30 },
+    art: {
+      closed: 'nave_stormtrooper',
+      open: 'nave_stormtrooper', // no hatch
+      picture: {
+        aspect: 692 / 1400,
+        waterline: 0.56,
+        keel: 0.72,
+        helmX: 0.5,
+        deckY: 0.27,
+        propX: 0.13,
+        propY: 0.7,
+        bowU: 0.97,
+      },
+    },
   },
   {
     id: 'poseidon',

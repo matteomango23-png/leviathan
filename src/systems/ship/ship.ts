@@ -23,6 +23,7 @@ import {
   sonarMaxKnots,
 } from './model';
 import { icebergAcross } from '../world/icebergs';
+import { fullAir, hullBlocked, stepDive, submerged } from './uboat';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
@@ -53,6 +54,9 @@ export interface ShipState {
   prop: number;
   /** Seconds the bow keeps breaking ice (not saved; > 0 while it cuts): shards fly, the bow wave is gone. */
   iceT: number;
+  /** U-Boats (block 4c, ship/uboat.ts): units under its floating line (0 = afloat), and seconds of air left. */
+  dive: number;
+  air: number;
   /** Slowing down by itself into the harbour (not saved: says it once per approach). */
   approaching: boolean;
   /** Litres of fuel (fuel.ts); dry, it does not move. */
@@ -81,6 +85,8 @@ export interface SavedShip {
   aboard: boolean;
   fuel: number;
   engineOn?: boolean; // added 8 ottobre: missing = off
+  dive?: number; // U-Boats (9 ottobre): missing = afloat
+  air?: number;
   model: string; // v18
 }
 
@@ -114,6 +120,8 @@ export function newShip(saved: SavedShip | null): ShipState {
     prop: 0,
     approaching: false,
     iceT: 0,
+    dive: Math.max(0, saved?.dive ?? 0),
+    air: saved?.air ?? fullAir({ model: saved?.model ?? FIRST_SHIP }),
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : shipTank({ model: FIRST_SHIP }),
     fuelWarned: false,
     sonarOn: false,
@@ -136,6 +144,7 @@ export function saveShip(s: ShipState): SavedShip | null {
     aboard: s.aboard,
     fuel,
     engineOn: s.engineOn,
+    ...(shipModel(s).dive ? { dive: Math.round(s.dive), air: Math.round(s.air) } : {}),
     model: s.model,
   };
 }
@@ -232,7 +241,10 @@ export function sailShip(
       s.approaching = true;
     }
   } else s.approaching = false;
-  s.x = Math.max(SHIP_WEST_X, Math.min(end, s.x + s.face * s.speed * dt));
+  // a U-Boat under water stops against rock with its whole hull (ship/uboat.ts)
+  const ahead2 = s.x + s.face * s.speed * dt;
+  if (hullBlocked(g.map, s, ahead2, s.dive)) s.speed = 0;
+  else s.x = Math.max(SHIP_WEST_X, Math.min(end, ahead2));
   const atEdge = s.x >= end ? 'seaEnd' : s.x <= SHIP_WEST_X ? 'shipWest' : null;
   if (atEdge && s.speed > 0 && s.face > 0 === (atEdge === 'seaEnd')) {
     s.speed = 0;
@@ -252,7 +264,8 @@ export function sailShip(
 
   s.iceT = Math.max(0, s.iceT - dt);
   const changed: number[] = [];
-  if (s.speed > 0.5) {
+  if (s.speed > 0.5 && !submerged(s)) {
+    // under water a U-Boat slips beneath the ice sheet
     // the ice breaks under the hull, just behind the bow where the ship covers it (owner, 8 ottobre: it broke
     // ahead of the bow, before the ship touched it)
     const nose = s.x + s.face * shipLength(s) * (shipPicture(s).bowU - 0.5); // where the bow meets the water, now
@@ -270,6 +283,7 @@ export function sailShip(
     }
     changed.push(...cut);
   }
+  changed.push(...stepDive(g.map, s, helm, dt, events));
   changed.push(...refreeze(g.map, s.broken, dt, far));
 
   if (s.aboard) {

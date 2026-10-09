@@ -81,6 +81,10 @@ export type GameEvent =
   | { type: 'boatDocked'; text: string }
   /** The ice sheet or an iceberg stopped it. */
   | { type: 'boatIce' }
+  // the U-Boats (ship/uboat.ts)
+  | { type: 'diveAir' }
+  | { type: 'diveSurfacing' }
+  | { type: 'diveTooDeep' }
   /** The rescue flare: towed somewhere, for some teeth. */
   | { type: 'rescued'; where: string; teeth: number }
   /** Tiles changed (ice broken or frozen again): to redraw. */

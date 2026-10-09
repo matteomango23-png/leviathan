@@ -47,7 +47,7 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
     const k = Math.min(C.maxScale, Math.max(1, (shipLength(s) / C.refLength) ** C.growth));
     return {
       x: s.x + s.face * C.lookAhead * k * (s.speed / shipTopSpeed(s)),
-      y: C.y * k,
+      y: C.y * k + s.dive, // a U-Boat: the view goes down with it
       viewH: C.viewHeightUnits * k,
       minY: C.minY * k,
     };

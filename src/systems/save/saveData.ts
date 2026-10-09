@@ -494,6 +494,8 @@ function checkedShip(raw: unknown): SavedShip | null {
     aboard: raw.aboard === true,
     fuel: isFiniteNumber(raw.fuel) ? Math.max(0, raw.fuel) : Infinity, // newShip caps it at its tank
     engineOn: raw.engineOn === true,
+    ...(isFiniteNumber(raw.dive) ? { dive: Math.max(0, raw.dive) } : {}),
+    ...(isFiniteNumber(raw.air) ? { air: Math.max(0, raw.air) } : {}),
     model: SHIP_MODELS.some((m) => m.id === raw.model) ? String(raw.model) : FIRST_SHIP,
   };
 }

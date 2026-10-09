@@ -119,6 +119,17 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       unit: 'm',
     },
   ];
+  // a U-Boat dives itself (block 4c)
+  if (m.dive)
+    rows.push({
+      key: 'dive',
+      group: g,
+      label: 'Immersione',
+      value: m.dive.maxDepthM,
+      text: `fino a ${m.dive.maxDepthM} m per ${Math.round(m.dive.airSeconds / 60)} minuti`,
+      better: 'high',
+      unit: 'm',
+    });
   for (const b of m.bays) {
     const sub = b.kind === 'sub' ? SUB_MODELS.find((x) => x.id === b.model) : undefined;
     const boat = BOAT_MODELS.find((x) => x.id === b.model);

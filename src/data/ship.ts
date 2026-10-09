@@ -27,6 +27,10 @@ export const SHIP = {
   smoke: { idleRate: 1.5, fullRate: 30, life: 5.5, lift: 45, liftDrag: 0.6, size: 7, swell: 4.5, alpha: 0.8, wind: 5, max: 360 },
   /** Coming into Porto Fango (and to the end of the sea): within range (units) it slows down by itself at decel
    *  (units/s²) so that it stops at the berth (owner, 8 ottobre). Tuning. */
+  /** The U-Boats' dive (block 4c): air refilled afloat (seconds of air per second), the warning before it runs out
+   *  (seconds), shallower than this (units) it counts as afloat, how fast it surfaces when the air is gone, and the air it
+   *  needs afloat to dive again (seconds). Tuning. */
+  dive: { refill: 4, warnAt: 30, afloatBelow: 3, emergencyRise: 60, minAir: 40 },
   approach: { range: 1800, decel: 30 }, // from 1800 units the curve allows ~330 u/s: above the fastest ship
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
