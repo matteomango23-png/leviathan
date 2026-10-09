@@ -5,7 +5,7 @@ import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard, hatchT } from '../systems/ship/ship';
 import { boatBay, shipPicture, subBay } from '../systems/ship/model';
 import { shipPoint } from '../systems/ship/geometry';
-import { submerged } from '../systems/ship/uboat';
+import { diveShare } from '../systems/ship/uboat';
 import { boatEngineLevel, boatLength } from '../systems/boat';
 import { BoatView } from '../views/boatView';
 import type { GameEvent } from '../systems/events';
@@ -345,6 +345,7 @@ export class WorldScene extends Phaser.Scene {
       g.time,
       g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6,
       sky.waves,
+      dt,
     );
     this.sub.update(g.sub, g.time, dt, g.ship.bay === 'docked' && hatchT(g.ship, subBay(g.ship)) < 0.6);
     this.fishView.update(g.fish, view, g.time, dt);
@@ -369,11 +370,11 @@ export class WorldScene extends Phaser.Scene {
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
     // in the speedboat the headlight sits on its bow
     const b = g.boat;
-    // a U-Boat under water lights the way from its bow (block 4c)
-    const sunk = g.ship.aboard && submerged(g.ship);
+    // a U-Boat diving lights the way from its bow, its cone growing as it goes down (owner, 9 ottobre: it snapped)
+    const dive = g.ship.aboard ? diveShare(g.ship) : 0;
     const lamp = b.aboard
       ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
-      : sunk
+      : dive > 0
         ? shipPoint(g.ship, shipPicture(g.ship).bowU, shipPicture(g.ship).waterline)
         : (rider ?? d);
     const glows = [
@@ -392,9 +393,9 @@ export class WorldScene extends Phaser.Scene {
         face: d.face,
         // no lamp while sitting on the boat; shorter in murky water
         lengthMult:
-          storyHoldsDiver(g) || (g.ship.aboard && !sunk)
+          storyHoldsDiver(g) || (g.ship.aboard && dive <= 0)
             ? 0
-            : (sunk ? 1.6 : mods.coneMult) * (1 - (1 - DELTA.murk.lampMult) * murk),
+            : (g.ship.aboard ? 1.6 * dive : mods.coneMult) * (1 - (1 - DELTA.murk.lampMult) * murk),
         widthMult: mods.coneWidthMult,
       },
       Math.max(this.hurtFlash, lowO2),

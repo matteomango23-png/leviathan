@@ -775,3 +775,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Aria (scelte del proprietario):** avviso a 30 s, poi risalita automatica. A galla si ricarica; per rimmergersi ne servono `SHIP.dive.minAir` secondi, sennò dopo l'emergenza si poteva subito tornare giù.
 - **Faro:** immerso, l'U-Boat accende la luce dalla prua (al timone in superficie no).
 - **Salvataggio:** `dive` e `air` facoltativi in `SavedShip`, senza cambiare versione.
+
+## 9 ottobre 2026 — Ritocchi agli U-Boat (v0.55.1)
+
+- **Linea dell'acqua mobile:** le immagini della nave si tagliano ogni fotogramma dove passa la superficie (`place(..., water)`), non più alla linea di galleggiamento fissa: un U-Boat che scende si scurisce solo sotto il pelo dell'acqua.
+- **`diveShare`** (0 a galla … 1 tutta sotto) attenua gradualmente dondolio e assetto, la luce sotto lo scafo e fa crescere il faro di prua.
+- **Reattori:** le immagini "accese" col fuoco (Poseidon, motoscafo EH2) non piacevano. Sono tolte dal gioco (originali in `art-inbox/_*`); al loro posto il fumo dai reattori (`ShipStack.reactor`, `BoatModel.reactors`), solo mentre il motore spinge e solo sopra l'acqua. Il Whale tiene la sua immagine coi reattori accesi, anche sott'acqua.
+- **Fumo generico:** `ShipFx.puff(sorgenti, spinta, scala)`, usato da navi e motoscafi.
+- **Leva della profondità** all'estrema destra (`order: 2`) e pulsante contestuale spostato sopra le frecce (`.helm-diving`).

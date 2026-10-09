@@ -36,25 +36,36 @@ export class ShipFx {
    * last ones fade away.
    */
   smoke(s: ShipState, at: (u: number, v: number) => { x: number; y: number }, dt: number): void {
+    // the stacks smoke whenever the engine runs; reactors (Poseidon) only while it pushes (owner, 9 ottobre: their
+    // fiery picture is gone, smoke instead); a stack under the sea surface (a U-Boat diving) never does
+    const sources = s.engineOn
+      ? (shipArt(s).stacks ?? [])
+          .map((st) => ({ ...at(st.u, st.v), size: st.size * (st.reactor ? s.prop : 1) }))
+          .filter((p) => p.y < WORLD.surfaceY && p.size > 0.02)
+      : [];
+    this.puff(sources, s.prop, shipLength(s) / 180, dt);
+  }
+
+  /**
+   * The puffs: born at each source (x, y, size), more and bigger with `push` (0…1), then drifting and fading.
+   * @param scale how big the vehicle is (1 = a 180-unit ship)
+   */
+  puff(sources: { x: number; y: number; size: number }[], push: number, scale: number, dt: number): void {
     this.back.clear();
     const S = SHIP.smoke;
-    const scale = shipLength(s) / 180; // bigger ships, bigger smoke
-    if (s.engineOn) {
-      const rate = S.idleRate + (S.fullRate - S.idleRate) * s.prop;
-      for (const [i, st] of (shipArt(s).stacks ?? []).entries()) {
-        this.smokeDue[i] = (this.smokeDue[i] ?? 0) + rate * st.size * dt;
-        const base = at(st.u, st.v);
-        while ((this.smokeDue[i] ?? 0) >= 1 && this.puffs.length < S.max) {
-          this.smokeDue[i]! -= 1;
-          this.puffs.push({
-            x: base.x + (Math.random() - 0.5) * 2,
-            y: base.y,
-            vy: -S.lift * (0.7 + 0.6 * s.prop) * (0.8 + Math.random() * 0.4),
-            r: S.size * st.size * scale * (0.5 + 0.5 * s.prop) * (0.8 + Math.random() * 0.4), // more gas, bigger puffs
-            age: 0,
-            seed: Math.random() * 10,
-          });
-        }
+    const rate = S.idleRate + (S.fullRate - S.idleRate) * push;
+    for (const [i, src] of sources.entries()) {
+      this.smokeDue[i] = (this.smokeDue[i] ?? 0) + rate * src.size * dt;
+      while ((this.smokeDue[i] ?? 0) >= 1 && this.puffs.length < S.max) {
+        this.smokeDue[i]! -= 1;
+        this.puffs.push({
+          x: src.x + (Math.random() - 0.5) * 2,
+          y: src.y,
+          vy: -S.lift * (0.7 + 0.6 * push) * (0.8 + Math.random() * 0.4),
+          r: S.size * src.size * scale * (0.5 + 0.5 * push) * (0.8 + Math.random() * 0.4), // more gas, bigger puffs
+          age: 0,
+          seed: Math.random() * 10,
+        });
       }
     }
     for (const p of this.puffs) {
