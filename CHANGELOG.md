@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.6 — Pulizia (9 ottobre 2026)
+
+- **Nessun cambiamento nel gioco:** solo ordine nel codice dopo il blocco della flotta.
+- **Tolto il cockpit "a vapore" dipinto,** che nessuna nave usava più (si recupera da git).
+- **Il gioco è un po' più leggero:** le quattro immagini di quel cockpit non vengono più scaricate.
+
 ## v0.58.5 — Nebbia senza taglio (9 ottobre 2026)
 
 - **Nebbia, nuvole e pioggia** coprono tutto il cielo visibile anche con la visuale larga delle navi grandi. La nebbia sfuma da zero in alto, senza più la linea netta a metà cielo.

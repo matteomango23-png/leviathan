@@ -820,3 +820,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 9 ottobre 2026 — Colori del cockpit per nave (v0.58.3)
 
 - **`cockpitTheme`** nel modello della nave: stessa struttura, colori diversi. Il CSS lavora sulle variabili del cockpit (`--steel`, `--amber`, `--phosphor`, `--lamp`, `--line`) più pochi colori scritti a mano; il sonar, disegnato su canvas, prende la sua tavolozza da `ui/cockpitTheme.ts`. Per un'altra nave basta un nuovo tema.
+
+## 9 ottobre 2026 — Pulizia dopo il blocco 4 (v0.58.6)
+
+- **Cockpit a vapore tolto** su richiesta del proprietario: resta nella storia di git (fino a v0.58.5). Gli originali in `art-inbox` sono rinominati con `_`, così `npm run art` li salta e non li cancella.
+- **I file grandi sono divisi per responsabilità.** `game.ts` e `submarine.ts` riesportano le parti spostate, così chi li importa non cambia. Il CSS del timone è in `helm.css`, importato subito dopo `ui.css`, quindi l'ordine delle regole resta identico.
