@@ -15,6 +15,9 @@ export interface ShipPicture {
   propY: number;
   /** Where the bow meets the water (the painted bow may stick out above it): the bow wave starts here. */
   bowU: number;
+  /** Where a diving U-Boat's headlight starts (default bowU): a little back into a blunt bow, so the beam touches
+   *  the hull (owner, 9 ottobre: on the Nightmare it floated ahead of it). */
+  lampU?: number;
 }
 
 /** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
@@ -500,6 +503,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.03,
         propY: 0.5,
         bowU: 0.96,
+        lampU: 0.88,
       },
     },
   },
