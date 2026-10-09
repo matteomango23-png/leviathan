@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.54.0 — Il cockpit dipinto (9 ottobre 2026)
+
+- Il cockpit dell'Expedition Hunter 1 e 2 ora **usa le schermate dipinte** generate con Gemini dal proprietario. Sopra gli spazi vuoti ci sono i comandi veri:
+  - nodi, avanti adagio, motore, denti e "Al timone" sulle targhe in alto;
+  - le schede sulle placche a sinistra, con quella aperta illuminata;
+  - il sonar nello schermo grande e l'interruttore sulla placca verde;
+  - nella Plancia la carta nautica nello schermo e le **lancette rosse che si muovono davvero** sui quadranti (carburante della nave e del sottomarino, velocità), il meteo nel quadrante di rame; scorrendo, il travaso sulle placche accanto alla leva e il razzo sulla placca rossa;
+  - Diario, Recinto e Zaino scorrono sopra il muro inciso coi draghi.
+- Ai lati dello schermo dell'iPhone, il muro coi draghi sfocato.
+
 ## v0.53.6 — Pulsanti del timone senza pezzi disegnati a metà (9 ottobre 2026)
 
 - Sull'iPhone i pulsanti che svanivano restavano disegnati a metà. Ora svaniscono tutti insieme come un unico riquadro e alla fine vengono nascosti del tutto.

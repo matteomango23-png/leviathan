@@ -760,3 +760,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 9 ottobre 2026 — Dissolvenza dei pulsanti del timone (v0.53.6)
 
 - Sull'iPhone (Safari) sfumare l'opacità di singoli pulsanti sopra il canvas del gioco lasciava pezzi disegnati a metà. I pulsanti che funzionano solo a nave ferma stanno in un gruppo (`.helm-still`) con un suo livello (`will-change`, `translateZ(0)`), sfumato intero e poi nascosto con `visibility` a fine transizione.
+
+## 9 ottobre 2026 — Il cockpit dipinto (v0.54.0)
+
+- Le quattro schermate di Gemini (stessa cornice) fanno da **palco 16:9** (`.steam-stage`, container query: misure in `cqh`), adattato allo schermo; le fasce laterali mostrano il muro coi draghi sfocato.
+- **Posizioni misurate una volta** in percentuale delle immagini (`data/cockpitSteam.ts`); `ui/steamStage.ts` mette gli elementi sugli spazi (`place`) e incolla ritagli delle immagini (`crop`): placca accesa/spenta sulle schede, targa d'ottone su "Al timone", qualunque sia l'immagine sotto.
+- **Plancia:** una finestra che scorre su due parti dipinte (schermata con la carta, poi i pannelli di travaso ed emergenza dell'altra schermata). Le lancette sono div ruotati da -135° a +135° sulle tacche dipinte.
+- Le regole del palco sono prefissate con `#ui`: `#ui button { font-size: inherit }` vinceva sulle classi.
