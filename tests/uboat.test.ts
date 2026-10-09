@@ -14,7 +14,7 @@ import { canBoardShip, diveFromShip } from '../src/systems/ship/hatch';
 import { shipModel } from '../src/systems/ship/model';
 import { newShip, sailShip, type ShipWorld } from '../src/systems/ship/ship';
 import { buyShip } from '../src/systems/ship/shipyard';
-import { iceIn } from '../src/systems/ship/surface';
+import { iceIn, SHIP_WEST_X } from '../src/systems/ship/surface';
 import { maxDive, submerged } from '../src/systems/ship/uboat';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { pushOutOfVehicles } from '../src/systems/vehicles';
@@ -102,6 +102,29 @@ describe('the U-Boats dive', () => {
     const up = run(w, 6, { throttle: 0, dir: 1, dive: 0 });
     expect(up.some((e) => e.type === 'diveSurfacing')).toBe(true);
     expect(submerged(w.ship)).toBe(false);
+  });
+
+  it('at Porto Fango afloat it slows to the berth, the throttle lever going down with the speed', () => {
+    const w = world('whale', PORTO_FANGO.shipDock + 900);
+    w.ship.face = -1;
+    const helm = { throttle: 1, dir: -1 as const, dive: 0 };
+    let drop = 0;
+    for (let t = 0; t < 60; t += DT) {
+      const was = helm.throttle;
+      sailShip(w, helm, DT, [], () => false);
+      drop = Math.max(drop, was - helm.throttle);
+    }
+    expect(w.ship.speed).toBeLessThan(1);
+    expect(helm.throttle).toBeLessThan(0.05);
+    expect(drop).toBeLessThan(0.1); // gradually, never all at once
+    expect(w.ship.x).toBeGreaterThanOrEqual(SHIP_WEST_X);
+  });
+
+  it('under water it passes beneath the pier of Porto Fango, on west (owner, 9 ottobre)', () => {
+    const w = world('whale', PORTO_FANGO.shipDock + 400, 40);
+    w.ship.face = -1;
+    run(w, 25, { throttle: 1, dir: -1, dive: 0 });
+    expect(w.ship.x).toBeLessThan(SHIP_WEST_X - 100);
   });
 
   it('a ship that is not a U-Boat never dives', () => {

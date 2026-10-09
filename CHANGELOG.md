@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.56.2 — Arrivo a Porto Fango più naturale (9 ottobre 2026)
+
+- **Leva del gas:** quando la nave rallenta da sola entrando a Porto Fango, anche la leva del gas scende piano fino a zero insieme alla velocità.
+- **Solo in superficie:** la frenata e il limite del molo valgono solo a galla. Un U-Boat immerso passa sotto il molo e prosegue verso ovest; se riemerge laggiù, a galla può solo tornare verso est.
+
 ## v0.56.1 — Il meteo cambia davvero (9 ottobre 2026)
 
 - **Si parte con un tempo a caso** (sereno, nuvoloso, pioggia o nebbia, mai tempesta), e ogni partita ha la sua sequenza: prima ogni apertura ripartiva da cielo sereno con sempre la stessa sequenza, e sull'iPhone, che riapre spesso il gioco, si vedeva quasi solo il sereno.
