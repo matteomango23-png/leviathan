@@ -73,13 +73,15 @@ export class WeatherView {
 
   update(v: ViewInfo, look: WeatherLook, cold: number, time: number, dt: number): void {
     const reach = weatherReach(v.cy);
-    const skyTop = v.h / 2 + (CAMERA.minY - v.cy) * v.zoom;
+    // the sky's top: where the swimming camera stops, or the top of the screen when the view is wider than that (the
+    // big ships' far view: owner, 9 ottobre, the mist ended in a hard line across the sky)
+    const skyTop = Math.min(0, v.h / 2 + (CAMERA.minY - v.cy) * v.zoom);
     const surface = v.h / 2 + (WORLD.surfaceY - v.cy) * v.zoom;
     const skyVisible = surface > 0;
 
     // clouds: a strip of soft dark blobs drifting with the wind, over the upper sky
     const cloudAlpha = look.clouds * 0.85;
-    const bandH = (WORLD.surfaceY - CAMERA.minY) * v.zoom;
+    const bandH = surface - skyTop;
     const showClouds = skyVisible && cloudAlpha > 0.01;
     const cw = v.w * 1.2;
     const off = (((time * (4 + look.wind * 30) * (v.w / 800) + v.cx * v.zoom * 0.05) % cw) + cw) % cw;
@@ -213,7 +215,7 @@ function paintFog(scene: Phaser.Scene): void {
   const tex = scene.textures.createCanvas(FOG_KEY, 4, 128)!;
   const c = tex.context;
   const gr = c.createLinearGradient(0, 0, 0, 128);
-  gr.addColorStop(0, 'rgba(255,255,255,0.15)');
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); // nothing at the top: no edge, however tall the band
   gr.addColorStop(0.75, 'rgba(255,255,255,0.85)');
   gr.addColorStop(0.85, 'rgba(255,255,255,0.7)');
   gr.addColorStop(1, 'rgba(255,255,255,0)');
