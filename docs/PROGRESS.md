@@ -1,5 +1,13 @@
 # Progressi
 
+## Molo di Porto Fango solo in superficie (9 ottobre 2026) → v0.56.2
+
+**Fatto:** in `sailShip` (`systems/ship/ship.ts`) la frenata d'arrivo abbassa anche `helm.throttle` (`velocità / massima`). Frenata e limite ovest (`SHIP_WEST_X`) valgono solo se la nave non è `submerged`. A galla oltre il limite si può solo tornare a est. Due test in `tests/uboat.test.ts`.
+
+**Da provare sull'iPhone:**
+1. Entra a Porto Fango col gas al massimo: la leva deve scendere da sola fino a zero.
+2. Con l'U-Boat immerso, passa sotto il molo verso ovest.
+
 ## Meteo a caso e salvato (9 ottobre 2026) → v0.56.1
 
 **Fatto:** `createWeather` parte da `WEATHER.startWeights` con un seme diverso a ogni sessione; `SaveData.weather` (facoltativo, senza cambiare versione) con `saveWeather` e `checkedWeather` in `systems/weather.ts`.

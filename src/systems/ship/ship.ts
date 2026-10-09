@@ -230,22 +230,27 @@ export function sailShip(
   const from = s.x;
   const end = SEA_END_X - half;
   // coming into Porto Fango (or to the end of the sea) it slows down by itself and stops at the berth (owner,
-  // 8 ottobre: at full speed you crashed into it every time, unseen)
+  // 8 ottobre: at full speed you crashed into it every time, unseen), the throttle lever going down with the speed
+  // (owner, 9 ottobre). The pier is at the surface: a U-Boat under water passes beneath it, on west.
   const A = SHIP.approach;
-  const ahead = s.face < 0 ? s.x - PORTO_FANGO.shipDock : end - s.x;
+  const afloat = !submerged(s);
+  const ahead = s.face < 0 ? (afloat ? s.x - PORTO_FANGO.shipDock : Infinity) : end - s.x;
   if (ahead < A.range && s.speed > 0) {
     const most = Math.sqrt(2 * A.decel * Math.max(0, ahead)); // the speed that stops it right there
     if (s.speed > most) {
       s.speed = most; // it follows the braking curve exactly: it stops at the berth, never all at once
+      if (helm && top > 0) helm.throttle = Math.min(helm.throttle, s.speed / top);
       if (!s.approaching && s.face < 0) events.push({ type: 'harbourApproach' });
       s.approaching = true;
     }
   } else s.approaching = false;
+  // afloat it never goes west of the harbour (a U-Boat that came up out there only sails back east)
+  const west = afloat ? Math.min(SHIP_WEST_X, s.x) : -Infinity;
   // a U-Boat under water stops against rock with its whole hull (ship/uboat.ts)
   const ahead2 = s.x + s.face * s.speed * dt;
   if (hullBlocked(g.map, s, ahead2, s.dive)) s.speed = 0;
-  else s.x = Math.max(SHIP_WEST_X, Math.min(end, ahead2));
-  const atEdge = s.x >= end ? 'seaEnd' : s.x <= SHIP_WEST_X ? 'shipWest' : null;
+  else s.x = Math.max(west, Math.min(end, ahead2));
+  const atEdge = s.x >= end ? 'seaEnd' : s.x <= west ? 'shipWest' : null;
   if (atEdge && s.speed > 0 && s.face > 0 === (atEdge === 'seaEnd')) {
     s.speed = 0;
     if (s.shallowWarn <= 0) {
