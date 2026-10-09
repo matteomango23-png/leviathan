@@ -43,9 +43,15 @@ export function turbidityAt(
 ): number {
   if (y < WORLD.surfaceY) return 0;
   const weather = C.fromWaves * Math.max(0, Math.min(1, (w.waves - 1) / 2.2)) + C.fromRain * w.precip;
-  return Math.max(murkAt(x, y), Math.min(1, cycleMurk(x, t) + weather));
+  return Math.max(murkAt(x, y), Math.min(C.max, cycleMurk(x, t) + weather));
 }
 
-/** At this murk, is a beast this far from your light only a dark shape? */
-export const isShape = (murk: number, distance: number): boolean =>
-  murk >= C.shapesFrom && distance > C.shapesBeyond;
+const smooth = (a: number, b: number, v: number): number => {
+  const u = Math.max(0, Math.min(1, (v - a) / (b - a)));
+  return u * u * (3 - 2 * u);
+};
+
+/** At this murk, how much a beast this far from your light is only a dark shape: 0 (seen) … 1 (a shape). */
+export const shapeShare = (murk: number, distance: number): number =>
+  smooth(C.shapesFrom, C.shapesFrom + C.shapesSoft, murk) *
+  smooth(C.shapesBeyond, C.shapesBeyond + C.shapesSoft * 100, distance);

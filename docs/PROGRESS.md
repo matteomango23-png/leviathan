@@ -1,5 +1,11 @@
 # Progressi
 
+## Torbidità più giocabile (9 ottobre 2026) → v0.60.4
+
+- `CLARITY.max` 0,55 (tetto del mare aperto; il Delta resta 1), `cycleMax` 0,45, `fromWaves` 0,3, `fromRain` 0,2, `shapesFrom` 0,38.
+- `shapeShare` (0…1) al posto di `isShape`; in `beastsLayer` ogni bestia sfuma verso la sagoma con `shapesEase`.
+- **Da provare sull'iPhone:** tempesta con pioggia sott'acqua: si vede ancora, bestie lontane come sagome che arrivano piano.
+
 ## Bestie fuori inquadratura, torbidità sfumata (9 ottobre 2026) → v0.60.3
 
 - `BeastState.view` (non salvato), messo dalla `WorldScene` a ogni fotogramma; `onScreen` in `beastState.ts`. Le bestie compaiono (`appearPoint`, residenti del mare aperto con raggio pari a metà inquadratura + margine) e spariscono solo fuori schermo (`WILD_RULES.viewMargin`); idem i banchi di sardine (`stepEndlessSchools`).
