@@ -77,6 +77,7 @@ export function waterOver(
   bottom: number,
   time: number,
   sea: SeaNow,
+  strength = 1,
 ): void {
   const c = rampColor(SEA.waterByY, WORLD.surfaceY + 12);
   const colour = Phaser.Display.Color.GetColor(c[0], c[1], c[2]);
@@ -94,7 +95,7 @@ export function waterOver(
     for (let j = 0; j < bands; j++) {
       const top = j * band;
       if (Math.min(a, b) + top >= bottom) break;
-      const alpha = 0.5 * edge * (1 - j / bands);
+      const alpha = 0.5 * strength * edge * (1 - j / bands);
       if (alpha < 0.01) continue;
       g.fillStyle(colour, alpha);
       g.fillTriangle(x, a + top, xe, b + top, xe, b + top + band);

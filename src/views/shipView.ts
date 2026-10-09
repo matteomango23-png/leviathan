@@ -18,6 +18,9 @@ import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
 
+/** A U-Boat's hull under the waves darkens fully once it has gone down this share of its floating line. */
+const UNDER_FADE = 0.5;
+
 export class ShipView {
   /** The paintings of every model, made at once so they stay under the submarine (owner, 8 ottobre: made later,
    *  on top, the open hatch hid it). */
@@ -90,14 +93,18 @@ export class ShipView {
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
     const pics = this.picsOf(s);
     // afloat, the whole painting, and in front of it the sea cut by the wave itself (no straight line, owner 9
-    // ottobre); diving, the sea line climbing its picture, along the waves too
+    // ottobre); diving, the hull under the waves darkens little by little (owner: it turned dark at once going
+    // down a centimetre) while that sea in front fades away
+    const wet = Math.min(1, diveShare(s) / UNDER_FADE);
     const afloat = diveShare(s) < 0.02;
-    const seaY = afloat ? null : (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
-    if (pics) pics.place(s, s.x, top, 1, pitch * calm, seaY, time);
+    const seaY = (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
+    if (pics) pics.place(s, s.x, top, 1, pitch * calm, wet > 0 ? seaY : null, time, wet);
     else this.drawFallback(s, top);
-    if (afloat) {
+    if (wet < 1) {
       const { x0, x1 } = { x0: s.x - shipLength(s) / 2, x1: s.x + shipLength(s) / 2 };
-      waterOver(this.fx, x0, x1, top + shipHeight(s) * 1.05, time, sea);
+      waterOver(this.fx, x0, x1, top + shipHeight(s) * 1.05, time, sea, 1 - wet);
+    }
+    if (afloat) {
       // its bow buried in a crest throws the sea up (his clip of the tanker)
       if (s.ride.plunge > 0.5)
         this.spray.spray(

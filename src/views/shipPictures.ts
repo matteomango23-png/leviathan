@@ -77,7 +77,8 @@ export class ShipPictures {
   /**
    * Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), and the sea's surface (world y at
    * a world x) when it is diving: under it the picture is seen through the water, cut along the waves themselves.
-   * Afloat (null) the whole picture shows and the sea in front of it is drawn by waterOver.
+   * Afloat (null) the whole picture shows and the sea in front of it is drawn by waterOver. `wet`: how strongly the
+   * part under the waves is tinted (0 … 1), growing as it goes down.
    */
   place(
     s: ShipState,
@@ -87,6 +88,7 @@ export class ShipPictures {
     pitch: number,
     seaY: ((x: number) => number) | null,
     time = 0,
+    wet = 1,
   ): void {
     const w = shipLength(s) * scale;
     const h = w * shipPicture(s).aspect;
@@ -132,7 +134,7 @@ export class ShipPictures {
           .setPosition(x, cy)
           .setScale(sc * s.face, sc)
           .setRotation(rot)
-          .setAlpha(alpha)
+          .setAlpha(alpha * wet)
           .setCrop(u0, v, u1 - u0, H - v);
       }
     }

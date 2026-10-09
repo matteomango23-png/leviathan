@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.2 — U-Boat che si scurisce piano (9 ottobre 2026)
+
+- **Niente più scatto da chiaro a scuro:** scendendo con l'U-Boat, la parte sott'acqua si scurisce un po' alla volta, mentre la fascia d'acqua chiara della superficie sfuma via.
+
 ## v0.60.1 — U-Boat sott'acqua lungo le onde (9 ottobre 2026)
 
 - **U-Boat che si immerge:** la parte sott'acqua si scurisce lungo le onde vere, non più lungo una riga dritta.
