@@ -99,31 +99,36 @@ describe('shopping', () => {
 });
 
 describe('the suit sets the maximum depth', () => {
-  it('below it there is no wall: the pressure bar empties (faster the deeper), then it hurts (4 ottobre)', () => {
-    const after = (extraM: number, seconds: number) => {
-      const g = fresh();
-      const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
-      g.diver.x = bay(340); // the open shaft down to the abyss (the test needs open water at every depth)
-      g.diver.y = limitY + extraM * WORLD.unitsPerMetre;
-      expect(g.map.hitCircle(g.diver.x, g.diver.y, 5)).toBe(false);
-      const y0 = g.diver.y;
-      const ev = run(g, seconds);
-      if (seconds < 5) expect(g.diver.y).toBeGreaterThanOrEqual(y0 - 1); // not pushed back up
-      if (extraM > 0) expect(ev.some((e) => e.type === 'tooDeep')).toBe(true);
-      return {
-        pressure: g.diver.pressure,
-        hurt: ev.filter((e) => e.type === 'hurt').length,
-        o2: g.diver.o2 / g.diver.maxO2,
+  // several games stepped for seconds each: slow under the full suite's load, it timed out once in a while
+  it(
+    'below it there is no wall: the pressure bar empties (faster the deeper), then it hurts (4 ottobre)',
+    { timeout: 30000 },
+    () => {
+      const after = (extraM: number, seconds: number) => {
+        const g = fresh();
+        const limitY = WORLD.surfaceY + SUITS[0]!.maxDepth * WORLD.unitsPerMetre;
+        g.diver.x = bay(340); // the open shaft down to the abyss (the test needs open water at every depth)
+        g.diver.y = limitY + extraM * WORLD.unitsPerMetre;
+        expect(g.map.hitCircle(g.diver.x, g.diver.y, 5)).toBe(false);
+        const y0 = g.diver.y;
+        const ev = run(g, seconds);
+        if (seconds < 5) expect(g.diver.y).toBeGreaterThanOrEqual(y0 - 1); // not pushed back up
+        if (extraM > 0) expect(ev.some((e) => e.type === 'tooDeep')).toBe(true);
+        return {
+          pressure: g.diver.pressure,
+          hurt: ev.filter((e) => e.type === 'hurt').length,
+          o2: g.diver.o2 / g.diver.maxO2,
+        };
       };
-    };
-    expect(after(-5, 2).pressure).toBe(1); // within the suit: nothing
-    const just = after(1, 2);
-    const deep = after(25, 2);
-    expect(just.pressure).toBeLessThan(1);
-    expect(deep.pressure).toBeLessThan(just.pressure);
-    expect(just.o2).toBeGreaterThan(0.9); // the air is not what drops
-    expect(after(25, 15).hurt).toBeGreaterThan(0); // empty, it costs hearts
-  });
+      expect(after(-5, 2).pressure).toBe(1); // within the suit: nothing
+      const just = after(1, 2);
+      const deep = after(25, 2);
+      expect(just.pressure).toBeLessThan(1);
+      expect(deep.pressure).toBeLessThan(just.pressure);
+      expect(just.o2).toBeGreaterThan(0.9); // the air is not what drops
+      expect(after(25, 15).hurt).toBeGreaterThan(0); // empty, it costs hearts
+    },
+  );
 });
 
 describe('wrecks, weapons and the backpack', () => {
