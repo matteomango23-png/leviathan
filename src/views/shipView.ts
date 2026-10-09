@@ -10,100 +10,13 @@ import { SeaFx, waterOver } from './seaFx';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { SHIP_MODELS, type ShipModelDef } from '../data/fleet';
+import { SHIP_MODELS } from '../data/fleet';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
-import { hatchT, type ShipState } from '../systems/ship/ship';
+import type { ShipState } from '../systems/ship/ship';
 import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
-
-const UNDERWATER_TINT = 0x6f97a6;
-
-/**
- * One copy of the ship: its pictures, each cut at the waterline (above / below), in pairs. Closed first; then,
- * with two hatches, each one open alone and both open; with one, it open; last the propeller turning, if painted.
- */
-class ShipPictures {
-  readonly parts: Phaser.GameObjects.Image[];
-  /** For each pair of parts: how open it shows (from the hatches), or the propeller turning. */
-  private readonly roles: ('closed' | number | 'all' | 'moving')[] = [];
-  /** Its lit red parts, added on top and pulsing (art.glow). */
-  private readonly glow: Phaser.GameObjects.Image | null;
-
-  constructor(
-    scene: Phaser.Scene,
-    layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
-    art: NonNullable<ShipModelDef['art']>,
-    bays: ShipModelDef['bays'],
-  ) {
-    const make = (key: string): Phaser.GameObjects.Image => scene.add.image(0, 0, key).setVisible(false);
-    this.parts = [];
-    const add = (key: string, role: (typeof this.roles)[number]): void => {
-      if (!WORLD_ART_KEYS.includes(key)) return;
-      this.parts.push(make(`world-${key}`), make(`world-${key}`));
-      this.roles.push(role);
-    };
-    add(art.closed, 'closed');
-    if (bays.length > 1) {
-      for (const [i, bay] of bays.entries()) if (bay.open) add(bay.open, i);
-      add(art.open, 'all');
-    } else add(art.open, 0);
-    if (art.moving) add(art.moving, 'moving');
-    layer.add(this.parts);
-    this.glow =
-      art.glow && WORLD_ART_KEYS.includes(art.glow)
-        ? make(`world-${art.glow}`).setBlendMode(Phaser.BlendModes.ADD)
-        : null;
-    if (this.glow) layer.add(this.glow);
-    for (const [i, im] of this.parts.entries()) if (i % 2 === 1) im.setTint(UNDERWATER_TINT);
-  }
-
-  hide(): void {
-    for (const im of this.parts) im.setVisible(false);
-    this.glow?.setVisible(false);
-  }
-
-  /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
-   *  propeller over all while it pushes. */
-  private alphaOf(s: ShipState, role: (typeof this.roles)[number]): number {
-    if (role === 'closed') return 1;
-    if (typeof role === 'number') return hatchT(s, role);
-    const most = Math.max(0, ...s.hatches.map((h) => h.t));
-    if (role === 'all') return s.hatches.reduce((a, h) => a * h.t, 1);
-    return Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - most);
-  }
-
-  /**
-   * Places it: centre x, top of the picture y, scale, pitch (radians, bow up > 0), and where the sea surface crosses
-   * it (share of its height from the top): above, the picture as it is; below, seen through the water. A U-Boat
-   * diving moves that line up its picture little by little (owner, 9 ottobre: it went all dark at once).
-   */
-  place(s: ShipState, x: number, top: number, scale: number, pitch: number, water: number, time = 0): void {
-    const w = shipLength(s) * scale;
-    const h = w * shipPicture(s).aspect;
-    if (this.glow) {
-      const sc = w / this.glow.width;
-      this.glow
-        .setVisible(true)
-        .setPosition(x, top + h / 2)
-        .setScale(sc * s.face, sc)
-        .setRotation(-s.face * pitch)
-        .setAlpha(0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6)));
-    }
-    for (const [i, im] of this.parts.entries()) {
-      const alpha = this.alphaOf(s, this.roles[i >> 1]!);
-      const sc = w / im.width;
-      im.setVisible(alpha > 0.01)
-        .setPosition(x, top + h / 2)
-        .setScale(sc * s.face, sc)
-        .setRotation(-s.face * pitch)
-        .setAlpha(alpha);
-      const cut = Math.round(Math.max(0, Math.min(1, water)) * im.height);
-      if (i % 2 === 1) im.setCrop(0, cut, im.width, im.height - cut);
-      else im.setCrop(0, 0, im.width, cut).setVisible(alpha > 0.01 && cut > 0);
-    }
-  }
-}
+import { ShipPictures } from './shipPictures';
 
 export class ShipView {
   /** The paintings of every model, made at once so they stay under the submarine (owner, 8 ottobre: made later,
@@ -177,10 +90,10 @@ export class ShipView {
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
     const pics = this.picsOf(s);
     // afloat, the whole painting, and in front of it the sea cut by the wave itself (no straight line, owner 9
-    // ottobre); diving, the old cut at the sea line climbing its picture
+    // ottobre); diving, the sea line climbing its picture, along the waves too
     const afloat = diveShare(s) < 0.02;
-    const water = afloat ? 1 : (WORLD.surfaceY - top) / shipHeight(s);
-    if (pics) pics.place(s, s.x, top, 1, pitch * calm, water, time);
+    const seaY = afloat ? null : (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
+    if (pics) pics.place(s, s.x, top, 1, pitch * calm, seaY, time);
     else this.drawFallback(s, top);
     if (afloat) {
       const { x0, x1 } = { x0: s.x - shipLength(s) / 2, x1: s.x + shipLength(s) / 2 };

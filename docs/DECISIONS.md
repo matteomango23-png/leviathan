@@ -841,6 +841,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 9 ottobre 2026 — Linea d'acqua dell'U-Boat lungo le onde (v0.60.1)
+
+- **Strisce invece di una maschera:** il taglio rettangolare (crop) è sempre dritto. Una maschera di Phaser 4 ridisegnerebbe ogni fotogramma una texture grande quanto la nave, troppo pesante sull'iPhone. Così ogni dipinto ha 40 copie colorate "sott'acqua", ognuna ritagliata su una striscia verticale all'altezza dell'onda: stessa texture, quindi poco costo.
+
 ## 9 ottobre 2026 — Onde realistiche e colonne d'acqua (v0.60.0)
 
 - **Perché sembravano un fantasma:** poche sinusoidi uguali scorrono rigide e si ripetono. Il mare vero è una somma di molte onde con velocità diverse (dispersione del mare profondo, ω = √(g·k)), che forma gruppi. Ora: 8 treni di Gerstner con lunghezze da 34 a 420 unità, altezza ∝ lunghezza^0,75, ripidità dal meteo. Fonti: CREST (crest.readthedocs.io, wave conditions), Wave Generator di ziszle (itch.io).

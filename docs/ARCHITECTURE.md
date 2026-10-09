@@ -145,6 +145,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
+| `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |
 | `shipFx.ts` (views) | Effetti intorno alla nave: fumo delle ciminiere (dietro la nave), schegge di ghiaccio. Solo aspetto. |
 | `boatView.ts` (views) | Il motoscafo o la moto d'acqua: immagine sulla linea d'acqua, beccheggio, immagine "accesa" col gas, scia e bolle. |
 | `worldArtView.ts` (views) | Le pareti dipinte sui bordi dritti di pozzi e fosse e gli iceberg, solo vicino alla telecamera. |

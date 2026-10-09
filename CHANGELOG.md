@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.1 — U-Boat sott'acqua lungo le onde (9 ottobre 2026)
+
+- **U-Boat che si immerge:** la parte sott'acqua si scurisce lungo le onde vere, non più lungo una riga dritta.
+
 ## v0.60.0 — Onde realistiche e mare che reagisce (9 ottobre 2026)
 
 - **Onde vere:** non più due onde uguali che scorrono, ma otto treni d'onde di lunghezza diversa. Le lunghe corrono più veloci delle corte, come nel mare vero: si formano gruppi, ogni tanto un'onda più alta, mai due tratti di mare uguali.
