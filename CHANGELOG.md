@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.56.1 — Il meteo cambia davvero (9 ottobre 2026)
+
+- **Si parte con un tempo a caso** (sereno, nuvoloso, pioggia o nebbia, mai tempesta), e ogni partita ha la sua sequenza: prima ogni apertura ripartiva da cielo sereno con sempre la stessa sequenza, e sull'iPhone, che riapre spesso il gioco, si vedeva quasi solo il sereno.
+- **Il meteo si salva:** riaprendo il gioco ritrovi il tempo che c'era.
+
 ## v0.56.0 — Musica del mare aperto e nuova musica di battaglia (9 ottobre 2026)
 
 - **Musica del mare aperto:** passato Porto Fango (circa 1,2 km dalla costa) entra piano una musica lenta e cupa, scritta da noi: un coro di voci basse a bocca chiusa, una voce grave che canta la melodia una volta sì e una no, un bordone profondo e un tamburo lontano, tutto in un'eco lunga. Si spegne piano quando torni verso la costa e tace durante le battaglie.

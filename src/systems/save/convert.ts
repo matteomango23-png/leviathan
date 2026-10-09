@@ -16,6 +16,7 @@ import { newGear, type GearState } from '../economy/gear';
 import type { BackpackWorld } from '../economy/backpack';
 import { newSave, type SaveData, type SavedGear } from './saveData';
 import { saveStory, type StoryState } from '../story';
+import { saveWeather, type WeatherState } from '../weather';
 
 /** The parts of the game that are saved. */
 export interface SaveSource extends Pick<
@@ -28,6 +29,7 @@ export interface SaveSource extends Pick<
   fleet: MooredShip[];
   hunts: SaveData['hunts'];
   huntPinned: string | null;
+  weather: WeatherState;
   playTime: number;
   fishCaught: Record<string, number>;
   story: StoryState;
@@ -102,6 +104,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.fleet = g.fleet.map((m) => structuredClone(m));
   s.hunts = structuredClone(g.hunts);
   s.huntPinned = g.huntPinned;
+  s.weather = saveWeather(g.weather);
   s.legendsGone = [...g.beasts.gone];
   // saved aboard: you start next to it, in the water (one tap climbs back aboard)
   if (g.sub.aboard && !d.dead) s.diver = subWakePoint(g.sub); // saved inside: you start next to it

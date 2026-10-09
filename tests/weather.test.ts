@@ -5,8 +5,10 @@ import { ICE, WORLD } from '../src/data/worldLayout';
 import { createBirds, stepBirds } from '../src/systems/birds';
 import { biomeOf } from '../src/systems/world/stretches';
 import {
+  checkedWeather,
   coldAt,
   createWeather,
+  saveWeather,
   isColdSea,
   nextWeather,
   stepWeather,
@@ -63,8 +65,10 @@ describe('meteo', () => {
     for (let i = 0; i < 500; i++) expect(nextWeather('sereno', rng)).not.toBe('tempesta');
   });
 
-  it('si parte col sereno e in due ore di gioco si vedono tutti i tipi', () => {
-    expect(createWeather().to).toBe(WEATHER.start);
+  it('si parte a caso (mai in tempesta), ogni sessione col suo tempo; in due ore si vedono tutti i tipi', () => {
+    const starts = new Set(Array.from({ length: 200 }, (_, i) => createWeather(i).to));
+    expect([...starts].sort()).toEqual(Object.keys(WEATHER.startWeights).sort());
+    expect(starts.has('tempesta')).toBe(false);
     const { seen } = run(2 * 3600);
     for (const id of IDS) expect(seen.has(id), id).toBe(true);
   });
@@ -79,6 +83,15 @@ describe('meteo', () => {
     const { flashesIn } = run(3 * 3600, 3);
     expect(flashesIn.get('tempesta') ?? 0).toBeGreaterThan(0);
     for (const id of IDS) if (id !== 'tempesta') expect(flashesIn.get(id) ?? 0, id).toBe(0);
+  });
+
+  it('il tempo si salva e riprende da dov’era (owner, 9 ottobre)', () => {
+    const w = run(1234, 4).w;
+    const back = createWeather(7, checkedWeather(JSON.parse(JSON.stringify(saveWeather(w)))));
+    expect([back.from, back.to, back.left]).toEqual([w.from, w.to, Math.round(w.left)]);
+    expect(back.blend).toBeCloseTo(w.blend, 2);
+    expect(checkedWeather({ from: 'grandine', to: 'sereno', blend: 1, left: 9 })).toBeNull();
+    expect(checkedWeather(undefined)).toBeNull();
   });
 
   it('stessa partenza, stesso tempo (ripetibile)', () => {

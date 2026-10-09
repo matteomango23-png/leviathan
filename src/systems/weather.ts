@@ -1,4 +1,5 @@
-// The weather above the sea (look only: it changes nothing in the game's rules and is not saved). One kind of
+// The weather above the sea (look only: it changes nothing in the game's rules; saved, so it goes on where it was).
+// It starts at random, with a random sequence after it (owner, 9 ottobre). One kind of
 // weather at a time, chosen from WEATHER_NEXT when the current one runs out, blending slowly into the next;
 // lightning flashes come at random during storms. The view reads `weatherLook` and `coldAt`.
 import { ICE } from '../data/worldLayout';
@@ -25,15 +26,48 @@ const minutes = (rng: Rng, id: WeatherId): number => {
   return range(rng, a, b) * 60;
 };
 
-export function createWeather(seed: number = WEATHER.seed): WeatherState {
+/** What is saved of the weather. */
+export interface SavedWeather {
+  from: WeatherId;
+  to: WeatherId;
+  blend: number;
+  left: number;
+}
+
+/**
+ * The weather of a session: the saved one going on, or a random start. `seed` fixes the sequence (tests); by
+ * default every session has its own.
+ */
+export function createWeather(
+  seed = Math.floor(Math.random() * 2 ** 31),
+  saved?: SavedWeather | null,
+): WeatherState {
   const rng = makeRng(seed);
-  const start = WEATHER.start;
+  if (saved) return { ...saved, flash: 0, rng };
+  const start = pick(WEATHER.startWeights, rng);
   return { from: start, to: start, blend: 1, left: minutes(rng, start), flash: 0, rng };
 }
 
-/** Picks the kind that follows `id`, by the weights in WEATHER_NEXT. */
-export function nextWeather(id: WeatherId, rng: Rng): WeatherId {
-  const options = Object.entries(WEATHER_NEXT[id]) as [WeatherId, number][];
+export const saveWeather = (w: WeatherState): SavedWeather => ({
+  from: w.from,
+  to: w.to,
+  blend: Math.round(w.blend * 1000) / 1000,
+  left: Math.round(w.left),
+});
+
+/** A saved weather read back (null: missing or not valid). */
+export function checkedWeather(raw: unknown): SavedWeather | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  const kind = (v: unknown): v is WeatherId => typeof v === 'string' && v in WEATHERS;
+  const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  if (!kind(r.from) || !kind(r.to) || !num(r.blend) || !num(r.left)) return null;
+  return { from: r.from, to: r.to, blend: Math.max(0, Math.min(1, r.blend)), left: Math.max(0, r.left) };
+}
+
+/** A kind of weather by weights. */
+function pick(weights: Partial<Record<WeatherId, number>>, rng: Rng): WeatherId {
+  const options = Object.entries(weights) as [WeatherId, number][];
   const total = options.reduce((s, [, w]) => s + w, 0);
   let r = rng() * total;
   for (const [k, w] of options) {
@@ -42,6 +76,9 @@ export function nextWeather(id: WeatherId, rng: Rng): WeatherId {
   }
   return options[options.length - 1]![0];
 }
+
+/** Picks the kind that follows `id`, by the weights in WEATHER_NEXT. */
+export const nextWeather = (id: WeatherId, rng: Rng): WeatherId => pick(WEATHER_NEXT[id], rng);
 
 /** The look of the weather right now: the two kinds mixed by the blend. */
 export function weatherLook(w: WeatherState): WeatherLook {

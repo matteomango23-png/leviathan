@@ -1,5 +1,5 @@
 // Leviatano — the weather above the sea and the sea birds (owner, 4 ottobre 2026: "meteo dinamico e stormi di
-// uccelli", look only: nothing here changes battles, beasts, air or saves). The weather changes by itself every
+// uccelli", look only: nothing here changes battles, beasts or air; the weather is saved, 9 ottobre). The weather changes by itself every
 // few minutes and blends slowly from one kind to the next; in the cold seas rain falls as snow. Values marked
 // "tuning" are a first pass: change them here, never in systems or views.
 
@@ -83,8 +83,9 @@ export const WEATHER_NEXT: Record<WeatherId, Partial<Record<WeatherId, number>>>
 };
 
 export const WEATHER = {
-  seed: 4127, // tuning: another seed, another sequence of weather
-  start: 'sereno' as WeatherId, // every session starts calm
+  /** A new game (or a save from before the weather was saved) starts with one of these, at random, by weight: never
+   *  a storm (owner, 9 ottobre: the iPhone, reopened often, always showed the same calm start). Tuning. */
+  startWeights: { sereno: 3, nuvoloso: 2, pioggia: 1, nebbia: 1 } as Partial<Record<WeatherId, number>>,
   blendSeconds: 25, // tuning: how long one kind takes to turn into the next
   lightningSeconds: 0.35, // how long a flash lasts
   /** Below this depth (m) the weather is not felt any more: rays, darkness and flashes fade to nothing. */
