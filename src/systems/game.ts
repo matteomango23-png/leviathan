@@ -242,7 +242,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
   }
   stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
-  stepEndlessSchools(g.fish, g.map, d, g.rng);
+  stepEndlessSchools(g.fish, g.map, d, g.rng, g.beasts.view);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {
       markSeen(g, f.kind, events);

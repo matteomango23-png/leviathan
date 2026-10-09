@@ -16,7 +16,7 @@ import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
-import { isHeld, type BattleRequest, type BeastWorld } from './beastState';
+import { isHeld, onScreen, type BattleRequest, type BeastWorld } from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
@@ -73,6 +73,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     lure.t -= dt;
     if (lure.t <= 0) g.beasts.lure = null;
   }
+  /** On screen, or so near its edge that a beast there would show. */
+  const seen = (x: number, y: number): boolean => onScreen(g.beasts.view, x, y, WILD_RULES.viewMargin);
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
   /** It comes out of the dark (a resident of the endless sea: where it already is). */
   const appear = (w: WildBeast, at?: { x: number; y: number }): boolean => {
@@ -80,8 +82,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const form: BeastForm = w.spawn.form
       ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
       : rollWildForm(w.spawn.speciesId, g.rng);
-    const p = at ?? appearPoint(w, g.map, g.rng, d);
-    if (!p) return false;
+    const p = at ?? appearPoint(w, g.map, g.rng, d, seen);
+    if (!p || seen(p.x, p.y)) return false;
     spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
     // far stronger than your strongest beast: a warning (owner, 4 ottobre: fear of some creatures)
@@ -102,8 +104,11 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   const wakeResident = (w: WildBeast): boolean => {
     const lure = g.beasts.lure?.species ?? [];
     const dist = (c: { x: number; y: number }): number => Math.hypot(c.x - d.x, c.y - d.y);
-    const near = residentsNear(res, d.x, R.wakeRadius, g.beasts.held).filter(
-      (c) => res.awake[c.r.id] === undefined && dist(c) < R.wakeRadius,
+    // just beyond the screen's edge when the view is wider than the waking distance (the big ships' far view)
+    const v = g.beasts.view;
+    const reach = Math.max(R.wakeRadius, v ? Math.max(v.width, v.height) / 2 + WILD_RULES.viewMargin * 2 : 0);
+    const near = residentsNear(res, d.x, reach, g.beasts.held).filter(
+      (c) => res.awake[c.r.id] === undefined && dist(c) < reach && !seen(c.x, c.y),
     );
     if (!near.length) return false;
     const score = (c: (typeof near)[number]): number => dist(c) - (lure.includes(c.r.speciesId) ? 1e6 : 0);
@@ -134,7 +139,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     // you swam far away from its waters: it goes back into the dark (a hunter on your tail a bit later)
     // (not while the sphere holds it: it waits for you there)
     const leash = 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0);
-    if (!isHeld(g.beasts.held, w) && !inArea(w, d.x, d.y, leash)) {
+    if (!isHeld(g.beasts.held, w) && !inArea(w, d.x, d.y, leash) && !seen(w.x, w.y)) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
     }

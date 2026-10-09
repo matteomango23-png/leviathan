@@ -17,12 +17,21 @@ const hash = (k: number, salt: number): number => {
 /** The stretch of sea at x. */
 export const clarityZone = (x: number): number => Math.floor(x / (C.zoneKm * 1000 * WORLD.unitsPerMetre));
 
-/** Its own cycle now, 0 (clear) … CLARITY.cycleMax: clear most of the time, murky for a part of each period. */
-export function cycleMurk(x: number, t: number): number {
-  const k = clarityZone(x);
+/** A stretch's own cycle now, 0 (clear) … CLARITY.cycleMax: clear most of the time, murky for a part of each period. */
+function zoneMurk(k: number, t: number): number {
   const period = C.periodS * (1 - C.jitter + 2 * C.jitter * hash(k, 1));
   const wave = 0.5 + 0.5 * Math.sin((t / period) * Math.PI * 2 + hash(k, 2) * Math.PI * 2);
   return Math.max(0, (wave - 0.4) / 0.6) * C.cycleMax;
+}
+
+/** The cycle at x now: from the middle of one stretch to the middle of the next it blends softly into the next one's
+ *  (owner, 9 ottobre: crossing into another stretch the water changed at a stroke). */
+export function cycleMurk(x: number, t: number): number {
+  const f = x / (C.zoneKm * 1000 * WORLD.unitsPerMetre) - 0.5;
+  const k = Math.floor(f);
+  const u = f - k;
+  const s = u * u * (3 - 2 * u);
+  return zoneMurk(k, t) * (1 - s) + zoneMurk(k + 1, t) * s;
 }
 
 /** How murky the water is at a point now, 0..1 (above the surface: 0). */

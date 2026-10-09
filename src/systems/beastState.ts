@@ -60,7 +60,21 @@ export interface BeastState {
   residents: ResidentsState;
   /** The beast the sphere holds still (not saved). */
   held: Held | null;
+  /** What the camera shows now (world units; set by the World scene, not saved): beasts come out of the dark and go
+   *  back into it only outside it (owner, 9 ottobre: in the U-Boat they popped up on screen). */
+  view: ViewRect | null;
 }
+
+export interface ViewRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** Is this point on screen, or within `margin` units of its edges? (No view known: never.) */
+export const onScreen = (v: ViewRect | null, x: number, y: number, margin: number): boolean =>
+  !!v && x > v.x - margin && x < v.x + v.width + margin && y > v.y - margin && y < v.y + v.height + margin;
 
 export interface BeastWorld {
   map: TileMap;
@@ -94,6 +108,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     recent: [],
     residents: newResidents(),
     held: null,
+    view: null,
   };
 }
 

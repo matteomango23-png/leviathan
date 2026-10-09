@@ -1,5 +1,12 @@
 # Progressi
 
+## Bestie fuori inquadratura, torbidità sfumata (9 ottobre 2026) → v0.60.3
+
+- `BeastState.view` (non salvato), messo dalla `WorldScene` a ogni fotogramma; `onScreen` in `beastState.ts`. Le bestie compaiono (`appearPoint`, residenti del mare aperto con raggio pari a metà inquadratura + margine) e spariscono solo fuori schermo (`WILD_RULES.viewMargin`); idem i banchi di sardine (`stepEndlessSchools`).
+- `clarity.ts`: `cycleMurk` sfuma fra un tratto e il successivo; la `WorldScene` ammorbidisce nel tempo il colore torbido (`MURK_EASE`).
+- Test: `tests/offscreen.test.ts`.
+- **Da provare sull'iPhone:** U-Boat veloce sott'acqua nel mare aperto: nessuna bestia che appare sullo schermo; passaggi da acqua limpida a torbida senza scatti.
+
 ## U-Boat che si scurisce piano (9 ottobre 2026) → v0.60.2
 
 - `shipView.ts`: `wet` = `diveShare / UNDER_FADE` (0,5) fa crescere l'opacità delle strisce sott'acqua e sfumare `waterOver` (`strength`).

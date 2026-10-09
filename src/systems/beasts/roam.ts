@@ -59,10 +59,11 @@ export function appearPoint(
   map: TileMap,
   rng: Rng,
   diver: { x: number; y: number },
+  seen: (x: number, y: number) => boolean = () => false,
 ): { x: number; y: number } | null {
   for (let i = 0; i < 30; i++) {
     const p = wanderPoint(b, map, rng);
-    if (Math.hypot(p.x - diver.x, p.y - diver.y) >= ROAM.spawnMinDistance) return p;
+    if (Math.hypot(p.x - diver.x, p.y - diver.y) >= ROAM.spawnMinDistance && !seen(p.x, p.y)) return p;
   }
   return null;
 }
