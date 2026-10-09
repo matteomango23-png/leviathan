@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.54.1 — Cockpit di nuovo quello di prima (9 ottobre 2026)
+
+- L'Expedition Hunter 1 e 2 tornano al cockpit di tutte le altre navi: quello dipinto va studiato meglio.
+
 ## v0.54.0 — Il cockpit dipinto (9 ottobre 2026)
 
 - Il cockpit dell'Expedition Hunter 1 e 2 ora **usa le schermate dipinte** generate con Gemini dal proprietario. Sopra gli spazi vuoti ci sono i comandi veri:

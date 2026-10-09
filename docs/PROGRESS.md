@@ -6,7 +6,7 @@
 
 **Da provare sull'iPhone:** con l'EH1 o l'EH2 apri il Cockpit e passa tutte le schede; con l'EH2 dai gas e guarda le eliche.
 
-**Fatto dopo (v0.54.0):** il cockpit usa le quattro schermate dipinte di Gemini (`public/bg/cockpit*_far.webp`), con i comandi messi sugli spazi dipinti (`data/cockpitSteam.ts`, `ui/steamStage.ts`, `ui/bridgeSteam.ts`). Il lotto 4 di pezzi separati non serve più per EH1/EH2.
+**Sospeso (v0.54.1):** al proprietario il cockpit dipinto non basta ancora, "va studiato bene": nessuna nave lo usa (`cockpitStyle` tolto da EH1/EH2), il codice resta pronto. **Era (v0.54.0):** il cockpit usa le quattro schermate dipinte di Gemini (`public/bg/cockpit*_far.webp`), con i comandi messi sugli spazi dipinti (`data/cockpitSteam.ts`, `ui/steamStage.ts`, `ui/bridgeSteam.ts`). Il lotto 4 di pezzi separati non serve più per EH1/EH2.
 
 **Prossimo:** il cockpit con le immagini del lotto 4; poi la parte 4c (U-Boat).
 
