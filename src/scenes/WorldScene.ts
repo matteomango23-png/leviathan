@@ -1,18 +1,16 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
+import { lampOf } from '../systems/lamp';
 import { NightmareView } from '../views/nightmareView';
 import { reconOut } from '../systems/ship/gadgets';
 import { CAMERA, DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard, hatchT } from '../systems/ship/ship';
-import { boatBay, shipPicture, subBay } from '../systems/ship/model';
-import { shipPoint } from '../systems/ship/geometry';
-import { diveShare } from '../systems/ship/uboat';
-import { boatEngineLevel, boatLength } from '../systems/boat';
+import { boatBay, subBay } from '../systems/ship/model';
+import { boatEngineLevel } from '../systems/boat';
 import { BoatView } from '../views/boatView';
 import type { GameEvent } from '../systems/events';
 import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
-import { diverModifiers } from '../systems/economy/gear';
 import { lampAim } from '../systems/submarine';
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
@@ -29,7 +27,7 @@ import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../s
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres, murkAt } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/stretches';
-import { DELTA, WORLD } from '../data/worldLayout';
+import { WORLD } from '../data/worldLayout';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
 import { atHelmView, cameraAim } from '../systems/shipCamera';
@@ -377,41 +375,16 @@ export class WorldScene extends Phaser.Scene {
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
-    // in the speedboat the headlight sits on its bow
-    const b = g.boat;
-    // a U-Boat diving lights the way from its bow, its cone growing as it goes down (owner, 9 ottobre: it snapped)
-    const dive = g.ship.aboard ? diveShare(g.ship) : 0;
-    const lamp = b.aboard
-      ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
-      : dive > 0
-        ? shipPoint(
-            g.ship,
-            shipPicture(g.ship).lampU ?? shipPicture(g.ship).bowU,
-            shipPicture(g.ship).waterline,
-          )
-        : (rider ?? d);
     const glows = [
       ...this.places.glowSpots(g.gear),
       ...this.beasts.glowSpots(g),
       ...this.ship.glowSpots(g.ship),
       ...this.nightmare.glowSpots(g),
     ];
-    const mods = diverModifiers(g.gear);
     const murk = murkAt(info.cx, info.cy);
     this.light.update(
       info,
-      {
-        x: lamp.x,
-        y: lamp.y,
-        angle: this.lampAngle,
-        face: d.face,
-        // no lamp while sitting on the boat; shorter in murky water
-        lengthMult:
-          storyHoldsDiver(g) || (g.ship.aboard && dive <= 0)
-            ? 0
-            : (g.ship.aboard ? 1.6 * dive : mods.coneMult) * (1 - (1 - DELTA.murk.lampMult) * murk),
-        widthMult: mods.coneWidthMult,
-      },
+      { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },
       Math.max(this.hurtFlash, lowO2),
       fade,
       glows,

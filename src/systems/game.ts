@@ -1,22 +1,13 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
-import {
-  clearTarget,
-  newGadgets,
-  pickTarget,
-  reconOut,
-  sendSphere,
-  startRecon,
-  stepGadgets,
-  type GadgetsState,
-} from './ship/gadgets';
+import { clearTarget, pickTarget, reconOut, sendSphere, startRecon, stepGadgets } from './ship/gadgets';
 import { XP_RULES } from '../data/progression';
 import { DIVER, SARDINE } from '../data/diver';
-import { START, TILE, WORLD } from '../data/worldLayout';
+import { WORLD } from '../data/worldLayout';
 import { beastEats } from './feeding';
 import { refillTanks, tankRanOut } from './breath';
-import { rideTank, type RideTanks } from './rideAir';
+import { rideTank } from './rideAir';
 import { bodyCircles, headOf } from './beasts/combat';
 import { formName } from './beasts/forms';
 import { isInWater } from './beasts/wildState';
@@ -24,56 +15,36 @@ import {
   activeBeast,
   beastAction,
   contextAction,
-  createBeasts,
   mountSpeed,
   stepBeasts,
   weaponHitsBeast,
 } from './beastPlay';
-import { createDiver, stepDiver } from './diver';
+import { stepDiver } from './diver';
 import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
-import { diverModifiers, newGear, sellBag } from './economy/gear';
+import { diverModifiers } from './economy/gear';
 import { feedBeast, fishXp, gainXp, isHungry } from './beasts/growth';
 import { maxHpOf } from './beasts/team';
-import { signalMissions } from './economy/missions';
-import { createStory, stepStory, storyHoldsDiver, type StoryWorld } from './story';
+import { stepStory, storyHoldsDiver } from './story';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
-import {
-  atPort,
-  discoverOutposts,
-  nearWreck,
-  openWreck,
-  placeWrecks,
-  portAt,
-  portStart,
-  type Wreck,
-} from './economy/places';
-import { PORT, PORTS, type PortDef } from '../data/economy';
+import { atPort, discoverOutposts, nearWreck, openWreck, portAt, portStart } from './economy/places';
+import { PORT, PORTS } from '../data/economy';
 import type { GameEvent } from './events';
-import { createFish, stepFish, takeFish, type FishState } from './fish';
-import { createHarpoon, fireHarpoon, stepHarpoon, type HarpoonState } from './harpoon';
+import { stepFish, takeFish } from './fish';
+import { fireHarpoon, stepHarpoon } from './harpoon';
 import type { InputState } from './input';
-import { makeRng } from './math';
-import { newSave, type SaveData } from './save/saveData';
-import { restoreGear, restoreTeam } from './save/convert';
-import { createWeapons, fireProjectileWeapon, stepProjectiles, type WeaponState } from './weapons';
-import type { TileMap } from './world/tileMap';
+import { fireProjectileWeapon, stepProjectiles } from './weapons';
 import { zoneAt } from './world/zones';
 import { regionAt } from './world/stretches';
 import { ENDLESS } from '../data/endless';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import { shipModel } from './ship/model';
-import { board, canBoard, leaveSub, newSub, ramSub, repairSub, subModel, type SubState } from './submarine';
+import { board, canBoard, leaveSub, ramSub } from './submarine';
 import { dismount } from './beastState';
 import { rescue } from './fuel';
-import { addHuntSlots, hearRumours, placeDens, stepHunts, type Den, type HuntsState } from './hunts';
-import { createWeather, type WeatherState } from './weather';
-import { newShip, type ShipState } from './ship/ship';
-import { newBoat, type BoatState } from './boat';
-import type { MooredShip } from './ship/shipyard';
+import { stepHunts } from './hunts';
 import { helmPoint } from './ship/geometry';
 import { canDock } from './ship/hatch';
 import {
@@ -86,115 +57,12 @@ import {
   vehicleAction,
   wakeOnShip,
 } from './vehicles';
-import { createTemples, hitLever, stepTemples, type TempleState } from './temple';
+import { hitLever, stepTemples } from './temple';
 
 export { toSave } from './save/convert';
-
-export interface GameState extends StoryWorld {
-  time: number;
-  playTime: number;
-  zone: string;
-  harpoon: HarpoonState;
-  weapons: WeaponState;
-  fish: FishState;
-  fishCaught: Record<string, number>;
-  wrecks: Wreck[];
-  /** True while the diver floats at a pier; `port` says which. */
-  atPort: boolean;
-  port: PortDef | null;
-  /** The last harbour you came into: you wake up there without a ship (saved). */
-  homePort: PortDef['id'];
-  /** Your submarine (Aurelio's gift at Porto Fango; saved). */
-  sub: SubState;
-  /** Your expedition ship (Aurelio's gift at Porto Fango; saved). */
-  ship: ShipState;
-  /** Its speedboat or jet ski (block 4b; saved). */
-  boat: BoatState;
-  /** Your other ships, moored at Porto Fango (saved). */
-  fleet: MooredShip[];
-  /** The puzzles of the sunken temples in progress (not saved). */
-  temples: TempleState;
-  /** Seconds before your big beast can eat the next fish (not saved). */
-  timers: { feed: number; vent: number };
-  /** The air of the whales of your team, which you breathe while riding them (breath.ts, not saved). */
-  rideTanks: RideTanks;
-  /** The weather above the sea (weather.ts, not saved; the World scene steps it). */
-  weather: WeatherState;
-  /** The hunts in the diary (saved) and the dens in the world. */
-  hunts: HuntsState;
-  dens: Den[];
-  /** The hunt you follow (pinned in the diary; saved). */
-  huntPinned: string | null;
-  /** The Ocean's Nightmare's drone and sphere, and the beast you follow (ship/gadgets.ts; the beast saved). */
-  gadgets: GadgetsState;
-}
-
-function applyBrokenTiles(map: TileMap, tiles: number[]): void {
-  for (const i of tiles) {
-    const { tx, ty } = map.tileOf(i);
-    const t = map.get(tx, ty);
-    if (t === TILE.bone || t === TILE.gate) map.set(tx, ty, TILE.water); // bones broken, temple gates opened
-  }
-}
-
-export function createGame(map: TileMap, save: SaveData | null, seed = Date.now()): GameState {
-  const rng = makeRng(seed);
-  const s = save ?? newSave(START);
-  applyBrokenTiles(map, s.brokenTiles);
-  const diver = createDiver(s.diver.x, s.diver.y);
-  // A save inside rock (e.g. the world changed) falls back to the start.
-  if (map.hitCircle(diver.x, diver.y, DIVER.radius)) Object.assign(diver, createDiver());
-  const gear = s.gear ? restoreGear(s.gear) : newGear();
-  diver.maxHp = diverModifiers(gear).maxHp;
-  diver.hp = diver.maxHp;
-  const beasts = createBeasts(restoreTeam(s), s.legendsGone);
-  const dens = placeDens(map);
-  addHuntSlots(beasts.wilds, dens); // the legends and giants in their dens (hunts.ts)
-  const g: GameState = {
-    map,
-    rng,
-    time: 0,
-    playTime: s.playTime,
-    zone: '',
-    diver,
-    harpoon: createHarpoon(),
-    weapons: createWeapons(),
-    fish: createFish(map, rng),
-    fishCaught: { ...s.fishCaught },
-    seen: new Set(s.seen),
-    beasts,
-    brokenTiles: [...s.brokenTiles],
-    gear,
-    swarmCooldowns: {},
-    wrecks: placeWrecks(map),
-    atPort: false,
-    port: null,
-    homePort: PORTS.find((p) => p.id === s.homePort)?.id ?? 'portofosco',
-    sub: newSub(s.sub),
-    ship: newShip(s.ship),
-    boat: newBoat(s.boat),
-    fleet: structuredClone(s.fleet ?? []),
-    timers: { feed: 0, vent: 0 },
-    rideTanks: {},
-    weather: createWeather(undefined, s.weather),
-    hunts: structuredClone(s.hunts ?? {}),
-    huntPinned: s.huntPinned ?? null,
-    gadgets: newGadgets(s.target ?? null),
-    dens,
-    temples: createTemples(),
-    story: createStory(s.story, save !== null, !!s.ship),
-  };
-  matchSubToShip(g);
-  return g;
-}
-
-/** Each ship comes with its own submarine (8 ottobre): a save whose submarine is not its ship's gets its ship's. */
-function matchSubToShip(g: GameState): void {
-  const bay = g.ship.owned ? shipModel(g.ship).bays.find((b) => b.kind === 'sub') : undefined;
-  if (!bay || !g.sub.owned || g.sub.model === bay.model) return;
-  const m = subModel(bay.model);
-  Object.assign(g.sub, { model: m.id, models: [m.id], hull: m.hull, fuel: m.tank, air: m.airSeconds });
-}
+export { applySave, createGame, type GameState } from './newGame';
+export { enterPort, restAtPort, sellAtPort } from './port';
+import type { GameState } from './newGame';
 
 /** Where you wake up (owner, 4 ottobre: you heal only on the ship and at the port): your ship, or your harbour. */
 export function respawnPoint(g: GameState): { x: number; y: number } {
@@ -419,40 +287,4 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   // "sulla tua nave" / "a Portofosco"
   const place = onShip ? 'sulla tua nave' : `a ${(PORTS.find((p) => p.id === g.homePort) ?? PORT).name}`;
   events.push({ type: 'blackout', teethLost, place });
-}
-
-/** Arriving at a harbour: everyone is healed, the market restocks, you wake up here. */
-export function enterPort(g: GameState, events: GameEvent[] = []): void {
-  restAtPort(g);
-  repairSub(g, events);
-  if (g.port) hearRumours(g.hunts, g.port, events); // the people of the harbour talk
-  g.gear.shopBought = {};
-}
-
-/** Resting at the port (also the "Riposa" button): you and the team healed, you wake up here next time. */
-export function restAtPort(g: GameState): void {
-  const d = g.diver;
-  if (g.port) g.homePort = g.port.id;
-  d.hp = d.maxHp;
-  d.o2 = d.maxO2;
-  for (const b of g.beasts.team) {
-    b.hp = maxHpOf(b);
-    b.ko = false;
-    b.ppUsed = undefined; // PP back to full, like a Pokémon Center
-    b.status = undefined;
-    b.sleepTurns = undefined;
-  }
-}
-
-/** Sells the fish bag at the market; counts for "sell" missions. */
-export function sellAtPort(g: GameState): { count: number; teeth: number; completed: string[] } {
-  const r = sellBag(g.gear);
-  const completed = r.count > 0 ? signalMissions(g.gear, { kind: 'sell', count: r.count }) : [];
-  return { ...r, completed };
-}
-
-/** Replaces progress with an imported save (rebuilds the game on the same map). */
-export function applySave(g: GameState, save: SaveData): void {
-  const fresh = createGame(g.map, save, 1);
-  Object.assign(g, fresh, { map: g.map, rng: g.rng, time: g.time });
 }
