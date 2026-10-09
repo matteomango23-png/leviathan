@@ -118,6 +118,8 @@ export const SEA = {
   ] as [number, number[]][],
   skyTop: '#0e141c',
   skyBottom: '#2a3a48',
+  /** The sky fades from skyBottom at the horizon to skyTop at the top of the view, over at least this (units). */
+  skyFade: 60,
   surfaceLine: 'rgba(150,200,210,0.55)',
   lightRays: { count: 6, alpha: 0.06, fadeY: 420 },
   snow: { count: 160, alpha: 0.5 },

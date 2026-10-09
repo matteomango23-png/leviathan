@@ -384,7 +384,11 @@ export class WorldScene extends Phaser.Scene {
     const lamp = b.aboard
       ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
       : dive > 0
-        ? shipPoint(g.ship, shipPicture(g.ship).bowU, shipPicture(g.ship).waterline)
+        ? shipPoint(
+            g.ship,
+            shipPicture(g.ship).lampU ?? shipPicture(g.ship).bowU,
+            shipPicture(g.ship).waterline,
+          )
         : (rider ?? d);
     const glows = [
       ...this.places.glowSpots(g.gear),

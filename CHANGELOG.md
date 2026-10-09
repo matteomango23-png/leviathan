@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.58.4 — Cielo e faro dell'U-Boat (9 ottobre 2026)
+
+- **Cielo:** la sfumatura dall'orizzonte (più chiaro) verso l'alto (scuro) ora riempie tutto il cielo che si vede. Con la visuale larga delle navi grandi si vedeva solo una striscia sopra il mare e il resto era tutto del colore più scuro.
+- **Faro dell'Ocean's Nightmare immerso:** parte un po' più indietro, dentro la prua, così il fascio tocca lo scafo invece di galleggiare davanti.
+
 ## v0.58.3 — Il cockpit rosso dell'Ocean's Nightmare (9 ottobre 2026)
 
 - **Il cockpit dell'Ocean's Nightmare** ha i colori della nave: ferro scuro arrugginito e rosso che pulsa piano, come le rune. Pulsanti, schede, plancia, carta nautica, quadranti e diario cambiano colore; la disposizione resta la stessa.

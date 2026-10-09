@@ -169,13 +169,16 @@ export class BackgroundView {
       const m = (x: number, y: number): number => x + (y - x) * clouds;
       return { red: m(ca.red, cb.red), green: m(ca.green, cb.green), blue: m(ca.blue, cb.blue) };
     };
+    const skySpan = Math.max(SEA.skyFade, WORLD.surfaceY - top);
     const sky0 = mix(SEA.skyTop, WEATHER.skyStorm.top);
     const sky1 = mix(SEA.skyBottom, WEATHER.skyStorm.bottom);
     for (let i = 0; i < WATER_ROWS; i++) {
       const wy = top + ((i + 0.5) / WATER_ROWS) * span;
       let c: [number, number, number];
       if (wy < WORLD.surfaceY) {
-        const t = Phaser.Math.Clamp(1 - (WORLD.surfaceY - wy) / 60, 0, 1);
+        // from the horizon up to the top of the view, however wide it is (owner, 9 ottobre: with the big ships'
+        // far view, all but a thin strip of it was the darkest colour)
+        const t = Phaser.Math.Clamp(1 - (WORLD.surfaceY - wy) / skySpan, 0, 1);
         c = [
           sky0.red + (sky1.red - sky0.red) * t,
           sky0.green + (sky1.green - sky0.green) * t,

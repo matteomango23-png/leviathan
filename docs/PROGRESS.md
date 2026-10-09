@@ -1,5 +1,11 @@
 # Progressi
 
+## Cielo e faro (9 ottobre 2026) → v0.58.4
+
+**Fatto:** `paintWater` (`views/backgroundView.ts`) sfuma il cielo su tutta l'altezza visibile, almeno `SEA.skyFade`; `ShipPicture.lampU` (Nightmare 0,88) per il faro degli U-Boat.
+
+**Da provare sull'iPhone:** al timone di una nave grande guarda il cielo; scendi poco con l'Ocean's Nightmare e guarda il fascio davanti alla prua.
+
 ## Cockpit rosso del Nightmare (9 ottobre 2026) → v0.58.3
 
 **Fatto:** `cockpitTheme: 'nightmare'` in `data/fleet.ts`; la classe `theme-nightmare` in `cockpit.css` ridefinisce variabili e colori; i colori del sonar in `ui/cockpitTheme.ts` (`sonarPalette`).
