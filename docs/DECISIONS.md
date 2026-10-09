@@ -825,3 +825,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Cockpit a vapore tolto** su richiesta del proprietario: resta nella storia di git (fino a v0.58.5). Gli originali in `art-inbox` sono rinominati con `_`, così `npm run art` li salta e non li cancella.
 - **I file grandi sono divisi per responsabilità.** `game.ts` e `submarine.ts` riesportano le parti spostate, così chi li importa non cambia. Il CSS del timone è in `helm.css`, importato subito dopo `ui.css`, quindi l'ordine delle regole resta identico.
+
+## 9 ottobre 2026 — Il mare vivo (v0.59.0)
+
+- **Niente simulazione dell'acqua:** due treni d'onde sinusoidali, la cui altezza cresce col quadrato delle onde del meteo. Ogni mezzo legge l'onda a prua, al centro e a poppa: il su e giù è la media, l'inclinazione la differenza sulla lunghezza. Così un mezzo corto segue ogni onda e uno lungo le media, come nella realtà, con poco calcolo. Il video di riferimento del proprietario non è arrivato; si ritocca se lo manda.
+- **Le onde si disegnano dietro i mezzi** (`seaSurfaceView`): sopra la linea di riposo il mare, sotto il cielo. La linea della superficie non passa più sopra gli scafi.
+- **La torbidità riusa il "murk" del Delta** (lampada più corta, acqua più scura e verdastra): il Delta resta il massimo. Le bestie lontane diventano sagome con una tinta quasi nera.
+- **Una partita nuova parte col sereno;** i salvataggi tengono il loro meteo. In questo modo i test, che creano partite nuove, non dipendono dal meteo a caso.

@@ -39,8 +39,10 @@ export class SeaSurfaceView {
       g.fillTriangle(x, y0, x, y0 - ya, x + STEP, y0 - yb);
       g.fillTriangle(x, y0, x + STEP, y0 - yb, x + STEP, y0);
     };
-    // crests: sea above the line; troughs: sky below it
+    // crests: sea above the line; troughs: sky below it; then the bright line of the surface itself
+    const line: { x: number; y: number }[] = [];
     for (let x = x0; x <= view.right + STEP; x += STEP) {
+      line.push({ x, y: y0 - waveHeight(x, time, sea) });
       const a = waveHeight(x, time, sea);
       const b = waveHeight(x + STEP, time, sea);
       if (a > 0 || b > 0) {
@@ -52,5 +54,10 @@ export class SeaSurfaceView {
         strip(x, Math.min(0, a), Math.min(0, b));
       }
     }
+    const c = Phaser.Display.Color.RGBStringToColor(SEA.surfaceLine);
+    g.lineStyle(0.8, c.color, c.alphaGL);
+    g.beginPath();
+    line.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)));
+    g.strokePath();
   }
 }

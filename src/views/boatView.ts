@@ -91,6 +91,7 @@ export class BoatView {
           x: b.x + b.face * (r.u - 0.5) * L,
           y: top + r.v * H,
           size: r.size * b.prop,
+          carry: b.face * b.speed,
         }))
       : [];
     this.smoke.puff(sources, b.prop, L / 180, dt);

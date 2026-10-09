@@ -372,7 +372,7 @@ export class WorldScene extends Phaser.Scene {
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.birdsView.update(this.birds, view);
-    this.effects.update(view, g.time, dt, sky);
+    this.effects.update(g.time, dt);
     this.places.update(g.gear, g.time);
     this.story.update(g.story);
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine

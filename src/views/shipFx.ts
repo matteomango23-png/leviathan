@@ -8,7 +8,8 @@ import type { ShipState } from '../systems/ship/ship';
 
 export class ShipFx {
   /** The puffs in the air (look only), and how many each stack owes (a fraction of a puff carried over). */
-  private puffs: { x: number; y: number; vy: number; r: number; age: number; seed: number }[] = [];
+  private puffs: { x: number; y: number; vx: number; vy: number; r: number; age: number; seed: number }[] =
+    [];
   private readonly smokeDue: number[] = [];
   /** Shards of ice in the air or floating (look only), and the fraction of a shard owed. */
   private shards: {
@@ -47,10 +48,16 @@ export class ShipFx {
   }
 
   /**
-   * The puffs: born at each source (x, y, size), more and bigger with `push` (0…1), then drifting and fading.
+   * The puffs: born at each source (x, y, size), more and bigger with `push` (0…1), then drifting and fading. A
+   * source's `carry` (units/s): a fast boat's jets throw their smoke after it, a trail that stays near.
    * @param scale how big the vehicle is (1 = a 180-unit ship)
    */
-  puff(sources: { x: number; y: number; size: number }[], push: number, scale: number, dt: number): void {
+  puff(
+    sources: { x: number; y: number; size: number; carry?: number }[],
+    push: number,
+    scale: number,
+    dt: number,
+  ): void {
     this.back.clear();
     const S = SHIP.smoke;
     const rate = S.idleRate + (S.fullRate - S.idleRate) * push;
@@ -61,6 +68,7 @@ export class ShipFx {
         this.puffs.push({
           x: src.x + (Math.random() - 0.5) * 2,
           y: src.y,
+          vx: (src.carry ?? 0) * (0.6 + Math.random() * 0.25),
           vy: -S.lift * (0.7 + 0.6 * push) * (0.8 + Math.random() * 0.4),
           r: S.size * src.size * scale * (0.5 + 0.5 * push) * (0.8 + Math.random() * 0.4), // more gas, bigger puffs
           age: 0,
@@ -70,7 +78,8 @@ export class ShipFx {
     }
     for (const p of this.puffs) {
       p.age += dt / S.life;
-      p.x += S.wind * dt;
+      p.vx *= Math.exp(-1.2 * dt);
+      p.x += (S.wind + p.vx) * dt;
       p.y += p.vy * dt;
       p.vy *= Math.exp(-S.liftDrag * dt);
     }

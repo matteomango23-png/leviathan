@@ -1,5 +1,26 @@
 # Progressi
 
+## Il mare vivo (9 ottobre 2026) → v0.59.0
+
+**Fatto:**
+- **Mare:** `data/sea.ts` (`SEA_STATE`, `CLARITY`) e `systems/sea.ts`:
+  - `waveHeight`, `rideWaves` per navi e barche (al posto di `SHIP.rock`);
+  - `currentMult` / `diverCurrentMult`, `boatWear`.
+- **Superficie:** `views/seaSurfaceView.ts` (creste, cavi, linea), dietro i mezzi.
+- **Barche:** `BoatState.hull` salvato, `repairBoat` al porto, barra dello scafo al timone (`helmBars`); `boatCrew.ts` per tuffo e risalita.
+- **Tempesta:** `audio/stormSound.ts` (tuono e pioggia, `STORM_SOUND`), cielo più nero, 8 fulmini al minuto.
+- **Acqua:** `systems/clarity.ts` (`turbidityAt`, sagome con `shade` in `beastView`).
+- **Fumo del motoscafo EH2:** reattori misurati, fumo davanti e con una scia (`carry`).
+- **Meteo:** una partita nuova parte sereno; i test non dipendono più dal meteo a caso.
+
+**Da provare sull'iPhone:**
+1. Aspetta o fai capitare una tempesta: onde, pioggia, tuoni.
+2. Col motoscafo vai a tutta velocità: guarda la barra dello scafo e i salti sulle onde.
+3. Nuota in acqua torbida: lampada corta, sagome.
+4. Tuffati dal motoscafo fermo e risali con "A bordo".
+
+**Da regolare a gusto** (`data/sea.ts`): altezza delle onde, forza delle correnti, usura dello scafo, cicli della torbidità.
+
 ## Pulizia dopo il blocco 4 (9 ottobre 2026) → v0.58.6
 
 **Fatto:**

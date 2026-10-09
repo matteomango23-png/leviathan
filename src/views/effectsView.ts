@@ -1,7 +1,5 @@
-// Small effects in the water: breath bubbles, puffs of silt, and the wavy surface line.
+// Small effects in the water: breath bubbles and puffs of silt (the surface line: seaSurfaceView.ts).
 import Phaser from 'phaser';
-import { CALM_SEA, waveHeight, type SeaWeather } from '../systems/sea';
-import { SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { TEX } from './textures';
 
@@ -19,7 +17,6 @@ const POOL = 80;
 
 export class EffectsView {
   private readonly parts: Particle[] = [];
-  private readonly surface: Phaser.GameObjects.Graphics;
   private next = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
@@ -28,8 +25,6 @@ export class EffectsView {
       layer.add(img);
       this.parts.push({ img, vx: 0, vy: 0, life: 0, maxLife: 1, rising: true, phase: 0 });
     }
-    this.surface = scene.add.graphics();
-    layer.add(this.surface);
   }
 
   private take(): Particle {
@@ -71,8 +66,7 @@ export class EffectsView {
     }
   }
 
-  /** @param sea the weather's waves and wind (the surface line rides the same waves as the vehicles) */
-  update(view: Phaser.Geom.Rectangle, time: number, dt: number, sea: SeaWeather = CALM_SEA): void {
+  update(time: number, dt: number): void {
     for (const p of this.parts) {
       if (p.life <= 0) continue;
       p.life -= dt;
@@ -88,19 +82,6 @@ export class EffectsView {
       }
       p.img.setAlpha(Math.min(1, (p.life / p.maxLife) * 2) * 0.9);
       if (p.life <= 0) p.img.setVisible(false);
-    }
-
-    // surface line
-    const g = this.surface;
-    g.clear();
-    if (view.y < WORLD.surfaceY + 30) {
-      const c = Phaser.Display.Color.RGBStringToColor(SEA.surfaceLine);
-      g.lineStyle(0.8, c.color, c.alphaGL);
-      const pts: Phaser.Math.Vector2[] = [];
-      for (let x = Math.floor(view.x) - 4; x <= view.right + 4; x += 3) {
-        pts.push(new Phaser.Math.Vector2(x, WORLD.surfaceY - waveHeight(x, time, sea)));
-      }
-      g.strokePoints(pts);
     }
   }
 }
