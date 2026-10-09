@@ -17,6 +17,8 @@ export interface BoatModel {
   name: string;
   /** The whole picture's width in metres (it fits its hatch). */
   lengthM: number;
+  /** Its hull: worn by rough seas at speed (owner, 9 ottobre; data/sea.ts boatWear), mended at the harbour. */
+  hull: number;
   knots: number; // top speed
   /** units/s² speeding up, slowing down by itself and braking. Tuning. */
   accel: number;
@@ -41,6 +43,7 @@ export const BOAT_MODELS: BoatModel[] = [
     id: 'motoscafo_eh2',
     name: 'Motoscafo da gara',
     lengthM: 14,
+    hull: 60,
     knots: 40,
     accel: 120,
     coast: 50,
@@ -52,15 +55,17 @@ export const BOAT_MODELS: BoatModel[] = [
     art: 'motoscafo_eh2',
     // (its picture with the jets on fire is gone, owner 9 ottobre: they smoke instead)
     picture: { ...PICTURE, propX: 0.04, propY: 0.62 },
+    // the two stern nozzles (measured on the picture, owner 9 ottobre: no smoke showed)
     reactors: [
-      { u: 0.04, v: 0.3, size: 0.8 },
-      { u: 0.03, v: 0.6, size: 0.8 },
+      { u: 0.03, v: 0.39, size: 1.6 },
+      { u: 0.03, v: 0.6, size: 1.3 },
     ],
   },
   {
     id: 'motoscafo_poseidon',
     name: 'Motoscafo',
     lengthM: 9,
+    hull: 80,
     knots: 48,
     accel: 150,
     coast: 55,
@@ -76,6 +81,7 @@ export const BOAT_MODELS: BoatModel[] = [
     id: 'moto_imperium',
     name: 'Moto d’acqua',
     lengthM: 4,
+    hull: 40,
     knots: 44,
     accel: 170,
     coast: 60,
@@ -97,6 +103,9 @@ export const BOAT = {
   launchSeconds: 2.4,
   /** How near its hatch (sideways) "Aggancia" appears. */
   dockReach: 50,
+  /** Diving off it (owner, 9 ottobre): how deep you land (units), and how near it "A bordo" shows (units). */
+  diveDepth: 14,
+  boardReach: 30,
   /** Slow enough to moor at a pier or dock in its hatch: slower than this (units/s, ~3 knots:
    *  the throttle lever rarely sits exactly at zero). */
   stillBelow: 28,

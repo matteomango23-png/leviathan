@@ -77,6 +77,8 @@ export interface BeastPoseView {
   pale?: boolean;
   /** A whale or a dolphin: the tail beats up and down. */
   whale?: boolean;
+  /** Murky water, far from your light: only its dark shape shows (this tint; clarity.ts). */
+  shade?: number;
 }
 
 export class BeastSprite {
@@ -163,6 +165,10 @@ export class BeastSprite {
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
         .setScale((lens[i]! / SEG) * OVERLAP, 1);
+      if (p.shade !== undefined && p.flash <= 0) {
+        s.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.shade);
+        continue;
+      }
       if (p.pale && p.flash <= 0) {
         // screen tint: lightens the dark sprite towards bone white
         const k = ALBINO_SCREEN;
@@ -199,6 +205,7 @@ export class BeastSprite {
       .setRotation(Math.sin(p.phase) * 0.05 + p.pitch * 0.3)
       .setScale(sc, sc * (1 + 0.03 * Math.sin(p.phase * 2)));
     if (p.flash > 0) im.setTint(0xff9a8a);
+    else if (p.shade !== undefined) im.setTint(p.shade);
     else if (p.rage) im.setTint(0xffd0c8);
     else im.clearTint();
     this.root.setVisible(true).setPosition(p.x, p.y).setScale(1, 1).setAlpha(p.alpha);

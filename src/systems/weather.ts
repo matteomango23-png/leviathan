@@ -41,10 +41,11 @@ export interface SavedWeather {
 export function createWeather(
   seed = Math.floor(Math.random() * 2 ** 31),
   saved?: SavedWeather | null,
+  calmStart = false,
 ): WeatherState {
   const rng = makeRng(seed);
   if (saved) return { ...saved, flash: 0, rng };
-  const start = pick(WEATHER.startWeights, rng);
+  const start: WeatherId = calmStart ? 'sereno' : pick(WEATHER.startWeights, rng);
   return { from: start, to: start, blend: 1, left: minutes(rng, start), flash: 0, rng };
 }
 

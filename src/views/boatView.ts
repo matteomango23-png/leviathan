@@ -3,6 +3,7 @@
 // "running" picture fades in (the jets of the Expedition Hunter 2's boat). A wake and bubbles behind it, no foam
 // dots (owner, 8 ottobre). Look only: systems/boat.ts moves it.
 import Phaser from 'phaser';
+import { rideWaves, type SeaWeather } from '../systems/sea';
 import { BOAT_MODELS, type BoatModel } from '../data/boats';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { WORLD } from '../data/worldLayout';
@@ -40,16 +41,16 @@ export class BoatView {
   private readonly smoke: ShipFx;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
-    const back = scene.add.graphics();
-    layer.add(back);
     for (const m of BOAT_MODELS) this.pics.set(m.id, new BoatPictures(scene, layer, m));
+    // its smoke in front of it: the nozzles are at the very stern, behind the hull it was hidden (owner, 9 ottobre)
+    const smoke = scene.add.graphics();
     this.fx = scene.add.graphics();
-    layer.add(this.fx);
-    this.smoke = new ShipFx(back, this.fx);
+    layer.add([smoke, this.fx]);
+    this.smoke = new ShipFx(smoke, this.fx);
   }
 
-  /** @param hidden in the hold behind its closed hatch @param waves the weather's waves (1 = calm) */
-  update(b: BoatState, time: number, hidden: boolean, waves: number, dt = 1 / 60): void {
+  /** @param hidden in the hold behind its closed hatch @param sea the weather's waves and wind: it rides them */
+  update(b: BoatState, time: number, hidden: boolean, sea: SeaWeather, dt = 1 / 60): void {
     this.fx.clear();
     this.puffs(b, hidden, dt);
     for (const [id, p] of this.pics) if (id !== b.model || !b.owned || hidden) p.hide();
@@ -60,10 +61,10 @@ export class BoatView {
     const H = L * m.picture.aspect;
     const k = Math.min(1, b.speed / boatTopSpeed(b));
     const onWater = b.bay === 'out';
-    const sea = Math.min(3, waves);
-    // bobbing on the swell; the bow lifts as it speeds up
-    const bob = onWater ? Math.sin(time * 2.6) * 1.2 * sea : 0;
-    const pitch = onWater ? Math.sin(time * 2.1 + 0.7) * 0.025 * sea + k * 0.06 : 0;
+    // short, it rides every wave: up and down, bow up and down (owner, 9 ottobre); the bow lifts as it speeds up
+    const ride = onWater ? rideWaves(b.x, L, b.face, time, sea) : { heave: 0, pitch: 0 };
+    const bob = -ride.heave;
+    const pitch = onWater ? ride.pitch + k * 0.06 : 0;
     const top = b.y - m.picture.waterline * H + bob - k * 2;
     const running = Math.min(1, Math.max(0, (b.prop - 0.05) / 0.25));
     for (const [i, im] of pics.parts.entries()) {

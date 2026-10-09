@@ -9,6 +9,8 @@ export class HelmBars {
   private readonly airBar: HTMLDivElement;
   private readonly airFill: HTMLDivElement;
   private readonly airText: HTMLSpanElement;
+  private readonly hullBar: HTMLDivElement;
+  private readonly hullFill: HTMLDivElement;
 
   constructor(private readonly root: HTMLElement) {
     this.fuelBar = el('div', 'helm-fuel', root);
@@ -18,16 +20,32 @@ export class HelmBars {
     el('span', 'helm-fuel-ico', this.airBar, '🫧');
     this.airFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.airBar));
     this.airText = el('span', 'helm-air-text', this.airBar);
+    // the speedboat's or jet ski's hull, in the same place (owner, 9 ottobre: rough seas wear it)
+    this.hullBar = el('div', 'helm-fuel helm-air helm-hullbar', root);
+    el('span', 'helm-fuel-ico', this.hullBar, '🔧');
+    this.hullFill = el('div', 'helm-fuel-fill', el('div', 'helm-fuel-bar', this.hullBar));
   }
 
-  /** @param air seconds left and full, or undefined (no air bar) */
-  update(fuel: number, tank: number, air: number | undefined, airMax: number | undefined): void {
+  /** @param air seconds left and full, or undefined (no air bar) @param hull a boat's hull, now and whole */
+  update(
+    fuel: number,
+    tank: number,
+    air: number | undefined,
+    airMax: number | undefined,
+    hull?: [number, number],
+  ): void {
     const share = Math.max(0, Math.min(1, fuel / Math.max(1, tank)));
     this.fuelFill.style.width = `${Math.round(share * 100)}%`;
     this.fuelBar.dataset.level = share > 0.5 ? 'ok' : share > 0.2 ? 'half' : 'low';
     const shown = air !== undefined && !!airMax;
     this.airBar.hidden = !shown;
-    this.root.parentElement?.classList.toggle('helm-has-air', shown);
+    this.hullBar.hidden = !hull;
+    if (hull) {
+      const h = Math.max(0, Math.min(1, hull[0] / Math.max(1, hull[1])));
+      this.hullFill.style.width = `${Math.round(h * 100)}%`;
+      this.hullBar.dataset.level = h > 0.5 ? 'ok' : h > 0.25 ? 'half' : 'low';
+    }
+    this.root.parentElement?.classList.toggle('helm-has-air', shown || !!hull);
     if (!shown) return;
     this.airFill.style.width = `${Math.round(Math.max(0, Math.min(1, air / airMax)) * 100)}%`;
     this.airBar.dataset.level = air > SUBMARINE.air.warnAt ? 'ok' : 'low';

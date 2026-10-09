@@ -3,6 +3,8 @@
 // never breaks ice; dry, it crawls home on its reserve. Pure logic; ship/boatBay.ts moves it on its ramp,
 // views/boatView.ts draws it.
 import { BOAT, BOAT_MODELS, BOAT_TEXT, type BoatModel } from '../data/boats';
+import { SEA_STATE } from '../data/sea';
+import { boatWear, CALM_SEA, currentMult, type SeaWeather } from './sea';
 import { HELM } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import type { GameEvent } from './events';
@@ -39,6 +41,8 @@ export interface BoatState {
   prop: number;
   /** Seconds before the "ice" message may show again. */
   iceWarn: number;
+  /** Its hull (data/sea.ts boatWear; saved): at zero it goes back broken to the hold. */
+  hull: number;
 }
 
 export interface SavedBoat {
@@ -49,6 +53,8 @@ export interface SavedBoat {
   drums: number;
   out: boolean;
   aboard: boolean;
+  /** Added 9 ottobre: missing = whole. */
+  hull?: number;
 }
 
 export const boatModel = (id: string): BoatModel => BOAT_MODELS.find((m) => m.id === id) ?? BOAT_MODELS[0]!;
@@ -75,6 +81,7 @@ export function newBoat(saved: SavedBoat | null): BoatState {
     engineOn: false,
     prop: 0,
     iceWarn: 0,
+    hull: clamp(saved?.hull ?? m.hull, m.hull),
   };
 }
 
@@ -90,6 +97,7 @@ export function saveBoat(b: BoatState): SavedBoat | null {
     drums: Math.round(b.drums),
     out,
     aboard: out && b.aboard,
+    hull: Math.round(b.hull * 10) / 10,
   };
 }
 
@@ -112,7 +120,13 @@ export interface BoatWorld {
  * One step on the water (out of the hold). `helm` is null when you are not aboard: it slows to a stop. The engine
  * starts with the throttle, like the ship's; dry, it crawls on its reserve.
  */
-export function sailBoat(g: BoatWorld, helm: HelmState | null, dt: number, events: GameEvent[]): void {
+export function sailBoat(
+  g: BoatWorld,
+  helm: HelmState | null,
+  dt: number,
+  events: GameEvent[],
+  sea: SeaWeather = CALM_SEA,
+): void {
   const b = g.boat;
   if (!b.owned || b.bay !== 'out') return;
   const m = boatModel(b.model);
@@ -122,7 +136,8 @@ export function sailBoat(g: BoatWorld, helm: HelmState | null, dt: number, event
     events.push({ type: 'engineStarted', vehicle: 'boat' });
   }
   const dry = b.fuel <= 0;
-  const top = boatTopSpeed(b) * (dry ? BOAT.dryCrawl : 1);
+  // against the current in rough weather the small boats lose the most (owner, 9 ottobre)
+  const top = boatTopSpeed(b) * (dry ? BOAT.dryCrawl : 1) * currentMult('boat', sea);
   const push = helm && b.engineOn ? helm.throttle : 0;
   b.prop += (push - b.prop) * Math.min(1, dt * 3);
   const rates = { accel: m.accel, coast: m.coast, brake: m.brake, turnBelow: SHIP.turnBelow };
@@ -161,6 +176,24 @@ export function sailBoat(g: BoatWorld, helm: HelmState | null, dt: number, event
     events.push({ type: 'fuelOut', vehicle: 'boat' });
   }
   if (b.aboard) Object.assign(g.diver, { x: b.x, y: b.y - 4, vx: b.face * b.speed, vy: 0, face: b.face });
+  // fast through a rough sea the hull wears: half gone, a warning; gone, it goes back broken to the hold (vehicles.ts)
+  const was = b.hull;
+  if (b.aboard) b.hull = Math.max(0, b.hull - boatWear(b.speed / boatTopSpeed(b), sea, dt));
+  if (was > m.hull / 2 && b.hull <= m.hull / 2) events.push({ type: 'boatHullHalf' });
+  if (was > 0 && b.hull <= 0) events.push({ type: 'boatWrecked' });
+}
+
+/** Coming into a harbour: its hull mended, for the teeth you have. */
+export function repairBoat(g: { boat: BoatState; gear: { teeth: number } }, events: GameEvent[]): void {
+  const b = g.boat;
+  const missing = boatModel(b.model).hull - b.hull;
+  if (!b.owned || missing <= 0) return;
+  const points = Math.min(missing, Math.floor(g.gear.teeth / SEA_STATE.boatRepairPerPoint));
+  if (points <= 0) return;
+  const cost = Math.ceil(points * SEA_STATE.boatRepairPerPoint);
+  g.gear.teeth -= cost;
+  b.hull += points;
+  events.push({ type: 'boatRepaired', cost });
 }
 
 /** What its engine sounds like (null: off): how hard it works. Heard only aboard. */

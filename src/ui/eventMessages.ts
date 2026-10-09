@@ -74,6 +74,18 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     }
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
+    case 'boatHullHalf':
+      return ['Il mare grosso sta rovinando lo scafo della barca: rallenta o torna alla nave.', 4];
+    case 'boatWrecked':
+      return ['Lo scafo della barca ha ceduto: torna alla nave e va riparato al porto.', 5];
+    case 'boatRepaired':
+      return [`Scafo della barca riparato (${e.cost} denti).`, 3];
+    case 'boatBroken':
+      return ['La barca è rotta: si ripara al porto.', 3.5];
+    case 'boatLeft':
+      return ['La barca resta qui ad aspettarti: torna vicino e premi "A bordo".', 3];
+    case 'boatBoarded':
+      return ['Di nuovo alla guida.', 2];
     case 'boarded':
       return [SUB_TEXT.boarded, 4];
     case 'dove':

@@ -2,6 +2,8 @@
 // alfa, legendary, Guardians) shimmer with a pale glow so you notice them in the dark. Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
+import { CLARITY } from '../data/sea';
+import { isShape } from '../systems/clarity';
 import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, formKey, speciesOf, tailUpDown, type BeastForm } from '../systems/beasts/forms';
@@ -70,7 +72,11 @@ export class BeastsLayer {
       .map((w) => ({ x: w.x, y: w.y, r: w.length * 0.5 }));
   }
 
-  update(g: GameState, time: number): void {
+  /** @param shapes murky water (clarity.ts): how murky, and where your light is (the beasts far from it are dark
+   *  shapes) */
+  update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
+    const shade = (x: number, y: number): number | undefined =>
+      shapes && isShape(shapes.murk, Math.hypot(x - shapes.x, y - shapes.y)) ? CLARITY.shapeTint : undefined;
     this.glow.clear();
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
@@ -109,6 +115,7 @@ export class BeastsLayer {
         whale: tailUpDown(w.form),
         flash: w.flash,
         alpha: 1,
+        shade: shade(w.x, w.y),
       });
       // the school: behind and around the leader, each a little out of step
       const schoolSize = BEAST_TEMPER[w.form.speciesId]?.school ?? 0;
@@ -133,6 +140,7 @@ export class BeastsLayer {
           whale: tailUpDown(w.form),
           flash: w.flash,
           alpha: 1,
+          shade: shade(w.x, w.y),
         });
       });
     });

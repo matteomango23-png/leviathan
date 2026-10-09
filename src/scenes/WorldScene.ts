@@ -1,5 +1,7 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
+import { turbidityAt } from '../systems/clarity';
+import { SeaSurfaceView } from '../views/seaSurfaceView';
 import { lampOf } from '../systems/lamp';
 import { NightmareView } from '../views/nightmareView';
 import { reconOut } from '../systems/ship/gadgets';
@@ -25,7 +27,7 @@ import {
 import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
 import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
-import { depthMetres, murkAt } from '../systems/world/zones';
+import { depthMetres } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/stretches';
 import { WORLD } from '../data/worldLayout';
 import { inVehicle } from '../systems/vehicles';
@@ -79,6 +81,7 @@ export class WorldScene extends Phaser.Scene {
   private light!: LightView;
   private weatherView!: WeatherView;
   private nightmare!: NightmareView;
+  private surface!: SeaSurfaceView;
   private birdsView!: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
@@ -121,6 +124,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents = new VentView(this, L.world);
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
+    this.surface = new SeaSurfaceView(this, L.world); // behind the vehicles that ride its waves
     this.ship = new ShipView(this, L.world);
     this.hunts = new HuntView(this, L.world);
     this.boat = new BoatView(this, L.world);
@@ -326,8 +330,13 @@ export class WorldScene extends Phaser.Scene {
     const view = this.rig.worldView();
     const info = this.rig.viewInfo();
     this.terrain.update(view);
-    if (stepWeather(g.weather, dt)) this.weatherView.lightning(info);
+    const under = Math.max(0, Math.min(1, depthMetres(g.diver.y) / 20)); // under water the weather is muffled
+    if (stepWeather(g.weather, dt)) {
+      this.weatherView.lightning(info);
+      this.session.sound.thunder(1 - under * 0.7);
+    }
     const sky = weatherLook(g.weather);
+    this.session.sound.setRain(sky.precip * (1 - under));
     for (const s of stepBirds(
       this.birds,
       dt,
@@ -342,13 +351,14 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.ship.update(g.ship, g.time, dt, sky.waves);
+    this.surface.update(view, g.time, sky, sky.clouds);
+    this.ship.update(g.ship, g.time, dt, sky);
     this.hunts.update(g, view, g.time);
     this.boat.update(
       g.boat,
       g.time,
       g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6,
-      sky.waves,
+      sky,
       dt,
     );
     // the drone away on its round is drawn by the Nightmare's view, not in the hold
@@ -356,11 +366,13 @@ export class WorldScene extends Phaser.Scene {
     this.sub.update(g.sub, g.time, dt, inHold);
     this.nightmare.update(g, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
-    this.beasts.update(g, g.time);
+    // murky water (clarity.ts): the beasts far from you are dark shapes
+    const murkHere = turbidityAt(d.x, d.y, g.time, sky);
+    this.beasts.update(g, g.time, { murk: murkHere, x: d.x, y: d.y });
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.birdsView.update(this.birds, view);
-    this.effects.update(view, g.time, dt, sky.waves);
+    this.effects.update(view, g.time, dt, sky);
     this.places.update(g.gear, g.time);
     this.story.update(g.story);
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
@@ -381,7 +393,7 @@ export class WorldScene extends Phaser.Scene {
       ...this.ship.glowSpots(g.ship),
       ...this.nightmare.glowSpots(g),
     ];
-    const murk = murkAt(info.cx, info.cy);
+    const murk = turbidityAt(info.cx, info.cy, g.time, sky);
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },

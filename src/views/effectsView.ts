@@ -1,5 +1,6 @@
 // Small effects in the water: breath bubbles, puffs of silt, and the wavy surface line.
 import Phaser from 'phaser';
+import { CALM_SEA, waveHeight, type SeaWeather } from '../systems/sea';
 import { SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { TEX } from './textures';
@@ -70,8 +71,8 @@ export class EffectsView {
     }
   }
 
-  /** @param waves height of the surface waves (1: calm; the weather raises it) */
-  update(view: Phaser.Geom.Rectangle, time: number, dt: number, waves = 1): void {
+  /** @param sea the weather's waves and wind (the surface line rides the same waves as the vehicles) */
+  update(view: Phaser.Geom.Rectangle, time: number, dt: number, sea: SeaWeather = CALM_SEA): void {
     for (const p of this.parts) {
       if (p.life <= 0) continue;
       p.life -= dt;
@@ -92,12 +93,12 @@ export class EffectsView {
     // surface line
     const g = this.surface;
     g.clear();
-    if (view.y < WORLD.surfaceY + 4) {
+    if (view.y < WORLD.surfaceY + 30) {
       const c = Phaser.Display.Color.RGBStringToColor(SEA.surfaceLine);
       g.lineStyle(0.8, c.color, c.alphaGL);
       const pts: Phaser.Math.Vector2[] = [];
       for (let x = Math.floor(view.x) - 4; x <= view.right + 4; x += 3) {
-        pts.push(new Phaser.Math.Vector2(x, WORLD.surfaceY + Math.sin(x * 0.09 + time * 2) * 0.8 * waves));
+        pts.push(new Phaser.Math.Vector2(x, WORLD.surfaceY - waveHeight(x, time, sea)));
       }
       g.strokePoints(pts);
     }
