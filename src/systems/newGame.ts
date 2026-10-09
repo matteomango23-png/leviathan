@@ -1,5 +1,6 @@
 // The whole state of a game, and how one starts: new, or from a save (game.ts steps it).
 import { newGadgets, type GadgetsState } from './ship/gadgets';
+import { newColumns, type WaterColumns } from './waterColumns';
 import { DIVER } from '../data/diver';
 import { START, TILE } from '../data/worldLayout';
 import { type RideTanks } from './rideAir';
@@ -55,6 +56,8 @@ export interface GameState extends StoryWorld {
   rideTanks: RideTanks;
   /** The weather above the sea (weather.ts, not saved; the World scene steps it). */
   weather: WeatherState;
+  /** The water answering the hulls around the camera (waterColumns.ts; not saved). */
+  water: WaterColumns;
   /** The hunts in the diary (saved) and the dens in the world. */
   hunts: HuntsState;
   dens: Den[];
@@ -113,6 +116,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     rideTanks: {},
     // a brand new game starts under a clear sky; a save goes on with its weather (an old one: a random start)
     weather: createWeather(undefined, s.weather, save === null),
+    water: newColumns(s.diver.x),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,
     gadgets: newGadgets(s.target ?? null),

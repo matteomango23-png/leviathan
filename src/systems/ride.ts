@@ -7,7 +7,8 @@
 // lifted and dropped slowly and buries its bow in the crests, throwing spray. Pure logic: the views draw its heave
 // and pitch (data/sea.ts SEA_STATE.ride).
 import { SEA_STATE } from '../data/sea';
-import { waveHeight, type SeaWeather } from './sea';
+import { seaHeight, type SeaWeather } from './sea';
+import type { WaterColumns } from './waterColumns';
 
 const R = SEA_STATE.ride;
 
@@ -60,6 +61,7 @@ export function stepRide(
   sea: SeaWeather,
   t: number,
   dt: number,
+  water?: WaterColumns | null,
 ): boolean {
   if (dt <= 0) return false;
   if (r.flipped > 0) {
@@ -82,8 +84,8 @@ export function stepRide(
     const tt = t - dt + (i + 1) * h;
     const cos = Math.cos(r.p);
     const sin = Math.sin(r.p);
-    const sb = waveHeight(x + face * off * cos, tt, sea);
-    const ss = waveHeight(x - face * off * cos, tt, sea);
+    const sb = seaHeight(x + face * off * cos, tt, sea, water);
+    const ss = seaHeight(x - face * off * cos, tt, sea, water);
     // the water's vertical speed under each end, as the hull sees it (it runs into the wave)
     const vsb = Number.isNaN(r.bow) ? 0 : (sb - r.bow) / h;
     const vss = Number.isNaN(r.stern) ? 0 : (ss - r.stern) / h;

@@ -840,3 +840,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Rigidità e smorzamento passano da "moto d'acqua" a "nave di 90 m" secondo la lunghezza: le barche leggere possono superare l'inclinazione limite e si ribaltano, le navi no.
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
+
+## 9 ottobre 2026 — Onde realistiche e colonne d'acqua (v0.60.0)
+
+- **Perché sembravano un fantasma:** poche sinusoidi uguali scorrono rigide e si ripetono. Il mare vero è una somma di molte onde con velocità diverse (dispersione del mare profondo, ω = √(g·k)), che forma gruppi. Ora: 8 treni di Gerstner con lunghezze da 34 a 420 unità, altezza ∝ lunghezza^0,75, ripidità dal meteo. Fonti: CREST (crest.readthedocs.io, wave conditions), Wave Generator di ziszle (itch.io).
+- **Il mare che risponde agli scafi:** fila di colonne a molle (Michael Hoffman, "Make a Splash with Dynamic 2D Water Effects", Tuts+; Water2D-Unity di MemoryLeakHub; Tessendorf, "Interactive Water Surfaces") sommata alle onde di fondo. Solo 700 colonne attorno alla telecamera: costo piccolo. L'onda di prua cresce con velocità e peso, come negli studi sul "green water" e sullo slamming delle navi (studio KCS sull'angolo di prua, SJTU; modello di slamming UCL).
+- **Niente contorni disegnati:** la riga sottile era il contorno della superficie. Il mare è un riempimento pieno fino al cavo più profondo possibile per il meteo.

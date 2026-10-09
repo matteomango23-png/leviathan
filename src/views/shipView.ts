@@ -5,7 +5,7 @@
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
-import { waveHeight, type SeaWeather } from '../systems/sea';
+import { seaHeight, type SeaNow } from '../systems/sea';
 import { SeaFx, waterOver } from './seaFx';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
@@ -155,7 +155,7 @@ export class ShipView {
   }
 
   /** @param sea the weather's waves and wind: it rides them (systems/sea.ts) */
-  update(s: ShipState, time: number, dt: number, sea: SeaWeather): void {
+  update(s: ShipState, time: number, dt: number, sea: SeaNow): void {
     this.fx.clear();
     this.glow.clear();
     this.fallback.clear();
@@ -277,7 +277,7 @@ export class ShipView {
   }
 
   /** Foam at the stern, a wake behind, bubbles behind the propeller. */
-  private drawWake(s: ShipState, k: number, time: number, sea: SeaWeather): void {
+  private drawWake(s: ShipState, k: number, time: number, sea: SeaNow): void {
     const g = this.fx;
     this.drawPropBubbles(s, time);
     if (k < 0.03) return;
@@ -289,7 +289,7 @@ export class ShipView {
       g.fillStyle(0xe8f2f4, 0.35 * k * (1 - t));
       g.fillEllipse(
         wx,
-        WORLD.surfaceY - waveHeight(wx, time, sea) + Math.sin(i * 1.7) * 1.2,
+        WORLD.surfaceY - seaHeight(wx, time, sea, sea.water) + Math.sin(i * 1.7) * 1.2,
         6 + t * 14,
         1.6 + t * 1.2,
       );

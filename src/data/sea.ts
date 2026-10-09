@@ -6,11 +6,22 @@ export const SEA_STATE = {
   /** The waves: their height (units) is `amp × waves²` (waves: the weather's, 1 calm … 3.2 storm), two trains of
    *  waves of these lengths (units) and speeds (units/s), the first the bigger. */
   waves: {
-    amp: 2,
-    long: { length: 220, speed: 30, share: 0.7 },
-    short: { length: 70, speed: 16, share: 0.3 },
-    /** In a storm the crests sharpen and the troughs flatten (the water turns in circles under a wave). */
-    sharpness: 0.32,
+    /** Height: `swell + amp × waves²` units (waves: the weather's, 1 calm … 3.2 storm) for the whole sea: even on
+     *  a still day a long low swell lifts the hulls (owner, 9 ottobre: the ship looked tied to a line). */
+    swell: 3,
+    amp: 2.6,
+    /** A real sea is many waves at once (owner, 9 ottobre: two sines "look like a ghost"): their lengths (units),
+     *  the longest the biggest; each runs at its deep-water speed √(g·length/2π), so they drift in and out of step
+     *  and make groups, a big one now and then, never twice the same. Their phases are fixed (a steady sea). */
+    lengths: [420, 290, 205, 150, 104, 72, 50, 34],
+    /** How much bigger the longer ones are (height ∝ length^this). */
+    spectrum: 0.75,
+    /** Gerstner (trochoidal) shape: the water turns in circles, crests narrow and pushed forward, troughs broad;
+     *  this steep in a calm sea and in a storm (0 … 1). */
+    steepCalm: 0.25,
+    steepStorm: 0.8,
+    /** Gravity for the waves' speeds (units/s²). */
+    gravity: 59,
   },
   /** How a hull rides them (systems/ride.ts): it floats on two points (this share of its length from the middle,
    *  each way) pulled down by gravity (units/s²: 9.8 m/s²) and pushed up by the water, as stiff (1/s²) and damped
@@ -20,8 +31,8 @@ export const SEA_STATE = {
     pointsAt: 0.38,
     /** A light short hull: lively, it can stand on its stern and flip; a long heavy ship: slow, it never tilts past
      *  its limit (radians). */
-    small: { length: 60, k: 70, c: 3.2, pitchMax: 1.35 },
-    big: { length: 540, k: 9, c: 2.2, pitchMax: 0.3 },
+    small: { length: 60, k: 50, c: 2.6, pitchMax: 1.35 },
+    big: { length: 540, k: 11, c: 1.5, pitchMax: 0.3 },
     pitchGain: 7,
     maxV: 150,
     /** The water's push stops growing this many times deeper than it rests (a buried bow is not shot out). */
@@ -59,4 +70,24 @@ export const CLARITY = {
   shapesFrom: 0.55,
   shapesBeyond: 90,
   shapeTint: 0x0b0f10,
+};
+
+/** The water that answers the hulls (systems/waterColumns.ts): a row of columns this far apart, how stiff and damped,
+ *  how much a column passes on to its neighbours (and how many passes a step), how the hulls push it. Tuning. */
+export const COLUMNS = {
+  count: 700,
+  spacing: 4,
+  stiffness: 6,
+  damping: 0.9,
+  spread: 0.25,
+  passes: 4,
+  passSpeed: 60,
+  maxStep: 1 / 60,
+  /** The bow wave: push (units/s per second) at `speedRef` units/s for the heaviest hull (`heavyLength` units). */
+  bowWave: 260,
+  speedRef: 160,
+  heavyLength: 500,
+  /** Landing faster than this (units/s downward) drives the water down. */
+  slamFrom: 25,
+  slam: 0.9,
 };

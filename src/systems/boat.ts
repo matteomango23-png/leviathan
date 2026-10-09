@@ -3,6 +3,7 @@
 // never breaks ice; dry, it crawls home on its reserve. Pure logic; ship/boatBay.ts moves it on its ramp,
 // views/boatView.ts draws it.
 import { BOAT, BOAT_MODELS, BOAT_TEXT, type BoatModel } from '../data/boats';
+import type { WaterColumns } from './waterColumns';
 import { newRide, settleRide, stepRide, type RideState } from './ride';
 import { SEA_STATE } from '../data/sea';
 import { boatWear, CALM_SEA, currentMult, type SeaWeather } from './sea';
@@ -131,6 +132,7 @@ export function sailBoat(
   events: GameEvent[],
   sea: SeaWeather = CALM_SEA,
   t = 0,
+  water: WaterColumns | null = null,
 ): void {
   const b = g.boat;
   if (!b.owned || b.bay !== 'out') {
@@ -185,7 +187,7 @@ export function sailBoat(
   }
   const was = b.hull;
   // light and short, fast into a wave it flies (ride.ts); flipped over, it stops and its hull takes the blow
-  if (stepRide(b.ride, b.x, b.face, boatLength(b), sea, t, dt)) {
+  if (stepRide(b.ride, b.x, b.face, boatLength(b), sea, t, dt, water)) {
     b.speed = 0;
     b.hull = Math.max(0, b.hull - m.hull * SEA_STATE.capsizeDamage);
     events.push({ type: 'boatCapsized' });

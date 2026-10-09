@@ -351,14 +351,15 @@ export class WorldScene extends Phaser.Scene {
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
-    this.surface.update(view, g.time, sky);
-    this.ship.update(g.ship, g.time, dt, sky);
+    const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
+    this.surface.update(view, g.time, sea);
+    this.ship.update(g.ship, g.time, dt, sea);
     this.hunts.update(g, view, g.time);
     this.boat.update(
       g.boat,
       g.time,
       g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6,
-      sky,
+      sea,
       dt,
     );
     // the drone away on its round is drawn by the Nightmare's view, not in the hold

@@ -1,5 +1,21 @@
 # Progressi
 
+## Onde realistiche (9 ottobre 2026) → v0.60.0
+
+**Fatto:**
+- `systems/sea.ts`: onde di Gerstner su 8 treni (`SEA_STATE.waves.lengths`), velocità dalla legge del mare profondo, ripidità che cresce col meteo, onda lunga di fondo (`swell`). `seaHeight` = onde + colonne; `troughDepth` per lo sfondo.
+- `systems/waterColumns.ts`: fila di colonne d'acqua a molle attorno alla telecamera (`COLUMNS`), spinte dagli scafi (`hullOnWater`: onda di prua, cavo dietro, atterraggio). Il galleggiamento (`ride.ts`) legge `seaHeight`.
+- `views/seaSurfaceView.ts` riscritta: mare pieno senza contorno, luce sulle creste, schiuma sulle creste ripide, onde lontane solo col mare mosso. Tolto il contorno anche in `waterOver`.
+- Nave più morbida (`ride.big` k 11, c 1.5).
+- Test: `tests/waves.test.ts`.
+
+**Da provare sull'iPhone:**
+1. Col sereno: nessuna linea dritta sulla superficie.
+2. In tempesta con la nave a tutta velocità: onda di prua, schiuma, spruzzi; la nave sale e scende morbida.
+3. Motoscafo vicino alla nave: sente le onde che lei crea.
+
+**Da regolare a gusto** (`data/sea.ts`): `swell`, `amp`, `steepStorm`, `COLUMNS.bowWave`, `ride.big`.
+
 ## Galleggiamento vero (9 ottobre 2026) → v0.59.1
 
 **Fatto:**

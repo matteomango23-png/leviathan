@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.60.0 — Onde realistiche e mare che reagisce (9 ottobre 2026)
+
+- **Onde vere:** non più due onde uguali che scorrono, ma otto treni d'onde di lunghezza diversa. Le lunghe corrono più veloci delle corte, come nel mare vero: si formano gruppi, ogni tanto un'onda più alta, mai due tratti di mare uguali.
+- **Forma:** creste strette e appuntite, cavi larghi; col mare grosso le creste si fanno ripide e schiumano.
+- **Il mare risponde agli scafi:** la prua solleva un'onda che cresce con velocità e peso della nave e si allarga ai lati; una barca che atterra da un salto scava l'acqua e la fa risalire intorno. Le barche sentono anche le onde fatte dalla nave.
+- **Nave meno "incatenata":** galleggia più morbida, con un'onda lunga di fondo sempre presente; in tempesta pianta la prua nelle creste e alza spruzzi.
+- **Nessuna linea:** tolto anche il sottile contorno che restava sulla superficie e davanti agli scafi; il mare è pieno fino al cavo più profondo, le onde lontane dietro compaiono solo col mare mosso.
+
 ## v0.59.1 — Galleggiamento vero (9 ottobre 2026)
 
 - **Niente più "binario":** barche e navi galleggiano come corpi con un peso. L'acqua spinge su prua e poppa, la gravità le tira giù.

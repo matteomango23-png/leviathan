@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { rampColor } from '../systems/math';
-import { waveHeight, type SeaWeather } from '../systems/sea';
+import { seaHeight, type SeaNow } from '../systems/sea';
 
 interface Drop {
   x: number;
@@ -74,26 +74,17 @@ export function waterOver(
   x1: number,
   bottom: number,
   time: number,
-  sea: SeaWeather,
+  sea: SeaNow,
 ): void {
   const c = rampColor(SEA.waterByY, WORLD.surfaceY + 12);
   g.fillStyle(Phaser.Display.Color.GetColor(c[0], c[1], c[2]), 0.55);
   const step = 4;
   for (let x = x0; x < x1; x += step) {
-    const a = WORLD.surfaceY - waveHeight(x, time, sea);
-    const b = WORLD.surfaceY - waveHeight(Math.min(x1, x + step), time, sea);
+    const a = WORLD.surfaceY - seaHeight(x, time, sea, sea.water);
+    const b = WORLD.surfaceY - seaHeight(Math.min(x1, x + step), time, sea, sea.water);
     const xe = Math.min(x1, x + step);
     if (bottom <= Math.min(a, b)) continue;
     g.fillTriangle(x, a, xe, b, xe, bottom);
     g.fillTriangle(x, a, xe, bottom, x, bottom);
   }
-  // the bright line of the surface over it
-  g.lineStyle(0.8, 0xc8e4ec, 0.5);
-  g.beginPath();
-  for (let x = x0; x <= x1; x += step) {
-    const y = WORLD.surfaceY - waveHeight(x, time, sea);
-    if (x === x0) g.moveTo(x, y);
-    else g.lineTo(x, y);
-  }
-  g.strokePath();
 }
