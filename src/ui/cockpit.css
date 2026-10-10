@@ -677,3 +677,8 @@
 .lg.rd-beast {
   background: rgb(255, 150, 120);
 }
+
+/* a dial showing a word (wind, water: 10 ottobre) */
+.dial-value.word {
+  font-size: 11px;
+}

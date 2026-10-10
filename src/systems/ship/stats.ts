@@ -4,7 +4,7 @@
 import { BOAT_MODELS } from '../../data/boats';
 import { SHIP_MODELS, type ShipModelDef } from '../../data/fleet';
 import { HUNT_RULES } from '../../data/hunts';
-import { HELM } from '../../data/ship';
+import { HELM, SHIP } from '../../data/ship';
 import { SUB_MODELS } from '../../data/submarine';
 import { WORLD } from '../../data/worldLayout';
 import { autonomyKm } from '../fuelBurn';
@@ -87,7 +87,7 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       group: g,
       label: 'Sonar',
       value: s.big,
-      text: `sente le bestie grandi fino a ${s.big} m e una tana fino a ${s.den} m`,
+      text: `sente le bestie fino a ${s.big} m e una tana fino a ${s.den} m; distingue ${m.sonar.classes} grandezze di eco`,
       better: 'high',
       unit: 'm',
     },
@@ -99,6 +99,34 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       text: `funziona sotto i ${m.sonar.maxKnots} nodi`,
       better: 'high',
       unit: 'nodi',
+    },
+    // block 5c: the hull, what mending it costs, the proximity radar
+    {
+      key: 'hull',
+      group: g,
+      label: 'Scafo',
+      value: m.hull,
+      text: `${m.hull} punti`,
+      better: 'high',
+      unit: 'punti',
+    },
+    {
+      key: 'repair',
+      group: g,
+      label: 'Riparazione completa',
+      value: Math.round(Math.max(SHIP.hull.giftValue, m.price) * SHIP.hull.fullRepairShare),
+      text: `${Math.round(Math.max(SHIP.hull.giftValue, m.price) * SHIP.hull.fullRepairShare)} denti a Porto Fango`,
+      better: 'low',
+      unit: 'denti',
+    },
+    {
+      key: 'radar',
+      group: g,
+      label: 'Radar',
+      value: SHIP.radar.rangeM,
+      text: `di prossimità, ${SHIP.radar.rangeM} m oltre prua e poppa, con bip`,
+      better: 'none',
+      unit: 'm',
     },
     {
       key: 'pool',
@@ -176,10 +204,21 @@ export function shipStats(m: ShipModelDef): StatRow[] {
           key: 'sub.sonar',
           group: v,
           label: 'Sonar',
-          value: sub.sonar ? 1 : 0,
-          text: sub.sonar ? 'sì' : 'no',
+          value: sub.scope?.rangeM ?? 0,
+          text: sub.scope
+            ? `a 360° sul vetro, fino a ${sub.scope.rangeM} m, ${sub.scope.classes} grandezze`
+            : 'no',
           better: 'high',
-          unit: '',
+          unit: 'm',
+        },
+        {
+          key: 'sub.parts',
+          group: v,
+          label: 'Ricambi',
+          value: SHIP.hull.partsSub,
+          text: `porta ${SHIP.hull.partsSub} punti di ricambi per la nave`,
+          better: 'high',
+          unit: 'punti',
         },
       );
     } else if (boat) {
@@ -211,6 +250,15 @@ export function shipStats(m: ShipModelDef): StatRow[] {
           text: `${boat.drums} L di carburante per la nave`,
           better: 'high',
           unit: 'L',
+        },
+        {
+          key: 'boat.parts',
+          group: v,
+          label: 'Ricambi',
+          value: SHIP.hull.partsBoat,
+          text: `porta ${SHIP.hull.partsBoat} punti di ricambi per la nave`,
+          better: 'high',
+          unit: 'punti',
         },
       );
     } else

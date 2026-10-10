@@ -64,7 +64,9 @@ export function dial(parent: HTMLElement, d: DialSpec): HTMLElement {
   const [nx, ny] = polar(cx, cy, 36, a0 + (a1 - a0) * share);
   svgEl('line', { x1: cx, y1: cy, x2: nx, y2: ny, class: 'dial-needle' }, svg);
   svgEl('circle', { cx, cy, r: 4, class: 'dial-hub' }, svg);
-  const v = svgEl('text', { x: cx, y: 88, class: 'dial-value' }, svg);
+  // a word instead of a number (the wind, the water: 10 ottobre) is set smaller to stay inside the dial
+  const word = d.value.length > 4;
+  const v = svgEl('text', { x: cx, y: 88, class: `dial-value${word ? ' word' : ''}` }, svg);
   v.textContent = d.value;
   const u = svgEl('text', { x: cx, y: 99, class: 'dial-unit' }, svg);
   u.textContent = d.unit;

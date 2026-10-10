@@ -5,11 +5,15 @@
 // steep tops break into white foam. Drawn behind the vehicles, which ride the same water (systems/ride.ts).
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
-import { WORLD } from '../data/worldLayout';
+import { TILE, WORLD } from '../data/worldLayout';
+import type { TileMap } from '../systems/world/tileMap';
+import { icebergsNear } from '../systems/world/icebergs';
 import { rampColor } from '../systems/math';
 import { seaHeight, troughDepth, waveHeight, type SeaNow } from '../systems/sea';
 
 const STEP = 4; // units between the points of the wave line
+/** How much of the wave under it an ice floe follows (it is heavy and wide). */
+const ICE_RIDE = 0.35;
 const BACK = { shift: 1700, slow: 0.75, scale: 0.6, haze: 0.35 };
 /** Under the deepest trough the sea melts into the painted water below in thin steps (no edge): units. */
 const FADE = { depth: 48, steps: 16 };
@@ -24,7 +28,11 @@ const mixRgb = (a: number[], b: number[], t: number): [number, number, number] =
 export class SeaSurfaceView {
   private readonly g: Phaser.GameObjects.Graphics;
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer,
+    private readonly map: TileMap,
+  ) {
     this.g = scene.add.graphics();
     layer.add(this.g);
   }
@@ -72,6 +80,9 @@ export class SeaSurfaceView {
       this.column(x0 + i * STEP, a, b, Math.max(a, b) + 3 + 8 * up);
     }
 
+    // the ice sheet at the surface, over the sea (owner, 10 ottobre: the waves hid it), riding the waves a little
+    this.drawIce(x0, x1, y0, deep, time, sea);
+
     // white foam where a steep crest breaks (rough weather)
     if (rough > 0.05)
       for (let i = 1; i + 1 < ys.length; i++) {
@@ -85,6 +96,32 @@ export class SeaSurfaceView {
         g.fillStyle(0xffffff, 0.55 * rough * flicker);
         g.fillEllipse(x, y + 1, 7 + 6 * rough, 2.2 + 1.5 * rough);
       }
+  }
+
+  /** The ice tiles of the surface band (map TILE.ice), painted over the sea and lifted with the wave under them. */
+  private drawIce(x0: number, x1: number, y0: number, deep: number, time: number, sea: SeaNow): void {
+    const m = this.map;
+    const t = m.tileSize;
+    const top = y0 - troughDepth(sea) - t;
+    const ice = colour(SEA.ice);
+    for (let x = Math.floor(x0 / t) * t; x < x1; x += t) {
+      const lift = -waveHeight(x + t / 2, time, sea) * ICE_RIDE;
+      // an iceberg is its own picture (worldArtView): its tiles are not painted
+      const bergs = icebergsNear(x);
+      let first = true;
+      for (let y = Math.floor(top / t) * t; y < deep; y += t) {
+        const inBerg = bergs.some(
+          (b) => x + t > b.left && x < b.left + b.w && y + t > b.top && y < b.top + b.h,
+        );
+        if (inBerg || m.tileAtPoint(x + t / 2, y + t / 2) !== TILE.ice) {
+          first = true;
+          continue;
+        }
+        this.g.fillStyle(ice, 1).fillRect(x, y + lift, t, t);
+        if (first) this.g.fillStyle(0xf2fbff, 0.9).fillRect(x, y + lift, t, Math.max(1, t * 0.2));
+        first = false;
+      }
+    }
   }
 
   /** The water between two points of a surface and a depth, as two triangles. */

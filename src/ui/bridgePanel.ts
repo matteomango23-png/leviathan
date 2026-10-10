@@ -10,6 +10,11 @@ import { OPEN_SEA_X } from '../data/worldLayout';
 import { chartAround } from '../systems/chart';
 import { autonomyKm, canRescue, rescue, transferFuel } from '../systems/fuel';
 import { hullMax } from '../systems/ship/shipHull';
+import { seaWords, waterWords, windWords } from '../systems/seaReport';
+import { turbidityAt } from '../systems/clarity';
+import { CLARITY } from '../data/sea';
+import { weatherLook } from '../systems/weather';
+import { WORLD } from '../data/worldLayout';
 import type { GameState } from '../systems/game';
 import { knotsOf } from '../systems/helm';
 import { huntNextStep, huntOpen, huntRegionName, weatherNow } from '../systems/hunts';
@@ -130,6 +135,25 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
   el('div', 'dial-label', wx, 'Meteo');
   el('div', 'dial-note', wx, weatherName(g.weather, ship.x));
   el('div', 'dial-note', wx, `sonar ${ship.sonarOn ? 'acceso' : 'spento'}`);
+  // wind, sea and water (owner, 10 ottobre: wind, water quality and visibility in the cockpit)
+  const look = weatherLook(g.weather);
+  dial(dials, {
+    label: 'Vento',
+    share: look.wind,
+    value: windWords(look.wind),
+    unit: '',
+    note: seaWords(look).text,
+    warnBelow: -1,
+  });
+  const water = waterWords(turbidityAt(ship.x, WORLD.surfaceY + 40, g.time, look));
+  dial(dials, {
+    label: 'Acqua',
+    share: water.visibilityM / CLARITY.visibilityM,
+    value: water.text,
+    unit: '',
+    note: `visibilità circa ${water.visibilityM} m`,
+    warnBelow: 0.5,
+  });
 
   if (sub.owned) {
     const m = subModel(sub.model);

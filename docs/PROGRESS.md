@@ -1,5 +1,16 @@
 # Progressi
 
+## Rifiniture (10 ottobre 2026) → v0.63.2
+
+- `SeaSurfaceView.drawIce`: caselle `TILE.ice` della fascia di superficie ridisegnate sopra il mare (escluse quelle degli iceberg dipinti), sollevate col 35% dell'onda.
+- `learnFromReport` (`sonarScan.ts`) su `reconDone`: nomi sul sonar e note nel Diario.
+- `systems/seaReport.ts` (vento, mare, acqua, visibilità con `CLARITY.visibilityM`); quadranti "Vento" e "Acqua" in Plancia; `dial-value.word` per le parole.
+- `ship/stats.ts`: righe scafo, riparazione, radar, grandezze del sonar, sonar a 360° e ricambi dei mezzi.
+- Test: `tests/finish5.test.ts`.
+- **Da provare sull'iPhone:** la banchisa con le onde; Plancia in tempesta; cantiere di Porto Fango (card); ricognizione del Nightmare e poi il sonar.
+
+**Prossimo:** la Krill Hunter, in Plan mode.
+
 ## Prezzi delle riparazioni (10 ottobre 2026) → v0.63.1
 
 - `SHIP.hull.fullRepairShare` 0,1 del prezzo della nave (Aurelia vale `giftValue` 6000), ricambi ×`partsMult` 1,2; `repairPerPoint` in `ship/spareParts.ts`.

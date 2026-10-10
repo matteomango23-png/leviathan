@@ -130,7 +130,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 
 ## Idee del proprietario (10 ottobre 2026), con l'ordine proposto
 
-Subito, in un pacchetto di rifiniture:
+Subito, in un pacchetto di rifiniture (✅ fatte in v0.63.2):
 - La banchisa di ghiaccio non si vede con le onde.
 - Ocean's Nightmare: dopo la ricognizione del drone, sul sonar i nomi degli animali compaiono da soli (li ha già analizzati il drone).
 - Nel cockpit: indicatore del vento, della qualità dell'acqua (torbidità) e della visibilità.
