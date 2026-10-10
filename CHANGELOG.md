@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.63.1 — Riparazioni in proporzione alla nave (10 ottobre 2026)
+
+- **Il prezzo segue il valore della nave:** riparare da zero a nuovo costa il 10% del suo prezzo (Ocean's Nightmare 5000 denti, EH2 3000, Aurelia 600). I ricambi portati col motoscafo o col sottomarino costano un 20% in più.
+
 ## v0.63.0 — Radar, scafo delle navi, sonar dei sottomarini (10 ottobre 2026)
 
 - **Radar di prossimità:** nel cockpit c'è la scheda "Radar", uno schermo rotondo con il fascio che gira. Mostra cosa c'è entro 30 m oltre prua e poppa: roccia e fondale, ghiaccio, moli, i tuoi mezzi, le bestie. Se vai veloce verso un ostacolo, al timone senti dei bip leggeri come i sensori di parcheggio, più fitti quando ti avvicini.

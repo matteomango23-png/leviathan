@@ -7,6 +7,7 @@ import type { BoatState } from '../boat';
 import type { GameEvent } from '../events';
 import { canRefuel, type FuelWorld } from '../fuel';
 import { hullMax, mendShip } from './shipHull';
+import { shipModel } from './model';
 
 const H = SHIP.hull;
 
@@ -21,6 +22,10 @@ export interface Result {
 
 const atYard = (g: FuelWorld): boolean => g.port?.id === PORTO_FANGO.id;
 
+/** Teeth per hull point at the yard: whole from nothing costs SHIP.hull.fullRepairShare of the ship's price. */
+export const repairPerPoint = (s: { model: string }): number =>
+  (Math.max(H.giftValue, shipModel(s).price) * H.fullRepairShare) / hullMax(s);
+
 /** What the ship still lacks, less the parts already on their way to it. */
 const missing = (g: FuelWorld): number =>
   Math.max(0, hullMax(g.ship) - g.ship.hull - g.boat.parts - g.sub.parts);
@@ -32,7 +37,7 @@ const carrier = (g: FuelWorld, which: PartsCarrier): { parts: number } => (which
 export function yardRepair(g: FuelWorld): { here: boolean; points: number; cost: number } {
   const here = atYard(g) && canRefuel(g, 'ship');
   const points = Math.max(0, hullMax(g.ship) - g.ship.hull);
-  return { here, points, cost: Math.ceil(points * H.repairPerPoint) };
+  return { here, points, cost: Math.ceil(points * repairPerPoint(g.ship)) };
 }
 
 export function repairAtYard(g: FuelWorld, events: GameEvent[]): Result {
@@ -56,7 +61,7 @@ export function partsOffer(
   const here = owned && atYard(g) && canRefuel(g, which) && g.ship.owned;
   const room = capacity(which) - carrier(g, which).parts;
   const points = Math.max(0, Math.min(room, missing(g)));
-  return { here, points, cost: Math.ceil(points * H.partsPerPoint) };
+  return { here, points, cost: Math.ceil(points * repairPerPoint(g.ship) * H.partsMult) };
 }
 
 export function loadParts(g: FuelWorld, which: PartsCarrier): Result {
