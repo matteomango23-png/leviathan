@@ -652,3 +652,28 @@
 .diary-card.sonar-note {
   cursor: default;
 }
+
+/* the surface radar (block 5c): a round screen in the middle of the frame */
+.radar-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.radar-canvas {
+  height: 100%;
+  aspect-ratio: 1;
+  max-width: 100%;
+  display: block;
+}
+.lg.rd-ice {
+  background: rgb(190, 230, 255);
+}
+.lg.rd-port {
+  background: rgb(255, 200, 110);
+}
+.lg.rd-you {
+  background: #fff;
+}
+.lg.rd-beast {
+  background: rgb(255, 150, 120);
+}

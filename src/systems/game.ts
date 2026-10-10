@@ -40,6 +40,7 @@ import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
 import { stepPackHunt } from './beasts/packHunt';
 import { stepLight, toggleLight } from './ship/underLight';
+import { stepShipRams } from './ship/shipHull';
 import { fireHarpoon, stepHarpoon } from './harpoon';
 import type { InputState } from './input';
 import { fireProjectileWeapon, stepProjectiles } from './weapons';
@@ -163,6 +164,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (input.helmCmd === 'tracker') shootTracker(g, events);
   if (input.helmCmd === 'light') toggleLight(g, events);
   stepLight(g, dt, events); // the light under the still ship calls the beasts (ship/underLight.ts)
+  stepShipRams(g, events); // giants ramming the ship (ship/shipHull.ts)
   stepGadgets(g, dt, events);
   stepTracker(g, dt, events); // the trace of the beast you follow (trackerDart.ts)
   stepScan(g, dt, events); // the sonar's analysis of an echo (sonarScan.ts)
@@ -225,7 +227,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
-    if (e.type === 'subRammedBy') ramSub(g, e.lengthM, e.x, e.y, events); // a big beast against the hull
+    // a big beast against the submarine's hull (only when you are in it)
+    if (e.type === 'subRammedBy' && g.sub.aboard) ramSub(g, e.lengthM, e.x, e.y, events);
   }
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepHunts(g, events);

@@ -14,6 +14,7 @@ import { renderBackpack, type TabContext } from './portTabs';
 import type { CockpitTab } from '../data/fleet';
 import { shipModel } from '../systems/ship/model';
 import { renderSonar } from './sonarScreen';
+import { renderRadar } from './radarScreen';
 import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
@@ -22,6 +23,7 @@ import { renderReconTab } from './reconPanel';
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
   ['sonar', 'Sonar', 'dive'],
+  ['radar', 'Radar', 'radar'], // surface proximity radar (block 5c)
   ['plancia', 'Plancia', 'lamp'],
   ['drone', 'Drone', 'school'], // the Nightmare's drone report, above the diary (owner, 9 ottobre)
   ['diario', 'Diario', 'scroll'],
@@ -133,7 +135,7 @@ export class Cockpit {
     this.stopSonar?.();
     this.stopSonar = null;
     this.body.replaceChildren();
-    this.body.classList.toggle('is-sonar', this.tab === 'sonar');
+    this.body.classList.toggle('is-sonar', this.tab === 'sonar' || this.tab === 'radar');
     const redraw = (): void => this.render();
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw };
     if (this.tab === 'plancia')
@@ -145,6 +147,7 @@ export class Cockpit {
         },
       });
     else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, redraw);
+    else if (this.tab === 'radar') this.stopSonar = renderRadar(this.body, this.g);
     else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else if (this.tab === 'drone') renderReconTab(this.body, this.g, this.session, (t) => this.say(t));

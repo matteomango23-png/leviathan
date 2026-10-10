@@ -30,6 +30,7 @@ import { restSubAir } from './subAir';
 import { BOAT } from '../data/boats';
 import { boatLength, sailBoat, type BoatState } from './boat';
 import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
+import { unloadParts } from './ship/spareParts';
 import { boatBay, shipLength } from './ship/model';
 import { submerged } from './ship/uboat';
 
@@ -116,7 +117,10 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     Object.assign(g.diver, helmPoint(ship), { vx: 0, vy: 0 });
     freshLevers(ship.face);
   }
-  if (events.some((e) => e.type === 'subDocked' || e.type === 'boatDocked')) freshLevers(ship.face);
+  if (events.some((e) => e.type === 'subDocked' || e.type === 'boatDocked')) {
+    freshLevers(ship.face);
+    unloadParts(g, events); // the spare parts they bring mend the ship (ship/spareParts.ts)
+  }
   const inSub = !ramp && stepSub(g, input, dt, events);
   freeSubFromHull(g);
   // waiting, or in the ship's hold: the submarine breathes again (subAir.ts)

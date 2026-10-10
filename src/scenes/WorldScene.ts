@@ -30,6 +30,7 @@ import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/stretches';
 import { WORLD } from '../data/worldLayout';
+import { beepEvery, obstacleAhead } from '../systems/ship/radar';
 import { inVehicle } from '../systems/vehicles';
 import { ShipView } from '../views/shipView';
 import { atHelmView, cameraAim } from '../systems/shipCamera';
@@ -87,6 +88,8 @@ export class WorldScene extends Phaser.Scene {
   private surface!: SeaSurfaceView;
   /** The murk tinting the screen, easing towards the water's own. */
   private murkShown = NaN;
+  /** Seconds to the radar's next beep. */
+  private beepT = 0;
   private birdsView!: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
@@ -262,6 +265,8 @@ export class WorldScene extends Phaser.Scene {
       else if (e.type === 'iceCracked' && Math.random() < 0.3)
         this.effects.puff(e.x, WORLD.surfaceY + 2, 3, 0xe6f2f8, 20 + e.speed * 0.2);
       else if (e.type === 'hatchMoved') this.rig.shake(0.15);
+      else if (e.type === 'shipDamaged')
+        this.rig.shake(0.5); // a blow to the ship's hull (block 5c)
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();
       else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
         const g = this.state;
@@ -298,6 +303,13 @@ export class WorldScene extends Phaser.Scene {
     const events = stepGame(g, input, dt);
     consumePresses(input);
     this.handleEvents(events);
+    // the radar's parking sensor: beeps for an obstacle ahead, the closer the more often (ship/radar.ts)
+    const ahead = g.ship.aboard ? obstacleAhead(g) : null;
+    if (ahead === null) this.beepT = 0;
+    else if ((this.beepT -= dt) <= 0) {
+      this.session.sound.radarBeep();
+      this.beepT = beepEvery(ahead);
+    }
     const d0 = g.diver;
     this.session.sound.updateSea(
       {

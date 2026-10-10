@@ -841,6 +841,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 10 ottobre 2026 — Blocco 5c: radar, scafo e ricambi, sonar dei sottomarini (v0.63.0)
+
+- **Risposte del proprietario:** radar solo per navi e U-Boat, di prossimità (30 m oltre prua e poppa), con bip "da sensori di parcheggio" quando vai veloce verso un ostacolo, non invadente. Danni dagli urti dell'U-Boat, dalla tempesta a tutta velocità, dalle bestie giganti. Nave in avaria: ricambi da Porto Fango con un mezzo secondario o rimorchiatore; si ripara solo a Porto Fango. Sonar a cerchio sul vetro e freccia verso la nave.
+- **Il radar vede il mondo di lato:** in un gioco 2D le distanze sono "avanti/dietro" e "sopra/sotto", così lo schermo rotondo mette i contatti in quelle due direzioni. I bip sono l'unica cosa fuori dal cockpit: niente messaggi né disegni.
+- **I ricambi seguono lo schema dei fusti di carburante:** si caricano sul mezzo a Porto Fango e si scaricano rientrando nella stiva. Così motoscafo e sottomarino diventano utili quando la nave è ferma rotta.
+- **Le speronate del sottomarino valgono solo se ci sei dentro:** prima una bestia che toccava il sub sulla nave danneggiava il sottomarino nella stiva.
+
 ## 10 ottobre 2026 — Niente annunci degli animali (v0.62.1)
 
 - **Il proprietario:** i messaggi che dicono quali animali ci sono "non servono". Tolti gli annunci di bestie pericolose, rare, leggendarie e quelli del compagno che le sente. Le bestie si scoprono col sonar, con la luce e guardando. I messaggi restano per comandi e azioni, e al timone stanno in alto per non coprire leve e pulsanti.

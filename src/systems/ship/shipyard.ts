@@ -15,6 +15,8 @@ import { fullAir, submerged } from './uboat';
 export interface MooredShip {
   model: string;
   fuel: number;
+  /** Its hull as it was moored (block 5c; missing: whole). */
+  hull?: number;
   sub?: { hull: number; fuel: number };
   boat?: { fuel: number; drums: number };
 }
@@ -62,6 +64,7 @@ function moor(g: ShipyardWorld): MooredShip {
   return {
     model: g.ship.model,
     fuel: g.ship.fuel,
+    hull: g.ship.hull,
     ...(g.sub.owned ? { sub: { hull: g.sub.hull, fuel: g.sub.fuel } } : {}),
     ...(g.boat.owned ? { boat: { fuel: g.boat.fuel, drums: g.boat.drums } } : {}),
   };
@@ -83,6 +86,8 @@ function bringIn(g: ShipyardWorld, m: ShipModelDef, from: MooredShip | null): vo
     air: fullAir({ model: m.id }),
   });
   s.fuel = Math.min(shipTank(s), from ? from.fuel : shipTank(s));
+  s.hull = Math.min(shipModel(s).hull, from?.hull ?? Infinity);
+  s.hullWait = 0;
   const subBay = m.bays.find((b) => b.kind === 'sub');
   if (subBay) {
     const sm = subModel(subBay.model);
@@ -171,6 +176,7 @@ export function checkedFleet(raw: unknown, inUse: string | null): MooredShip[] {
     out.push({
       model,
       fuel: Math.min(shipModel({ model }).tank, num(o.fuel)),
+      ...(typeof o.hull === 'number' ? { hull: Math.min(shipModel({ model }).hull, num(o.hull)) } : {}),
       ...(sub && typeof sub === 'object' ? { sub: { hull: num(sub.hull), fuel: num(sub.fuel) } } : {}),
       ...(boat && typeof boat === 'object' ? { boat: { fuel: num(boat.fuel), drums: num(boat.drums) } } : {}),
     });

@@ -26,6 +26,7 @@ import {
 } from './model';
 import { icebergAcross } from '../world/icebergs';
 import { fullAir, hullBlocked, stepDive, submerged } from './uboat';
+import { bumpShip, stepShipHull } from './shipHull';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
 export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
@@ -69,6 +70,9 @@ export interface ShipState {
   /** The sonar is switched on (not saved), and seconds to its next ping. */
   sonarOn: boolean;
   sonarT: number;
+  /** Its hull points (block 5c, saved) and the pause after a bump (not saved). */
+  hull: number;
+  hullWait: number;
   /** The light under the still ship (block 5b; not saved) and how long it has been on (seconds). */
   lightOn: boolean;
   lightT: number;
@@ -95,6 +99,7 @@ export interface SavedShip {
   dive?: number; // U-Boats (9 ottobre): missing = afloat
   air?: number;
   model: string; // v18
+  hull?: number; // block 5c (10 ottobre): missing = whole
 }
 
 export { shipTank, shipTopSpeed } from './model';
@@ -135,6 +140,8 @@ export function newShip(saved: SavedShip | null): ShipState {
     sonarOn: false,
     lightOn: false,
     lightT: 0,
+    hull: Math.min(shipModel({ model: saved?.model ?? FIRST_SHIP }).hull, saved?.hull ?? Infinity),
+    hullWait: 0,
     sonarT: 0,
     shallowWarn: 0,
     broken: [],
@@ -156,6 +163,7 @@ export function saveShip(s: ShipState): SavedShip | null {
     engineOn: s.engineOn,
     ...(shipModel(s).dive ? { dive: Math.round(s.dive), air: Math.round(s.air) } : {}),
     model: s.model,
+    hull: Math.round(s.hull * 10) / 10,
   };
 }
 
@@ -217,9 +225,11 @@ export function sailShip(
   // Banchisa capped the ship at 10 knots)
   const icy = icebergAcross(Math.min(bow, bow + s.face * 40), Math.max(bow, bow + s.face * 40));
   // dry, it drifts to a stop; a storm's current holds it back a little (owner, 9 ottobre)
-  const top = s.fuel <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1) * currentMult('ship', sea);
+  // dry or broken down (block 5c): no engine
+  const top =
+    s.fuel <= 0 || s.hull <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1) * currentMult('ship', sea);
   // the throttle off zero starts the engine; dry, it stops (owner, 8 ottobre)
-  if (helm && helm.throttle > 0 && s.fuel > 0 && !s.engineOn) {
+  if (helm && helm.throttle > 0 && s.fuel > 0 && s.hull > 0 && !s.engineOn) {
     s.engineOn = true;
     events.push({ type: 'engineStarted' });
   }
@@ -267,8 +277,10 @@ export function sailShip(
   const east = westSide ? SHIP_WEST_X - 1 : end;
   // a U-Boat under water stops against rock with its whole hull (ship/uboat.ts)
   const ahead2 = s.x + s.face * s.speed * dt;
-  if (hullBlocked(g.map, s, ahead2, s.dive)) s.speed = 0;
-  else s.x = Math.max(west, Math.min(east, ahead2));
+  if (hullBlocked(g.map, s, ahead2, s.dive)) {
+    bumpShip(s, s.speed, events); // hard into rock, the hull suffers (block 5c)
+    s.speed = 0;
+  } else s.x = Math.max(west, Math.min(east, ahead2));
   const atEdge = s.x >= end ? 'seaEnd' : s.x <= west || (westSide && s.x >= east) ? 'shipWest' : null;
   const into = atEdge === 'seaEnd' || westSide ? 1 : -1; // the way that runs into it
   if (atEdge && s.speed > 0 && s.face === into) {
@@ -308,7 +320,15 @@ export function sailShip(
     }
     changed.push(...cut);
   }
+  const depth = s.dive;
   changed.push(...stepDive(g.map, s, helm, dt, events));
+  // sinking or rising into rock with the lever pushed (block 5c)
+  if (helm && helm.dive !== 0 && s.dive === depth && submerged(s)) {
+    const d = shipModel(s).dive;
+    if (d && hullBlocked(g.map, s, s.x, s.dive + Math.sign(helm.dive) * 2))
+      bumpShip(s, Math.abs(helm.dive) * (helm.dive > 0 ? d.sinkSpeed : d.riseSpeed), events);
+  }
+  stepShipHull(s, sea, top, dt, events);
   // on the waves: a body floating on its bow and stern (ride.ts); under water a U-Boat no longer feels them
   if (submerged(s)) settleRide(s.ride);
   else stepRide(s.ride, s.x, s.face, shipLength(s), sea, t, dt);

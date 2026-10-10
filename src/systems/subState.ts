@@ -33,6 +33,8 @@ export interface SubState {
   pressureHurt: number;
   /** Seconds of air left under water (subAir.ts; saved). */
   air: number;
+  /** Spare parts for the ship it carries (block 5c; saved), hull points. */
+  parts: number;
 }
 
 export interface SavedSub {
@@ -44,6 +46,8 @@ export interface SavedSub {
   fuel: number;
   /** Seconds of air (added 9 ottobre; missing = full). */
   air?: number;
+  /** Spare parts for the ship (block 5c; missing = none). */
+  parts?: number;
 }
 
 export const subModel = (id: string): SubModel => SUB_MODELS.find((m) => m.id === id) ?? SUB_MODELS[0]!;
@@ -65,6 +69,7 @@ export function newSub(saved: SavedSub | null): SubState {
     bumpWait: 0,
     fuel: saved ? clamp(saved.fuel, 0, subModel(model).tank) : subModel(model).tank,
     fuelWarned: false,
+    parts: Math.max(0, saved?.parts ?? 0),
     ...freshPressure(),
     air: Math.min(subModel(model).airSeconds, saved?.air ?? subModel(model).airSeconds),
   };
@@ -80,6 +85,7 @@ export const saveSub = (s: SubState): SavedSub | null =>
         hull: Math.round(s.hull),
         fuel: Math.round(s.fuel * 10) / 10,
         air: Math.round(s.air),
+        ...(s.parts > 0 ? { parts: Math.round(s.parts) } : {}),
       }
     : null;
 

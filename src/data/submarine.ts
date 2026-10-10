@@ -21,6 +21,8 @@ export interface SubModel {
   airSeconds: number;
   /** It has a sonar of its own (block 5 makes it work). */
   sonar: boolean;
+  /** Its 360° sonar on the glass (block 5c): how far it hears (m) and how many sizes of echo it tells apart. */
+  scope?: { rangeM: number; classes: 2 | 3 | 4 | 5 };
   note: string;
   art: string; // its picture in public/world
   /** The picture with the propeller turning (same box), shown while it moves. */
@@ -71,6 +73,7 @@ export const SUB_MODELS: SubModel[] = [
     tank: 140,
     perKm: 9,
     sonar: true,
+    scope: { rangeM: 60, classes: 3 },
     note: 'Robusto, con il sonar: né il più veloce né il migliore',
     art: 'sottomarino_eh2',
   },
@@ -86,6 +89,7 @@ export const SUB_MODELS: SubModel[] = [
     tank: 130,
     perKm: 9,
     sonar: true,
+    scope: { rangeM: 90, classes: 4 },
     note: 'Ottimo sonar, veloce e profondo',
     art: 'sottomarino_imperium',
     moving: 'sottomarino_imperium_moto',
@@ -102,6 +106,7 @@ export const SUB_MODELS: SubModel[] = [
     tank: 80,
     perKm: 6,
     sonar: true,
+    scope: { rangeM: 110, classes: 5 },
     note: 'Piccolo e velocissimo: fa la ricognizione da solo, o lo guidi tu fino a 500 m',
     art: 'sottomarino_drone',
     recon: true,

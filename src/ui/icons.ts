@@ -56,6 +56,7 @@ export const ICONS = {
   ),
   close: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
   check: svg('<path d="m5 12 5 5 9-10"/>'),
+  radar: svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12 18 6"/>'),
 };
 
 export type IconName = keyof typeof ICONS;

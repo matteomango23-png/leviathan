@@ -53,7 +53,7 @@ export interface BayDef {
 }
 
 /** The tabs of its cockpit (owner, 8 ottobre: each ship its own; new instruments come with parts 4b–4d). */
-export type CockpitTab = 'sonar' | 'plancia' | 'diario' | 'recinto' | 'zaino' | 'drone';
+export type CockpitTab = 'sonar' | 'radar' | 'plancia' | 'diario' | 'recinto' | 'zaino' | 'drone';
 
 export interface ShipModelDef {
   id: string;
@@ -73,6 +73,8 @@ export interface ShipModelDef {
   coast: number;
   brake: number;
   tank: number; // litres
+  /** Hull points (block 5c, owner 10 ottobre): it wears in storms, a U-Boat bumping the floor, giants ramming it. */
+  hull: number;
   perKm: number; // litres per km at full throttle
   /** The sonar: how far it hears (× the base range), up to which speed (knots), and how many sizes of echo it
    *  tells apart (2 … 5, data/hunts.ts SONAR). */
@@ -101,7 +103,7 @@ export interface ShipModelDef {
   };
 }
 
-const ALL_TABS: CockpitTab[] = ['sonar', 'plancia', 'diario', 'recinto', 'zaino'];
+const ALL_TABS: CockpitTab[] = ['sonar', 'radar', 'plancia', 'diario', 'recinto', 'zaino'];
 
 export const SHIP_MODELS: ShipModelDef[] = [
   {
@@ -117,6 +119,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 22,
     brake: 60,
     tank: 300,
+    hull: 100, // its hull points (block 5c)
     perKm: 10,
     sonar: { range: 1, maxKnots: 10, name: 'debole', classes: 2 },
     pool: 0,
@@ -164,6 +167,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 15,
     brake: 42,
     tank: 600,
+    hull: 140, // its hull points (block 5c)
     perKm: 14,
     sonar: { range: 1.2, maxKnots: 10, name: 'normale', classes: 3 },
     pool: 2,
@@ -209,6 +213,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 28,
     brake: 75,
     tank: 400,
+    hull: 160, // its hull points (block 5c)
     perKm: 8,
     sonar: { range: 1, maxKnots: 10, name: 'di prossimità, a 360°', classes: 3 },
     pool: 1,
@@ -251,6 +256,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 20,
     brake: 55,
     tank: 900,
+    hull: 180, // its hull points (block 5c)
     perKm: 15,
     sonar: { range: 1.6, maxKnots: 16, name: 'ottimo', classes: 4 },
     pool: 3,
@@ -308,6 +314,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 14,
     brake: 38,
     tank: 1200,
+    hull: 260, // its hull points (block 5c)
     perKm: 16,
     sonar: { range: 1.6, maxKnots: 14, name: 'a 360°, forte', classes: 4 },
     pool: 3,
@@ -346,6 +353,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 30,
     brake: 90,
     tank: 1000,
+    hull: 150, // its hull points (block 5c)
     perKm: 20,
     sonar: { range: 1.3, maxKnots: 12, name: 'medio', classes: 3 },
     pool: 2,
@@ -398,6 +406,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 11,
     brake: 30,
     tank: 2000,
+    hull: 220, // its hull points (block 5c)
     perKm: 25,
     sonar: { range: 1.6, maxKnots: 14, name: 'buono', classes: 4 },
     pool: 4,
@@ -456,6 +465,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     coast: 9,
     brake: 24,
     tank: 2500,
+    hull: 300, // its hull points (block 5c)
     perKm: 28,
     sonar: { range: 2, maxKnots: 18, name: 'il migliore', classes: 5 },
     pool: 5,

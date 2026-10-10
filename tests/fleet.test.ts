@@ -96,7 +96,7 @@ describe('the shipyard of Porto Fango', () => {
     expect(g.ship).toMatchObject({ model: 'eh1', x: PORTO_FANGO.shipDock, bay: 'docked', fuel: 600 });
     expect(g.sub.model).toBe('squalo_acciaio');
     expect(g.sub.hull).toBe(SUB_MODELS.find((s) => s.id === 'squalo_acciaio')!.hull);
-    expect(g.fleet).toEqual([{ model: 'aurelia', fuel: 250, sub: { hull: 60, fuel: 120 } }]);
+    expect(g.fleet).toEqual([{ model: 'aurelia', fuel: 250, hull: 100, sub: { hull: 60, fuel: 120 } }]);
     expect(buyShip(g, 'aurelia').ok).toBe(false); // already yours
   });
 

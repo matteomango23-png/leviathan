@@ -38,6 +38,8 @@ export const ENGINE_SOUND = {
   /** Gliding from one level to the next (seconds). */
   glide: 0.4,
   ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },
+  /** The radar's parking-sensor beep (block 5c): short and soft, not to be in the way. */
+  beep: { freq: 1900, seconds: 0.07, volume: 0.06 },
 };
 
 /** Rain and thunder (owner, 9 ottobre: storms): the rain's hiss at full rain, the thunder's crack and rumble. */

@@ -46,6 +46,8 @@ export class HelmBars {
       this.hullBar.dataset.level = h > 0.5 ? 'ok' : h > 0.25 ? 'half' : 'low';
     }
     this.root.parentElement?.classList.toggle('helm-has-air', shown || !!hull);
+    // a U-Boat has both (block 5c): the hull bar goes under the air
+    this.root.parentElement?.classList.toggle('helm-has-two', shown && !!hull);
     if (!shown) return;
     this.airFill.style.width = `${Math.round(Math.max(0, Math.min(1, air / airMax)) * 100)}%`;
     this.airBar.dataset.level = air > SUBMARINE.air.warnAt ? 'ok' : 'low';

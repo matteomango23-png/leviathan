@@ -99,3 +99,40 @@
   font-size: 11px;
   color: var(--muted);
 }
+
+/* the submarine's 360° sonar and the arrow home (block 5c): bottom left, right of the gas lever */
+.sub-scope {
+  position: absolute;
+  left: calc(100px + var(--safe-l));
+  bottom: calc(14px + var(--safe-b));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+.sub-scope-canvas {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  opacity: 0.92;
+}
+.sub-home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(3, 12, 19, 0.6);
+  color: #cfe8d8;
+  font-size: 12px;
+}
+.sub-home-arrow {
+  color: #8fe3ff;
+  font-size: 14px;
+}
+.sub-scope[hidden],
+.sub-home[hidden],
+.sub-scope-canvas[hidden] {
+  display: none;
+}

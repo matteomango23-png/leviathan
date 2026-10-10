@@ -1,5 +1,24 @@
 # Progressi
 
+## Blocco 5c — Radar, scafo, sonar dei sottomarini (10 ottobre 2026) → v0.63.0 · blocco 5 chiuso
+
+**Fatto:**
+- `SHIP.hull`, `SHIP.radar`; `hull` per modello (`data/fleet.ts`); `scope` per i sottomarini col sonar (`data/submarine.ts`).
+- `ship/shipHull.ts` (`ShipState.hull` salvato, `hullWait`), urti in `sailShip` e nella discesa, usura in tempesta, speronate (`stepShipRams`), avaria (motore spento, razzo verso Porto Fango).
+- `ship/spareParts.ts`: `parts` su barca e sottomarino (salvati), "Cantiere: scafo della nave" nel porto di Porto Fango (`renderShipRepair`), scarico rientrando nella stiva.
+- `ship/radar.ts` + `ui/radarScreen.ts` (scheda Radar), bip in `WorldScene` (`radarBeep`); `ui/sweepScope.ts`, `ui/subScope.ts` (cerchio e freccia).
+- Barra dello scafo della nave (`helmBars`, sull'U-Boat sotto l'aria); quadrante in Plancia.
+- Test: `tests/hull5c.test.ts`.
+
+**Da provare sull'iPhone:**
+1. Cockpit → Radar vicino a Porto Fango (il molo) e nel ghiaccio della Banchisa.
+2. Al timone vai veloce verso il molo o il ghiaccio: bip sempre più fitti.
+3. Con un U-Boat urta forte il fondale: la barra dello scafo scende.
+4. Nave rotta: motoscafo a Porto Fango → Porto → "Carica ricambi" → torna e aggancia.
+5. Nel sottomarino EH2/Imperium/drone guarda il cerchio del sonar e la freccia verso la nave.
+
+**Prossimo:** pulizia dopo il blocco 5 (ogni 3 tappe), poi blocco 6 (cattura e combattimento), in Plan mode.
+
 ## Luce visibile e messaggi (10 ottobre 2026) → v0.62.1
 
 - `ShipView.drawBeam`: fascio ADD sotto la chiglia quando `ship.lightOn` (`beamK` sfuma, tremolio all'accensione).

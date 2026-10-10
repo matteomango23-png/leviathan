@@ -52,6 +52,31 @@ export const SHIP = {
     below: [25, 90] as [number, number],
     glow: 90,
   },
+  /** The ships' hull (block 5c, owner 10 ottobre 2026). A U-Boat under water bumping rock faster than `bumpFrom`
+   *  (units/s) takes `perSpeed` a unit/s above it (once every `bumpWait` s) and bounces back by `bounce`; in a storm
+   *  above half its top speed it wears `stormPerSecond` at the worst weather (from the weather's waves `stormFrom`);
+   *  a giant ramming it hits `ram` × its length in metres / 6, then backs off `ramCalm` s. Half the hull: a warning;
+   *  nothing left: broken down (no engine). Mended only at Porto Fango: teeth per point, or spare parts brought by
+   *  the speedboat or the submarine (teeth per point there too). Tuning. */
+  hull: {
+    bumpFrom: 20,
+    perSpeed: 0.25,
+    bumpWait: 1,
+    bounce: 0.3,
+    stormPerSecond: 0.6,
+    stormFrom: 1.8,
+    ram: 8,
+    ramCalm: 3,
+    repairPerPoint: 4,
+    partsPerPoint: 5,
+    /** Spare parts a speedboat or jet ski / a submarine carries (hull points of the ship). */
+    partsBoat: 80,
+    partsSub: 50,
+  },
+  /** The surface radar of the cockpit (block 5c): what is within `rangeM` of the hull's ends, swept round once every
+   *  `sweepSeconds`; the parking-sensor beeps for an obstacle ahead within `rangeM` faster than `beepFromKnots`,
+   *  every `beepFar` s far away down to `beepNear` s close. Tuning. */
+  radar: { rangeM: 30, sweepSeconds: 3, beepFromKnots: 4, beepFar: 1.2, beepNear: 0.18 },
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
   /** The sonar (owner, 5 ottobre): switched on at the helm, it pings this often. */

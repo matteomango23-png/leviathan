@@ -84,6 +84,11 @@ export type GameEvent =
   | { type: 'scanDone'; text: string; known: boolean }
   | { type: 'scanLost' }
   | { type: 'lightOn' }
+  | { type: 'shipDamaged'; hull: number; max: number }
+  | { type: 'shipHullHalf' }
+  | { type: 'shipBroken' }
+  | { type: 'shipRammed'; x: number; y: number }
+  | { type: 'shipMended'; points: number; by: 'parts' | 'yard' }
   | { type: 'lightOff' }
   | { type: 'lightNo' }
   | { type: 'lightHunters' }

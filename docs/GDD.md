@@ -207,7 +207,7 @@ Le risposte del proprietario alle domande del blocco 3 di `docs/BACKLOG.md`, pri
     2. ✅ correzioni rapide (v0.48.0);
     3. ✅ decisioni di design (sezione sopra);
     4. la flotta (navi, sottomarini, mezzi nei portelloni, concessionario): parte 4a ✅ (v0.49.0), poi 4b, 4c, 4d;
-    5. sonar e spedizioni: 5a ✅ sonar al centro della caccia e tracker (v0.61.0), 5b ✅ luce che attira e branchi (v0.62.0), 5c (sonar a 360° e orientamento dei sottomarini);
+    5. sonar e spedizioni: 5a ✅ sonar al centro della caccia e tracker (v0.61.0), 5b ✅ luce che attira e branchi (v0.62.0), 5c ✅ radar di prossimità, scafo e ricambi delle navi, sonar a 360° e freccia dei sottomarini (v0.63.0);
     6. cattura e combattimento;
     7. ruoli delle bestie, nuoto, cavalcature;
     8. immagini;
