@@ -17,6 +17,7 @@ import type { ShipState } from '../systems/ship/ship';
 import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
+import { hasMouth, mouthPoint } from '../systems/ship/krillMouth';
 
 /** A U-Boat's hull under the waves darkens fully once it has gone down this share of its floating line. */
 const UNDER_FADE = 0.5;
@@ -164,6 +165,10 @@ export class ShipView {
     // switching on it flickers for a moment, like a big lamp warming up
     const flicker = this.beamK < 0.95 && want ? 0.6 + 0.4 * Math.abs(Math.sin(time * 37)) : 1;
     const k = this.beamK * flicker;
+    if (hasMouth(s)) {
+      this.drawMouthBeam(s, k * s.mouthT);
+      return;
+    }
     const B = SHIP.underLight;
     const keel = WORLD.surfaceY + s.dive + shipDraft(s);
     const half = shipLength(s) * 0.22;
@@ -180,6 +185,21 @@ export class ShipView {
       this.glow.fillStyle(0xffe6a8, 0.08 * k).fillEllipse(s.x, keel + 6, half * 0.9 * r * 0.5, 10 * r * 0.5);
   }
 
+  /** The Krill Hunter's light: out of its mouth, a blue-green beam fanning forward and down into the sea. */
+  private drawMouthBeam(s: ShipState, k: number): void {
+    if (k < 0.01) return;
+    const m = mouthPoint(s);
+    const len = SHIP.mouth.reach * 0.9;
+    for (let i = 6; i >= 1; i--) {
+      const spread = len * (0.18 + 0.32 * (i / 6));
+      const far = { x: m.x + s.face * len * (0.6 + 0.4 * (i / 6)), y: m.y + len * 0.35 };
+      this.glow
+        .fillStyle(0x8ff7ff, 0.05 * k)
+        .fillTriangle(m.x, m.y - 4, far.x, far.y - spread, far.x, far.y + spread);
+    }
+    for (let r = 4; r >= 1; r--) this.glow.fillStyle(0xc8fbff, 0.1 * k).fillCircle(m.x, m.y, 5 * r);
+  }
+
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
   glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
@@ -188,7 +208,14 @@ export class ShipView {
     if (fade <= 0.01) return [];
     const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius * fade }));
     // the light under the still ship (block 5b): a wide glow below the keel
-    if (s.lightOn) {
+    if (s.lightOn && hasMouth(s)) {
+      const m = mouthPoint(s);
+      spots.push({
+        x: m.x + s.face * SHIP.mouth.reach * 0.4,
+        y: m.y + SHIP.mouth.reach * 0.2,
+        r: SHIP.underLight.glow,
+      });
+    } else if (s.lightOn) {
       const keel = WORLD.surfaceY + s.dive + shipDraft(s);
       spots.push({ x: s.x, y: keel + SHIP.underLight.glow * 0.4, r: SHIP.underLight.glow });
     }

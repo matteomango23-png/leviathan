@@ -129,6 +129,24 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
           : `Nave riparata: scafo +${Math.round(e.points)}.`,
         3,
       ];
+    case 'droneTrackerOut':
+      return [`Il drone parte verso ${e.name}: le pianta il tracker e torna.`, 3.5];
+    case 'mouthOpen':
+      return ['La balena apre la bocca: la luce attira le sardine, e le bestie curiose.', 4];
+    case 'mouthShut':
+      return [
+        e.eaten > 0
+          ? `La bocca si chiude: ${e.eaten} sardine nella sacca. Si riapre tra 10 minuti.`
+          : 'La bocca si chiude.',
+        4,
+      ];
+    case 'mouthNo':
+      return [
+        e.wait > 0
+          ? `La bocca è in ricarica: ${Math.floor(e.wait / 60)}:${String(e.wait % 60).padStart(2, '0')}.`
+          : 'La bocca si apre solo a nave ferma, con i portelloni chiusi.',
+        3,
+      ];
     case 'lightOn':
       return [
         'Luce subacquea accesa: le bestie curiose si avvicinano alla nave. Restare a lungo attira anche i predatori.',

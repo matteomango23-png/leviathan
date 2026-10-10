@@ -12,6 +12,7 @@ import { holdPoint } from './geometry';
 import { shipModel, subBay } from './model';
 import { hatchT, type ShipState } from './ship';
 import { SHIP } from '../../data/ship';
+import { TRACKER } from '../../data/hunts';
 
 /** One beast in the drone's report, as it found it. */
 export interface ReconEntry {
@@ -28,6 +29,8 @@ export interface ReconEntry {
 export interface GadgetsState {
   recon: {
     phase: 'idle' | 'out' | 'back';
+    /** A round of every beast (the Nightmare's scouting) or one beast to plant a tracker on (the Krill Hunter's). */
+    mode: 'scout' | 'tracker';
     x: number;
     y: number;
     face: 1 | -1;
@@ -59,7 +62,7 @@ export function newGadgets(
   trackLeft: number | null = null,
 ): GadgetsState {
   return {
-    recon: { phase: 'idle', x: 0, y: 0, face: 1, queue: [], t: 0, found: [], report: null },
+    recon: { phase: 'idle', mode: 'scout', x: 0, y: 0, face: 1, queue: [], t: 0, found: [], report: null },
     sphere: { phase: 'dock', x: 0, y: 0, cooldown: 0 },
     target: target?.target ?? null,
     targetName: target?.name ?? '',
@@ -69,17 +72,51 @@ export function newGadgets(
 
 export const sphereBay = (s: { model: string }): number =>
   shipModel(s).bays.findIndex((b) => b.kind === 'sphere');
-/** Its submarine is a drone that scouts (the Ocean's Nightmare's). */
-export const hasDrone = (g: { ship: ShipState }): boolean => {
+/** Its submarine is a drone (the Ocean's Nightmare's scouts, the Krill Hunter's plants trackers from afar). */
+export const droneKind = (g: { ship: ShipState }): 'scout' | 'tracker' | null => {
   const bay = shipModel(g.ship).bays[subBay(g.ship)];
-  return !!bay && !!subModel(bay.model).recon;
+  const m = bay && subModel(bay.model);
+  return m?.recon ? 'scout' : m?.remoteTracker ? 'tracker' : null;
 };
+export const hasDrone = (g: { ship: ShipState }): boolean => droneKind(g) !== null;
+
+/** The drone is in its hold behind its open hatch, whole, the ship still, not already out. */
+const droneReady = (g: GadgetsWorld): boolean =>
+  g.ship.owned &&
+  g.ship.bay === 'docked' &&
+  hatchT(g.ship, subBay(g.ship)) === 1 &&
+  g.ship.speed < SHIP.stillBelow &&
+  !g.sub.aboard &&
+  g.sub.hull > 0 &&
+  g.gadgets.recon.phase === 'idle';
+
+/** The Krill Hunter's drone can be sent to plant a tracker now (block 5, 10 ottobre). */
+export const canSendTracker = (g: GadgetsWorld): boolean => droneKind(g) === 'tracker' && droneReady(g);
+
+/** Sends it to one beast the sonar hears (picked on the cockpit's screen): it plants a tracker and comes back. */
+export function sendTrackerDrone(g: GadgetsWorld, target: Target, events: GameEvent[]): boolean {
+  if (!canSendTracker(g)) return false;
+  const c = beastsInRange(g, g.ship).find((x) => JSON.stringify(x.target) === JSON.stringify(target));
+  if (!c) return false;
+  const home = holdPoint(g.ship);
+  Object.assign(g.gadgets.recon, {
+    phase: 'out',
+    mode: 'tracker',
+    x: home.x,
+    y: home.y,
+    queue: [c],
+    t: 0,
+    found: [],
+  });
+  events.push({ type: 'droneTrackerOut', name: c.name });
+  return true;
+}
 
 /** The drone can scout now: in its hold behind its open hatch (owner, 9 ottobre: open it, then scout or launch),
  *  whole, the ship still, not already out. */
 export const canRecon = (g: GadgetsWorld): boolean =>
   g.ship.owned &&
-  hasDrone(g) &&
+  droneKind(g) === 'scout' &&
   g.ship.bay === 'docked' &&
   hatchT(g.ship, subBay(g.ship)) === 1 &&
   g.ship.speed < SHIP.stillBelow &&
@@ -99,7 +136,7 @@ export function startRecon(g: GadgetsWorld, events: GameEvent[]): void {
     events.push({ type: 'reconEmpty' });
     return;
   }
-  Object.assign(r, { phase: 'out', x: home.x, y: home.y, queue, t: 0, found: [] });
+  Object.assign(r, { phase: 'out', mode: 'scout', x: home.x, y: home.y, queue, t: 0, found: [] });
   events.push({ type: 'reconStart' });
 }
 
@@ -135,7 +172,14 @@ function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
       r.t = 0;
     } else {
       r.t += dt;
-      if (glide(r, at, RECON.speed, RECON.reach, dt)) {
+      if (glide(r, at, RECON.speed, RECON.reach, dt) && r.mode === 'tracker') {
+        // the Krill Hunter's: the dart planted, home again
+        Object.assign(g.gadgets, { target: c.target, targetName: c.name, trackLeft: TRACKER.seconds });
+        events.push({ type: 'trackerHit', name: c.name });
+        g.seen.add(c.speciesId);
+        r.queue = [];
+        r.phase = 'back';
+      } else if (r.mode === 'scout' && Math.hypot(at.x - r.x, at.y - r.y) <= RECON.reach) {
         r.found.push({
           target: c.target,
           name: c.name,
@@ -152,8 +196,11 @@ function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
     }
   } else if (glide(r, home, RECON.speed, 6, dt)) {
     r.phase = 'idle';
-    r.report = r.found;
-    events.push({ type: 'reconDone', count: r.found.length });
+    if (r.mode === 'scout') {
+      r.report = r.found;
+      events.push({ type: 'reconDone', count: r.found.length });
+    }
+    r.mode = 'scout';
   }
   if (r.x !== was) r.face = r.x > was ? 1 : -1;
 }

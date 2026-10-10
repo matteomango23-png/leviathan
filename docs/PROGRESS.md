@@ -1,5 +1,19 @@
 # Progressi
 
+## Krill Hunter (10 ottobre 2026) → v0.64.0
+
+**Fatto:**
+- Immagini: `MIRROR` (nave e drone guardavano a sinistra), allineamento delle varianti di formato diverso (`register`, ricerca della scala e dello spostamento sulla sagoma), `GLOW` con colore (ciano), nomi `_bocca`, `_bocca_moto`.
+- Dati: nave `krill` (`art.mouth`, `mouthU/V`), `drone_krill` (`remoteTracker`), `motoscafo_krill`; `SHIP.mouth`.
+- `ship/krillMouth.ts` (bocca: sardine, tetto, ricarica; usa la luce di `underLight`); `hatchCanMove` vieta i portelloni a bocca aperta; ruoli `mouth`/`mouthMoving` in `shipPictures.ts`; fascio dalla bocca in `shipView`.
+- `gadgets.ts`: `droneKind`, `canSendTracker`, `sendTrackerDrone` (giro del drone in modalità `tracker`); pulsante nel Sonar; `sonarScan.picked`.
+- Card: righe "Bocca luminosa" e "Da remoto".
+- Test: `tests/krill.test.ts`.
+
+**Da provare sull'iPhone:** compra la Krill Hunter a Porto Fango; "Apri bocca" vicino alle sardine; apri il portellone del drone, Sonar → tocca un'eco → "Manda il drone: tracker"; guida drone e Balenotto.
+
+**Prossimo:** pulizia dopo il blocco 5, poi blocco 6 (cattura e combattimento).
+
 ## Rifiniture (10 ottobre 2026) → v0.63.2
 
 - `SeaSurfaceView.drawIce`: caselle `TILE.ice` della fascia di superficie ridisegnate sopra il mare (escluse quelle degli iceberg dipinti), sollevate col 35% dell'onda.

@@ -25,7 +25,7 @@ const map = generateWorld();
 
 describe('the ships of the fleet', () => {
   it('each has its numbers and its card; the ready ones their paintings and submarines', () => {
-    expect(SHIP_MODELS).toHaveLength(8);
+    expect(SHIP_MODELS).toHaveLength(9);
     for (const m of SHIP_MODELS) {
       expect(m.knots, m.id).toBeGreaterThan(0);
       expect(m.tank, m.id).toBeGreaterThan(0);

@@ -40,6 +40,7 @@ import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
 import { stepPackHunt } from './beasts/packHunt';
 import { stepLight, toggleLight } from './ship/underLight';
+import { hasMouth, stepMouth, toggleMouth } from './ship/krillMouth';
 import { stepShipRams } from './ship/shipHull';
 import { fireHarpoon, stepHarpoon } from './harpoon';
 import type { InputState } from './input';
@@ -162,8 +163,13 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (picked) pickTarget(g, picked, events);
   if (input.clearTarget) clearTarget(g);
   if (input.helmCmd === 'tracker') shootTracker(g, events);
-  if (input.helmCmd === 'light') toggleLight(g, events);
+  // the light under the hull, or the Krill Hunter's mouth (ship/krillMouth.ts)
+  if (input.helmCmd === 'light') {
+    if (hasMouth(g.ship)) toggleMouth(g, events);
+    else toggleLight(g, events);
+  }
   stepLight(g, dt, events); // the light under the still ship calls the beasts (ship/underLight.ts)
+  stepMouth(g, dt, events);
   stepShipRams(g, events); // giants ramming the ship (ship/shipHull.ts)
   stepGadgets(g, dt, events);
   // the drone back: its report names the beasts on the sonar (block 5, 10 ottobre)

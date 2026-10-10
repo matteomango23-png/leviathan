@@ -24,6 +24,8 @@ export interface ScanState {
   /** The echo being analysed, and for how long (seconds). */
   lock: Target | null;
   t: number;
+  /** The echo last touched: it stays picked after its analysis (the Krill Hunter's drone goes to it). */
+  picked: Target | null;
   /** What the analyses of this outing found, by echo (targetKey): the words shown by its dot. */
   results: Record<string, string>;
 }
@@ -36,7 +38,7 @@ export interface ScanWorld {
   sonarNotes: SonarNotes;
 }
 
-export const newScan = (): ScanState => ({ lock: null, t: 0, results: {} });
+export const newScan = (): ScanState => ({ lock: null, t: 0, picked: null, results: {} });
 
 /** One beast, one key (an echo keeps it while it moves). */
 export const targetKey = (t: Target): string =>
@@ -49,10 +51,12 @@ export const scanSeconds = (ship: { model: string }): number => SONAR.analyzeSec
 export function lockEcho(s: ScanState, t: Target): void {
   if (s.lock && targetKey(s.lock) === targetKey(t)) {
     s.lock = null;
+    s.picked = null;
     s.t = 0;
     return;
   }
   s.lock = t;
+  s.picked = t;
   s.t = 0;
 }
 
@@ -82,6 +86,7 @@ export function stepScan(g: ScanWorld, dt: number, events: GameEvent[]): void {
   const p = locate(g, s.lock);
   if (!p || Math.abs(p.x - g.ship.x) > range || p.y <= WORLD.surfaceY) {
     s.lock = null;
+    s.picked = null;
     s.t = 0;
     events.push({ type: 'scanLost' });
     return;

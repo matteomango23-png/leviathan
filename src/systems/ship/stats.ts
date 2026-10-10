@@ -147,6 +147,17 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       unit: 'm',
     },
   ];
+  // the Krill Hunter's mouth (10 ottobre)
+  if (m.art?.mouth)
+    rows.push({
+      key: 'mouth',
+      group: g,
+      label: 'Bocca luminosa',
+      value: SHIP.mouth.maxSardines,
+      text: `attira e mangia fino a ${SHIP.mouth.maxSardines} sardine, poi ricarica ${Math.round(SHIP.mouth.rechargeSeconds / 60)} min`,
+      better: 'high',
+      unit: 'sardine',
+    });
   // a U-Boat dives itself (block 4c)
   if (m.dive)
     rows.push({
@@ -210,6 +221,19 @@ export function shipStats(m: ShipModelDef): StatRow[] {
             : 'no',
           better: 'high',
           unit: 'm',
+        },
+        {
+          key: 'sub.remote',
+          group: v,
+          label: 'Da remoto',
+          value: sub.recon || sub.remoteTracker ? 1 : 0,
+          text: sub.recon
+            ? 'ricognizione di tutte le bestie a portata del sonar'
+            : sub.remoteTracker
+              ? 'pianta il tracker a una bestia scelta sul sonar'
+              : 'no',
+          better: 'none',
+          unit: '',
         },
         {
           key: 'sub.parts',

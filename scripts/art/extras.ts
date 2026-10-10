@@ -46,12 +46,18 @@ export function extraDest(outRoot: string, e: ExtraName): string {
   return join(outRoot, 'ui', `${e.id}.webp`);
 }
 
-/** Pixels of a picture, at most maxW wide, with inset (a share of the shorter side) trimmed all around. */
-async function raw(src: string, maxW: number, inset = 0): Promise<Raw> {
+/** Pictures drawn facing left (the Krill Hunter's, 10 ottobre): mirrored, so the bow is on the right like the others. */
+const MIRROR = ['nave_lanterna', 'sottomarino_lanterna'];
+const mirrored = (id: string): boolean => MIRROR.some((n) => id === n || id.startsWith(`${n}_`));
+
+/** Pixels of a picture, at most maxW wide, with inset (a share of the shorter side) trimmed all around; mirrored on
+ *  demand. */
+async function raw(src: string, maxW: number, inset = 0, flop = false): Promise<Raw> {
   const meta = await sharp(src).metadata();
   const t = Math.round(Math.min(meta.width!, meta.height!) * inset);
   const { data, info } = await sharp(src)
     .extract({ left: t, top: t, width: meta.width! - 2 * t, height: meta.height! - 2 * t })
+    .flop(flop)
     .resize({ width: maxW, withoutEnlargement: true })
     .ensureAlpha()
     .raw()
@@ -79,7 +85,7 @@ async function pairBox(src: string, id: string, img: Raw): Promise<Box | null> {
     ? src.replace(/_moto(.[a-z]+)$/i, '$1')
     : src.replace(/(.[a-z]+)$/i, '_moto$1');
   if (!existsSync(other)) return null;
-  const o = await raw(other, img.width);
+  const o = await raw(other, img.width, 0, mirrored(id));
   if (o.width !== img.width || o.height !== img.height) return null;
   const cut = onGreenScreen(o)
     ? removeGreenBackground(o)
@@ -185,7 +191,7 @@ const MASK_COLS = 40;
  * waterline (share of the cut picture's height), with a coarse solid mask for the game's collisions.
  */
 async function makeWorldPiece(src: string, dest: string, id: string): Promise<string> {
-  const img = await raw(src, 1400);
+  const img = await raw(src, 1400, 0, mirrored(id));
   const iceberg = id.startsWith('iceberg');
   // the waterline: the brightest row in the side margins (only the line reaches them, not the ice or its snow)
   let line = -1;
@@ -201,7 +207,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
       if (n > best) [best, line] = [n, y];
     }
   }
-  if (shipLike(id)) return makeShip(img, dest);
+  if (shipLike(id)) return makeShip(img, dest, src, id);
   const radius = Math.max(3, Math.round(img.width * 0.004));
   // icebergs are pale: a loose cut; the walls are dark rock: a tight one, or the rock turns see-through
   const opt = iceberg ? { low: 8, high: 30, soft: 40 } : { low: 2, high: 9, soft: 14 };
@@ -262,7 +268,110 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
  * distance from the colour of the edges, so the gaps inside the hull (by the rudder) go too; the green left on the
  * edges is taken out. NOT cropped: the two pictures share one frame and must line up.
  */
-async function makeShip(img: Raw, dest: string): Promise<string> {
+async function makeShip(img: Raw, dest: string, src: string, id: string): Promise<string> {
+  let out = keyShip(img);
+  let { width, height } = img;
+  // a variant drawn in another frame than its plain picture (the Krill Hunter's running ones, 10 ottobre): fitted
+  // onto it by its outline, or it would jump when the two fade into each other
+  const base = baseOf(src, id);
+  let fitted = false;
+  if (base) {
+    const b = await raw(base, 1400, 0, mirrored(id));
+    if (b.width !== width || b.height !== height) {
+      out = register(out, img, keyShip(b), b);
+      [width, height] = [b.width, b.height];
+      fitted = true;
+    }
+  }
+  await mkdir(dirname(dest), { recursive: true });
+  await sharp(Buffer.from(out.buffer), { raw: { width, height, channels: 4 } })
+    .webp({ quality: 88, alphaQuality: 95 })
+    .toFile(dest);
+  await glowIfListed(dest);
+  return `nave ${width}×${height}, senza ritaglio${fitted ? ', allineata alla base' : ''}`;
+}
+
+/** The plain picture of a ship's or boat's variant (`nave_x_moto` → `nave_x`), if it is in the inbox. */
+function baseOf(src: string, id: string): string | null {
+  const plain = id.replace(/_(aperta(_\d)?|moto|bocca(_moto)?)$/, '');
+  if (plain === id) return null;
+  const file = join(dirname(src), `${plain}${src.slice(src.lastIndexOf('.'))}`);
+  return existsSync(file) ? file : null;
+}
+
+/** A picture's solid pixels, `k` times smaller (1: solid), for comparing outlines. */
+function smallMask(
+  pix: Uint8ClampedArray,
+  w: number,
+  h: number,
+  k: number,
+): { m: Uint8Array; w: number; h: number } {
+  const mw = Math.floor(w / k);
+  const mh = Math.floor(h / k);
+  const m = new Uint8Array(mw * mh);
+  for (let y = 0; y < mh; y++)
+    for (let x = 0; x < mw; x++)
+      m[y * mw + x] = pix[((y * k + (k >> 1)) * w + x * k + (k >> 1)) * 4 + 3]! > 100 ? 1 : 0;
+  return { m, w: mw, h: mh };
+}
+
+/**
+ * Fits a cut picture onto another's frame (the same drawing, scaled and shifted by the AI): the scale and the shift
+ * that make their outlines overlap the most, searched on small masks; the stern's quarter is left out of the score,
+ * its propeller blurred wider when it turns.
+ */
+function register(pix: Uint8ClampedArray, img: Raw, ref: Uint8ClampedArray, to: Raw): Uint8ClampedArray {
+  const k = 4;
+  const A = smallMask(pix, img.width, img.height, k);
+  const B = smallMask(ref, to.width, to.height, k);
+  const from = Math.floor(B.w * 0.25); // the bow side only
+  let best = { score: -1, s: 1, dx: 0, dy: 0 };
+  const score = (sc: number, dx: number, dy: number): number => {
+    let hit = 0;
+    let miss = 0;
+    for (let y = 0; y < B.h; y += 2)
+      for (let x = from; x < B.w; x += 2) {
+        const sx = Math.round((x - dx) / sc);
+        const sy = Math.round((y - dy) / sc);
+        const a = sx >= 0 && sy >= 0 && sx < A.w && sy < A.h ? A.m[sy * A.w + sx]! : 0;
+        const b = B.m[y * B.w + x]!;
+        if (a && b) hit++;
+        else if (a || b) miss++;
+      }
+    return hit / Math.max(1, hit + miss);
+  };
+  for (let sc = 0.85; sc <= 1.2; sc += 0.01)
+    for (let dx = -40; dx <= 40; dx += 4)
+      for (let dy = -40; dy <= 40; dy += 4) {
+        const v = score(sc, dx, dy);
+        if (v > best.score) best = { score: v, s: sc, dx, dy };
+      }
+  // a finer look around the best
+  const coarse = best;
+  for (let sc = coarse.s - 0.01; sc <= coarse.s + 0.01; sc += 0.001)
+    for (let dx = coarse.dx - 4; dx <= coarse.dx + 4; dx += 0.5)
+      for (let dy = coarse.dy - 4; dy <= coarse.dy + 4; dy += 0.5) {
+        const v = score(sc, dx, dy);
+        if (v > best.score) best = { score: v, s: sc, dx, dy };
+      }
+  const sc = best.s;
+  const dx = best.dx * k;
+  const dy = best.dy * k;
+  const out = new Uint8ClampedArray(to.width * to.height * 4);
+  for (let y = 0; y < to.height; y++)
+    for (let x = 0; x < to.width; x++) {
+      const sx = Math.round((x - dx) / sc);
+      const sy = Math.round((y - dy) / sc);
+      if (sx < 0 || sy < 0 || sx >= img.width || sy >= img.height) continue;
+      const i = (sy * img.width + sx) * 4;
+      const o = (y * to.width + x) * 4;
+      for (let c = 0; c < 4; c++) out[o + c] = pix[i + c]!;
+    }
+  return out;
+}
+
+/** The ship's background keyed out (see makeShip). */
+function keyShip(img: Raw): Uint8ClampedArray {
   const [br, bg, bb] = borderColor(img);
   const d = img.data;
   const out = new Uint8ClampedArray(d.length);
@@ -284,37 +393,50 @@ async function makeShip(img: Raw, dest: string): Promise<string> {
     out[o + 3] = dist <= low ? 0 : dist >= high ? 255 : Math.round(((dist - low) / (high - low)) * 255);
   }
   keepLargest(out, img.width, img.height); // stray specks of the noisy background
-  await mkdir(dirname(dest), { recursive: true });
-  await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
-    .webp({ quality: 88, alphaQuality: 95 })
-    .toFile(dest);
-  await glowIfListed(dest);
-  return `nave ${img.width}×${img.height}, senza ritaglio`;
+  return out;
 }
 
 /** Pictures whose red lights glow and pulse in the game (owner, 9 ottobre: the Ocean's Nightmare's runes, its
  *  drone's red details). */
-const GLOW = ['nave_nightmare', 'sottomarino_drone'];
+const GLOW: Record<string, 'red' | 'cyan'> = {
+  nave_nightmare: 'red',
+  sottomarino_drone: 'red',
+  // the Krill Hunter's and its drone's blue-green lights (10 ottobre)
+  nave_lanterna: 'cyan',
+  sottomarino_lanterna: 'cyan',
+};
 
 /** For a listed picture, `<name>_glow.webp` next to it. */
 async function glowIfListed(dest: string): Promise<void> {
-  if (GLOW.some((n) => dest.endsWith(`${n}.webp`)))
-    await makeGlow(dest, dest.replace(/\.webp$/, '_glow.webp'));
+  const name = Object.keys(GLOW).find((n) => dest.endsWith(`${n}.webp`));
+  if (name) await makeGlow(dest, dest.replace(/\.webp$/, '_glow.webp'), GLOW[name]!);
 }
 
-/** Only the lit red of the picture (its runes and lamps), softly blurred, on transparent: drawn added and pulsing. */
-async function makeGlow(src: string, dest: string): Promise<void> {
+/** Only the lit lights of the picture (red runes and lamps, or blue-green ones), softly blurred, on transparent:
+ *  drawn added and pulsing. */
+async function makeGlow(src: string, dest: string, hue: 'red' | 'cyan'): Promise<void> {
   const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const cut = new Uint8ClampedArray(data.buffer, data.byteOffset, data.length);
   const img = { width: info.width, height: info.height };
   const out = new Uint8ClampedArray(cut.length);
   for (let o = 0; o < cut.length; o += 4) {
     const r = cut[o]!;
-    const other = Math.max(cut[o + 1]!, cut[o + 2]!);
-    out[o] = r;
-    out[o + 1] = Math.round(cut[o + 1]! * 0.6);
-    out[o + 2] = Math.round(cut[o + 2]! * 0.6);
-    out[o + 3] = r > 140 && r > other * 1.8 && cut[o + 3]! > 0 ? Math.min(255, (r - other) * 2) : 0;
+    const g = cut[o + 1]!;
+    const b = cut[o + 2]!;
+    // how strongly it is the light's colour: red over the others, or green-and-blue over red
+    const gb = Math.min(g, b);
+    const lit =
+      hue === 'red'
+        ? r > 140 && r > Math.max(g, b) * 1.8
+          ? r - Math.max(g, b)
+          : 0
+        : gb > 120 && r < gb * 0.6
+          ? gb - r
+          : 0;
+    out[o] = hue === 'red' ? r : Math.round(r * 0.6);
+    out[o + 1] = hue === 'red' ? Math.round(g * 0.6) : g;
+    out[o + 2] = hue === 'red' ? Math.round(b * 0.6) : b;
+    out[o + 3] = lit > 0 && cut[o + 3]! > 0 ? Math.min(255, lit * 2) : 0;
   }
   await sharp(Buffer.from(out.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
     .blur(1.2)

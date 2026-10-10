@@ -54,6 +54,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/shipHull.ts` | Lo scafo delle navi: urti dell'U-Boat, usura in tempesta, speronate delle bestie giganti, avaria a zero. |
 | `ship/spareParts.ts` | Riparare la nave a Porto Fango (denti) o coi ricambi portati dal motoscafo o dal sottomarino. |
 | `ship/radar.ts` | Il radar di prossimità: cosa c'è vicino allo scafo, e la distanza dall'ostacolo davanti per i bip. |
+| `ship/krillMouth.ts` | La bocca della Krill Hunter: si apre a nave ferma, attira e mangia le sardine con un tetto e una ricarica, accende la luce che chiama le bestie. |
 | `ship/underLight.ts` | La luce sotto la nave ferma: consumo, spegnimento in moto, chiama le bestie a portata del sonar (curiose subito, predatori dopo). |
 | `beasts/packHunt.ts` | I branchi che cacciano: sardine (le mangiano), orche dietro a bestie più piccole (che scappano). |
 | `trackerDart.ts` | Il tracker sparato dal sottomarino: la bussola segue la bestia per 30 minuti di gioco. |
