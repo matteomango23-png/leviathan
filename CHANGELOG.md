@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.62.1 — Luce visibile, messaggi al loro posto (10 ottobre 2026)
+
+- **La luce subacquea si vede:** accesa, un fascio caldo si apre sotto lo scafo con un breve tremolio; spenta, sfuma via.
+- **Niente più annunci degli animali:** spariti i messaggi "Pericolo: …", "Qualcosa brilla nel buio…" e "… si agita: qualcosa nel buio". Restano i messaggi che spiegano comandi e azioni.
+- **I messaggi non coprono più i pulsanti:** più stretti; al timone compaiono in alto, sotto gli strumenti.
+
 ## v0.62.0 — Luce che attira le bestie, branchi veri (10 ottobre 2026)
 
 - **Luce subacquea:** a nave ferma il pulsante "Luce" accende una luce sotto lo scafo (consuma un po' di carburante). Le bestie curiose a portata del sonar arrivano piano sotto la nave; dopo circa 45 secondi arrivano anche i predatori. Al timone: "luce accesa: 3 in arrivo". Resta accesa anche se ti tuffi o cali il sottomarino; si spegne se riparti.

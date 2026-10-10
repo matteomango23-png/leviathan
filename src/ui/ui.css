@@ -117,7 +117,8 @@
 }
 .toast {
   bottom: calc(22px + var(--safe-b));
-  max-width: calc(100vw - 2 * var(--side));
+  /* between the joystick and the buttons, never over them (owner, 10 ottobre) */
+  max-width: min(46vw, 460px);
   box-sizing: border-box;
   font-size: 14px;
   background: rgba(3, 12, 19, 0.6);
@@ -1611,4 +1612,10 @@ img.albino-art {
 }
 .bestiary-filters {
   margin-bottom: 6px;
+}
+
+/* at the helm the levers and buttons fill the bottom: the messages go up, under the instruments (owner, 10 ottobre) */
+#ui.at-helm .toast {
+  bottom: auto;
+  top: calc(112px + var(--safe-t));
 }

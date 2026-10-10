@@ -841,6 +841,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 10 ottobre 2026 — Niente annunci degli animali (v0.62.1)
+
+- **Il proprietario:** i messaggi che dicono quali animali ci sono "non servono". Tolti gli annunci di bestie pericolose, rare, leggendarie e quelli del compagno che le sente. Le bestie si scoprono col sonar, con la luce e guardando. I messaggi restano per comandi e azioni, e al timone stanno in alto per non coprire leve e pulsanti.
+
 ## 9 ottobre 2026 — Blocco 5b: luce e branchi (v0.62.0)
 
 - **Risposte del proprietario:** luce con interruttore a nave ferma che consuma carburante; prima i curiosi, poi i predatori; branchi che combattono insieme, si muovono insieme e cacciano.

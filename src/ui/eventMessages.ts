@@ -24,7 +24,6 @@ const itemName = (id: string): string => ITEMS.find((i) => i.id === id)?.name ??
 const weaponName = (id: string): string => WEAPONS.find((w) => w.id === id)?.name ?? id;
 
 export function messageFor(e: GameEvent, g: GameState): [string, number] | null {
-  const wild = (id: number) => g.beasts.wilds.find((w) => w.id === id);
   const tamed = (uid: string) => g.beasts.team.find((b) => b.uid === uid);
   switch (e.type) {
     case 'creatureSeen':
@@ -43,35 +42,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         g.ship.owned ? 'Ti risvegli sulla tua nave.' : 'Il mare ti ha respinto: ti risvegli al porto.',
         3,
       ];
-    case 'wildAppeared': {
-      const w = wild(e.id);
-      if (!w) return null;
-      if (e.legend)
-        return [
-          `Qualcosa di antico si muove nel buio… ${formName(w.form)}! Ne esiste una sola: se la sconfiggi sparisce per sempre.`,
-          6,
-        ];
-      if (e.danger)
-        return [
-          `⚠ Pericolo: ${formName(w.form)} Lv ${w.level}. È molto più forte della tua squadra: meglio evitarlo.`,
-          4.5,
-        ];
-      return e.rare ? [`Qualcosa brilla nel buio: ${formName(w.form)}! Raggiungilo e sfidalo.`, 4] : null;
-    }
-    case 'beastSensed': {
-      const b = tamed(e.uid);
-      const w = wild(e.wildId);
-      if (!b || !w) return null;
-      const side = e.side < 0 ? 'a sinistra' : 'a destra';
-      // it names the beasts you already know; a rare one it feels as "something that shines"
-      const what =
-        w.form.variant !== 'comune' || w.form.unique
-          ? 'qualcosa di raro'
-          : g.seen.has(w.form.speciesId)
-            ? formName(w.form)
-            : 'qualcosa';
-      return [`${formName(b.form)} si agita: ${what} nel buio ${side}.`, 2.6];
-    }
+    // which beasts are about is not announced any more (owner, 10 ottobre: "una cosa che non serve"): the
+    // sonar, the light and your own eyes tell you
+    case 'wildAppeared':
+    case 'beastSensed':
+      return null;
     case 'ventBreath':
       return ['Uno sfiatatoio: respiri le bolle che salgono dal fondale.', 3];
     case 'boatCapsized':

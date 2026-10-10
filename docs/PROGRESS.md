@@ -1,5 +1,12 @@
 # Progressi
 
+## Luce visibile e messaggi (10 ottobre 2026) → v0.62.1
+
+- `ShipView.drawBeam`: fascio ADD sotto la chiglia quando `ship.lightOn` (`beamK` sfuma, tremolio all'accensione).
+- `eventMessages`: `wildAppeared` e `beastSensed` non mostrano più nulla.
+- `ui.css`: `.toast` largo al massimo `min(46vw, 460px)`; con `#ui.at-helm` sta in alto (112 px).
+- **Da provare sull'iPhone:** accendi e spegni la luce; al timone e nel sottomarino i messaggi non devono coprire i pulsanti.
+
 ## Blocco 5b — Luce e branchi (10 ottobre 2026) → v0.62.0
 
 **Fatto:**

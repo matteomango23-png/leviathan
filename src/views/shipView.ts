@@ -35,6 +35,8 @@ export class ShipView {
   private readonly tug: Phaser.GameObjects.Image | null;
   private tugLeft = 0;
   private tugFrom = 0;
+  /** How lit the light under the still ship is now (eases on and off). */
+  private beamK = 0;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
     const smoke = scene.add.graphics(); // behind the ship
@@ -122,6 +124,7 @@ export class ShipView {
     else this.drawWake(s, k, time, sea);
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
+    this.drawBeam(s, time, dt);
     this.drawTug(s, top, dt);
   }
 
@@ -150,6 +153,31 @@ export class ShipView {
         this.glow
           .fillStyle(0x9fd8ff, L.wash * pulse)
           .fillEllipse(p.x, p.y, L.radius * k * 0.45, L.radius * k * 0.3);
+  }
+
+  /** The light under the still ship (block 5b; owner, 10 ottobre: on and off looked the same): a wide beam fanning
+   *  down from the keel, flickering on and fading out. */
+  private drawBeam(s: ShipState, time: number, dt: number): void {
+    const want = s.lightOn ? 1 : 0;
+    this.beamK += (want - this.beamK) * Math.min(1, dt * (want ? 2.5 : 4));
+    if (this.beamK < 0.01) return;
+    // switching on it flickers for a moment, like a big lamp warming up
+    const flicker = this.beamK < 0.95 && want ? 0.6 + 0.4 * Math.abs(Math.sin(time * 37)) : 1;
+    const k = this.beamK * flicker;
+    const B = SHIP.underLight;
+    const keel = WORLD.surfaceY + s.dive + shipDraft(s);
+    const half = shipLength(s) * 0.22;
+    for (let i = 6; i >= 1; i--) {
+      const w = half + (B.spread + B.glow) * (i / 6);
+      const depth = B.below[1] * 1.6 * (0.55 + 0.45 * (i / 6));
+      const [ax, bx, y1] = [s.x - half * 0.8, s.x + half * 0.8, keel + depth];
+      this.glow
+        .fillStyle(0xfff1c8, 0.05 * k)
+        .fillTriangle(ax, keel, bx, keel, s.x + w, y1)
+        .fillTriangle(ax, keel, s.x + w, y1, s.x - w, y1);
+    }
+    for (let r = 4; r >= 1; r--)
+      this.glow.fillStyle(0xffe6a8, 0.08 * k).fillEllipse(s.x, keel + 6, half * 0.9 * r * 0.5, 10 * r * 0.5);
   }
 
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
