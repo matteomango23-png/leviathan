@@ -127,3 +127,25 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 - Menu del porto da riorganizzare (schede per nave, sottomarino, potenziamenti, squadra, equipaggiamento).
 - Più chiaro dove trovare le bestie; sonar più leggibile.
 - Ciclo giorno/notte.
+
+## Idee del proprietario (10 ottobre 2026), con l'ordine proposto
+
+Subito, in un pacchetto di rifiniture:
+- La banchisa di ghiaccio non si vede con le onde.
+- Ocean's Nightmare: dopo la ricognizione del drone, sul sonar i nomi degli animali compaiono da soli (li ha già analizzati il drone).
+- Nel cockpit: indicatore del vento, della qualità dell'acqua (torbidità) e della visibilità.
+- Card dei mezzi (cantiere, scheda nave/barca) da aggiornare con le novità (radar, scafo, sonar, ricambi); da ora in poi aggiornarle a ogni modifica dei mezzi.
+
+Quando arrivano gli asset:
+- Una nuova nave (asset pronti dal proprietario).
+
+Con il blocco 6 (cattura e combattimento):
+- Contratti per catturare bestie specifiche (al porto, con ricompensa).
+- Squadra tutta KO: niente più ritorno automatico; i predatori possono attaccarti e mangiarti, i cuori contano davvero; a zero cuori muori e riappari (con la perdita di denti).
+
+Blocco "mezzi e mare" (dopo il 6):
+- Dare un senso al motoscafo: reti da calare in mare che si riempiono di sardine in qualche ora di gioco (minuti reali), mentre la nave va oltre; si torna a prenderle. Resa a fortuna e zona, massimo per rete.
+- Correnti con una direzione: contro corrente consumi alle stelle e più lento, a favore più veloce e consumi meno (oggi c'è solo il rallentamento della tempesta).
+
+Grande, da progettare bene (insieme al blocco 10, storia):
+- Nuovo inizio lungo un fiume di circa 10 km dentro una giungla fitta, prima di Portofosco: acqua bassa, solo motoscafi e gommoni, rocce che rovinano lo scafo, animali di fiume piccoli e predatori (coccodrilli); si arriva gradualmente al mare, dove ti danno la barca. Asset della giungla generati dal proprietario con Gemini.
