@@ -260,6 +260,7 @@
      open the one long column ran over the arrows); rtl only orders the columns, the buttons read left to right */
   display: grid;
   grid-template-rows: repeat(3, auto);
+  /* (a phone tall enough: five a column, so a second column seldom runs over the sonar line; 10 ottobre) */
   grid-auto-flow: column;
   direction: rtl;
   justify-items: start; /* rtl: the right edge */
@@ -403,4 +404,10 @@
 }
 .helm-has-two .helm-objective {
   top: calc(116px + var(--safe-t));
+}
+
+@media (min-height: 380px) {
+  .helm-still {
+    grid-template-rows: repeat(5, auto);
+  }
 }

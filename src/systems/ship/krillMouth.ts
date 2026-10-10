@@ -1,8 +1,9 @@
 // The Krill Hunter's mouth (owner, 10 ottobre 2026): in place of the light under the hull, the whale opens its mouth
 // and the light comes out of it. It draws the sardine schools near it and swallows them (into your bag), and like the
-// light it calls the curious beasts, then the hunters. Never an endless feast: it stays open a minute at most and
-// swallows at most so many, then it shuts and needs a while to open again. Only with the ship still and its hatches
-// shut (mouth or hatches, one at a time). Pure logic, data/ship.ts SHIP.mouth.
+// light it calls the curious beasts, then the hunters. It can stay open as long as the ship is still, hatches open or
+// not: you leave it fishing while you hunt with the drone or the speedboat (owner: "farmare"), and shut it before
+// sailing off. Never an endless feast: its appetite is SHIP.mouth.maxSardines, refilled over rechargeSeconds; full,
+// it waits until it is hungry again. And the light burns fuel and calls the hunters too. Pure logic.
 import { SHIP } from '../../data/ship';
 import type { GameEvent } from '../events';
 import { takeFish, type FishState } from '../fish';
@@ -28,18 +29,12 @@ export function mouthPoint(s: ShipState): { x: number; y: number } {
   return shipPoint(s, p?.mouthU ?? 0.9, p?.mouthV ?? 0.55);
 }
 
-/** It can open now: still, with fuel, its hatches shut, recharged. */
-export const mouthCan = (g: { ship: ShipState }): boolean =>
-  lightCan(g) && g.ship.mouthWait <= 0 && g.ship.hatches.every((h) => !h.open && h.t === 0);
+/** It can open now: still, with fuel. */
+export const mouthCan = (g: { ship: ShipState }): boolean => lightCan(g);
 
 function shut(s: ShipState, events: GameEvent[]): void {
   const ate = s.mouthEaten;
-  Object.assign(s, {
-    mouthOpen: false,
-    lightOn: false,
-    lightT: 0,
-    mouthWait: ate > 0 ? M.rechargeSeconds : 0,
-  });
+  Object.assign(s, { mouthOpen: false, lightOn: false, lightT: 0 });
   events.push({ type: 'mouthShut', eaten: ate });
 }
 
@@ -51,17 +46,17 @@ export function toggleMouth(g: MouthWorld, events: GameEvent[]): void {
     return;
   }
   if (!mouthCan(g)) {
-    events.push({ type: 'mouthNo', wait: Math.ceil(s.mouthWait) });
+    events.push({ type: 'mouthNo' });
     return;
   }
-  Object.assign(s, { mouthOpen: true, mouthLeft: M.seconds, mouthEaten: 0, lightOn: true, lightT: 0 });
+  Object.assign(s, { mouthOpen: true, mouthEaten: 0, mouthFullSaid: false, lightOn: true, lightT: 0 });
   events.push({ type: 'mouthOpen' });
 }
 
-/** One step: it opens and shuts gently, draws and swallows the sardines, and shuts itself when it has had enough. */
+/** One step: its appetite comes back, it opens and shuts gently, draws and swallows the sardines while hungry. */
 export function stepMouth(g: MouthWorld, dt: number, events: GameEvent[]): void {
   const s = g.ship;
-  s.mouthWait = Math.max(0, s.mouthWait - dt);
+  s.mouthFood = Math.min(M.maxSardines, s.mouthFood + (M.maxSardines / M.rechargeSeconds) * dt);
   const want = s.mouthOpen ? 1 : 0;
   s.mouthT = Math.max(0, Math.min(1, s.mouthT + Math.sign(want - s.mouthT) * (dt / M.openSeconds)));
   if (!s.mouthOpen) return;
@@ -69,17 +64,21 @@ export function stepMouth(g: MouthWorld, dt: number, events: GameEvent[]): void 
     shut(s, events); // the ship moved off, or ran dry (underLight.ts put its light out)
     return;
   }
-  s.mouthLeft -= dt;
   const at = mouthPoint(s);
   for (const sc of g.fish.schools)
     if (Math.hypot(sc.x - at.x, sc.y - at.y) < M.reach) Object.assign(sc, { tx: at.x, ty: at.y, t: 1 });
   for (const f of g.fish.fish) {
-    if (s.mouthEaten >= M.maxSardines) break;
+    if (s.mouthFood < 1) break;
     if (!f.alive || f.hooked || Math.hypot(f.x - at.x, f.y - at.y) > M.bite) continue;
     takeFish(f);
     g.gear.bag[f.kind] = (g.gear.bag[f.kind] ?? 0) + 1;
     g.fishCaught[f.kind] = (g.fishCaught[f.kind] ?? 0) + 1;
     s.mouthEaten++;
+    s.mouthFood -= 1;
   }
-  if (s.mouthEaten >= M.maxSardines || s.mouthLeft <= 0) shut(s, events);
+  // full for now: once, a word; it eats again as its appetite comes back
+  if (s.mouthFood < 1 && !s.mouthFullSaid) {
+    s.mouthFullSaid = true;
+    events.push({ type: 'mouthFull', eaten: s.mouthEaten });
+  } else if (s.mouthFood >= M.maxSardines / 2) s.mouthFullSaid = false;
 }

@@ -1619,3 +1619,13 @@ img.albino-art {
   bottom: auto;
   top: calc(112px + var(--safe-t));
 }
+
+/* the context button with a long word: smaller, on one line, inside the circle (10 ottobre) */
+.act-ctx {
+  white-space: nowrap;
+  padding: 0;
+}
+.act-ctx.long {
+  font-size: 10.5px;
+  letter-spacing: -0.2px;
+}

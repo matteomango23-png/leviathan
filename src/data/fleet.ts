@@ -21,6 +21,8 @@ export interface ShipPicture {
   /** A ship with a mouth (the Krill Hunter, 10 ottobre): where its light comes out (shares of the picture). */
   mouthU?: number;
   mouthV?: number;
+  /** Where its head begins (share of the width): the open mouth replaces the picture from there to the bow. */
+  mouthFromU?: number;
 }
 
 /** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
@@ -519,6 +521,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         bowU: 0.95,
         mouthU: 0.83,
         mouthV: 0.56,
+        mouthFromU: 0.63,
       },
     },
   },

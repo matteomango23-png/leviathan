@@ -46,46 +46,37 @@ describe('the Krill Hunter', () => {
     expect(rows.find((r) => r.key === 'sub.remote')?.text).toContain('tracker');
   });
 
-  it('its mouth opens only still with the hatches shut; then the hatches cannot open', () => {
+  it('its mouth opens with the ship still, hatches open or not; the hatches work with it open', () => {
     const g = krill();
     const ev: GameEvent[] = [];
     g.ship.hatches[0]!.open = true;
     g.ship.hatches[0]!.t = 1;
     toggleMouth(g, ev);
-    expect(g.ship.mouthOpen).toBe(false);
-    g.ship.hatches[0]!.open = false;
-    g.ship.hatches[0]!.t = 0;
-    toggleMouth(g, ev);
     expect(g.ship.mouthOpen).toBe(true);
-    toggleHatch(g, 0, ev);
-    expect(g.ship.hatches[0]!.open).toBe(false);
+    toggleHatch(g, 1, ev);
+    expect(g.ship.hatches[1]!.open).toBe(true);
+    g.ship.speed = 100;
+    stepGame(g, emptyInput(), 1 / 30); // off it sails: the mouth shuts
+    expect(g.ship.mouthOpen).toBe(false);
   });
 
-  it('it swallows at most 25 sardines into the bag, then shuts and recharges for 10 minutes', () => {
+  it('it swallows at most 25 sardines into the bag, then is full until its appetite comes back', () => {
     const g = krill();
     const ev: GameEvent[] = [];
     toggleMouth(g, ev);
     const at = mouthPoint(g.ship);
-    for (let round = 0; round < 4; round++) {
+    const feed = (): void => {
       for (const f of g.fish.fish) Object.assign(f, { alive: true, hooked: false, x: at.x, y: at.y });
       stepMouth(g, 0.1, ev);
-    }
+    };
+    for (let round = 0; round < 4; round++) feed();
     expect(g.ship.mouthEaten).toBe(SHIP.mouth.maxSardines);
-    expect(g.ship.mouthOpen).toBe(false);
+    expect(g.ship.mouthOpen).toBe(true); // it stays open, farming
     expect(Object.values(g.gear.bag).reduce((a, b) => a + b, 0)).toBe(SHIP.mouth.maxSardines);
-    expect(g.ship.mouthWait).toBeGreaterThan(SHIP.mouth.rechargeSeconds - 1);
-    toggleMouth(g, ev);
-    expect(g.ship.mouthOpen).toBe(false); // recharging
-    expect(ev.some((e) => e.type === 'mouthNo')).toBe(true);
-  });
-
-  it('it shuts by itself after a minute', () => {
-    const g = krill();
-    toggleMouth(g, []);
-    for (const f of g.fish.fish) f.alive = false;
-    for (let t = 0; t < SHIP.mouth.seconds + 1; t += 0.5) stepMouth(g, 0.5, []);
-    expect(g.ship.mouthOpen).toBe(false);
-    expect(g.ship.mouthWait).toBe(0); // it ate nothing: no recharge
+    expect(ev.some((e) => e.type === 'mouthFull')).toBe(true);
+    for (let t = 0; t < SHIP.mouth.rechargeSeconds / 2; t += 1) stepMouth(g, 1, ev);
+    feed();
+    expect(g.ship.mouthEaten).toBeGreaterThan(SHIP.mouth.maxSardines + 10); // hungry again
   });
 
   it('its drone plants a tracker on a beast picked on the sonar, then comes home; it does not scout', () => {

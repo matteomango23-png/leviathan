@@ -283,13 +283,12 @@ export class HelmControls {
     this.reconBtn.hidden = !info.canRecon;
     this.trackerBtn.hidden = !info.canTrack;
     this.lightBtn.hidden = !ship;
-    const w = Math.ceil(info.mouth?.wait ?? 0);
     const lightText = info.mouth
       ? info.mouth.open
-        ? 'Chiudi bocca'
-        : w > 0
-          ? `Bocca ${Math.floor(w / 60)}:${String(w % 60).padStart(2, '0')}`
-          : 'Apri bocca'
+        ? info.mouth.full
+          ? 'Chiudi bocca (sazia)'
+          : 'Chiudi bocca'
+        : 'Apri bocca'
       : info.lightOn
         ? 'Spegni luce'
         : 'Luce';

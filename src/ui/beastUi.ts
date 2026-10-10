@@ -84,7 +84,11 @@ export class BeastUi {
     });
     const act = currentAction(g);
     this.ctxBtn.hidden = act === null;
-    if (act) this.ctxBtn.textContent = LABELS[act];
+    if (act) {
+      this.ctxBtn.textContent = LABELS[act];
+      // a long word (Aggancia, A bordo) smaller, inside the round button (owner, 10 ottobre)
+      this.ctxBtn.classList.toggle('long', LABELS[act].length > 5);
+    }
     document.getElementById('ui')?.classList.toggle('riding', !!(g.beasts.riding && activeBeast(g)));
   }
 }

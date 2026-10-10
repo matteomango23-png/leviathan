@@ -841,6 +841,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 10 ottobre 2026 — La bocca della Krill Hunter per "farmare" (v0.64.1)
+
+- **Il proprietario:** la bocca deve poter restare aperta mentre vai a caccia, per farmare; basta la nave ferma. Il limite diventa un appetito: 25 sardine, che tornano in 10 minuti. Così si farma, ma piano, e intanto la luce consuma carburante e chiama anche i predatori.
+- **Testa e corpo da immagini diverse:** non avendo le immagini "bocca aperta + portellone aperto", la testa (dal 63% della larghezza in avanti) viene dall'immagine della bocca e il resto dalle altre. Funziona perché le immagini sono a registro.
+
 ## 10 ottobre 2026 — Krill Hunter (v0.64.0)
 
 - **Immagini girate e fuori registro:** la nave e il drone erano disegnati con la prua a sinistra, quindi vengono specchiati nello script (`MIRROR`). Due immagini erano in un formato diverso dalle sorelle: lo script cerca la scala e lo spostamento che fanno coincidere di più le sagome (senza l'elica, che sfocata cambia larghezza) e le riporta sul riquadro della base. Resta qualche pixel di differenza perché l'AI ridisegna, ma non salta.

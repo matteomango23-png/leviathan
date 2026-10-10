@@ -70,13 +70,13 @@ export interface ShipState {
   /** The sonar is switched on (not saved), and seconds to its next ping. */
   sonarOn: boolean;
   sonarT: number;
-  /** The Krill Hunter's mouth (not saved): open, how open it shows (0…1), seconds left open, sardines swallowed this
-   *  time, seconds before it can open again. */
+  /** The Krill Hunter's mouth (not saved): open, how open it shows (0…1), sardines swallowed since it opened, its
+   *  appetite (sardines it can still swallow) and whether it already said it is full. */
   mouthOpen: boolean;
   mouthT: number;
-  mouthLeft: number;
   mouthEaten: number;
-  mouthWait: number;
+  mouthFood: number;
+  mouthFullSaid: boolean;
   /** Its hull points (block 5c, saved) and the pause after a bump (not saved). */
   hull: number;
   hullWait: number;
@@ -151,9 +151,9 @@ export function newShip(saved: SavedShip | null): ShipState {
     hullWait: 0,
     mouthOpen: false,
     mouthT: 0,
-    mouthLeft: 0,
     mouthEaten: 0,
-    mouthWait: 0,
+    mouthFood: SHIP.mouth.maxSardines,
+    mouthFullSaid: false,
     sonarT: 0,
     shallowWarn: 0,
     broken: [],
@@ -202,12 +202,7 @@ export const sonarActive = (s: ShipState): boolean => s.sonarOn && knotsOf(s.spe
 
 /** Can the hatch move now? Only with the ship still and the submarine not on the ramp. */
 export const hatchCanMove = (s: ShipState): boolean =>
-  s.owned &&
-  s.speed < SHIP.stillBelow &&
-  s.bay !== 'launching' &&
-  s.bay !== 'docking' &&
-  !s.mouthOpen &&
-  s.mouthT === 0; // the Krill Hunter: mouth or hatches, one at a time
+  s.owned && s.speed < SHIP.stillBelow && s.bay !== 'launching' && s.bay !== 'docking';
 
 /**
  * One step of the ship. `helm` is null when you are not at the helm (it drifts to a stop). `far` tells whether

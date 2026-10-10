@@ -102,7 +102,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
       lightOn: s.lightOn,
-      ...(hasMouth(s) ? { mouth: { open: s.mouthOpen, wait: s.mouthWait } } : {}),
+      ...(hasMouth(s) ? { mouth: { open: s.mouthOpen, full: s.mouthFood < 1 } } : {}),
       // its hull (block 5c): the bar, and broken down
       hull: [s.hull, hullMax(s)],
       broken: s.hull <= 0,

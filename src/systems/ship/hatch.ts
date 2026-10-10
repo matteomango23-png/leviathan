@@ -8,6 +8,7 @@ import type { GameEvent } from '../events';
 import { repairSub, restAboard, type SubWorld } from '../submarine';
 import { bayPath, dockPoint, helmPoint, holdPoint, shipDraft, shipSpan } from './geometry';
 import { subBay } from './model';
+import { droneKind } from './gadgets';
 import { hatchCanMove, hatchT, type ShipState } from './ship';
 
 export interface HatchWorld extends SubWorld {
@@ -28,6 +29,8 @@ export function toggleHatch(g: HatchWorld, bay: number, events: GameEvent[], bus
   }
   h.open = !h.open;
   events.push({ type: 'hatchMoved', open: h.open });
+  // the Krill Hunter's drone ready in its open hold: how to send it (owner, 10 ottobre: he found no button)
+  if (h.open && bay === subBay(s) && droneKind(g) === 'tracker') events.push({ type: 'droneTrackerHint' });
 }
 
 /** Can the submarine go down the ramp now? */
