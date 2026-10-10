@@ -149,3 +149,17 @@ Blocco "mezzi e mare" (dopo il 6):
 
 Grande, da progettare bene (insieme al blocco 10, storia):
 - Nuovo inizio lungo un fiume di circa 10 km dentro una giungla fitta, prima di Portofosco: acqua bassa, solo motoscafi e gommoni, rocce che rovinano lo scafo, animali di fiume piccoli e predatori (coccodrilli); si arriva gradualmente al mare, dove ti danno la barca. Asset della giungla generati dal proprietario con Gemini.
+
+## Krill Hunter (deciso il 10 ottobre 2026)
+- Nave ipertecnologica (non U-Boat), 40.000 denti, tra l'EH2 e l'Ocean's Nightmare. Immagini in `art-inbox/` (`nave_lanterna*`, `motoscafo_lanterna*`, `sottomarino_lanterna*`: nome di file provvisorio "lanterna").
+- Due portelloni: il drone con le braccia (guidabile come sottomarino, col sonar sul vetro) e il motoscafo a balena.
+- Drone da remoto: tracker a distanza. Tocchi un'eco sul sonar, il drone parte da solo, raggiunge la bestia, le pianta il tracker e torna. Meno forte della ricognizione del Nightmare.
+- Al posto della luce: "Apri bocca", la luce esce dalla bocca della balena, attira le sardine e le mangia (nella sacca), con un tetto (proposta: 1 minuto, al massimo 25 sardine, poi 10 minuti di ricarica); attira anche le bestie curiose. Bocca e portelloni uno alla volta.
+- Luci azzurre estratte dalle immagini e pulsanti, come le rune del Nightmare.
+
+## Battaglie a nuoto (proposta di Claude, da decidere nel blocco 6)
+- In groppa: come oggi, la cavalcatura ti difende e la battaglia parte subito.
+- A nuoto da solo: il predatore prima morde (un cuore, spinta), poi o lo affronti (tocchi la bestia o una delle tue nella barra della squadra) o scappi; continua a inseguire e mordere finché non lo semini.
+- Colpirlo per primo con l'arma: battaglia in vantaggio, come oggi.
+- Squadra tutta KO: niente battaglia, solo morsi; a zero cuori muori e riappari (con denti persi).
+- Calme e timide non mordono. Tregua dopo ogni morso; inizio del gioco facile.
