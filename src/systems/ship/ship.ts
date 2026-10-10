@@ -69,6 +69,9 @@ export interface ShipState {
   /** The sonar is switched on (not saved), and seconds to its next ping. */
   sonarOn: boolean;
   sonarT: number;
+  /** The light under the still ship (block 5b; not saved) and how long it has been on (seconds). */
+  lightOn: boolean;
+  lightT: number;
   /** Seconds before the shallow-water message may show again. */
   shallowWarn: number;
   /** Ice broken by the bow, freezing again later (not saved). */
@@ -130,6 +133,8 @@ export function newShip(saved: SavedShip | null): ShipState {
     fuel: saved ? Math.max(0, Math.min(shipTank(saved), saved.fuel)) : shipTank({ model: FIRST_SHIP }),
     fuelWarned: false,
     sonarOn: false,
+    lightOn: false,
+    lightT: 0,
     sonarT: 0,
     shallowWarn: 0,
     broken: [],

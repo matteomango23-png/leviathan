@@ -386,3 +386,10 @@
   background: var(--blood);
   box-shadow: 0 0 6px var(--blood);
 }
+
+/* the light under the ship, lit (block 5b) */
+.helm-light.on {
+  border-color: #f2d58a;
+  color: #fff2c8;
+  box-shadow: 0 0 12px rgba(242, 213, 138, 0.55);
+}

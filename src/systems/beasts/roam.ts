@@ -97,6 +97,8 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
   if (ctx.scared && !b.boss && dist < sight) b.mood = 'flee';
+  // called by the light under the ship, a curious beast comes on and does not slip away from you (block 5b)
+  if (b.drawn && temper !== 'aggressive' && b.mood === 'flee') b.mood = 'wander';
 
   const spec = BEAST_TEMPER[b.form.speciesId];
   const mult = spec?.speedMult ?? 1;
@@ -110,6 +112,20 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   } else if (b.mood === 'flee') {
     const k = (ROAM.loseRange * U) / Math.max(1, dist);
     [tx, ty, speed] = [b.x + (b.x - d.x) * k, b.y + (b.y - d.y) * k * 0.5, ROAM.shySpeed * U * mult];
+  } else if (b.fleeFrom) {
+    // a hunter after it (beasts/packHunt.ts): away from it
+    const fx = b.x - b.fleeFrom.x;
+    const fy = b.y - b.fleeFrom.y;
+    const fd = Math.hypot(fx, fy) || 1;
+    [tx, ty, speed] = [b.x + (fx / fd) * 200, b.y + (fy / fd) * 100, ROAM.shySpeed * U * mult * 1.3];
+  } else if (b.drawn) {
+    // the light under the ship: to its place there, then round it slowly
+    const near = Math.hypot(b.drawn.x - b.x, b.drawn.y - b.y) < b.length;
+    const round = near ? Math.sin(b.phase * 0.05) * b.length * 1.5 : 0;
+    [tx, ty, speed] = [b.drawn.x + round, b.drawn.y, ROAM.cruiseSpeed * U * mult * (near ? 0.5 : 1)];
+  } else if (b.hunt) {
+    // its pack hunts: after the sardines or a smaller beast
+    [tx, ty, speed] = [b.hunt.x, b.hunt.y, ROAM.chaseSpeed * U * mult];
   } else {
     if (!b.target || Math.hypot(b.target.x - b.x, b.target.y - b.y) < ROAM.targetReach)
       b.target = wanderPoint(b, map, rng, b);
@@ -123,8 +139,11 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
     b.mood = 'wander'; // it gives up and swims home, leaving you alone meanwhile
     b.calm = ROAM.homeSeconds;
   }
-  tx = clamp(tx, x0 - leash, x1 + leash);
-  ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
+  // the light calls it out of its own waters (block 5b)
+  if (!(b.drawn && b.mood === 'wander')) {
+    tx = clamp(tx, x0 - leash, x1 + leash);
+    ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
+  } else ty = Math.max(ty, top);
   if ((spec?.surface || uniqueOf(b.form)?.surface) && b.mood !== 'chase') ty = top;
   if (spec?.floor && b.mood === 'flee') ty = b.y; // slipping away along the floor, not swimming up
 

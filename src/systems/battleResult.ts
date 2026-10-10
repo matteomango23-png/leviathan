@@ -4,7 +4,8 @@
 import { residentGone } from './beasts/residents';
 import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
-import { ROAM } from '../data/beasts';
+import { PACK_RULES, ROAM } from '../data/beasts';
+import { temperOf } from './beasts/roam';
 import { seedFrom } from '../data/stats';
 import { isLegend } from './beasts/legends';
 import { XP_RULES } from '../data/progression';
@@ -30,6 +31,9 @@ export interface BattleOutcome {
   /** The beast that was fighting at the end (it gets all the experience). */
   lastActive?: string;
   foe: { form: BeastForm; level: number; hp: number };
+  /** Its pack (block 5b): the ones beaten before it, and how many mates are left swimming with it. */
+  defeated?: { form: BeastForm; level: number }[];
+  packLeft?: number;
 }
 
 /** The beasts that fight for you: the team, worn-out ones included (they cannot be sent in). */
@@ -53,12 +57,15 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
   }
   const w = g.beasts.wilds.find((x) => x.id === o.wildId);
   const win = o.over === 'won' || o.over === 'caught';
-  if (win) {
+  // experience for every beast beaten, its pack's too (block 5b), even if you fled after some of them
+  const beaten = [...(o.defeated ?? []), ...(win ? [o.foe] : [])];
+  for (const foe of beaten)
     for (const b of battleTeam(g)) {
       if (b.ko) continue;
-      const xp = xpReward(o.foe.form, o.foe.level, b.level); // each by its own level, like Pokémon
+      const xp = xpReward(foe.form, foe.level, b.level); // each by its own level, like Pokémon
       gainXp(b, b.uid === o.lastActive ? xp : Math.floor(xp * XP_RULES.benchShare), events);
     }
+  if (win) {
     const m = g.beasts.mount;
     const rode = activeBeast(g);
     if (m && rode) m.length = formLengthUnits(rode.form, rode.level); // it may have grown
@@ -86,7 +93,10 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
       // a resident of the endless sea: its place stays empty for a while (beasts/residents.ts)
       if (w.spawn.resident) residentGone(g.beasts.residents, w.spawn.resident, g.rng);
-    } else w.calm = ROAM.calmAfterBattle;
+    } else {
+      w.calm = ROAM.calmAfterBattle;
+      if (o.packLeft !== undefined) w.pack = Math.max(0, o.packLeft); // the pack left swims on, smaller
+    }
   }
   // a moment of peace: nobody comes at you right after a battle
   for (const x of g.beasts.wilds) x.calm = Math.max(x.calm, 1.5);
@@ -119,7 +129,16 @@ export function battleSetup(g: BackpackWorld): BattleSetup | null {
   const team = battleTeam(g).map(fighterFromTeam);
   // a wild beast gets its individual values when you meet it; they stay with it if you tame it
   w.form.seed ??= seedFrom(`${w.id}:${w.x.toFixed(1)}:${w.y.toFixed(1)}:${w.level}`);
-  const state = createBattle(team, makeFighter({ ...w.form }, w.level));
+  // an aggressive pack fights together: its mates come in one after the other (block 5b)
+  const together = temperOf(w) === PACK_RULES.fightTogether && !w.boss;
+  const reserve = together
+    ? Array.from({ length: w.pack }, (_, i) => {
+        const level = Math.max(1, w.level + Math.round((g.rng() * 2 - 1) * PACK_RULES.levelSpread));
+        const seed = seedFrom(`${w.id}:pack${i}:${level}`);
+        return makeFighter({ speciesId: w.form.speciesId, variant: 'comune', seed }, level);
+      })
+    : [];
+  const state = createBattle(team, makeFighter({ ...w.form }, w.level), reserve);
   return {
     state,
     wildId: w.id,
@@ -146,5 +165,7 @@ export function battleOutcome(s: BattleState, wildId: number): BattleOutcome {
       })),
     lastActive: s.team[s.active]?.uid,
     foe: { form: s.foe.form, level: s.foe.level, hp: s.foe.hp },
+    defeated: s.defeated,
+    packLeft: s.reserve.length + (s.foe.hp > 0 ? 1 : 0) - 1,
   };
 }

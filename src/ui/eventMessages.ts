@@ -138,6 +138,17 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
           : `Sonar: analisi finita. ${e.text}: una bestia che non hai mai visto. Annotata nel Diario.`,
         4,
       ];
+    case 'lightOn':
+      return [
+        'Luce subacquea accesa: le bestie curiose si avvicinano alla nave. Restare a lungo attira anche i predatori.',
+        4.5,
+      ];
+    case 'lightOff':
+      return ['Luce subacquea spenta.', 2.5];
+    case 'lightNo':
+      return ['La luce subacquea si accende solo a nave ferma, con il carburante.', 3];
+    case 'lightHunters':
+      return ['Sotto la luce arrivano anche i predatori.', 3.5];
     case 'scanLost':
       return ['Sonar: eco persa, analisi interrotta.', 3];
     case 'trackerHit':

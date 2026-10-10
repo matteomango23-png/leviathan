@@ -11,7 +11,7 @@ import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { SHIP_MODELS } from '../data/fleet';
-import { shipHeight } from '../systems/ship/geometry';
+import { shipDraft, shipHeight } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
 import { diveShare, submerged } from '../systems/ship/uboat';
@@ -158,7 +158,13 @@ export class ShipView {
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
     const fade = 1 - diveShare(s);
     if (fade <= 0.01) return [];
-    return this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius * fade }));
+    const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius * fade }));
+    // the light under the still ship (block 5b): a wide glow below the keel
+    if (s.lightOn) {
+      const keel = WORLD.surfaceY + s.dive + shipDraft(s);
+      spots.push({ x: s.x, y: keel + SHIP.underLight.glow * 0.4, r: SHIP.underLight.glow });
+    }
+    return spots;
   }
 
   /** The tug after a rescue flare: ahead of the bow, a towline to it, then it sails away. */

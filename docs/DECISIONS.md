@@ -841,6 +841,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 9 ottobre 2026 — Blocco 5b: luce e branchi (v0.62.0)
+
+- **Risposte del proprietario:** luce con interruttore a nave ferma che consuma carburante; prima i curiosi, poi i predatori; branchi che combattono insieme, si muovono insieme e cacciano.
+- **La luce resta accesa quando ti tuffi o cali il sottomarino** (serve proprio a quello) e si spegne solo se la nave riparte o resta a secco. Le bestie chiamate possono uscire dalle loro acque e non vengono mandate nel buio finché la luce le chiama. Le residenti del mare aperto si svegliano fino alla portata del sonar, sempre fuori dall'inquadratura.
+- **Il branco è ancora una bestia sola nel gioco** (la guida) con un numero di compagni (`pack`): solo in battaglia diventano combattenti veri (`BattleState.reserve`). Così niente cambia nei salvataggi e nell'IA, e la formazione è solo grafica (`packFormation.ts`). Solo i branchi aggressivi combattono insieme; esperienza per ognuno battuto, anche se poi fuggi.
+- **Nessuna bestia ne mangia un'altra:** l'orca insegue e la preda scappa, ma nessuno sparisce, per non perdere bestie da catturare. I branchi mangiano solo le sardine.
+
 ## 9 ottobre 2026 — Blocco 5a: il sonar al centro della caccia (v0.61.0)
 
 - **Risposte del proprietario:** 5 in tre parti; echi da identificare (analisi); tracker di circa 30 minuti di gioco; indizi nel Diario di caccia.

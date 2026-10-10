@@ -276,6 +276,24 @@ export const WILD_RULES = {
   minAvailability: 0.15,
 };
 
+/** Packs (block 5b, owner 9 ottobre 2026): the beasts with a `school` swim with that many mates. Aggressive packs
+ *  fight together (the others come into the battle one after the other, each a level apart at most); the pack
+ *  hunters go after the sardine schools near them and bite the fish their mouth touches; orcas chase wild beasts far
+ *  smaller than themselves (only a chase: nobody is eaten). Tuning. */
+export const PACK_RULES = {
+  fightTogether: 'aggressive' as Temper,
+  levelSpread: 1,
+  hunters: ['barracuda', 'orca', 'tonno', 'delfino'],
+  /** Units: how close a school must be to be hunted; how close to the mouth a fish is bitten. */
+  huntRange: 260,
+  biteRadius: 9,
+  /** Who chases beasts this many times shorter than itself (or less), this close (units). */
+  preyOf: { orca: 0.5 } as Record<string, number>,
+  preyRange: 320,
+  /** Seconds between two looks for something to hunt. */
+  lookSeconds: 1.5,
+};
+
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
 export type Temper = 'aggressive' | 'calm' | 'shy';
 export const BEAST_TEMPER: Record<

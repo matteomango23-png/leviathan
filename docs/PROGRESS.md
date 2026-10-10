@@ -1,5 +1,21 @@
 # Progressi
 
+## Blocco 5b — Luce e branchi (10 ottobre 2026) → v0.62.0
+
+**Fatto:**
+- `SHIP.underLight` e `systems/ship/underLight.ts` (`ship.lightOn`, `beasts.light`, `w.drawn`); pulsante "Luce" al timone; alone sotto la chiglia in `ShipView.glowSpots`.
+- `PACK_RULES` (`data/beasts.ts`); `w.pack` all'uscita dal buio; `BattleState.reserve`/`defeated`, `nextFoe`; `BattleOutcome.defeated`/`packLeft`; testo `packIn`.
+- `views/packFormation.ts` (scia della guida); `systems/beasts/packHunt.ts` (`w.hunt`, `w.fleeFrom`), `stepFish` con più minacce.
+- Test: `tests/pack5b.test.ts`.
+
+**Da provare sull'iPhone:**
+1. In mare aperto, nave ferma: "Luce", poi guarda il sonar e sotto la nave. Dopo un minuto arrivano i predatori.
+2. Con la luce accesa tuffati o cala il sottomarino: le curiose non scappano.
+3. Attacca un branco di barracuda: dopo il primo entra il secondo.
+4. Guarda un branco di tonni o barracuda vicino alle sardine.
+
+**Prossimo:** blocco 5c (sonar a 360° e orientamento per i sottomarini premium), in Plan mode.
+
 ## Blocco 5a — Sonar al centro della caccia (9 ottobre 2026) → v0.61.0
 
 **Fatto:**

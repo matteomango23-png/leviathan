@@ -63,6 +63,8 @@ export interface BeastState {
   /** What the camera shows now (world units; set by the World scene, not saved): beasts come out of the dark and go
    *  back into it only outside it (owner, 9 ottobre: in the U-Boat they popped up on screen). */
   view: ViewRect | null;
+  /** The light under the still ship (block 5b; not saved): where it shines and how far it calls the beasts. */
+  light: { x: number; reach: number } | null;
 }
 
 export interface ViewRect {
@@ -109,6 +111,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     residents: newResidents(),
     held: null,
     view: null,
+    light: null,
   };
 }
 

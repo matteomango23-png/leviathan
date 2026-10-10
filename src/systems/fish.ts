@@ -103,6 +103,8 @@ export function stepFish(
   time: number,
   dt: number,
   rng: Rng,
+  /** Hunting packs after the sardines (beasts/packHunt.ts): they flee from them too. */
+  hunters: { x: number; y: number }[] = [],
 ): void {
   for (const sc of state.schools) {
     sc.t -= dt;
@@ -147,10 +149,17 @@ export function stepFish(
     }
     const mult = FISH_LOOK[f.kind]?.speedMult ?? 1;
     let sp = SARDINE.swimSpeed * mult;
-    const dx = f.x - threat.x;
-    const dy = f.y - threat.y;
+    // the nearest danger: you, or a hunter of a pack
+    let near = threat.alive ? threat : null;
+    let nd = near ? Math.hypot(f.x - near.x, f.y - near.y) : Infinity;
+    for (const h of hunters) {
+      const hd = Math.hypot(f.x - h.x, f.y - h.y);
+      if (hd < nd) [near, nd] = [{ ...h, alive: true }, hd];
+    }
+    const dx = near ? f.x - near.x : 0;
+    const dy = near ? f.y - near.y : 0;
     const d = Math.hypot(dx, dy) || 1;
-    if (threat.alive && d < SARDINE.fleeRadius) {
+    if (near && d < SARDINE.fleeRadius) {
       tx = f.x + (dx / d) * SARDINE.fleeDistance;
       ty = f.y + (dy / d) * SARDINE.fleeDistance;
       sp = SARDINE.fleeSpeed * mult;
