@@ -1,5 +1,9 @@
 # Progressi
 
+## Prezzi delle riparazioni (10 ottobre 2026) → v0.63.1
+
+- `SHIP.hull.fullRepairShare` 0,1 del prezzo della nave (Aurelia vale `giftValue` 6000), ricambi ×`partsMult` 1,2; `repairPerPoint` in `ship/spareParts.ts`.
+
 ## Blocco 5c — Radar, scafo, sonar dei sottomarini (10 ottobre 2026) → v0.63.0 · blocco 5 chiuso
 
 **Fatto:**

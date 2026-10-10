@@ -57,7 +57,7 @@ export const SHIP = {
    *  above half its top speed it wears `stormPerSecond` at the worst weather (from the weather's waves `stormFrom`);
    *  a giant ramming it hits `ram` × its length in metres / 6, then backs off `ramCalm` s. Half the hull: a warning;
    *  nothing left: broken down (no engine). Mended only at Porto Fango: teeth per point, or spare parts brought by
-   *  the speedboat or the submarine (teeth per point there too). Tuning. */
+   *  the speedboat or the submarine, priced by the ship's worth (fullRepairShare). Tuning. */
   hull: {
     bumpFrom: 20,
     perSpeed: 0.25,
@@ -67,8 +67,12 @@ export const SHIP = {
     stormFrom: 1.8,
     ram: 8,
     ramCalm: 3,
-    repairPerPoint: 4,
-    partsPerPoint: 5,
+    /** Mending it from nothing to whole costs this share of the ship's price (owner, 10 ottobre: the Ocean's
+     *  Nightmare, the dearest, 10%); Aurelio's gift counts as worth `giftValue`; spare parts cost `partsMult` times
+     *  the yard (they travel). */
+    fullRepairShare: 0.1,
+    giftValue: 6000,
+    partsMult: 1.2,
     /** Spare parts a speedboat or jet ski / a submarine carries (hull points of the ship). */
     partsBoat: 80,
     partsSub: 50,

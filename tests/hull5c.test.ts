@@ -14,7 +14,7 @@ import { parseSave } from '../src/systems/save/saveData';
 import { obstacleAhead, radarContacts } from '../src/systems/ship/radar';
 import { sailShip } from '../src/systems/ship/ship';
 import { bumpShip, damageShip, hullMax, stepShipHull, stepShipRams } from '../src/systems/ship/shipHull';
-import { loadParts, repairAtYard, unloadParts } from '../src/systems/ship/spareParts';
+import { loadParts, repairAtYard, repairPerPoint, unloadParts } from '../src/systems/ship/spareParts';
 import { shipTopSpeed } from '../src/systems/ship/model';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -122,7 +122,7 @@ describe('mending it', () => {
     const teeth = g.gear.teeth;
     expect(repairAtYard(g, []).ok).toBe(true);
     expect(g.ship.hull).toBe(hullMax(g.ship));
-    expect(g.gear.teeth).toBe(teeth - Math.ceil((hullMax(g.ship) - 20) * SHIP.hull.repairPerPoint));
+    expect(g.gear.teeth).toBe(teeth - Math.ceil((hullMax(g.ship) - 20) * repairPerPoint(g.ship)));
   });
 
   it('the hull and the parts are saved; an old save starts whole', () => {
@@ -135,6 +135,16 @@ describe('mending it', () => {
     const raw = toSave(g, new Date());
     delete raw.ship!.hull;
     expect(createGame(map, parseSave(JSON.stringify(raw)), 4).ship.hull).toBe(hullMax(g.ship));
+  });
+});
+
+describe('the price of mending', () => {
+  it('from nothing to whole costs 10% of the ship: the Ocean’s Nightmare 5000 teeth; spare parts a little more', () => {
+    const full = (model: string) => repairPerPoint({ model }) * hullMax({ model });
+    expect(full('nightmare')).toBeCloseTo(5000);
+    expect(full('eh2')).toBeLessThan(full('nightmare'));
+    expect(full('aurelia')).toBeGreaterThan(0);
+    expect(SHIP.hull.partsMult).toBeGreaterThan(1);
   });
 });
 
