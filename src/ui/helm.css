@@ -393,3 +393,14 @@
   color: #fff2c8;
   box-shadow: 0 0 12px rgba(242, 213, 138, 0.55);
 }
+
+/* a U-Boat: air and hull bars both, one under the other (block 5c) */
+.helm-has-two .helm-fuel.helm-hullbar {
+  top: calc(56px + var(--safe-t));
+}
+.at-helm.helm-has-two .hud {
+  top: calc(84px + var(--safe-t));
+}
+.helm-has-two .helm-objective {
+  top: calc(116px + var(--safe-t));
+}

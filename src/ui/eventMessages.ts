@@ -113,6 +113,22 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
           : `Sonar: analisi finita. ${e.text}: una bestia che non hai mai visto. Annotata nel Diario.`,
         4,
       ];
+    case 'shipHullHalf':
+      return ['Lo scafo della nave è a metà: riparalo a Porto Fango.', 4];
+    case 'shipBroken':
+      return [
+        'La nave è in avaria: prendi i ricambi a Porto Fango col motoscafo o col sottomarino, oppure chiama il rimorchiatore col razzo.',
+        7,
+      ];
+    case 'shipRammed':
+      return ['Una bestia gigante sperona la nave!', 2.5];
+    case 'shipMended':
+      return [
+        e.by === 'parts'
+          ? `Ricambi montati: scafo +${Math.round(e.points)}.`
+          : `Nave riparata: scafo +${Math.round(e.points)}.`,
+        3,
+      ];
     case 'lightOn':
       return [
         'Luce subacquea accesa: le bestie curiose si avvicinano alla nave. Restare a lungo attira anche i predatori.',

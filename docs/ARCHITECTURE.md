@@ -51,6 +51,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `echoClass.ts` | Le grandezze delle eco al sonar (piccola, media, grande, enorme, leggendaria) e quante ne distingue ogni sonar. |
 | `sonarScan.ts` | L'analisi di un'eco toccata sul sonar del cockpit: avanza lenti e a portata, poi nome o indizi, e l'annotazione nel diario. |
 | `sonarNotes.ts` | Gli avvistamenti col sonar per specie (luoghi, profondità, grandezza, tipo), salvati. |
+| `ship/shipHull.ts` | Lo scafo delle navi: urti dell'U-Boat, usura in tempesta, speronate delle bestie giganti, avaria a zero. |
+| `ship/spareParts.ts` | Riparare la nave a Porto Fango (denti) o coi ricambi portati dal motoscafo o dal sottomarino. |
+| `ship/radar.ts` | Il radar di prossimità: cosa c'è vicino allo scafo, e la distanza dall'ostacolo davanti per i bip. |
 | `ship/underLight.ts` | La luce sotto la nave ferma: consumo, spegnimento in moto, chiama le bestie a portata del sonar (curiose subito, predatori dopo). |
 | `beasts/packHunt.ts` | I branchi che cacciano: sardine (le mangiano), orche dietro a bestie più piccole (che scappano). |
 | `trackerDart.ts` | Il tracker sparato dal sottomarino: la bussola segue la bestia per 30 minuti di gioco. |
@@ -151,6 +154,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
+| `sweepScope.ts`, `radarScreen.ts`, `subScope.ts` (ui) | Lo schermo rotondo col fascio che gira: radar nel cockpit, sonar sul vetro del sottomarino con la freccia verso la nave. |
 | `packFormation.ts` (views) | Il branco che nuota insieme: i compagni seguono la scia della guida, larghi, stretti o sparpagliati secondo l'umore. |
 | `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |
 | `shipFx.ts` (views) | Effetti intorno alla nave: fumo delle ciminiere (dietro la nave), schegge di ghiaccio. Solo aspetto. |

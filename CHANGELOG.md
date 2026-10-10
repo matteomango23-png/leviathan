@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.63.0 — Radar, scafo delle navi, sonar dei sottomarini (10 ottobre 2026)
+
+- **Radar di prossimità:** nel cockpit c'è la scheda "Radar", uno schermo rotondo con il fascio che gira. Mostra cosa c'è entro 30 m oltre prua e poppa: roccia e fondale, ghiaccio, moli, i tuoi mezzi, le bestie. Se vai veloce verso un ostacolo, al timone senti dei bip leggeri come i sensori di parcheggio, più fitti quando ti avvicini.
+- **Lo scafo delle navi:** barra dello scafo al timone e in Plancia. Si rovina se l'U-Boat urta forte roccia o fondale, se navighi a tutta velocità in tempesta, se una bestia gigante sperona la nave.
+- **Nave in avaria:** a scafo zero il motore non parte. Puoi prendere il motoscafo o il sottomarino, andare a Porto Fango, caricare i ricambi e tornare: rientrando nella stiva riparano la nave. Oppure il razzo di soccorso: il rimorchiatore la porta a Porto Fango. Al cantiere di Porto Fango la nave ormeggiata si ripara pagando denti.
+- **Sonar dei sottomarini:** sull'EH2, sull'Imperium e sul drone un piccolo cerchio sul vetro mostra le bestie tutto intorno, più grandi più grande è il punto.
+- **Freccia verso la nave:** in ogni sottomarino, con la distanza, per non perdersi.
+
 ## v0.62.1 — Luce visibile, messaggi al loro posto (10 ottobre 2026)
 
 - **La luce subacquea si vede:** accesa, un fascio caldo si apre sotto lo scafo con un breve tremolio; spenta, sfuma via.

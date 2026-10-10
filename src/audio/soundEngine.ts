@@ -86,6 +86,11 @@ export class SoundEngine {
     this.storm?.thunder(a + Math.random() * (b - a), near);
   }
 
+  /** The radar's parking-sensor beep (block 5c). */
+  radarBeep(): void {
+    if (this.ctx?.state === 'running' && !this.battle) this.engines?.beep();
+  }
+
   /** The sonar's ping. */
   sonarPing(): void {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.ping();

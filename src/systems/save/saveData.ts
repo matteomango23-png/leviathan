@@ -266,7 +266,8 @@ function checkedSub(raw: unknown): SavedSub | null {
   const tank = SUB_MODELS.find((m) => m.id === model)!.tank;
   const fuel = isFiniteNumber(raw.fuel) ? Math.max(0, Math.min(tank, raw.fuel)) : tank;
   const air = isFiniteNumber(raw.air) ? Math.max(0, raw.air) : undefined;
-  return { x: raw.x, y: raw.y, model, models, hull, fuel, ...(air !== undefined ? { air } : {}) };
+  const parts = isFiniteNumber(raw.parts) && raw.parts > 0 ? { parts: raw.parts } : {};
+  return { x: raw.x, y: raw.y, model, models, hull, fuel, ...(air !== undefined ? { air } : {}), ...parts };
 }
 
 /** The saved speedboat, checked: a broken one is dropped (the next shipyard visit gives none: newBoat). */
@@ -282,6 +283,7 @@ function checkedBoat(raw: unknown): SavedBoat | null {
     out: raw.out === true,
     aboard: raw.aboard === true,
     ...(isFiniteNumber(raw.hull) ? { hull: Math.max(0, raw.hull) } : {}),
+    ...(isFiniteNumber(raw.parts) && raw.parts > 0 ? { parts: raw.parts } : {}),
   };
 }
 
@@ -300,6 +302,7 @@ function checkedShip(raw: unknown): SavedShip | null {
     ...(isFiniteNumber(raw.dive) ? { dive: Math.max(0, raw.dive) } : {}),
     ...(isFiniteNumber(raw.air) ? { air: Math.max(0, raw.air) } : {}),
     model: SHIP_MODELS.some((m) => m.id === raw.model) ? String(raw.model) : FIRST_SHIP,
+    ...(isFiniteNumber(raw.hull) ? { hull: Math.max(0, raw.hull) } : {}),
   };
 }
 

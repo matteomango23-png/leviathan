@@ -261,7 +261,7 @@ export class HelmControls {
       info.tank,
       info.air,
       info.airMax,
-      info.mode === 'boat' ? info.hull : undefined,
+      info.mode !== 'sub' ? info.hull : undefined, // the boat's and the ship's (block 5c)
     );
     this.sonar.classList.toggle('on', !!info.sonarOn);
     this.objective.hidden = !info.objective;
@@ -295,7 +295,8 @@ export class HelmControls {
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;
     this.engineBtn.classList.toggle('on', !!info.engineOn);
     this.engineBtn.title = info.engineOn ? 'Spegni il motore' : 'Accendi il motore';
-    this.rescueBtn.hidden = info.fuel > 0 || info.mode === 'boat'; // dry, the boat crawls on its reserve
+    // dry or broken down (block 5c); the boat crawls on its reserve
+    this.rescueBtn.hidden = (info.fuel > 0 && !info.broken) || info.mode === 'boat';
     this.gauges.classList.toggle('dry', info.fuel <= 0);
   }
 

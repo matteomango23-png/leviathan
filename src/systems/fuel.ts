@@ -2,7 +2,7 @@
 // engine runs, more at full throttle; dry, they stop. It is bought at the harbours, moved between the two in the
 // cockpit (the submarine in the hold), and far away the rescue flare tows you home for a share of your teeth.
 // Numbers in data/ship.ts (SHIP.fuel, FUEL, RESCUE) and data/submarine.ts (tank, perKm of each model).
-import { PORTS, type PortDef } from '../data/economy';
+import { PORTO_FANGO, PORTS, type PortDef } from '../data/economy';
 import { FUEL, RESCUE } from '../data/ship';
 import { SUBMARINE } from '../data/submarine';
 import type { GameEvent } from './events';
@@ -141,10 +141,14 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
   let where: string;
   if (s.aboard || (g.sub.aboard && s.owned)) {
     if (s.aboard) {
-      // the nearest harbour the ship can reach (none west of Porto Fango: ship/surface.ts)
-      const port = PORTS.filter((p) => p.shipDock >= SHIP_WEST_X).reduce((a, b) =>
-        Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
-      );
+      // the nearest harbour the ship can reach (none west of Porto Fango: ship/surface.ts); broken down, to Porto
+      // Fango, the only yard that mends it (block 5c)
+      const port =
+        s.hull <= 0
+          ? PORTO_FANGO
+          : PORTS.filter((p) => p.shipDock >= SHIP_WEST_X).reduce((a, b) =>
+              Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
+            );
       Object.assign(s, { x: port.shipDock, speed: 0 });
       g.homePort = port.id;
       where = `a ${port.name}`;

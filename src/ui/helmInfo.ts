@@ -22,6 +22,7 @@ import type { HelmInfo } from './helmTypes';
 import { CLASS_PLURAL } from '../systems/echoClass';
 import { trackerTarget } from '../systems/trackerDart';
 import { drawnCount } from '../systems/ship/underLight';
+import { hullMax } from '../systems/ship/shipHull';
 
 /** The sonar line at the helm: off, too fast, or the floor under the ship and the nearest echoes. */
 function sonarLine(g: GameState): string {
@@ -100,6 +101,9 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
       lightOn: s.lightOn,
+      // its hull (block 5c): the bar, and broken down
+      hull: [s.hull, hullMax(s)],
+      broken: s.hull <= 0,
       objective: objectiveLine(g),
       hatchCanMove: hatchCanMove(s) && !boatOnRamp(g),
       hatches: hatchButtons(g),

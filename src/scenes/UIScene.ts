@@ -14,6 +14,7 @@ import { storyHoldsDiver } from '../systems/story';
 import { needsStarter } from '../systems/starter';
 import { StarterPicker } from '../ui/starterPicker';
 import { Compass } from '../ui/compass';
+import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
 
 export class UIScene extends Phaser.Scene {
@@ -27,6 +28,8 @@ export class UIScene extends Phaser.Scene {
   private dialogue!: DialogueBox;
   private starter!: StarterPicker;
   private compass!: Compass;
+  /** The submarine's 360° sonar and the arrow home (block 5c). */
+  private subScope!: SubScope;
 
   constructor() {
     super('UI');
@@ -47,6 +50,7 @@ export class UIScene extends Phaser.Scene {
     this.dialogue = new DialogueBox(this.root);
     this.starter = new StarterPicker(this.root, () => this.session.game);
     this.compass = new Compass(this.root, this.session);
+    this.subScope = new SubScope(this.root);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');
@@ -148,5 +152,6 @@ export class UIScene extends Phaser.Scene {
     this.beastUi.update(g);
     this.backpack.update(g);
     this.compass.update(g);
+    this.subScope.update(g, dt);
   }
 }

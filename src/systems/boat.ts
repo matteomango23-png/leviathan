@@ -44,6 +44,8 @@ export interface BoatState {
   iceWarn: number;
   /** Its hull (data/sea.ts boatWear; saved): at zero it goes back broken to the hold. */
   hull: number;
+  /** Spare parts for the ship it carries (block 5c; saved), hull points. */
+  parts: number;
   /** How it rides the waves now (ride.ts; not saved). */
   ride: RideState;
 }
@@ -58,6 +60,8 @@ export interface SavedBoat {
   aboard: boolean;
   /** Added 9 ottobre: missing = whole. */
   hull?: number;
+  /** Spare parts for the ship (block 5c; missing = none). */
+  parts?: number;
 }
 
 export const boatModel = (id: string): BoatModel => BOAT_MODELS.find((m) => m.id === id) ?? BOAT_MODELS[0]!;
@@ -77,6 +81,7 @@ export function newBoat(saved: SavedBoat | null): BoatState {
     speed: 0,
     fuel: saved ? clamp(saved.fuel, m.tank) : m.tank,
     drums: saved ? clamp(saved.drums, m.drums) : 0,
+    parts: Math.max(0, saved?.parts ?? 0),
     fuelWarned: false,
     bay: !saved ? 'none' : saved.out ? 'out' : 'docked',
     bayT: saved?.out ? 1 : 0,
@@ -102,6 +107,7 @@ export function saveBoat(b: BoatState): SavedBoat | null {
     out,
     aboard: out && b.aboard,
     hull: Math.round(b.hull * 10) / 10,
+    ...(b.parts > 0 ? { parts: Math.round(b.parts) } : {}),
   };
 }
 

@@ -72,6 +72,22 @@ export class EngineSound {
     set(this.sub, ENGINE_SOUND.sub, sub);
   }
 
+  /** One short soft beep of the radar's parking sensor (block 5c). */
+  beep(): void {
+    const p = ENGINE_SOUND.beep;
+    const at = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(p.freq, at);
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(p.volume, at + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + p.seconds);
+    osc.connect(g).connect(this.dest);
+    osc.start(at);
+    osc.stop(at + p.seconds + 0.03);
+  }
+
   /** One sonar ping, and its faint echo. */
   ping(): void {
     const p = ENGINE_SOUND.ping;

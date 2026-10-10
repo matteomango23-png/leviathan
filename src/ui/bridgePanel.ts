@@ -9,6 +9,7 @@ import type { WeatherId } from '../data/weather';
 import { OPEN_SEA_X } from '../data/worldLayout';
 import { chartAround } from '../systems/chart';
 import { autonomyKm, canRescue, rescue, transferFuel } from '../systems/fuel';
+import { hullMax } from '../systems/ship/shipHull';
 import type { GameState } from '../systems/game';
 import { knotsOf } from '../systems/helm';
 import { huntNextStep, huntOpen, huntRegionName, weatherNow } from '../systems/hunts';
@@ -90,6 +91,15 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
     unit: `L su ${tank}`,
     note: `${km(autonomyKm(ship.fuel, shipModel(ship).perKm))} km a tutto gas`,
     warnBelow: 0.2,
+  });
+  // its hull (block 5c): mended only at Porto Fango
+  dial(dials, {
+    label: 'Scafo nave',
+    share: ship.hull / hullMax(ship),
+    value: `${Math.round(ship.hull)}`,
+    unit: `su ${hullMax(ship)}`,
+    note: ship.hull <= 0 ? 'in avaria: ricambi da Porto Fango o rimorchiatore' : 'si ripara a Porto Fango',
+    warnBelow: 0.5,
   });
   if (sub.owned) {
     const m = subModel(sub.model);
