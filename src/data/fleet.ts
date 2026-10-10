@@ -18,6 +18,9 @@ export interface ShipPicture {
   /** Where a diving U-Boat's headlight starts (default bowU): a little back into a blunt bow, so the beam touches
    *  the hull (owner, 9 ottobre: on the Nightmare it floated ahead of it). */
   lampU?: number;
+  /** A ship with a mouth (the Krill Hunter, 10 ottobre): where its light comes out (shares of the picture). */
+  mouthU?: number;
+  mouthV?: number;
 }
 
 /** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
@@ -100,6 +103,8 @@ export interface ShipModelDef {
     stacks?: ShipStack[];
     /** Its lit red parts alone (made by `npm run art`), glowing and pulsing over it (the Nightmare's runes). */
     glow?: string;
+    /** Its mouth open, still and running (the Krill Hunter): the light comes out of it and swallows sardines. */
+    mouth?: { open: string; moving: string };
   };
 }
 
@@ -449,6 +454,71 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.06,
         propY: 0.6,
         bowU: 0.94,
+      },
+    },
+  },
+  {
+    // the whale ship (owner, 10 ottobre 2026): hyper-technological, not a U-Boat; a drone with claws that plants a
+    // tracker from afar, a whale speedboat, and a mouth that lights up, draws the sardines and swallows them
+    id: 'krill',
+    category: 'spedizione',
+    tier: 5,
+    name: 'Krill Hunter',
+    ready: true,
+    price: 40000,
+    lengthM: 80,
+    knots: 26,
+    accel: 20,
+    coast: 12,
+    brake: 32,
+    tank: 2200,
+    hull: 260, // its hull points (block 5c)
+    perKm: 24,
+    sonar: { range: 1.8, maxKnots: 16, name: 'ottimo', classes: 4 },
+    pool: 4,
+    bays: [
+      {
+        kind: 'sub',
+        model: 'drone_krill',
+        name: 'Drone Artiglio',
+        card: 'sottomarino_lanterna',
+        hatch: { x: 0.56, y: 0.61, rampEnd: 0.78 },
+        open: 'nave_lanterna_aperta_1',
+      },
+      {
+        kind: 'boat',
+        model: 'motoscafo_krill',
+        name: 'Balenotto',
+        card: 'motoscafo_lanterna',
+        hatch: { x: 0.36, y: 0.61, rampEnd: 0.78 },
+        open: 'nave_lanterna_aperta_2',
+      },
+    ],
+    special: 'Bocca luminosa che attira e mangia le sardine; drone che pianta il tracker a distanza',
+    note: 'Nave balena ipertecnologica: veloce, con drone e motoscafo',
+    cockpit: ALL_TABS,
+    card: 'nave_lanterna',
+    art: {
+      closed: 'nave_lanterna',
+      open: 'nave_lanterna_aperta',
+      moving: 'nave_lanterna_moto',
+      glow: 'nave_lanterna_glow', // its blue-green lights pulse
+      mouth: { open: 'nave_lanterna_bocca', moving: 'nave_lanterna_bocca_moto' },
+      stacks: [
+        { u: 0.255, v: 0.2, size: 1.1 },
+        { u: 0.275, v: 0.23, size: 0.9 },
+      ],
+      picture: {
+        aspect: 768 / 1376,
+        waterline: 0.6,
+        keel: 0.8,
+        helmX: 0.36,
+        deckY: 0.3,
+        propX: 0.04,
+        propY: 0.53,
+        bowU: 0.95,
+        mouthU: 0.83,
+        mouthV: 0.56,
       },
     },
   },

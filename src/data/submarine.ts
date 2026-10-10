@@ -29,6 +29,8 @@ export interface SubModel {
   moving?: string;
   /** A drone: it can also scout by itself from its ship (the Ocean's Nightmare's, systems/ship/recon.ts). */
   recon?: boolean;
+  /** A drone that plants a tracker from afar on a beast picked on the sonar (the Krill Hunter's, 10 ottobre). */
+  remoteTracker?: boolean;
 }
 
 export const SUB_MODELS: SubModel[] = [
@@ -110,6 +112,25 @@ export const SUB_MODELS: SubModel[] = [
     note: 'Piccolo e velocissimo: fa la ricognizione da solo, o lo guidi tu fino a 500 m',
     art: 'sottomarino_drone',
     recon: true,
+  },
+  {
+    // the Krill Hunter's (owner, 10 ottobre): claws in front; slower than the Nightmare's, it plants a tracker on a
+    // beast picked on the sonar and comes back, or you drive it by hand
+    id: 'drone_krill',
+    airSeconds: 160,
+    name: 'Drone Artiglio',
+    lengthM: 13,
+    speed: 110,
+    maxDepthM: 400,
+    hull: 130,
+    tank: 100,
+    perKm: 7,
+    sonar: true,
+    scope: { rangeM: 80, classes: 4 },
+    note: 'Con le braccia: pianta il tracker a distanza, o lo guidi tu fino a 400 m',
+    art: 'sottomarino_lanterna',
+    moving: 'sottomarino_lanterna_moto',
+    remoteTracker: true,
   },
 ];
 

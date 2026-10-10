@@ -12,6 +12,7 @@ import { el } from './dom';
 import { WORLD } from '../data/worldLayout';
 import type { EchoClass } from '../data/hunts';
 import { lockEcho, scanSeconds, targetKey } from '../systems/sonarScan';
+import { canSendTracker, droneKind, sendTrackerDrone } from '../systems/ship/gadgets';
 import type { Target } from '../systems/tracking';
 
 /** Each size's dot (radius, css px) and the legends' colour. */
@@ -34,6 +35,13 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
   sw.addEventListener('click', () => {
     g.ship.sonarOn = !g.ship.sonarOn;
     redraw();
+  });
+  // the Krill Hunter's drone: sent to the echo you touched, it plants a tracker and comes back
+  const droneBtn = el('button', 'pbtn sonar-switch sonar-drone', head, 'Manda il drone: tracker');
+  droneBtn.hidden = droneKind(g) !== 'tracker';
+  droneBtn.addEventListener('click', () => {
+    const pick = g.sonarScan.lock ?? g.sonarScan.picked;
+    if (pick && sendTrackerDrone(g, pick, g.story.pending)) redraw();
   });
   const frame = el('div', 'sonar-frame', b);
   const canvas = el('canvas', 'sonar-canvas', frame);
@@ -69,6 +77,10 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
             ? `Analisi dell’eco in corso… resta lento e vicino (${Math.round((100 * g.sonarScan.t) / scanSeconds(g.ship))}%)`
             : `In ascolto · portata ${r.rangeM} m per lato · fondale sotto la nave ${r.floorM} m · tocca un’eco per analizzarla`;
     status.classList.toggle('warn', r.status !== 'on');
+    droneBtn.disabled = !(g.sonarScan.lock ?? g.sonarScan.picked) || !canSendTracker(g);
+    droneBtn.title = canSendTracker(g)
+      ? 'Tocca un’eco, poi manda il drone'
+      : 'Il drone deve essere nella stiva col portellone aperto, a nave ferma';
   };
   read();
   let readT = 0;
@@ -205,6 +217,14 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
         ctx.strokeStyle = P.mainHex;
         ctx.beginPath();
         ctx.arc(ex, ey, 12 * dpr, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2);
+        ctx.stroke();
+      }
+      // the one picked (analysed already): a thin ring stays round it
+      if (e.target && !scan.lock && scan.picked && targetKey(scan.picked) === key) {
+        ctx.strokeStyle = `rgba(${P.main},0.8)`;
+        ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 11 * dpr, 0, Math.PI * 2);
         ctx.stroke();
       }
       const found = key ? scan.results[key] : undefined;

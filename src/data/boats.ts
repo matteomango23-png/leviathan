@@ -40,6 +40,24 @@ const PICTURE = { aspect: 781 / 1400, waterline: 0.62, keel: 0.74 };
 
 export const BOAT_MODELS: BoatModel[] = [
   {
+    // the Krill Hunter's whale speedboat (owner, 10 ottobre): a little slower than the racer, more drums
+    id: 'motoscafo_krill',
+    name: 'Balenotto',
+    lengthM: 13,
+    hull: 70,
+    knots: 34,
+    accel: 100,
+    coast: 45,
+    brake: 140,
+    tank: 80,
+    perKm: 3,
+    drums: 300,
+    note: 'Il motoscafo a balena: robusto, porta tanti fusti',
+    art: 'motoscafo_lanterna',
+    moving: 'motoscafo_lanterna_moto',
+    picture: { aspect: 693 / 1400, waterline: 0.62, keel: 0.78, propX: 0.05, propY: 0.57 },
+  },
+  {
     id: 'motoscafo_eh2',
     name: 'Motoscafo da gara',
     lengthM: 14,

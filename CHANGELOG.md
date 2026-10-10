@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.64.0 — Krill Hunter, la nave balena (10 ottobre 2026)
+
+- **Nuova nave al cantiere di Porto Fango:** la Krill Hunter, 40.000 denti, una balena di ferro con luci azzurre che pulsano. Veloce, scafo robusto, sonar ottimo.
+- **Apri bocca:** a nave ferma e con i portelloni chiusi la balena apre la bocca e la luce esce da lì. Attira i banchi di sardine e le mangia (finiscono nella sacca), al massimo 25 per volta e per un minuto, poi la bocca si richiude e serve circa 10 minuti per riaprirla. Attira anche le bestie curiose, come la luce delle altre navi. Bocca e portelloni non si aprono insieme.
+- **Drone Artiglio:** il drone con le braccia si guida come un sottomarino (con il sonar sul vetro). Da remoto: nel Sonar del cockpit tocchi un'eco e premi "Manda il drone: tracker"; parte da solo, pianta il tracker alla bestia e torna. Serve il suo portellone aperto, come la ricognizione del Nightmare.
+- **Balenotto:** il motoscafo a balena, robusto e con tanti fusti.
+- **Sonar:** l'eco toccata resta scelta (un anello) anche dopo l'analisi.
+
 ## v0.63.2 — Rifiniture (10 ottobre 2026)
 
 - **La banchisa si vede di nuovo:** le lastre di ghiaccio stanno sopra il mare e salgono e scendono un poco con le onde.

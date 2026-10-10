@@ -26,7 +26,7 @@ interface Part {
 export class ShipPictures {
   private readonly parts: Part[];
   /** For each part: how open it shows (from the hatches), or the propeller turning. */
-  private readonly roles: ('closed' | number | 'all' | 'moving')[] = [];
+  private readonly roles: ('closed' | number | 'all' | 'moving' | 'mouth' | 'mouthMoving')[] = [];
   /** Its lit red parts, added on top and pulsing (art.glow). */
   private readonly glow: Phaser.GameObjects.Image | null;
 
@@ -52,6 +52,11 @@ export class ShipPictures {
       add(art.open, 'all');
     } else add(art.open, 0);
     if (art.moving) add(art.moving, 'moving');
+    // the Krill Hunter's mouth, still and running, over the rest
+    if (art.mouth) {
+      add(art.mouth.open, 'mouth');
+      add(art.mouth.moving, 'mouthMoving');
+    }
     this.glow =
       art.glow && WORLD_ART_KEYS.includes(art.glow)
         ? make(`world-${art.glow}`).setBlendMode(Phaser.BlendModes.ADD)
@@ -71,7 +76,10 @@ export class ShipPictures {
     if (typeof role === 'number') return hatchT(s, role);
     const most = Math.max(0, ...s.hatches.map((h) => h.t));
     if (role === 'all') return s.hatches.reduce((a, h) => a * h.t, 1);
-    return Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25)) * (1 - most);
+    const run = Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25));
+    if (role === 'mouth') return s.mouthT * (1 - run);
+    if (role === 'mouthMoving') return s.mouthT * run;
+    return run * (1 - most);
   }
 
   /**

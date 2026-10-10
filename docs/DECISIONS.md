@@ -841,6 +841,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Passi piccoli (1/120 s) per la stabilità.
 - **La superficie non ha più bordi dritti:** lo sfondo dipinto ferma il mare al cavo più profondo possibile per il meteo, il resto lo disegna la vista delle onde.
 
+## 10 ottobre 2026 — Krill Hunter (v0.64.0)
+
+- **Immagini girate e fuori registro:** la nave e il drone erano disegnati con la prua a sinistra, quindi vengono specchiati nello script (`MIRROR`). Due immagini erano in un formato diverso dalle sorelle: lo script cerca la scala e lo spostamento che fanno coincidere di più le sagome (senza l'elica, che sfocata cambia larghezza) e le riporta sul riquadro della base. Resta qualche pixel di differenza perché l'AI ridisegna, ma non salta.
+- **La bocca usa la luce delle altre navi** (`underLight`) per chiamare le bestie, e aggiunge le sardine con un tetto (25 per volta, 1 minuto, 10 minuti di ricarica solo se ha mangiato). Bocca e portelloni uno alla volta: non ci sono immagini con tutte e due aperte.
+- **Il drone tracker riusa il giro del drone del Nightmare** (`recon`, modalità `tracker`): stessa animazione, stesse regole del portellone; va da una sola bestia scelta sul sonar.
+
 ## 10 ottobre 2026 — Riparazioni in proporzione al prezzo (v0.63.1)
 
 - **Il proprietario:** il costo deve seguire il valore della nave; per l'Ocean's Nightmare, la più cara, riparare tutto costa il 10%. La stessa quota vale per ogni nave; l'Aurelia, regalo di Aurelio, conta come 6000 denti. I ricambi costano il 20% in più del cantiere, perché sono la comodità di non portarci la nave.

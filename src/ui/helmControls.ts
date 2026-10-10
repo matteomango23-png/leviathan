@@ -283,7 +283,16 @@ export class HelmControls {
     this.reconBtn.hidden = !info.canRecon;
     this.trackerBtn.hidden = !info.canTrack;
     this.lightBtn.hidden = !ship;
-    const lightText = info.lightOn ? 'Spegni luce' : 'Luce';
+    const w = Math.ceil(info.mouth?.wait ?? 0);
+    const lightText = info.mouth
+      ? info.mouth.open
+        ? 'Chiudi bocca'
+        : w > 0
+          ? `Bocca ${Math.floor(w / 60)}:${String(w % 60).padStart(2, '0')}`
+          : 'Apri bocca'
+      : info.lightOn
+        ? 'Spegni luce'
+        : 'Luce';
     if (this.lightBtn.textContent !== lightText) this.lightBtn.textContent = lightText;
     this.lightBtn.classList.toggle('on', !!info.lightOn);
     this.sphereBtn.hidden = !info.sphere;
