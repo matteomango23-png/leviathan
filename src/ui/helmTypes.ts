@@ -45,8 +45,8 @@ export interface HelmInfo {
   broken?: boolean;
   /** Ship only (block 5b): the light under the hull, on or off. */
   lightOn?: boolean;
-  /** The Krill Hunter: its mouth instead of the light (open, seconds before it can open again). */
-  mouth?: { open: boolean; wait: number };
+  /** The Krill Hunter: its mouth instead of the light (open; full for now). */
+  mouth?: { open: boolean; full: boolean };
   /** Submarine only (block 5a): a wild beast close in front, the tracker dart can be fired. */
   canTrack?: boolean;
   /** Ship only: it is still (owner, 9 ottobre: the hatch and dive buttons show only then). */

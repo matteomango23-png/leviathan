@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.64.1 — Ritocchi alla Krill Hunter (10 ottobre 2026)
+
+- **La bocca resta aperta quanto vuoi** (basta la nave ferma, anche con i portelloni aperti): la lasci a pescare mentre vai a caccia col drone o col motoscafo, e la chiudi prima di ripartire. Mangia fino a 25 sardine, poi è sazia e riprende a mangiare man mano che le torna fame (25 ogni 10 minuti circa). Ripartendo si chiude da sola.
+- **Bocca aperta pulita:** non si vede più la mascella chiusa sotto quella aperta, e la testa aperta sta bene anche con i portelloni aperti.
+- **Motoscafi e moto d'acqua:** contro ghiaccio e iceberg ad alta velocità si danneggiano (con uno scossone).
+- **Drone della Krill Hunter:** aprendo il suo portellone un messaggio spiega come mandarlo col tracker (Cockpit → Sonar → tocca un'eco → «Manda il drone: tracker»). Non fa la ricognizione: quella è del Nightmare.
+- **Bussola del tracker:** al timone sta in basso, tra la leva del gas e le frecce, e non copre più le scritte.
+- **Pulsanti:** sugli schermi abbastanza alti, fino a cinque in colonna prima di aprirne una seconda; "Aggancia" e "A bordo" stanno dentro il pulsante rotondo.
+
 ## v0.64.0 — Krill Hunter, la nave balena (10 ottobre 2026)
 
 - **Nuova nave al cantiere di Porto Fango:** la Krill Hunter, 40.000 denti, una balena di ferro con luci azzurre che pulsano. Veloce, scafo robusto, sonar ottimo.

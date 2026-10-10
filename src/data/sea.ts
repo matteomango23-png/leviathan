@@ -50,6 +50,9 @@ export const SEA_STATE = {
   /** The small boats in rough seas: their hull wears out (points per second at full storm) when they go faster
    *  than `fast` of their top speed, from waves of `from` on (the weather's waves). */
   boatWear: { perSecond: 1.5, fast: 0.5, from: 1.8 },
+  /** Running into ice or an iceberg faster than `from` (units/s) costs a boat `perSpeed` hull a unit/s above it
+   *  (owner, 10 ottobre: at full speed into an iceberg it took nothing). */
+  boatBump: { from: 25, perSpeed: 0.3 },
   /** Flipping over costs a boat this share of its whole hull. */
   capsizeDamage: 0.2,
   /** Mending a broken boat at the harbour: teeth per hull point. */

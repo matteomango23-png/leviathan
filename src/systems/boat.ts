@@ -170,6 +170,12 @@ export function sailBoat(
   const lo = Math.min(bow, b.x + b.face * half);
   const hi = Math.max(bow, b.x + b.face * half);
   if (b.speed > 0 && (iceIn(g.map, lo, hi, 4) || icebergAcross(lo, hi))) {
+    // hard into it, the hull takes the blow
+    const hit = (b.speed - SEA_STATE.boatBump.from) * SEA_STATE.boatBump.perSpeed;
+    if (hit > 0) {
+      b.hull = Math.max(0, b.hull - hit);
+      events.push({ type: 'boatBumped', hull: b.hull });
+    }
     next = b.x;
     b.speed = 0;
     if (b.iceWarn <= 0) {

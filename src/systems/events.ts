@@ -74,6 +74,7 @@ export type GameEvent =
   // the Ocean's Nightmare's drone and sphere (part 4d)
   | { type: 'reconStart' }
   | { type: 'droneTrackerOut'; name: string }
+  | { type: 'droneTrackerHint' }
   | { type: 'reconEmpty' }
   | { type: 'reconDone'; count: number }
   | { type: 'sphereGo'; name: string }
@@ -86,8 +87,10 @@ export type GameEvent =
   | { type: 'scanLost' }
   | { type: 'lightOn' }
   | { type: 'mouthOpen' }
+  | { type: 'boatBumped'; hull: number }
   | { type: 'mouthShut'; eaten: number }
-  | { type: 'mouthNo'; wait: number }
+  | { type: 'mouthNo' }
+  | { type: 'mouthFull'; eaten: number }
   | { type: 'shipDamaged'; hull: number; max: number }
   | { type: 'shipHullHalf' }
   | { type: 'shipBroken' }

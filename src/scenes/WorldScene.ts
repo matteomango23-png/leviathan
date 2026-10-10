@@ -265,6 +265,8 @@ export class WorldScene extends Phaser.Scene {
       else if (e.type === 'iceCracked' && Math.random() < 0.3)
         this.effects.puff(e.x, WORLD.surfaceY + 2, 3, 0xe6f2f8, 20 + e.speed * 0.2);
       else if (e.type === 'hatchMoved') this.rig.shake(0.15);
+      else if (e.type === 'boatBumped')
+        this.rig.shake(0.6); // the speedboat into the ice
       else if (e.type === 'shipDamaged')
         this.rig.shake(0.5); // a blow to the ship's hull (block 5c)
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();

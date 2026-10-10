@@ -18,8 +18,12 @@
   font-size: 13px;
   pointer-events: auto;
 }
+/* at the helm the top is full of instruments and buttons (owner, 10 ottobre: it ran over them): at the bottom, between
+   the gas lever and the arrows */
 #ui.driving .compass {
-  top: calc(84px + var(--safe-t));
+  top: auto;
+  bottom: calc(14px + var(--safe-b));
+  max-width: min(64vw, 560px);
 }
 #ui .compass-arrow {
   width: 22px;

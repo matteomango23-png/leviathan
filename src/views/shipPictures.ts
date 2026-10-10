@@ -29,6 +29,10 @@ export class ShipPictures {
   private readonly roles: ('closed' | number | 'all' | 'moving' | 'mouth' | 'mouthMoving')[] = [];
   /** Its lit red parts, added on top and pulsing (art.glow). */
   private readonly glow: Phaser.GameObjects.Image | null;
+  /** The Krill Hunter: its closed head alone, fading out while the open mouth (its head alone too) fades in over
+   *  whatever the rest shows (hatches open or not; owner, 10 ottobre: the closed jaw showed under the open one). */
+  private readonly headClosed: Phaser.GameObjects.Image | null = null;
+  private readonly split: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -52,8 +56,13 @@ export class ShipPictures {
       add(art.open, 'all');
     } else add(art.open, 0);
     if (art.moving) add(art.moving, 'moving');
+    this.split = art.picture.mouthFromU ?? 1;
     // the Krill Hunter's mouth, still and running, over the rest
     if (art.mouth) {
+      if (WORLD_ART_KEYS.includes(art.closed)) {
+        this.headClosed = make(`world-${art.closed}`);
+        layer.add(this.headClosed);
+      }
       add(art.mouth.open, 'mouth');
       add(art.mouth.moving, 'mouthMoving');
     }
@@ -67,6 +76,7 @@ export class ShipPictures {
   hide(): void {
     for (const p of this.parts) for (const im of [p.full, ...p.under]) im.setVisible(false);
     this.glow?.setVisible(false);
+    this.headClosed?.setVisible(false);
   }
 
   /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
@@ -113,6 +123,27 @@ export class ShipPictures {
         .setRotation(rot)
         .setAlpha(0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6)));
     }
+    // the mouth open (even a little): the body from the pictures, the head from the mouth's
+    const head = !!this.headClosed && s.mouthT > 0;
+    const bodyOf = (im: Phaser.GameObjects.Image): void => {
+      if (head) im.setCrop(0, 0, Math.round(im.width * this.split), im.height);
+      else im.setCrop();
+    };
+    const headOf = (im: Phaser.GameObjects.Image): void => {
+      const from = Math.round(im.width * this.split);
+      im.setCrop(from, 0, im.width - from, im.height);
+    };
+    if (this.glow) bodyOf(this.glow);
+    if (this.headClosed) {
+      const sc = w / this.headClosed.width;
+      this.headClosed
+        .setVisible(head)
+        .setPosition(x, cy)
+        .setScale(sc * s.face, sc)
+        .setRotation(rot)
+        .setAlpha(1 - s.mouthT);
+      headOf(this.headClosed);
+    }
     for (const [i, p] of this.parts.entries()) {
       const alpha = this.alphaOf(s, this.roles[i]!);
       const show = alpha > 0.01;
@@ -125,6 +156,9 @@ export class ShipPictures {
         .setScale(sc * s.face, sc)
         .setRotation(rot)
         .setAlpha(alpha);
+      const role = this.roles[i];
+      if (role === 'mouth' || role === 'mouthMoving') headOf(p.full);
+      else if (this.headClosed) bodyOf(p.full);
       const sw = W / STRIPS;
       for (const [j, im] of p.under.entries()) {
         if (!show || !seaY) {

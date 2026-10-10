@@ -1,5 +1,13 @@
 # Progressi
 
+## Ritocchi alla Krill Hunter (10 ottobre 2026) → v0.64.1
+
+- Bocca: aperta senza limite a nave ferma (anche a portelloni aperti), appetito `mouthFood` (25, ricarica in 600 s), messaggio `mouthFull`; `hatchCanMove` non dipende più dalla bocca.
+- `ShipPictures`: con la bocca aperta il corpo viene dalle immagini normali (ritagliate fino a `mouthFromU` 0,63) e la testa dall'immagine della bocca; `headClosed` sfuma.
+- `SEA_STATE.boatBump` (urti del motoscafo contro ghiaccio e iceberg), evento `boatBumped`.
+- Bussola in basso al timone; `.helm-still` 5 righe con altezza ≥ 380 px; `.act-ctx.long`; messaggio `droneTrackerHint`.
+- **Da provare sull'iPhone:** bocca aperta con un portellone aperto; motoscafo contro un iceberg; bussola e pulsanti al timone della Krill Hunter.
+
 ## Krill Hunter (10 ottobre 2026) → v0.64.0
 
 **Fatto:**

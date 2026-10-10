@@ -81,10 +81,10 @@ export const SHIP = {
    *  `sweepSeconds`; the parking-sensor beeps for an obstacle ahead within `rangeM` faster than `beepFromKnots`,
    *  every `beepFar` s far away down to `beepNear` s close. Tuning. */
   radar: { rangeM: 30, sweepSeconds: 3, beepFromKnots: 4, beepFar: 1.2, beepNear: 0.18 },
-  /** The Krill Hunter's mouth (owner, 10 ottobre 2026): it opens only with the ship still and its hatches shut, lights
-   *  the sea, draws the sardine schools within `reach` (units) and swallows the fish within `bite` of it; at most
-   *  `maxSardines` and `seconds` each time, then `rechargeSeconds` to open again (no endless feast). Tuning. */
-  mouth: { seconds: 60, maxSardines: 25, rechargeSeconds: 600, reach: 420, bite: 22, openSeconds: 0.8 },
+  /** The Krill Hunter's mouth (owner, 10 ottobre 2026): it opens with the ship still (hatches open or not) and stays
+   *  open as long as you like, lights the sea, draws the sardine schools within `reach` (units) and swallows the fish
+   *  within `bite` of it; its appetite is `maxSardines`, refilled over `rechargeSeconds` (no endless feast). Tuning. */
+  mouth: { maxSardines: 25, rechargeSeconds: 600, reach: 420, bite: 22, openSeconds: 0.8 },
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
   /** The sonar (owner, 5 ottobre): switched on at the helm, it pings this often. */
