@@ -78,6 +78,8 @@ export const CLARITY = {
   /** How fast a beast turns into a shape or back (per second). */
   shapesEase: 1.2,
   shapeTint: 0x0b0f10,
+  /** How far your lamp shows things in clear water (m), for the cockpit's water dial (10 ottobre). */
+  visibilityM: 30,
 };
 
 /** The water that answers the hulls (systems/waterColumns.ts): a row of columns this far apart, how stiff and damped,

@@ -132,7 +132,7 @@ export class WorldScene extends Phaser.Scene {
     this.vents = new VentView(this, L.world);
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
-    this.surface = new SeaSurfaceView(this, L.world); // behind the vehicles that ride its waves
+    this.surface = new SeaSurfaceView(this, L.world, map); // behind the vehicles that ride its waves
     this.ship = new ShipView(this, L.world);
     this.hunts = new HuntView(this, L.world);
     this.boat = new BoatView(this, L.world);

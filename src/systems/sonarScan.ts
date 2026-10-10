@@ -106,3 +106,32 @@ export function stepScan(g: ScanWorld, dt: number, events: GameEvent[]): void {
   addNote(g.sonarNotes, t.speciesId, { place: placeName(p.x, p.y), depthM, cls, type });
   events.push({ type: 'scanDone', text, known });
 }
+
+/** The drone's report (ship/gadgets.ts): every beast it reached is named on the sonar at once, and noted in the
+ *  diary, as if analysed (owner, 10 ottobre: "it already did everything itself"). */
+export function learnFromReport(
+  g: ScanWorld,
+  report: {
+    target: Target;
+    name: string;
+    speciesId: string;
+    level?: number;
+    depthM: number;
+    dxM: number;
+    lengthM: number;
+  }[],
+): void {
+  const classes = shipModel(g.ship).sonar.classes;
+  for (const e of report) {
+    g.sonarScan.results[targetKey(e.target)] = `${e.name}${e.level ? ` · liv. ${e.level}` : ''}`;
+    const sp = speciesById(e.speciesId);
+    const x = g.ship.x + e.dxM * WORLD.unitsPerMetre;
+    const y = WORLD.surfaceY + e.depthM * WORLD.unitsPerMetre;
+    addNote(g.sonarNotes, e.speciesId, {
+      place: placeName(x, y),
+      depthM: e.depthM,
+      cls: heardClass(trueClass({ speciesId: e.speciesId, variant: 'comune' }), classes),
+      type: sp && sp.type !== 'variabile' ? TYPES[sp.type].name : 'Mutevole',
+    });
+  }
+}

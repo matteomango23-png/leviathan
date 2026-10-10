@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.63.2 — Rifiniture (10 ottobre 2026)
+
+- **La banchisa si vede di nuovo:** le lastre di ghiaccio stanno sopra il mare e salgono e scendono un poco con le onde.
+- **Ocean's Nightmare:** al ritorno del drone dalla ricognizione, sul sonar compaiono subito i nomi e i livelli delle bestie che ha visto, e finiscono nel Diario.
+- **Plancia:** due quadranti nuovi. "Vento": calmo, brezza, vento forte o burrasca, con l'altezza delle onde e quanto la corrente rallenta la nave. "Acqua": limpida, velata, torbida o molto torbida, con la visibilità in metri.
+- **Card del cantiere aggiornate:** per ogni nave scafo, costo della riparazione completa e radar; il sonar dice quante grandezze di eco distingue; per sottomarini e motoscafi il sonar a 360° e i ricambi che portano.
+
 ## v0.63.1 — Riparazioni in proporzione alla nave (10 ottobre 2026)
 
 - **Il prezzo segue il valore della nave:** riparare da zero a nuovo costa il 10% del suo prezzo (Ocean's Nightmare 5000 denti, EH2 3000, Aurelia 600). I ricambi portati col motoscafo o col sottomarino costano un 20% in più.
