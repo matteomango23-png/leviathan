@@ -10,6 +10,7 @@ import {
   createBattle,
   endRound,
   firstSide,
+  nextFoe,
   nextStanding,
   switchTo,
   tryFlee,
@@ -124,6 +125,12 @@ export class BattleScene extends Phaser.Scene {
       // a beast knocked out (also by the ambush before the first round): the next one comes in first
       if (you(s).hp <= 0 && !(await this.replaceFainted())) break;
       await this.round(await this.ui.chooseAction(s, this.items));
+      // its pack: the next one comes in (block 5b)
+      if (!s.over && nextFoe(s)) {
+        await this.view!.swimIn('foe', s.foe.form, s.foe.level);
+        this.ui.show(s);
+        await this.ui.say(BATTLE_TEXT.packIn(this.name('foe')), 1.6);
+      }
     }
     await this.finish();
   }

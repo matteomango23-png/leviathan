@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.62.0 — Luce che attira le bestie, branchi veri (10 ottobre 2026)
+
+- **Luce subacquea:** a nave ferma il pulsante "Luce" accende una luce sotto lo scafo (consuma un po' di carburante). Le bestie curiose a portata del sonar arrivano piano sotto la nave; dopo circa 45 secondi arrivano anche i predatori. Al timone: "luce accesa: 3 in arrivo". Resta accesa anche se ti tuffi o cali il sottomarino; si spegne se riparti.
+- **I branchi combattono insieme:** attaccando un barracuda o un'orca del branco, quando lo sconfiggi entra il successivo ("Il branco attacca: arriva un altro Barracuda!"). Si vince solo quando sono tutti a terra, con esperienza per ognuno. Se fuggi, il branco resta più piccolo.
+- **I branchi nuotano insieme:** i compagni seguono la scia della guida e girano con lei come un'onda; larghi quando vagano, stretti in fila quando caricano, sparpagliati quando fuggono.
+- **I branchi cacciano:** barracuda, orche, tonni e delfini inseguono i banchi di sardine e ne mangiano; le sardine scappano. Le orche inseguono le bestie più piccole, che scappano.
+
 ## v0.61.0 — Il sonar al centro della caccia (9 ottobre 2026)
 
 - **Echi di grandezze diverse:** sul sonar del cockpit più grande è il punto, più grande è la bestia. Il sonar debole distingue solo piccole e grandi; quelli migliori anche medie ed enormi; il sonar dell'Ocean's Nightmare riconosce anche le leggende (punto dorato). Al timone: "19 animali (5 grandi, 1 enorme)".

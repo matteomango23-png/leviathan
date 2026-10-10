@@ -1,6 +1,6 @@
 // Wild beasts in the open sea: their state, how they (re)appear, and simple queries. Movement is in roam.ts.
 // They do not fight in the water: touching them, or hitting them with a weapon, starts a turn-based battle.
-import { BEAST_BODY, type WildSpawnDef } from '../../data/beasts';
+import { BEAST_BODY, BEAST_TEMPER, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
 import { formLengthUnits, type BeastForm, shapeOfForm } from './forms';
 
@@ -29,6 +29,15 @@ export interface WildBeast extends BodyPose {
   turnFrom: 1 | -1;
   /** Title in the battle for named beasts. */
   boss?: string;
+  /** Its pack (block 5b): how many mates swim with it now. */
+  pack: number;
+  /** The light under the still ship calls it there (ship/underLight.ts), or null. */
+  drawn: { x: number; y: number } | null;
+  /** What it hunts now (a sardine school, a smaller beast), or what hunts it (beasts/packHunt.ts), or null. */
+  hunt: { x: number; y: number; prey?: number; school?: number } | null;
+  fleeFrom: { x: number; y: number } | null;
+  /** Seconds before it looks again for something to hunt. */
+  lookT: number;
 }
 
 export interface Rect {
@@ -63,6 +72,11 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     respawn: 0,
     turn: 0,
     turnFrom: 1,
+    pack: 0,
+    drawn: null,
+    hunt: null,
+    fleeFrom: null,
+    lookT: 0,
   };
 }
 
@@ -93,6 +107,11 @@ export function spawnWild(
     jaw: 0,
     flash: 0,
     boss: undefined,
+    pack: BEAST_TEMPER[form.speciesId]?.school ?? 0, // its mates come out of the dark with it
+    drawn: null,
+    hunt: null,
+    fleeFrom: null,
+    lookT: 0,
   });
 }
 

@@ -106,7 +106,13 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const dist = (c: { x: number; y: number }): number => Math.hypot(c.x - d.x, c.y - d.y);
     // just beyond the screen's edge when the view is wider than the waking distance (the big ships' far view)
     const v = g.beasts.view;
-    const reach = Math.max(R.wakeRadius, v ? Math.max(v.width, v.height) / 2 + WILD_RULES.viewMargin * 2 : 0);
+    // and with the light under the ship on, as far as it calls them (block 5b)
+    const light = g.beasts.light;
+    const reach = Math.max(
+      R.wakeRadius,
+      v ? Math.max(v.width, v.height) / 2 + WILD_RULES.viewMargin * 2 : 0,
+      light ? light.reach : 0,
+    );
     const near = residentsNear(res, d.x, reach, g.beasts.held).filter(
       (c) => res.awake[c.r.id] === undefined && dist(c) < reach && !seen(c.x, c.y),
     );
@@ -139,7 +145,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     // you swam far away from its waters: it goes back into the dark (a hunter on your tail a bit later)
     // (not while the sphere holds it: it waits for you there)
     const leash = 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0);
-    if (!isHeld(g.beasts.held, w) && !inArea(w, d.x, d.y, leash) && !seen(w.x, w.y)) {
+    if (!isHeld(g.beasts.held, w) && !w.drawn && !inArea(w, d.x, d.y, leash) && !seen(w.x, w.y)) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
     }

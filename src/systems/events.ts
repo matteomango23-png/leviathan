@@ -83,6 +83,10 @@ export type GameEvent =
   | { type: 'targetSet'; name: string }
   | { type: 'scanDone'; text: string; known: boolean }
   | { type: 'scanLost' }
+  | { type: 'lightOn' }
+  | { type: 'lightOff' }
+  | { type: 'lightNo' }
+  | { type: 'lightHunters' }
   | { type: 'trackerHit'; name: string }
   | { type: 'trackerExpired'; name: string }
   | { type: 'targetLost'; name: string }

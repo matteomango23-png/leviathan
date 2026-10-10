@@ -27,6 +27,8 @@ const o = (b: Named): string => (b.f ? 'a' : 'o');
 
 export const BATTLE_TEXT = {
   appears: (b: Named): string => `Dal buio emerge ${b.name} selvatic${o(b)}!`,
+  /** The next of its pack comes in (block 5b). */
+  packIn: (b: Named): string => `Il branco attacca: arriva un${b.f ? "'altra" : ' altro'} ${b.name}!`,
   go: (b: Named): string => `Vai, ${b.name}!`,
   whatNext: (b: Named): string => `Cosa farà ${b.name}?`,
   uses: (b: Named, move: string): string => `${b.name} usa ${move}!`,

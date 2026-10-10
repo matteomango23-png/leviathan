@@ -12,6 +12,7 @@ import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
 import { BeastSprite } from './beastView';
+import { PackTrail } from './packFormation';
 
 const spriteOf = (form: BeastForm): string =>
   artKeysOf(form).find((k) => SPRITE_KEYS.includes(k)) ?? formKey(form);
@@ -19,14 +20,6 @@ const spriteOf = (form: BeastForm): string =>
 /** An albino without its own sprite yet is drawn with the species' one, lightened. */
 const isPaleSprite = (form: BeastForm): boolean =>
   form.variant === 'albino' && !form.unique && spriteOf(form) !== formKey(form);
-
-/** Where the rest of a school swims, as shares of the leader's length (behind it, above and below). */
-const SCHOOL_PLACES: [number, number][] = [
-  [0.55, -0.32],
-  [0.7, 0.3],
-  [1.15, -0.05],
-  [1.4, 0.38],
-];
 
 const MAX_SCHOOL = Math.max(0, ...Object.values(BEAST_TEMPER).map((t) => t.school ?? 0));
 
@@ -46,6 +39,8 @@ export class BeastsLayer {
   /** How much each wild beast shows as a dark shape now (easing towards the water's own), and the last time. */
   private readonly shapeNow: number[] = [];
   private lastTime = NaN;
+  /** Each leader's wake, for its pack to follow (packFormation.ts). */
+  private readonly trails: PackTrail[] = [];
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
     this.glow = scene.add.graphics();
@@ -134,22 +129,27 @@ export class BeastsLayer {
         alpha: 1,
         shade,
       });
-      // the school: behind and around the leader, each a little out of step
-      const schoolSize = BEAST_TEMPER[w.form.speciesId]?.school ?? 0;
+      // its pack: as many as are left (block 5b), each following the leader's wake a moment behind
+      const schoolSize = Math.min(BEAST_TEMPER[w.form.speciesId]?.school ?? 0, w.pack);
+      const trail = (this.trails[i] ??= new PackTrail());
+      trail.push({ t: time, x: w.x, y: w.y, face: w.face, pitch: w.pitch }, w.mood, dt);
       mates.forEach((m, k) => {
         if (k >= schoolSize) {
           m.hide();
           return;
         }
-        const [bx, by] = SCHOOL_PLACES[k % SCHOOL_PLACES.length]!;
-        const wob = Math.sin(time * 1.3 + k * 2.1) * 0.08;
+        const at = trail.mate(time, k, w.length, time);
+        if (!at) {
+          m.hide();
+          return;
+        }
         m.update({
           key: spriteOf(w.form),
           pale: isPaleSprite(w.form),
-          x: w.x - w.face * w.length * bx,
-          y: w.y + w.length * (by + wob),
-          face: w.face,
-          pitch: w.pitch,
+          x: at.x,
+          y: at.y,
+          face: at.face,
+          pitch: at.pitch,
           pitchV: w.pitchV,
           phase: w.phase + 1.3 * (k + 1),
           jaw: 0,

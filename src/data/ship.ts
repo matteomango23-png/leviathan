@@ -40,6 +40,18 @@ export const SHIP = {
    *  "fanno cacare"): spots along the keel (shares of the picture) that open the dark, and a faint wash. */
   lights: { under: { from: 0.25, to: 0.75, v: 0.8, below: 18, radius: 34, spots: 4, wash: 0.03 } },
 
+  /** The light under the still ship (block 5b, owner 9 ottobre 2026): a switch at the helm, only with the ship still;
+   *  it burns a little fuel. Every `pulseSeconds` the beasts in its sonar's range get a place under the hull to
+   *  swim to: the curious (calm and shy) at once, the hunters (aggressive) after `predatorsAfter` seconds of light.
+   *  Their places: this far each side of the ship and this deep under its keel (units); its glow (units). Tuning. */
+  underLight: {
+    litresPerMinute: 2,
+    pulseSeconds: 5,
+    predatorsAfter: 45,
+    spread: 120,
+    below: [25, 90] as [number, number],
+    glow: 90,
+  },
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
   /** The sonar (owner, 5 ottobre): switched on at the helm, it pings this often. */

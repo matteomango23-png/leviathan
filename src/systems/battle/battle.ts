@@ -66,16 +66,19 @@ export interface BattleState {
   over: null | 'won' | 'lost' | 'caught' | 'fled';
   /** The wild beast's move for this round (chosen at the start of the round). */
   foeMove: number;
+  /** Its pack waiting to come in, one after the other (block 5b), and the ones already beaten. */
+  reserve: Fighter[];
+  defeated: { form: Fighter['form']; level: number }[];
 }
 
 export const you = (s: BattleState): Fighter => s.team[s.active]!;
 
-export function createBattle(team: Fighter[], foe: Fighter): BattleState {
+export function createBattle(team: Fighter[], foe: Fighter, reserve: Fighter[] = []): BattleState {
   const active = Math.max(
     0,
     team.findIndex((f) => f.hp > 0),
   );
-  return { team, active, foe, fleeTries: 0, over: null, foeMove: 0 };
+  return { team, active, foe, fleeTries: 0, over: null, foeMove: 0, reserve, defeated: [] };
 }
 
 /** The wild beast's choice: its best move with PP against you, sometimes a random one. */
@@ -309,10 +312,21 @@ export function endRound(s: BattleState): Step[] {
     if (f.hp <= 0) steps.push({ kind: 'faint', side });
   }
   if (!s.over) {
-    if (s.foe.hp <= 0) s.over = 'won';
+    if (s.foe.hp <= 0 && !s.reserve.length)
+      s.over = 'won'; // its pack still to come: not yet
     else if (s.team.every((f) => f.hp <= 0)) s.over = 'lost';
   }
   return steps;
+}
+
+/** The beaten wild beast's pack sends the next one in (block 5b); false when none is left. */
+export function nextFoe(s: BattleState): boolean {
+  if (s.foe.hp > 0 || !s.reserve.length) return false;
+  const next = s.reserve.shift()!;
+  s.defeated.push({ form: s.foe.form, level: s.foe.level });
+  s.foe = next;
+  s.foeMove = 0;
+  return true;
 }
 
 /** After a faint on your side: the first beast still standing, or -1. */

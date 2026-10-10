@@ -21,6 +21,7 @@ import { HUNTS } from '../data/hunts';
 import type { HelmInfo } from './helmTypes';
 import { CLASS_PLURAL } from '../systems/echoClass';
 import { trackerTarget } from '../systems/trackerDart';
+import { drawnCount } from '../systems/ship/underLight';
 
 /** The sonar line at the helm: off, too fast, or the floor under the ship and the nearest echoes. */
 function sonarLine(g: GameState): string {
@@ -41,7 +42,9 @@ function sonarLine(g: GameState): string {
   const life = beasts.length
     ? [`${beasts.length} animali${sizes.length ? ` (${sizes.join(', ')})` : ''}`]
     : [];
-  return [`Sonar: fondale ${r.floorM} m`, ...life, ...odd].join(' · ');
+  // the light under the ship: how many it has called (block 5b)
+  const called = g.ship.lightOn ? [`luce accesa: ${drawnCount(g)} in arrivo`] : [];
+  return [`Sonar: fondale ${r.floorM} m`, ...life, ...called, ...odd].join(' · ');
 }
 
 /** The hunt you follow, in one line. */
@@ -96,6 +99,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       rangeKm: autonomyKm(s.fuel, shipModel(s).perKm, throttle),
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
+      lightOn: s.lightOn,
       objective: objectiveLine(g),
       hatchCanMove: hatchCanMove(s) && !boatOnRamp(g),
       hatches: hatchButtons(g),

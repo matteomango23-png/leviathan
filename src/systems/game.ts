@@ -38,6 +38,8 @@ import { atPort, discoverOutposts, nearWreck, openWreck, portAt, portStart } fro
 import { PORT, PORTS } from '../data/economy';
 import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
+import { stepPackHunt } from './beasts/packHunt';
+import { stepLight, toggleLight } from './ship/underLight';
 import { fireHarpoon, stepHarpoon } from './harpoon';
 import type { InputState } from './input';
 import { fireProjectileWeapon, stepProjectiles } from './weapons';
@@ -159,6 +161,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (picked) pickTarget(g, picked, events);
   if (input.clearTarget) clearTarget(g);
   if (input.helmCmd === 'tracker') shootTracker(g, events);
+  if (input.helmCmd === 'light') toggleLight(g, events);
+  stepLight(g, dt, events); // the light under the still ship calls the beasts (ship/underLight.ts)
   stepGadgets(g, dt, events);
   stepTracker(g, dt, events); // the trace of the beast you follow (trackerDart.ts)
   stepScan(g, dt, events); // the sonar's analysis of an echo (sonarScan.ts)
@@ -246,7 +250,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     const h = headOf(m);
     events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
   }
-  stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng);
+  // the packs hunt (beasts/packHunt.ts): the sardines flee from them too
+  const hunters = stepPackHunt(g, dt);
+  stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng, hunters);
   stepEndlessSchools(g.fish, g.map, d, g.rng, g.beasts.view);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {
