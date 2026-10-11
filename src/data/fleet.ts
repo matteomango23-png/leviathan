@@ -23,6 +23,9 @@ export interface ShipPicture {
   mouthV?: number;
   /** Where its head begins (share of the width): the open mouth replaces the picture from there to the bow. */
   mouthFromU?: number;
+  /** The running picture used only up to here from the stern (its propeller): a picture redrawn a little bigger by
+   *  the AI would make the whole ship grow when it starts (owner, 11 ottobre). */
+  propToU?: number;
 }
 
 /** The top of a smokestack on the picture (shares) and how big its smoke is (1 = the main one). */
@@ -522,6 +525,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         mouthU: 0.83,
         mouthV: 0.56,
         mouthFromU: 0.63,
+        propToU: 0.17,
       },
     },
   },

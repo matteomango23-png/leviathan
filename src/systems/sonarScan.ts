@@ -49,6 +49,12 @@ export const scanSeconds = (ship: { model: string }): number => SONAR.analyzeSec
 
 /** Touched on the screen: this echo is analysed (another one touched replaces it; the same one again lets it go). */
 export function lockEcho(s: ScanState, t: Target): void {
+  // already analysed (by you or the drone): nothing new to learn, it is just picked (owner, 11 ottobre); again, unpicked
+  if (s.results[targetKey(t)] !== undefined) {
+    const same = s.picked && targetKey(s.picked) === targetKey(t);
+    Object.assign(s, { lock: null, t: 0, picked: same ? null : t });
+    return;
+  }
   if (s.lock && targetKey(s.lock) === targetKey(t)) {
     s.lock = null;
     s.picked = null;

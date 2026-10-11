@@ -1,5 +1,13 @@
 # Progressi
 
+## Ritocchi (11 ottobre 2026) → v0.64.2
+
+- `.act-ctx.long` a pillola; `lockEcho` su un'eco già analizzata la sceglie soltanto; `sailBoat` legge lo scafo prima degli urti (un urto che lo rompe dà `boatWrecked`).
+- `ShipPictures`: `propToU` (Krill 0,17) → l'immagine in moto solo per la poppa, con `sternClosed` che sfuma; il resto non cambia.
+- `drawPropBubbles`: elica sopra la linea d'acqua → scie d'aria e spruzzi.
+- `main.ts`: controllo della misura ogni secondo, `visualViewport` e `pageshow`.
+- **Da provare sull'iPhone:** apri l'app già in orizzontale; Krill in partenza; motoscafo rotto contro un iceberg; "Aggancia".
+
 ## Ritocchi alla Krill Hunter (10 ottobre 2026) → v0.64.1
 
 - Bocca: aperta senza limite a nave ferma (anche a portelloni aperti), appetito `mouthFood` (25, ricarica in 600 s), messaggio `mouthFull`; `hatchCanMove` non dipende più dalla bocca.

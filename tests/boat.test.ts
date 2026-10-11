@@ -191,6 +191,30 @@ describe('the speedboat', () => {
     expect(ev.some((e) => e.type === 'boatIce')).toBe(true);
   });
 
+  it('fast into the ice its hull takes the blow; a blow that breaks it wrecks it (owner, 11 ottobre)', () => {
+    let at = 0;
+    for (let x = ENDLESS.startX; x < 400000 && !at; x += 50)
+      if (Array.from({ length: 10 }, (_, i) => x + i * 20).every((c) => iceIn(map, c, c + 20))) at = x;
+    const b = newBoat({
+      model: 'motoscafo_eh2',
+      x: at - 400,
+      face: 1,
+      fuel: 60,
+      drums: 0,
+      out: true,
+      aboard: true,
+    });
+    const w = { boat: b, map, diver: { x: 0, y: 0, vx: 0, vy: 0, face: 1 as const } };
+    const ev: GameEvent[] = [];
+    for (let t = 0; t < 6; t += DT) sailBoat(w, { throttle: 1, dir: 1, dive: 0 }, DT, ev);
+    expect(ev.some((e) => e.type === 'boatBumped')).toBe(true);
+    expect(b.hull).toBeLessThan(BOAT_MODELS.find((m) => m.id === 'motoscafo_eh2')!.hull);
+    Object.assign(b, { hull: 1, x: at - 400, speed: 0 });
+    const ev2: GameEvent[] = [];
+    for (let t = 0; t < 6; t += DT) sailBoat(w, { throttle: 1, dir: 1, dive: 0 }, DT, ev2);
+    expect(ev2.some((e) => e.type === 'boatWrecked')).toBe(true);
+  });
+
   it('at an outpost it fills its drums; docked again, they pour into the ship and its tank fills', () => {
     const { g, input } = boatOut();
     const outpost = OUTPOSTS[0]!;

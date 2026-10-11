@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.64.2 — Ritocchi (11 ottobre 2026)
+
+- **"Aggancia" e "A bordo":** il pulsante rotondo diventa una pillola larga quanto la parola.
+- **Sonar:** toccando un'eco già analizzata non riparte l'analisi: la scegli e basta (per il drone).
+- **Motoscafo rotto:** se un urto contro il ghiaccio lo rompe torna davvero rotto nella stiva, come quando si rompe per la tempesta (prima si continuava a guidarlo).
+- **Krill Hunter in moto:** non si "allarga" più quando parte; cambia solo l'elica.
+- **Elica fuori dall'acqua:** al posto delle bollicine, scie d'aria spostata e qualche spruzzo dove toccano il mare.
+- **Avvio già in orizzontale dalla Home:** il gioco ricontrolla la misura dello schermo e si sistema da solo, senza la fascia nera.
+
 ## v0.64.1 — Ritocchi alla Krill Hunter (10 ottobre 2026)
 
 - **La bocca resta aperta quanto vuoi** (basta la nave ferma, anche con i portelloni aperti): la lasci a pescare mentre vai a caccia col drone o col motoscafo, e la chiudi prima di ripartire. Mangia fino a 25 sardine, poi è sazia e riprende a mangiare man mano che le torna fame (25 ogni 10 minuti circa). Ripartendo si chiude da sola.

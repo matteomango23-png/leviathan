@@ -42,6 +42,14 @@ const onResize = (): void => {
   }, 60);
 };
 window.addEventListener('resize', onResize);
+window.visualViewport?.addEventListener('resize', onResize);
+window.addEventListener('pageshow', onResize);
+// opened from the Home screen already in landscape, iOS can report the wrong size first and never fire a resize (owner,
+// 11 ottobre: a black band at the bottom): a cheap look every second, resizing only if the screen really changed
+window.setInterval(() => {
+  const s = size();
+  if (Math.abs(s.w - game.scale.width) > 2 || Math.abs(s.h - game.scale.height) > 2) onResize();
+}, 1000);
 window.addEventListener('orientationchange', onResize);
 document.addEventListener('visibilitychange', onResize);
 game.events.once('ready', onResize);
