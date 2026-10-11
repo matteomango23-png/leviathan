@@ -3,6 +3,7 @@
 // "running" picture fades in (the jets of the Expedition Hunter 2's boat). A wake and bubbles behind it, no foam
 // dots (owner, 8 ottobre). Look only: systems/boat.ts moves it.
 import Phaser from 'phaser';
+import { SHIP } from '../data/ship';
 import { seaHeight, type SeaNow } from '../systems/sea';
 import { airborne } from '../systems/ride';
 import { SeaFx, waterOver } from './seaFx';
@@ -63,8 +64,10 @@ export class BoatView {
     // as it speeds up; flipped over it shows see-through, blinking, until it is set upright
     const bob = onWater ? -b.ride.h : 0;
     const pitch = onWater ? b.ride.p + k * 0.06 : 0;
-    const ghost = b.ride.flipped > 0 ? 0.25 + 0.2 * Math.sin(time * 18) : 1;
-    const top = b.y - m.picture.waterline * H + bob - k * 2;
+    // broken: it fades and sinks where it is before it goes back to the hold (owner, 11 ottobre)
+    const sink = b.sinkT > 0 ? 1 - b.sinkT / SHIP.wreckSinkSeconds : 0;
+    const ghost = (b.ride.flipped > 0 ? 0.25 + 0.2 * Math.sin(time * 18) : 1) * (1 - sink * 0.85);
+    const top = b.y - m.picture.waterline * H + bob - k * 2 + sink * H * 0.6;
     const running = Math.min(1, Math.max(0, (b.prop - 0.05) / 0.25));
     for (const [i, im] of pics.parts.entries()) {
       const alpha = (i >= 2 ? running : 1) * ghost * (i % 2 ? 0 : 1);

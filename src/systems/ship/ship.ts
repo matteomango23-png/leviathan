@@ -83,6 +83,8 @@ export interface ShipState {
   /** The light under the still ship (block 5b; not saved) and how long it has been on (seconds). */
   lightOn: boolean;
   lightT: number;
+  /** Seconds towards the next healing tick of the pool (ship/shipPool.ts; not saved). */
+  poolT: number;
   /** Seconds before the shallow-water message may show again. */
   shallowWarn: number;
   /** Ice broken by the bow, freezing again later (not saved). */
@@ -147,6 +149,7 @@ export function newShip(saved: SavedShip | null): ShipState {
     sonarOn: false,
     lightOn: false,
     lightT: 0,
+    poolT: 0,
     hull: Math.min(shipModel({ model: saved?.model ?? FIRST_SHIP }).hull, saved?.hull ?? Infinity),
     hullWait: 0,
     mouthOpen: false,

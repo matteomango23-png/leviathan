@@ -195,6 +195,16 @@
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  /* no scroll bar over the words (owner, 11 ottobre) */
+  scrollbar-width: none;
+}
+/* never squeezed by the column: a name and its rarity on two lines pushed the rarity over the numbers (owner,
+   11 ottobre) */
+.ship-info > * {
+  flex-shrink: 0;
+}
+.ship-info::-webkit-scrollbar {
+  display: none;
 }
 .ship-info-head {
   display: flex;
@@ -279,8 +289,10 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 8px 0 2px;
-  /* always in reach while the numbers scroll */
+  /* always in reach while the numbers scroll, on a solid band: the numbers never show under the buttons (owner,
+     11 ottobre: the fade was not enough) */
   position: sticky;
   bottom: 0;
-  background: linear-gradient(transparent, #081016 30%);
+  background: #081016;
+  box-shadow: 0 -14px 12px #081016;
 }

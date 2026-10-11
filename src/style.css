@@ -18,3 +18,11 @@ body {
   inset: 0;
   touch-action: none;
 }
+
+/* no scroll bars anywhere in the game: they ran over the words of the cards (owner, 11 ottobre); lists still scroll */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}

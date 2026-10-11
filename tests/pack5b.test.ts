@@ -70,6 +70,7 @@ describe('the light under the still ship', () => {
     const y = WORLD.surfaceY + 150;
     const calm = put(g, 'tartaruga_marina', g.ship.x + 400, y, 0);
     const hunter = put(g, 'squalo_tigre', g.ship.x - 400, y, 1);
+    g.rng = () => 0; // every chance taken
     toggleLight(g, []);
     stepLight(g, DT, []);
     expect(calm.drawn).not.toBeNull();

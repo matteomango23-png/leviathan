@@ -83,10 +83,20 @@ export function stepLight(g: LightWorld, dt: number, events: GameEvent[]): void 
   if (Math.floor(before / L.pulseSeconds) === Math.floor(s.lightT / L.pulseSeconds) && before > 0) return;
   const hunters = s.lightT >= L.predatorsAfter;
   if (hunters && before < L.predatorsAfter) events.push({ type: 'lightHunters' });
-  for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || w.drawn || w.boss || Math.abs(w.x - s.x) > reach || w.y <= WORLD.surfaceY) continue;
-    if (temperOf(w) === 'aggressive' && !hunters) continue;
+  let called = g.beasts.wilds.filter((w) => isInWater(w) && w.drawn).length;
+  // the nearer first, each by a chance (more for the near ones), never more than maxDrawn at once
+  const near = g.beasts.wilds
+    .filter(
+      (w) => isInWater(w) && !w.drawn && !w.boss && Math.abs(w.x - s.x) <= reach && w.y > WORLD.surfaceY,
+    )
+    .filter((w) => temperOf(w) !== 'aggressive' || hunters)
+    .sort((a, b) => Math.abs(a.x - s.x) - Math.abs(b.x - s.x));
+  for (const w of near) {
+    if (called >= L.maxDrawn) break;
+    const closeness = 1 - Math.abs(w.x - s.x) / reach;
+    if (g.rng() > L.drawChance * (0.5 + closeness)) continue;
     w.drawn = placeUnder(g);
+    called++;
   }
 }
 

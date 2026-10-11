@@ -19,6 +19,8 @@ import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
 import { renderReconTab } from './reconPanel';
+import { inPool } from '../systems/ship/shipPool';
+import { formName } from '../systems/beasts/forms';
 
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
@@ -151,7 +153,22 @@ export class Cockpit {
     else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
     else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else if (this.tab === 'drone') renderReconTab(this.body, this.g, this.session, (t) => this.say(t));
-    else renderTeamPanel(this.body, this.g, true);
+    else {
+      // the pool aboard: who is resting in it now (ship/shipPool.ts)
+      const places = shipModel(this.g.ship).pool;
+      const now = inPool(this.g).map((b) => formName(b.form));
+      el(
+        'p',
+        'pool-line',
+        this.body,
+        !places
+          ? 'Questa nave non ha una vasca: la squadra guarisce al porto.'
+          : now.length
+            ? `In vasca (${places} posti): ${now.join(', ')}`
+            : `Vasca (${places} posti): la squadra sta bene.`,
+      );
+      renderTeamPanel(this.body, this.g, true);
+    }
     this.body.scrollTop = keep;
   }
 

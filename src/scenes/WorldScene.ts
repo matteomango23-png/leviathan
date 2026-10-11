@@ -334,7 +334,8 @@ export class WorldScene extends Phaser.Scene {
     this.saveTimer += dt;
     if (this.saveTimer >= SAVE.autosaveSeconds) {
       this.saveTimer = 0;
-      if (!g.diver.dead && !g.beasts.battle) this.save();
+      // not while a broken vehicle is sinking: a moment later it is back in its hold
+      if (!g.diver.dead && !g.beasts.battle && !g.boat.sinkT && !g.sub.sinkT) this.save();
     }
 
     const d = g.diver;

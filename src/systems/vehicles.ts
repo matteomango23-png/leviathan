@@ -91,8 +91,13 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     if (!ship.engineOn) input.helm.throttle = 0;
     if (ship.engineOn !== was) events.push({ type: ship.engineOn ? 'engineStarted' : 'engineStopped' });
   }
+  // the broken ice freezes again only far from you and the ship, and never while the speedboat or the submarine is
+  // out of the hold: its way back stays open (owner, 11 ottobre: the speedboat got shut out by the ice)
+  const vehicleOut = (g.boat.owned && g.boat.bay !== 'docked') || (g.sub.owned && ship.bay !== 'docked');
   const far = (x: number): boolean =>
-    Math.abs(x - g.diver.x) > SHIP.refreezeDistance && Math.abs(x - ship.x) > SHIP.refreezeDistance;
+    !vehicleOut &&
+    Math.abs(x - g.diver.x) > SHIP.refreezeDistance &&
+    Math.abs(x - ship.x) > SHIP.refreezeDistance;
   const sea = g.weather ? weatherLook(g.weather) : CALM_SEA; // its waves and its currents (sea.ts)
   const t = g.time ?? 0; // the waves' clock (the views draw the same waves)
   const water = g.water ?? null;

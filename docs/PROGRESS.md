@@ -1,5 +1,18 @@
 # Progressi
 
+## Correzioni dell'11 ottobre (11 ottobre 2026) → v0.64.3
+
+- `ship/shipPool.ts`: `inPool` (le più ferite, quanti i posti `pool` del modello), `stepPool` (un tick al secondo, `SHIP.poolHealSeconds` 120, KO in piedi a `poolStandShare` 0,25, PP a vita piena). `restAboard` cura solo il sub. Riga "In vasca" nel Recinto del cockpit.
+- `vehicles.ts`: `far` falso finché un mezzo è fuori dalla stiva (ghiaccio aperto).
+- Mezzo rotto: `sinkT` su motoscafo e sottomarino (`SHIP.wreckSinkSeconds` 2, `wreckSinkSpeed`), evento `vehicleSinking`; il traino (`boatWrecked`/`towSub`) alla fine; le viste sfumano e affondano.
+- `underLight`: `drawChance` 0,35 (di più per i vicini), `maxDrawn` 4. `shipView.drawBeam` col sollevamento della nave (`lift`).
+- `beastsLayer`: bestie e compagni fuori da `g.beasts.view` nascosti.
+- Cantiere: `.ship-info > * { flex-shrink: 0 }` (la testata si schiacciava con la rarità a capo), barre nascoste ovunque, `.yard-foot` pieno.
+- Gabbiani: `BIRDS.altitude` 18–140, `climb`/`climbSeconds`, tuffo solo sotto `diveFrom`; `SKY_TOP` dalla telecamera della nave.
+- Test: `tests/fixes11.test.ts`; aggiornati fuel, pack5b, submarine, boat.
+- **Da provare sull'iPhone:** rompi il ghiaccio, esci col motoscafo, aspetta e torna; rompi un mezzo; luce a nave ferma con le onde; la vasca (Recinto del cockpit) con una nave che ce l'ha; cantiere; gabbiani dalla nave.
+- **Prossimo:** pagina di prova del nuovo squalo dai video (`Desktop/Megalodon nuovo modelo con video virata/`), in Plan mode.
+
 ## Ritocchi (11 ottobre 2026) → v0.64.2
 
 - `.act-ctx.long` a pillola; `lockEcho` su un'eco già analizzata la sceglie soltanto; `sailBoat` legge lo scafo prima degli urti (un urto che lo rompe dà `boatWrecked`).

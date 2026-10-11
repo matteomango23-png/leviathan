@@ -125,7 +125,8 @@ export class ShipView {
     else this.drawWake(s, k, time, sea);
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
-    this.drawBeam(s, time, dt);
+    // its light rides the waves with it (owner, 11 ottobre: the hull rocked, the light stood still)
+    this.drawBeam(s, top - this.restTop(s), time, dt);
     this.drawTug(s, top, dt);
   }
 
@@ -158,7 +159,13 @@ export class ShipView {
 
   /** The light under the still ship (block 5b; owner, 10 ottobre: on and off looked the same): a wide beam fanning
    *  down from the keel, flickering on and fading out. */
-  private drawBeam(s: ShipState, time: number, dt: number): void {
+  /** The top of its picture with no waves (the light was computed from it). */
+  private restTop(s: ShipState): number {
+    return WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
+  }
+
+  /** @param lift how far the waves move the ship from its resting place now (down > 0) */
+  private drawBeam(s: ShipState, lift: number, time: number, dt: number): void {
     const want = s.lightOn ? 1 : 0;
     this.beamK += (want - this.beamK) * Math.min(1, dt * (want ? 2.5 : 4));
     if (this.beamK < 0.01) return;
@@ -166,11 +173,11 @@ export class ShipView {
     const flicker = this.beamK < 0.95 && want ? 0.6 + 0.4 * Math.abs(Math.sin(time * 37)) : 1;
     const k = this.beamK * flicker;
     if (hasMouth(s)) {
-      this.drawMouthBeam(s, k * s.mouthT);
+      this.drawMouthBeam(s, k * s.mouthT, lift);
       return;
     }
     const B = SHIP.underLight;
-    const keel = WORLD.surfaceY + s.dive + shipDraft(s);
+    const keel = WORLD.surfaceY + s.dive + shipDraft(s) + lift;
     const half = shipLength(s) * 0.22;
     for (let i = 6; i >= 1; i--) {
       const w = half + (B.spread + B.glow) * (i / 6);
@@ -186,9 +193,10 @@ export class ShipView {
   }
 
   /** The Krill Hunter's light: out of its mouth, a blue-green beam fanning forward and down into the sea. */
-  private drawMouthBeam(s: ShipState, k: number): void {
+  private drawMouthBeam(s: ShipState, k: number, lift: number): void {
     if (k < 0.01) return;
-    const m = mouthPoint(s);
+    const at = mouthPoint(s);
+    const m = { x: at.x, y: at.y + lift };
     const len = SHIP.mouth.reach * 0.9;
     for (let i = 6; i >= 1; i--) {
       const spread = len * (0.18 + 0.32 * (i / 6));

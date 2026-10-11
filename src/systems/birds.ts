@@ -4,7 +4,7 @@
 // the edge of the screen, so none ever pops in or out in view. Bad weather sends them away (WeatherLook.birds).
 import { BIRDS } from '../data/weather';
 import { WORLD } from '../data/worldLayout';
-import { CAMERA } from '../data/diver';
+import { SHIP } from '../data/ship';
 import { makeRng, range, type Rng } from './math';
 
 export interface Bird {
@@ -65,7 +65,7 @@ export interface School {
   y: number;
 }
 
-const SKY_TOP = CAMERA.minY + 6; // birds never fly out of the top of the world
+const SKY_TOP = SHIP.camera.minY + 6; // birds never fly out of the top of the world
 
 export function createBirds(seed: number = BIRDS.seed): BirdsState {
   const rng = makeRng(seed);
@@ -224,7 +224,8 @@ function stepFlock(f: Flock, dt: number, view: BirdsView, wind: number, home: Sc
   const step = BIRDS.turnAccel * dt;
   f.vx += Math.max(-step, Math.min(step, dv));
   f.x += (f.vx + wind * BIRDS.windPush) * dt;
-  f.y = WORLD.surfaceY - f.altitude + Math.sin(f.t * 0.35) * 5;
+  const climb = 1 + BIRDS.climb * Math.sin((f.t / BIRDS.climbSeconds) * Math.PI * 2 + f.speed); // slowly up and down
+  f.y = Math.max(SKY_TOP + 10, WORLD.surfaceY - f.altitude * climb + Math.sin(f.t * 0.35) * 5);
 }
 
 function stepBird(
@@ -244,7 +245,12 @@ function stepBird(
     if (rng() < dt * BIRDS.glideChance) b.glide = range(rng, 1, 3);
   }
 
-  if (b.dive === 'none' && !f.leaving && rng() < dt * BIRDS.diveChancePerSec) {
+  if (
+    b.dive === 'none' &&
+    !f.leaving &&
+    WORLD.surfaceY - f.y < BIRDS.diveFrom &&
+    rng() < dt * BIRDS.diveChancePerSec
+  ) {
     const fish = schools.find(
       (sh) =>
         sh.y > surface && sh.y < surface + BIRDS.diveShoalDepth && Math.abs(sh.x - b.x) < BIRDS.diveRange,
