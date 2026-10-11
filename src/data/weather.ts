@@ -125,8 +125,13 @@ export const BIRDS = {
   turnAccel: 7,
   /** Units beyond the edge of the screen where flocks arrive and are put to rest (more than half a wingspan). */
   offscreenMargin: 25,
-  /** Height of a flock above the surface (world units; the surface is WORLD.surfaceY, the sky goes up to −60). */
-  altitude: [16, 46] as [number, number],
+  /** Height of a flock above the surface (world units; the surface is WORLD.surfaceY, the ship's view shows the sky up
+   *  to −150): low to high (owner, 11 ottobre: they only flew low), each flock rising and sinking slowly by up to
+   *  `climb` of its height over `climbSeconds`; only a low one plunges (`diveFrom`). */
+  altitude: [18, 140] as [number, number],
+  climb: 0.35,
+  climbSeconds: 40,
+  diveFrom: 60,
   speed: [13, 20] as [number, number], // units per second
   wingspanUnits: 10, // ~1.7 m: a large gull or a gannet (the diver is 12 units = 2 m)
   flapHz: [1.8, 2.6] as [number, number],

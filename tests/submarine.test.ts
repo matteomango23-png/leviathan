@@ -3,6 +3,7 @@
 // do not fight: ordinary beasts slip away, big hunters ram it; broken it is towed home; ports repair it; better
 // ones are bought; saved (v11, the old boat becomes the bathyscaphe).
 import { beforeAll, describe, expect, it } from 'vitest';
+import { SHIP } from '../src/data/ship';
 import { SUB_MODELS, SUBMARINE } from '../src/data/submarine';
 import { WORLD } from '../src/data/worldLayout';
 import { spawnWild } from '../src/systems/beasts/wildState';
@@ -137,6 +138,10 @@ describe('the submarine', () => {
     expect(ev.some((e) => e.type === 'subRammed')).toBe(true);
     expect(g.beasts.battle).toBeNull();
     expect(g.sub.hull).toBe(0);
+    // it sinks where it is for a moment, then it is towed (owner, 11 ottobre)
+    expect(ev).toContainEqual({ type: 'vehicleSinking', vehicle: 'sub' });
+    expect(ev.some((e) => e.type === 'subWrecked')).toBe(false);
+    for (let t = 0; t < SHIP.wreckSinkSeconds + 0.2; t += DT) ev = ev.concat(run(g, DT));
     expect(ev).toContainEqual({ type: 'subWrecked', teeth: 100 });
     expect(g.sub.x).toBe(SUBMARINE.mooredX);
     // at the port it is mended

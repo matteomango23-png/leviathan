@@ -6,13 +6,12 @@
 import { SUBMARINE } from '../data/submarine';
 import { stepSubAir } from './subAir';
 import { WORLD } from '../data/worldLayout';
-import { maxHpOf } from './beasts/team';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import type { TileMap } from './world/tileMap';
 import { PRESSURE } from '../data/diver';
 import { stepPressure } from './breath';
-import { HELM } from '../data/ship';
+import { HELM, SHIP } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
 import { subBody, subModel, subTopY, type SubState, type SubWorld } from './subState';
@@ -37,18 +36,11 @@ export function board(g: SubWorld, events: GameEvent[]): void {
   events.push({ type: 'boarded' });
 }
 
-/** Aboard the ship (and at the port): you breathe and heal, and your team rests. */
-export function restAboard(g: Pick<SubWorld, 'diver' | 'beasts'>): void {
+/** Aboard the ship: you breathe and heal (your team rests slowly in its pool, ship/shipPool.ts). */
+export function restAboard(g: Pick<SubWorld, 'diver'>): void {
   const d = g.diver;
   d.hp = d.maxHp;
   d.o2 = d.maxO2;
-  for (const t of g.beasts.team) {
-    t.hp = maxHpOf(t);
-    t.ppUsed = undefined;
-    t.status = undefined;
-    t.sleepTurns = undefined;
-    t.ko = false;
-  }
 }
 
 /** You get out: it stays here, still. */
@@ -140,6 +132,15 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   s.bumpWait = Math.max(0, s.bumpWait - dt);
   const m = subModel(s.model);
   if (!s.aboard) return false;
+  if (s.sinkT > 0) {
+    // broken and sinking: no levers, it goes slowly down, then it is towed
+    s.sinkT = Math.max(0, s.sinkT - dt);
+    Object.assign(s, { vx: 0, vy: 0 });
+    s.y += SHIP.wreckSinkSpeed * dt;
+    Object.assign(g.diver, { x: s.x, y: s.y, vx: 0, vy: 0 });
+    if (s.sinkT === 0) towSub(g, events);
+    return true;
+  }
   const d = g.diver;
   const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
   steer(s, input.helm, top, dt);
@@ -203,10 +204,17 @@ function damageHull(
   s.hull = Math.max(0, s.hull - amount);
   events.push({ type: 'subRammed', hull: s.hull, max, by, x: s.x, y: s.y });
   if (s.hull > 0) return;
-  // broken: towed home, you with it (a price in teeth, like losing your senses)
+  // broken: it sinks where it is for a moment (you see it go), then it is towed (towSub)
+  s.sinkT = SHIP.wreckSinkSeconds;
+  events.push({ type: 'vehicleSinking', vehicle: 'sub' });
+}
+
+/** The broken submarine towed home, you with it (a price in teeth, like losing your senses). */
+function towSub(g: SubWorld, events: GameEvent[]): void {
+  const s = g.sub;
   const teeth = Math.floor(g.gear.teeth * SUBMARINE.wreckTeethLoss);
   g.gear.teeth -= teeth;
-  Object.assign(s, { x: SUBMARINE.mooredX, y: subTopY(s), vx: 0, vy: 0 });
+  Object.assign(s, { x: SUBMARINE.mooredX, y: subTopY(s), vx: 0, vy: 0, sinkT: 0 });
   Object.assign(g.diver, { x: s.x, y: s.y });
   events.push({ type: 'subWrecked', teeth });
 }

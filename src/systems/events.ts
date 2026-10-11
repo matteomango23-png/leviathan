@@ -88,6 +88,7 @@ export type GameEvent =
   | { type: 'lightOn' }
   | { type: 'mouthOpen' }
   | { type: 'boatBumped'; hull: number }
+  | { type: 'vehicleSinking'; vehicle: 'boat' | 'sub' }
   | { type: 'mouthShut'; eaten: number }
   | { type: 'mouthNo' }
   | { type: 'mouthFull'; eaten: number }

@@ -53,6 +53,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return ['Ribaltato dall’onda! La barca si raddrizza, ma lo scafo ne risente.', 3.5];
     case 'boatHullHalf':
       return ['Il mare grosso sta rovinando lo scafo della barca: rallenta o torna alla nave.', 4];
+    case 'vehicleSinking':
+      return [
+        e.vehicle === 'boat' ? 'Il motoscafo è a pezzi e affonda…' : 'Il sottomarino è a pezzi e affonda…',
+        2,
+      ];
     case 'boatWrecked':
       return ['Lo scafo della barca ha ceduto: torna alla nave e va riparato al porto.', 5];
     case 'boatRepaired':

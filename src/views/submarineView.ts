@@ -2,6 +2,7 @@
 // bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
 // left for a few seconds, then fades; badly damaged it trails dark smoke.
 import Phaser from 'phaser';
+import { SHIP } from '../data/ship';
 import { CALM_SEA, type SeaWeather } from '../systems/sea';
 import { newRide, settleRide, stepRide } from '../systems/ride';
 import { subUnder } from '../systems/subAir';
@@ -75,7 +76,10 @@ export class SubmarineView {
       const key = `world-${art}`;
       if (this.img.texture.key !== key) this.img.setTexture(key);
       const sc = L / this.img.width;
+      // broken: it fades as it sinks (owner, 11 ottobre)
+      const fade = s.sinkT > 0 ? 0.2 + 0.8 * (s.sinkT / SHIP.wreckSinkSeconds) : 1;
       this.img
+        .setAlpha(fade)
         .setVisible(true)
         .setPosition(s.x, y)
         .setRotation(rock)

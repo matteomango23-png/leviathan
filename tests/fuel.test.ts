@@ -160,14 +160,17 @@ describe('razzo di soccorso', () => {
 });
 
 describe('cure solo sulla nave e al porto', () => {
-  it('salendo sulla nave la squadra guarisce; svenuto ti risvegli al timone', () => {
+  it('salendo sulla nave la squadra guarisce piano nella vasca; svenuto ti risvegli al timone', () => {
     const { g, input } = atTheHelm();
+    g.ship.model = 'eh1'; // a ship with a pool (the first one has none)
     input.helmCmd = 'dive';
     run(g, DT, input);
     g.beasts.team[0]!.hp = 1;
     input.action = true;
     run(g, DT, input);
     expect(g.ship.aboard).toBe(true);
+    expect(g.beasts.team[0]!.hp).toBeLessThan(5); // no longer healed at once (owner, 11 ottobre)
+    for (let t = 0; t < 3; t += DT) run(g, DT, emptyInput());
     expect(g.beasts.team[0]!.hp).toBeGreaterThan(1);
     input.helmCmd = 'dive';
     run(g, DT, input);

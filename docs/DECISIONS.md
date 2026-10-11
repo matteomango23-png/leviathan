@@ -896,3 +896,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Gli scafi galleggiano solo sulle onde del mare aperto, non sulle colonne:** leggendo anche l'acqua che spingevano, rimbalzavano sulla loro stessa onda di prua e scendevano nel cavo dietro (il "trampolino" visto dal proprietario). Le colonne restano solo da vedere, con un'altezza massima (`COLUMNS.maxHeight`). Il "correre contro l'onda" lancia in aria le barche leggere ma non le navi pesanti (`ride.follow`).
 - **Torbidità sullo schermo** pesata da quanto l'inquadratura è sott'acqua: durante il varo la telecamera scende un attimo sotto la superficie e prima lo schermo cambiava colore di colpo.
 - **Niente contorni disegnati:** la riga sottile era il contorno della superficie. Il mare è un riempimento pieno fino al cavo più profondo possibile per il meteo.
+
+## 11 ottobre 2026 — Vasca, mezzi rotti, luce che sceglie (v0.64.3)
+
+- **Vasca invece della cura istantanea a bordo:** salire sulla nave curava tutta la squadra, quindi la nave era un porto mobile. Ora cura piano e solo i posti della vasca del modello (dati `pool`, 0–5); il porto e il risveglio dopo una sconfitta restano la cura completa. Il tick è di un secondo (`poolT`), così i punti vita restano interi.
+- **Mezzo rotto che affonda:** il traino nella stiva avviene dopo `wreckSinkSeconds`; lo stato `sinkT` non si salva e il salvataggio automatico aspetta che il mezzo sia nella stiva.
+- **Luce a caso, con un tetto:** ogni impulso prova le bestie dalla più vicina con probabilità `drawChance·(0,5+vicinanza)`, al massimo `maxDrawn` chiamate. Meno bestie insieme sotto la nave alleggerisce anche il disegno; in più `BeastsLayer` nasconde ciò che è fuori dall'inquadratura (la logica continua a girare).

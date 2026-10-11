@@ -51,6 +51,10 @@ export const SHIP = {
     spread: 120,
     below: [25, 90] as [number, number],
     glow: 90,
+    /** Not every beast around comes (owner, 11 ottobre): each a chance at each pulse, the nearer the likelier, and
+     *  at most this many called at once. */
+    drawChance: 0.35,
+    maxDrawn: 4,
   },
   /** The ships' hull (block 5c, owner 10 ottobre 2026). A U-Boat under water bumping rock faster than `bumpFrom`
    *  (units/s) takes `perSpeed` a unit/s above it (once every `bumpWait` s) and bounces back by `bounce`; in a storm
@@ -85,6 +89,14 @@ export const SHIP = {
    *  open as long as you like, lights the sea, draws the sardine schools within `reach` (units) and swallows the fish
    *  within `bite` of it; its appetite is `maxSardines`, refilled over `rechargeSeconds` (no endless feast). Tuning. */
   mouth: { maxSardines: 25, rechargeSeconds: 600, reach: 420, bite: 22, openSeconds: 0.8 },
+  /** A speedboat or a submarine broken: it stops, smokes and sinks this many seconds where it is, then it is found
+   *  broken in the hold (owner, 11 ottobre: it vanished at once). */
+  wreckSinkSeconds: 2,
+  wreckSinkSpeed: 8,
+  /** The pool aboard (ship/shipPool.ts): seconds for a beast in it from nothing to full health, and the share of
+   *  health at which a KO beast stands again (owner, 11 ottobre: no more healing everyone at once). Tuning. */
+  poolHealSeconds: 120,
+  poolStandShare: 0.25,
   /** The tug of the rescue flare (public/world/rimorchiatore.webp): its length, waterline, gap ahead of the bow. */
   tug: { art: 'rimorchiatore', length: 110, waterline: 0.66, gap: 26, seconds: 9 },
   /** The sonar (owner, 5 ottobre): switched on at the helm, it pings this often. */

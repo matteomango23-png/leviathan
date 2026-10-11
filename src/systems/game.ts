@@ -42,6 +42,7 @@ import { stepPackHunt } from './beasts/packHunt';
 import { stepLight, toggleLight } from './ship/underLight';
 import { hasMouth, stepMouth, toggleMouth } from './ship/krillMouth';
 import { stepShipRams } from './ship/shipHull';
+import { stepPool } from './ship/shipPool';
 import { fireHarpoon, stepHarpoon } from './harpoon';
 import type { InputState } from './input';
 import { fireProjectileWeapon, stepProjectiles } from './weapons';
@@ -171,6 +172,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepLight(g, dt, events); // the light under the still ship calls the beasts (ship/underLight.ts)
   stepMouth(g, dt, events);
   stepShipRams(g, events); // giants ramming the ship (ship/shipHull.ts)
+  stepPool(g, dt); // the team resting slowly in the pool aboard (ship/shipPool.ts)
   stepGadgets(g, dt, events);
   // the drone back: its report names the beasts on the sonar (block 5, 10 ottobre)
   if (events.some((e) => e.type === 'reconDone') && g.gadgets.recon.report)

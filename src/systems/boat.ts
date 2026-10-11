@@ -42,6 +42,8 @@ export interface BoatState {
   prop: number;
   /** Seconds before the "ice" message may show again. */
   iceWarn: number;
+  /** Broken: seconds left sinking where it is before it goes back to the hold (not saved; 0: not sinking). */
+  sinkT: number;
   /** Its hull (data/sea.ts boatWear; saved): at zero it goes back broken to the hold. */
   hull: number;
   /** Spare parts for the ship it carries (block 5c; saved), hull points. */
@@ -89,6 +91,7 @@ export function newBoat(saved: SavedBoat | null): BoatState {
     engineOn: false,
     prop: 0,
     iceWarn: 0,
+    sinkT: 0,
     hull: clamp(saved?.hull ?? m.hull, m.hull),
     ride: newRide(),
   };
@@ -141,6 +144,14 @@ export function sailBoat(
   const b = g.boat;
   if (!b.owned || b.bay !== 'out') {
     settleRide(b.ride);
+    return;
+  }
+  if (b.sinkT > 0) {
+    // broken and sinking where it is, then back to the hold (vehicles.ts on boatWrecked)
+    b.speed = 0;
+    b.sinkT = Math.max(0, b.sinkT - dt);
+    if (b.aboard) Object.assign(g.diver, { x: b.x, y: b.y - 4, vx: 0, vy: 0 });
+    if (b.sinkT === 0) events.push({ type: 'boatWrecked' });
     return;
   }
   // its hull before this step: every blow below (ice, capsizing, wear) can wreck it (owner, 11 ottobre: broken by an
@@ -209,7 +220,10 @@ export function sailBoat(
   // fast through a rough sea the hull wears: half gone, a warning; gone, it goes back broken to the hold (vehicles.ts)
   if (b.aboard) b.hull = Math.max(0, b.hull - boatWear(b.speed / boatTopSpeed(b), sea, dt));
   if (was > m.hull / 2 && b.hull <= m.hull / 2) events.push({ type: 'boatHullHalf' });
-  if (was > 0 && b.hull <= 0) events.push({ type: 'boatWrecked' });
+  if (was > 0 && b.hull <= 0) {
+    b.sinkT = SHIP.wreckSinkSeconds; // it sinks for a moment where it is (owner, 11 ottobre)
+    events.push({ type: 'vehicleSinking', vehicle: 'boat' });
+  }
 }
 
 /** Coming into a harbour: its hull mended, for the teeth you have. */

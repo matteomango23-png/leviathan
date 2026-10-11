@@ -682,3 +682,10 @@
 .dial-value.word {
   font-size: 11px;
 }
+
+/* the pool aboard: who rests in it (ship/shipPool.ts) */
+.pool-line {
+  margin: 0 0 8px;
+  color: #9fd3e0;
+  font-size: 13px;
+}

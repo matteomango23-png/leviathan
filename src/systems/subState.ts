@@ -28,6 +28,8 @@ export interface SubState {
   deepWarn: number;
   /** Seconds before running into rock can damage it again. */
   bumpWait: number;
+  /** Broken: seconds left sinking where it is before it is towed (not saved; 0: not sinking). */
+  sinkT: number;
   /** Deeper than its model allows: 1 = safe … 0 = the hull is crushed little by little (breath.ts). */
   pressure: number;
   pressureHurt: number;
@@ -67,6 +69,7 @@ export function newSub(saved: SavedSub | null): SubState {
     aboard: false,
     deepWarn: 0,
     bumpWait: 0,
+    sinkT: 0,
     fuel: saved ? clamp(saved.fuel, 0, subModel(model).tank) : subModel(model).tank,
     fuelWarned: false,
     parts: Math.max(0, saved?.parts ?? 0),

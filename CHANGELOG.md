@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.64.3 — Correzioni dell'11 ottobre (11 ottobre 2026)
+
+- **Vasca della nave:** a bordo la squadra non guarisce più tutta e subito. Nella vasca si curano piano (circa 2 minuti da zero a piena) solo tante bestie quanti i suoi posti, le più ferite per prime; una bestia KO si rialza a un quarto di vita. Nel Recinto del cockpit vedi chi è in vasca. L'Aurelia non ha la vasca. Il porto e il risveglio dopo una sconfitta curano ancora tutto subito.
+- **Ghiaccio:** il canale aperto dalla nave non si richiude finché il motoscafo o il sottomarino sono fuori: la strada per tornare resta libera.
+- **Mezzo rotto:** motoscafo e sottomarino a pezzi restano dove sono 2 secondi, affondano e svaniscono, poi li ritrovi rotti nella stiva.
+- **Luce sotto la nave:** non chiama più tutti i pesci della zona: ogni volta qualcuno sì e qualcuno no (più facilmente i vicini), al massimo 4 bestie insieme. Il fascio ora segue la nave che sale e scende sulle onde.
+- **Più leggero:** le bestie e i loro branchi fuori dall'inquadratura non vengono disegnati.
+- **Cantiere:** niente barra di scorrimento nelle schede, pulsanti su una fascia scura piena; la rarità non copre più le statistiche quando va a capo (es. U-Boat Whale).
+- **Gabbiani:** volano a quote diverse, anche molto alti, e salgono e scendono piano; si tuffano solo quando sono bassi.
+
 ## v0.64.2 — Ritocchi (11 ottobre 2026)
 
 - **"Aggancia" e "A bordo":** il pulsante rotondo diventa una pillola larga quanto la parola.

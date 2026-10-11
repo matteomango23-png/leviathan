@@ -211,8 +211,16 @@ describe('the speedboat', () => {
     expect(b.hull).toBeLessThan(BOAT_MODELS.find((m) => m.id === 'motoscafo_eh2')!.hull);
     Object.assign(b, { hull: 1, x: at - 400, speed: 0 });
     const ev2: GameEvent[] = [];
-    for (let t = 0; t < 6; t += DT) sailBoat(w, { throttle: 1, dir: 1, dive: 0 }, DT, ev2);
-    expect(ev2.some((e) => e.type === 'boatWrecked')).toBe(true);
+    let sank = -1;
+    let wrecked = -1;
+    for (let t = 0; t < 6; t += DT) {
+      sailBoat(w, { throttle: 1, dir: 1, dive: 0 }, DT, ev2);
+      if (sank < 0 && ev2.some((e) => e.type === 'vehicleSinking')) sank = t;
+      if (wrecked < 0 && ev2.some((e) => e.type === 'boatWrecked')) wrecked = t;
+    }
+    // it sinks where it is for a moment before it is back in the hold (owner, 11 ottobre)
+    expect(sank).toBeGreaterThanOrEqual(0);
+    expect(wrecked - sank).toBeCloseTo(SHIP.wreckSinkSeconds, 0);
   });
 
   it('at an outpost it fills its drums; docked again, they pour into the ship and its tank fills', () => {

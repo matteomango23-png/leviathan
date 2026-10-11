@@ -83,6 +83,10 @@ export class BeastsLayer {
     const dt = Number.isNaN(this.lastTime) ? 1 : Math.max(0, Math.min(1, time - this.lastTime));
     this.lastTime = time;
     this.glow.clear();
+    // out of the picture nothing is drawn (owner, 11 ottobre: slow with many beasts and their packs under the ship)
+    const v = g.beasts.view;
+    const unseen = (x: number, y: number, len: number): boolean =>
+      !!v && (x + len < v.x || x - len > v.x + v.width || y + len < v.y || y - len > v.y + v.height);
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
       const mates = this.school[i] ?? [];
@@ -112,23 +116,25 @@ export class BeastsLayer {
           );
         }
       }
-      s.update({
-        key: spriteOf(w.form),
-        pale: isPaleSprite(w.form),
-        x: w.x,
-        y: w.y,
-        face: w.face,
-        pitch: w.pitch,
-        pitchV: w.pitchV,
-        phase: w.phase,
-        jaw: w.jaw,
-        length: w.length,
-        girth: speciesOf(w.form).girth,
-        whale: tailUpDown(w.form),
-        flash: w.flash,
-        alpha: 1,
-        shade,
-      });
+      if (unseen(w.x, w.y, w.length)) s.hide();
+      else
+        s.update({
+          key: spriteOf(w.form),
+          pale: isPaleSprite(w.form),
+          x: w.x,
+          y: w.y,
+          face: w.face,
+          pitch: w.pitch,
+          pitchV: w.pitchV,
+          phase: w.phase,
+          jaw: w.jaw,
+          length: w.length,
+          girth: speciesOf(w.form).girth,
+          whale: tailUpDown(w.form),
+          flash: w.flash,
+          alpha: 1,
+          shade,
+        });
       // its pack: as many as are left (block 5b), each following the leader's wake a moment behind
       const schoolSize = Math.min(BEAST_TEMPER[w.form.speciesId]?.school ?? 0, w.pack);
       const trail = (this.trails[i] ??= new PackTrail());
@@ -139,7 +145,7 @@ export class BeastsLayer {
           return;
         }
         const at = trail.mate(time, k, w.length, time);
-        if (!at) {
+        if (!at || unseen(at.x, at.y, w.length)) {
           m.hide();
           return;
         }

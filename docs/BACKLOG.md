@@ -97,6 +97,9 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 - Squadra solo al porto? (il porto diventa la preparazione della spedizione).
 - Zona iniziale: bestie fino a circa livello 30 per imparare e far crescere le bestie basse.
 
+- **Vasca (fatto in parte, v0.64.3):** oggi a bordo si curano piano le più ferite, quanti i posti della vasca. Da fare qui: scegliere chi va in vasca e cambiare la squadra dalla vasca.
+- **Da pensare (proprietario, 11 ottobre):** catturare uno dopo l'altro i megapredatori di livello alto stando sotto la nave (che aiuta), senza mai far crescere le proprie bestie. Serve un freno (es. la nave non aiuta in battaglia, livello massimo domabile legato alla squadra, conchiglie adatte).
+
 ## Blocco 7 — Ruoli delle bestie, nuoto, cavalcature
 
 - **Deciso l'8 ottobre:** cavalcature = mezzo per esplorare (solo le specie che rendono bene in groppa); nuoto = modalità di dettaglio (posti stretti, raccolta, silenzio); supporto = un potere in mare ciascuna.
@@ -121,6 +124,10 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 - Il giocatore scopre navi, strutture, bestie imprigionate, esperimenti, mutanti, combattimenti, produzione di olio; le bestie domate servono a sabotare l'impero (affondare navi, distruggere strutture e laboratori, liberare bestie, battere i suoi cacciatori).
 - Decisione morale: A) noi buoni, evoluzione naturale; B) anche noi modifichiamo (DNA, reperti, reliquie abissali). Proposta di Claude: una via di mezzo, il villain con la chimica e noi con le reliquie abissali (le stesse forze, usate diversamente), coerente con lo stile delle evoluzioni (forme preistoriche, rune).
 - Equipaggio: solo se ha funzioni forti; forse come sistema dei potenziamenti.
+
+## Avamposti (proprietario, 11 ottobre 2026; fase futura)
+
+- Meno avamposti, ognuno con uno scopo suo e diverso. Esempio: in uno si dorme per cambiare il tempo, con una ricarica lunga. Poche cose per avamposto, per non barare.
 
 ## Esperienza e personalizzazione (quando c'è spazio)
 - All'inizio: nome del giocatore, piccola personalizzazione, colori del sottomarino.
