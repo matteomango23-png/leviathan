@@ -31,6 +31,8 @@ export default defineConfig(({ command }) => ({
       workbox: {
         // precache everything the game needs, so it plays with no connection
         globPatterns: ['**/*.{js,css,html,webp,png,jpg,svg,ico,json,woff2}'],
+        // the test pages (public/prove/, e.g. the shark from the videos) are not part of the game: never downloaded by it
+        globIgnores: ['prove/**'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         navigateFallback: 'index.html',

@@ -13,3 +13,4 @@ A parte il carattere, il gioco non usa asset esterni: fondali, sub e pesci sono 
 | Libreria | Uso | Licenza |
 |---|---|---|
 | [Phaser](https://phaser.io) | motore di gioco | MIT |
+| [ffmpeg](https://ffmpeg.org) via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static) | solo sul PC, per `npm run art:video` (fotogrammi dai video); non è nel gioco | LGPL/GPL (binario), pacchetto MIT |

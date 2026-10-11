@@ -902,3 +902,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Vasca invece della cura istantanea a bordo:** salire sulla nave curava tutta la squadra, quindi la nave era un porto mobile. Ora cura piano e solo i posti della vasca del modello (dati `pool`, 0–5); il porto e il risveglio dopo una sconfitta restano la cura completa. Il tick è di un secondo (`poolT`), così i punti vita restano interi.
 - **Mezzo rotto che affonda:** il traino nella stiva avviene dopo `wreckSinkSeconds`; lo stato `sinkT` non si salva e il salvataggio automatico aspetta che il mezzo sia nella stiva.
 - **Luce a caso, con un tetto:** ogni impulso prova le bestie dalla più vicina con probabilità `drawChance·(0,5+vicinanza)`, al massimo `maxDrawn` chiamate. Meno bestie insieme sotto la nave alleggerisce anche il disegno; in più `BeastsLayer` nasconde ciò che è fuori dall'inquadratura (la logica continua a girare).
+
+## 11 ottobre 2026 — Fotogrammi dai video per le bestie enormi (prova)
+
+- **ffmpeg-static (solo sviluppo):** sul PC non c'è ffmpeg e serve leggere gli mp4 del proprietario in modo ripetibile; il pacchetto porta il programma già pronto, gira solo con `npm run art:video` e non entra nel gioco. Lo scontorno riusa `removeGreenBackground` e `keepLargest` dello script delle immagini.
+- **Fotogrammi invece della spina dorsale, solo da provare:** la virata di un video è una virata vera (di fronte, in prospettiva), che con un'immagine piatta non si può fare (per questo oggi le bestie non virano in vista). Costo: circa 5 MB e circa 190 immagini per bestia, contro un'immagine sola. La pagina di prova è fuori dalla precache della PWA (`globIgnores: ['prove/**']`); portarla nel gioco è una decisione a parte del proprietario.

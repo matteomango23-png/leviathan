@@ -1,5 +1,17 @@
 # Progressi
 
+## Prova dello squalo dai video (11 ottobre 2026)
+
+- `npm run art:video` (`scripts/art/video.ts`, tagli in `scripts/art/videoClips.ts`, dipendenza di sviluppo `ffmpeg-static`): dai video in `art-inbox/video/<id>/` ai fotogrammi in `public/prove/<id>/`.
+- Megalodonte d'osso: nuoto in anello (dal video 1), virata da destra a sinistra passando di fronte (video 2, 10,25–18,75 s). Il video 3 ha particelle sul fondo e non è usato.
+- Pagina `public/prove/squalo/index.html` (dalla prova realistica):
+  - **Animazione video/oggi:** il confronto con le strisce sulla spina dorsale;
+  - **Vetrina:** lo squalo va avanti e indietro davanti a te e vira in vista;
+  - **Pattuglia:** le regole del gioco, ma con la virata visibile;
+  - lunghezza 6, 9 o 18 m, Lento, Vira.
+- Fuori dalla precache. Il gioco non cambia.
+- **Da decidere col proprietario:** portare la virata dai video nel gioco per le bestie enormi (cambia la regola "non si girano in vista").
+
 ## Correzioni dell'11 ottobre (11 ottobre 2026) → v0.64.3
 
 - `ship/shipPool.ts`: `inPool` (le più ferite, quanti i posti `pool` del modello), `stepPool` (un tick al secondo, `SHIP.poolHealSeconds` 120, KO in piedi a `poolStandShare` 0,25, PP a vita piena). `restAboard` cura solo il sub. Riga "In vasca" nel Recinto del cockpit.
