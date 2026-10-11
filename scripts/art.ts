@@ -367,6 +367,7 @@ async function main(): Promise<void> {
   let errors = 0;
   for (const file of files) {
     if (file.startsWith('_')) continue; // set aside by hand (e.g. a discarded alternative)
+    if (file === 'video') continue; // the videos of npm run art:video
     const extra = parseExtraName(file);
     if (extra) {
       const dest = extraDest(outRoot, extra);

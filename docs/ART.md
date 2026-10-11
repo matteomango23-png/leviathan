@@ -164,3 +164,16 @@ Dopo `npm run art` lancia anche **`npm run shapes`**: legge i profili in `public
 - **Fondo:** può essere verde o bianco, lo script lo legge dai bordi.
 - **Inquadratura:** le due immagini devono avere la stessa inquadratura (stessa misura, nave nello stesso punto). Non vengono ritagliate, così nel gioco combaciano mentre il portellone si apre.
 - **Punti della nave:** la linea d'acqua, il portellone, la rampa e il timone stanno in `SHIP.picture` (`src/data/ship.ts`), come frazioni dell'immagine. Se una nuova immagine li ha altrove, si cambiano lì.
+
+## Animali enormi da video (11 ottobre 2026, prova)
+
+Per le bestie enormi si può animare il nuoto e la virata da un video invece che dall'immagine a strisce sulla spina dorsale. Prova: `public/prove/squalo/` (link `/leviathan/prove/squalo/`, altri animali con `?id=<id>`).
+
+- **Video da chiedere a Gemini:** fondo verde pieno e uniforme, senza particelle né bolle; l'animale intero e sempre dentro l'inquadratura, telecamera ferma.
+  1. Nuoto sul posto di profilo, rivolto a destra, almeno 5-10 s.
+  2. Virata: da profilo a destra, verso la telecamera, fino al profilo a sinistra.
+  La virata opposta si ottiene specchiando.
+- **Dove metterli:** `art-inbox/video/<id>/` (i video restano sul PC, non nel repository).
+- **Tagli:** in `scripts/art/videoClips.ts` (secondi di inizio e fine, fotogrammi al secondo, larghezza).
+- **Comando:** `npm run art:video` (o `-- --only=<id>`). Toglie il verde, tiene solo l'animale, ritaglia ogni clip su un riquadro unico, trova l'anello del nuoto e salva in `public/prove/<id>/<clip>/` i fotogrammi webp e `<clip>.json` (velocità, numero, misure, sagoma iniziale e finale).
+- **Peso del megalodonte d'osso:** nuoto 86 fotogrammi 720×278 (2,7 MB), virata 102 fotogrammi 720×294 (2,2 MB).
