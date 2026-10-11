@@ -15,8 +15,9 @@ export interface VideoClip {
   /** A swim: the script finds the stretch that closes on itself best (at least `minLoop` seconds). */
   loop?: boolean;
   minLoop?: number;
-  /** Where it faces at the start of the clip (the videos face right). */
+  /** Where it faces at the start of the clip and at its end (a turn; the same if not given). The videos face right. */
   face: 1 | -1;
+  endFace?: 1 | -1;
 }
 
 export const VIDEO_ANIMALS: Record<string, VideoClip[]> = {
@@ -32,13 +33,25 @@ export const VIDEO_ANIMALS: Record<string, VideoClip[]> = {
       minLoop: 1.5,
       face: 1,
     },
-    // from its right profile, towards you, to its left profile
+    // the quick turn of the third video (owner, 11 ottobre: the slow one looked at the camera too long): from its left
+    // profile to its right one in about two seconds; mirrored for the other way
     {
       name: 'virata',
+      file: 'gemini_generated_video_C6FC8D1E.mp4',
+      from: 30.5,
+      to: 33.3,
+      fps: 24,
+      width: 720,
+      face: -1,
+      endFace: 1,
+    },
+    // the bite: in profile it opens its jaws before the slow turn of the second video (played open, then back closed)
+    {
+      name: 'morso',
       file: 'gemini_generated_video_734C9C25.mp4',
-      from: 10.25,
-      to: 18.75,
-      fps: 12,
+      from: 9.9,
+      to: 10.65,
+      fps: 24,
       width: 720,
       face: 1,
     },

@@ -26,6 +26,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .act{border-radius:50%;background:radial-gradient(circle at 50% 38%,rgba(46,66,74,.55),rgba(3,10,16,.85));border:2px solid rgba(176,138,74,.85);color:var(--lamp);font:700 13px -apple-system,system-ui,sans-serif}
 #bTurn{width:78px;height:78px}
 #bDash{width:58px;height:58px}
+#bBite{width:66px;height:66px}
 #info{position:absolute;left:calc(12px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--muted);text-shadow:0 1px 3px #000;pointer-events:none;max-width:55%}
 #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--lamp);background:var(--bg)}
 </style>
@@ -40,7 +41,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
     <button class="tb" id="tSlow">Lento</button>
     <button class="tb on" id="tLamp">Lampada</button>
   </div>
-  <div id="btns"><button class="act" id="bDash">Scatto</button><button class="act" id="bTurn">Vira</button></div>
+  <div id="btns"><button class="act" id="bDash">Scatto</button><button class="act" id="bBite">Morso</button><button class="act" id="bTurn">Vira</button></div>
   <div id="info"></div>
   <div id="load">Carico i fotogrammi…</div>
 </div>
@@ -106,7 +107,7 @@ const sharkLen=()=>LENGTHS[li]*metre();
 
 const D={x:0,y:0,vx:0,vy:0,face:1,kick:0,dash:0};
 // the shark: st enter/cruise/exit/bolt/hidden (patrol) or show (showcase); turning: the turn clip playing
-const S={x:0,y:0,vx:0,vy:0,face:1,grow:1,phase:0,pitch:0,pitchV:0,st:'hidden',t:0.6,dy:0,onT:0,followT:0,frame:0,turn:null};
+const S={x:0,y:0,vx:0,vy:0,face:1,clip:null,want:null,ghost:null,last:null,phase:0,pitch:0,pitchV:0,st:'hidden',t:0.6,dy:0,onT:0,followT:0,frame:0};
 const cam={x:0,y:0};
 let touch=null;
 const wrap=$('wrap');
@@ -114,11 +115,12 @@ wrap.addEventListener('pointerdown',e=>{if(e.target.tagName==='BUTTON')return;to
 wrap.addEventListener('pointermove',e=>{if(touch)touch={x:e.clientX*DPR,y:e.clientY*DPR};});
 const end=()=>{touch=null;};wrap.addEventListener('pointerup',end);wrap.addEventListener('pointercancel',end);
 $('bDash').addEventListener('pointerdown',e=>{e.stopPropagation();D.dash=0.35;});
-$('bTurn').addEventListener('pointerdown',e=>{e.stopPropagation();startTurn();});
+$('bTurn').addEventListener('pointerdown',e=>{e.stopPropagation();request('virata');});
+$('bBite').addEventListener('pointerdown',e=>{e.stopPropagation();request('morso');});
 
 const fish=[],snow=[];
 function restart(){
-  S.turn=null;S.frame=0;
+  S.clip=null;S.want=null;S.ghost=null;S.frame=0;
   if(showcase){S.st='show';S.x=D.x+D.face*W*0.12;S.y=D.y-H*0.05;S.vx=S.face*1.2*U();S.vy=0;}
   else{S.st='hidden';S.t=0.4;}
 }
@@ -129,29 +131,62 @@ function init(){
 }
 let time=0,school={x:0,y:0,t:0};
 
-// ---- the turn of the video, in view: the shark slows down, the clip plays where it is, then it swims off the other way
-function startTurn(){
-  if(!video||S.turn||S.st==='hidden'||!clips.virata)return;
-  const c=clips.virata,sc=sharkLen()/(c.first[2]-c.first[0]);
-  // the frame placed so that the first silhouette's centre is where the shark is (mirrored when it faces left)
-  const fx=(c.first[0]+c.first[2])/2,fy=(c.first[1]+c.first[3])/2;
-  S.turn={t:0,face:S.face,sc,ox:S.x,oy:S.y,fx,fy};
+// ---- the video clips (owner, 11 ottobre: "stesse grandezze", no jump at the end, a bite that opens smoothly)
+// The swim is drawn at a fixed scale around a fixed point of its frames. A clip (turn, bite) starts only on a swim frame
+// that looks like one of its first frames (clip.swimFrom: pairs [swim frame, clip frame], from npm run art:video), at
+// the same size and in the same place as the swim's silhouette; a turn hands back to the swim frame that looks like its
+// last one (clip.swimTo), again at the same size and place. A short cross-fade covers what is left.
+const box=(c,i)=>c.boxes[i],mid=b=>[(b[0]+b[2])/2,(b[1]+b[3])/2],len=b=>b[2]-b[0];
+let SW=null; // the swim's fixed point and its usual length (median of its frames)
+function swimGeo(){
+  const c=clips.nuoto,m=a=>a.slice().sort((x,y)=>x-y)[a.length>>1];
+  SW={len:m(c.boxes.map(len)),ax:m(c.boxes.map(b=>mid(b)[0])),ay:m(c.boxes.map(b=>mid(b)[1]))};
 }
-function turnPose(){
-  const c=clips.virata,T=S.turn,n=c.frames;
-  const i=Math.min(n-1,Math.floor(T.t*c.fps*turnRate()));
-  return {i,done:T.t*c.fps*turnRate()>=n};
+const swimScale=()=>sharkLen()/SW.len;
+const swimIndex=()=>((Math.floor(S.frame)%clips.nuoto.frames)+clips.nuoto.frames)%clips.nuoto.frames;
+/** Where swim frame i's silhouette centre is in the world, facing this way. */
+function swimCentre(i,face){const [x,y]=mid(box(clips.nuoto,i)),sc=swimScale();return [S.x+(x-SW.ax)*sc*face,S.y+(y-SW.ay)*sc];}
+function request(name){if(video&&!S.clip&&S.st!=='hidden'&&clips[name])S.want={name,t:0};}
+function tryStart(dt){
+  const w=S.want;if(!w)return;w.t+=dt;
+  const c=clips[w.name],f=swimIndex();
+  let pair=c.swimFrom.filter(q=>q[0]===f).sort((a,b)=>a[1]-b[1])[0];
+  if(!pair&&w.t<2.5)return; // wait for a swim frame that matches (the swim beats faster meanwhile, see advance)
+  const matched=!!pair;
+  if(!pair)pair=[f,0];
+  const k0=pair[1],xs=S.face*c.face,P=swimCentre(f,S.face);
+  const sA=swimScale()*len(box(clips.nuoto,f))/len(box(c,k0));
+  const turn=(c.endFace??c.face)!==c.face;
+  const sB=turn?swimScale()*len(box(clips.nuoto,c.swimTo))/len(box(c,c.frames-1)):sA;
+  S.ghost=S.last&&{...S.last,a:matched?0.5:1.6}; // no match in time: a longer cross-fade
+  S.clip={name:w.name,c,k0,t:0,xs,P,c0:mid(box(c,k0)),sA,sB,turn,swimAt:f};S.want=null;
+  if(!turn)S.vx+=S.face*3*U(); // the bite: a lunge forward
 }
-const turnRate=()=>1.8; // the video's turn takes 8.5 s: played faster, about 4.7 s
-function finishTurn(){
-  const c=clips.virata,T=S.turn;
-  // where the last silhouette is, in the world: the shark goes on from there, facing the other way
-  const lx=(c.last[0]+c.last[2])/2,ly=(c.last[1]+c.last[3])/2;
-  S.x=T.ox+(lx-T.fx)*T.sc*T.face;S.y=T.oy+(ly-T.fy)*T.sc;
-  S.face=-T.face;S.vx=S.face*1.2*U();S.vy=0;S.turn=null;S.onT=0;S.followT=0;
-  // the video's last silhouette is a little shorter (perspective): the swim starts at that size and grows back slowly
-  S.grow=(c.last[2]-c.last[0])/(c.first[2]-c.first[0]);
-  if(S.st!=='show')S.st='enter';
+/** The clip's frame now and its scale (a turn plays once; a bite opens, holds, closes). */
+function clipPose(){
+  const K=S.clip,c=K.c,n=c.frames,span=n-1-K.k0,run=K.t*c.fps,hold=0.18*c.fps;
+  let k;
+  if(K.turn)k=Math.min(n-1,K.k0+Math.floor(run));
+  else k=run<=span?K.k0+Math.floor(run):run<=span+hold?n-1:Math.max(K.k0,n-1-Math.floor(run-span-hold));
+  const u=span>0?(k-K.k0)/span:1;
+  return {k,s:K.sA+(K.sB-K.sA)*u,done:K.turn?run>=span+1:run>=2*span+hold+1};
+}
+function finishClip(){
+  const K=S.clip,c=K.c;S.ghost=S.last&&{...S.last,a:0.5};
+  if(K.turn){
+    // where its last silhouette is: the swim goes on from there, the other way, on the frame that looks like it
+    const [lx,ly]=mid(box(c,c.frames-1));
+    const ex=K.P[0]+(lx-K.c0[0])*K.sB*K.xs,ey=K.P[1]+(ly-K.c0[1])*K.sB;
+    S.face=-S.face;S.frame=c.swimTo;
+    const [x,y]=mid(box(clips.nuoto,c.swimTo)),sc=swimScale();
+    S.x=ex-(x-SW.ax)*sc*S.face;S.y=ey-(y-SW.ay)*sc;S.vx=S.face*1.2*U();S.vy=0;S.onT=0;S.followT=0;
+    if(S.st!=='show')S.st='enter';
+  } else {
+    // the jaws closed again: back on the swim frame it started from, where the shark is now
+    const [cx,cy]=mid(box(clips.nuoto,K.swimAt)),sc=swimScale();
+    S.frame=K.swimAt;S.x=K.P[0]-(cx-SW.ax)*sc*S.face;S.y=K.P[1]-(cy-SW.ay)*sc;
+  }
+  S.clip=null;
 }
 
 function update(dt){
@@ -174,17 +209,19 @@ function update(dt){
 
 function updateShark(dt){
   const u=U(),halfL=sharkLen()*0.55,sx=S.x-cam.x,off=sx<-halfL||sx>W+halfL;
-  if(S.turn){
-    // turning: it stops where it is; the clip carries it round
-    S.turn.t+=dt;S.vx*=Math.pow(0.05,dt);S.vy*=Math.pow(0.05,dt);
-    if(turnPose().done)finishTurn();
-    advance(dt);return;
+  if(S.clip){
+    // in a clip: it carries the shark (a turn slows it to a drift, a bite lunges and slows)
+    const K=S.clip;K.t+=dt;S.vx*=Math.pow(K.turn?0.1:0.35,dt);S.vy*=Math.pow(0.2,dt);
+    K.P[0]+=S.vx*dt;K.P[1]+=S.vy*dt;
+    if(clipPose().done)finishClip();
+    fadeGhost(dt);return;
   }
+  tryStart(dt);
   let want=0;const ty=D.y+S.dy;
   if(S.st==='show'){
     // the showcase: it swims slowly back and forth in front of you, turning in view at the edges
     const rel=(S.x-cam.x)/W;
-    if(video&&((S.face>0&&rel>0.68)||(S.face<0&&rel<0.32)))startTurn();
+    if(video&&!S.want&&((S.face>0&&rel>0.55)||(S.face<0&&rel<0.45)))request('virata');
     else if(!video&&((S.face>0&&rel>0.8)||(S.face<0&&rel<0.2)))S.face=-S.face; // today: it flips at once
     want=1.2*u;S.vx+=(S.face*want-S.vx)*Math.min(1,dt*2);S.vy+=((D.y-H*0.05-S.y)*0.6-S.vy)*Math.min(1,dt*1.5);
   } else if(S.st==='hidden'){
@@ -201,33 +238,41 @@ function updateShark(dt){
     else if(aheadOff){S.st='hidden';S.t=rnd(0.9,2.2);}
     else if(rel<0.35){S.st='enter';want=3.5*u-(rel/0.35)*2.2*u;}
     else if(rel<0.72){S.st='cruise';want=1.7*u;}
-    else if(video&&S.st==='cruise'&&Math.random()<0.7){startTurn();return;} // most passes: it turns in view
+    else if(video&&S.st==='cruise'&&Math.random()<0.7){S.st='turning';request('virata');want=1.7*u;} // most passes: it turns in view
+    else if(S.st==='turning')want=1.7*u;
     else{S.st='exit';want=1.7*u+Math.pow((rel-0.72)/0.28,2)*6*u;}
     if(S.st!=='hidden'){S.vx+=(S.face*want-S.vx)*Math.min(1,dt*2);S.vy+=((ty-S.y)*0.8-S.vy)*Math.min(1,dt*1.5);}
   }
   if(S.st!=='hidden'){S.x+=S.vx*dt;S.y+=S.vy*dt;}
   advance(dt);
 }
+function fadeGhost(dt){if(S.ghost){S.ghost.a-=dt/0.2;if(S.ghost.a<=0)S.ghost=null;}}
 function advance(dt){
+  fadeGhost(dt);
   const wp=Math.max(-0.4,Math.min(0.4,Math.atan2(S.vy,Math.abs(S.vx)+U()*1.5)));const np=S.pitch+(wp-S.pitch)*Math.min(1,dt*3);
-  S.pitchV=(np-S.pitch)/Math.max(dt,1e-3);S.pitch=S.turn?S.pitch*(1-Math.min(1,dt*3)):np;
+  S.pitchV=(np-S.pitch)/Math.max(dt,1e-3);S.pitch=np;
   // the swim's beat: faster with speed (the video swims at a cruise)
   const beat=0.7+Math.min(2.2,Math.hypot(S.vx,S.vy)/U()*0.25);
-  S.frame+=dt*beat*(clips.nuoto?clips.nuoto.fps:12);
-  S.grow+=(1-S.grow)*Math.min(1,dt*1.5);
+  S.frame+=dt*beat*(S.want?2.4:1)*(clips.nuoto?clips.nuoto.fps:12); // waiting for a clip: a quicker beat to reach it
   S.phase+=dt*(2.6+Math.hypot(S.vx,S.vy)/U()*0.9);
 }
 
 // ---- drawing the shark
+function put(g,o,a){
+  g.save();g.globalAlpha=a;g.translate(o.x-cam.x,o.y-cam.y);g.rotate(o.rot);g.scale(o.sx,o.sy);g.drawImage(o.im,o.ox,o.oy);g.restore();
+}
 function drawVideoShark(g){
-  if(S.turn){
-    const c=clips.virata,T=S.turn,im=c.img[turnPose().i];if(!im)return;
-    g.save();g.translate(T.ox-cam.x,T.oy-cam.y);g.scale(T.sc*T.face,T.sc);g.drawImage(im,-T.fx,-T.fy);g.restore();return;
+  if(!SW)return;
+  let o=null;
+  if(S.clip){
+    const K=S.clip,{k,s}=clipPose(),im=K.c.img[k];
+    if(im)o={im,b:box(K.c,k),x:K.P[0],y:K.P[1],rot:0,sx:s*K.xs,sy:s,ox:-K.c0[0],oy:-K.c0[1]};
+  } else {
+    const c=clips.nuoto,im=c.img[swimIndex()],sc=swimScale();
+    if(im)o={im,b:box(c,swimIndex()),x:S.x,y:S.y,rot:S.pitch*S.face,sx:sc*S.face,sy:sc,ox:-SW.ax,oy:-SW.ay};
   }
-  const c=clips.nuoto;if(!c)return;
-  const im=c.img[Math.floor(S.frame)%c.frames];if(!im)return;
-  const sc=(S.grow*sharkLen())/(c.first[2]-c.first[0]),cx=(c.first[0]+c.first[2])/2,cy=(c.first[1]+c.first[3])/2;
-  g.save();g.translate(S.x-cam.x,S.y-cam.y);g.rotate(S.pitch*S.face);g.scale(sc*S.face,sc);g.drawImage(im,-cx,-cy);g.restore();
+  if(S.ghost)put(g,S.ghost,Math.min(1,S.ghost.a)); // the last frame of the clip before, fading
+  if(o){put(g,o,1);S.last=o;}
 }
 // today's animation: the painted profile on strips following the spine (as views/beastView.ts)
 const N=26;
@@ -308,13 +353,13 @@ function frame(now){
   const real=Math.min(0.05,(now-last)/1000);last=now;
   update(real*(slow?0.25:1));drawScene(ctx);
   fpsN++;fpsT+=real;if(fpsT>=1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;
-    $('info').textContent=`${fps} fps · ${video?'video: nuoto '+(clips.nuoto?.frames??0)+' fotogrammi, virata '+(clips.virata?.frames??0):'oggi: immagine a strisce sulla spina dorsale'} · ${showcase?'vetrina':'pattuglia'}`;}
+    $('info').textContent=`${fps} fps · ${video?'video: nuoto '+(clips.nuoto?.frames??0)+', virata '+(clips.virata?.frames??0)+', morso '+(clips.morso?.frames??0)+' fotogrammi':'oggi: immagine a strisce sulla spina dorsale'} · ${showcase?'vetrina':'pattuglia'}`;}
   requestAnimationFrame(frame);
 }
 (async()=>{
   init();
-  const [n,v,p]=await Promise.all([loadClip('nuoto'),loadClip('virata'),loadImg(BASE+'profilo.webp')]);
-  if(n)clips.nuoto=n;if(v)clips.virata=v;profile=p;
+  const [n,v,b,p]=await Promise.all([loadClip('nuoto'),loadClip('virata'),loadClip('morso'),loadImg(BASE+'profilo.webp')]);
+  if(n){clips.nuoto=n;swimGeo();}if(v)clips.virata=v;if(b)clips.morso=b;profile=p;
   $('load').remove();restart();requestAnimationFrame(frame);
 })();
 </script>
