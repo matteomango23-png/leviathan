@@ -33,6 +33,9 @@ export class ShipPictures {
    *  whatever the rest shows (hatches open or not; owner, 10 ottobre: the closed jaw showed under the open one). */
   private readonly headClosed: Phaser.GameObjects.Image | null = null;
   private readonly split: number;
+  /** Likewise its closed stern, while the running propeller (its stern alone) fades in (art.picture.propToU). */
+  private readonly sternClosed: Phaser.GameObjects.Image | null = null;
+  private readonly sternTo: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -55,6 +58,11 @@ export class ShipPictures {
       for (const [i, bay] of bays.entries()) if (bay.open) add(bay.open, i);
       add(art.open, 'all');
     } else add(art.open, 0);
+    this.sternTo = art.moving ? (art.picture.propToU ?? 0) : 0;
+    if (this.sternTo > 0 && WORLD_ART_KEYS.includes(art.closed)) {
+      this.sternClosed = make(`world-${art.closed}`);
+      layer.add(this.sternClosed);
+    }
     if (art.moving) add(art.moving, 'moving');
     this.split = art.picture.mouthFromU ?? 1;
     // the Krill Hunter's mouth, still and running, over the rest
@@ -77,6 +85,7 @@ export class ShipPictures {
     for (const p of this.parts) for (const im of [p.full, ...p.under]) im.setVisible(false);
     this.glow?.setVisible(false);
     this.headClosed?.setVisible(false);
+    this.sternClosed?.setVisible(false);
   }
 
   /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
@@ -87,9 +96,10 @@ export class ShipPictures {
     const most = Math.max(0, ...s.hatches.map((h) => h.t));
     if (role === 'all') return s.hatches.reduce((a, h) => a * h.t, 1);
     const run = Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25));
-    if (role === 'mouth') return s.mouthT * (1 - run);
-    if (role === 'mouthMoving') return s.mouthT * run;
-    return run * (1 - most);
+    // with the propeller drawn alone (sternTo), the head and the stern never change with the running picture
+    if (role === 'mouth') return this.sternTo > 0 ? s.mouthT : s.mouthT * (1 - run);
+    if (role === 'mouthMoving') return this.sternTo > 0 ? 0 : s.mouthT * run;
+    return this.sternTo > 0 ? run : run * (1 - most);
   }
 
   /**
@@ -125,15 +135,30 @@ export class ShipPictures {
     }
     // the mouth open (even a little): the body from the pictures, the head from the mouth's
     const head = !!this.headClosed && s.mouthT > 0;
-    const bodyOf = (im: Phaser.GameObjects.Image): void => {
-      if (head) im.setCrop(0, 0, Math.round(im.width * this.split), im.height);
-      else im.setCrop();
+    const run = Math.min(1, Math.max(0, (s.prop - 0.05) / 0.25));
+    const stern = !!this.sternClosed && run > 0;
+    const band = (im: Phaser.GameObjects.Image, u0: number, u1: number): void => {
+      if (u0 <= 0 && u1 >= 1) im.setCrop();
+      else {
+        const a = Math.round(im.width * u0);
+        im.setCrop(a, 0, Math.round(im.width * u1) - a, im.height);
+      }
     };
-    const headOf = (im: Phaser.GameObjects.Image): void => {
-      const from = Math.round(im.width * this.split);
-      im.setCrop(from, 0, im.width - from, im.height);
-    };
+    const bodyOf = (im: Phaser.GameObjects.Image): void =>
+      band(im, stern ? this.sternTo : 0, head ? this.split : 1);
+    const headOf = (im: Phaser.GameObjects.Image): void => band(im, this.split, 1);
+    const sternOf = (im: Phaser.GameObjects.Image): void => band(im, 0, this.sternTo);
     if (this.glow) bodyOf(this.glow);
+    if (this.sternClosed) {
+      const sc = w / this.sternClosed.width;
+      this.sternClosed
+        .setVisible(stern)
+        .setPosition(x, cy)
+        .setScale(sc * s.face, sc)
+        .setRotation(rot)
+        .setAlpha(1 - run);
+      sternOf(this.sternClosed);
+    }
     if (this.headClosed) {
       const sc = w / this.headClosed.width;
       this.headClosed
@@ -158,7 +183,8 @@ export class ShipPictures {
         .setAlpha(alpha);
       const role = this.roles[i];
       if (role === 'mouth' || role === 'mouthMoving') headOf(p.full);
-      else if (this.headClosed) bodyOf(p.full);
+      else if (role === 'moving' && this.sternClosed) sternOf(p.full);
+      else if (this.headClosed || this.sternClosed) bodyOf(p.full);
       const sw = W / STRIPS;
       for (const [j, im] of p.under.entries()) {
         if (!show || !seaY) {

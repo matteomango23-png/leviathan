@@ -289,8 +289,31 @@ export class ShipView {
       x: s.x + s.face * (P.propX - 0.5) * L,
       y: WORLD.surfaceY + s.dive + (P.propY - P.waterline) * shipHeight(s),
     };
-    // a big ship churns much more water (owner, 9 ottobre): more bubbles, bigger, a longer and taller plume
     const size = Math.max(1, L / SHIP.camera.refLength);
+    // a propeller painted above the water (the Krill Hunter's, owner 11 ottobre): no bubbles in the air, but the air it
+    // pushes: pale streaks blown back from it, and a little spray where they hit the sea
+    if (P.propY < P.waterline - 0.02 && s.dive < 1) {
+      const sea = WORLD.surfaceY;
+      for (let i = 0; i < 12; i++) {
+        const t = (time * (1.6 + k * 2) + i / 12) % 1;
+        const len = (14 + 22 * t) * Math.sqrt(size);
+        const x0 = prop.x - s.face * t * (40 + 60 * k) * Math.sqrt(size);
+        const y0 = prop.y + Math.sin(i * 2.3) * 4 * size + t * 6;
+        g.lineStyle(1 + 0.4 * size, 0xe6f2f6, 0.28 * k * (1 - t));
+        g.lineBetween(x0, y0, x0 - s.face * len, y0 + Math.sin(time * 9 + i) * 1.5);
+      }
+      for (let i = 0; i < 8; i++) {
+        const t = (time * 1.4 + i / 8) % 1;
+        g.fillStyle(0xf2fbff, 0.35 * k * (1 - t));
+        g.fillCircle(
+          prop.x - s.face * (20 + 50 * t) * Math.sqrt(size),
+          sea - t * 6 + Math.sin(i * 1.9) * 2,
+          1 + t * 1.5,
+        );
+      }
+      return;
+    }
+    // a big ship churns much more water (owner, 9 ottobre): more bubbles, bigger, a longer and taller plume
     const n = Math.round(16 + 26 * (size - 1));
     for (let i = 0; i < n; i++) {
       const t = (time * (1.2 + k * 2) + i / n) % 1;

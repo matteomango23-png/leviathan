@@ -76,13 +76,27 @@ describe('analysing an echo', () => {
     expect(done && done.type === 'scanDone' && done.known).toBe(false);
     expect(done && done.type === 'scanDone' && done.text).toContain('Sconosciuta');
     expect(g.sonarNotes[id]).toBeDefined();
-    // seen: named
+    // seen: named (another outing: its earlier finding forgotten)
     g.seen.add(id);
+    g.sonarScan.results = {};
     lockEcho(g.sonarScan, echo.target!);
     const ev2: GameEvent[] = [];
     for (let t = 0; t < scanSeconds(g.ship) + 0.5; t += 0.25) stepScan(g, 0.25, ev2);
     const named = ev2.find((e) => e.type === 'scanDone');
     expect(named && named.type === 'scanDone' && named.known).toBe(true);
+  });
+
+  it('an echo already analysed is only picked: no new analysis (owner, 11 ottobre)', () => {
+    const g = game('nightmare');
+    const echo = sonarReadout(g).echoes.find((e) => e.target)!;
+    lockEcho(g.sonarScan, echo.target!);
+    for (let t = 0; t < scanSeconds(g.ship) + 0.5; t += 0.25) stepScan(g, 0.25, []);
+    lockEcho(g.sonarScan, echo.target!);
+    expect(g.sonarScan.lock).toBeNull(); // no new timer
+    expect(g.sonarScan.picked).toBeNull(); // the same one touched again: let go
+    lockEcho(g.sonarScan, echo.target!);
+    expect(g.sonarScan.lock).toBeNull();
+    expect(g.sonarScan.picked).toEqual(echo.target);
   });
 
   it('the echo going out of range stops the analysis', () => {

@@ -143,6 +143,9 @@ export function sailBoat(
     settleRide(b.ride);
     return;
   }
+  // its hull before this step: every blow below (ice, capsizing, wear) can wreck it (owner, 11 ottobre: broken by an
+  // iceberg it still sailed on)
+  const was = b.hull;
   const m = boatModel(b.model);
   b.iceWarn = Math.max(0, b.iceWarn - dt);
   if (helm && helm.throttle > 0 && !b.engineOn) {
@@ -195,7 +198,6 @@ export function sailBoat(
     b.fuelWarned = true;
     events.push({ type: 'fuelOut', vehicle: 'boat' });
   }
-  const was = b.hull;
   // light and short, fast into a wave it flies (ride.ts); flipped over, it stops and its hull takes the blow
   if (stepRide(b.ride, b.x, b.face, boatLength(b), sea, t, dt)) {
     b.speed = 0;
