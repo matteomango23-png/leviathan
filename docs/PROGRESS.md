@@ -3,7 +3,9 @@
 ## Prova dello squalo dai video (11 ottobre 2026)
 
 - `npm run art:video` (`scripts/art/video.ts`, tagli in `scripts/art/videoClips.ts`, dipendenza di sviluppo `ffmpeg-static`): dai video in `art-inbox/video/<id>/` ai fotogrammi in `public/prove/<id>/`.
-- Megalodonte d'osso: nuoto in anello (dal video 1), virata da destra a sinistra passando di fronte (video 2, 10,25–18,75 s). Il video 3 ha particelle sul fondo e non è usato.
+- Megalodonte d'osso: nuoto in anello (video 1), virata rapida (video 3, 30,5–33,3 s, specchiata per l'altro verso), morso (video 2, 9,9–10,65 s: apre, tiene, richiude). Seconda versione (11 ottobre, dopo la prova del proprietario):
+  - **Raccordo:** lo script segna i fotogrammi del nuoto che somigliano all'inizio e alla fine di ogni pezzo (`swimFrom`, `swimTo`). La pagina attacca virata e morso alla stessa misura e nello stesso punto; mentre aspetta il fotogramma giusto, la nuotata accelera.
+  - **Sfondo:** scontorno con soglia adattata al verde di ogni fotogramma.
 - Pagina `public/prove/squalo/index.html` (dalla prova realistica):
   - **Animazione video/oggi:** il confronto con le strisce sulla spina dorsale;
   - **Vetrina:** lo squalo va avanti e indietro davanti a te e vira in vista;
