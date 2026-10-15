@@ -916,3 +916,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - Una bestia residente del mare aperto ha versione e livello presi dal seme del suo id (`residentForm`): prima venivano ritirati a sorte a ogni risveglio.
   - Le bestie della costa hanno `serial`, un contatore della loro casella che sale a ogni comparsa: chi le ricorda (tracker, sfera, sonar) confronta anche quello. Le note salvate senza serial restano valide.
 - **Leggende e giganti:** non spariscono più per sempre; restano nella tana per un tempo lungo. Solo domarle le toglie dal mare.
+
+## 15 ottobre 2026 — Pattuglia, sardine, corpi, velocità, imboscata (v0.66.0)
+
+- **Pattuglia in un modulo a parte** (`beasts/patrol.ts`): `roam.ts` le chiede solo dove nuotare. È la logica della prova realistica (entra, crociera, uscita accelerata, attesa fuori, rientro dallo stesso lato, scatto se seguita o in vista da troppo). In più, a volte, una virata in vista, come chiesto dal proprietario.
+- **Sardine:** la fuga di ogni pesce in linea retta dal pericolo, unita a un banco che si fermava su di te, formava l'anello. La schivata è ora di lato rispetto alla direzione del banco, con isteresi, e un banco fermo sul pericolo riparte oltre.
+- **Forma del corpo in un file senza Phaser** (`views/swimPose.ts`): si può verificare con i test (segmenti del serpente di lunghezza costante, ali che battono in alternanza).
+- **Velocità reali ammorbidite:** la radice quadrata delle velocità vere (riferimento: squalo bianco a 40 km/h) tiene le differenze riconoscibili senza rendere ingiocabili le più lente o le più veloci.
+- **Imboscata solo alle spalle:** la simulazione a specchio dà circa il 50% di vittorie. La sensazione del proprietario veniva dall'attacco gratis della bestia che ti tocca, cioè quasi sempre.

@@ -209,7 +209,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
-    } else if (touched && !aboard) requestBattle(g, w, ambush(w, d, g.beasts.riding ? g.beasts.mount : null), events);
+    } else if (touched && !aboard)
+      requestBattle(g, w, ambush(w, d, g.beasts.riding ? g.beasts.mount : null), events);
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the
   // first of the list, so the same few came every time)

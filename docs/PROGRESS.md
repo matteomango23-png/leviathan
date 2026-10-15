@@ -1,5 +1,37 @@
 # Progressi
 
+## Lotto B, bestie in mare (15 ottobre 2026) → v0.66.0
+
+- **Pattuglia** (`beasts/patrol.ts`, dati `PATROL`):
+  - `startPatrol` alla vista (aggressivi grandi o colossali, probabilità 0,65, 1–3 passaggi);
+  - `stepPatrol` (pass/wait/bolt, uscita accelerata, attesa 1–2 s, rientro dallo stesso lato, virata in vista 0,25);
+  - poi `charging` (carica ×1,4);
+  - `roam.ts` riceve `view`; durante la pattuglia non perde la bestia e non c'è contatto.
+- **Sardine** (`fish.ts`):
+  - schivata di lato rispetto alla direzione del banco, isteresi `calmFactor`;
+  - il banco fermo su di te riparte oltre, mete preferite davanti;
+  - `Threat.r` (sottomarino, cavalcatura).
+- **Arpione:** controllo sul tratto (`toSegment`), `catchRadius` 9, `assistAim` (6°).
+- **Movimento del corpo** (`views/swimPose.ts`, logica pura usata da `beastView`):
+  - serpenti (`SERPENTS`, `serpentWave`);
+  - ali battenti (`FLAP.manta`, `flapScale`);
+  - `swimLook(form)` in `forms.ts`.
+- **Cavalcature:** `RIDE_KMH` per specie, velocità = squalo bianco × √(km/h ÷ 40), mai sotto quella del sub (`beastPlay.mountSpeed`).
+- **Bilanciamento:**
+  - `tests/balance.test.ts`: 200 battaglie per 5 specie, specchio, intorno al 50%;
+  - l'imboscata (`ambush` in `encounters.ts`) solo alle spalle.
+- **Immagini:** squalo volpe da rifare, `docs/GEMINI-LOTTO-5.md`.
+
+**Da provare sull'iPhone:**
+- uno squalo bianco o tigre nella Baia;
+- un banco di sardine da fermo e col sottomarino;
+- l'arpione sui pesci;
+- Folgore in acqua e in groppa;
+- una manta;
+- le velocità a cavallo.
+
+**Prossimo:** lotto C (schermate e comandi).
+
 ## Lotto A, bug e progressione (15 ottobre 2026) → v0.65.0
 
 Il feedback del 15 ottobre è diviso in lotti A–F in `docs/BACKLOG.md`.
