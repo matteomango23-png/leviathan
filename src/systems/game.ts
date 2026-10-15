@@ -29,7 +29,6 @@ import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers } from './economy/gear';
 import { feedBeast, fishXp, gainXp, isHungry } from './beasts/growth';
-import { maxHpOf } from './beasts/team';
 import { stepStory, storyHoldsDiver } from './story';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
@@ -221,7 +220,6 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
   const hitBeast = (x: number, y: number): boolean =>
     hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events);
-  const fishMark = events.length; // fish caught from here on are experience (below)
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, hitBeast);
   if (caught) catchFish(g, caught, events);
   stepProjectiles(g.weapons, g.fish, g.map, dt, {
@@ -246,12 +244,15 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const eater = activeBeast(g);
   const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
-  // every fish caught or eaten is experience for the beast in the water (or the first of the team)
-  const fed = eater ?? g.beasts.team[0];
-  const fishCaught =
-    events.slice(fishMark).filter((e) => e.type === 'fishCaught').length +
-    Math.min(eaten.length, XP_RULES.fishPerBiteMax);
-  if (fed && fishCaught > 0) gainXp(fed, fishXp(fed.level) * fishCaught, events);
+  // only the fish your beast eats are experience, and only a few a minute (XP_RULES.fishPerMinute); the ones you catch
+  // yourself go in the bag (owner, 15 ottobre)
+  const t = g.timers;
+  t.fishXp = Math.min(XP_RULES.fishPerMinute, t.fishXp + (XP_RULES.fishPerMinute / 60) * dt);
+  const worth = Math.min(eaten.length, Math.floor(t.fishXp));
+  if (eater && worth > 0) {
+    t.fishXp -= worth;
+    gainXp(eater, fishXp(eater.level) * worth, events);
+  }
   // a growing beast (levels 31–50) keeps the fish for its nourishment bar; the rest go in your bag
   for (const f of eaten) {
     if (eater && isHungry(eater)) {
@@ -293,8 +294,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 }
 
 /**
- * Like Pokémon: a beast touched you with every beast of yours KO. You black out and wake up on your ship (or at
- * your harbour) with everyone healed, a few teeth lost on the way.
+ * A beast touched you with every beast of yours KO. You black out and wake up on your ship (or at your harbour), a
+ * few teeth lost on the way. You are healed; your beasts are not (owner, 15 ottobre: losing on purpose healed them):
+ * the ones KO stand again with 1 HP, to be healed in the ship's pool or at a port.
  */
 export function blackout(g: GameState, events: GameEvent[]): void {
   const at = respawnPoint(g);
@@ -302,11 +304,9 @@ export function blackout(g: GameState, events: GameEvent[]): void {
   Object.assign(d, { x: at.x, y: at.y, vx: 0, vy: 0, hp: d.maxHp, o2: d.maxO2 });
   d.invulnerable = DIVER.invulnerableAfterRespawn;
   for (const b of g.beasts.team) {
-    b.hp = maxHpOf(b);
+    if (!b.ko && b.hp > 0) continue;
+    b.hp = 1;
     b.ko = false;
-    b.ppUsed = undefined; // PP back to full, like a Pokémon Center
-    b.status = undefined;
-    b.sleepTurns = undefined;
   }
   if (g.beasts.riding) g.beasts.riding = false;
   const teethLost = Math.floor(g.gear.teeth * BLACKOUT.teethLoss);

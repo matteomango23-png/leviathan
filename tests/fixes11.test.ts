@@ -60,14 +60,17 @@ describe('the pool aboard', () => {
     expect(b.ppUsed).toBeUndefined();
   });
 
-  it('a ship without a pool heals nobody; the port heals everyone at once', () => {
+  it('the first ship heals one beast at a time (owner, 15 ottobre); the port heals everyone at once', () => {
     const g = atSea('aurelia');
-    const b = g.beasts.team.find((t) => t.inTeam)!;
-    b.hp = 1;
+    const [a, b] = g.beasts.team.filter((t) => t.inTeam);
+    a!.hp = 1;
+    b!.hp = maxHpOf(b!) - 1; // barely hurt: the most hurt goes first
     for (let t = 0; t < 10; t++) stepPool(g, 1);
-    expect(b.hp).toBe(1);
+    expect(a!.hp).toBeGreaterThan(1);
+    expect(b!.hp).toBe(maxHpOf(b!) - 1);
     enterPort(g, []);
-    expect(b.hp).toBe(maxHpOf(b));
+    expect(a!.hp).toBe(maxHpOf(a!));
+    expect(b!.hp).toBe(maxHpOf(b!));
   });
 });
 

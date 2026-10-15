@@ -36,10 +36,10 @@ export function xpReward(form: BeastForm, level: number, own: number, guardian =
   let xp = scaledXp(XP_RULES.yieldByStars[speciesOf(form).rarity], level, own);
   if (form.variant !== 'comune') xp *= XP_RULES.variantMult;
   if (guardian) xp *= XP_RULES.guardianMult;
-  return Math.round(xp);
+  return Math.max(1, Math.round(xp * XP_RULES.battleMult));
 }
 
-/** XP for a small fish caught or eaten, for a beast of this level. */
+/** XP for a small fish your beast eats, for a beast of this level. */
 export const fishXp = (level: number): number => scaledXp(XP_RULES.fishYield, level, level);
 
 /** Level 50 of an iconic species: its final form (none for the alfa, the albino only where defined). */

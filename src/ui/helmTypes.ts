@@ -37,6 +37,8 @@ export interface HelmInfo {
   canLaunchBoat?: boolean;
   /** "motoscafo", "moto d’acqua": for "Cala …". */
   boatName?: string;
+  /** Ship only: the beast resting in its pool now and how far healed ("vasca: Zanna 45%"). */
+  pool?: string;
   /** Speedboat only: litres in its drums, and how many they hold. */
   drums?: [number, number];
   /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */
