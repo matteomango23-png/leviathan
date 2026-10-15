@@ -2,6 +2,25 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.71.0 — Porto a schede e bacheca nuova (16 ottobre 2026)
+
+- **Il porto è diviso in schede, una per argomento:** Bacheca, Mercato, Conchiglie, Cure, Esche, Sub, Mezzi, Zaino, Recinto.
+- **Bacheca:**
+  - si apre per prima;
+  - in alto i **Ricercati**: le leggende e i giganti di questi mari con la loro card grande. Quelli più al largo si vedono solo come ombra, finché non ne senti la voce;
+  - sotto, le **taglie** con l'immagine della bestia, poi gli incarichi.
+- **Mercato:** la vendita del pescato e il **listino di oggi**, con i prezzi abbassati dalle vendite recenti.
+- **Conchiglie a 4 livelli**, come le Poké Ball: Conchiglia, rara (×1,5), d'abisso (×2) e **Conchiglia del Re**, che doma sempre e se ne porta una sola.
+  - In battaglia, se ne hai di più tipi, scegli quale lanciare.
+  - L'arpione mitico non c'è più: chi lo aveva riceve una Conchiglia del Re.
+- **Cure** divise in gruppi: vita, rianimare, stati, energia delle mosse, in battaglia, crescita.
+- **Esche per gruppo di animali:** squali, cetacei e foche, rettili e tartarughe, polpi e bestie degli abissi, pesci da preda.
+  - Ogni esca ha anche una versione **pregiata**, che a volte porta un alfa o un albino.
+- **Mezzi:**
+  - il carburante, con **"Fai il pieno a tutti"**;
+  - la **riparazione di ogni mezzo in ogni porto** (prima la nave solo a Porto Fango);
+  - i ricambi e il cantiere a Porto Fango.
+
 ## v0.70.2 — Varano albino (15 ottobre 2026)
 
 - **Il varano del Nilo albino arriva nel Delta**, raro come gli altri albini. Al livello 100 diventa il **Varano d'osso**.

@@ -959,3 +959,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - il capodoglio d'osso è Moby Dick.
 - **Regola nuova:** un alfa o un albino ha una forma finale solo dove ne ha una con un nome suo (`alfaFinalFormName`, `albinoFinalFormName`). Le altre restano senza, come prima.
 - **Specie rinominate dopo una pubblicazione:** il salvataggio converte il vecchio id nel nuovo (`RENAMED_SPECIES`), così una bestia domata non si perde.
+
+## 16 ottobre 2026 — Porto a schede, conchiglie, esche per gruppo (v0.71.0)
+
+- **Una scheda per argomento**, con la Bacheca per prima: il primo tester non aveva capito che esistono i leggendari. La bacheca mostra i Ricercati con le card grandi; quelli più al largo restano in ombra finché non se ne sente la voce, così resta un po' di mistero (scelta del proprietario).
+- **Conchiglie come le Poké Ball:** la Conchiglia del Re prende il posto dell'arpione mitico, che non serviva più (i Guardiani, che ne rinnovavano la scorta, sono fermi con la storia). Se ne porta una sola alla volta: usata, se ne ricompra un'altra.
+- **Esche per gruppo, i dati in `BAIT_GROUPS`:** i giganti da caccia non si attirano mai. Le pregiate costano il triplo e il 12% delle volte portano un alfa, o un albino dove ha immagini proprie.
+- **Riparazioni in ogni porto, un solo carburante** (scelta del proprietario). I ricambi restano per una nave rotta in mare.

@@ -964,18 +964,18 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  width: 74px;
-  padding: 8px 4px;
+  width: 78px;
+  padding: 6px 2px;
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(176, 138, 74, 0.2);
 }
 .port-tab .ico {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 .port-tab.on {
   color: #02070c;
@@ -1141,6 +1141,189 @@
   height: 100%;
   background: var(--glow);
 }
+
+/* The board's Wanted (16 ottobre 2026): big vertical cards, the far ones in shadow */
+.wanted-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  scrollbar-width: thin;
+}
+.wanted-card {
+  pointer-events: auto;
+  position: relative;
+  flex: 0 0 150px;
+  aspect-ratio: 2 / 3;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #c79a58;
+  background: #03080c;
+  box-shadow:
+    0 0 14px rgba(255, 200, 120, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  text-align: left;
+  color: #fff3dc;
+}
+.wanted-card.pinned {
+  border-color: var(--glow);
+  box-shadow: 0 0 16px rgba(95, 243, 214, 0.5);
+}
+.wanted-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wanted-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 26px 7px 7px;
+  background: linear-gradient(180deg, transparent, rgba(2, 6, 10, 0.92) 40%);
+}
+.wanted-name {
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.1;
+  color: var(--lamp);
+  text-shadow: 0 1px 3px #000;
+}
+.wanted-where {
+  font-size: 10px;
+  line-height: 1.25;
+  color: #cfd8d6;
+}
+.wanted-info .diary-light {
+  padding: 1px 5px;
+  font-size: 9px;
+}
+.wanted-stamp,
+.wanted-pin {
+  position: absolute;
+  top: 8px;
+  right: -26px;
+  transform: rotate(35deg);
+  width: 110px;
+  padding: 2px 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--blood);
+}
+.wanted-pin {
+  background: #127a68;
+}
+.wanted-card.closed .wanted-art {
+  filter: grayscale(0.7) brightness(0.7);
+}
+/* not heard yet: a black silhouette with a faint glow, and a question mark for a name */
+.wanted-card.shadow {
+  border-color: #33424a;
+  box-shadow: inset 0 0 30px rgba(95, 243, 214, 0.12);
+}
+.wanted-card.shadow .wanted-art {
+  filter: brightness(0) drop-shadow(0 0 6px rgba(95, 243, 214, 0.55));
+  opacity: 0.9;
+}
+.wanted-card.shadow .wanted-name {
+  color: #8aa;
+  font-size: 22px;
+}
+
+/* bounties: the beast's picture on the left */
+.bounty-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+.bounty-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 68, 63, 0.6);
+  background: linear-gradient(160deg, rgba(70, 24, 22, 0.55), rgba(8, 12, 16, 0.92));
+}
+.bounty-card.on {
+  border-color: var(--glow);
+}
+.bounty-art {
+  width: 72px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.bounty-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.bounty-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: #ffb3a8;
+}
+.bounty-title::first-letter {
+  text-transform: uppercase;
+}
+.bounty-text {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.bounty-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bounty-reward {
+  font-size: 17px;
+}
+
+/* the fish market's price list */
+.price-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 4px 12px;
+}
+.price-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+.price-row.have {
+  color: var(--ink);
+  background: rgba(95, 243, 214, 0.08);
+}
+.price-have {
+  font-weight: 700;
+  color: var(--glow);
+}
+.price-row .price {
+  margin-right: 0;
+}
+.price-row .price.low {
+  color: #f2a46a;
+}
 .slot-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1158,9 +1341,9 @@
     gap: 4px;
   }
   .port-tab {
-    width: 62px;
-    padding: 3px 2px;
-    font-size: 10px;
+    width: 72px;
+    padding: 3px 1px;
+    font-size: 9.5px;
   }
   .port-tab .ico {
     width: 20px;

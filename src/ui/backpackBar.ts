@@ -21,8 +21,12 @@ const SHORT: Record<string, string> = {
   esca_sangue: 'Sangue',
   esca_gamberi: 'Gamberi',
   esca_viva: 'Viva',
-  arpione_mitico: 'Mitico',
+  esca_aringhe: 'Aringhe',
+  esca_carne: 'Carne',
 };
+/** A fine bait shows as its plain one with a plus. */
+const shortName = (id: string): string | undefined =>
+  SHORT[id] ?? (id.endsWith('_pregiata') ? `${SHORT[id.slice(0, -9)] ?? 'Esca'}+` : undefined);
 
 export class BackpackBar {
   private readonly root: HTMLDivElement;
@@ -52,7 +56,7 @@ export class BackpackBar {
       b.hidden = !id;
       if (!id) return;
       const k = slotKind(id);
-      let label = SHORT[id] ?? slotName(id);
+      let label = shortName(id) ?? slotName(id);
       if (k === 'item') label += ` ×${gear.inventory[id] ?? 0}`;
       if (k === 'swarm') {
         const cd = g.swarmCooldowns[id] ?? 0;

@@ -1,7 +1,7 @@
 // Using what is in the backpack during a dive: pick a weapon, use an item, call a swarm.
 import { ITEM_RULES } from '../../data/economy';
 import { PROGRESSION } from '../../data/rules';
-import { ITEMS, SWARMS } from '../../data/world';
+import { BAIT_GROUPS, ITEMS, SWARMS } from '../../data/world';
 import { activeBeast, type BeastWorld } from '../beastState';
 import type { GameEvent } from '../events';
 import { raiseLevel } from '../beasts/growth';
@@ -45,10 +45,11 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[], uid?: string
   const target = uid
     ? g.beasts.team.find((b) => b.uid === uid)
     : (activeBeast(g) ?? team.find((b) => b.ko || b.hp < maxHpOf(b)) ?? team[0]);
-  const bait = ITEMS.find((i) => i.id === id)?.lure;
+  const def = ITEMS.find((i) => i.id === id);
+  const bait = def?.lure ? BAIT_GROUPS[def.lure].species : undefined;
   if (bait) {
     // its species come to you: the ones gone into the dark come back soon (encounters.ts keeps them coming)
-    g.beasts.lure = { species: bait, t: ITEM_RULES.bait.seconds };
+    g.beasts.lure = { species: bait, t: ITEM_RULES.bait.seconds, rare: def?.rare };
     for (const w of g.beasts.wilds)
       if (w.motion === 'gone' && bait.includes(w.spawn.speciesId))
         w.respawn = Math.min(w.respawn, ITEM_RULES.bait.respawn);

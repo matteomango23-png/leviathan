@@ -91,14 +91,45 @@ export interface ItemUse {
   cure?: StatusId[] | 'all';               // the conditions it ends (Antidoto, Cura totale…)
   pp?: { amount: number | 'full'; all?: boolean }; // PP back to one move (Etere) or all of them (Elisir)
   stage?: { stat: StageId; by: number };   // in battle only: a statistic up (Attacco X: +2 since gen 7)
-  tameMult?: number;                       // in battle only: the next taming attempt × this
 }
-export interface ItemDef { id: string; name: string; price: number; stockPerVisit?: number; restockAfterGuardian?: boolean; text: string;
-  lure?: string[];         // a bait: these species come to you for a while (ITEM_RULES.bait)
+export interface ItemDef { id: string; name: string; price: number; stockPerVisit?: number; text: string;
+  lure?: BaitGroupId;      // a bait: the beasts of this group come to you for a while (ITEM_RULES.bait, BAIT_GROUPS)
+  rare?: number;           // a fine bait: a beast it draws is an alfa or an albino this often (systems/beasts/lure.ts)
+  shell?: number;          // a taming shell: × the hold chance (Infinity: it always holds), BATTLE.catch
+  maxOwned?: number;       // you can carry at most this many (the Conchiglia del Re: one)
+  tint?: number;           // a shell drawn in this colour in battle, until it has its own picture
   battleOnly?: boolean;    // used in battle only: never in a backpack slot
   pocket?: Pocket;         // its pocket in the backpack (default: varie)
   use?: ItemUse;
 }
+/** The groups of beasts a bait draws (the giants you hunt never come to a bait). */
+export type BaitGroupId = 'squali' | 'cetacei' | 'rettili' | 'abissi' | 'pesci';
+export const BAIT_GROUPS: Record<BaitGroupId, { name: string; bait: string; baitName: string; price: number; species: string[] }> = {
+  squali: { name: 'squali', bait: 'esca_sangue', baitName: 'Esca di sangue', price: 180,
+    species: ['squalo_bianco', 'squalo_tigre', 'squalo_martello', 'squalo_volpe', 'squalo_nutrice', 'squalo_capopiatto', 'squalo_goblin', 'squalo_mako', 'squalo_toro', 'squalo_leuca', 'squalo_balena', 'squalo_elefante'] },
+  cetacei: { name: 'cetacei e foche', bait: 'esca_aringhe', baitName: 'Esca di aringhe', price: 220,
+    species: ['delfino', 'beluga', 'narvalo', 'orca', 'megattera', 'capodoglio', 'foca_leopardo', 'foca_comune', 'elefante_marino', 'tricheco', 'lontra_marina'] },
+  rettili: { name: 'rettili e tartarughe', bait: 'esca_carne', baitName: 'Esca di carne', price: 150,
+    species: ['coccodrillo_nilo', 'coccodrillo_marino', 'varano_nilo', 'tartaruga_marina', 'tartaruga_liuto'] },
+  abissi: { name: 'polpi, calamari e bestie degli abissi', bait: 'esca_gamberi', baitName: 'Esca di gamberi', price: 120,
+    species: ['polpo_gigante', 'calamaro_gigante', 'calamaro_colossale', 'rana_pescatrice', 'dragone_nero', 'chimera', 'granchio_ragno', 'isopode_gigante', 'medusa_gigante'] },
+  pesci: { name: 'pesci da preda e razze', bait: 'esca_viva', baitName: 'Esca viva', price: 90,
+    species: ['barracuda', 'tonno', 'lampuga', 'pesce_vela', 'pesce_spada', 'cernia', 'pesce_napoleone', 'pesce_luna', 'murena', 'anguilla_elettrica', 'torpedine', 'pesce_palla', 'pesce_leone', 'scorfano', 'manta', 'pastinaca', 'pesce_sega'] },
+};
+/** A fine bait: × this price, and this often an alfa or an albino. Tuning. */
+export const FINE_BAIT = { priceMult: 3, rare: 0.12 };
+
+function baits(): ItemDef[] {
+  const out: ItemDef[] = [];
+  for (const [group, g] of Object.entries(BAIT_GROUPS) as [BaitGroupId, (typeof BAIT_GROUPS)[BaitGroupId]][]) {
+    const who = `Per un minuto e mezzo attira ${g.name}`;
+    out.push({ id: g.bait, name: g.baitName, price: g.price, pocket: 'esche', lure: group, text: who });
+    out.push({ id: `${g.bait}_pregiata`, name: `${g.baitName} pregiata`, price: g.price * FINE_BAIT.priceMult, pocket: 'esche', lure: group, rare: FINE_BAIT.rare,
+      text: `${who}; a volte arriva un alfa o un albino` });
+  }
+  return out;
+}
+
 export const ITEMS: ItemDef[] = [
   { id: 'krill_dorato', name: 'Krill dorato', price: 500, stockPerVisit: 2, text: '+1 livello a una bestia' },
   // like Pokémon's medicine (owner, 3 ottobre: "copia da Pokémon"); prices about 0.3 × Pokémon's (tuning)
@@ -125,13 +156,16 @@ export const ITEMS: ItemDef[] = [
   { id: 'precisione_x', name: 'Precisione X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'acc', by: 2 } }, text: 'In battaglia: alza molto la Precisione' },
   { id: 'bolla_aria', name: 'Bolla d\u2019aria', price: 40, text: 'Ricarica l\u2019ossigeno' },
   { id: 'esca', name: 'Esca', price: 80, pocket: 'esche', text: 'Attira le creature di una zona' },
-  // owner, 2 ottobre: baits for the beasts you are looking for, and shells for taming (no longer endless)
-  { id: 'esca_sangue', name: 'Esca di sangue', price: 180, pocket: 'esche', text: 'Per un minuto e mezzo attira gli squali: bianco, tigre, martello', lure: ['squalo_bianco', 'squalo_tigre', 'squalo_martello'] },
-  { id: 'esca_gamberi', name: 'Esca di gamberi', price: 90, pocket: 'esche', text: 'Attira tartarughe, pesci palla e mante', lure: ['tartaruga_marina', 'pesce_palla', 'manta'] },
-  { id: 'esca_viva', name: 'Esca viva', price: 90, pocket: 'esche', text: 'Attira barracuda, murene, torpedini e coccodrilli', lure: ['barracuda', 'murena', 'torpedine', 'coccodrillo_marino'] },
-  { id: 'conchiglia', name: 'Conchiglia del domatore', price: 30, pocket: 'battaglia', text: 'Serve per domare: una per ogni tentativo in battaglia', battleOnly: true },
-  { id: 'arpione_mitico', name: 'Arpione mitico', price: 5000, stockPerVisit: 1, restockAfterGuardian: true, pocket: 'battaglia', use: { tameMult: 3 }, text: 'Monouso: stordisce all\u2019istante la bestia colpita e porta subito al minigioco' },
+  // baits by group of beasts (owner, 16 ottobre: "diversi tipi di esche per diversi tipi di animali"), a plain one
+  // and a fine one that may draw an alfa or an albino (tuning)
+  ...baits(),
+  // taming shells like Pokémon's balls (owner, 16 ottobre): one per attempt; the King's always holds, one at a time
+  { id: 'conchiglia', name: 'Conchiglia', price: 30, pocket: 'battaglia', battleOnly: true, shell: 1, text: 'Per domare: una per ogni tentativo in battaglia' },
+  { id: 'conchiglia_rara', name: 'Conchiglia rara', price: 120, pocket: 'battaglia', battleOnly: true, shell: 1.5, tint: 0x9fd8ff, text: 'Tiene meglio: presa ×1,5' },
+  { id: 'conchiglia_abisso', name: 'Conchiglia d\u2019abisso', price: 300, pocket: 'battaglia', battleOnly: true, shell: 2, tint: 0x9a7cff, text: 'Madreperla scura degli abissi: presa ×2' },
+  { id: 'conchiglia_re', name: 'Conchiglia del Re', price: 15000, pocket: 'battaglia', battleOnly: true, shell: Infinity, maxOwned: 1, tint: 0xffd36a, text: 'Doma sempre, qualunque bestia. Se ne porta una sola' },
 ];
+
 
 /** Cosmetic skins for beasts already tamed: small bonus, one active per beast. */
 export interface SkinDef { id: string; species: string; name: string; price: number; bonus: { stat: 'hp' | 'bite' | 'charge' | 'defense' | 'speed'; mult: number }; }

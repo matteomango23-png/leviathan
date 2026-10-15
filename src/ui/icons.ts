@@ -80,7 +80,11 @@ export function iconFor(id: string): IconName {
     esca_gamberi: 'shrimp',
     esca_viva: 'hook',
     conchiglia: 'star',
-    arpione_mitico: 'trident',
+    conchiglia_rara: 'star',
+    conchiglia_abisso: 'star',
+    conchiglia_re: 'star',
+    esca_aringhe: 'school',
+    esca_carne: 'hook',
     fiocine: 'darts',
     rete: 'net',
     folgore: 'bolt',
@@ -92,5 +96,5 @@ export function iconFor(id: string): IconName {
     lampo_sonar: 'bolt',
     controcorrente: 'dive',
   };
-  return map[id] ?? 'star';
+  return map[id] ?? map[id.replace(/_pregiata$/, '')] ?? 'star';
 }

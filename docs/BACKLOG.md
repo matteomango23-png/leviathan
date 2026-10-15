@@ -66,6 +66,34 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 - **In ghiaccio:** virata e morso del megalodonte dai video (`public/prove/squalo/`); il proprietario non è soddisfatto, troppe cose da risolvere prima.
 - **Leviatano:** è la bestia del finale della storia (oggi in pausa), per questo non si trova in mare. Torna col blocco 10.
 
+## Feedback del 16 ottobre 2026 (menu, bacheca, bestiario), in lotti
+
+Il primo tester ha trovato lo squalo bianco ma non ha capito che esistono i leggendari: i menu devono essere chiari e invitanti, e lasciare un po' di mistero.
+
+- **G. Porto diviso in schede monotematiche** ✅ v0.71.0 (insieme a H):
+  - Mercato: solo la vendita del pescato, con il listino;
+  - Conchiglie: 4 livelli come le Poké Ball; l'ultima, la Conchiglia del Re, cattura sempre, se ne compra una sola e prende il posto dell'arpione mitico;
+  - Cure divise in gruppi: PS, rianimare, stati, PP, potenziamenti da battaglia;
+  - Esche: una per gruppo di animali, quelle care con una piccola probabilità di alfa o albino;
+  - Sub: mute, potenziamenti, lampade, ossigeno;
+  - Mezzi: carburante (un tipo solo, "pieno a tutti"), riparazione mezzo per mezzo, cantiere;
+  - Bacheca;
+  - Recinto (resta).
+- **H. Bacheca nuova** ✅ v0.71.0:
+  - in ogni porto e avamposto 3-4 Ricercati (leggendari e giganti di quel mare) con la card grande;
+  - prima della voce si vede solo la sagoma scura con un indizio, dopo la card intera;
+  - taglie con le card;
+  - missioni ordinate meglio.
+- **I. Bestiario e squadra:**
+  - gli albini sono voci separate;
+  - le versioni rare mostrano solo quelle con immagini proprie;
+  - le evoluzioni stanno una accanto all'altra, con le icone delle evoluzioni sulla card;
+  - via l'alone chiaro delle bestie rare in acqua (`views/beastsLayer.ts`);
+  - nei menu solo la squadra (max 5);
+  - sulla nave una stiva di bestie che dipende dalla nave (barca piccola 0, navi grandi 5-10), le altre al Recinto.
+- **J. Salto fuori dall'acqua cavalcando** (tipo Angry Shark), mangiando anche gli uccelli.
+- **K. Tutorial:** spiegazioni brevi la prima volta (barca, sonar, voci, trovare un leggendario).
+
 ---
 
 ## Blocco 1 — Nuovo inizio senza storia

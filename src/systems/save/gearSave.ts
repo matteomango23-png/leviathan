@@ -17,7 +17,6 @@ export interface SavedGear {
   swarms: string[];
   wrecks: string[];
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
-  mythicStock: number;
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
   /** Relics found in the sunken temples (tappa 14; missing in older saves). */
@@ -40,6 +39,12 @@ const counts = (v: unknown, known: string[]): Record<string, number> => {
   for (const [k, n] of Object.entries(v)) if (known.includes(k) && num(n) > 0) out[k] = Math.floor(num(n));
   return out;
 };
+
+/** The mythic harpoon is gone (owner, 16 ottobre 2026): whoever had one gets a Conchiglia del Re (one at most). */
+function harpoonToShell(raw: unknown, inv: Record<string, number>): Record<string, number> {
+  if (isObj(raw) && num(raw.arpione_mitico) > 0) inv.conchiglia_re = 1;
+  return inv;
+}
 
 export function validateGear(raw: unknown): SavedGear {
   if (!isObj(raw)) throw new Error('Equipaggiamento non valido.');
@@ -79,7 +84,7 @@ export function validateGear(raw: unknown): SavedGear {
     ),
     weapons,
     activeWeapon,
-    inventory: counts(raw.inventory, itemIds),
+    inventory: harpoonToShell(raw.inventory, counts(raw.inventory, itemIds)),
     backpack,
     swarms: ids(raw.swarms, swarmIds),
     wrecks: ids(
@@ -87,7 +92,6 @@ export function validateGear(raw: unknown): SavedGear {
       WRECKS.map((w) => w.id),
     ),
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
-    mythicStock: Math.floor(num(raw.mythicStock)),
     deepestM: num(raw.deepestM),
     relics: ids(
       raw.relics,

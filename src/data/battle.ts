@@ -31,7 +31,6 @@ export const BATTLE = {
     statusBonus: { stordito: 2.5, congelato: 2.5, avvelenato: 1.5, ferito: 1.5, paralizzato: 1.5 } as Record<string, number>,
     levelPenalty: 0.85, // × this for every level the beast is above your strongest (like Spada e Scudo's badges)
     shakes: 3, // the shell shakes this many times before it holds
-    shellItem: 'conchiglia', // each attempt uses one (owner, 2 ottobre: they were endless)
   },
   /** Fleeing: harder from stronger, rarer and giant beasts (owner, 1 ottobre 2026). Tuning. */
   flee: {
@@ -61,7 +60,7 @@ export const BATTLE_PROTOTYPE = {
     { speciesId: 'torpedine', level: [5, 7] },
     { speciesId: 'coccodrillo_marino', level: [9, 11] },
   ] as { speciesId: string; level: [number, number] }[],
-  items: { alga_curativa: 2, perla_ristoro: 1, ambra_risveglio: 1, muschio_luminoso: 1, attacco_x: 1, arpione_mitico: 1, conchiglia: 5 } as Record<string, number>,
+  items: { alga_curativa: 2, perla_ristoro: 1, ambra_risveglio: 1, muschio_luminoso: 1, attacco_x: 1, conchiglia: 5, conchiglia_rara: 2, conchiglia_re: 1 } as Record<string, number>,
   variantChance: 0.15, // a test foe is sometimes albino or alfa, to try harder taming
 };
 

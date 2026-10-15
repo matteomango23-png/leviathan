@@ -87,7 +87,6 @@ function saveGear(g: GearState): SavedGear {
     swarms: [...g.swarms],
     wrecks: [...g.wrecks],
     missions: structuredClone(g.missions),
-    mythicStock: g.mythicStock,
     deepestM: Math.floor(g.deepestM),
     relics: [...g.relics],
     market: structuredClone(g.market),

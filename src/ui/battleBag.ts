@@ -47,7 +47,7 @@ export function battleBag(
   };
   const pick = (id: string): void => {
     const use = itemDef(id)!.use!;
-    if (use.stage || use.tameMult) return done({ kind: 'item', id });
+    if (use.stage) return done({ kind: 'item', id });
     // medicine: on which beast?
     const m = host.page('list', `${itemDef(id)!.name}: su chi?`);
     s.team.forEach((f, i) =>

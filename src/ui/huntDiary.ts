@@ -12,12 +12,12 @@ import { renderSonarNotes } from './sonarNotes';
 
 const STEPS = ['Voce', 'Eco', 'Tracce', 'Bestia'] as const;
 
-function stepsDone(g: GameState, h: HuntDef): boolean[] {
+export function stepsDone(g: GameState, h: HuntDef): boolean[] {
   const p = g.hunts[h.id];
   return [!!p?.heard, !!p?.echo, !!p?.traces, !huntOpen(h, g.beasts.gone, g.beasts.team)];
 }
 
-function outcome(g: GameState, h: HuntDef): string | null {
+export function outcome(g: GameState, h: HuntDef): string | null {
   if (huntOpen(h, g.beasts.gone, g.beasts.team)) return null;
   return h.form.unique && g.beasts.team.some((t) => t.form.unique === h.form.unique)
     ? 'catturata'
@@ -25,7 +25,7 @@ function outcome(g: GameState, h: HuntDef): string | null {
 }
 
 /** The sheet of one hunt: every piece of it in rows, and the button to follow it. */
-function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw: () => void): void {
+export function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw: () => void): void {
   const i = HUNTS.indexOf(h);
   const p = g.hunts[h.id]!;
   // over everything, not inside the cockpit's scrolling body (owner, 15 ottobre: it overlapped and its X was out of sight)

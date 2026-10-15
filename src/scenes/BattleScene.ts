@@ -2,7 +2,7 @@
 // the interface for your action and plays the steps with the battle view. Without a game it starts on its own
 // with the test team (link with ?battaglia).
 import Phaser from 'phaser';
-import { BATTLE, BATTLE_PROTOTYPE } from '../data/battle';
+import { BATTLE_PROTOTYPE } from '../data/battle';
 import { BATTLE_TEXT, type Named } from '../data/battleText';
 import { ITEMS } from '../data/world';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../systems/battle/battle';
 import { makeFighter, named } from '../systems/battle/fighter';
 import { useBattleItem } from '../systems/battle/battleItems';
+import { itemDef, shellsOwned } from '../systems/economy/items';
 import type { BeastForm } from '../systems/beasts/forms';
 import { xpReward } from '../systems/beasts/growth';
 import { makeRng, type Rng } from '../systems/math';
@@ -43,7 +44,6 @@ export class BattleScene extends Phaser.Scene {
   private s!: BattleState;
   private rng: Rng = makeRng(Date.now());
   private items: Record<string, number> = {};
-  private tameBonus = 1;
   /** In the game (not the ?battaglia prototype): the session and what the battle is about. */
   private session: Session | null = null;
   private setupInGame: BattleSetup | null = null;
@@ -65,7 +65,6 @@ export class BattleScene extends Phaser.Scene {
   private setup(): void {
     const g = this.session?.game;
     this.setupInGame = g ? battleSetup(g) : null;
-    this.tameBonus = 1;
     if (g && this.setupInGame) {
       this.s = this.setupInGame.state;
       this.items = g.gear.inventory; // the real backpack: what you use is gone
@@ -175,16 +174,18 @@ export class BattleScene extends Phaser.Scene {
       await this.ui.say(BATTLE_TEXT.switched(from, this.name('you')));
     } else if (action.kind === 'item') await this.useItem(action.id, action.target, action.move);
     else if (action.kind === 'tame') {
-      if ((this.items[BATTLE.catch.shellItem] ?? 0) <= 0) {
+      // each attempt uses one shell (owner, 2 ottobre); a better one holds better (16 ottobre)
+      const shell = action.shell ? itemDef(action.shell) : shellsOwned(this.items)[0];
+      if (!shell || (this.items[shell.id] ?? 0) <= 0) {
         await this.ui.say(BATTLE_TEXT.noShells);
         return;
       }
-      this.items[BATTLE.catch.shellItem] = (this.items[BATTLE.catch.shellItem] ?? 0) - 1;
+      this.items[shell.id] = (this.items[shell.id] ?? 0) - 1;
       await this.ui.say(BATTLE_TEXT.tameThrow(this.name('foe')), 0.9);
-      const step = tryTame(s, this.rng, Math.max(...s.team.map((f) => f.level)), this.tameBonus);
-      this.tameBonus = 1;
+      const level = Math.max(...s.team.map((f) => f.level));
+      const step = tryTame(s, this.rng, level, shell.shell ?? 1);
       if (step.kind !== 'tame') return;
-      await this.view!.tame(step.shakes, step.caught);
+      await this.view!.tame(step.shakes, step.caught, shell.tint);
       if (step.caught) await this.ui.say(BATTLE_TEXT.tamed(this.name('foe')), 2);
       else await this.ui.say(BATTLE_TEXT.tameBroke[Math.min(step.shakes, 2)]!);
     } else if (action.kind === 'flee') {
@@ -204,7 +205,6 @@ export class BattleScene extends Phaser.Scene {
     const on = s.team[target ?? s.active] ?? you(s);
     await this.ui.say(BATTLE_TEXT.item(name, named(on)), 0.9);
     const r = useBattleItem(s, id, target, move);
-    if (r.tameMult !== 1) this.tameBonus = r.tameMult;
     for (const line of r.lines) {
       this.ui.setHp(s);
       await this.ui.say(line);

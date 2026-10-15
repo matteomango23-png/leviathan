@@ -50,8 +50,8 @@ export interface BeastState {
   aboard: boolean;
   /** Wild beasts your companion already warned you about (until they go back into the dark). */
   sensed: number[];
-  /** A bait: these species come to you for a while. */
-  lure: { species: string[]; t: number } | null;
+  /** A bait: these species come to you for a while; a fine one makes one an alfa or an albino this often. */
+  lure: { species: string[]; t: number; rare?: number } | null;
   /** Seconds before the hint about ancient bones can show again. */
   boneHintT: number;
   /** The last species that came out of the dark (they come back less soon; not saved). */
