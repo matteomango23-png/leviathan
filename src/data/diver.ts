@@ -69,6 +69,9 @@ export const SARDINE = {
   fleeRadius: 42,
   fleeSpeed: 86,
   fleeDistance: 50, // how far ahead of the threat a fleeing sardine aims
+  /** Once scared it calms down only this far out (× fleeRadius): no back and forth at the edge (owner, 15 ottobre:
+   *  the small fish moved oddly around a diver standing still). */
+  calmFactor: 1.7,
   steer: 3,
   radius: 2,
   respawnSeconds: 20,
