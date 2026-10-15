@@ -457,6 +457,39 @@ export const BEAST_SPRITE = {
   serpentWave: { amp: 0.32, head: 0.25, waves: 1.6 },
 };
 
+/**
+ * How fast each beast you can ride really swims (km/h, its fast cruise or short burst; owner, 15 ottobre: "diversi
+ * animali, diverse velocità realistiche"). Riding speed follows it, softened (square root) so a slow one is still
+ * worth riding and a fast one does not fly off the screen: the white shark (40 km/h) keeps the speed it had.
+ * Real figures: sailfish ~100, orca ~56, sperm whale ~37, humpback ~27, manta ~24, narwhal ~22, saltwater
+ * crocodile ~29 in bursts; prehistoric ones guessed from their living kin. Tuning.
+ */
+export const RIDE_KMH: Record<string, number> = {
+  squalo_bianco: 40,
+  squalo_martello: 40,
+  squalo_capopiatto: 40,
+  pesce_vela: 100,
+  orca: 56,
+  capodoglio: 37,
+  megattera: 27,
+  manta: 24,
+  narvalo: 22,
+  coccodrillo_marino: 29,
+  archelon: 15,
+  folgore: 42,
+  zannarossa: 45,
+  squarcio: 42,
+  rocciaguscio: 18,
+  saetta: 32,
+  piovra: 25,
+  mosasauro: 40,
+  megalodonte: 40,
+  livyatan: 37,
+  leviatano: 45,
+};
+/** The reference: a beast of RIDE_KMH.squalo_bianco km/h swims as fast as the white shark did. */
+export const RIDE_REF_KMH = 40;
+
 /** The beasts drawn with the serpent's wave (BEAST_SPRITE.serpentWave). */
 export const SERPENTS: readonly string[] = ['folgore', 'saetta', 'murena', 'anguilla_elettrica', 'serpente_di_mare'];
 

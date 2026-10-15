@@ -193,6 +193,25 @@ describe('mounts', () => {
     expect(mountSpeed(g)!).toBeGreaterThan(slow);
   });
 
+  it('each mount as fast as it really swims, softened: sailfish > orca > white shark > humpback (owner, 15 ottobre)', () => {
+    const g = createGame(map, null, 3);
+    giveTestBeast(g, { speciesId: 'squalo_bianco', variant: 'comune' }, 20);
+    run(g, 0.1, { ...emptyInput(), summon: 0 });
+    run(g, TEAM_RULES.arriveSeconds + 0.3);
+    expect(g.beasts.riding).toBe(true);
+    const b = g.beasts.team[0]!;
+    const at = (speciesId: string): number => {
+      b.form = { ...b.form, speciesId };
+      return mountSpeed(g)!;
+    };
+    const shark = at('squalo_bianco');
+    expect(at('pesce_vela')).toBeGreaterThan(at('orca'));
+    expect(at('orca')).toBeGreaterThan(shark);
+    expect(shark).toBeGreaterThan(at('megattera'));
+    expect(at('archelon')).toBeGreaterThan(DIVER.maxSpeed); // never slower than swimming yourself
+    expect(at('pesce_vela')).toBeLessThan(shark * 2); // softened: it does not fly off the screen
+  });
+
   it('the white shark breaks the ancient bones ("Sfonda")', () => {
     const g = bay();
     run(g, 0.1, { ...emptyInput(), summon: 0 });
