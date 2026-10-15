@@ -9,6 +9,9 @@ export interface Layers {
   world: Phaser.GameObjects.Layer;
   front: Phaser.GameObjects.Layer;
   overlay: Phaser.GameObjects.Layer;
+  /** Lights that shine in the dark (the ships' pulsing runes and lamps): the world's view, drawn after the darkness
+   *  (owner, 15 ottobre: deep down the Nightmare's red lights could not be seen). */
+  glow: Phaser.GameObjects.Layer;
 }
 
 export class CameraRig {
@@ -16,6 +19,7 @@ export class CameraRig {
   private readonly bgCam: Phaser.Cameras.Scene2D.Camera;
   private readonly worldCam: Phaser.Cameras.Scene2D.Camera;
   private readonly overlayCam: Phaser.Cameras.Scene2D.Camera;
+  private readonly glowCam: Phaser.Cameras.Scene2D.Camera;
   cx: number;
   cy: number;
 
@@ -31,14 +35,17 @@ export class CameraRig {
       world: scene.add.layer(),
       front: scene.add.layer(),
       overlay: scene.add.layer(),
+      glow: scene.add.layer(),
     };
-    const { bg, world, front, overlay } = this.layers;
+    const { bg, world, front, overlay, glow } = this.layers;
     this.bgCam = scene.cameras.main;
     this.worldCam = scene.cameras.add(0, 0, scene.scale.width, scene.scale.height);
     this.overlayCam = scene.cameras.add(0, 0, scene.scale.width, scene.scale.height);
-    this.bgCam.ignore([world, front, overlay]);
-    this.worldCam.ignore([bg, overlay]);
-    this.overlayCam.ignore([bg, world, front]);
+    this.glowCam = scene.cameras.add(0, 0, scene.scale.width, scene.scale.height);
+    this.bgCam.ignore([world, front, overlay, glow]);
+    this.worldCam.ignore([bg, overlay, glow]);
+    this.overlayCam.ignore([bg, world, front, glow]);
+    this.glowCam.ignore([bg, world, front, overlay]);
     this.cx = startX;
     this.cy = startY;
     this.resize(scene.scale.width, scene.scale.height);
@@ -53,7 +60,7 @@ export class CameraRig {
   private minY: number = CAMERA.minY;
 
   resize(w: number, h: number): void {
-    for (const c of [this.bgCam, this.worldCam, this.overlayCam]) c.setSize(w, h);
+    for (const c of [this.bgCam, this.worldCam, this.overlayCam, this.glowCam]) c.setSize(w, h);
     this.worldCam.setZoom(h / this.viewH);
     this.clampAndApply();
   }
@@ -75,6 +82,8 @@ export class CameraRig {
     this.cx = Phaser.Math.Clamp(this.cx, halfW, Math.max(halfW, this.worldW - halfW));
     this.cy = Phaser.Math.Clamp(this.cy, this.minY + halfH, Math.max(this.minY + halfH, this.worldH - halfH));
     this.worldCam.centerOn(this.cx, this.cy);
+    // the lights follow the world's view exactly
+    this.glowCam.setZoom(this.worldCam.zoom).centerOn(this.cx, this.cy);
   }
 
   /** Eases towards a target; `snap` jumps straight there (start, respawn, import). */
@@ -87,7 +96,7 @@ export class CameraRig {
 
   /** The view cut to another (the helm's, yours): it comes back from dark, so the jump does not show. */
   fadeCut(ms: number): void {
-    for (const c of [this.bgCam, this.worldCam, this.overlayCam]) c.fadeIn(ms, 2, 8, 14);
+    for (const c of [this.bgCam, this.worldCam, this.overlayCam, this.glowCam]) c.fadeIn(ms, 2, 8, 14);
   }
 
   /** A jolt of the view; `strength` 1 = a hit on the diver, less for lighter knocks. */

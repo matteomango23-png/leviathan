@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.68.0 — Luci degli U-Boat (15 ottobre 2026)
+
+- **Fari degli U-Boat e dei sottomarini migliori:** sott'acqua illuminano il mare intorno allo scafo, non solo davanti; meno nell'acqua torbida.
+  - U-Boat: Ocean's Nightmare 40 m, Stormtrooper 28 m, Whale 18 m.
+  - Sottomarini: imperiale 20 m, con sonar e Drone sottomarino 16 m, Drone Artiglio 14 m.
+  - Si accendono da soli in immersione.
+- **Luci della nave:** restano accese anche immergendosi (prima si spegnevano e a fondo era tutto nero).
+- **Luci che pulsano** (le rune rosse del Nightmare, le luci della Krill Hunter, del sottomarino e del drone, il bagliore della sfera): ora si vedono anche nel buio più fondo.
+- **Drone e sfera:** fanno molta più luce attorno a sé, si vedono anche a 300 m.
+- **Manta:** tolto il battito delle ali.
+
 ## v0.67.0 — Schermate e comandi (15 ottobre 2026)
 
 - **Sonar senza tremolii:** le righe di stato (al timone e nel cockpit) hanno sempre la stessa misura. I pulsanti del motore ("▶ Adagio 8 nodi" / "■ Ferma") non fanno più andare a capo la barra in alto.

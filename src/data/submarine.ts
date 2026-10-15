@@ -14,6 +14,8 @@ export interface SubModel {
   lengthM: number;
   speed: number; // units/s (you swim at 42)
   maxDepthM: number;
+  /** Floodlights round the hull under water (m), the top ones only (owner, 15 ottobre). Tuning. */
+  floodlightM?: number;
   hull: number; // hits it takes (each ram takes SUBMARINE.ram.damage × the beast's size)
   tank: number; // litres of fuel (owner, 4 ottobre: bought at the port). Tuning
   perKm: number; // litres per km at full throttle (less going slowly: FUEL.idleShare). Tuning
@@ -71,6 +73,7 @@ export const SUB_MODELS: SubModel[] = [
     lengthM: 13,
     speed: 120,
     maxDepthM: 300,
+    floodlightM: 16,
     hull: 140,
     tank: 140,
     perKm: 9,
@@ -87,6 +90,7 @@ export const SUB_MODELS: SubModel[] = [
     lengthM: 9.5,
     speed: 140,
     maxDepthM: 350,
+    floodlightM: 20,
     hull: 130,
     tank: 130,
     perKm: 9,
@@ -104,6 +108,7 @@ export const SUB_MODELS: SubModel[] = [
     lengthM: 14, // owner, 9 ottobre: at 7 m it was "uno scricciolo"
     speed: 160,
     maxDepthM: 500,
+    floodlightM: 16,
     hull: 90,
     tank: 80,
     perKm: 6,
@@ -122,6 +127,7 @@ export const SUB_MODELS: SubModel[] = [
     lengthM: 13,
     speed: 110,
     maxDepthM: 400,
+    floodlightM: 14,
     hull: 130,
     tank: 100,
     perKm: 7,

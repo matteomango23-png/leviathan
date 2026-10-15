@@ -2,7 +2,7 @@
 // Sharks and fish swing the tail sideways, shortening in perspective; whales and dolphins beat it up and down;
 // serpents and eels carry one wave down the whole body (owner, 15 ottobre: Folgore stretched and shrank); wings that
 // beat (the manta) stretch their strips up and down in turn.
-import { BEAST_SPRITE, type FlapDef } from '../data/beasts';
+import { BEAST_SPRITE } from '../data/beasts';
 
 const { frameW: IW, segments: N, whaleWave, serpentWave } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -13,7 +13,6 @@ export interface SwimPoseIn {
   phase: number;
   whale?: boolean;
   serpent?: boolean;
-  flap?: FlapDef;
 }
 
 /** The spine's points (head first), the angle at each and each piece's length, in picture pixels. */
@@ -44,7 +43,7 @@ export function spineOf(p: SwimPoseIn): { pts: [number, number][]; ang: number[]
     } else {
       // the tail swings sideways, shortening in perspective; with wings the body barely swings (they beat instead)
       const env = Math.pow(Math.max(0, (u - 0.35) / 0.65), 1.5);
-      const th = (p.flap ? 0.25 : 1.05) * env * Math.sin(p.phase - u * 2.2);
+      const th = 1.05 * env * Math.sin(p.phase - u * 2.2);
       a = p.pitch + bend * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2);
       len = SEG * (0.62 + 0.38 * Math.cos(th));
     }
@@ -57,15 +56,4 @@ export function spineOf(p: SwimPoseIn): { pts: [number, number][]; ang: number[]
     }
   }
   return { pts, ang, lens };
-}
-
-/** The upright stretch of strip i for wings that beat: the upper wing's strips taller as the lower one's get
- *  shorter, and back, so both wing tips rise and fall together (strips scale about the body line). */
-export function flapScale(p: { phase: number; flap?: FlapDef }, i: number): number {
-  const f = p.flap;
-  if (!f) return 1;
-  const x = 1 - (i + 0.5) / N; // where the strip is along the picture (0 = tail end, 1 = head)
-  const inside = (r: [number, number]): number =>
-    x < r[0] || x > r[1] ? 0 : Math.sin(((x - r[0]) / (r[1] - r[0])) * Math.PI); // fades at the wing's ends
-  return 1 + f.amp * Math.sin(p.phase * f.rate) * (inside(f.upper) - inside(f.lower));
 }

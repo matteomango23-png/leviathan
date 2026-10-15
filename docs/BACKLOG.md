@@ -50,7 +50,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
   - scelta dello starter su Android;
   - bestiario con le versioni rare viste;
   - riordino della squadra trascinando le sfere.
-- **D. Luci degli U-Boat:**
+- **D. Luci degli U-Boat** ✅ v0.68.0:
   - luce intorno mentre navigano sott'acqua (con la torbidità);
   - luci rosse che pulsano al buio;
   - drone e sfera visibili in profondità.

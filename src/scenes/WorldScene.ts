@@ -1,5 +1,6 @@
 // World: runs the game step and draws the sea. No rules live here, only wiring and drawing.
 import Phaser from 'phaser';
+import { subFloodSpots } from '../systems/ship/floodlight';
 import { turbidityAt } from '../systems/clarity';
 import { SeaSurfaceView } from '../views/seaSurfaceView';
 import { lampOf } from '../systems/lamp';
@@ -133,11 +134,11 @@ export class WorldScene extends Phaser.Scene {
     this.temple = new TempleView(this, L.world);
     this.worldArt = new WorldArtView(this, L.world, map);
     this.surface = new SeaSurfaceView(this, L.world, map); // behind the vehicles that ride its waves
-    this.ship = new ShipView(this, L.world);
+    this.ship = new ShipView(this, L.world, L.glow);
     this.hunts = new HuntView(this, L.world);
     this.boat = new BoatView(this, L.world);
-    this.sub = new SubmarineView(this, L.world);
-    this.nightmare = new NightmareView(this, L.world);
+    this.sub = new SubmarineView(this, L.world, L.glow);
+    this.nightmare = new NightmareView(this, L.world, L.glow);
     this.fishView = new FishView(this, L.world, g.fish);
     this.beasts = new BeastsLayer(this, L.world, g);
     this.birdsView = new BirdsView(this, L.world);
@@ -409,12 +410,6 @@ export class WorldScene extends Phaser.Scene {
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
     const fade = d.dead ? Phaser.Math.Clamp(1.4 - d.deadTime * 0.6, 0, 1) : 0;
-    const glows = [
-      ...this.places.glowSpots(g.gear),
-      ...this.beasts.glowSpots(g),
-      ...this.ship.glowSpots(g.ship),
-      ...this.nightmare.glowSpots(g),
-    ];
     // the murk tints the whole screen: only as much as the view is under water (owner, 9 ottobre: launching a boat
     // the screen turned another colour while the camera dipped under the surface, then snapped back)
     const viewWet = Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / (info.h / 2 / info.zoom), 0, 1);
@@ -424,6 +419,13 @@ export class WorldScene extends Phaser.Scene {
       ? murkNow
       : this.murkShown + (murkNow - this.murkShown) * Math.min(1, dt * MURK_EASE);
     const murk = this.murkShown;
+    const glows = [
+      ...this.places.glowSpots(g.gear),
+      ...this.beasts.glowSpots(g),
+      ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
+      ...subFloodSpots(g.sub, murk),
+      ...this.nightmare.glowSpots(g),
+    ];
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },

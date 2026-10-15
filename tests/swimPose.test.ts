@@ -1,8 +1,8 @@
 // How the big beasts' bodies move (owner, 15 ottobre 2026): Folgore like a snake without stretching, the manta's
 // wings beating.
 import { describe, expect, it } from 'vitest';
-import { BEAST_SPRITE, FLAP, SERPENTS } from '../src/data/beasts';
-import { flapScale, spineOf } from '../src/views/swimPose';
+import { BEAST_SPRITE, SERPENTS } from '../src/data/beasts';
+import { spineOf } from '../src/views/swimPose';
 
 const SEG = BEAST_SPRITE.frameW / BEAST_SPRITE.segments;
 
@@ -21,19 +21,5 @@ describe('a serpent', () => {
     const head = ang.slice(0, 6);
     expect(Math.max(...head) - Math.min(...head)).toBeGreaterThan(0.02);
     expect(Math.max(...ang) - Math.min(...ang)).toBeGreaterThan(0.3);
-  });
-});
-
-describe('the manta', () => {
-  it('beats its wings: the upper wing up while the lower one rises too, and back', () => {
-    const flap = FLAP.manta!;
-    const N = BEAST_SPRITE.segments;
-    const upper = Math.round((1 - (flap.upper[0] + flap.upper[1]) / 2) * N - 0.5);
-    const lower = Math.round((1 - (flap.lower[0] + flap.lower[1]) / 2) * N - 0.5);
-    const up = Math.PI / 2 / flap.rate;
-    expect(flapScale({ phase: up, flap }, upper)).toBeGreaterThan(1.1);
-    expect(flapScale({ phase: up, flap }, lower)).toBeLessThan(0.9);
-    expect(flapScale({ phase: -up, flap }, upper)).toBeLessThan(0.9);
-    expect(flapScale({ phase: up, flap }, 0)).toBe(1); // the head does not move
   });
 });
