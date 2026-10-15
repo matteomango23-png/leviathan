@@ -107,7 +107,7 @@ const sharkLen=()=>LENGTHS[li]*metre();
 
 const D={x:0,y:0,vx:0,vy:0,face:1,kick:0,dash:0};
 // the shark: st enter/cruise/exit/bolt/hidden (patrol) or show (showcase); turning: the turn clip playing
-const S={x:0,y:0,vx:0,vy:0,face:1,clip:null,want:null,ghost:null,last:null,phase:0,pitch:0,pitchV:0,st:'hidden',t:0.6,dy:0,onT:0,followT:0,frame:0};
+const S={x:0,y:0,vx:0,vy:0,face:1,bite:null,clip:null,want:null,ghost:null,last:null,phase:0,pitch:0,pitchV:0,st:'hidden',t:0.6,dy:0,onT:0,followT:0,frame:0};
 const cam={x:0,y:0};
 let touch=null;
 const wrap=$('wrap');
@@ -116,11 +116,11 @@ wrap.addEventListener('pointermove',e=>{if(touch)touch={x:e.clientX*DPR,y:e.clie
 const end=()=>{touch=null;};wrap.addEventListener('pointerup',end);wrap.addEventListener('pointercancel',end);
 $('bDash').addEventListener('pointerdown',e=>{e.stopPropagation();D.dash=0.35;});
 $('bTurn').addEventListener('pointerdown',e=>{e.stopPropagation();request('virata');});
-$('bBite').addEventListener('pointerdown',e=>{e.stopPropagation();request('morso');});
+$('bBite').addEventListener('pointerdown',e=>{e.stopPropagation();bite();});
 
 const fish=[],snow=[];
 function restart(){
-  S.clip=null;S.want=null;S.ghost=null;S.frame=0;
+  S.clip=null;S.want=null;S.ghost=null;S.bite=null;S.frame=0;
   if(showcase){S.st='show';S.x=D.x+D.face*W*0.12;S.y=D.y-H*0.05;S.vx=S.face*1.2*U();S.vy=0;}
   else{S.st='hidden';S.t=0.4;}
 }
@@ -140,18 +140,68 @@ const box=(c,i)=>c.boxes[i],mid=b=>[(b[0]+b[2])/2,(b[1]+b[3])/2],len=b=>b[2]-b[0
 let SW=null; // the swim's fixed point and its usual length (median of its frames)
 function swimGeo(){
   const c=clips.nuoto,m=a=>a.slice().sort((x,y)=>x-y)[a.length>>1];
-  SW={len:m(c.boxes.map(len)),ax:m(c.boxes.map(b=>mid(b)[0])),ay:m(c.boxes.map(b=>mid(b)[1]))};
+  SW={len:m(c.boxes.map(len)),top:m(c.boxes.map(b=>b[1])),ax:m(c.boxes.map(b=>mid(b)[0])),ay:m(c.boxes.map(b=>mid(b)[1]))};
 }
 const swimScale=()=>sharkLen()/SW.len;
 const swimIndex=()=>((Math.floor(S.frame)%clips.nuoto.frames)+clips.nuoto.frames)%clips.nuoto.frames;
 /** Where swim frame i's silhouette centre is in the world, facing this way. */
 function swimCentre(i,face){const [x,y]=mid(box(clips.nuoto,i)),sc=swimScale();return [S.x+(x-SW.ax)*sc*face,S.y+(y-SW.ay)*sc];}
 function request(name){if(video&&!S.clip&&S.st!=='hidden'&&clips[name])S.want={name,t:0};}
+// the bite (owner, 11 ottobre: the video's mouth barely opened): the lower jaw of the swim frame turns down on its hinge,
+// opening onto a dark mouth, while the shark lunges; the swim never stops, so nothing jumps
+function bite(){if(video&&!S.clip&&S.st!=='hidden'&&!S.bite){S.bite={t:0};S.vx+=S.face*3*U();}}
+const BITE={open:0.16,hold:0.14,close:0.22,angle:0.5};
+function jawAngle(){
+  const b=S.bite;if(!b)return 0;const t=b.t,ease=x=>x*x*(3-2*x);
+  if(t<BITE.open)return BITE.angle*ease(t/BITE.open);
+  if(t<BITE.open+BITE.hold)return BITE.angle;
+  return BITE.angle*(1-ease(Math.min(1,(t-BITE.open-BITE.hold)/BITE.close)));
+}
+// the lower jaw, measured on a frame of the swim: points as (from the nose, from the top) in shark lengths; the first is
+// the hinge at the corner of the mouth, then the lower lip to the front and the underside of the jaw back
+const JAW=[[-0.1616,0.2458],[-0.1246,0.2424],[-0.0909,0.2424],[-0.0606,0.2441],[-0.0505,0.2525],[-0.0606,0.2643],[-0.0825,0.2727],[-0.1162,0.2828],[-0.1498,0.2929],[-0.1835,0.2997],[-0.2054,0.2929],[-0.1919,0.2677]];
+// the upper lip, from the hinge to where the upper teeth end (the mouth opens below it)
+const UP=[[-0.1616,0.2458],[-0.1246,0.2391],[-0.0825,0.2357],[-0.037,0.2357]];
+const UPPER=4; // JAW[0..UPPER] is the lower lip, from the hinge to the front of the jaw
+const jawC=document.createElement('canvas'),jg=jawC.getContext('2d'),headC=document.createElement('canvas'),hg=headC.getContext('2d');
+/** The swim frame with its jaw open by a (radians), drawn on a canvas of its own size. */
+function openJaw(im,b,a){
+  const w=im.naturalWidth,h=im.naturalHeight;
+  for(const c of [jawC,headC])if(c.width!==w||c.height!==h){c.width=w;c.height=h;}
+  const pts=JAW.map(([x,y])=>[b[2]+x*SW.len,SW.top+y*SW.len]),[hx,hy]=pts[0];
+  const path=g=>{g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();};
+  // the jaw alone
+  jg.clearRect(0,0,w,h);jg.save();path(jg);jg.clip();jg.drawImage(im,0,0);jg.restore();
+  // the head without it, the mouth's inside, then the jaw turned down on its hinge
+  hg.clearRect(0,0,w,h);hg.drawImage(im,0,0);
+  const rot=([x,y])=>{const dx=x-hx,dy=y-hy;return [hx+dx*Math.cos(a)-dy*Math.sin(a),hy+dx*Math.sin(a)+dy*Math.cos(a)];};
+  const lip=UP.map(([x,y])=>[b[2]+x*SW.len,SW.top+y*SW.len]),low=pts.slice(0,UPPER+1).map(rot).reverse();
+  hg.beginPath();lip.forEach(([x,y],i)=>i?hg.lineTo(x,y):hg.moveTo(x,y));low.forEach(([x,y])=>hg.lineTo(x,y));hg.closePath();
+  const front=lip[lip.length-1],gr=hg.createLinearGradient(hx,hy,front[0],front[1]);
+  gr.addColorStop(0,'#050102');gr.addColorStop(0.6,'#2a0c0e');gr.addColorStop(1,'#4c1a1c');
+  hg.fillStyle=gr;hg.fill();
+  // rows of teeth: along the upper lip pointing down, along the turned lower lip pointing up, longer as it opens
+  const open=a/BITE.angle,tooth=SW.len*0.011*(0.4+0.6*open);
+  const row=(line,dir,n)=>{
+    for(let i=1;i<=n;i++){
+      const u=i/(n+1),seg=u*(line.length-1),j=Math.min(line.length-2,Math.floor(seg)),f=seg-j;
+      const x=line[j][0]+(line[j+1][0]-line[j][0])*f,y=line[j][1]+(line[j+1][1]-line[j][1])*f;
+      const t=tooth*(0.6+0.4*Math.sin(u*Math.PI)),wd=t*0.55;
+      hg.beginPath();hg.moveTo(x-wd,y);hg.lineTo(x+wd,y);hg.lineTo(x+dir[0]*t,y+dir[1]*t);hg.closePath();
+      hg.fillStyle='#d6cdb8';hg.fill();hg.strokeStyle='rgba(40,20,15,.7)';hg.lineWidth=0.6;hg.stroke();
+    }
+  };
+  row(lip.slice(1),[0,1],7);
+  const lowLip=low.slice().reverse().slice(1);row(lowLip,[Math.sin(a),-Math.cos(a)],6);
+  hg.save();hg.translate(hx,hy);hg.rotate(a);hg.translate(-hx,-hy);hg.drawImage(jawC,0,0);hg.restore();
+  row(lowLip,[Math.sin(a),-Math.cos(a)],6); // the lower teeth stand on the jaw, in front of it
+  return headC;
+}
 function tryStart(dt){
   const w=S.want;if(!w)return;w.t+=dt;
   const c=clips[w.name],f=swimIndex();
   let pair=c.swimFrom.filter(q=>q[0]===f).sort((a,b)=>a[1]-b[1])[0];
-  if(!pair&&w.t<2.5)return; // wait for a swim frame that matches (the swim beats faster meanwhile, see advance)
+  if(!pair&&w.t<3)return; // wait for a swim frame that matches (one comes round every few beats)
   const matched=!!pair;
   if(!pair)pair=[f,0];
   const k0=pair[1],xs=S.face*c.face,P=swimCentre(f,S.face);
@@ -162,14 +212,15 @@ function tryStart(dt){
   S.clip={name:w.name,c,k0,t:0,xs,P,c0:mid(box(c,k0)),sA,sB,turn,swimAt:f};S.want=null;
   if(!turn)S.vx+=S.face*3*U(); // the bite: a lunge forward
 }
+const TURN_RATE=1.7; // the turn of the video, played faster (owner: "velocizza considerevolmente"): about 1.6 s
 /** The clip's frame now and its scale (a turn plays once; a bite opens, holds, closes). */
 function clipPose(){
-  const K=S.clip,c=K.c,n=c.frames,span=n-1-K.k0,run=K.t*c.fps,hold=0.18*c.fps;
+  const K=S.clip,c=K.c,n=c.frames,span=n-1-K.k0,run=K.t*c.fps*TURN_RATE,hold=0.18*c.fps;
   let k;
   if(K.turn)k=Math.min(n-1,K.k0+Math.floor(run));
   else k=run<=span?K.k0+Math.floor(run):run<=span+hold?n-1:Math.max(K.k0,n-1-Math.floor(run-span-hold));
   const u=span>0?(k-K.k0)/span:1;
-  return {k,s:K.sA+(K.sB-K.sA)*u,done:K.turn?run>=span+1:run>=2*span+hold+1};
+  return {k,frac:K.turn?run-Math.floor(run):0,s:K.sA+(K.sB-K.sA)*u,done:K.turn?run>=span:run>=2*span+hold+1};
 }
 function finishClip(){
   const K=S.clip,c=K.c;S.ghost=S.last&&{...S.last,a:0.5};
@@ -253,26 +304,31 @@ function advance(dt){
   S.pitchV=(np-S.pitch)/Math.max(dt,1e-3);S.pitch=np;
   // the swim's beat: faster with speed (the video swims at a cruise)
   const beat=0.7+Math.min(2.2,Math.hypot(S.vx,S.vy)/U()*0.25);
-  S.frame+=dt*beat*(S.want?2.4:1)*(clips.nuoto?clips.nuoto.fps:12); // waiting for a clip: a quicker beat to reach it
+  S.frame+=dt*beat*(S.want?1.3:1)*(clips.nuoto?clips.nuoto.fps:24); // waiting for a clip: a little quicker to reach it
+  if(S.bite){S.bite.t+=dt;if(S.bite.t>BITE.open+BITE.hold+BITE.close)S.bite=null;}
   S.phase+=dt*(2.6+Math.hypot(S.vx,S.vy)/U()*0.9);
 }
 
 // ---- drawing the shark
 function put(g,o,a){
-  g.save();g.globalAlpha=a;g.translate(o.x-cam.x,o.y-cam.y);g.rotate(o.rot);g.scale(o.sx,o.sy);g.drawImage(o.im,o.ox,o.oy);g.restore();
+  g.save();g.globalAlpha=a;g.translate(o.x-cam.x,o.y-cam.y);g.rotate(o.rot);g.scale(o.sx,o.sy);g.drawImage(o.im,o.ox,o.oy);
+  if(o.next&&o.frac>0.02){g.globalAlpha=a*o.frac;g.drawImage(o.next,o.ox,o.oy);} // the next frame showing through
+  g.restore();
 }
 function drawVideoShark(g){
   if(!SW)return;
   let o=null;
   if(S.clip){
-    const K=S.clip,{k,s}=clipPose(),im=K.c.img[k];
-    if(im)o={im,b:box(K.c,k),x:K.P[0],y:K.P[1],rot:0,sx:s*K.xs,sy:s,ox:-K.c0[0],oy:-K.c0[1]};
+    const K=S.clip,{k,s,frac}=clipPose(),im=K.c.img[k],next=K.c.img[Math.min(K.c.frames-1,k+1)];
+    if(im)o={im,next,frac,b:box(K.c,k),x:K.P[0],y:K.P[1],rot:0,sx:s*K.xs,sy:s,ox:-K.c0[0],oy:-K.c0[1]};
   } else {
-    const c=clips.nuoto,im=c.img[swimIndex()],sc=swimScale();
-    if(im)o={im,b:box(c,swimIndex()),x:S.x,y:S.y,rot:S.pitch*S.face,sx:sc*S.face,sy:sc,ox:-SW.ax,oy:-SW.ay};
+    const c=clips.nuoto,i=swimIndex(),sc=swimScale(),a=jawAngle();
+    let im=c.img[i],next=c.img[(i+1)%c.frames];const frac=S.frame-Math.floor(S.frame);
+    if(im&&a>0){im=openJaw(im,box(c,i),a);next=null;} // biting: one frame, its jaw open
+    if(im)o={im,next,frac,b:box(c,i),x:S.x,y:S.y,rot:S.pitch*S.face,sx:sc*S.face,sy:sc,ox:-SW.ax,oy:-SW.ay};
   }
   if(S.ghost)put(g,S.ghost,Math.min(1,S.ghost.a)); // the last frame of the clip before, fading
-  if(o){put(g,o,1);S.last=o;}
+  if(o){put(g,o,1);S.last=o.im===headC?{...o,im:clips.nuoto.img[swimIndex()],next:null}:o;}
 }
 // today's animation: the painted profile on strips following the spine (as views/beastView.ts)
 const N=26;
@@ -353,13 +409,13 @@ function frame(now){
   const real=Math.min(0.05,(now-last)/1000);last=now;
   update(real*(slow?0.25:1));drawScene(ctx);
   fpsN++;fpsT+=real;if(fpsT>=1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;
-    $('info').textContent=`${fps} fps · ${video?'video: nuoto '+(clips.nuoto?.frames??0)+', virata '+(clips.virata?.frames??0)+', morso '+(clips.morso?.frames??0)+' fotogrammi':'oggi: immagine a strisce sulla spina dorsale'} · ${showcase?'vetrina':'pattuglia'}`;}
+    $('info').textContent=`${fps} fps · ${video?'video: nuoto '+(clips.nuoto?.frames??0)+', virata '+(clips.virata?.frames??0)+' fotogrammi':'oggi: immagine a strisce sulla spina dorsale'} · ${showcase?'vetrina':'pattuglia'}`;}
   requestAnimationFrame(frame);
 }
 (async()=>{
   init();
-  const [n,v,b,p]=await Promise.all([loadClip('nuoto'),loadClip('virata'),loadClip('morso'),loadImg(BASE+'profilo.webp')]);
-  if(n){clips.nuoto=n;swimGeo();}if(v)clips.virata=v;if(b)clips.morso=b;profile=p;
+  const [n,v,p]=await Promise.all([loadClip('nuoto'),loadClip('virata'),loadImg(BASE+'profilo.webp')]);
+  if(n){clips.nuoto=n;swimGeo();}if(v)clips.virata=v;profile=p;
   $('load').remove();restart();requestAnimationFrame(frame);
 })();
 </script>

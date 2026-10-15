@@ -100,11 +100,17 @@ function difference(a: Uint8ClampedArray, b: Uint8ClampedArray, w: number, h: nu
 }
 
 /** The stretch [from, to) whose end looks most like its start (to is the frame that would repeat `from`). */
-function bestLoop(frames: Uint8ClampedArray[], w: number, h: number, minFrames: number): [number, number] {
+function bestLoop(
+  frames: Uint8ClampedArray[],
+  w: number,
+  h: number,
+  minFrames: number,
+  maxFrames: number,
+): [number, number] {
   let best: [number, number] = [0, frames.length];
   let score = Infinity;
   for (let a = 0; a < frames.length / 2; a++)
-    for (let b = a + minFrames; b < frames.length; b++) {
+    for (let b = a + minFrames; b < frames.length && b - a <= maxFrames; b++) {
       const d = difference(frames[a]!, frames[b]!, w, h);
       if (d < score) {
         score = d;
@@ -171,7 +177,8 @@ async function makeClip(id: string, c: VideoClip): Promise<Made> {
   let frames = raw.map((f) => cutOut(f, w, h));
   let loop: [number, number] | null = null;
   if (c.loop) {
-    loop = bestLoop(frames, w, h, Math.round((c.minLoop ?? 1) * c.fps));
+    const most = c.maxLoop ? Math.round(c.maxLoop * c.fps) : frames.length;
+    loop = bestLoop(frames, w, h, Math.round((c.minLoop ?? 1) * c.fps), most);
     frames = frames.slice(loop[0], loop[1]);
   }
   const boxes = frames.map((f) => opaqueBox(f, w, h)!);

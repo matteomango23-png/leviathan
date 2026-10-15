@@ -176,6 +176,6 @@ Per le bestie enormi si può animare il nuoto e la virata da un video invece che
 - **Dove metterli:** `art-inbox/video/<id>/` (i video restano sul PC, non nel repository).
 - **Tagli:** in `scripts/art/videoClips.ts` (secondi di inizio e fine, fotogrammi al secondo, larghezza).
 - **Comando:** `npm run art:video` (o `-- --only=<id>`). Toglie il verde, tiene solo l'animale, ritaglia ogni clip su un riquadro unico, trova l'anello del nuoto e salva in `public/prove/<id>/<clip>/` i fotogrammi webp e `<clip>.json` (velocità, numero, misure, sagoma iniziale e finale).
-- **Peso del megalodonte d'osso:** nuoto 86 fotogrammi (2,5 MB), virata 68 (1,5 MB), morso 18 (0,5 MB).
+- **Peso del megalodonte d'osso:** nuoto 69 fotogrammi a 24 al secondo (1,8 MB), virata 68 (1,3 MB). Il morso è disegnato dalla pagina: la mascella ruota sulla cerniera, e i punti della mascella (`JAW`, `UP`) vanno misurati una volta per ogni animale.
 - **Raccordi:** per ogni pezzo lo script scrive `swimFrom` (coppie [fotogramma del nuoto, fotogramma del pezzo] che si somigliano, solo finché l'animale è ancora di profilo) e `swimTo` (il fotogramma del nuoto da cui ripartire). Da dove parte e dove finisce il pezzo va scritto in `face`/`endFace`.
 - **Limite dei video di Gemini:** ogni virata passa davanti alla telecamera. Una virata a U vista di lato, che mostri il dorso, va chiesta esplicitamente: "the shark turns away from the camera showing its back, never facing the camera".
