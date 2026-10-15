@@ -3,8 +3,8 @@
 // each strip follows one spine segment (rotated and shortened in perspective as the tail swings).
 import Phaser from 'phaser';
 import { assetUrl } from '../data/assets';
-import { BEAST_SPRITE, type FlapDef } from '../data/beasts';
-import { flapScale, spineOf } from './swimPose';
+import { BEAST_SPRITE } from '../data/beasts';
+import { spineOf } from './swimPose';
 import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
@@ -80,8 +80,6 @@ export interface BeastPoseView {
   whale?: boolean;
   /** A serpent or an eel: a wave along the whole body, no piece shortened (BEAST_SPRITE.serpentWave). */
   serpent?: boolean;
-  /** Wings that beat (the manta: FLAP). */
-  flap?: FlapDef;
   /** Murky water, far from your light: only its dark shape shows (this tint; clarity.ts). */
   shade?: number;
 }
@@ -140,7 +138,7 @@ export class BeastSprite {
       const a = (ang[i]! + ang[i + 1]!) / 2;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
-        .setScale((lens[i]! / SEG) * OVERLAP, flapScale(p, i));
+        .setScale((lens[i]! / SEG) * OVERLAP, 1);
       if (p.shade !== undefined && p.flash <= 0) {
         s.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.shade);
         continue;

@@ -493,20 +493,6 @@ export const RIDE_REF_KMH = 40;
 /** The beasts drawn with the serpent's wave (BEAST_SPRITE.serpentWave). */
 export const SERPENTS: readonly string[] = ['folgore', 'saetta', 'murena', 'anguilla_elettrica', 'serpente_di_mare'];
 
-/**
- * Wings that beat (owner, 15 ottobre: the manta): the strips of the upper wing (from x0 to x1 of the picture, 0 = its
- * tail end, 1 = its head) and of the lower one stretch and shrink up and down in turn, by `amp`, at `rate` × the
- * swimming beat. The body barely swings. Measured on public/sprites/manta.webp. Tuning.
- */
-export interface FlapDef {
-  upper: [number, number];
-  lower: [number, number];
-  amp: number;
-  rate: number;
-}
-export const FLAP: Record<string, FlapDef> = {
-  manta: { upper: [0.62, 0.86], lower: [0.13, 0.46], amp: 0.22, rate: 0.45 },
-};
 
 /** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */
 export const CETACEANS: readonly string[] = ['megattera', 'capodoglio', 'livyatan', 'orca', 'beluga', 'narvalo', 'delfino'];
