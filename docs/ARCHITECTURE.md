@@ -88,6 +88,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
+| `beasts/patrol.ts` | La pattuglia dei predatori grandi: passaggi, uscita accelerata, rientro dallo stesso lato, scatto via, poi la carica. |
 | `beasts/roam.ts` | Bestie selvatiche in esplorazione: nuotano piano nel buio, si girano solo fuori dalla luce; ti puntano, ti ignorano o scivolano via secondo il carattere. |
 | `encounters.ts` | Comparse delle bestie selvatiche e inizio della battaglia (al tocco, o al colpo di fucile: alle spalle attacchi tu per primo). |
 | `beasts/spawnDraw.ts` | Chi compare quando c'è posto: estrazione pesata per rarità, meno per chi è già in acqua o appena visto; quote della mappa. |
@@ -177,6 +178,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi; a fine battaglia chiede quale mossa dimenticare. |
 | `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo, sempre tutta nello schermo), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
+| `views/swimPose.ts` | La forma del corpo delle bestie grandi lungo la spina (squalo, cetaceo, serpente, ali che battono), senza Phaser: `beastView.ts` la disegna a strisce. |
 | `views/battleView.ts` | Le due bestie: grandezza, respiro e ondeggio, rincorsa e affondo, colpi, svenimenti, ombra e luce dietro; mette insieme sfondo, effetti e conchiglia. |
 | `views/battle/backdrop.ts` | Lo sfondo a strati che si muove (acqua, rocce lontane, raggi, foschia, rocce medie, pedane con riflessi, neve marina e bolle, piante in primo piano, vignetta); usa gli strati dipinti quando ci sono. |
 | `views/battle/backdropArt.ts`, `paint.ts` | I pezzi dello sfondo disegnati dal codice (in attesa di quelli dipinti) e i loro aiuti (colori, creste, grana). |

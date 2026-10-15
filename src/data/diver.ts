@@ -51,7 +51,9 @@ export const HARPOON = {
   speed: 540, // a speargun: fast and straight (tuning)
   returnSpeed: 800, // the line reels back quickly
   range: 150,
-  catchRadius: 6,
+  catchRadius: 9, // along the whole stretch it flew this step (owner, 15 ottobre: it went through fish; was 6)
+  /** A fish or a beast this close to the line of the shot (degrees) pulls it gently onto itself. Tuning. */
+  assistDeg: 6,
   backInHandRadius: 9, // the shot is back in the diver's hand within this distance
   muzzleOffset: 6,
   aimDotsFrom: 14,
@@ -69,6 +71,9 @@ export const SARDINE = {
   fleeRadius: 42,
   fleeSpeed: 86,
   fleeDistance: 50, // how far ahead of the threat a fleeing sardine aims
+  /** Once scared it calms down only this far out (× fleeRadius): no back and forth at the edge (owner, 15 ottobre:
+   *  the small fish moved oddly around a diver standing still). */
+  calmFactor: 1.7,
   steer: 3,
   radius: 2,
   respawnSeconds: 20,

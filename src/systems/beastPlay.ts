@@ -1,11 +1,12 @@
 // Everything about beasts during a game step in the open sea: wild beasts and encounters, calling a mount
 // from the team bar and riding it, its ability, the sardine swarm. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
-import { TEAM_RULES } from '../data/beasts';
+import { RIDE_KMH, RIDE_REF_KMH, TEAM_RULES } from '../data/beasts';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
-import { swimSpeedOf } from '../data/species';
+import { speciesById, swimSpeedOf } from '../data/species';
+import { DIVER } from '../data/diver';
 import { formLengthUnits, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
 import { teamMembers, type TeamBeast } from './beasts/team';
@@ -30,11 +31,17 @@ export function contextAction(g: BeastWorld): ContextAction {
 export function mountSpeed(g: BeastWorld): number | undefined {
   const b = activeBeast(g);
   if (!g.beasts.riding || !b) return undefined;
-  return (
-    swimSpeedOf(speciesOf(b.form), b.form.variant) *
-    TEAM_RULES.rideSpeedMult *
-    (speciesOf(b.form).rideSpeedMult ?? 1)
-  );
+  const sp = speciesOf(b.form);
+  // its real speed (data/beasts.ts RIDE_KMH), softened, measured against the white shark's; else by its role and size
+  const kmh = RIDE_KMH[sp.id];
+  const ref = swimSpeedOf(speciesById('squalo_bianco')!);
+  const base =
+    kmh !== undefined
+      ? ref * Math.sqrt(kmh / RIDE_REF_KMH) * (b.form.variant === 'albino' ? 1.1 : 1)
+      : swimSpeedOf(sp, b.form.variant);
+  const mult = kmh !== undefined ? 1 : (sp.rideSpeedMult ?? 1);
+  // never slower than swimming yourself
+  return Math.max(DIVER.maxSpeed * 1.1, base * TEAM_RULES.rideSpeedMult * mult);
 }
 
 /** Mounts (GDD "cavalcatura") and the second stages that can carry you; not while worn out. */

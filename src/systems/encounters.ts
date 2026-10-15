@@ -38,6 +38,20 @@ export function requestBattle(
   events.push({ type: 'battleStart', id: w.id, first });
 }
 
+/**
+ * A beast that reaches you gets a free attack only from behind (you were facing away from it); met face to face,
+ * the battle starts even (owner, 15 ottobre: "i nemici a parità di livello sono sempre più forti": almost every battle
+ * began with its free attack, though the two sides are otherwise even; tests/balance.test.ts).
+ */
+export function ambush(
+  w: { x: number },
+  d: { x: number; face: 1 | -1 },
+  mount: { face: 1 | -1 } | null = null,
+): BattleRequest['first'] {
+  const face = mount?.face ?? d.face;
+  return Math.sign(w.x - d.x) === face ? 'normal' : 'foe';
+}
+
 /** A weapon tip on a wild beast: the battle starts. Returns true if it hit one (the shot stops). */
 export function weaponHitsBeast(g: BeastWorld, x: number, y: number, events: GameEvent[]): boolean {
   const d = g.diver;
@@ -180,11 +194,23 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const rams = aboard && ramsSubmarine(w);
     const scared = aboard && !rams;
     const rider = g.beasts.riding ? (g.beasts.mount ?? undefined) : undefined;
-    const touched = stepRoam(w, { diver: d, map: g.map, rng: g.rng, dt, hidden, riderLength, scared, rider });
+    const view = g.beasts.view;
+    const touched = stepRoam(w, {
+      diver: d,
+      map: g.map,
+      rng: g.rng,
+      dt,
+      hidden,
+      riderLength,
+      scared,
+      rider,
+      view,
+    });
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
-    } else if (touched && !aboard) requestBattle(g, w, 'foe', events);
+    } else if (touched && !aboard)
+      requestBattle(g, w, ambush(w, d, g.beasts.riding ? g.beasts.mount : null), events);
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the
   // first of the list, so the same few came every time)

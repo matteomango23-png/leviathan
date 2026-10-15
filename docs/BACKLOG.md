@@ -27,7 +27,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
   - le immagini delle bestie delle cacce ora si caricano (il megalodonte invisibile);
   - mezzi rotti senza perdita di denti, riparati solo al porto;
   - specie rare più rare nel mare aperto.
-- **B. Bestie in mare:**
+- **B. Bestie in mare** ✅ v0.66.0 (squalo volpe: immagini nel lotto F, richieste in `docs/GEMINI-LOTTO-5.md`):
   - pattuglia per tutti i predatori (non sempre; a volte una virata in vista);
   - sardine che passano oltre invece di girarti intorno;
   - pesciolini strani da fermo;

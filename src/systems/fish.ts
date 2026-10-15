@@ -30,6 +30,8 @@ export interface Fish {
   ox: number;
   oy: number;
   phase: number;
+  /** Dodging a threat, until it is well clear of it (SARDINE.calmFactor). */
+  scared?: boolean;
 }
 
 export interface FishState {
@@ -94,6 +96,8 @@ export interface Threat {
   x: number;
   y: number;
   alive: boolean;
+  /** How big it is (units): a submarine, a boat or the beast you ride, not a point. */
+  r?: number;
 }
 
 export function stepFish(
@@ -110,10 +114,30 @@ export function stepFish(
     sc.t -= dt;
     if (sc.t <= 0) {
       const [x0, y0, x1, y1] = sc.roam;
-      const p = map.randomOpen(rng, x0, y0, x1, y1, 10);
+      // ahead of it if it can (a school goes on its way, it does not turn back on you; owner, 15 ottobre)
+      const way = Math.sign(sc.tx - sc.x) || 1;
+      let p = map.randomOpen(rng, x0, y0, x1, y1, 10);
+      for (let i = 0; i < 3 && Math.sign(p.x - sc.x) !== way; i++)
+        p = map.randomOpen(rng, x0, y0, x1, y1, 10);
       sc.tx = p.x;
       sc.ty = p.y;
       sc.t = range(rng, SARDINE.schoolRetarget[0], SARDINE.schoolRetarget[1]);
+    }
+    // stopped on you (its goal was where you are): it moves on past you, it does not settle in a ring round you
+    const td = Math.hypot(sc.x - threat.x, sc.y - threat.y);
+    if (
+      threat.alive &&
+      td < (SARDINE.fleeRadius + (threat.r ?? 0)) * 1.5 &&
+      Math.hypot(sc.tx - sc.x, sc.ty - sc.y) < 60
+    ) {
+      const away = Math.sign(sc.x - threat.x) || Math.sign(sc.tx - sc.x) || 1;
+      const [x0, y0, x1, y1] = sc.roam;
+      const p = map.nearestOpen(
+        Math.max(x0, Math.min(x1, sc.x + away * 260)),
+        Math.max(y0, Math.min(y1, sc.y)),
+        10,
+      );
+      [sc.tx, sc.ty, sc.t] = [p.x, p.y, range(rng, SARDINE.schoolRetarget[0], SARDINE.schoolRetarget[1])];
     }
     const dx = sc.tx - sc.x;
     const dy = sc.ty - sc.y;
@@ -159,9 +183,25 @@ export function stepFish(
     const dx = near ? f.x - near.x : 0;
     const dy = near ? f.y - near.y : 0;
     const d = Math.hypot(dx, dy) || 1;
-    if (near && d < SARDINE.fleeRadius) {
-      tx = f.x + (dx / d) * SARDINE.fleeDistance;
-      ty = f.y + (dy / d) * SARDINE.fleeDistance;
+    // a threat's own size (the submarine's hull, not a point at its middle)
+    const reach = SARDINE.fleeRadius + (near === threat ? (threat.r ?? 0) : 0);
+    if (near && d < reach) f.scared = true;
+    else if (!near || d > reach * SARDINE.calmFactor) f.scared = false;
+    if (near && f.scared) {
+      // out of the way to the side, still going the school's way: the school opens round you and closes behind,
+      // instead of a ring of fish backing off around you (owner, 15 ottobre)
+      const sx = f.school.tx - f.school.x;
+      const sy = f.school.ty - f.school.y;
+      const sl = Math.hypot(sx, sy);
+      if (sl > 4) {
+        const [ux, uy] = [sx / sl, sy / sl];
+        const side = Math.sign(dx * -uy + dy * ux) || 1; // which side of its way you are on
+        tx = f.x + (-uy * side + ux * 0.8) * SARDINE.fleeDistance;
+        ty = f.y + (ux * side + uy * 0.8) * SARDINE.fleeDistance;
+      } else {
+        tx = f.x + (dx / d) * SARDINE.fleeDistance;
+        ty = f.y + (dy / d) * SARDINE.fleeDistance;
+      }
       sp = SARDINE.fleeSpeed * mult;
     }
     const ex = tx - f.x;

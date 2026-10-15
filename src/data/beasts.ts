@@ -33,6 +33,24 @@ export const ROAM = {
   swimPhasePerSpeed: 0.9,
 };
 
+/** The patrol of the big predators (systems/beasts/patrol.ts; owner, 15 ottobre). Speeds × the diver's length a
+ *  second, times as in CLAUDE.md. Tuning. */
+export const PATROL = {
+  chance: 0.65, // how often a big hunter makes passes first instead of charging at once
+  maxPasses: 3,
+  turnInView: 0.25, // share of the passes that end with a turn in view
+  cruiseMult: 2.5, // × ROAM.cruiseSpeed while it cruises past you
+  exitMult: 1.6, // × ROAM.chaseSpeed added as it speeds out of the far edge
+  boltMult: 2.2, // × ROAM.chaseSpeed when it bolts away…
+  boltOver: 3, // …and at least this much faster than you (U/s)
+  catchUpMult: 1.5, // left behind off screen facing in: it catches up
+  waitSeconds: [1, 2] as [number, number], // off screen before it turns and comes back
+  followSeconds: 1.1, // you follow it this long: it bolts
+  followSpeed: 1.4, // U/s: you count as following it above this speed its way
+  inViewSeconds: 9, // in view this long without attacking: it bolts
+  chargeMult: 1.4, // its charge after the passes is this much faster than a plain chase
+};
+
 /** Wild beasts: where they live (world units) and when they come back. */
 
 export interface WildSpawnDef {
@@ -431,6 +449,63 @@ export const BEAST_SPRITE = {
    * between the pieces of the picture). Tuning.
    */
   whaleWave: { amp: 0.3, from: 0.6, waves: 1.2 },
+  /**
+   * Serpents and eels (owner, 15 ottobre: Folgore stretched and shrank going up and down, and should move like a
+   * snake): a wave runs along the whole body, head to tail, each piece keeping its length. `amp` radians at the tail,
+   * `head` share of it at the head. Tuning.
+   */
+  serpentWave: { amp: 0.32, head: 0.25, waves: 1.6 },
+};
+
+/**
+ * How fast each beast you can ride really swims (km/h, its fast cruise or short burst; owner, 15 ottobre: "diversi
+ * animali, diverse velocità realistiche"). Riding speed follows it, softened (square root) so a slow one is still
+ * worth riding and a fast one does not fly off the screen: the white shark (40 km/h) keeps the speed it had.
+ * Real figures: sailfish ~100, orca ~56, sperm whale ~37, humpback ~27, manta ~24, narwhal ~22, saltwater
+ * crocodile ~29 in bursts; prehistoric ones guessed from their living kin. Tuning.
+ */
+export const RIDE_KMH: Record<string, number> = {
+  squalo_bianco: 40,
+  squalo_martello: 40,
+  squalo_capopiatto: 40,
+  pesce_vela: 100,
+  orca: 56,
+  capodoglio: 37,
+  megattera: 27,
+  manta: 24,
+  narvalo: 22,
+  coccodrillo_marino: 29,
+  archelon: 15,
+  folgore: 42,
+  zannarossa: 45,
+  squarcio: 42,
+  rocciaguscio: 18,
+  saetta: 32,
+  piovra: 25,
+  mosasauro: 40,
+  megalodonte: 40,
+  livyatan: 37,
+  leviatano: 45,
+};
+/** The reference: a beast of RIDE_KMH.squalo_bianco km/h swims as fast as the white shark did. */
+export const RIDE_REF_KMH = 40;
+
+/** The beasts drawn with the serpent's wave (BEAST_SPRITE.serpentWave). */
+export const SERPENTS: readonly string[] = ['folgore', 'saetta', 'murena', 'anguilla_elettrica', 'serpente_di_mare'];
+
+/**
+ * Wings that beat (owner, 15 ottobre: the manta): the strips of the upper wing (from x0 to x1 of the picture, 0 = its
+ * tail end, 1 = its head) and of the lower one stretch and shrink up and down in turn, by `amp`, at `rate` × the
+ * swimming beat. The body barely swings. Measured on public/sprites/manta.webp. Tuning.
+ */
+export interface FlapDef {
+  upper: [number, number];
+  lower: [number, number];
+  amp: number;
+  rate: number;
+}
+export const FLAP: Record<string, FlapDef> = {
+  manta: { upper: [0.62, 0.86], lower: [0.13, 0.46], amp: 0.22, rate: 0.45 },
 };
 
 /** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */

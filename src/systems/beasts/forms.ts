@@ -9,6 +9,9 @@ import {
   SIDE_TAIL_UNIQUES,
   SPECIES_DANGER,
   type Danger,
+  FLAP,
+  SERPENTS,
+  type FlapDef,
 } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { FINAL_FORM_SIZE_MULT, PROGRESSION, RENDER, VARIANT_RULES, type TypeId } from '../../data/rules';
@@ -220,6 +223,13 @@ export function shapeOfForm(form: BeastForm): readonly (readonly [number, number
     );
   return shapeCache.get(key);
 }
+
+/** How it swims when drawn: a whale's tail up and down, a serpent's wave, wings that beat (data/beasts.ts). */
+export const swimLook = (form: BeastForm): { whale: boolean; serpent: boolean; flap?: FlapDef } => ({
+  whale: tailUpDown(form),
+  serpent: SERPENTS.includes(form.speciesId),
+  flap: FLAP[form.speciesId],
+});
 
 /** Whales and dolphins beat the tail up and down; a few of their uniques swim like a shark (SIDE_TAIL_UNIQUES). */
 export const tailUpDown = (form: BeastForm): boolean =>

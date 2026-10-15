@@ -50,7 +50,7 @@ import { regionAt } from './world/stretches';
 import { ENDLESS } from '../data/endless';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import { board, canBoard, leaveSub, ramSub } from './submarine';
+import { board, canBoard, leaveSub, ramSub, subModel } from './submarine';
 import { dismount } from './beastState';
 import { rescue } from './fuel';
 import { stepHunts } from './hunts';
@@ -135,7 +135,10 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   const weapon = g.gear.activeWeapon;
   const fired =
     weapon === 'arpione'
-      ? fireHarpoon(g.harpoon, d, angle, events)
+      ? fireHarpoon(g.harpoon, d, angle, events, [
+          ...g.fish.fish.filter((f) => f.alive && !f.hooked),
+          ...g.beasts.wilds.filter((w) => w.motion === 'roam'),
+        ])
       : fireProjectileWeapon(g.weapons, weapon, d.x, d.y, angle, events);
   if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
 }
@@ -267,7 +270,13 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   }
   // the packs hunt (beasts/packHunt.ts): the sardines flee from them too
   const hunters = stepPackHunt(g, dt);
-  stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead }, g.time, dt, g.rng, hunters);
+  // the sardines dodge you as big as you are: in the submarine, the boat or on a beast (owner, 15 ottobre)
+  const big = g.sub.aboard
+    ? (subModel(g.sub.model).lengthM * WORLD.unitsPerMetre) / 2
+    : g.beasts.riding && g.beasts.mount
+      ? g.beasts.mount.length / 2
+      : 0;
+  stepFish(g.fish, g.map, { x: d.x, y: d.y, alive: !d.dead, r: big }, g.time, dt, g.rng, hunters);
   stepEndlessSchools(g.fish, g.map, d, g.rng, g.beasts.view);
   for (const f of g.fish.fish) {
     if (f.alive && !d.dead && Math.hypot(f.x - d.x, f.y - d.y) < SARDINE.seenRadius) {

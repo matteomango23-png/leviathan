@@ -26,8 +26,36 @@ export interface HarpoonState {
 
 export const createHarpoon = (): HarpoonState => ({ shot: null, cooldown: 0 });
 
-export function fireHarpoon(h: HarpoonState, d: DiverState, angle: number, events: GameEvent[]): boolean {
+/** The shot's angle, bent a little onto the nearest fish or beast just off its line (HARPOON.assistDeg). */
+export function assistAim(
+  from: { x: number; y: number },
+  angle: number,
+  targets: readonly { x: number; y: number }[],
+): number {
+  const cone = (HARPOON.assistDeg * Math.PI) / 180;
+  let best = angle;
+  let bestDist = Infinity;
+  for (const t of targets) {
+    const dx = t.x - from.x;
+    const dy = t.y - from.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist > HARPOON.range || dist < 1) continue;
+    const off = Math.atan2(Math.sin(Math.atan2(dy, dx) - angle), Math.cos(Math.atan2(dy, dx) - angle));
+    if (Math.abs(off) <= cone && dist < bestDist) [best, bestDist] = [angle + off, dist];
+  }
+  return best;
+}
+
+export function fireHarpoon(
+  h: HarpoonState,
+  d: DiverState,
+  aim: number,
+  events: GameEvent[],
+  /** Fish and beasts the shot may bend onto (owner, 15 ottobre: hard to hit). */
+  targets: readonly { x: number; y: number }[] = [],
+): boolean {
   if (h.shot || h.cooldown > 0 || d.dead) return false;
+  const angle = assistAim(d, aim, targets);
   h.shot = {
     x: d.x + Math.cos(angle) * HARPOON.muzzleOffset,
     y: d.y + Math.sin(angle) * HARPOON.muzzleOffset * 0.5,
@@ -66,14 +94,16 @@ export function stepHarpoon(
     } else if (s.dist > HARPOON.range) {
       s.returning = true;
     } else {
+      const [ax, ay] = [s.x, s.y];
       s.x = nx;
       s.y = ny;
-      if (hitBeast(s.x, s.y)) {
+      // the whole stretch it flew this step, not only where it is now: fast, it used to jump over fish
+      if (hitBeast((ax + nx) / 2, (ay + ny) / 2) || hitBeast(s.x, s.y)) {
         s.returning = true;
         return null;
       }
       for (const f of fish.fish) {
-        if (f.alive && !f.hooked && Math.hypot(f.x - s.x, f.y - s.y) < HARPOON.catchRadius) {
+        if (f.alive && !f.hooked && toSegment(f.x, f.y, ax, ay, nx, ny) < HARPOON.catchRadius) {
           f.hooked = true;
           s.caught = f;
           s.returning = true;
@@ -99,4 +129,12 @@ export function stepHarpoon(
     s.caught.y = s.y;
   }
   return null;
+}
+
+/** Distance from a point to the segment a–b. */
+function toSegment(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
+  const [vx, vy] = [bx - ax, by - ay];
+  const l2 = vx * vx + vy * vy;
+  const t = l2 > 0 ? Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / l2)) : 0;
+  return Math.hypot(px - (ax + vx * t), py - (ay + vy * t));
 }

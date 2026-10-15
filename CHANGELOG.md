@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.66.0 — Bestie in mare (15 ottobre 2026)
+
+- **Predatori grandi** (squalo bianco, tigre, martello, orca…): quando ti vedono, spesso non caricano subito.
+  - Passano vicino a te, rallentano, poi accelerano fino a uscire dallo schermo e rientrano dallo stesso lato, da una a tre volte.
+  - Se li segui o restano in vista troppo a lungo, scattano via più veloci di te.
+  - A volte virano davanti a te.
+  - Poi attaccano, più veloci.
+- **Sardine:** il banco ti passa intorno e oltre, aprendosi e richiudendosi dietro, invece di girarti in cerchio. Da fermo i pesci non vanno più avanti e indietro. Col sottomarino o in groppa si scansano tenendo conto di quanto sei grosso.
+- **Arpione:** prende i pesci su tutto il tratto che percorre (prima a volte ci passava attraverso) e piega appena verso un pesce o una bestia di pochi gradi fuori mira.
+- **Folgore** (e Saetta, murene, anguille, serpente di mare): ondeggia come un serpente lungo tutto il corpo e non si allunga né si accorcia più salendo e scendendo.
+- **Manta:** batte piano le ali.
+- **Cavalcature:** ognuna ha la sua velocità, presa da quella reale e ammorbidita. Pesce vela e orca sono le più veloci, poi lo squalo bianco (come prima); megattera, manta e tartarughe più lente, ma mai più lente di te a nuoto.
+- **Battaglie più giuste:** a parità di livello si vince metà delle volte (l'ho verificato con 1000 battaglie simulate). Però quasi ogni battaglia cominciava con un attacco gratis della bestia che ti toccava. Ora l'attacco gratis c'è solo se ti prende alle spalle.
+
 ## v0.65.0 — Bug e progressione (15 ottobre 2026)
 
 - **Livelli più lenti:**
