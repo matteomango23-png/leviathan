@@ -30,7 +30,8 @@ export interface SpeciesDef {
   storyOnly?: boolean;         // a beast of the paused story (owner, 8 ottobre): kept for later, out of the game
   iconic?: boolean;            // reaches a final form at level 50
   finalFormName?: string;
-  albinoFinalFormName?: string; // the albino variant has its own final form (only where defined); the alpha has none
+  albinoFinalFormName?: string; // the albino variant has its own final form (only where defined, also on a species that is not iconic)
+  alfaFinalFormName?: string;  // the alpha has its own final form (only where defined)
   legendary?: boolean;
   tameableAfterStory?: boolean;
   artPrompt: string;           // [CREATURE] part of the illustration prompt (see docs/ART.md)
@@ -57,7 +58,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'torpedine', name: 'Torpedine', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [3, 5], rarity: 2, size: 'piccola', lengthM: 1.5, trait: 'Scarica che stordisce i vicini',
     artPrompt: 'a round dark torpedo ray with electric veins crackling across its disc' },
   { id: 'squalo_bianco', name: 'Squalo bianco', type: 'predatore', role: 'cavalcatura', region: 'baia', wildLevel: [4, 6], rarity: 3, size: 'grande', lengthM: 6, minLevel: 15, trait: 'Carica che sfonda le ossa antiche',
-    abilities: ['sfondaOssa'], iconic: true, finalFormName: 'Squalo bianco Titano', albinoFinalFormName: 'Squalo bianco Mega albino',
+    abilities: ['sfondaOssa'], iconic: true, finalFormName: 'Squalo bianco Titano', albinoFinalFormName: 'Squalo bianco Mega albino', alfaFinalFormName: 'Squalo bianco Re Alfa',
     artPrompt: 'a massive scarred great white shark with jaws half open showing rows of serrated teeth and a black lifeless eye' },
 
   // ---- The three starters (unique, never met in the wild while you have one): 3 stages each, evolving at Lv 16 and 36.
@@ -115,6 +116,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a giant oceanic manta ray gliding on enormous wings, lightning flowing along its wing tips' },
   // ---- The open sea (tappa 11, the owner's pictures of 2 ottobre 2026): mostly common beasts of the endless sea
   { id: 'varano_nilo', name: 'Varano del Nilo nero', type: 'predatore', role: 'compagno', region: 'delta', wildLevel: [8, 11], rarity: 3, size: 'media', lengthM: 2.5, trait: 'Nuota tra le radici a pelo d’acqua, morso velenoso',
+    albinoFinalFormName: 'Varano d\u2019osso',
     artPrompt: 'a black Nile monitor lizard, long muscular tail, scaly dark armor with faint pale bands, forked tongue, swimming' },
   // more life (owner, 3 ottobre 2026: "riempire il mare di animali medi e piccoli"; pictures: lotto Gemini 2)
   { id: 'cernia', name: 'Cernia bruna', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [3, 6], rarity: 1, size: 'media', lengthM: 1.5, trait: 'Bocca enorme: risucchia la preda',
@@ -172,8 +174,8 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a whale shark, a wide flat head and mouth, dark grey skin with white spots and stripes' },
   { id: 'squalo_elefante', name: 'Squalo elefante', type: 'glaciale', role: 'cavalcatura', region: 'ghiaccio', wildLevel: [15, 18], rarity: 3, size: 'colossale', lengthM: 9, trait: 'Bocca enorme spalancata che filtra il mare freddo',
     artPrompt: 'a basking shark, an enormous gaping mouth, long gill slits around the head, grey-brown skin' },
-  { id: 'squalo_pinna_nera', name: 'Squalo pinna nera', type: 'predatore', role: 'compagno', region: 'barriera', wildLevel: [5, 8], rarity: 1, size: 'media', lengthM: 2.5, trait: 'Snello e nervoso, salta fuori dall’acqua inseguendo i pesci',
-    artPrompt: 'a blacktip shark, slender grey body, pointed snout, black tips on the fins' },
+  { id: 'squalo_mako', name: 'Squalo mako', type: 'predatore', role: 'compagno', region: 'barriera', wildLevel: [6, 9], rarity: 2, size: 'grande', lengthM: 3.8, trait: 'Lo squalo più veloce: salta fuori dall’acqua inseguendo le prede',
+    artPrompt: 'a shortfin mako shark, slender metallic blue-grey body, pointed conical snout, big black eyes, long curved teeth' },
   { id: 'squalo_toro', name: 'Squalo toro', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [6, 9], rarity: 2, size: 'grande', lengthM: 3.2, trait: 'Denti a uncino sempre in mostra, sta sospeso immobile',
     artPrompt: 'a sand tiger shark, bulky brown body with dark spots, ragged needle teeth sticking out of its mouth' },
   { id: 'squalo_leuca', name: 'Squalo leuca', type: 'predatore', role: 'cavalcatura', region: 'delta', wildLevel: [8, 11], rarity: 2, size: 'grande', lengthM: 3.5, trait: 'Risale i fiumi: il più aggressivo degli squali',
@@ -222,7 +224,7 @@ export const SPECIES: SpeciesDef[] = [
     iconic: true, finalFormName: 'Calamaro gigante degli Abissi',
     artPrompt: 'a giant squid with enormous eyes and long feeding tentacles with hooked suckers' },
   { id: 'capodoglio', name: 'Capodoglio', type: 'abissale', role: 'cavalcatura', region: 'fossa', wildLevel: [25, 27], rarity: 4, size: 'colossale', lengthM: 18, trait: 'Apnea ed ecolocalizzazione',
-    abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Capodoglio Bianco dei Mari',
+    abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Moby Dick',
     artPrompt: 'a colossal sperm whale with a massive square head covered in circular sucker scars' },
   { id: 'calamaro_colossale', name: 'Calamaro colossale', type: 'abissale', role: 'compagno', region: 'fossa', wildLevel: [30, 30], rarity: 4, size: 'colossale', lengthM: 20, trait: 'Stritola e oscura con l\u2019inchiostro',
     artPrompt: 'a nightmarish colossal squid with rotating hooks on its tentacles and one huge glowing eye, dragging broken iron chains' },

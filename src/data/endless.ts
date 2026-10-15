@@ -75,7 +75,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 2, rx: [30, 70], ry: [30, 90] },
     kelp: { chance: 0.12, minH: 10, maxH: 40 },
     corals: { chance: 0.1, colors: [] },
-    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4, pesce_vela: 1.5, medusa_gigante: 1.5, squalo_nutrice: 1, cernia: 1, squalo_capopiatto: 0.8, chimera: 0.8, lampuga: 2.5, tartaruga_liuto: 1, squalo_balena: 0.4, squalo_pinna_nera: 1.5, squalo_toro: 1 },
+    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4, pesce_vela: 1.5, medusa_gigante: 1.5, squalo_nutrice: 1, cernia: 1, squalo_capopiatto: 0.8, chimera: 0.8, lampuga: 2.5, tartaruga_liuto: 1, squalo_balena: 0.4, squalo_mako: 1.5, squalo_toro: 1 },
   },
   {
     id: 'barriera',
@@ -86,7 +86,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 9, rx: [25, 60], ry: [25, 70] },
     kelp: { chance: 0.15, minH: 10, maxH: 30 },
     corals: { chance: 0.6, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
-    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5, pesce_leone: 2.5, cernia: 2, medusa_gigante: 1.5, squalo_nutrice: 1.5, pastinaca: 1.5, squalo_pinna_nera: 2, squalo_toro: 1, squalo_balena: 0.3 },
+    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5, pesce_leone: 2.5, cernia: 2, medusa_gigante: 1.5, squalo_nutrice: 1.5, pastinaca: 1.5, squalo_mako: 2, squalo_toro: 1, squalo_balena: 0.3 },
   },
   {
     id: 'foresta',

@@ -77,6 +77,9 @@ export interface SaveData {
   sonarNotes?: SonarNotes; // what the sonar taught you about each species (block 5a; missing = nothing yet)
 }
 
+/** Species renamed after a release (old id → new id): "squalo pinna nera" was a mako (owner, 15 ottobre 2026). */
+const RENAMED_SPECIES: Readonly<Record<string, string>> = { squalo_pinna_nera: 'squalo_mako' };
+
 export function newSave(start: { x: number; y: number }): SaveData {
   return {
     game: SAVE_GAME_ID,
@@ -190,6 +193,8 @@ function validateBeast(raw: unknown): SavedBeast {
   };
   if (!isObject(raw) || typeof raw.uid !== 'string' || !isObject(raw.form)) return bad();
   const f = raw.form;
+  if (typeof f.speciesId === 'string' && RENAMED_SPECIES[f.speciesId])
+    f.speciesId = RENAMED_SPECIES[f.speciesId];
   if (typeof f.speciesId !== 'string' || !SPECIES.some((s) => s.id === f.speciesId)) return bad();
   if (f.variant !== 'comune' && f.variant !== 'albino' && f.variant !== 'alfa') return bad();
   if (f.unique !== undefined && !UNIQUE_VARIANTS.some((u) => u.id === f.unique)) return bad();

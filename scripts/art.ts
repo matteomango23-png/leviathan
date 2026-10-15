@@ -85,6 +85,7 @@ const SIDE_ERASE: Record<string, number[][]> = {
     [0.7, 0, 1, 0.34],
     [0.42, 0, 0.7, 0.26],
   ],
+  varano_nilo_albino_side: [[0, 0.68, 1, 1]], // a dark sea floor under the green screen (lotto F)
 };
 const SIDE_FLOOD: CutoutOptions = { low: 3, high: 16, soft: 30 };
 const SIDE_FLOOD_SPECIES = [

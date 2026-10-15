@@ -5,7 +5,7 @@
 import { GROWTH_BY_STARS, GROWTH_CURVES, XP_RULES, scaledXp, type GrowthGroup } from '../../data/progression';
 import { PROGRESSION } from '../../data/rules';
 import type { GameEvent } from '../events';
-import { speciesOf, type BeastForm } from './forms';
+import { speciesOf, type BeastForm, hasFinalForm } from './forms';
 import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
 import { learnMove, movesLearnedAt } from './battleMoves';
 import { maxHpOf, type TeamBeast } from './team';
@@ -42,13 +42,13 @@ export function xpReward(form: BeastForm, level: number, own: number, guardian =
 /** XP for a small fish your beast eats, for a beast of this level. */
 export const fishXp = (level: number): number => scaledXp(XP_RULES.fishYield, level, level);
 
-/** Level 50 of an iconic species: its final form (none for the alfa, the albino only where defined). */
+/**
+ * The final form at PROGRESSION.finalFormLevel: the common one of an iconic species; the albino and the alpha only
+ * where their own is named (the albino Nile monitor's, the white shark's "Re Alfa").
+ */
 export function finalFormAt(form: BeastForm, level: number): BeastForm | null {
   if (level < PROGRESSION.finalFormLevel || form.final || form.unique) return null;
-  const s = speciesOf(form);
-  if (!s.iconic || form.variant === 'alfa') return null;
-  if (form.variant === 'albino' && !s.albinoFinalFormName) return null;
-  return { ...form, final: true };
+  return hasFinalForm(form.speciesId, form.variant) ? { ...form, final: true } : null;
 }
 
 function levelUp(b: TeamBeast, events: GameEvent[]): void {

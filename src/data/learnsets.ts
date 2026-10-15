@@ -39,7 +39,7 @@ export const LEARNSETS: Record<string, LearnEntry[]> = {
   torpedine: ls('1 bollicine, 1 onda_paralizzante, 5 scossa, 9 lampo, 13 getto_acqua, 18 carica_elettrica, 24 raggio_carico, 30 onda_urto, 36 scarica, 42 accumulo, 48 fulmine, 55 tuono, 63 cannone_elettrico'), // Chinchou
   squalo_bianco: SHARK,
   squalo_tigre: SHARK,
-  squalo_pinna_nera: SHARK,
+  squalo_mako: SHARK,
   squalo_toro: SHARK,
   squalo_leuca: SHARK,
   lampuga: ls('1 spinta, 1 sguardo_feroce, 4 guizzo, 8 azzannata, 12 morsi_raffica, 16 fendente, 22 muso_terrore, 28 zanna_lunga, 34 agguato, 40 stritolamorso, 46 frenesia, 52 taglio_buio, 60 carica_suicida'), // like the barracuda

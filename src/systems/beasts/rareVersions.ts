@@ -2,7 +2,7 @@
 // in generale quelle viste"): every alpha, every albino with its own pictures, every final form, and whether you have
 // seen it (close, in your light, or in a battle) or tamed it. Pure logic.
 import { GAME_SPECIES } from '../../data/species';
-import { formKey, hasAlbinoArt, type BeastForm } from './forms';
+import { formKey, hasAlbinoArt, hasFinalForm, type BeastForm } from './forms';
 import type { TeamBeast } from './team';
 
 export interface RareVersion {
@@ -16,10 +16,11 @@ export function allRareForms(): BeastForm[] {
   for (const s of GAME_SPECIES) {
     out.push({ speciesId: s.id, variant: 'alfa' });
     if (hasAlbinoArt(s.id)) out.push({ speciesId: s.id, variant: 'albino' });
-    if (s.iconic) {
-      out.push({ speciesId: s.id, variant: 'comune', final: true });
-      if (s.albinoFinalFormName) out.push({ speciesId: s.id, variant: 'albino', final: true });
-    }
+    if (hasFinalForm(s.id, 'comune')) out.push({ speciesId: s.id, variant: 'comune', final: true });
+    if (hasFinalForm(s.id, 'alfa')) out.push({ speciesId: s.id, variant: 'alfa', final: true });
+    // an albino's final form only once the albino itself is in the sea
+    if (hasFinalForm(s.id, 'albino') && hasAlbinoArt(s.id))
+      out.push({ speciesId: s.id, variant: 'albino', final: true });
   }
   return out;
 }
