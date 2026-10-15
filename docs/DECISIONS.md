@@ -949,3 +949,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Giganti preistorici sempre a caccia:** anche il plesiosauro e il mosasauro (che finora non aveva immagini) non compaiono per caso, come il megalodonte. Hanno una tana, una voce nei porti e un tempo.
 - **Nomi degli squali:** toro = sand tiger (Carcharias taurus), leuca = bull shark (Carcharhinus leucas), come nell'uso italiano.
 - **Fondo verde spento:** la soglia per togliere il verde ora si adatta al verde dello sfondo (`cutGreenScreen`). Prima un verde debole restava come una nebbia intorno alla bestia.
+
+## 15 ottobre 2026 — Forme finali di alfa e albini, mako, Moby Dick (v0.70.1)
+
+- **Il proprietario ha corretto le assegnazioni:**
+  - lo squalo snello è un mako;
+  - lo squalo scuro corazzato è l'evoluzione dello squalo bianco **alfa**;
+  - il coccodrillo d'osso è l'evoluzione del **varano albino**;
+  - il capodoglio d'osso è Moby Dick.
+- **Regola nuova:** un alfa o un albino ha una forma finale solo dove ne ha una con un nome suo (`alfaFinalFormName`, `albinoFinalFormName`). Le altre restano senza, come prima.
+- **Specie rinominate dopo una pubblicazione:** il salvataggio converte il vecchio id nel nuovo (`RENAMED_SPECIES`), così una bestia domata non si perde.

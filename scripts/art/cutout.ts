@@ -438,7 +438,8 @@ export function removeGreenBackground(img: Raw, low = 30, high = 90): Uint8Clamp
  */
 export function onGreenScreen(img: Raw): boolean {
   const ex = borderGreenExcess(img);
-  return ex.filter((e) => e > GREEN_MIN_EXCESS).length / ex.length > 0.6;
+  // half the border is enough: some pictures have a dark sea floor along the bottom (lotto F)
+  return ex.filter((e) => e > GREEN_MIN_EXCESS).length / ex.length > 0.5;
 }
 
 /** How much greener than red and blue a screen must be (some of 15 ottobre are a dull green, ~65). */

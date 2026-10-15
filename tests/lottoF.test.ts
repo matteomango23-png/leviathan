@@ -13,21 +13,13 @@ const NEW = [
   'tartaruga_liuto',
   'squalo_balena',
   'squalo_elefante',
-  'squalo_pinna_nera',
+  'squalo_mako',
   'squalo_toro',
   'squalo_leuca',
   'foca_comune',
   'plesiosauro',
 ];
-const FINALS = [
-  'squalo_bianco',
-  'megattera',
-  'capodoglio',
-  'coccodrillo_marino',
-  'manta',
-  'squalo_martello',
-  'pesce_spada',
-];
+const FINALS = ['squalo_bianco', 'megattera', 'capodoglio', 'manta', 'squalo_martello', 'pesce_spada'];
 
 describe('lotto F: le bestie nuove', () => {
   it('ognuna ha profilo, card, vista di fronte, mosse da imparare', () => {

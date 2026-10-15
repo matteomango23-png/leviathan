@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.70.1 — Correzioni alle bestie nuove (15 ottobre 2026)
+
+- **Squalo mako:** lo "squalo pinna nera" era un mako, lo squalo più veloce. Se ne avevi domato uno, diventa un mako.
+- **Squalo bianco Re Alfa:** lo squalo scuro corazzato è la forma finale dell'alfa. Lo squalo bianco normale torna al suo Titano.
+- **Moby Dick:** è il nome della forma finale del capodoglio.
+- **Varano d'osso:** il coccodrillo d'osso è la forma finale del varano del Nilo albino. Il varano albino arriverà in mare con le sue ultime due immagini. Il coccodrillo marino torna senza forma finale disegnata.
+
 ## v0.70.0 — Bestie nuove e forme finali (15 ottobre 2026)
 
 - **Immagini rifatte** per 17 bestie: anguilla elettrica, barracuda, beluga, calamaro gigante, capodoglio, coccodrillo albino leggendario, coccodrillo del Nilo, delfino, Dunkleosteus, elefante marino, foca leopardo, Archelon, Folgore, Livyatan, lontra marina, manta, megattera.

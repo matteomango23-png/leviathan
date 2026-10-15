@@ -169,7 +169,7 @@ export const WILD_SPAWNS: WildSpawnDef[] = [
   { speciesId: 'foca_comune', area: BAY_HIGH, respawnSeconds: [40, 80] },
   { speciesId: 'foca_comune', area: ICY, respawnSeconds: [30, 60] },
   { speciesId: 'squalo_toro', area: BAY, respawnSeconds: [60, 110] },
-  { speciesId: 'squalo_pinna_nera', area: REEF, respawnSeconds: [30, 60] },
+  { speciesId: 'squalo_mako', area: REEF, respawnSeconds: [30, 60] },
   { speciesId: 'tartaruga_liuto', area: REEF, respawnSeconds: [40, 80] },
   { speciesId: 'squalo_balena', area: REEF, respawnSeconds: [120, 200] },
   { speciesId: 'squalo_elefante', area: ICY, respawnSeconds: [100, 180] },
@@ -227,10 +227,10 @@ export const SPECIES_DANGER: Record<string, Danger> = {
   // 2 — small predators
   murena: 2, pesce_leone: 2, medusa_gigante: 2, pesce_vela: 2, scorfano: 2, rana_pescatrice: 2, dragone_nero: 2,
   tricheco: 2, elefante_marino: 2, beluga: 2, varano_nilo: 2, anguilla_elettrica: 2, narvalo: 2, pesce_sega: 2,
-  squalo_pinna_nera: 2, squalo_balena: 2, squalo_elefante: 2,
+  squalo_balena: 2, squalo_elefante: 2,
   // 3 — serious predators (and the great whales: majestic, not to be taken lightly)
   squalo_martello: 3, squalo_tigre: 3, squalo_volpe: 3, coccodrillo_nilo: 3, pesce_spada: 3, foca_leopardo: 3,
-  polpo_gigante: 3, squalo_capopiatto: 3, squalo_goblin: 3, megattera: 3, squalo_toro: 3, squalo_leuca: 3,
+  polpo_gigante: 3, squalo_capopiatto: 3, squalo_goblin: 3, megattera: 3, squalo_toro: 3, squalo_leuca: 3, squalo_mako: 3,
   // 4 — superpredators
   squalo_bianco: 4, orca: 4, coccodrillo_marino: 4, capodoglio: 4, calamaro_gigante: 4,
   // 5 — prehistoric giants
@@ -259,7 +259,7 @@ export const SPECIES_DEPTH: Record<string, { minM?: number; maxM?: number }> = {
   granchio_ragno: { minM: 120 },
   squalo_capopiatto: { minM: 100 },
   lampuga: { maxM: 100 },
-  squalo_pinna_nera: { maxM: 100 },
+  squalo_mako: { maxM: 300 },
   pesce_sega: { maxM: 100 },
   foca_comune: { maxM: 150 },
   squalo_goblin: { minM: 120 },
@@ -356,7 +356,7 @@ export const BEAST_TEMPER: Record<
   tartaruga_liuto: { temper: 'calm', speedMult: 0.6 },
   squalo_balena: { temper: 'calm', speedMult: 0.5 },
   squalo_elefante: { temper: 'calm', speedMult: 0.5 },
-  squalo_pinna_nera: { temper: 'shy', speedMult: 1.1 },
+  squalo_mako: { temper: 'aggressive', speedMult: 1.35 }, // the fastest shark
   squalo_toro: { temper: 'calm', speedMult: 0.8 },
   squalo_leuca: { temper: 'aggressive' },
   foca_comune: { temper: 'shy', speedMult: 1.05 },

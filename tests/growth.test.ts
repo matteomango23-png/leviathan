@@ -89,7 +89,7 @@ describe('growth 31–50 and final form', () => {
     expect(formLengthM(f, 55)).toBeCloseTo(6 * (1 + 5 * PROGRESSION.growthSizePerLevel));
   });
 
-  it('reaches the final form at 100: Titano, Mega albino; never for the alfa', () => {
+  it('reaches the final form at 100: Titano, Mega albino, Re Alfa (15 ottobre); no other alfa', () => {
     const events: GameEvent[] = [];
     const b = shark(99);
     raiseLevel(b, 1, events);
@@ -97,7 +97,8 @@ describe('growth 31–50 and final form', () => {
     expect(formLengthM(b.form, b.level)).toBe(9);
     expect(events).toContainEqual({ type: 'finalForm', uid: 'b1' });
     expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'albino' }, 100)?.final).toBe(true);
-    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'alfa' }, 100)).toBeNull();
+    expect(finalFormAt({ speciesId: 'squalo_bianco', variant: 'alfa' }, 100)?.final).toBe(true);
+    expect(finalFormAt({ speciesId: 'orca', variant: 'alfa' }, 100)).toBeNull();
     expect(finalFormAt({ speciesId: 'barracuda', variant: 'comune' }, 100)).toBeNull();
     expect(
       finalFormAt({ speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' }, 100),

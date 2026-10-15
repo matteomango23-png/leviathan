@@ -29,7 +29,7 @@ const shark = (over: Partial<BeastForm> = {}): BeastForm => ({
 const move = (id: string) => MOVES.find((m) => m.id === id)!;
 
 describe('white shark versions', () => {
-  it('has six versions with the sizes of the design document', () => {
+  it('has seven versions with the sizes of the design document', () => {
     const lengths = Object.fromEntries(
       WHITE_SHARK_FORMS.map((f) => [formKey(f), Math.round(formLengthM(f) * 100) / 100]),
     );
@@ -40,6 +40,7 @@ describe('white shark versions', () => {
       squalo_bianco_albino_finale: 9,
       sfregiato: 7.5,
       squalo_bianco_finale: 9,
+      squalo_bianco_alfa_finale: 9,
     });
   });
 
@@ -51,6 +52,7 @@ describe('white shark versions', () => {
       'Squalo bianco Mega albino',
       'Lo Sfregiato',
       'Squalo bianco Titano',
+      'Squalo bianco Re Alfa',
     ]);
     expect(formStars(shark())).toBe(3);
     expect(formStars(shark({ variant: 'albino' }))).toBe(4);

@@ -71,11 +71,21 @@ export function formName(form: BeastForm): string {
   if (u) return u.name;
   if (form.final) {
     if (form.variant === 'albino' && s.albinoFinalFormName) return s.albinoFinalFormName;
+    if (form.variant === 'alfa' && s.alfaFinalFormName) return s.alfaFinalFormName;
     if (s.finalFormName) return s.finalFormName;
   }
   if (form.variant === 'albino') return `${s.name} albino`;
   if (form.variant === 'alfa') return s.alfaName ?? `${s.name} alfa`;
   return s.name;
+}
+
+/** Whether this version of a species has a final form (the albino and the alpha only where theirs is named). */
+export function hasFinalForm(speciesId: string, variant: Variant): boolean {
+  const s = SPECIES.find((x) => x.id === speciesId);
+  if (!s) return false;
+  if (variant === 'albino') return !!s.albinoFinalFormName;
+  if (variant === 'alfa') return !!s.alfaFinalFormName;
+  return !!s.iconic;
 }
 
 /** Size multiplier over the species' standard length (RENDER / VARIANT_RULES / UNIQUE_VARIANTS / FINAL_FORM_SIZE_MULT). */
@@ -191,7 +201,7 @@ export function wildLevelRange(form: BeastForm): [number, number] {
   return [lo + extra, hi + extra];
 }
 
-/** The six versions of the white shark (tappa 2), in the order shown in the test panel. */
+/** The seven versions of the white shark (tappa 2), in the order shown in the test panel. */
 export const WHITE_SHARK_FORMS: BeastForm[] = [
   { speciesId: 'squalo_bianco', variant: 'comune' },
   { speciesId: 'squalo_bianco', variant: 'alfa' },
@@ -199,6 +209,7 @@ export const WHITE_SHARK_FORMS: BeastForm[] = [
   { speciesId: 'squalo_bianco', variant: 'albino', final: true },
   { speciesId: 'squalo_bianco', variant: 'comune', unique: 'sfregiato' },
   { speciesId: 'squalo_bianco', variant: 'comune', final: true },
+  { speciesId: 'squalo_bianco', variant: 'alfa', final: true },
 ];
 
 /** Breaks ancient bones: a bone breaker (the white shark line) or a Predatore/Corazzato with Sfondamento. */

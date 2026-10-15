@@ -1,5 +1,21 @@
 # Progressi
 
+## Correzioni al lotto F (15 ottobre 2026) → v0.70.1
+
+- **Squalo mako:** `squalo_pinna_nera` diventa `squalo_mako`.
+  - I salvataggi lo convertono (`RENAMED_SPECIES` in `save/saveData.ts`).
+- **Forme finali di alfa e albini** (`hasFinalForm` in `beasts/forms.ts`):
+  - nuovo campo `alfaFinalFormName`: lo squalo bianco ha il "Re Alfa" (`squalo_bianco_alfa_finale`, lo squalo scuro corazzato);
+  - il Titano (`squalo_bianco_finale`) ha di nuovo le immagini di prima;
+  - `albinoFinalFormName` vale anche per una specie non iconica: il varano albino diventa il "Varano d'osso" (`varano_nilo_albino_finale`, il coccodrillo d'osso).
+  - Il bestiario mostra il Varano d'osso solo quando il varano albino è in mare.
+- **Capodoglio finale:** "Moby Dick". Il Leviatano si decide quando riprende la storia.
+- **Varano albino:** profilo, bocca aperta e fronte sono in `art-inbox`. Card e retro da generare: `docs/GEMINI-LOTTO-6.md`.
+- **Script delle immagini:**
+  - basta metà del bordo verde per riconoscere il fondo verde;
+  - `SIDE_ERASE` toglie il fondale scuro sotto il varano albino.
+- **Test:** `tests/lottoF2.test.ts`.
+
 ## Lotto F, prima parte: immagini e bestie nuove (15 ottobre 2026) → v0.70.0
 
 - **Immagini rifatte su fondo verde** (`asset animali ai/`, dall'alto fino all'orca esclusa): 17 bestie.
