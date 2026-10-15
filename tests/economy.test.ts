@@ -229,8 +229,10 @@ describe('missions', () => {
       run(g, 0.8, { ...emptyInput(), fireHeld: true, aim: 0 });
     }
     expect(isComplete(g.gear, 'sardine_10')).toBe(true);
-    expect(claimMission(g.gear, 'sardine_10')).toBe(30);
+    expect(claimMission(g.gear, 'sardine_10')).toBe(80);
     expect(boardMissions(g.gear).map((m) => m.id)).toContain('sgombri_5');
+    // an everyday job comes back on the board (owner, 15 ottobre: missions that pay)
+    expect(boardMissions(g.gear).map((m) => m.id)).toContain('sardine_10');
   });
 
   it(`allows at most ${MAX_ACTIVE_MISSIONS} active missions`, () => {

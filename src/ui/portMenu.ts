@@ -1,9 +1,10 @@
 // A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
 // Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
-import { BAG, MARKET } from '../data/economy';
+import { MARKET } from '../data/economy';
+import { bagWorth } from '../systems/economy/market';
 import { renderFuel, renderShipRepair } from './portSubs';
 import { renderShipyard } from './shipyardPanel';
-import { FISH, ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
+import { ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
 import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
 import { restAtPort, sellAtPort, type GameState } from '../systems/game';
 import type { Session } from '../scenes/session';
@@ -118,23 +119,20 @@ export class PortMenu {
     } else if (this.tab === 'navi') renderShipyard(b, ctx);
     else if (this.tab === 'zaino') renderBackpack(b, ctx);
     else if (this.tab === 'bacheca') renderBoard(b, ctx);
-    else renderTeamPanel(b, this.g, true);
+    else renderTeamPanel(b, this.g, true, true);
     this.body.scrollTop = keep;
   }
 
   private renderMarket(b: HTMLElement): void {
     const gear = this.g.gear;
     const n = bagCount(gear);
-    const worth = Object.entries(gear.bag).reduce(
-      (a, [id, c]) => a + c * (FISH.find((f) => f.id === id)?.sellPrice ?? 0),
-      0,
-    );
+    const worth = bagWorth(gear.market, gear.bag, Date.now());
     const sell = el('div', 'pcard-grid', b);
     portCard(sell, {
       icon: 'fish',
-      title: `Sacca: ${n}/${BAG.capacity} pesci`,
+      title: `Sacca: ${n} pesci`,
       text: n
-        ? 'Il mercante compra tutto il pescato.'
+        ? 'Il mercante compra tutto il pescato. Paga meno un pesce che gli hai appena venduto in gran quantità: il prezzo torna su col tempo.'
         : 'Pesca con arpione, fiocine o rete: i pesci finiscono qui.',
       price: n ? worth : undefined,
       button: {

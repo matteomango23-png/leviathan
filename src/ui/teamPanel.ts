@@ -10,11 +10,13 @@ import { feedFromBag } from '../systems/feeding';
 import { setArt } from './art';
 import { growthBars } from './growthBars';
 import { el } from './dom';
+import { beastPrice, cannotSell, sellBeast } from '../systems/economy/beastSale';
 import { openBeastSheet } from './beastSheet';
 import { openBag } from './bagScreen';
 import { STATUS_NAMES } from '../data/moveBattle';
 
-export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boolean): void {
+/** @param atPort at a harbour's pen: a beast in the reserve can be sold there too (economy/beastSale.ts) */
+export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boolean, atPort = false): void {
   const box = el('div', 'team-panel', parent);
   const draw = (): void => {
     box.innerHTML = '';
@@ -92,6 +94,18 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, editable: boo
         if (toggleInTeam(g.beasts.team, b.uid)) draw();
         else btn.textContent = 'Squadra piena';
       });
+      // at the harbour a beast of the reserve can be sold (owner, 15 ottobre: "vendere animali")
+      if (atPort && !b.inTeam && !b.form.unique) {
+        const price = beastPrice(b);
+        const sell = el('button', 'menu-btn small', row, `Vendi · ${price} denti`);
+        const why = cannotSell(g.beasts.team, b);
+        sell.disabled = !!why;
+        if (why) sell.title = why;
+        sell.addEventListener('click', () => {
+          if (!window.confirm(`Vendere ${formName(b.form)} per ${price} denti? Non torna più.`)) return;
+          if (sellBeast(g, b.uid) > 0) draw();
+        });
+      }
     }
   };
   draw();

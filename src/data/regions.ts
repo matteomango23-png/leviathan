@@ -84,7 +84,7 @@ export const REGION_CHESTS = {
   perRegion: 3,
   at: [0.22, 0.55, 0.85],
   /** Teeth of a chest: base × (1 + region index) (the deepest one of each region gives double). Tuning. */
-  teethBase: 90,
+  teethBase: 400, // owner, 15 ottobre: richer treasures (was 90). Tuning.
   /** What the last chest of each region also holds (by region index). */
   items: ['alga_rossa', 'krill_dorato', 'alga_reale', 'krill_dorato', 'alga_reale'],
 };

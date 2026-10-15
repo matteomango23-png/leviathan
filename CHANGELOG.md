@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.69.0 — Soldi ed economia (15 ottobre 2026)
+
+- **Sacca senza tetto:** tieni tutti i pesci che prendi. Il mercante paga meno un pesce che gli hai appena venduto a mucchi: dopo circa 120 dello stesso tipo il prezzo arriva al 30%, e torna su col tempo, circa 4 pesci al minuto anche a gioco chiuso. La sardina torna a 2 denti.
+- **Missioni che pagano:**
+  - le ricompense sono 3-5 volte più alte;
+  - le spedizioni valgono da 800 a 7000 denti;
+  - puoi tenere 4 missioni insieme.
+  - Le missioni di tutti i giorni (sardine, sgombri) e le taglie tornano in bacheca dopo che le riscuoti.
+- **Taglie nuove:** squalo tigre (900), squali martello (1400), orca (2500), capodoglio (4000), megalodonte (12.000). Compaiono dopo la spedizione che porta nelle loro acque.
+- **Vendere le bestie domate:** al Recinto del porto una bestia in riserva si può vendere. Il prezzo dipende da stelle e livello: le versioni rare valgono 2,5 volte, le forme finali 4. Le leggende non si vendono.
+- **Tesori più ricchi:** forzieri e relitti valgono circa 3-4 volte di più.
+
 ## v0.68.0 — Luci degli U-Boat (15 ottobre 2026)
 
 - **Fari degli U-Boat e dei sottomarini migliori:** sott'acqua illuminano il mare intorno allo scafo, non solo davanti; meno nell'acqua torbida.

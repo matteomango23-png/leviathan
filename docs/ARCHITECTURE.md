@@ -89,6 +89,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
 | `beasts/rareVersions.ts` | Le versioni rare (alfa, albine, forme finali) e se le hai viste o domate, per il bestiario. |
+| `economy/market.ts` | Il mercato del pesce: il prezzo di un tipo scende se ne vendi tanti e risale col tempo. |
+| `economy/beastSale.ts` | La vendita delle bestie domate al Recinto del porto: prezzo per stelle, livello e versione. |
 | `ship/floodlight.ts` | I fari degli U-Boat e dei sottomarini migliori sott'acqua: punti di luce intorno allo scafo, ridotti dalla torbidità. |
 | `ship/ownMarks.ts` | I tuoi mezzi in acqua (motoscafo, sottomarino, drone, sfera) per il sonar della nave. |
 | `beasts/patrol.ts` | La pattuglia dei predatori grandi: passaggi, uscita accelerata, rientro dallo stesso lato, scatto via, poi la carica. |
