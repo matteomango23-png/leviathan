@@ -17,6 +17,9 @@ export interface WildBeast extends BodyPose {
   flash: number;
   /** 'gone': out of the world, waiting to come back · 'roam': in the water. */
   motion: 'gone' | 'roam';
+  /** Which appearance of its slot this is (each spawn counts one more): the tracker, the sphere and the sonar's notes
+   *  follow this one beast, not whatever comes out of the same slot later (owner, 15 ottobre). */
+  serial?: number;
   /** What it is doing: wandering, coming at you, slipping away. */
   mood: 'wander' | 'chase' | 'flee';
   /** Where it is swimming to while wandering. */
@@ -90,6 +93,7 @@ export function spawnWild(
   face: 1 | -1,
 ): void {
   Object.assign(b, {
+    serial: (b.serial ?? 0) + 1,
     form,
     level,
     length: formLengthUnits(form, level),

@@ -5,10 +5,11 @@
 // empty for a while. Pure logic, no Phaser.
 import { SPECIES_DEPTH } from '../../data/beasts';
 import { ENDLESS } from '../../data/endless';
+import { speciesById } from '../../data/species';
 import { WORLD } from '../../data/worldLayout';
 import { makeRng, range } from '../math';
 import { biomeOf, endlessFloor, regionAt, stretchAt } from '../world/endless';
-import { bandAt } from './forms';
+import { bandAt, rollWildForm, rollWildLevel, type BeastForm } from './forms';
 
 const R = ENDLESS.residents;
 
@@ -45,7 +46,9 @@ export function residentsOf(k: number): Resident[] {
   const x0 = ENDLESS.startX + k * ENDLESS.stretch;
   if (k >= 0 && x0 < ENDLESS.maxX - ENDLESS.endWall) {
     const rng = makeRng(ENDLESS.seed * 7919 + k * 104729 + 13);
-    const kinds = Object.entries(biomeOf(k).beasts);
+    const kinds = Object.entries(biomeOf(k).beasts).map(
+      ([id, n]) => [id, n * (R.rarityWeight[speciesById(id)?.rarity ?? 1] ?? 1)] as [string, number],
+    );
     const total = kinds.reduce((a, [, n]) => a + n, 0);
     for (let i = 0; i < R.perStretch && kinds.length; i++) {
       let r = rng() * total;
@@ -124,4 +127,14 @@ export function residentById(id: string): Resident | undefined {
 export function residentGone(s: ResidentsState, id: string, rng: () => number): void {
   s.gone[id] = s.clock + range(rng, R.returnSeconds[0], R.returnSeconds[1]);
   delete s.awake[id];
+}
+
+/** A resident's own version and level, the same every time it comes out (owner, 15 ottobre: a matriarch orca followed
+ *  with the tracker came back an ordinary orca; its version was drawn again each time it woke). From its id. */
+export function residentForm(r: Resident): { form: BeastForm; level: number } {
+  let seed = 0;
+  for (const ch of r.id) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+  const rng = makeRng(seed || 1);
+  const form = rollWildForm(r.speciesId, rng);
+  return { form, level: rollWildLevel(form, rng, r.band) };
 }

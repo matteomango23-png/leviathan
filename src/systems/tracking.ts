@@ -6,11 +6,28 @@ import { COMPASS } from '../data/nightmare';
 import { WORLD } from '../data/worldLayout';
 import type { Held, BeastState } from './beastState';
 import { formLengthM, formName } from './beasts/forms';
-import { residentAt, residentById, residentsNear } from './beasts/residents';
-import { isInWater } from './beasts/wildState';
+import { residentAt, residentById, residentsNear, residentForm } from './beasts/residents';
+import { isInWater, type WildBeast } from './beasts/wildState';
 import { sonarRange } from './ship/model';
 
-export type Target = { resident: string; speciesId: string } | { wild: number; speciesId: string };
+export type Target =
+  | { resident: string; speciesId: string }
+  /** serial: that one appearance of the slot (wildState.ts); missing in older saves */
+  | { wild: number; speciesId: string; serial?: number };
+
+/** The beast of a slot, as a target: this appearance of it. */
+export const wildTarget = (w: WildBeast): Target => ({
+  wild: w.id,
+  speciesId: w.spawn.speciesId,
+  serial: w.serial,
+});
+
+/** This wild beast in the water is still the one the target means. */
+export const isTarget = (w: WildBeast, t: { wild: number; speciesId: string; serial?: number }): boolean =>
+  w.id === t.wild &&
+  isInWater(w) &&
+  w.spawn.speciesId === t.speciesId &&
+  (t.serial === undefined || w.serial === t.serial);
 
 /** A beast within the sonar's reach: who, and where now. */
 export interface Contact {
@@ -28,14 +45,12 @@ interface TrackWorld {
   beasts: Pick<BeastState, 'wilds' | 'residents' | 'held'>;
 }
 
-const common = (speciesId: string) => ({ speciesId, variant: 'comune' as const });
-
 /** Where the beast is now, with its level when it is out for real; null when it is gone (caught, beaten, away). */
 export function locate(g: TrackWorld, t: Target): { x: number; y: number; level?: number } | null {
   const b = g.beasts;
   if ('wild' in t) {
     const w = b.wilds.find((x) => x.id === t.wild);
-    return w && isInWater(w) && w.spawn.speciesId === t.speciesId ? { x: w.x, y: w.y, level: w.level } : null;
+    return w && isTarget(w, t) ? { x: w.x, y: w.y, level: w.level } : null;
   }
   const res = b.residents;
   if ((res.gone[t.resident] ?? -1) > res.clock) return null;
@@ -59,7 +74,7 @@ export function beastsInRange(g: TrackWorld, ship: { x: number; model: string })
     if (!isInWater(w) || w.y <= WORLD.surfaceY || Math.abs(w.x - ship.x) > range) continue;
     const target: Target = w.spawn.resident
       ? { resident: w.spawn.resident, speciesId: w.spawn.speciesId }
-      : { wild: w.id, speciesId: w.spawn.speciesId };
+      : wildTarget(w);
     const name = formName(w.form);
     out.push({
       target,
@@ -73,7 +88,7 @@ export function beastsInRange(g: TrackWorld, ship: { x: number; model: string })
   }
   for (const c of residentsNear(b.residents, ship.x, range, b.held)) {
     if (b.residents.awake[c.r.id] !== undefined) continue; // out for real: listed above
-    const form = common(c.r.speciesId);
+    const form = residentForm(c.r).form;
     out.push({
       target: { resident: c.r.id, speciesId: c.r.speciesId },
       speciesId: c.r.speciesId,

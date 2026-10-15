@@ -112,9 +112,11 @@ describe('pace of the levels (Pokémon style)', () => {
   it('the first evolution comes quickly, the second takes longer', () => {
     const toFirst = fightsTo(STARTER.level, 16, (l) => Math.max(3, l - 2));
     const toSecond = fightsTo(16, 36, (l) => l - 2);
-    expect(toFirst).toBeLessThan(40); // like Pokémon: a few fights per level (plus the bench share and fish)
+    // a few fights per level, slower than before (owner, 15 ottobre: level 21 in 12 minutes was far too fast)
+    expect(toFirst).toBeGreaterThan(35);
+    expect(toFirst).toBeLessThan(70);
     expect(toSecond).toBeGreaterThan(toFirst);
-    expect(toSecond).toBeLessThan(160);
+    expect(toSecond).toBeLessThan(260);
   });
 
   it('a fish is worth some experience, a fight much more', () => {

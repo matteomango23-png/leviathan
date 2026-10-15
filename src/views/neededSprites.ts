@@ -3,13 +3,18 @@
 // (storyOnly in data/species.ts) are left out.
 import { WILD_SPAWNS } from '../data/beasts';
 import { BIOMES } from '../data/endless';
+import { HUNTS } from '../data/hunts';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { SPECIES, UNIQUE_VARIANTS } from '../data/species';
 
 export function neededSpriteKeys(): string[] {
   const starterLines = SPECIES.filter((s) => s.starter || s.movesFrom).map((s) => s.id);
   const endless = BIOMES.flatMap((b) => Object.keys(b.beasts));
-  const species = [...WILD_SPAWNS.map((s) => s.speciesId), ...starterLines, ...endless];
+  // and the hunted giants out of their dens (owner, 15 ottobre: the megalodon fought you unseen, its pictures never loaded)
+  const hunted = HUNTS.map((h) => h.form.speciesId);
+  const species = [
+    ...new Set([...WILD_SPAWNS.map((s) => s.speciesId), ...starterLines, ...endless, ...hunted]),
+  ];
   // evolutions of a beast you can tame, and the species whose pictures they borrow
   for (let i = 0; i < species.length; i++) {
     const sp = SPECIES.find((s) => s.id === species[i]);

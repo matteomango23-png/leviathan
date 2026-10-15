@@ -142,7 +142,7 @@ describe('the submarine', () => {
     expect(ev).toContainEqual({ type: 'vehicleSinking', vehicle: 'sub' });
     expect(ev.some((e) => e.type === 'subWrecked')).toBe(false);
     for (let t = 0; t < SHIP.wreckSinkSeconds + 0.2; t += DT) ev = ev.concat(run(g, DT));
-    expect(ev).toContainEqual({ type: 'subWrecked', teeth: 100 });
+    expect(ev).toContainEqual({ type: 'subWrecked', teeth: 0 }); // no teeth lost any more (owner, 15 ottobre)
     expect(g.sub.x).toBe(SUBMARINE.mooredX);
     // at the port it is mended
     const out: GameEvent[] = [];

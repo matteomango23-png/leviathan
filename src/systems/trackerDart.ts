@@ -11,7 +11,7 @@ import { isInWater, type WildBeast } from './beasts/wildState';
 import type { GameEvent } from './events';
 import type { GadgetsState } from './ship/gadgets';
 import type { SubState } from './subState';
-import { locate } from './tracking';
+import { locate, wildTarget } from './tracking';
 
 export interface TrackerWorld {
   sub: SubState;
@@ -43,7 +43,7 @@ export function shootTracker(g: TrackerWorld, events: GameEvent[]): void {
   if (!w) return;
   g.gadgets.target = w.spawn.resident
     ? { resident: w.spawn.resident, speciesId: w.spawn.speciesId }
-    : { wild: w.id, speciesId: w.spawn.speciesId };
+    : wildTarget(w);
   g.gadgets.targetName = formName(w.form);
   g.gadgets.trackLeft = TRACKER.seconds;
   events.push({ type: 'trackerHit', name: g.gadgets.targetName });

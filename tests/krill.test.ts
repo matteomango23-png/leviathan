@@ -18,6 +18,7 @@ import { SHIP_MODELS } from '../src/data/fleet';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
+import { wildTarget } from '../src/systems/tracking';
 
 let map: TileMap;
 beforeAll(() => {
@@ -100,13 +101,13 @@ describe('the Krill Hunter', () => {
     // its waters round it, so it stays out while the drone goes
     w.spawn = { ...w.spawn, area: [w.x - 600, WORLD.surfaceY, w.x + 600, WORLD.surfaceY + 400] };
     const ev: GameEvent[] = [];
-    expect(sendTrackerDrone(g, { wild: w.id, speciesId: w.spawn.speciesId }, ev)).toBe(true);
+    expect(sendTrackerDrone(g, wildTarget(w), ev)).toBe(true);
     for (let t = 0; t < 30 && g.gadgets.recon.phase !== 'idle'; t += 1 / 30) {
       Object.assign(w, { vx: 0, vy: 0 });
       ev.push(...stepGame(g, emptyInput(), 1 / 30));
     }
     expect(ev.some((e) => e.type === 'trackerHit')).toBe(true);
-    expect(g.gadgets.target).toEqual({ wild: w.id, speciesId: w.spawn.speciesId });
+    expect(g.gadgets.target).toEqual(wildTarget(w));
     expect(g.gadgets.trackLeft).toBeGreaterThan(0);
     expect(g.gadgets.recon.phase).toBe('idle');
     expect(g.gadgets.recon.report).toBeNull();

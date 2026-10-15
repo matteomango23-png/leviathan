@@ -19,6 +19,7 @@ import { spawnWild } from '../src/systems/beasts/wildState';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
+import { wildTarget } from '../src/systems/tracking';
 
 let map: TileMap;
 beforeAll(() => {
@@ -134,7 +135,7 @@ describe('the tracker dart', () => {
     expect(trackerTarget(g)).toBe(w);
     const ev: GameEvent[] = [];
     shootTracker(g, ev);
-    expect(g.gadgets.target).toEqual({ wild: w.id, speciesId: 'barracuda' });
+    expect(g.gadgets.target).toEqual(wildTarget(w));
     expect(g.gadgets.trackLeft).toBe(TRACKER.seconds);
     stepTracker(g, TRACKER.seconds - 1, ev);
     expect(g.gadgets.target).not.toBeNull();

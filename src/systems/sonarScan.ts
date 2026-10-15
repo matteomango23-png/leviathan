@@ -11,11 +11,12 @@ import { WORLD } from '../data/worldLayout';
 import type { BeastState } from './beastState';
 import { formLengthM, formName, type BeastForm } from './beasts/forms';
 import { isInWater } from './beasts/wildState';
+import { residentById, residentForm } from './beasts/residents';
 import { heardClass, trueClass } from './echoClass';
 import type { GameEvent } from './events';
 import { shipModel, sonarRange } from './ship/model';
 import { sonarActive, type ShipState } from './ship/ship';
-import { locate, type Target } from './tracking';
+import { locate, type Target, isTarget } from './tracking';
 import { biomeAt, regionAt } from './world/endless';
 import { zoneAt } from './world/zones';
 import { addNote, type SonarNotes } from './sonarNotes';
@@ -42,7 +43,7 @@ export const newScan = (): ScanState => ({ lock: null, t: 0, picked: null, resul
 
 /** One beast, one key (an echo keeps it while it moves). */
 export const targetKey = (t: Target): string =>
-  'wild' in t ? `w${t.wild}:${t.speciesId}` : `r${t.resident}`;
+  'wild' in t ? `w${t.wild}.${t.serial ?? 0}:${t.speciesId}` : `r${t.resident}`;
 
 /** Seconds this ship's sonar takes to analyse an echo. */
 export const scanSeconds = (ship: { model: string }): number => SONAR.analyzeSeconds / sonarRange(ship);
@@ -75,7 +76,10 @@ function formOf(g: ScanWorld, t: Target): BeastForm {
         ? -1
         : g.beasts.residents.awake[t.resident];
   const w = g.beasts.wilds.find((x) => x.id === out);
-  return w && isInWater(w) ? w.form : { speciesId: t.speciesId, variant: 'comune' };
+  if (w && isInWater(w) && (!('wild' in t) || isTarget(w, t))) return w.form;
+  // a resident still asleep: its own version all the same (it never changes)
+  const r = 'resident' in t ? residentById(t.resident) : undefined;
+  return r ? residentForm(r).form : { speciesId: t.speciesId, variant: 'comune' };
 }
 
 /** Where in the sea: the region out in the open sea, the zone along the coast. */

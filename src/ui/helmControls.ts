@@ -232,6 +232,7 @@ export class HelmControls {
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
     if (info.hull) parts.push(`scafo ${Math.round(info.hull[0])}/${info.hull[1]}`);
     if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
+    if (info.pool) parts.push(info.pool);
     const text = parts.join(' · ');
     if (text !== this.gaugeText) {
       this.gaugeText = text;

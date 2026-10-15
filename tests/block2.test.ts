@@ -23,7 +23,6 @@ import { rideTank } from '../src/systems/rideAir';
 import { launchShown, launchSub, stepBay } from '../src/systems/ship/hatch';
 import { engineHeard, newShip, sailShip, saveShip, type ShipWorld } from '../src/systems/ship/ship';
 import { iceIn } from '../src/systems/ship/surface';
-import { subModel } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
 import { icebergAcross, icebergsOfStretch } from '../src/systems/world/icebergs';
 import { biomeOf } from '../src/systems/world/stretches';
@@ -150,7 +149,7 @@ describe('the submarine', () => {
     expect(g.sub.vx).toBeGreaterThan(5);
   });
 
-  it('back in the hold the ship mends it, for teeth', () => {
+  it('back in the hold it stays broken: only a port mends it, for teeth (owner, 15 ottobre)', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
     g.gear.teeth = 1000;
@@ -159,17 +158,17 @@ describe('the submarine', () => {
     const ev: GameEvent[] = [];
     stepBay(g, 0.5, ev);
     expect(g.ship.bay).toBe('docked');
-    expect(g.sub.hull).toBe(subModel(g.sub.model).hull);
-    expect(g.gear.teeth).toBeLessThan(1000);
-    expect(ev.some((e) => e.type === 'subRepaired')).toBe(true);
+    expect(g.sub.hull).toBe(1);
+    expect(g.gear.teeth).toBe(1000);
+    expect(ev.some((e) => e.type === 'subRepaired')).toBe(false);
   });
 
-  it('broken and no teeth: Cala says how to mend it', () => {
+  it('broken, even with teeth: Cala says how to mend it', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
     Object.assign(g.ship, { aboard: true, hatches: [{ t: 1, open: true }] });
     g.sub.hull = 0;
-    g.gear.teeth = 0;
+    g.gear.teeth = 5000;
     expect(launchShown(g)).toBe(true);
     const ev: GameEvent[] = [];
     launchSub(g, ev);
@@ -227,7 +226,7 @@ describe('sardines and teeth (owner: thousands of teeth in two minutes)', () => 
     expect(ev.filter((e) => e.type === 'fishCaught')).toHaveLength(2); // still caught: they heal, they feed
   });
 
-  it('a gulp of a whole school is worth at most XP_RULES.fishPerBiteMax fish of experience', () => {
+  it('a gulp of a whole school is worth at most XP_RULES.fishPerMinute fish of experience (owner, 15 ottobre)', () => {
     const g = riding('megattera', 20, 2600, 200);
     run(g, DT);
     const b = g.beasts.team[0]!;
@@ -240,7 +239,14 @@ describe('sardines and teeth (owner: thousands of teeth in two minutes)', () => 
     stepGame(g, emptyInput(), DT);
     expect(b.level).toBe(lv0);
     expect(b.xp - xp0).toBeGreaterThan(0);
-    expect(b.xp - xp0).toBeLessThanOrEqual(fishXp(lv0) * XP_RULES.fishPerBiteMax);
+    expect(b.xp - xp0).toBeLessThanOrEqual(fishXp(lv0) * XP_RULES.fishPerMinute);
+    // the next gulp at once is worth nothing: this minute's fish are spent
+    for (const f of g.fish.fish.filter((f) => f.kind === 'sardina').slice(20, 40))
+      Object.assign(f, { x: h.x, y: h.y, vx: 0, vy: 0, alive: true });
+    g.timers.feed = 0;
+    const xp1 = b.xp;
+    stepGame(g, emptyInput(), DT);
+    expect(b.xp - xp1).toBeLessThan(fishXp(lv0));
   });
 });
 

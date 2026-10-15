@@ -208,7 +208,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       if (e.by === 'pressure') return [SUB_TEXT.crushed(e.hull, e.max), 2];
       return e.by === 'rock' ? [SUB_TEXT.bumped, 1.5] : [SUB_TEXT.rammed(e.hull, e.max), 2];
     case 'subWrecked':
-      return [e.toShip ? SHIP_TEXT.wreckedToShip(e.teeth) : SUB_TEXT.wrecked(e.teeth), 6];
+      return [e.toShip ? SHIP_TEXT.wreckedToShip(e.teeth) : SUB_TEXT.wrecked(), 6];
     case 'bagFull':
       return [
         'Sacca piena: vendi i pesci al porto. Quelli che prendi ora curano e nutrono, ma non li tieni.',
@@ -219,7 +219,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'subTooDeep':
       return [SUB_TEXT.tooDeep, 3];
     case 'legendGone':
-      return [`${e.name} è sconfitta: non tornerà mai più nel mare.`, 5];
+      return [`${e.name} è sconfitta: torna ferita nella sua tana. Tornerà più avanti.`, 5];
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':

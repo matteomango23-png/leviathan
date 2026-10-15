@@ -30,11 +30,14 @@ export const XP_RULES = {
   yieldByStars: { 1: 60, 2: 90, 3: 140, 4: 180, 5: 270 } as Record<StatSource['rarity'], number>,
   variantMult: 1.5, // tuning: albino and alfa are worth more (like a Lucky Egg)
   guardianMult: 1.5, // like a trainer's beast in Pokémon
-  /** A small fish caught or eaten: worth a beaten beast of this yield and of the eater's own level. Tuning. */
-  fishYield: 10,
-  /** One bite of a big beast counts as at most this many fish (owner, 8 ottobre: a humpback gulping a school of 22
-   *  sardines grew by handfuls of levels). Tuning. */
-  fishPerBiteMax: 2,
+  /** A small fish your beast eats in the water: worth a beaten beast of this yield and of its own level. The fish you
+   *  catch yourself (harpoon, net, ship, mouth) give none (owner, 15 ottobre: a starter at level 21 in 12 minutes,
+   *  following you through the sardine schools). Tuning. */
+  fishYield: 6,
+  /** At most this many eaten fish a minute are worth experience (a whole school gulped is still just a few). Tuning. */
+  fishPerMinute: 2,
+  /** All the experience from battles, scaled (owner, 15 ottobre: levels came too fast). Tuning. */
+  battleMult: 0.6,
   benchShare: 0.5, // the team beasts not in the water get this share, like the modern Exp. Share
 };
 

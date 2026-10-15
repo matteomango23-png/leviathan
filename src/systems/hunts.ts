@@ -13,7 +13,7 @@ import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
 import type { BeastForm } from './beasts/forms';
 import { heardClass, trueClass } from './echoClass';
-import type { Target } from './tracking';
+import { wildTarget, type Target } from './tracking';
 import type { EchoClass } from '../data/hunts';
 import { residentsNear, type ResidentsState } from './beasts/residents';
 import { sonarActive, type ShipState } from './ship/ship';
@@ -213,9 +213,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
     if (isInWater(w) && Math.abs(w.x - x) <= range && w.y > WORLD.surfaceY)
       dot(
         w.form,
-        w.spawn.resident
-          ? { resident: w.spawn.resident, speciesId: w.spawn.speciesId }
-          : { wild: w.id, speciesId: w.spawn.speciesId },
+        w.spawn.resident ? { resident: w.spawn.resident, speciesId: w.spawn.speciesId } : wildTarget(w),
         w.x,
         w.y,
       );

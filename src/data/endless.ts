@@ -55,6 +55,9 @@ export const ENDLESS = {
     roamY: 45,
     lapSeconds: [50, 110] as [number, number], // one lap of its wandering
     returnSeconds: [240, 480] as [number, number], // caught or beaten: a new one lives there after this
+    /** Each kind's weight in its sea, scaled by its stars: the rare ones are rare everywhere (owner, 15 ottobre: a
+     *  4-star humpback was everywhere in the polar sea). Tuning. */
+    rarityWeight: { 1: 1, 2: 1, 3: 0.8, 4: 0.35, 5: 0.15 } as Record<number, number>,
   },
   schools: 9, // sardine schools that follow you out there (moved ahead of you when left far behind)
   schoolFar: 900, // units: a school this far from you is moved near you again

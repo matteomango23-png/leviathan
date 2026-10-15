@@ -38,7 +38,9 @@ describe('experience (Gen V scaled)', () => {
     const f = { speciesId: 'barracuda', variant: 'comune' as const };
     expect(xpReward(f, 10, 5)).toBeGreaterThan(xpReward(f, 10, 10));
     expect(xpReward(f, 10, 20)).toBeLessThan(xpReward(f, 10, 10));
-    expect(xpReward(f, 10, 10)).toBe(scaledXp(XP_RULES.yieldByStars[1], 10, 10));
+    expect(xpReward(f, 10, 10)).toBe(
+      Math.round(scaledXp(XP_RULES.yieldByStars[1], 10, 10) * XP_RULES.battleMult),
+    );
   });
 });
 

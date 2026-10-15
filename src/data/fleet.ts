@@ -132,7 +132,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     hull: 100, // its hull points (block 5c)
     perKm: 10,
     sonar: { range: 1, maxKnots: 10, name: 'debole', classes: 2 },
-    pool: 0,
+    pool: 1, // owner, 15 ottobre: on the first ship the team never healed
     bays: [
       {
         kind: 'sub',

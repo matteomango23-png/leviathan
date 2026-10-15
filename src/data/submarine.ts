@@ -179,8 +179,9 @@ export const SUBMARINE = {
   /** How the damage shows: the hull bar over it (seconds on screen) and smoke below this share of the hull. */
   hullBarSeconds: 3,
   smokeBelow: 0.3,
-  repairPerPoint: 2, // teeth per hull point, repaired when you come into a port
-  wreckTeethLoss: 0.1, // a broken submarine is towed back to Portofosco: you lose this share of your teeth
+  // teeth per hull point, mended only at a port (owner, 15 ottobre: no teeth lost when it breaks, but mending it costs;
+  // the crew no longer mends it in the hold). Tuning.
+  repairPerPoint: 5,
 };
 
 export const SUB_TEXT = {
@@ -188,8 +189,7 @@ export const SUB_TEXT = {
     'Dentro il sottomarino respiri, ma qui non si guarisce e non si combatte. Leva a sinistra: il gas. A destra: direzione e Sali/Scendi.',
   rammed: (hull: number, max: number): string => `Uno schianto contro lo scafo! (${hull}/${max})`,
   bumped: 'Lo scafo sbatte contro la roccia!',
-  wrecked: (teeth: number): string =>
-    `Lo scafo cede. Ti rimorchiano a Portofosco${teeth ? `: perdi ${teeth} denti` : ''}. Riparalo al porto.`,
+  wrecked: (): string => 'Lo scafo cede. Ti rimorchiano a Portofosco: riparalo al porto.',
   repaired: (cost: number): string => `Il sottomarino è stato riparato (${cost} denti).`,
   broken: 'Il sottomarino è a pezzi: entra in un porto per ripararlo.',
   tooDeep: 'Lo scafo scricchiola: la pressione è troppa per questo sottomarino. Risali!',

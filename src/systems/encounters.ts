@@ -4,7 +4,7 @@
 import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { ITEM_RULES } from '../data/economy';
 import { ENDLESS } from '../data/endless';
-import { residentArea, residentsNear } from './beasts/residents';
+import { residentArea, residentsNear, residentForm } from './beasts/residents';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
@@ -77,14 +77,20 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   const seen = (x: number, y: number): boolean => onScreen(g.beasts.view, x, y, WILD_RULES.viewMargin);
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
   /** It comes out of the dark (a resident of the endless sea: where it already is). */
-  const appear = (w: WildBeast, at?: { x: number; y: number }): boolean => {
-    // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready)
-    const form: BeastForm = w.spawn.form
-      ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
-      : rollWildForm(w.spawn.speciesId, g.rng);
+  const appear = (
+    w: WildBeast,
+    at?: { x: number; y: number },
+    own?: { form: BeastForm; level: number },
+  ): boolean => {
+    // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready); a resident too (its own)
+    const form: BeastForm =
+      own?.form ??
+      (w.spawn.form
+        ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
+        : rollWildForm(w.spawn.speciesId, g.rng));
     const p = at ?? appearPoint(w, g.map, g.rng, d, seen);
     if (!p || seen(p.x, p.y)) return false;
-    spawnWild(w, form, rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
+    spawnWild(w, form, own?.level ?? rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
     // far stronger than your strongest beast: a warning (owner, 4 ottobre: fear of some creatures)
     const top = Math.max(0, ...g.beasts.team.filter((b) => b.inTeam).map((b) => b.level));
@@ -125,8 +131,9 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       area: residentArea(c.r),
       band: c.r.band,
       resident: c.r.id,
+      form: undefined,
     };
-    if (!appear(w, g.map.nearestOpen(c.x, c.y, 8))) return false;
+    if (!appear(w, g.map.nearestOpen(c.x, c.y, 8), residentForm(c.r))) return false;
     res.awake[c.r.id] = w.id;
     return true;
   };

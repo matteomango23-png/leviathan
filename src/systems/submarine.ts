@@ -209,14 +209,13 @@ function damageHull(
   events.push({ type: 'vehicleSinking', vehicle: 'sub' });
 }
 
-/** The broken submarine towed home, you with it (a price in teeth, like losing your senses). */
+/** The broken submarine towed home, you with it; it stays broken until a port mends it (owner, 15 ottobre: no teeth
+ *  lost any more, but the repair costs). */
 function towSub(g: SubWorld, events: GameEvent[]): void {
   const s = g.sub;
-  const teeth = Math.floor(g.gear.teeth * SUBMARINE.wreckTeethLoss);
-  g.gear.teeth -= teeth;
   Object.assign(s, { x: SUBMARINE.mooredX, y: subTopY(s), vx: 0, vy: 0, sinkT: 0 });
   Object.assign(g.diver, { x: s.x, y: s.y });
-  events.push({ type: 'subWrecked', teeth });
+  events.push({ type: 'subWrecked', teeth: 0 });
 }
 
 /** Coming into a port: the hull is mended, for the teeth you have. */

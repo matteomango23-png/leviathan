@@ -12,6 +12,9 @@ import { boatLaunchShown, boatName, boatOnRamp } from '../systems/ship/boatBay';
 import { boatModel } from '../systems/boat';
 import { SHIP_MODELS } from '../data/fleet';
 import { SHIP } from '../data/ship';
+import { inPool } from '../systems/ship/shipPool';
+import { formName } from '../systems/beasts/forms';
+import { maxHpOf } from '../systems/beasts/team';
 import { keelDepthM } from '../systems/ship/uboat';
 import { canRecon, canSendSphere, hasDrone, reconOut, sphereBay, sphereOut } from '../systems/ship/gadgets';
 import { subModel } from '../systems/submarine';
@@ -106,6 +109,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       // its hull (block 5c): the bar, and broken down
       hull: [s.hull, hullMax(s)],
       broken: s.hull <= 0,
+      pool: poolLine(g),
       objective: objectiveLine(g),
       hatchCanMove: hatchCanMove(s) && !boatOnRamp(g),
       hatches: hatchButtons(g),
@@ -159,4 +163,13 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       canTrack: !!trackerTarget(g),
     };
   return null;
+}
+
+/** The ship's pool at the helm: the most hurt beast resting in it (and how many more), while it heals. */
+function poolLine(g: GameState): string | undefined {
+  const now = inPool(g);
+  const b = now[0];
+  if (!b) return undefined;
+  const more = now.length > 1 ? ` +${now.length - 1}` : '';
+  return `vasca: ${formName(b.form)} ${Math.round((100 * b.hp) / maxHpOf(b))}%${more}`;
 }

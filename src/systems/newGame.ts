@@ -4,6 +4,7 @@ import { newScan, type ScanState } from './sonarScan';
 import { checkedNotes, type SonarNotes } from './sonarNotes';
 import { newColumns, type WaterColumns } from './waterColumns';
 import { DIVER } from '../data/diver';
+import { XP_RULES } from '../data/progression';
 import { START, TILE } from '../data/worldLayout';
 import { type RideTanks } from './rideAir';
 import { createBeasts } from './beastPlay';
@@ -53,7 +54,8 @@ export interface GameState extends StoryWorld {
   /** The puzzles of the sunken temples in progress (not saved). */
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
-  timers: { feed: number; vent: number };
+  /** feed: the pause between bites; vent; fishXp: eaten fish still worth experience this minute (XP_RULES). */
+  timers: { feed: number; vent: number; fishXp: number };
   /** The air of the whales of your team, which you breathe while riding them (breath.ts, not saved). */
   rideTanks: RideTanks;
   /** The weather above the sea (weather.ts, not saved; the World scene steps it). */
@@ -91,7 +93,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
-  const beasts = createBeasts(restoreTeam(s), s.legendsGone);
+  // the legends an older save marked gone forever come back (owner, 15 ottobre); a tamed one is in your team
+  const beasts = createBeasts(restoreTeam(s), []);
   const dens = placeDens(map);
   addHuntSlots(beasts.wilds, dens); // the legends and giants in their dens (hunts.ts)
   const g: GameState = {
@@ -118,7 +121,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     ship: newShip(s.ship),
     boat: newBoat(s.boat),
     fleet: structuredClone(s.fleet ?? []),
-    timers: { feed: 0, vent: 0 },
+    timers: { feed: 0, vent: 0, fishXp: XP_RULES.fishPerMinute },
     rideTanks: {},
     // a brand new game starts under a clear sky; a save goes on with its weather (an old one: a random start)
     weather: createWeather(undefined, s.weather, save === null),
