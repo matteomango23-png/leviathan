@@ -1172,7 +1172,7 @@
 }
 
 /* while the port is open only the port (and sheets opened from it) are shown */
-#ui.in-port > :not(.port):not(.sheet):not(.dialogue) {
+#ui.in-port > :not(.port):not(.sheet):not(.dialogue):not(.diary-sheet) {
   display: none !important;
 }
 

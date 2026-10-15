@@ -924,3 +924,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Forma del corpo in un file senza Phaser** (`views/swimPose.ts`): si può verificare con i test (segmenti del serpente di lunghezza costante, ali che battono in alternanza).
 - **Velocità reali ammorbidite:** la radice quadrata delle velocità vere (riferimento: squalo bianco a 40 km/h) tiene le differenze riconoscibili senza rendere ingiocabili le più lente o le più veloci.
 - **Imboscata solo alle spalle:** la simulazione a specchio dà circa il 50% di vittorie. La sensazione del proprietario veniva dall'attacco gratis della bestia che ti tocca, cioè quasi sempre.
+
+## 15 ottobre 2026 — Schermate e audio (v0.67.0)
+
+- **Audio su iPhone:** lo sblocco fa partire un buffer muto dentro il tocco (iOS lo richiede) e riprova a ogni tocco e al rientro nell'app. `navigator.audioSession.type = 'playback'` (iOS 17+) fa suonare il gioco come un'app musicale, quindi l'interruttore silenzioso non lo zittisce: è una scelta, si può tornare indietro togliendo quella riga. `latencyHint: 'playback'` dà un buffer più ampio, quindi meno crepitii, al prezzo di qualche millisecondo di ritardo che in un gioco come questo non si sente.
+- **Resoconto del drone a tempo:** dopo 3 minuti le posizioni non valgono più (le bestie si muovono): meglio un resoconto scaduto che uno sbagliato.
+- **Trascinare le sfere:** il richiamo della bestia passa da `pointerdown` a `pointerup` senza movimento, così lo stesso pulsante serve anche a trascinare.
