@@ -6,7 +6,7 @@ import { CLARITY } from '../data/sea';
 import { shapeShare } from '../systems/clarity';
 import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { artKeysOf, formKey, speciesOf, tailUpDown, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, formKey, speciesOf, swimLook, type BeastForm } from '../systems/beasts/forms';
 import { riderSeat } from '../systems/beasts/combat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater, isRare } from '../systems/beasts/wildState';
@@ -130,7 +130,7 @@ export class BeastsLayer {
           jaw: w.jaw,
           length: w.length,
           girth: speciesOf(w.form).girth,
-          whale: tailUpDown(w.form),
+          ...swimLook(w.form),
           flash: w.flash,
           alpha: 1,
           shade,
@@ -160,7 +160,7 @@ export class BeastsLayer {
           phase: w.phase + 1.3 * (k + 1),
           jaw: 0,
           length: w.length * (0.82 + 0.06 * k),
-          whale: tailUpDown(w.form),
+          ...swimLook(w.form),
           flash: w.flash,
           alpha: 1,
           shade,
@@ -182,7 +182,7 @@ export class BeastsLayer {
         jaw: c.jaw,
         length: c.length,
         girth: speciesOf(b.form).girth,
-        whale: tailUpDown(b.form),
+        ...swimLook(b.form),
         flash: c.flash,
         alpha: c.alpha,
       });

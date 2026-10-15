@@ -3,10 +3,11 @@
 // each strip follows one spine segment (rotated and shortened in perspective as the tail swings).
 import Phaser from 'phaser';
 import { assetUrl } from '../data/assets';
-import { BEAST_SPRITE } from '../data/beasts';
+import { BEAST_SPRITE, type FlapDef } from '../data/beasts';
+import { flapScale, spineOf } from './swimPose';
 import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
-const { frameW: IW, frameH: IH, spineY: CY, segments: N, whaleWave } = BEAST_SPRITE;
+const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
 const OVERLAP = 1.07;
 const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
@@ -77,6 +78,10 @@ export interface BeastPoseView {
   pale?: boolean;
   /** A whale or a dolphin: the tail beats up and down. */
   whale?: boolean;
+  /** A serpent or an eel: a wave along the whole body, no piece shortened (BEAST_SPRITE.serpentWave). */
+  serpent?: boolean;
+  /** Wings that beat (the manta: FLAP). */
+  flap?: FlapDef;
   /** Murky water, far from your light: only its dark shape shows (this tint; clarity.ts). */
   shade?: number;
 }
@@ -125,38 +130,9 @@ export class BeastSprite {
     }
     this.front.setVisible(false);
     for (const s of this.strips) s.setVisible(true);
-    const bend = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
     // no turning animation: a beast faces its new way at once (owner, 4 ottobre: every animated turn of a flat
     // painted profile looked like a sheet of paper)
-    const pts: [number, number][] = [];
-    const ang: number[] = [];
-    const lens: number[] = [];
-    let px = 0;
-    let py = 0;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const env = Math.pow(Math.max(0, (u - 0.35) / 0.65), 1.5);
-      let a: number;
-      let len: number;
-      if (p.whale) {
-        // whales and dolphins: the tail beats up and down, the thick front of the body stays whole
-        const tail = Math.pow(Math.max(0, (u - whaleWave.from) / (1 - whaleWave.from)), 1.6);
-        a = p.pitch + bend * u * u * 0.9 + whaleWave.amp * tail * Math.sin(p.phase - u * whaleWave.waves);
-        len = SEG;
-      } else {
-        // sharks and fish: the tail swings sideways, shortening in perspective
-        const th = 1.05 * env * Math.sin(p.phase - u * 2.2);
-        a = p.pitch + bend * u * u * 0.9 + 0.05 * env * Math.sin(p.phase - u * 2.2 + 1.2);
-        len = SEG * (0.62 + 0.38 * Math.cos(th));
-      }
-      pts.push([px, py]);
-      ang.push(a);
-      lens.push(len);
-      if (i < N) {
-        px -= Math.cos(a) * len;
-        py -= Math.sin(a) * len;
-      }
-    }
+    const { pts, ang, lens } = spineOf(p);
     const mid = pts[Math.round(N * 0.45)]!;
     for (let i = 0; i < N; i++) {
       const s = this.strips[i]!;
@@ -164,7 +140,7 @@ export class BeastSprite {
       const a = (ang[i]! + ang[i + 1]!) / 2;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
-        .setScale((lens[i]! / SEG) * OVERLAP, 1);
+        .setScale((lens[i]! / SEG) * OVERLAP, flapScale(p, i));
       if (p.shade !== undefined && p.flash <= 0) {
         s.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.shade);
         continue;
