@@ -930,3 +930,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Audio su iPhone:** lo sblocco fa partire un buffer muto dentro il tocco (iOS lo richiede) e riprova a ogni tocco e al rientro nell'app. `navigator.audioSession.type = 'playback'` (iOS 17+) fa suonare il gioco come un'app musicale, quindi l'interruttore silenzioso non lo zittisce: è una scelta, si può tornare indietro togliendo quella riga. `latencyHint: 'playback'` dà un buffer più ampio, quindi meno crepitii, al prezzo di qualche millisecondo di ritardo che in un gioco come questo non si sente.
 - **Resoconto del drone a tempo:** dopo 3 minuti le posizioni non valgono più (le bestie si muovono): meglio un resoconto scaduto che uno sbagliato.
 - **Trascinare le sfere:** il richiamo della bestia passa da `pointerdown` a `pointerup` senza movimento, così lo stesso pulsante serve anche a trascinare.
+
+## 15 ottobre 2026 — Un livello che brilla sopra il buio (v0.68.0)
+
+- **Il buio** è una maschera disegnata da una telecamera sopra il mondo, quindi le luci che pulsano (immagini `_glow`) restavano coperte. Invece di "bucare" la maschera con la forma di ogni immagine (difficile con i ritagli e gli specchiamenti), c'è un quarto livello con una sua telecamera che segue esattamente quella del mondo, disegnato dopo il buio. Ciò che emette luce va lì.
+- **Fari automatici in immersione,** senza pulsante: è la cosa che serviva subito (vedere intorno). Un interruttore si può aggiungere se servirà nasconderli, per esempio per non farsi vedere.

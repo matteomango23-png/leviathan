@@ -23,13 +23,19 @@ export class NightmareView {
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly shocks: Phaser.GameObjects.Graphics;
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer,
+    glowLayer: Phaser.GameObjects.Layer = layer,
+  ) {
     this.drone = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.droneGlow = scene.add.image(0, 0, '__WHITE').setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
     this.sphere = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.shocks = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
-    layer.add([this.glow, this.drone, this.droneGlow, this.sphere, this.shocks]);
+    layer.add([this.drone, this.sphere, this.shocks]);
+    // the sphere's red glow and the drone's lights shine in the dark, over the darkness (cameraRig glow layer)
+    glowLayer.add([this.glow, this.droneGlow]);
   }
 
   update(g: GameState, time: number): void {
@@ -109,10 +115,11 @@ export class NightmareView {
   /** Lights in the dark: the sphere's glow, the drone's lamp. */
   glowSpots(g: GameState): { x: number; y: number; r: number }[] {
     const out: { x: number; y: number; r: number }[] = [];
-    if (g.ship.owned && reconOut(g)) out.push({ x: g.gadgets.recon.x, y: g.gadgets.recon.y, r: 26 });
+    // its own lights, seen from afar in the dark (owner, 15 ottobre: at 300 m drone and sphere could not be seen)
+    if (g.ship.owned && reconOut(g)) out.push({ x: g.gadgets.recon.x, y: g.gadgets.recon.y, r: 70 });
     const sp = g.gadgets.sphere;
     if (g.ship.owned && sphereBay(g.ship) >= 0 && sp.phase !== 'dock')
-      out.push({ x: sp.x, y: sp.y, r: SPHERE.sizeM * WORLD.unitsPerMetre * 0.8 });
+      out.push({ x: sp.x, y: sp.y, r: SPHERE.sizeM * WORLD.unitsPerMetre * 1.8 });
     return out;
   }
 }

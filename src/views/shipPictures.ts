@@ -42,6 +42,8 @@ export class ShipPictures {
     layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
     art: NonNullable<ShipModelDef['art']>,
     bays: ShipModelDef['bays'],
+    /** Where its pulsing lights go: drawn over the darkness (cameraRig's glow layer); else with the ship. */
+    glowLayer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container = layer,
   ) {
     const make = (key: string): Phaser.GameObjects.Image => scene.add.image(0, 0, key).setVisible(false);
     this.parts = [];
@@ -78,7 +80,7 @@ export class ShipPictures {
       art.glow && WORLD_ART_KEYS.includes(art.glow)
         ? make(`world-${art.glow}`).setBlendMode(Phaser.BlendModes.ADD)
         : null;
-    if (this.glow) layer.add(this.glow);
+    if (this.glow) glowLayer.add(this.glow);
   }
 
   hide(): void {

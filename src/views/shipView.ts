@@ -18,6 +18,7 @@ import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
 import { hasMouth, mouthPoint } from '../systems/ship/krillMouth';
+import { floodSpots } from '../systems/ship/floodlight';
 
 /** A U-Boat's hull under the waves darkens fully once it has gone down this share of its floating line. */
 const UNDER_FADE = 0.5;
@@ -39,7 +40,11 @@ export class ShipView {
   /** How lit the light under the still ship is now (eases on and off). */
   private beamK = 0;
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer,
+    glowLayer: Phaser.GameObjects.Layer = layer,
+  ) {
     const smoke = scene.add.graphics(); // behind the ship
     this.fallback = scene.add.graphics();
     layer.add([smoke, this.fallback]);
@@ -47,7 +52,7 @@ export class ShipView {
       const art = m.art;
       if (!art || this.pics.has(art.closed)) continue;
       const painted = WORLD_ART_KEYS.includes(art.closed) && WORLD_ART_KEYS.includes(art.open);
-      this.pics.set(art.closed, painted ? new ShipPictures(scene, layer, art, m.bays) : null);
+      this.pics.set(art.closed, painted ? new ShipPictures(scene, layer, art, m.bays, glowLayer) : null);
     }
     this.tug = WORLD_ART_KEYS.includes(SHIP.tug.art)
       ? scene.add.image(0, 0, `world-${SHIP.tug.art}`).setVisible(false)
@@ -209,12 +214,12 @@ export class ShipView {
   }
 
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
-  glowSpots(s: ShipState): { x: number; y: number; r: number }[] {
+  glowSpots(s: ShipState, murk = 0): { x: number; y: number; r: number }[] {
     if (!s.owned) return [];
     const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
-    const fade = 1 - diveShare(s);
-    if (fade <= 0.01) return [];
-    const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius * fade }));
+    // its lights stay on under water (owner, 15 ottobre: they went out as it dived, all black at depth)
+    const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
+    spots.push(...floodSpots(s, murk));
     // the light under the still ship (block 5b): a wide glow below the keel
     if (s.lightOn && hasMouth(s)) {
       const m = mouthPoint(s);

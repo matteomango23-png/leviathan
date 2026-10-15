@@ -1,5 +1,25 @@
 # Progressi
 
+## Lotto D, luci degli U-Boat (15 ottobre 2026) → v0.68.0
+
+- **Livello luminoso:** `cameraRig.layers.glow` con la sua telecamera (`glowCam`), disegnato dopo la maschera del buio. Ci vanno le immagini `_glow` (`ShipPictures`, `SubmarineView`) e i bagliori di drone e sfera (`NightmareView`).
+- **Fari:**
+  - `floodlightM` nei modelli (nave e sottomarino);
+  - `systems/ship/floodlight.ts`: `floodSpots` (tre punti lungo lo scafo), `subFloodSpots`;
+  - ridotti dalla torbidità (`FLOOD_MURK` 0,6).
+- **Luci della nave:** `shipView.glowSpots` non si spengono più con l'immersione.
+- **Drone e sfera:** raggio di luce 70 e 1,8 × la sfera.
+- **Manta:** tolto `FLAP` e `flapScale`.
+- **Test:** `tests/floodlight.test.ts`. Nel browser, a 300 m col Nightmare, la luminosità media intorno alla nave passa da 14 (senza fari) a 31.
+
+**Da provare sull'iPhone:**
+- Nightmare a 100 e 300 m, fermo e in moto;
+- le rune rosse al buio;
+- drone e sfera fuori;
+- il sottomarino imperiale.
+
+**Prossimo:** lotto E (soldi ed economia).
+
 ## Lotto C, schermate e comandi (15 ottobre 2026) → v0.67.0
 
 - **Sonar e cockpit:**

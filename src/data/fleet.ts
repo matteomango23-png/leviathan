@@ -89,6 +89,9 @@ export interface ShipModelDef {
   sonar: { range: number; maxKnots: number; name: string; classes: 2 | 3 | 4 | 5 };
   /** U-Boats only (block 4c): how deep and how long it dives, and how fast it sinks and rises (units/s). Tuning. */
   dive?: { maxDepthM: number; airSeconds: number; sinkSpeed: number; riseSpeed: number };
+  /** Under water its floodlights light the sea round the hull this far (m), less in murky water (owner, 15 ottobre:
+   *  diving the Nightmare showed only what was ahead). Tuning. */
+  floodlightM?: number;
   /** Places in its tank for beasts of the team (owner, 8 ottobre; it works from block 6). */
   pool: number;
   bays: BayDef[];
@@ -233,6 +236,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     cockpit: ALL_TABS,
     card: 'nave_whale',
     dive: { maxDepthM: 150, airSeconds: 300, sinkSpeed: 45, riseSpeed: 55 },
+    floodlightM: 18,
     art: {
       closed: 'nave_whale',
       open: 'nave_whale', // no hatch
@@ -334,6 +338,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     cockpit: ALL_TABS,
     card: 'nave_stormtrooper',
     dive: { maxDepthM: 300, airSeconds: 480, sinkSpeed: 25, riseSpeed: 30 },
+    floodlightM: 28,
     art: {
       closed: 'nave_stormtrooper',
       open: 'nave_stormtrooper', // no hatch
@@ -573,6 +578,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     cockpitTheme: 'nightmare',
     card: 'nave_nightmare',
     dive: { maxDepthM: 500, airSeconds: 600, sinkSpeed: 20, riseSpeed: 25 },
+    floodlightM: 40,
     art: {
       closed: 'nave_nightmare',
       open: 'nave_nightmare_aperta',

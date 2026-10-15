@@ -45,13 +45,18 @@ export class SubmarineView {
   private readonly ride = newRide();
   private barLeft = 0;
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer,
+    glowLayer: Phaser.GameObjects.Layer = layer,
+  ) {
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.turning = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.glow = scene.add.image(0, 0, '__WHITE').setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
     this.g = scene.add.graphics();
     this.bar = scene.add.graphics();
-    layer.add([this.img, this.turning, this.glow, this.g, this.bar]);
+    layer.add([this.img, this.turning, this.g, this.bar]);
+    glowLayer.add(this.glow); // its red lights shine in the dark (cameraRig glow layer)
   }
 
   /** @param hidden in the ship's hold behind the closed hatch */
