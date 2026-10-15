@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.70.0 — Bestie nuove e forme finali (15 ottobre 2026)
+
+- **Immagini rifatte** per 17 bestie: anguilla elettrica, barracuda, beluga, calamaro gigante, capodoglio, coccodrillo albino leggendario, coccodrillo del Nilo, delfino, Dunkleosteus, elefante marino, foca leopardo, Archelon, Folgore, Livyatan, lontra marina, manta, megattera.
+- **Dieci bestie nuove:**
+  - lampuga, pesce sega, tartaruga liuto, squalo balena, squalo elefante, squalo pinna nera, squalo toro, squalo leuca, foca comune;
+  - il **Plesiosauro**, un gigante preistorico che si caccia: nel Mare blu, con la nebbia.
+- **Il Mosasauro arriva in mare:** si caccia nelle Grandi fosse, durante la tempesta.
+- **Forme finali nuove**, d'osso e corazzate, al livello 50: megattera, capodoglio, coccodrillo marino, manta, squalo martello e pesce spada (nuova: "Pesce spada Corazzato").
+- **Squali nuovi:**
+  - lo squalo bianco Titano ora è lo squalo scuro corazzato;
+  - il megalodonte è il gigante bianco d'osso.
+
 ## v0.69.0 — Soldi ed economia (15 ottobre 2026)
 
 - **Sacca senza tetto:** tieni tutti i pesci che prendi. Il mercante paga meno un pesce che gli hai appena venduto a mucchi: dopo circa 120 dello stesso tipo il prezzo arriva al 30%, e torna su col tempo, circa 4 pesci al minuto anche a gioco chiuso. La sardina torna a 2 denti.

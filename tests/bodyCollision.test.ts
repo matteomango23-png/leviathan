@@ -80,7 +80,8 @@ describe('forma vera delle bestie (4 ottobre: più sono grandi più entravano ne
     const whale = { x: 0, y: 0, face: 1 as const, pitch: 0, length: 144 };
     const real = bodyCircles({ ...whale, shape: shapeOfForm({ speciesId: 'megattera', variant: 'comune' }) });
     const old = bodyCircles(whale);
-    expect(Math.max(...real.map((c) => c.r))).toBeGreaterThan(Math.max(...old.map((c) => c.r)) * 1.3);
+    // the humpback redrawn on 15 ottobre is slimmer than the first one (×1.24, was ×1.3+)
+    expect(Math.max(...real.map((c) => c.r))).toBeGreaterThan(Math.max(...old.map((c) => c.r)) * 1.15);
   });
 
   it('in groppa la battaglia parte quando la selvatica tocca la tua bestia', async () => {

@@ -24,7 +24,7 @@ import {
   placeProfile,
   removeBlackBackground,
   removeDarkBackground,
-  removeGreenBackground,
+  cutGreenScreen,
   onGreenScreen,
   fillMouth,
 } from './art/cutout.ts';
@@ -153,7 +153,7 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
   const flood = SIDE_FLOOD_SPECIES.some((id) => basename(src).startsWith(`${id}_side`));
   const green = onGreenScreen(raw);
   let cut = green
-    ? removeGreenBackground(raw)
+    ? cutGreenScreen(raw)
     : loose
       ? removeDarkBackground(raw, borderColor(raw), radius, loose)
       : flood
@@ -225,7 +225,7 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
   const raw = { data, width: info.width, height: info.height };
   const radius = Math.max(2, Math.round(Math.min(info.width, info.height) * 0.006));
   const cut = onGreenScreen(raw)
-    ? removeGreenBackground(raw)
+    ? cutGreenScreen(raw)
     : removeDarkBackground(raw, borderColor(raw), radius, BATTLE_CUTOUT_LOOSE[name] ?? BATTLE_CUTOUT);
   eraseRects(cut, info.width, info.height, BATTLE_ERASE[name] ?? []);
   if (BATTLE_ENCLOSED.includes(name)) clearEnclosedBackground(raw, cut, borderColor(raw));

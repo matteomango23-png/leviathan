@@ -942,3 +942,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Missioni ripetibili:** le taglie e i lavori quotidiani tornano dopo la riscossione, così c'è sempre qualcosa da fare per soldi oltre alla pesca. Restano anche nell'elenco delle "fatte", perché sbloccano le missioni successive.
 - **Vendita delle bestie domate:** trasforma la cattura in un guadagno (ciò che il proprietario chiamava vendere "pesci che domi"). Le leggende non si vendono.
 - **Obiettivo di ritmo** (da verificare giocando): la prima nave nuova (6000) in circa un'ora, il Nightmare (50.000) in circa 8-10 ore. Tutti i numeri sono in `data/economy.ts` e `data/regions.ts`.
+
+## 15 ottobre 2026 — Bestie nuove, forme finali, squalo bianco e megalodonte (v0.70.0)
+
+- **Squalo scuro corazzato = forma finale dello squalo bianco** (il "Titano", al livello 50), e **squalo bianco d'osso = megalodonte**. Lo ha proposto il proprietario e sono d'accordo: lo squalo corazzato è chiaramente uno squalo bianco cresciuto, mentre quello d'osso, enorme e preistorico, ha l'aspetto di un gigante antico.
+- **Giganti preistorici sempre a caccia:** anche il plesiosauro e il mosasauro (che finora non aveva immagini) non compaiono per caso, come il megalodonte. Hanno una tana, una voce nei porti e un tempo.
+- **Nomi degli squali:** toro = sand tiger (Carcharias taurus), leuca = bull shark (Carcharhinus leucas), come nell'uso italiano.
+- **Fondo verde spento:** la soglia per togliere il verde ora si adatta al verde dello sfondo (`cutGreenScreen`). Prima un verde debole restava come una nebbia intorno alla bestia.

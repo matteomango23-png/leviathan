@@ -75,7 +75,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 2, rx: [30, 70], ry: [30, 90] },
     kelp: { chance: 0.12, minH: 10, maxH: 40 },
     corals: { chance: 0.1, colors: [] },
-    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4, pesce_vela: 1.5, medusa_gigante: 1.5, squalo_nutrice: 1, cernia: 1, squalo_capopiatto: 0.8, chimera: 0.8 },
+    beasts: { tonno: 3, barracuda: 2, delfino: 2, tartaruga_marina: 2, manta: 1.2, pesce_luna: 1, pesce_spada: 1, squalo_martello: 1, squalo_tigre: 1, squalo_volpe: 0.8, squalo_bianco: 0.5, megattera: 0.4, pesce_vela: 1.5, medusa_gigante: 1.5, squalo_nutrice: 1, cernia: 1, squalo_capopiatto: 0.8, chimera: 0.8, lampuga: 2.5, tartaruga_liuto: 1, squalo_balena: 0.4, squalo_pinna_nera: 1.5, squalo_toro: 1 },
   },
   {
     id: 'barriera',
@@ -86,7 +86,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 9, rx: [25, 60], ry: [25, 70] },
     kelp: { chance: 0.15, minH: 10, maxH: 30 },
     corals: { chance: 0.6, colors: ['#d0584e', '#e8a547', '#d98cb8', '#5fc4b3'] },
-    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5, pesce_leone: 2.5, cernia: 2, medusa_gigante: 1.5, squalo_nutrice: 1.5, pastinaca: 1.5 },
+    beasts: { pesce_palla: 3, scorfano: 2, pesce_napoleone: 2, murena: 2, tartaruga_marina: 2, torpedine: 2, squalo_martello: 1, manta: 1, pesce_luna: 0.5, pesce_leone: 2.5, cernia: 2, medusa_gigante: 1.5, squalo_nutrice: 1.5, pastinaca: 1.5, squalo_pinna_nera: 2, squalo_toro: 1, squalo_balena: 0.3 },
   },
   {
     id: 'foresta',
@@ -97,7 +97,7 @@ export const BIOMES: BiomeDef[] = [
     mounds: { count: 5, rx: [30, 60], ry: [40, 90] },
     kelp: { chance: 0.85, minH: 40, maxH: 130 },
     corals: { chance: 0.05, colors: [] },
-    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, scorfano: 1.5, delfino: 1, torpedine: 1, anguilla_elettrica: 1.5, polpo_gigante: 1, lontra_marina: 1.5 },
+    beasts: { barracuda: 3, squalo_tigre: 2, murena: 2, scorfano: 1.5, delfino: 1, torpedine: 1, anguilla_elettrica: 1.5, polpo_gigante: 1, lontra_marina: 1.5, foca_comune: 1.5, squalo_leuca: 0.8 },
   },
   {
     id: 'ghiaccio',
@@ -109,7 +109,7 @@ export const BIOMES: BiomeDef[] = [
     kelp: { chance: 0, minH: 0, maxH: 0 },
     corals: { chance: 0, colors: [] },
     ice: { ceilingY: 46, holeEvery: 420, holeWidth: 44, pillars: 2 }, // + icebergs (worldArt.ts)
-    beasts: { foca_leopardo: 3, beluga: 2, tricheco: 2, elefante_marino: 2, orca: 2, narvalo: 1.5, megattera: 1, squalo_bianco: 0.5 },
+    beasts: { foca_leopardo: 3, beluga: 2, tricheco: 2, elefante_marino: 2, orca: 2, narvalo: 1.5, megattera: 1, squalo_bianco: 0.5, squalo_elefante: 0.6, foca_comune: 1.5 },
   },
   {
     id: 'fossa',

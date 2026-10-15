@@ -1,5 +1,31 @@
 # Progressi
 
+## Lotto F, prima parte: immagini e bestie nuove (15 ottobre 2026) → v0.70.0
+
+- **Immagini rifatte su fondo verde** (`asset animali ai/`, dall'alto fino all'orca esclusa): 17 bestie.
+  - Le immagini vecchie sono in `art-inbox/_vecchia_*`.
+- **Bestie nuove dal Desktop "nuovi animali"** (gli originali restano lì):
+  - 9 specie comuni (lampuga, pesce_sega, tartaruga_liuto, squalo_balena, squalo_elefante, squalo_pinna_nera, squalo_toro, squalo_leuca, foca_comune) e il plesiosauro;
+  - per ognuna: dati, mosse, mosse da imparare, comparse (`WILD_SPAWNS`, `BIOMES`), pericolo, profondità, carattere, velocità in groppa.
+- **Squali:**
+  - squalo toro = sand tiger (bruno, denti in fuori);
+  - squalo leuca = bull shark (grigio, tozzo);
+  - squalo pinna nera = quello snello.
+- **Cacce nuove:** `caccia_plesiosauro` (Mare blu, nebbia, 120 m) e `caccia_mosasauro` (Grandi fosse, tempesta, 180 m).
+- **Forme finali** (`<id>_finale`): megattera, capodoglio, coccodrillo marino, manta, squalo martello, pesce spada (`iconic` nuovo).
+  - `squalo_bianco_finale` = lo squalo scuro corazzato.
+  - Il megalodonte = lo squalo bianco d'osso della prova dei video.
+- **Script delle immagini:** `cutGreenScreen` (`scripts/art/cutout.ts`) toglie anche il verde spento e la striscia sul bordo di alcune immagini.
+- **Test:** `tests/lottoF.test.ts`.
+
+**Da provare sull'iPhone:**
+- il bestiario e le card nuove;
+- squali nuovi nella Baia, nella Barriera e nel Delta;
+- lo squalo balena e lo squalo elefante in groppa;
+- le cacce del plesiosauro e del mosasauro (le voci nei porti).
+
+**Resto del lotto F:** il proprietario rifà le immagini dall'orca in giù.
+
 ## Lotto E, soldi ed economia (15 ottobre 2026) → v0.69.0
 
 - **Mercato:**

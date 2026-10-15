@@ -60,7 +60,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
   - tesori più ricchi, taglie, mercato e baratto di bestie;
   - vendere pesci domati;
   - comprare una nave nuova deve essere raggiungibile.
-- **F. Immagini nuove dal fondo verde** (quando il proprietario dice che ha finito):
+- **F. Immagini nuove dal fondo verde** (prima parte ✅ v0.70.0: dall'alto fino all'orca, 10 bestie nuove, forme finali; resta dall'orca in giù):
   - opponente con la testa a sinistra, compagno, bocca aperta e chiusa delle cavalcature;
   - nuovi animali.
 - **In ghiaccio:** virata e morso del megalodonte dai video (`public/prove/squalo/`); il proprietario non è soddisfatto, troppe cose da risolvere prima.
