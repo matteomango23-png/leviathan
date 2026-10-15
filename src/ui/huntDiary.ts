@@ -28,7 +28,8 @@ function outcome(g: GameState, h: HuntDef): string | null {
 function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw: () => void): void {
   const i = HUNTS.indexOf(h);
   const p = g.hunts[h.id]!;
-  const root = el('div', 'diary-sheet', parent);
+  // over everything, not inside the cockpit's scrolling body (owner, 15 ottobre: it overlapped and its X was out of sight)
+  const root = el('div', 'diary-sheet', document.getElementById('ui') ?? parent);
   const card = el('div', 'diary-sheet-card', root);
   root.addEventListener('click', (e) => {
     if (e.target === root) root.remove();

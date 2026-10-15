@@ -79,6 +79,7 @@ const MARK_GLYPH: Record<ChartKind, string> = {
   harbour: '⚓',
   border: '',
   sub: '●',
+  boat: '▲',
   den: '◎',
   target: '◎',
   end: '▌',
@@ -107,7 +108,10 @@ export function chartStrip(parent: HTMLElement, c: Chart, face: 1 | -1): HTMLEle
     t.textContent =
       m === 0 ? '0' : `${m > 0 ? '+' : '−'}${(Math.abs(m) / 1000).toString().replace('.', ',')}`;
   }
+  // every mark on the same row; only one too close to the one before it goes up a row (owner, 15 ottobre: an
+  // outpost sat higher than the others for no reason, the rows alternated)
   let row = 0;
+  let lastX = -Infinity;
   for (const mk of c.marks) {
     const x = sx(mk.dx);
     if (mk.kind === 'border') {
@@ -127,7 +131,9 @@ export function chartStrip(parent: HTMLElement, c: Chart, face: 1 | -1): HTMLEle
       t.textContent = right ? `${mk.label} ▸` : `▸ ${mk.label}`;
       continue;
     }
-    const y = sea - 14 - (row++ % 2) * 30;
+    row = x - lastX < 150 ? (row + 1) % 2 : 0;
+    lastX = x;
+    const y = sea - 14 - row * 30;
     // dens sit under the surface, their name beside them (under them is the km scale)
     const deep = mk.kind === 'den' || mk.kind === 'target';
     const g = svgEl('text', { x, y: deep ? sea + 30 : y, class: `chart-mark ${mk.kind}` }, svg);

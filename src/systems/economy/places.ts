@@ -67,8 +67,9 @@ export function openWreck(w: Wreck, gear: GearState): WreckLoot | null {
 /** Key of a found outpost in the bestiary's "seen" list (no change to the save file). */
 export const outpostKey = (id: string): string => `avamposto:${id}`;
 
-/** How near (units) an outpost has to be to be found: you see its lantern from afar. */
-const OUTPOST_SIGHT = 600;
+/** How near (units) an outpost has to be to be found: you see its lantern from afar, 500 m (owner, 15 ottobre: at speed
+ *  it showed on the chart only once passed; it was 100 m). */
+export const OUTPOST_SIGHT = 3000;
 
 /** Sailing or swimming near an outpost finds it: it shows on the map from then on. */
 export function discoverOutposts(g: { seen: Set<string>; diver: { x: number } }, events: GameEvent[]): void {

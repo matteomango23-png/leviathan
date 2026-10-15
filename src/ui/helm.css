@@ -411,3 +411,15 @@
     grid-template-rows: repeat(5, auto);
   }
 }
+
+/* the sonar's line keeps its size whatever it hears (owner, 15 ottobre: it wobbled, wrapping and unwrapping as the
+   echoes changed): always as wide as it can be and two lines high, the words clipped if they are longer */
+.helm-sonar {
+  width: min(460px, 100%);
+  height: calc(2 * 1.3em + 6px);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}

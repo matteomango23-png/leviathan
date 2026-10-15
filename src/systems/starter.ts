@@ -27,6 +27,7 @@ export function needsStarter(g: Pick<StarterWorld, 'beasts' | 'story'>): boolean
 /** You pick one: it joins your team at its starting level. */
 export function chooseStarter(g: StarterWorld, speciesId: string, events: GameEvent[]): TeamBeast | null {
   if (!STARTERS.some((s) => s.id === speciesId)) return null;
+  if (g.story.seen.includes('starter')) return null; // chosen already: a second tap (or event) adds nothing
   const b = addTamed(
     g.beasts.team,
     makeTeamBeast(`b${g.beasts.nextUid++}`, { speciesId, variant: 'comune' }, STARTER.level, true),

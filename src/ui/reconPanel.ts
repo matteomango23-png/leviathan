@@ -3,6 +3,7 @@
 // from then on; "Invia sfera" at the helm (with the sphere's bay open) sends the sphere to hold it.
 import type { Session } from '../scenes/session';
 import type { GameState } from '../systems/game';
+import { RECON } from '../data/nightmare';
 import { el } from './dom';
 import './gadgets.css';
 
@@ -16,6 +17,7 @@ export function renderReconTab(
   el('div', 'recon-title', box, 'Resoconto del drone');
   const report = g.gadgets.recon.report;
   const out = g.gadgets.recon.phase !== 'idle';
+  const age = Math.floor(g.gadgets.recon.reportAge / 60);
   el(
     'div',
     'recon-note',
@@ -23,8 +25,8 @@ export function renderReconTab(
     out
       ? 'Il drone è in ricognizione: il resoconto arriva quando torna.'
       : report
-        ? 'Scegli un animale: la bussola ti porta da lui. Con il vano della sfera aperto, "Invia sfera" lo blocca per un minuto.'
-        : 'Nessun resoconto: al timone apri il portellone del drone e tocca "Ricognizione".',
+        ? `Fatto ${age ? `${age} min fa` : 'ora'} (vale ${RECON.reportSeconds / 60} minuti). Scegli un animale: la bussola ti porta da lui. Con il vano della sfera aperto, "Invia sfera" lo blocca per un minuto.`
+        : 'Nessun resoconto (o è scaduto): al timone apri il portellone del drone e tocca "Ricognizione".',
   );
   if (!report?.length) return;
   const list = el('div', 'recon-list', box);

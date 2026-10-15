@@ -21,12 +21,37 @@ export class SoundEngine {
   private on = readEnabled();
 
   constructor() {
+    // any first touch, click or key starts the sound (owner, 15 ottobre: it began only after touching the settings).
+    // iPhone wants a sound actually played inside the touch: a silent instant does it. Every later touch wakes it
+    // again if the phone stopped it (coming back to the app, a call…).
     const unlock = (): void => {
       this.start();
-      void this.ctx?.resume();
+      this.wake();
     };
-    for (const ev of ['pointerdown', 'keydown', 'touchend'])
+    for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'])
       window.addEventListener(ev, unlock, { capture: true, passive: true });
+    // back to the app: try at once (if iOS keeps it "interrupted", the next touch wakes it)
+    const back = (): void => {
+      if (document.visibilityState === 'visible') this.wake();
+    };
+    document.addEventListener('visibilitychange', back);
+    window.addEventListener('pageshow', back);
+    window.addEventListener('focus', back);
+  }
+
+  /** Resumes the context if the browser or the phone stopped it, with a silent instant played (iOS unlock). */
+  private wake(): void {
+    const c = this.ctx;
+    if (!c || c.state === 'running') return;
+    void c.resume().catch(() => undefined);
+    try {
+      const src = c.createBufferSource();
+      src.buffer = c.createBuffer(1, 1, c.sampleRate);
+      src.connect(c.destination);
+      src.start(0);
+    } catch {
+      // a closed context: nothing to wake
+    }
   }
 
   get enabled(): boolean {
@@ -115,7 +140,11 @@ export class SoundEngine {
       window.AudioContext ??
       (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctx) return;
-    this.ctx = new Ctx();
+    // a larger buffer: fewer crackles when the phone is busy (owner, 15 ottobre: "l'audio gracchia")
+    this.ctx = new Ctx({ latencyHint: 'playback' });
+    // iPhone: play like a music app, not like a ringtone (so the silent switch does not mute the game)
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (session) session.type = 'playback';
     this.master = this.ctx.createGain();
     this.master.connect(this.ctx.destination);
     this.applyMaster();

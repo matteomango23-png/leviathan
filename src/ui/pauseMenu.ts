@@ -13,6 +13,7 @@ import { icon } from './icons';
 import { hasPreviousGame } from '../systems/save/storage';
 import { exportSave, pickSaveFile } from './saveTransfer';
 import { renderTeamPanel } from './teamPanel';
+import { renderMissions } from './missionList';
 import { openBag } from './bagScreen';
 import { formatTime, openHunterCard } from './hunterCardView';
 import { renderTestPanel } from './testPanel';
@@ -79,6 +80,7 @@ export class PauseMenu {
     }
     this.msg = el('p', 'menu-msg', panel);
     renderTeamPanel(panel, game, false);
+    renderMissions(panel, game.gear);
     if (testMode())
       renderTestPanel(
         panel,

@@ -38,8 +38,9 @@ export interface GadgetsState {
     /** Seconds after the current beast. */
     t: number;
     found: ReconEntry[];
-    /** The last report (null: none yet). */
+    /** The last report (null: none yet, or run out) and its age in seconds (RECON.reportSeconds). */
     report: ReconEntry[] | null;
+    reportAge: number;
   };
   sphere: { phase: 'dock' | 'go' | 'hold' | 'back'; x: number; y: number; cooldown: number };
   /** The beast you follow (saved when it is a resident of the endless sea) and its name. */
@@ -62,7 +63,18 @@ export function newGadgets(
   trackLeft: number | null = null,
 ): GadgetsState {
   return {
-    recon: { phase: 'idle', mode: 'scout', x: 0, y: 0, face: 1, queue: [], t: 0, found: [], report: null },
+    recon: {
+      phase: 'idle',
+      mode: 'scout',
+      x: 0,
+      y: 0,
+      face: 1,
+      queue: [],
+      t: 0,
+      found: [],
+      report: null,
+      reportAge: 0,
+    },
     sphere: { phase: 'dock', x: 0, y: 0, cooldown: 0 },
     target: target?.target ?? null,
     targetName: target?.name ?? '',
@@ -198,6 +210,7 @@ function stepRecon(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
     r.phase = 'idle';
     if (r.mode === 'scout') {
       r.report = r.found;
+      r.reportAge = 0;
       events.push({ type: 'reconDone', count: r.found.length });
     }
     r.mode = 'scout';
@@ -280,6 +293,12 @@ function stepSphere(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
 export function stepGadgets(g: GadgetsWorld, dt: number, events: GameEvent[]): void {
   if (!g.ship.owned) return;
   stepRecon(g, dt, events);
+  // the report gets old and runs out: where the beasts were minutes ago is no use
+  const r = g.gadgets.recon;
+  if (r.report) {
+    r.reportAge += dt;
+    if (r.reportAge > RECON.reportSeconds) r.report = null;
+  }
   stepSphere(g, dt, events);
   const t = g.gadgets.target;
   if (t && !locate(g, t)) {

@@ -1633,3 +1633,11 @@ img.albino-art {
   border-radius: 32px;
   font-size: 12px;
 }
+
+/* a team ball dragged to another place (ui/beastUi.ts) */
+.team-slot.dragging {
+  z-index: 5;
+  opacity: 0.85;
+  box-shadow: 0 0 14px rgba(95, 243, 214, 0.7);
+  transition: none;
+}
