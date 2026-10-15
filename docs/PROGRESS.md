@@ -1,5 +1,10 @@
 # Progressi
 
+## Varano albino (15 ottobre 2026) → v0.70.2
+
+- Immagini complete del varano albino (profilo, bocca aperta, fronte, retro, card) dal proprietario: compare in mare e cresce nel Varano d'osso. Il lotto Gemini 6 è fatto.
+- Le immagini vecchie sono in `art-inbox/_vecchia_varano_nilo_albino_*`.
+
 ## Correzioni al lotto F (15 ottobre 2026) → v0.70.1
 
 - **Squalo mako:** `squalo_pinna_nera` diventa `squalo_mako`.
