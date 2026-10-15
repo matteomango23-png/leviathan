@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.70.2 — Varano albino (15 ottobre 2026)
+
+- **Il varano del Nilo albino arriva nel Delta**, raro come gli altri albini. Al livello 100 diventa il **Varano d'osso**.
+
 ## v0.70.1 — Correzioni alle bestie nuove (15 ottobre 2026)
 
 - **Squalo mako:** lo "squalo pinna nera" era un mako, lo squalo più veloce. Se ne avevi domato uno, diventa un mako.

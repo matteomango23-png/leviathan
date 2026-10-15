@@ -42,7 +42,7 @@ describe('battle balance', () => {
     save.team = [
       {
         uid: 'b1',
-        form: { speciesId: 'varano_nilo', variant: 'albino' },
+        form: { speciesId: 'barracuda', variant: 'albino' },
         level: 12,
         hp: 50,
         ko: false,
