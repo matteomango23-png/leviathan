@@ -8,7 +8,7 @@ import { canBreakBones } from '../src/systems/abilities';
 import { contextAction, mountSpeed } from '../src/systems/beastPlay';
 import { stepRoam } from '../src/systems/beasts/roam';
 import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
-import { weaponHitsBeast } from '../src/systems/encounters';
+import { ambush, weaponHitsBeast } from '../src/systems/encounters';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
@@ -83,13 +83,13 @@ describe('wild beasts in the open sea', () => {
     expect(turnedInLight).toBe(false);
   });
 
-  it('an aggressive one comes at you: when it touches you a battle starts, it strikes first', () => {
+  it('an aggressive one comes at you: when it touches you a battle starts (face to face: no free attack)', () => {
     const g = bay();
-    place(g, 'squalo_tigre', X + 70, 200, -1);
+    const w = place(g, 'squalo_tigre', X + 70, 200, -1);
     const ev = run(g, 6);
     const start = ev.find((e) => e.type === 'battleStart');
     expect(start).toBeDefined();
-    expect(start && start.type === 'battleStart' && start.first).toBe('foe');
+    expect(start && start.type === 'battleStart' && start.first).toBe(ambush(w, g.diver));
     expect(g.beasts.battle).not.toBeNull();
   });
 
