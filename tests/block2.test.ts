@@ -1,6 +1,6 @@
 // Block 2 of the owner's feedback (8 ottobre 2026): each test would have caught the problem.
 import { describe, expect, it } from 'vitest';
-import { BAG, OUTPOSTS, PORTO_FANGO } from '../src/data/economy';
+import { OUTPOSTS, PORTO_FANGO } from '../src/data/economy';
 import { ENDLESS } from '../src/data/endless';
 import { XP_RULES } from '../src/data/progression';
 import { SHIP } from '../src/data/ship';
@@ -13,7 +13,7 @@ import { LEGEND_GIANTS } from '../src/systems/beasts/legends';
 import { callMount } from '../src/systems/beasts/mount';
 import { wanderPoint } from '../src/systems/beasts/roam';
 import { catchFish } from '../src/systems/catching';
-import { bagCount } from '../src/systems/economy/gear';
+import { bagCount, sellBag } from '../src/systems/economy/gear';
 import { shipAlongside } from '../src/systems/economy/places';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, type GameState } from '../src/systems/game';
@@ -213,17 +213,22 @@ describe('the bestiary (owner: the megalodon was not among the legends)', () => 
 });
 
 describe('sardines and teeth (owner: thousands of teeth in two minutes)', () => {
-  it('a sardine is worth 1; the bag holds BAG.capacity, then says it is full once', () => {
-    expect(FISH.find((f) => f.id === 'sardina')!.sellPrice).toBe(1);
+  it('the bag has no limit; selling heaps of one kind, the market pays less (owner, 15 ottobre)', () => {
     const g = createGame(map, null, 4);
-    g.gear.bag = { sardina: BAG.capacity - 1 };
+    g.gear.bag = { sardina: 500 };
     const ev: GameEvent[] = [];
-    const sardines = g.fish.fish.filter((f) => f.kind === 'sardina');
-    catchFish(g, sardines[0]!, ev);
-    catchFish(g, sardines[1]!, ev);
-    expect(bagCount(g.gear)).toBe(BAG.capacity);
-    expect(ev.filter((e) => e.type === 'bagFull')).toHaveLength(1);
-    expect(ev.filter((e) => e.type === 'fishCaught')).toHaveLength(2); // still caught: they heal, they feed
+    catchFish(
+      g,
+      g.fish.fish.find((f) => f.kind === 'sardina')!,
+      ev,
+    );
+    expect(bagCount(g.gear)).toBe(501);
+    const base = FISH.find((f) => f.id === 'sardina')!.sellPrice;
+    const r = sellBag(g.gear, 1000);
+    expect(r.count).toBe(501);
+    // far less than 501 × the price: the market fills up (not thousands of teeth in minutes)
+    expect(r.teeth).toBeLessThan(501 * base * 0.5);
+    expect(r.teeth).toBeGreaterThan(0);
   });
 
   it('a gulp of a whole school is worth at most XP_RULES.fishPerMinute fish of experience (owner, 15 ottobre)', () => {

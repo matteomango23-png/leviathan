@@ -90,6 +90,7 @@ function saveGear(g: GearState): SavedGear {
     mythicStock: g.mythicStock,
     deepestM: Math.floor(g.deepestM),
     relics: [...g.relics],
+    market: structuredClone(g.market),
   };
 }
 

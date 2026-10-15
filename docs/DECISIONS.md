@@ -935,3 +935,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Il buio** è una maschera disegnata da una telecamera sopra il mondo, quindi le luci che pulsano (immagini `_glow`) restavano coperte. Invece di "bucare" la maschera con la forma di ogni immagine (difficile con i ritagli e gli specchiamenti), c'è un quarto livello con una sua telecamera che segue esattamente quella del mondo, disegnato dopo il buio. Ciò che emette luce va lì.
 - **Fari automatici in immersione,** senza pulsante: è la cosa che serviva subito (vedere intorno). Un interruttore si può aggiungere se servirà nasconderli, per esempio per non farsi vedere.
+
+## 15 ottobre 2026 — Economia: mercato che si satura, missioni ripetibili, vendita delle bestie (v0.69.0)
+
+- **Sacca senza tetto, ma il mercato si satura:** il tetto di 30 pesci rendeva i soldi lenti; senza tetto, l'8 ottobre le sardine davano migliaia di denti. Ogni pesce di un tipo venduto abbassa il suo prezzo fino al 30%, e il prezzo risale col tempo reale. Pescare tanto paga ancora, ma variare paga di più, e non c'è un modo infinito di fare soldi.
+- **Missioni ripetibili:** le taglie e i lavori quotidiani tornano dopo la riscossione, così c'è sempre qualcosa da fare per soldi oltre alla pesca. Restano anche nell'elenco delle "fatte", perché sbloccano le missioni successive.
+- **Vendita delle bestie domate:** trasforma la cattura in un guadagno (ciò che il proprietario chiamava vendere "pesci che domi"). Le leggende non si vendono.
+- **Obiettivo di ritmo** (da verificare giocando): la prima nave nuova (6000) in circa un'ora, il Nightmare (50.000) in circa 8-10 ore. Tutti i numeri sono in `data/economy.ts` e `data/regions.ts`.

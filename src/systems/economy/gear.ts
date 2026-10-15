@@ -1,10 +1,10 @@
 // The diver's side of progress: teeth, the fish bag, suits and upgrades, weapons, items,
 // the backpack (base harpoon + BACKPACK_SLOTS chosen at the port) and bound swarms.
 import { MARKET, UPGRADE_EFFECTS } from '../../data/economy';
+import { newMarket, sellAll, type MarketState } from './market';
 import { RELICS } from '../../data/temples';
 import {
   BACKPACK_SLOTS,
-  FISH,
   ITEMS,
   SUITS,
   SUIT_UPGRADES,
@@ -38,6 +38,8 @@ export interface GearState {
   mythicStock: number;
   deepestM: number;
   relics: string[]; // relics found in the sunken temples (tappa 14): their effect lasts for ever
+  /** What the fish market remembers buying (economy/market.ts). */
+  market: MarketState;
 }
 
 export function newGear(): GearState {
@@ -58,6 +60,7 @@ export function newGear(): GearState {
     mythicStock: MARKET.mythicHarpoonStock,
     deepestM: 0,
     relics: [],
+    market: newMarket(),
   };
 }
 
@@ -159,19 +162,12 @@ export function buyItem(g: GearState, id: string): BuyResult {
   return r;
 }
 
-/** Sells the whole bag. Returns how many fish and teeth. */
-export function sellBag(g: GearState): { count: number; teeth: number } {
-  let count = 0;
-  let teeth = 0;
-  for (const [id, n] of Object.entries(g.bag)) {
-    const f = FISH.find((x) => x.id === id);
-    if (!f || n <= 0) continue;
-    count += n;
-    teeth += n * f.sellPrice;
-  }
+/** Sells the whole bag at the market (its prices fall for a kind sold in heaps). Returns how many fish and teeth. */
+export function sellBag(g: GearState, now = Date.now()): { count: number; teeth: number } {
+  const r = sellAll(g.market, g.bag, now);
   g.bag = {};
-  g.teeth += teeth;
-  return { count, teeth };
+  g.teeth += r.teeth;
+  return r;
 }
 
 export const bagCount = (g: GearState): number => Object.values(g.bag).reduce((a, b) => a + b, 0);

@@ -69,11 +69,11 @@ export interface WreckDef {
   reward: { weapon?: string; teeth?: number; item?: string };
 }
 const COAST_WRECKS: WreckDef[] = [
-  { id: 'relitto_baia', name: 'Relitto della Baia', x: bay(1250), y: 200, reward: { weapon: 'fiocine', teeth: 20 } },
-  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: east(3420), y: 330, reward: { weapon: 'rete', teeth: 30 } },
-  { id: 'forziere_baia', name: 'Forziere', x: bay(560), y: 200, reward: { teeth: 60, item: 'bolla_aria' } },
-  { id: 'forziere_reef', name: 'Forziere', x: east(3820), y: 200, reward: { teeth: 80 } },
-  { id: 'forziere_crepuscolo', name: 'Forziere', x: bay(900), y: 640, reward: { teeth: 150, item: 'alga_curativa' } },
+  { id: 'relitto_baia', name: 'Relitto della Baia', x: bay(1250), y: 200, reward: { weapon: 'fiocine', teeth: 100 } },
+  { id: 'relitto_barriera', name: 'Relitto della Barriera', x: east(3420), y: 330, reward: { weapon: 'rete', teeth: 150 } },
+  { id: 'forziere_baia', name: 'Forziere', x: bay(560), y: 200, reward: { teeth: 250, item: 'bolla_aria' } },
+  { id: 'forziere_reef', name: 'Forziere', x: east(3820), y: 200, reward: { teeth: 300 } },
+  { id: 'forziere_crepuscolo', name: 'Forziere', x: bay(900), y: 640, reward: { teeth: 500, item: 'alga_curativa' } },
 ];
 
 /** The wrecks of the regions of the open sea (data/regions.ts: REGION_CHESTS): richer farther out. */
@@ -97,6 +97,16 @@ const REGION_WRECKS: WreckDef[] = SEA_REGIONS.flatMap((r, i) =>
 export const WRECKS: WreckDef[] = [...COAST_WRECKS, ...REGION_WRECKS];
 export const WRECK_REACH = 26; // how close you must be to open one
 
+/** The bounties on the board (owner, 15 ottobre): a big beast of the open sea, beaten (or tamed: it counts as beaten
+ *  in battle). After the expedition that reaches its waters. Tuning. */
+const BOUNTIES: { species: string; name: string; why: string; count: number; reward: number; after?: string }[] = [
+  { species: 'squalo_tigre', name: 'squalo tigre', why: 'Gli squali tigre strappano le reti al largo.', count: 1, reward: 900, after: 'spedizione_barriera_esterna' },
+  { species: 'squalo_martello', name: 'squalo martello', why: 'Un branco di martelli assalta i pescherecci.', count: 2, reward: 1400, after: 'spedizione_barriera_esterna' },
+  { species: 'orca', name: 'orca', why: 'Le orche affondano le barche dei balenieri.', count: 1, reward: 2500, after: 'spedizione_banchisa' },
+  { species: 'capodoglio', name: 'capodoglio', why: 'Un capodoglio infuriato sperona le navi.', count: 1, reward: 4000, after: 'spedizione_grandi_fosse' },
+  { species: 'megalodonte', name: 'megalodonte', why: 'Il gigante delle fosse è tornato a cacciare.', count: 1, reward: 12000, after: 'spedizione_grandi_fosse' },
+];
+
 /** Simple missions on the harbour board (tuning). Progress counts only after you accept them. */
 export type MissionGoal =
   | { kind: 'catch'; fish: string; count: number }
@@ -115,6 +125,8 @@ export interface MissionDef {
   goal: MissionGoal;
   reward: number; // teeth
   requires?: string; // appears on the board after this mission is completed
+  /** Back on the board once claimed (the everyday jobs and the bounties). */
+  repeat?: boolean;
 }
 export const MISSIONS: MissionDef[] = [
   {
@@ -122,28 +134,30 @@ export const MISSIONS: MissionDef[] = [
     title: 'Sardine per il mercato',
     text: 'Il mercante vuole sardine fresche. Catturane 10.',
     goal: { kind: 'catch', fish: 'sardina', count: 10 },
-    reward: 30,
+    reward: 80,
+    repeat: true,
   },
   {
     id: 'vendi_5',
     title: 'Primo guadagno',
     text: 'Vendi 5 pesci al mercato.',
     goal: { kind: 'sell', count: 5 },
-    reward: 20,
+    reward: 60,
   },
   {
     id: 'relitto_baia',
     title: 'Il relitto della Baia',
     text: 'Una nave è affondata nella Baia. Trovala e apri la stiva.',
     goal: { kind: 'openWreck', wreck: 'relitto_baia' },
-    reward: 50,
+    reward: 200,
   },
   {
     id: 'sgombri_5',
     title: 'Sgombri',
     text: 'Catturane 5: si vendono bene.',
     goal: { kind: 'catch', fish: 'sgombro', count: 5 },
-    reward: 40,
+    reward: 150,
+    repeat: true,
     requires: 'sardine_10',
   },
   {
@@ -151,28 +165,30 @@ export const MISSIONS: MissionDef[] = [
     title: 'Taglia: barracuda',
     text: 'I barracuda rubano il pescato. Sfiancane 3.',
     goal: { kind: 'exhaust', species: 'barracuda', count: 3 },
-    reward: 90,
+    reward: 300,
+    repeat: true,
   },
   {
     id: 'taglia_squalo',
     title: 'Taglia: lo squalo della Baia',
     text: 'Uno squalo bianco terrorizza i pescatori. Sfiancalo.',
     goal: { kind: 'exhaust', species: 'squalo_bianco', count: 1 },
-    reward: 120,
+    reward: 500,
+    repeat: true,
   },
   {
     id: 'doma_baia',
     title: 'Il primo domatore',
     text: 'Doma una bestia della Baia.',
     goal: { kind: 'tame', region: 'baia', count: 1 },
-    reward: 150,
+    reward: 400,
   },
   {
     id: 'profondo_100',
     title: 'Nel crepuscolo',
     text: 'Scendi a 100 metri.',
     goal: { kind: 'depth', metres: 100 },
-    reward: 60,
+    reward: 250,
     requires: 'relitto_baia',
   },
   // expeditions (4 ottobre 2026): farther out, richer
@@ -182,7 +198,7 @@ export const MISSIONS: MissionDef[] = [
       title: `Spedizione: ${r.outpost.name}`,
       text: `Porta la nave fino all’${r.outpost.name}, a ${r.outpost.km.toString().replace('.', ',')} km dalla costa.`,
       goal: { kind: 'reachKm', km: r.outpost.km },
-      reward: [150, 300, 500, 800, 1500][i]!,
+      reward: [800, 1500, 2500, 4000, 7000][i]!,
       requires: i === 0 ? undefined : `spedizione_${SEA_REGIONS[i - 1]!.id}`,
     }),
   ),
@@ -191,7 +207,7 @@ export const MISSIONS: MissionDef[] = [
     title: 'Le reti strappate',
     text: 'Trova le tracce dello squalo martello preistorico nella Barriera esterna (Diario di caccia).',
     goal: { kind: 'hunt', hunt: 'caccia_martello' },
-    reward: 400,
+    reward: 2000,
     requires: 'spedizione_barriera_esterna',
   },
   {
@@ -199,15 +215,39 @@ export const MISSIONS: MissionDef[] = [
     title: 'Il relitto dell’Orlo',
     text: 'Apri il relitto più ricco delle Grandi fosse.',
     goal: { kind: 'openWreck', wreck: 'relitto_grandi_fosse_3' },
-    reward: 600,
+    reward: 3000,
     requires: 'spedizione_grandi_fosse',
   },
+  // bounties on the big beasts of the open sea (owner, 15 ottobre: "taglie"): they come back once claimed
+  ...BOUNTIES.map(
+    (b): MissionDef => ({
+      id: `taglia_${b.species}`,
+      title: `Taglia: ${b.name}`,
+      text: `${b.why} Sconfiggine ${b.count === 1 ? 'uno' : b.count}.`,
+      goal: { kind: 'exhaust', species: b.species, count: b.count },
+      reward: b.reward,
+      requires: b.after,
+      repeat: true,
+    }),
+  ),
 ];
-export const MAX_ACTIVE_MISSIONS = 3;
+export const MAX_ACTIVE_MISSIONS = 4;
 
-/** The bag of fish to sell (owner, 8 ottobre: the sardines made thousands of teeth in minutes). Full, a fish still
- *  heals and feeds your beasts, but it is not kept. Tuning. */
-export const BAG = { capacity: 30 };
+/**
+ * The fish market (systems/economy/market.ts; owner, 15 ottobre: no limit on the bag, but on 8 ottobre the sardines
+ * made thousands of teeth in minutes): each fish of a kind sold lowers that kind's price, down to `floor` of it after
+ * `saturation` fish; the price comes back by `recoverPerMinute` fish a minute of real time. Tuning.
+ */
+export const MARKET_RULES = { saturation: 120, floor: 0.3, recoverPerMinute: 4 };
+
+/** A tamed beast sold at a harbour's pen (systems/economy/beastSale.ts; owner, 15 ottobre): teeth by its stars, × (1 +
+ *  level ÷ levelDivisor), × a rare version's multiplier. Tuning. */
+export const BEAST_SALE = {
+  byStars: { 1: 40, 2: 90, 3: 220, 4: 600, 5: 1800 } as Record<number, number>,
+  levelDivisor: 10,
+  variantMult: 2.5,
+  finalMult: 4,
+};
 
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */
 export const MARKET = {

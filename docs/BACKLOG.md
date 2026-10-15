@@ -54,7 +54,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
   - luce intorno mentre navigano sott'acqua (con la torbidità);
   - luci rosse che pulsano al buio;
   - drone e sfera visibili in profondità.
-- **E. Soldi ed economia** (prima un confronto di idee):
+- **E. Soldi ed economia** ✅ v0.69.0 (il baratto in posti speciali resta un'idea per più avanti):
   - sacca senza tetto e prezzo delle sardine;
   - missioni e commissioni che pagano;
   - tesori più ricchi, taglie, mercato e baratto di bestie;

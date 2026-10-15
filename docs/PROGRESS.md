@@ -1,5 +1,26 @@
 # Progressi
 
+## Lotto E, soldi ed economia (15 ottobre 2026) → v0.69.0
+
+- **Mercato:**
+  - `economy/market.ts` (`MARKET_RULES` saturazione 120, minimo 0,3, recupero 4 al minuto in tempo reale; `gear.market` salvato);
+  - via `BAG` e l'evento `bagFull`;
+  - sardina 2.
+- **Missioni:**
+  - ricompense alzate, `repeat` (tornano in bacheca);
+  - `BOUNTIES` per specie (obiettivo `exhaust`, cioè battaglia vinta);
+  - `MAX_ACTIVE_MISSIONS` 4.
+- **Vendita delle bestie:** `economy/beastSale.ts` (`BEAST_SALE`) e pulsante "Vendi" nel Recinto del porto (`renderTeamPanel(..., atPort)`).
+- **Tesori:** `REGION_CHESTS.teethBase` 400, forzieri della costa ×3.
+- **Test:** `tests/lottoE.test.ts`; aggiornati block2 ed economy.
+
+**Da provare sull'iPhone:**
+- una pesca lunga, poi la vendita (due volte di fila: la seconda paga meno);
+- la bacheca (taglie dopo le spedizioni);
+- la vendita di una bestia in riserva.
+
+**Lotto F** (immagini nuove): quando il proprietario avrà tutte le immagini.
+
 ## Lotto D, luci degli U-Boat (15 ottobre 2026) → v0.68.0
 
 - **Livello luminoso:** `cameraRig.layers.glow` con la sua telecamera (`glowCam`), disegnato dopo la maschera del buio. Ci vanno le immagini `_glow` (`ShipPictures`, `SubmarineView`) e i bagliori di drone e sfera (`NightmareView`).

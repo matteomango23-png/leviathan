@@ -13,12 +13,14 @@ export function goalCount(m: MissionDef): number {
   return g.count;
 }
 
-/** Missions you can accept now (not done, not active, prerequisites met). */
+/** Missions you can accept now (not done unless they repeat, not active, prerequisites met). */
 export function boardMissions(s: GearState): MissionDef[] {
   const ms = s.missions;
   return MISSIONS.filter(
     (m) =>
-      !ms.done.includes(m.id) && !ms.active.includes(m.id) && (!m.requires || ms.done.includes(m.requires)),
+      (m.repeat || !ms.done.includes(m.id)) &&
+      !ms.active.includes(m.id) &&
+      (!m.requires || ms.done.includes(m.requires)),
   );
 }
 
@@ -41,7 +43,8 @@ export function claimMission(s: GearState, id: string): number {
   const m = missionById(id);
   if (!m || !s.missions.active.includes(id) || !isComplete(s, id)) return 0;
   s.missions.active = s.missions.active.filter((x) => x !== id);
-  s.missions.done.push(id);
+  // done (it unlocks the next ones); the everyday jobs and the bounties come back on the board all the same
+  if (!s.missions.done.includes(id)) s.missions.done.push(id);
   delete s.missions.progress[id];
   s.teeth += m.reward;
   return m.reward;

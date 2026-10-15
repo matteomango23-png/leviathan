@@ -22,6 +22,8 @@ export interface SavedGear {
   /** Guardians already beaten (their reward is given once). */
   /** Relics found in the sunken temples (tappa 14; missing in older saves). */
   relics: string[];
+  /** The fish market's memory (15 ottobre; missing in older saves). */
+  market?: { sold: Record<string, number>; at: number };
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> =>
@@ -91,5 +93,14 @@ export function validateGear(raw: unknown): SavedGear {
       raw.relics,
       RELICS.map((r) => r.id),
     ),
+    market: isObj(raw.market)
+      ? {
+          sold: counts(
+            raw.market.sold,
+            FISH.map((f) => f.id),
+          ),
+          at: num(raw.market.at),
+        }
+      : { sold: {}, at: 0 },
   };
 }
