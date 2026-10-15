@@ -51,7 +51,9 @@ export const HARPOON = {
   speed: 540, // a speargun: fast and straight (tuning)
   returnSpeed: 800, // the line reels back quickly
   range: 150,
-  catchRadius: 6,
+  catchRadius: 9, // along the whole stretch it flew this step (owner, 15 ottobre: it went through fish; was 6)
+  /** A fish or a beast this close to the line of the shot (degrees) pulls it gently onto itself. Tuning. */
+  assistDeg: 6,
   backInHandRadius: 9, // the shot is back in the diver's hand within this distance
   muzzleOffset: 6,
   aimDotsFrom: 14,

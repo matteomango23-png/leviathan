@@ -135,7 +135,10 @@ function fire(g: GameState, input: InputState, events: GameEvent[]): void {
   const weapon = g.gear.activeWeapon;
   const fired =
     weapon === 'arpione'
-      ? fireHarpoon(g.harpoon, d, angle, events)
+      ? fireHarpoon(g.harpoon, d, angle, events, [
+          ...g.fish.fish.filter((f) => f.alive && !f.hooked),
+          ...g.beasts.wilds.filter((w) => w.motion === 'roam'),
+        ])
       : fireProjectileWeapon(g.weapons, weapon, d.x, d.y, angle, events);
   if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
 }
