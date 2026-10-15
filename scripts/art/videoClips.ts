@@ -12,9 +12,10 @@ export interface VideoClip {
   /** Frames per second kept. */
   fps: number;
   width: number;
-  /** A swim: the script finds the stretch that closes on itself best (at least `minLoop` seconds). */
+  /** A swim: the script finds the stretch that closes on itself best (between `minLoop` and `maxLoop` seconds). */
   loop?: boolean;
   minLoop?: number;
+  maxLoop?: number;
   /** Where it faces at the start of the clip and at its end (a turn; the same if not given). The videos face right. */
   face: 1 | -1;
   endFace?: 1 | -1;
@@ -27,10 +28,12 @@ export const VIDEO_ANIMALS: Record<string, VideoClip[]> = {
       file: 'gemini_generated_video_51840751.mp4',
       from: 0,
       to: 10,
-      fps: 12,
-      width: 720,
+      fps: 24,
+      width: 640,
       loop: true,
-      minLoop: 1.5,
+      // one clean stroke cycle (about 3 s) closes better than the long one and comes round often (owner: "scatti")
+      minLoop: 2,
+      maxLoop: 3.5,
       face: 1,
     },
     // the quick turn of the third video (owner, 11 ottobre: the slow one looked at the camera too long): from its left
@@ -41,19 +44,9 @@ export const VIDEO_ANIMALS: Record<string, VideoClip[]> = {
       from: 30.5,
       to: 33.3,
       fps: 24,
-      width: 720,
+      width: 640,
       face: -1,
       endFace: 1,
-    },
-    // the bite: in profile it opens its jaws before the slow turn of the second video (played open, then back closed)
-    {
-      name: 'morso',
-      file: 'gemini_generated_video_734C9C25.mp4',
-      from: 9.9,
-      to: 10.65,
-      fps: 24,
-      width: 720,
-      face: 1,
     },
   ],
 };
