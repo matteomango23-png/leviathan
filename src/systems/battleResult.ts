@@ -2,6 +2,7 @@
 // the wild beast gone (or calm for a while if you fled), or back to your ship or harbour if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import { residentGone } from './beasts/residents';
+import { HUNT_RULES } from '../data/hunts';
 import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
 import { PACK_RULES, ROAM } from '../data/beasts';
@@ -57,6 +58,11 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
   }
   const w = g.beasts.wilds.find((x) => x.id === o.wildId);
   const win = o.over === 'won' || o.over === 'caught';
+  // whoever you fought you have seen, however it ended (owner, 15 ottobre: the sonar still called it unknown)
+  for (const f of [o.foe, ...(o.defeated ?? [])]) {
+    g.seen.add(f.form.speciesId);
+    g.seen.add(formKey(f.form));
+  }
   // experience for every beast beaten, its pack's too (block 5b), even if you fled after some of them
   const beaten = [...(o.defeated ?? []), ...(win ? [o.foe] : [])];
   for (const foe of beaten)
@@ -71,11 +77,9 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
     if (m && rode) m.length = formLengthUnits(rode.form, rode.level); // it may have grown
     events.push({ type: 'battleWon', speciesId: o.foe.form.speciesId });
   }
-  // a legend defeated (not tamed) is gone forever
-  if (o.over === 'won' && isLegend(o.foe.form.unique) && !g.beasts.gone.includes(o.foe.form.unique!)) {
-    g.beasts.gone.push(o.foe.form.unique!);
-    events.push({ type: 'legendGone', name: formName(o.foe.form) });
-  }
+  // a legend defeated (not tamed) goes back to its den, wounded, and comes out again later (only taming it ends it)
+  const legendBeaten = o.over === 'won' && isLegend(o.foe.form.unique);
+  if (legendBeaten) events.push({ type: 'legendGone', name: formName(o.foe.form) });
   if (o.over === 'caught') {
     const b = addTamed(
       g.beasts.team,
@@ -90,7 +94,12 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
   }
   if (w) {
     if (win) {
-      removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]));
+      removeWild(
+        w,
+        legendBeaten
+          ? HUNT_RULES.legendReturnSeconds
+          : range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]),
+      );
       // a resident of the endless sea: its place stays empty for a while (beasts/residents.ts)
       if (w.spawn.resident) residentGone(g.beasts.residents, w.spawn.resident, g.rng);
     } else {

@@ -12,6 +12,7 @@ import { migrate, parseSave } from '../src/systems/save/saveData';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
+import { HUNT_RULES } from '../src/data/hunts';
 
 let map: TileMap;
 beforeAll(() => {
@@ -48,7 +49,7 @@ describe('legends', () => {
     expect(UNIQUE_VARIANTS.find((u) => u.id === 'tartaruga_preistorica')!.surface).toBe(true);
   });
 
-  it('defeated, a legend is gone forever (and stays gone in the save)', () => {
+  it('defeated, a legend goes back to its den and comes out again later (owner, 15 ottobre)', () => {
     const g = createGame(map, null, 3);
     giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 30);
     const form = {
@@ -67,10 +68,15 @@ describe('legends', () => {
       lastActive: a.uid,
       foe: { form, level: 30, hp: 0 },
     });
-    expect(g.beasts.gone).toContain('squalo_martello_preistorico');
+    expect(g.beasts.gone).not.toContain('squalo_martello_preistorico');
     expect(ev).toContainEqual({ type: 'legendGone', name: 'Squalo martello preistorico' });
-    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 3);
-    expect(back.beasts.gone).toContain('squalo_martello_preistorico');
+    expect(w.motion).toBe('gone');
+    expect(w.respawn).toBe(HUNT_RULES.legendReturnSeconds);
+    // an older save that marked it gone forever: it comes back
+    const old = JSON.parse(JSON.stringify(toSave(g, new Date())));
+    old.legendsGone = ['squalo_martello_preistorico'];
+    const back = createGame(map, parseSave(JSON.stringify(old)), 3);
+    expect(back.beasts.gone).not.toContain('squalo_martello_preistorico');
     expect((migrate({ game: 'leviatano', version: 9 }) as { legendsGone: unknown }).legendsGone).toEqual([]);
   });
 

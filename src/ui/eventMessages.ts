@@ -219,7 +219,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'subTooDeep':
       return [SUB_TEXT.tooDeep, 3];
     case 'legendGone':
-      return [`${e.name} è sconfitta: non tornerà mai più nel mare.`, 5];
+      return [`${e.name} è sconfitta: torna ferita nella sua tana. Tornerà più avanti.`, 5];
     case 'noTeam':
       return null; // the blackout message says it all
     case 'blackout':

@@ -93,7 +93,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
   const gear = s.gear ? restoreGear(s.gear) : newGear();
   diver.maxHp = diverModifiers(gear).maxHp;
   diver.hp = diver.maxHp;
-  const beasts = createBeasts(restoreTeam(s), s.legendsGone);
+  // the legends an older save marked gone forever come back (owner, 15 ottobre); a tamed one is in your team
+  const beasts = createBeasts(restoreTeam(s), []);
   const dens = placeDens(map);
   addHuntSlots(beasts.wilds, dens); // the legends and giants in their dens (hunts.ts)
   const g: GameState = {

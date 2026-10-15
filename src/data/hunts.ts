@@ -117,6 +117,9 @@ export const HUNTS: HuntDef[] = [
 ];
 
 export const HUNT_RULES = {
+  /** A legend beaten (not tamed) goes back to its den, wounded, and comes out again after this many seconds of play
+   *  (owner, 15 ottobre: they were gone forever, "the prehistoric hammerhead killed itself"). Tuning. */
+  legendReturnSeconds: 1200,
   /** The ship's sonar hears an anomalous echo this close to the den (units, ~300 m). Tuning. */
   sonarRange: 1800,
   /** Under water, the traces show this close to the den (units). */
