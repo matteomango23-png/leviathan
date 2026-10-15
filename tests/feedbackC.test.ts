@@ -8,7 +8,7 @@ import { ICEBERG_MAX_DRAFT, ICEBERGS } from '../src/data/worldArt';
 import { TILE, WORLD } from '../src/data/worldLayout';
 import { icebergBox } from '../src/systems/world/icebergs';
 import { generateWorld } from '../src/systems/world/worldGen';
-import { onGreenScreen, removeGreenBackground } from '../scripts/art/cutout';
+import { cutGreenScreen, onGreenScreen, removeGreenBackground } from '../scripts/art/cutout';
 
 const map = generateWorld();
 const T = map.tileSize;
@@ -70,5 +70,26 @@ describe('green screen', () => {
     const out = removeGreenBackground(img);
     expect(out[3]).toBe(0); // the corner is gone
     expect(out[(10 * w + 20) * 4 + 3]).toBe(255); // the subject stays
+  });
+});
+
+describe('dull green screen (15 ottobre 2026)', () => {
+  it('a dull green is recognised and keyed out fully, and an edge strip goes too', () => {
+    const w = 60;
+    const h = 30;
+    const data = new Uint8ClampedArray(w * h * 4);
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) {
+        const o = (y * w + x) * 4;
+        const subject = x > 15 && x < 45 && y > 8 && y < 22;
+        const strip = x >= w - 2;
+        data.set(subject ? [200, 170, 60, 255] : strip ? [240, 240, 240, 255] : [86, 165, 95, 255], o);
+      }
+    const img = { data, width: w, height: h };
+    expect(onGreenScreen(img)).toBe(true);
+    const out = cutGreenScreen(img);
+    expect(out[(15 * w + 8) * 4 + 3]).toBe(0); // the dull green is gone, not a haze
+    expect(out[(15 * w + (w - 1)) * 4 + 3]).toBe(0); // the strip on the edge too
+    expect(out[(15 * w + 30) * 4 + 3]).toBe(255); // the golden subject stays
   });
 });

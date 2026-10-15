@@ -39,6 +39,15 @@ export const LEARNSETS: Record<string, LearnEntry[]> = {
   torpedine: ls('1 bollicine, 1 onda_paralizzante, 5 scossa, 9 lampo, 13 getto_acqua, 18 carica_elettrica, 24 raggio_carico, 30 onda_urto, 36 scarica, 42 accumulo, 48 fulmine, 55 tuono, 63 cannone_elettrico'), // Chinchou
   squalo_bianco: SHARK,
   squalo_tigre: SHARK,
+  squalo_pinna_nera: SHARK,
+  squalo_toro: SHARK,
+  squalo_leuca: SHARK,
+  lampuga: ls('1 spinta, 1 sguardo_feroce, 4 guizzo, 8 azzannata, 12 morsi_raffica, 16 fendente, 22 muso_terrore, 28 zanna_lunga, 34 agguato, 40 stritolamorso, 46 frenesia, 52 taglio_buio, 60 carica_suicida'), // like the barracuda
+  pesce_sega: ls('1 spinta, 1 ritirata, 5 sassi, 9 azzannata, 13 indurimento, 18 tomba_sassi, 24 smottamento, 30 siesta, 36 frana, 42 corazza_ferro, 48 testata_acciaio, 54 potere_antico, 60 scossa_fondale'), // like the Guscio line
+  tartaruga_liuto: ls('1 spinta, 1 ritirata, 5 bollicine, 9 azzannata, 13 getto_acqua, 18 indurimento, 24 raggio_bolle, 30 siesta, 36 codata, 42 corazza_ferro, 48 maremoto, 54 testata_acciaio, 60 idrogetto'), // like the sea turtle
+  squalo_balena: ls('1 spinta, 1 ritirata, 5 bollicine, 9 indurimento, 13 getto_acqua, 18 raggio_bolle, 24 siesta, 30 codata, 36 corazza_ferro, 42 maremoto, 48 testata_acciaio, 54 idrogetto, 60 scossa_fondale'), // Wailord
+  squalo_elefante: ls('1 spinta, 1 ringhio, 5 neve, 9 azzannata, 13 scatto_acqua, 18 zanna_gelo, 24 siesta, 30 vento_polare, 36 stritolamorso, 42 stalattite, 48 raggio_gelido, 54 bufera'), // Lapras-like
+  foca_comune: ls('1 spinta, 1 sguardo_feroce, 5 azzannata, 9 neve, 13 scatto_acqua, 18 zanna_gelo, 24 scheggia, 30 stritolamorso, 36 vento_polare, 42 frenesia, 48 stalattite, 54 raggio_gelido, 60 bufera'), // Seel, Dewgong
   squalo_capopiatto: SHARK,
   megalodonte: SHARK,
   squalo_nutrice: ls('1 spinta, 1 ringhio, 5 azzannata, 10 sabbia, 15 capocciata, 22 schiacciata, 30 siesta, 37 stritolamorso, 45 frenesia, 52 testata_cieca, 60 forza_bruta'), // Snorlax-like bottom dweller
@@ -88,6 +97,7 @@ export const LEARNSETS: Record<string, LearnEntry[]> = {
   isopode_gigante: ls('1 spinta, 1 indurimento, 5 sabbia, 9 assorbimento, 13 ritirata, 18 tomba_sassi, 24 siesta, 30 sanguisuga, 36 corazza_ferro, 42 frana, 48 testata_acciaio, 54 scossa_fondale'), // Golisopod
   serpente_di_mare: ls('1 stretta, 1 sguardo_feroce, 5 scossa, 9 azzannata, 13 onda_paralizzante, 18 carica_elettrica, 24 muso_terrore, 30 lama_vento, 36 danza_predatore, 42 fulmine, 48 codata, 54 uragano, 60 tuono'), // Dragonair, Gyarados
   mosasauro: ls('1 spinta, 1 sguardo_feroce, 5 azzannata, 9 schizzo_fango, 13 muso_terrore, 18 tomba_sassi, 24 stritolamorso, 30 codata, 36 frana, 42 danza_predatore, 48 coda_acciaio, 54 lama_pietra, 60 carica_preistorica, 66 testata_roccia'), // Tyrantrum
+  plesiosauro: ls('1 stretta, 1 sguardo_feroce, 5 azzannata, 9 pulsazione, 13 muso_terrore, 18 stritolamorso, 24 impulso_oscuro, 30 codata, 36 sfera_ombra, 42 danza_predatore, 48 trama_oscura, 54 carica_preistorica, 60 onda_mentale'), // Lapras, Aerodactyl
   dunkleosteus: ls('1 azzannata, 1 indurimento, 5 sguardo_feroce, 9 tomba_sassi, 13 stritolamorso, 18 testata_acciaio, 24 corazza_ferro, 30 zanna_lunga, 36 frana, 42 frenesia, 48 coda_acciaio, 54 lama_pietra, 60 carica_preistorica, 66 testata_roccia'), // Tyrantrum, Arctovish
   leviatano: ls('1 maremoto, 1 stritolamorso, 1 muso_terrore, 1 ira_leviatano, 37 frenesia, 52 idrogetto, 67 abisso_primordiale'), // Arceus, Kyogre
 };

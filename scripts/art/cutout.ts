@@ -437,23 +437,51 @@ export function removeGreenBackground(img: Raw, low = 30, high = 90): Uint8Clamp
  * most of its border is strongly green.
  */
 export function onGreenScreen(img: Raw): boolean {
+  const ex = borderGreenExcess(img);
+  return ex.filter((e) => e > GREEN_MIN_EXCESS).length / ex.length > 0.6;
+}
+
+/** How much greener than red and blue a screen must be (some of 15 ottobre are a dull green, ~65). */
+const GREEN_MIN_EXCESS = 45;
+/** Pixels of the frame looked past: some pictures have a thin light or dark strip on one edge (15 ottobre). */
+const GREEN_FRAME = 6;
+
+/** The green excess (green minus the larger of red and blue) along the border, just inside the frame. */
+function borderGreenExcess(img: Raw): number[] {
   const { data, width: w, height: h } = img;
-  let green = 0;
-  let n = 0;
+  const i = Math.min(GREEN_FRAME, Math.floor(Math.min(w, h) / 4));
+  const out: number[] = [];
   const look = (x: number, y: number): void => {
     const o = (y * w + x) * 4;
-    n++;
-    if (data[o + 1]! > data[o]! + 60 && data[o + 1]! > data[o + 2]! + 60) green++;
+    out.push(data[o + 1]! - Math.max(data[o]!, data[o + 2]!));
   };
-  for (let x = 0; x < w; x += 4) {
-    look(x, 0);
-    look(x, h - 1);
+  for (let x = i; x < w - i; x += 4) {
+    look(x, i);
+    look(x, h - 1 - i);
   }
-  for (let y = 0; y < h; y += 4) {
-    look(0, y);
-    look(w - 1, y);
+  for (let y = i; y < h - i; y += 4) {
+    look(i, y);
+    look(w - 1 - i, y);
   }
-  return green / n > 0.6;
+  return out;
+}
+
+/**
+ * Keys out a green screen of any strength: a dull green (excess ~65, owner's pictures of 15 ottobre) keyed with
+ * the usual 30–90 stayed a quarter opaque, a haze around the beast. The fully-transparent mark goes just under the
+ * screen's own green; a bright screen keys as before. The thin strip some pictures have on one edge goes too.
+ */
+export function cutGreenScreen(img: Raw): Uint8ClampedArray {
+  const ex = borderGreenExcess(img).sort((a, b) => a - b);
+  const screen = ex[Math.floor(ex.length * 0.1)] ?? 90;
+  const high = Math.min(90, Math.max(40, Math.round(screen * 0.8)));
+  const out = removeGreenBackground(img, Math.min(30, Math.round(high * 0.4)), high);
+  const { width: w, height: h } = img;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++)
+      if (x < GREEN_FRAME || y < GREEN_FRAME || x >= w - GREEN_FRAME || y >= h - GREEN_FRAME)
+        out[(y * w + x) * 4 + 3] = 0;
+  return out;
 }
 
 /** A white-on-black icon becomes white with its brightness as transparency (the game tints it). */
