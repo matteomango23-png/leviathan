@@ -1,7 +1,6 @@
 // The battle interface, in the style of the recent Pokémon games: the wild beast's box at the top left, yours
 // at the bottom left, the commands stacked on the right (Lotta, Zaino, Squadra, Doma, Fuggi) and the moves in
 // the colours of their types. Messages appear at the bottom while the commands are hidden.
-import { BATTLE } from '../data/battle';
 import { BATTLE_TEXT } from '../data/battleText';
 import { RARITY } from '../data/cards';
 import { STATUS_NAMES, STRUGGLE } from '../data/moveBattle';
@@ -14,6 +13,7 @@ import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
 import { ICONS } from './icons';
 import { battleBag } from './battleBag';
+import { shellsOwned } from '../systems/economy/items';
 import { moveDetail, typeColor, typeName } from './movePanel';
 
 class InfoBox {
@@ -172,9 +172,22 @@ export class BattleUi {
         this.command(m, 'Lotta', 'icona_lotta', 'c-fight', moves);
         this.command(m, 'Zaino', 'icona_zaino', 'c-bag', bag);
         this.command(m, 'Squadra', 'icona_squadra', 'c-team', team);
-        const shells = items[BATTLE.catch.shellItem] ?? 0;
-        this.command(m, `Doma ×${shells}`, 'icona_doma', 'c-tame', () => done({ kind: 'tame' }));
+        const owned = shellsOwned(items);
+        const shells = owned.reduce((a, i) => a + (items[i.id] ?? 0), 0);
+        // more than one kind of shell: choose which (owner, 16 ottobre: like Pokémon's balls)
+        this.command(m, `Doma ×${shells}`, 'icona_doma', 'c-tame', () =>
+          owned.length > 1 ? shellPick() : done({ kind: 'tame', shell: owned[0]?.id }),
+        );
         this.command(m, 'Fuggi', 'icona_fuggi', 'c-flee', () => done({ kind: 'flee' }));
+      };
+      const shellPick = (): void => {
+        const m = this.page('list', 'Quale conchiglia?');
+        for (const it of shellsOwned(items)) {
+          const b = this.button(m, it.name, () => done({ kind: 'tame', shell: it.id }), 'brow bbag-item');
+          el('span', 'brow-side', b, `×${items[it.id]}`);
+          el('span', 'bbag-text', b, it.text);
+        }
+        this.back(m, main);
       };
       const moves = (): void => {
         const m = this.page('moves');

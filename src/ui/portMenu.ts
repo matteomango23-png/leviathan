@@ -1,29 +1,33 @@
-// A harbour (Portofosco or Porto Fango, full screen): tabs with icons on the left, cards on the right.
-// Market (sell the bag, buy items), Suits (suits and upgrades), Backpack, Board (missions), Pen (team).
-import { MARKET } from '../data/economy';
-import { bagWorth } from '../systems/economy/market';
-import { renderFuel, renderShipRepair } from './portSubs';
-import { renderShipyard } from './shipyardPanel';
-import { ITEMS, SUITS, SUIT_UPGRADES } from '../data/world';
-import { bagCount, buyItem, buySuit, buyUpgrade, stockLeft, type BuyResult } from '../systems/economy/gear';
+// A harbour (full screen): tabs with icons on the left, cards on the right. One subject per tab (owner, 16 ottobre
+// 2026): the Board first (the Wanted, bounties, jobs), the fish market, then the shops (portShop.ts), the vehicles
+// (portVehicles.ts), the backpack and the pen.
+import { FISH } from '../data/world';
+import { bagWorth, recover, unitPrice } from '../systems/economy/market';
+import { bagCount } from '../systems/economy/gear';
 import { restAtPort, sellAtPort, type GameState } from '../systems/game';
 import type { Session } from '../scenes/session';
 import { el } from './dom';
-import { icon, iconFor, type IconName } from './icons';
+import { icon, type IconName } from './icons';
 import { portCard } from './portCard';
-import { renderBackpack, renderBoard, type TabContext } from './portTabs';
+import { renderBoard } from './portBoard';
+import { renderShop } from './portShop';
+import { renderBackpack, type TabContext } from './portTabs';
+import { renderVehicles } from './portVehicles';
 import { renderTeamPanel } from './teamPanel';
 import { askAurelio } from '../systems/story';
 
 export { slotName } from './portTabs';
 
-type Tab = 'mercato' | 'mute' | 'navi' | 'zaino' | 'bacheca' | 'recinto';
+type Tab = 'bacheca' | 'mercato' | 'conchiglie' | 'cure' | 'esche' | 'sub' | 'mezzi' | 'zaino' | 'recinto';
 const TABS: [Tab, string, IconName][] = [
-  ['mercato', 'Mercato', 'coins'],
-  ['mute', 'Mute', 'suit'], // fuel, then the suits (portSubs.ts)
-  ['navi', 'Navi', 'trident'], // the shipyard, only at Porto Fango (shipyardPanel.ts)
-  ['zaino', 'Zaino', 'backpack'],
   ['bacheca', 'Bacheca', 'scroll'],
+  ['mercato', 'Mercato', 'fish'],
+  ['conchiglie', 'Conchiglie', 'star'],
+  ['cure', 'Cure', 'leaf'],
+  ['esche', 'Esche', 'hook'],
+  ['sub', 'Sub', 'suit'],
+  ['mezzi', 'Mezzi', 'trident'],
+  ['zaino', 'Zaino', 'backpack'],
   ['recinto', 'Recinto', 'pen'],
 ];
 
@@ -33,7 +37,7 @@ export class PortMenu {
   private readonly body: HTMLDivElement;
   private readonly msg: HTMLDivElement;
   private readonly tabs: HTMLButtonElement[] = [];
-  private tab: Tab = 'mercato';
+  private tab: Tab = 'bacheca';
   private msgTimer = 0;
 
   constructor(
@@ -72,7 +76,6 @@ export class PortMenu {
     });
     const rail = el('div', 'port-rail', this.root);
     for (const [id, label, ic] of TABS) {
-      if (id === 'navi' && g.port?.id !== 'fango') continue; // the shipyard is at Porto Fango
       const b = el('button', 'port-tab', rail);
       b.append(icon(ic), el('span', '', undefined, label));
       b.addEventListener('click', () => {
@@ -95,12 +98,6 @@ export class PortMenu {
     this.msgTimer = window.setTimeout(() => this.msg.classList.remove('show'), 2600);
   }
 
-  private result(r: BuyResult, okText: string): void {
-    if (r.ok) this.say(okText);
-    else this.say(r.reason, true);
-    this.render();
-  }
-
   /** Redraws the open tab; the list keeps its scroll unless a new tab opens (buying used to jump to the top). */
   private render(newTab = false): void {
     const gear = this.g.gear;
@@ -110,23 +107,21 @@ export class PortMenu {
     this.body.replaceChildren();
     const b = this.body;
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
-    if (this.tab === 'mercato') this.renderMarket(b);
-    else if (this.tab === 'mute') {
-      renderFuel(b, ctx); // first: an expedition starts with full tanks
-      renderShipRepair(b, ctx); // Porto Fango: the ship's hull (block 5c)
-      el('h3', '', b, 'Mute');
-      this.renderSuits(b);
-    } else if (this.tab === 'navi') renderShipyard(b, ctx);
-    else if (this.tab === 'zaino') renderBackpack(b, ctx);
-    else if (this.tab === 'bacheca') renderBoard(b, ctx);
+    const t = this.tab;
+    if (t === 'bacheca') renderBoard(b, ctx);
+    else if (t === 'mercato') this.renderMarket(b);
+    else if (t === 'conchiglie' || t === 'cure' || t === 'esche' || t === 'sub') renderShop(b, ctx, t);
+    else if (t === 'mezzi') renderVehicles(b, ctx);
+    else if (t === 'zaino') renderBackpack(b, ctx);
     else renderTeamPanel(b, this.g, true, true);
     this.body.scrollTop = keep;
   }
 
+  /** The fish market: sell the bag, and the price list (a kind sold in heaps is cheaper for a while, market.ts). */
   private renderMarket(b: HTMLElement): void {
     const gear = this.g.gear;
     const n = bagCount(gear);
-    const worth = bagWorth(gear.market, gear.bag, Date.now());
+    const now = Date.now();
     const sell = el('div', 'pcard-grid', b);
     portCard(sell, {
       icon: 'fish',
@@ -134,7 +129,7 @@ export class PortMenu {
       text: n
         ? 'Il mercante compra tutto il pescato. Paga meno un pesce che gli hai appena venduto in gran quantità: il prezzo torna su col tempo.'
         : 'Pesca con arpione, fiocine o rete: i pesci finiscono qui.',
-      price: n ? worth : undefined,
+      price: n ? bagWorth(gear.market, gear.bag, now) : undefined,
       button: {
         label: 'Vendi tutto',
         disabled: n === 0,
@@ -145,66 +140,23 @@ export class PortMenu {
         },
       },
     });
-    el('h3', '', b, 'Oggetti');
-    const grid = el('div', 'pcard-grid', b);
-    for (const id of MARKET.items) {
-      const it = ITEMS.find((i) => i.id === id)!;
-      const left = stockLeft(gear, id);
-      const have = gear.inventory[id] ?? 0;
-      portCard(grid, {
-        icon: iconFor(id),
-        title: it.name,
-        badge: have ? `hai ${have}` : undefined,
-        text: `${it.text}${Number.isFinite(left) ? ` · disponibili ${left}` : ''}`,
-        price: it.price,
-        state: left <= 0 ? 'locked' : '',
-        button: {
-          label: left <= 0 ? 'Esaurito' : 'Compra',
-          disabled: left <= 0 || gear.teeth < it.price,
-          onClick: () => this.result(buyItem(gear, id), `${it.name} comprato.`),
-        },
-      });
-    }
-  }
-
-  private renderSuits(b: HTMLElement): void {
-    const gear = this.g.gear;
-    const grid = el('div', 'pcard-grid', b);
-    for (const s of SUITS) {
-      const own = gear.suits.includes(s.id);
-      const worn = gear.suit === s.id;
-      portCard(grid, {
-        icon: 'suit',
-        title: s.name,
-        badge: worn ? 'indossata' : own ? 'tua' : undefined,
-        text: `${s.note}. Fino a ${s.maxDepth} m${s.hpBonus ? `, +${s.hpBonus} cuori` : ''}.`,
-        price: own ? undefined : s.price,
-        state: worn ? 'active' : own ? 'owned' : '',
-        button: {
-          label: worn ? 'Indossata' : own ? 'Indossa' : 'Compra',
-          disabled: worn || (!own && gear.teeth < s.price),
-          onClick: () => this.result(buySuit(gear, s.id), `${s.name} indossata.`),
-        },
-      });
-    }
-    el('h3', '', b, 'Potenziamenti');
-    const up = el('div', 'pcard-grid', b);
-    for (const u of SUIT_UPGRADES) {
-      const ready = MARKET.upgradesReady.includes(u.id);
-      const own = gear.upgrades.includes(u.id);
-      portCard(up, {
-        icon: iconFor(u.id),
-        title: u.name,
-        badge: own ? 'tuo' : ready ? undefined : 'in arrivo',
-        text: u.effect,
-        price: own ? undefined : u.price,
-        state: own ? 'owned' : ready ? '' : 'locked',
-        button: {
-          label: own ? 'Montato' : 'Compra',
-          disabled: own || !ready || gear.teeth < u.price,
-          onClick: () => this.result(buyUpgrade(gear, u.id), `${u.name} montato.`),
-        },
-      });
+    el('h3', '', b, 'Listino di oggi');
+    const today = { sold: { ...gear.market.sold }, at: gear.market.at };
+    recover(today, now);
+    const list = el('div', 'price-list', b);
+    for (const f of FISH) {
+      const have = gear.bag[f.id] ?? 0;
+      const row = el('div', `price-row${have ? ' have' : ''}`, list);
+      el('span', 'price-name', row, f.name);
+      el('span', 'price-have', row, have ? `×${have}` : '');
+      const p = unitPrice(today, f.id);
+      const low = p < f.sellPrice - 0.01;
+      const v = el('span', `price${low ? ' low' : ''}`, row);
+      const shown = Number.isInteger(p) ? `${p}` : p.toFixed(1).replace('.', ',');
+      v.append(
+        icon('tooth'),
+        document.createTextNode(` ${shown}${low ? ` (di solito ${f.sellPrice})` : ''}`),
+      );
     }
   }
 

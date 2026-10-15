@@ -276,7 +276,8 @@ export class BattleView {
   }
 
   /** Taming: the shell flies in an arc, the beast turns into light and is drawn in, the shell shakes. */
-  async tame(shakes: number, caught: boolean): Promise<void> {
+  async tame(shakes: number, caught: boolean, tint?: number): Promise<void> {
+    this.shell.tint = tint;
     const from = this.centre('you');
     const to = this.centre('foe');
     const foe = this.poses.foe;

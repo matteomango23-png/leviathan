@@ -14,7 +14,7 @@ const beast = () => makeTeamBeast('b1', { speciesId: 'zanna', variant: 'comune',
 
 describe('items like Pokémon', () => {
   it('every medicine is in the market and has a pocket', () => {
-    for (const it of ITEMS.filter((i) => i.use && !i.use.tameMult)) {
+    for (const it of ITEMS.filter((i) => i.use)) {
       expect(MARKET.items, it.id).toContain(it.id);
       expect(it.pocket, it.id).toBeDefined();
     }

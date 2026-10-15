@@ -33,7 +33,8 @@ export type Side = 'you' | 'foe';
 export type Action =
   | { kind: 'move'; index: number }
   | { kind: 'switch'; index: number }
-  | { kind: 'tame' }
+  /** A tame attempt with this shell (ItemDef.shell); none: the weakest you have. */
+  | { kind: 'tame'; shell?: string }
   | { kind: 'flee' }
   /** An item on team beast `target` (an index; none: the one in the water), `move` for an Etere. */
   | { kind: 'item'; id: string; target?: number; move?: number };
@@ -244,6 +245,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, mov
 
 /** The chance a tame attempt holds: Pokémon's catch formula (data/battle.ts BATTLE.catch). */
 export function tameChance(s: BattleState, strongestLevel: number, bonus = 1): number {
+  if (bonus === Infinity) return 1; // the Conchiglia del Re
   const f = s.foe;
   const c = BATTLE.catch;
   let rate = f.form.unique ? c.uniqueRate : (c.rateByStars[speciesOf(f.form).rarity] ?? 45);

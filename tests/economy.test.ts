@@ -84,17 +84,19 @@ describe('shopping', () => {
     expect(buyUpgrade(g.gear, 'lampo_sonar').ok).toBe(false);
   });
 
-  it('limits items per port visit and the mythic harpoon until a Guardian falls', () => {
+  it('limits items per port visit, and the Conchiglia del Re to one carried (it replaced the mythic harpoon)', () => {
     const g = fresh();
-    g.gear.teeth = 20000;
+    g.gear.teeth = 100000;
     expect(buyItem(g.gear, 'krill_dorato').ok).toBe(true);
     expect(buyItem(g.gear, 'krill_dorato').ok).toBe(true);
     expect(buyItem(g.gear, 'krill_dorato').ok).toBe(false);
     enterPort(g);
     expect(stockLeft(g.gear, 'krill_dorato')).toBe(2);
-    expect(buyItem(g.gear, 'arpione_mitico').ok).toBe(true);
+    expect(buyItem(g.gear, 'conchiglia_re').ok).toBe(true);
     enterPort(g);
-    expect(buyItem(g.gear, 'arpione_mitico').ok).toBe(false);
+    expect(buyItem(g.gear, 'conchiglia_re').ok).toBe(false); // one at a time, even on a new visit
+    g.gear.inventory.conchiglia_re = 0; // thrown in a battle
+    expect(buyItem(g.gear, 'conchiglia_re').ok).toBe(true);
   });
 });
 

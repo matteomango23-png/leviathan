@@ -2,6 +2,7 @@
 // Prices of suits, upgrades, weapons and items are in world.ts. Values marked "tuning" are a first pass.
 
 import { kmToX, REGION_CHESTS, SEA_REGIONS } from './regions';
+import { BAIT_GROUPS } from './world';
 import { bay, delta, east, ISLAND_X, LAYOUT, WORLD } from './worldLayout';
 
 /** A harbour at the surface: its pier runs from the shore out over the water. */
@@ -249,17 +250,40 @@ export const BEAST_SALE = {
   finalMult: 4,
 };
 
+/**
+ * The harbour's shops, one tab each, its shelves in groups (owner, 16 ottobre 2026: "tab monotematiche e con diverse
+ * categorie"). Every item on sale is on exactly one shelf (tests/lottoG.test.ts).
+ */
+export type ShopTab = 'conchiglie' | 'cure' | 'esche' | 'sub';
+export interface Shelf {
+  title: string;
+  items: string[];
+}
+export const SHOP: Record<ShopTab, Shelf[]> = {
+  conchiglie: [{ title: 'Conchiglie per domare', items: ['conchiglia', 'conchiglia_rara', 'conchiglia_abisso', 'conchiglia_re'] }],
+  cure: [
+    { title: 'Vita', items: ['alga_curativa', 'alga_rossa', 'alga_reale', 'corallo_vitale', 'perla_ristoro'] },
+    { title: 'Rianimare', items: ['ambra_risveglio'] },
+    { title: 'Stati', items: ['antidoto', 'benda_alga', 'spugna_isolante', 'sale_aromatico', 'pietra_termale', 'panacea'] },
+    { title: 'Energia delle mosse', items: ['muschio_luminoso', 'elisir_abissale'] },
+    { title: 'In battaglia', items: ['attacco_x', 'difesa_x', 'attacco_sp_x', 'difesa_sp_x', 'velocita_x', 'precisione_x'] },
+    { title: 'Crescita', items: ['krill_dorato'] },
+  ],
+  esche: [
+    { title: 'Esca semplice', items: ['esca'] },
+    ...Object.values(BAIT_GROUPS).map((g) => ({
+      title: g.name[0]!.toUpperCase() + g.name.slice(1),
+      items: [g.bait, `${g.bait}_pregiata`],
+    })),
+  ],
+  sub: [{ title: 'Ossigeno', items: ['bolla_aria'] }], // the suits and their upgrades: SUITS, SUIT_UPGRADES
+};
+
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */
 export const MARKET = {
-  items: [
-    'conchiglia', 'alga_curativa', 'alga_rossa', 'alga_reale', 'corallo_vitale', 'perla_ristoro', 'ambra_risveglio',
-    'muschio_luminoso', 'elisir_abissale', 'antidoto', 'benda_alga', 'spugna_isolante', 'sale_aromatico', 'pietra_termale', 'panacea',
-    'attacco_x', 'difesa_x', 'attacco_sp_x', 'difesa_sp_x', 'velocita_x', 'precisione_x',
-    'bolla_aria', 'esca_sangue', 'esca_gamberi', 'esca_viva', 'esca', 'krill_dorato', 'arpione_mitico',
-  ],
+  items: Object.values(SHOP).flatMap((tab) => tab.flatMap((s) => s.items)),
   /** Upgrades whose effect is not in the game yet are shown but cannot be bought. */
   upgradesReady: ['apnea', 'lampada_1', 'lampada_2'],
-  mythicHarpoonStock: 1, // restocked after each Guardian (tappa 4)
 };
 
 /** Effects of suit upgrades (SUIT_UPGRADES in world.ts). */

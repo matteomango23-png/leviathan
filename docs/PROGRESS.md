@@ -1,5 +1,32 @@
 # Progressi
 
+## Lotto G+H, porto a schede e bacheca nuova (16 ottobre 2026) → v0.71.0
+
+- **Schede** (`ui/portMenu.ts`):
+  - Bacheca → `ui/portBoard.ts` (Ricercati da `rumoursAt`, ombre per le cacce lontane non sentite, taglie con `setArt`, incarichi);
+  - Mercato col listino;
+  - Conchiglie, Cure, Esche, Sub → `ui/portShop.ts` (scaffali in `SHOP`, `data/economy.ts`);
+  - Mezzi → `ui/portVehicles.ts` (carburante + `buyFuelAll`, riparazioni `systems/economy/repair.ts`, ricambi e cantiere a Porto Fango);
+  - Zaino;
+  - Recinto.
+  - `portSubs.ts` tolto.
+- **Conchiglie:** `ItemDef.shell`, `maxOwned` e `tint`; `SHELL_ITEMS` e `shellsOwned` in `economy/items.ts`; `Action.tame.shell`, con la scelta della conchiglia in `battleUi.ts`.
+  - L'arpione mitico e `mythicStock` sono tolti; nel salvataggio diventano una `conchiglia_re` (`harpoonToShell` in `gearSave.ts`).
+  - Tolto anche il vecchio `tameMult`.
+- **Esche:** `BAIT_GROUPS` e `FINE_BAIT` (`data/world.ts`); `ItemDef.lure` è ora il gruppo, `rare` la probabilità; `beasts/lure.ts` `luredForm` in `encounters.ts`.
+- **Test:** `tests/lottoG.test.ts`; aggiornati economy, items e hull5c.
+- **Immagini delle conchiglie:** `docs/GEMINI-LOTTO-7.md`.
+
+**Da provare sull'iPhone:**
+- ogni scheda del porto;
+- una card dei Ricercati e una in ombra;
+- una taglia;
+- in battaglia, la scelta della conchiglia;
+- un'esca pregiata in acqua;
+- la riparazione del sottomarino o della barca.
+
+**Prossimo:** lotto I (bestiario e squadra), poi J (salto fuori dall'acqua), K (tutorial). Vedi `docs/BACKLOG.md`, "Feedback del 16 ottobre".
+
 ## Varano albino (15 ottobre 2026) → v0.70.2
 
 - Immagini complete del varano albino (profilo, bocca aperta, fronte, retro, card) dal proprietario: compare in mare e cresce nel Varano d'osso. Il lotto Gemini 6 è fatto.

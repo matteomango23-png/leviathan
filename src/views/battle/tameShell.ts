@@ -12,6 +12,8 @@ export class TameShell {
   private readonly g: Phaser.GameObjects.Graphics;
   private readonly glow: Phaser.GameObjects.Graphics;
   private readonly image: Phaser.GameObjects.Image;
+  /** The colour of the shell thrown (ItemDef.tint; none: its own). */
+  tint: number | undefined;
   private s: {
     x: number;
     y: number;
@@ -124,13 +126,15 @@ export class TameShell {
         .setPosition(x, s.y)
         .setRotation(tilt)
         .setScale((s.r * 2.6) / this.image.width);
+      if (this.tint === undefined) this.image.clearTint();
+      else this.image.setTint(this.tint);
       return;
     }
     // drawn shell: a pale cone with bronze bands and a teal rune glowing
     const c = Math.cos(tilt);
     g.fillStyle(0x2a1d12, 0.6);
     g.fillEllipse(x + 2, s.y + s.r * 0.15, s.r * 2, s.r * 1.4);
-    g.fillStyle(0xf0dcb8, 1);
+    g.fillStyle(this.tint ?? 0xf0dcb8, 1);
     g.fillEllipse(x, s.y, s.r * 2, s.r * 1.45);
     g.lineStyle(Math.max(1.5, s.r * 0.14), 0xa0763e, 1);
     for (let k = 1; k <= 3; k++) g.strokeCircle(x + c * s.r * 0.18, s.y, s.r * (0.82 - k * 0.2));

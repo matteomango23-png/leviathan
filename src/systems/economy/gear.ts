@@ -35,7 +35,6 @@ export interface GearState {
   wrecks: string[]; // opened wrecks and chests
   missions: MissionState;
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
-  mythicStock: number;
   deepestM: number;
   relics: string[]; // relics found in the sunken temples (tappa 14): their effect lasts for ever
   /** What the fish market remembers buying (economy/market.ts). */
@@ -57,7 +56,6 @@ export function newGear(): GearState {
     wrecks: [],
     missions: { active: [], done: [], progress: {} },
     shopBought: {},
-    mythicStock: MARKET.mythicHarpoonStock,
     deepestM: 0,
     relics: [],
     market: newMarket(),
@@ -146,7 +144,7 @@ export function buyUpgrade(g: GearState, id: string): BuyResult {
 export function stockLeft(g: GearState, id: string): number {
   const it = ITEMS.find((x) => x.id === id);
   if (!it) return 0;
-  if (id === 'arpione_mitico') return Math.max(0, g.mythicStock);
+  if (it.maxOwned !== undefined) return Math.max(0, it.maxOwned - (g.inventory[id] ?? 0)); // the Conchiglia del Re
   return it.stockPerVisit === undefined ? Infinity : Math.max(0, it.stockPerVisit - (g.shopBought[id] ?? 0));
 }
 
@@ -158,7 +156,6 @@ export function buyItem(g: GearState, id: string): BuyResult {
   if (!r.ok) return r;
   g.inventory[id] = (g.inventory[id] ?? 0) + 1;
   g.shopBought[id] = (g.shopBought[id] ?? 0) + 1;
-  if (id === 'arpione_mitico') g.mythicStock--;
   return r;
 }
 

@@ -122,6 +122,34 @@ export function buyFuel(g: FuelWorld, which: FuelTarget): FuelBuy {
   return { ok: true, litres, cost };
 }
 
+const ALL: FuelTarget[] = ['ship', 'sub', 'boat', 'drums'];
+
+/** Filling everything that is here (owner, 16 ottobre: one button): the litres missing and their price. */
+export function fillAllQuote(g: FuelWorld): { litres: number; cost: number } {
+  let litres = 0;
+  for (const w of ALL) {
+    if (!canRefuel(g, w)) continue;
+    const [now, tank] = fuelLevel(g, w);
+    litres += Math.max(0, tank - now);
+  }
+  return { litres, cost: Math.ceil(litres * FUEL.pricePerLitre) };
+}
+
+/** Fills everything that is here, the ship first, as far as your teeth go. */
+export function buyFuelAll(g: FuelWorld): FuelBuy {
+  let litres = 0;
+  let cost = 0;
+  for (const w of ALL) {
+    if (!canRefuel(g, w)) continue;
+    const r = buyFuel(g, w);
+    litres += r.litres;
+    cost += r.cost;
+  }
+  return litres > 0
+    ? { ok: true, litres, cost }
+    : { ok: false, litres: 0, cost: 0, reason: 'Tutti i serbatoi sono pieni, o non hai denti.' };
+}
+
 /** The rescue flare works from the helm or inside the submarine. */
 export const canRescue = (g: FuelWorld): boolean =>
   g.ship.aboard || (g.sub.aboard && g.ship.bay !== 'launching' && g.ship.bay !== 'docking');

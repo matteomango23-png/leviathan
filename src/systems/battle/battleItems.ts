@@ -18,33 +18,30 @@ export function battleItemUseful(s: BattleState, id: string, target = s.active, 
   const use = itemDef(id)?.use;
   if (!use) return false;
   if (use.stage) return you(s).stages[use.stage.stat] < 6;
-  if (use.tameMult) return true;
   const f = s.team[target];
   return !!f && canApply(use, careOfFighter(f), move);
 }
 
-/** Uses the item; returns what the battle says, and the taming bonus it gives (1: none). */
+/** Uses the item; returns what the battle says. */
 export function useBattleItem(
   s: BattleState,
   id: string,
   target = s.active,
   move?: number,
-): { lines: string[]; tameMult: number } {
+): { lines: string[] } {
   const use = itemDef(id)?.use;
-  if (!use) return { lines: [], tameMult: 1 };
-  if (use.tameMult) return { lines: [], tameMult: use.tameMult };
+  if (!use) return { lines: [] };
   if (use.stage) {
     const me = you(s);
     const moved = changeStage(me, use.stage.stat, use.stage.by);
     return {
       lines: [BATTLE_TEXT.stage(named(me), STAGE_NAMES[use.stage.stat], moved, use.stage.by)],
-      tameMult: 1,
     };
   }
   const f = s.team[target];
-  if (!f) return { lines: [], tameMult: 1 };
+  if (!f) return { lines: [] };
   const c = careOfFighter(f);
-  if (!canApply(use, c, move)) return { lines: [BATTLE_TEXT.noEffect], tameMult: 1 };
+  if (!canApply(use, c, move)) return { lines: [BATTLE_TEXT.noEffect] };
   const r = applyCare(use, c, move);
   writeFighter(f, c);
   const who = named(f);
@@ -53,5 +50,5 @@ export function useBattleItem(
   else if (r.healed) lines.push(BATTLE_TEXT.healed(who, r.healed));
   if (r.cured) lines.push(BATTLE_TEXT.cured(who));
   if (r.pp) lines.push(BATTLE_TEXT.ppBack(who));
-  return { lines, tameMult: 1 };
+  return { lines };
 }

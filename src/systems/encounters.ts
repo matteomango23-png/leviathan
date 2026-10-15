@@ -15,6 +15,7 @@ import { SUBMARINE } from '../data/submarine';
 import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
+import { luredForm } from './beasts/lure';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
 import { isHeld, onScreen, type BattleRequest, type BeastWorld } from './beastState';
 
@@ -97,11 +98,13 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     own?: { form: BeastForm; level: number },
   ): boolean => {
     // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready); a resident too (its own)
-    const form: BeastForm =
+    const base: BeastForm =
       own?.form ??
       (w.spawn.form
         ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
         : rollWildForm(w.spawn.speciesId, g.rng));
+    // drawn by a fine bait: now and then an alfa or an albino (beasts/lure.ts); never a hunted one
+    const form = !w.spawn.form && lured(w) ? luredForm(base, g.beasts.lure?.rare, g.rng) : base;
     const p = at ?? appearPoint(w, g.map, g.rng, d, seen);
     if (!p || seen(p.x, p.y)) return false;
     spawnWild(w, form, own?.level ?? rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);

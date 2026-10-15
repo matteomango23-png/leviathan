@@ -1,19 +1,10 @@
-// Port tabs: backpack (choose the 3 slots by tapping) and the harbour board (missions).
+// Port tab "Zaino": choose the 3 backpack slots by tapping (also in the cockpit). The board is portBoard.ts.
 import { ITEMS, SWARMS, WEAPONS } from '../data/world';
 import { canEquip, setSlot, slotKind } from '../systems/economy/gear';
-import {
-  acceptMission,
-  boardMissions,
-  claimMission,
-  goalCount,
-  isComplete,
-  missionById,
-} from '../systems/economy/missions';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
 import { iconFor } from './icons';
 import { portCard } from './portCard';
-import { renderDiary } from './huntDiary';
 
 export const slotName = (id: string): string =>
   WEAPONS.find((w) => w.id === id)?.name ??
@@ -89,55 +80,4 @@ export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
       },
     });
   }
-}
-
-export function renderBoard(b: HTMLElement, ctx: TabContext): void {
-  const gear = ctx.g.gear;
-  el('h3', '', b, 'Avvistamenti');
-  renderDiary(b, ctx.g, ctx.redraw); // the rumours of this harbour are heard when you come in (hunts.ts)
-  el('h3', '', b, 'In corso');
-  const active = el('div', 'pcard-grid', b);
-  if (!gear.missions.active.length)
-    el('p', 'port-hint', active, 'Nessuna missione in corso: scegline una qui sotto.');
-  for (const id of gear.missions.active) {
-    const m = missionById(id)!;
-    const done = isComplete(gear, id);
-    const p = Math.min(gear.missions.progress[id] ?? 0, goalCount(m));
-    const c = portCard(active, {
-      icon: 'scroll',
-      title: m.title,
-      text: m.text,
-      price: m.reward,
-      state: done ? 'active' : '',
-      button: {
-        label: done ? 'Riscuoti' : `${p} / ${goalCount(m)}`,
-        disabled: !done,
-        onClick: () => {
-          ctx.say(`Missione compiuta: +${claimMission(gear, id)} denti.`);
-          ctx.redraw();
-        },
-      },
-    });
-    const bar = el('div', 'pcard-progress', c);
-    el('div', 'pcard-progress-fill', bar).style.width = `${(p / goalCount(m)) * 100}%`;
-  }
-  el('h3', '', b, 'Bacheca');
-  const grid = el('div', 'pcard-grid', b);
-  const board = boardMissions(gear);
-  if (!board.length) el('p', 'port-hint', grid, 'Per ora non ci sono altri incarichi.');
-  for (const m of board)
-    portCard(grid, {
-      icon: 'scroll',
-      title: m.title,
-      text: m.text,
-      price: m.reward,
-      button: {
-        label: 'Accetta',
-        onClick: () => {
-          if (acceptMission(gear, m.id)) ctx.say('Missione accettata.');
-          else ctx.say('Hai già 3 missioni in corso.', true);
-          ctx.redraw();
-        },
-      },
-    });
 }
