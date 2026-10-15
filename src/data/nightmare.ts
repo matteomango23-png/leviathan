@@ -4,6 +4,9 @@
 // a red shock running through the beast. Values are tuning: change them here.
 
 export const RECON = {
+  /** Its report is good for this many seconds of play, then it runs out (owner, 15 ottobre: "a che mi serve sapere
+   *  cosa ha trovato 10 minuti fa"). Tuning. */
+  reportSeconds: 180,
   /** Units per second of the drone on its round (you swim at 42). */
   speed: 240,
   /** It visits at most this many beasts, nearest first. */

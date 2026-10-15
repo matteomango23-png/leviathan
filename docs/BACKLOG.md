@@ -37,7 +37,7 @@ Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
   - velocità realistiche delle cavalcature;
   - squalo volpe con l'immagine da compagno sbagliata;
   - nemici più forti a pari livello (simulazione).
-- **C. Schermate e comandi:**
+- **C. Schermate e comandi** ✅ v0.67.0:
   - sonar che tremola e va a capo;
   - pulsanti del sonar che saltano con "Vai adagio";
   - finestra dei leggendari che copre la X;

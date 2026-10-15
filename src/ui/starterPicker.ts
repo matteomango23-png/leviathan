@@ -38,9 +38,15 @@ export class StarterPicker {
       const next = SPECIES.find((x) => x.id === s.evolvesTo);
       if (next && s.evolveLevel) el('p', 'starter-evolves', card, STARTER.evolves(next.name, s.evolveLevel));
       const btn = el('button', 'starter-btn', card, STARTER.choose);
-      btn.addEventListener('click', () => {
+      // on the click, and on the finger lifting too: some Android phones lose the click (owner, 15 ottobre); the
+      // choice is made once (chooseStarter refuses a second one)
+      const choose = (): void => {
         const g = this.getGame();
         if (g && chooseStarter(g, s.id, g.story.pending)) this.root.hidden = true;
+      };
+      btn.addEventListener('click', choose);
+      btn.addEventListener('pointerup', (e) => {
+        if (e.pointerType !== 'mouse') choose();
       });
     }
   }

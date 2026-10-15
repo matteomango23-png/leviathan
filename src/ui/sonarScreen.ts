@@ -4,6 +4,7 @@
 // Block 5a: the dots are as big as the echo sounds (as many sizes as the ship's sonar tells apart), and touching one
 // analyses it (systems/sonarScan.ts): a ring fills round it, then its name or its clues stay written by it.
 import { SHIP } from '../data/ship';
+import { ownMarks } from '../systems/ship/ownMarks';
 import type { GameState } from '../systems/game';
 import { sonarReadout, type SonarReadout } from '../systems/hunts';
 import { shipModel, sonarMaxKnots } from '../systems/ship/model';
@@ -47,7 +48,7 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
   const canvas = el('canvas', 'sonar-canvas', frame);
   const legend = el('div', 'sonar-legend', b);
   legend.innerHTML =
-    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>più grande il punto, più grande la bestia</span><span><i class="lg odd"></i>eco anomala (tana)</span><span>tocca un’eco per analizzarla</span>';
+    '<span><i class="lg floor"></i>fondale</span><span><i class="lg big"></i>più grande il punto, più grande la bestia</span><span><i class="lg odd"></i>eco anomala (tana)</span><span><i class="lg own"></i>i tuoi mezzi (M motoscafo, S sottomarino, D drone, O sfera)</span><span>tocca un’eco per analizzarla</span>';
   // touching an echo analyses it (the same one again lets it go)
   let hits: { x: number; y: number; target: Target }[] = [];
   canvas.addEventListener('pointerdown', (ev) => {
@@ -186,6 +187,23 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       ctx.stroke();
     }
     ctx.shadowBlur = 0;
+    // your own craft in the water: a square with its letter, not a beast (owner, 15 ottobre)
+    ctx.font = `bold ${10 * dpr}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const m of ownMarks(g)) {
+      if (Math.abs(m.dxM) > r.rangeM) continue;
+      const [mx, my, k] = [px(m.dxM), py(m.depthM), 7 * dpr];
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(mx - k, my - k, k * 2, k * 2);
+      ctx.strokeStyle = P.ship;
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.strokeRect(mx - k, my - k, k * 2, k * 2);
+      ctx.fillStyle = P.ship;
+      ctx.fillText(m.letter, mx, my + 0.5 * dpr);
+    }
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
     // the echoes: dots that light up when the sweep passes and fade after, as big as they sound
     const scan = g.sonarScan;
     hits = [];

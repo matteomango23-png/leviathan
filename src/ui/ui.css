@@ -1172,7 +1172,7 @@
 }
 
 /* while the port is open only the port (and sheets opened from it) are shown */
-#ui.in-port > :not(.port):not(.sheet):not(.dialogue) {
+#ui.in-port > :not(.port):not(.sheet):not(.dialogue):not(.diary-sheet) {
   display: none !important;
 }
 
@@ -1632,4 +1632,12 @@ img.albino-art {
   padding: 0 14px;
   border-radius: 32px;
   font-size: 12px;
+}
+
+/* a team ball dragged to another place (ui/beastUi.ts) */
+.team-slot.dragging {
+  z-index: 5;
+  opacity: 0.85;
+  box-shadow: 0 0 14px rgba(95, 243, 214, 0.7);
+  transition: none;
 }

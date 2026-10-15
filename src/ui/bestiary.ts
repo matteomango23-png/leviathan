@@ -11,6 +11,7 @@ import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
 import { LEGEND_GIANTS, LEGENDS } from '../systems/beasts/legends';
+import { rareVersions } from '../systems/beasts/rareVersions';
 
 export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   const root = el('div', 'sheet bestiary', parent);
@@ -142,24 +143,27 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     el('span', 'tile-sub', card, mine ? 'domata' : 'gigante preistorico');
     if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level));
   }
-  // rare versions you own (albino, alfa, final forms)
-  const specials = team.filter((b) => b.form.variant !== 'comune' || b.form.unique || b.form.final);
-  if (specials.length) {
-    el('h3', '', body, 'Versioni rare domate');
+  // the rare versions (albino, alpha, final forms): the ones you have seen, in shadow, and the ones you tamed, in
+  // colour (owner, 15 ottobre: only the tamed ones were listed)
+  const rare = rareVersions(g);
+  const met = rare.filter((r) => r.state !== 'unknown');
+  if (met.length) {
+    const tamedN = met.filter((r) => r.state === 'tamed').length;
+    el('h3', '', body, `Versioni rare · viste ${met.length}/${rare.length} · domate ${tamedN}`);
     const sg = el('div', 'bestiary-grid', body);
-    const done = new Set<string>();
-    for (const b of specials) {
-      const key = formKey(b.form);
-      if (done.has(key)) continue;
-      done.add(key);
-      const stars = formStars(b.form) as 1 | 2 | 3 | 4 | 5;
-      const card = el('button', 'beast-tile tamed special', sg);
+    for (const r of met) {
+      const b = team.find((t) => formKey(t.form) === formKey(r.form));
+      const stars = formStars(r.form) as 1 | 2 | 3 | 4 | 5;
+      const card = el('button', `beast-tile special ${r.state}`, sg);
       card.style.setProperty('--rarity', RARITY[stars].color);
       const img = el('img', '', card);
-      setArt(img, b.form);
+      setArt(img, r.form);
       img.alt = '';
-      el('span', 'tile-name', card, formName(b.form));
-      card.addEventListener('click', () => openBeastSheet(parent, b.form, b.level, { hp: b.hp, ko: b.ko }));
+      el('span', 'tile-name', card, formName(r.form));
+      el('span', 'tile-sub', card, r.state === 'tamed' ? 'domata' : 'vista');
+      card.addEventListener('click', () =>
+        openBeastSheet(parent, r.form, b?.level, b ? { hp: b.hp, ko: b.ko } : undefined),
+      );
     }
   }
   el('h3', '', body, 'Sciami');

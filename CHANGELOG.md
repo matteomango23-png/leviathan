@@ -2,6 +2,29 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.67.0 — Schermate e comandi (15 ottobre 2026)
+
+- **Sonar senza tremolii:** le righe di stato (al timone e nel cockpit) hanno sempre la stessa misura. I pulsanti del motore ("▶ Adagio 8 nodi" / "■ Ferma") non fanno più andare a capo la barra in alto.
+- **Scheda di una leggenda nel Diario:** si apre sopra tutto, con il titolo e la X sempre visibili.
+- **Missioni:** quelle accettate si vedono nel cockpit (scheda Diario) e nella pausa, con l'avanzamento; si riscuotono al porto.
+- **Drone:**
+  - quando torna si apre subito un avviso con gli animali trovati, e puoi scegliere chi seguire;
+  - il resoconto dice da quanto è stato fatto e scade dopo 3 minuti.
+- **I tuoi mezzi sul sonar:** motoscafo (M), sottomarino (S), drone (D) e sfera (O) in acqua sono quadratini con la lettera. Sulla carta nautica c'è anche il motoscafo.
+- **Carta nautica:**
+  - gli avamposti si scoprono da 500 m, non più passandoci davanti;
+  - le icone stanno sulla stessa riga, e si alzano solo quando due sono troppo vicine.
+- **Audio:**
+  - parte al primo tocco qualsiasi;
+  - riparte da solo quando torni nell'app;
+  - buffer più ampio contro i crepitii;
+  - su iPhone non si spegne con l'interruttore silenzioso.
+- **Scelta dello starter:**
+  - si adatta a ogni schermo (anche Android con la barra del browser), con il pulsante "Scegli" sempre visibile;
+  - un doppio tocco non sceglie due volte.
+- **Bestiario:** "Versioni rare" mostra tutte quelle viste (in ombra) e domate (a colori), col conteggio.
+- **Squadra in acqua:** tieni premuta una sfera e trascinala su un'altra per scambiarle di posto (la prima guida in battaglia); un tocco la chiama come prima.
+
 ## v0.66.0 — Bestie in mare (15 ottobre 2026)
 
 - **Predatori grandi** (squalo bianco, tigre, martello, orca…): quando ti vedono, spesso non caricano subito.

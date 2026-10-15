@@ -100,3 +100,13 @@ export function moveInTeam(all: TeamBeast[], uid: string, dir: -1 | 1): boolean 
   [all[a], all[b]] = [all[b]!, all[a]!];
   return true;
 }
+
+/** Two team members change places (dragging a ball onto another in the sea, owner 15 ottobre): the first leads in
+ *  battle. False if either is not in the team. */
+export function swapInTeam(all: TeamBeast[], uidA: string, uidB: string): boolean {
+  const a = all.findIndex((b) => b.uid === uidA && b.inTeam);
+  const b = all.findIndex((x) => x.uid === uidB && x.inTeam);
+  if (a < 0 || b < 0 || a === b) return false;
+  [all[a], all[b]] = [all[b]!, all[a]!];
+  return true;
+}

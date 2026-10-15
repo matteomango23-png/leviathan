@@ -1,5 +1,41 @@
 # Progressi
 
+## Lotto C, schermate e comandi (15 ottobre 2026) → v0.67.0
+
+- **Sonar e cockpit:**
+  - `.helm-sonar` e `.sonar-status` a due righe fisse;
+  - pulsanti del motore corti e `nowrap`;
+  - `.port-top` non va a capo.
+- **Diario e missioni:**
+  - `huntDiary.openSheet` dentro `#ui`, `.diary-sheet` tra le eccezioni di `#ui.in-port`, testata appiccicata in alto;
+  - `ui/missionList.ts` (Diario del cockpit e pausa).
+- **Drone:** `recon.reportAge` + `RECON.reportSeconds` (180); `ui/reconPopup.ts` su `reconDone` (in `UIScene`).
+- **Mezzi e carta:**
+  - `ship/ownMarks.ts` (mezzi propri), disegnati in `sonarScreen`;
+  - `chart` con `boat`; icone della carta allineate (`instruments.chartStrip`).
+- **Avamposti:** `OUTPOST_SIGHT` 3000.
+- **Audio:** sblocco su tutti i tocchi con buffer muto, ripresa su `visibilitychange`/`pageshow`/`focus`, `latencyHint: 'playback'`, `navigator.audioSession.type = 'playback'`.
+- **Starter:** `100dvh`, media `max-height: 430px`, scelta anche su `pointerup`; `chooseStarter` rifiuta la seconda scelta.
+- **Bestiario e squadra:**
+  - `beasts/rareVersions.ts`;
+  - `swapInTeam` e trascinamento in `beastUi.dragSlot`.
+- **Test:** `tests/lottoC.test.ts`.
+
+**Da provare sull'iPhone:**
+- l'audio all'avvio e dopo essere uscito e rientrato;
+- il sonar mentre cambiano gli echi;
+- "Adagio";
+- una leggenda nel Diario;
+- le missioni nel cockpit;
+- la ricognizione del Nightmare;
+- i mezzi sul sonar;
+- la carta nautica;
+- il trascinamento delle sfere.
+
+**Su Android:** la scelta dello starter.
+
+**Prossimo:** lotto D (luci degli U-Boat).
+
 ## Lotto B, bestie in mare (15 ottobre 2026) → v0.66.0
 
 - **Pattuglia** (`beasts/patrol.ts`, dati `PATROL`):

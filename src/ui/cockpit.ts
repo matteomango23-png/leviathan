@@ -19,6 +19,7 @@ import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
 import { renderReconTab } from './reconPanel';
+import { renderMissions } from './missionList';
 import { inPool } from '../systems/ship/shipPool';
 import { formName } from '../systems/beasts/forms';
 
@@ -110,9 +111,10 @@ export class Cockpit {
     const kn = Math.round(knotsOf(this.g.ship.speed));
     const going = this.session.input.helm.throttle > 0.01;
     this.speed.textContent = `${kn} nodi`;
-    this.engine.textContent = going ? '■ Ferma i motori' : `▶ Avanti adagio (${SHIP.sonar.cruiseKnots} nodi)`;
+    // short words, the same width either way (owner, 15 ottobre: the bar jumped as they changed)
+    this.engine.textContent = going ? '■ Ferma' : `▶ Adagio ${SHIP.sonar.cruiseKnots} nodi`;
     this.engine.classList.toggle('on', going);
-    this.engineOff.textContent = this.g.ship.engineOn ? '⏻ Spegni motore' : '⏻ Motore spento';
+    this.engineOff.textContent = this.g.ship.engineOn ? '⏻ Spegni' : '⏻ Spento';
     this.engineOff.disabled = !this.g.ship.engineOn;
     if (this.tab === 'plancia' && this.ticks++ % 2 === 1) this.render();
     // the drone's report shows as soon as it is back
@@ -150,8 +152,10 @@ export class Cockpit {
       });
     else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, redraw);
     else if (this.tab === 'radar') this.stopSonar = renderRadar(this.body, this.g);
-    else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw);
-    else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
+    else if (this.tab === 'diario') {
+      renderMissions(this.body, this.g.gear); // the missions you accepted, at sea too (owner, 15 ottobre)
+      renderDiary(this.body, this.g, redraw);
+    } else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else if (this.tab === 'drone') renderReconTab(this.body, this.g, this.session, (t) => this.say(t));
     else {
       // the pool aboard: who is resting in it now (ship/shipPool.ts)

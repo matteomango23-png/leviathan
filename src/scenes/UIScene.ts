@@ -1,5 +1,6 @@
 // UI: HUD and touch/keyboard controls, drawn as HTML over the game canvas (crisp text, safe areas).
 import Phaser from 'phaser';
+import { openReconPopup } from '../ui/reconPopup';
 import { BackpackBar } from '../ui/backpackBar';
 import { BeastUi } from '../ui/beastUi';
 import { Controls } from '../ui/controls';
@@ -85,6 +86,9 @@ export class UIScene extends Phaser.Scene {
   private onGameEvents(events: GameEvent[]): void {
     if (!this.session.game) return;
     this.hud.onEvents(events, this.session.game);
+    // the drone's report pops up as soon as it is back (ui/reconPopup.ts)
+    if (events.some((e) => e.type === 'reconDone' && e.count > 0))
+      openReconPopup(this.session.game, this.session, (t) => this.hud.toast(t, 2.5));
   }
 
   private onToast(text: string): void {

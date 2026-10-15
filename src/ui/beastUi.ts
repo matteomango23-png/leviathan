@@ -3,7 +3,7 @@
 import { PROGRESSION } from '../data/rules';
 import { activeBeast, canRide } from '../systems/beastPlay';
 import { formKey, formName } from '../systems/beasts/forms';
-import { maxHpOf, teamMembers } from '../systems/beasts/team';
+import { maxHpOf, swapInTeam, teamMembers } from '../systems/beasts/team';
 import { currentAction, type GameState } from '../systems/game';
 import { setArt } from './art';
 import type { Session } from '../scenes/session';
@@ -50,9 +50,7 @@ export class BeastUi {
       const bar = el('div', 'team-hp', b);
       const fill = el('div', 'team-hp-fill', bar);
       const note = el('span', 'team-note', b);
-      press(b, () => {
-        this.session.input.summon = i;
-      });
+      this.dragSlot(b, i);
       this.slots.push({ root: b, img, fill, note });
     }
     this.ctxBtn = el('button', 'act act-ctx', root);
@@ -60,6 +58,58 @@ export class BeastUi {
     press(this.ctxBtn, () => {
       this.session.input.action = true;
     });
+  }
+
+  /**
+   * A ball of the team: a tap (down and up without moving) calls the beast, as before; held and dragged onto another
+   * ball, the two change places (owner, 15 ottobre: "trascinare l'ordine delle sfere"); the ball follows the finger.
+   */
+  private dragSlot(b: HTMLButtonElement, i: number): void {
+    let start: { x: number; id: number } | null = null;
+    let dragging = false;
+    b.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      start = { x: e.clientX, id: e.pointerId };
+      dragging = false;
+      try {
+        b.setPointerCapture(e.pointerId);
+      } catch {
+        // a pointer that cannot be captured: the drag simply ends where it leaves
+      }
+    });
+    b.addEventListener('pointermove', (e) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dx = e.clientX - start.x;
+      if (!dragging && Math.abs(dx) > 10) {
+        dragging = true;
+        b.classList.add('dragging');
+      }
+      if (dragging) b.style.transform = `translateX(${dx}px)`;
+    });
+    const end = (e: PointerEvent, cancel: boolean): void => {
+      if (!start || e.pointerId !== start.id) return;
+      e.stopPropagation();
+      start = null;
+      b.style.transform = '';
+      b.classList.remove('dragging');
+      if (cancel) return;
+      if (!dragging) {
+        this.session.input.summon = i;
+        return;
+      }
+      // the ball it was dropped on
+      const g = this.session.game;
+      const j = this.slots.findIndex((s, k) => {
+        if (k === i || s.root.hidden) return false;
+        const r = s.root.getBoundingClientRect();
+        return e.clientX >= r.left && e.clientX <= r.right;
+      });
+      const team = g ? teamMembers(g.beasts.team) : [];
+      if (g && j >= 0 && team[i] && team[j]) swapInTeam(g.beasts.team, team[i]!.uid, team[j]!.uid);
+    };
+    b.addEventListener('pointerup', (e) => end(e, false));
+    b.addEventListener('pointercancel', (e) => end(e, true));
   }
 
   update(g: GameState): void {

@@ -114,3 +114,41 @@
 .starter-btn:active {
   transform: scale(0.96);
 }
+
+/* Any screen, Android too (owner, 15 ottobre): the real height (dvh, without the browser's bars), scrolling if it
+   must, the "Scegli" button always in sight; on low screens the pictures get smaller. */
+.starter {
+  overflow-y: auto;
+  justify-content: safe center;
+}
+.starter-row {
+  height: auto;
+  max-height: calc(100dvh - 90px);
+  max-width: 100%;
+}
+.starter-card {
+  min-height: 0;
+}
+@media (max-height: 430px) {
+  .starter-title {
+    font-size: 19px;
+  }
+  .starter-aurelio {
+    font-size: 12px;
+    margin: 0;
+  }
+  .starter-frame {
+    height: clamp(56px, 24dvh, 120px);
+  }
+  .starter-name {
+    font-size: 16px;
+  }
+  .starter-trait,
+  .starter-evolves {
+    font-size: 11px;
+  }
+  .starter-btn {
+    padding: 4px 20px;
+    font-size: 15px;
+  }
+}

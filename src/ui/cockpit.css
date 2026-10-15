@@ -689,3 +689,83 @@
   color: #9fd3e0;
   font-size: 13px;
 }
+
+/* steady lines (owner, 15 ottobre: the sonar's words and the engine buttons made the screen jump) */
+.sonar-status {
+  min-height: calc(2 * 1.3em);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.cockpit-engine {
+  white-space: nowrap;
+  min-width: 128px;
+  text-align: center;
+}
+.port-top {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.port-top .port-title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* a hunt's sheet: its title and X stay at the top while the rest scrolls */
+.diary-sheet {
+  z-index: 80;
+}
+.diary-sheet-card {
+  padding-top: 0;
+}
+.diary-sheet-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 12px 0 8px;
+  background: inherit;
+  background-color: #13262f;
+}
+/* the missions you accepted (ui/missionList.ts) */
+.mission-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.mission-row {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(176, 138, 74, 0.35);
+  background: rgba(10, 22, 28, 0.8);
+}
+.mission-row.done {
+  border-color: rgba(95, 243, 214, 0.7);
+}
+.mission-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+}
+.mission-count {
+  white-space: nowrap;
+  color: #e8c987;
+  font-size: 13px;
+}
+.mission-text {
+  font-size: 12px;
+  opacity: 0.8;
+  margin: 2px 0 6px;
+}
+.lg.own {
+  border-radius: 2px;
+  border: 1.5px solid #cfe8d8;
+  background: transparent;
+}
+.chart-mark.boat {
+  fill: #cfe8d8;
+}
