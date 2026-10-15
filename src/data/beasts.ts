@@ -33,6 +33,24 @@ export const ROAM = {
   swimPhasePerSpeed: 0.9,
 };
 
+/** The patrol of the big predators (systems/beasts/patrol.ts; owner, 15 ottobre). Speeds × the diver's length a
+ *  second, times as in CLAUDE.md. Tuning. */
+export const PATROL = {
+  chance: 0.65, // how often a big hunter makes passes first instead of charging at once
+  maxPasses: 3,
+  turnInView: 0.25, // share of the passes that end with a turn in view
+  cruiseMult: 2.5, // × ROAM.cruiseSpeed while it cruises past you
+  exitMult: 1.6, // × ROAM.chaseSpeed added as it speeds out of the far edge
+  boltMult: 2.2, // × ROAM.chaseSpeed when it bolts away…
+  boltOver: 3, // …and at least this much faster than you (U/s)
+  catchUpMult: 1.5, // left behind off screen facing in: it catches up
+  waitSeconds: [1, 2] as [number, number], // off screen before it turns and comes back
+  followSeconds: 1.1, // you follow it this long: it bolts
+  followSpeed: 1.4, // U/s: you count as following it above this speed its way
+  inViewSeconds: 9, // in view this long without attacking: it bolts
+  chargeMult: 1.4, // its charge after the passes is this much faster than a plain chase
+};
+
 /** Wild beasts: where they live (world units) and when they come back. */
 
 export interface WildSpawnDef {

@@ -4,6 +4,22 @@ import { BEAST_BODY, BEAST_TEMPER, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
 import { formLengthUnits, type BeastForm, shapeOfForm } from './forms';
 
+/** A big hunter's passes before it charges (beasts/patrol.ts). */
+export interface Patrol {
+  /** Passes still to make before it charges. */
+  passes: number;
+  st: 'pass' | 'wait' | 'bolt';
+  /** Seconds left waiting off screen. */
+  t: number;
+  /** Seconds in view this pass, and seconds you have been following it. */
+  onT: number;
+  followT: number;
+  /** How far above or below your depth it passes (units). */
+  dy: number;
+  /** This pass ends with a turn in view instead of leaving the screen. */
+  turnInView: boolean;
+}
+
 export interface WildBeast extends BodyPose {
   id: number;
   spawn: WildSpawnDef;
@@ -39,6 +55,11 @@ export interface WildBeast extends BodyPose {
   /** What it hunts now (a sardine school, a smaller beast), or what hunts it (beasts/packHunt.ts), or null. */
   hunt: { x: number; y: number; prey?: number; school?: number } | null;
   fleeFrom: { x: number; y: number } | null;
+  /** A big hunter's passes before it charges (beasts/patrol.ts); undefined: none. */
+  patrol?: Patrol;
+  /** It made passes this time (patrolled), and now it charges, faster. */
+  patrolled?: boolean;
+  charging?: boolean;
   /** Seconds before it looks again for something to hunt. */
   lookT: number;
 }
@@ -79,6 +100,9 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     drawn: null,
     hunt: null,
     fleeFrom: null,
+    patrol: undefined,
+    charging: undefined,
+    patrolled: undefined,
     lookT: 0,
   };
 }
@@ -115,6 +139,9 @@ export function spawnWild(
     drawn: null,
     hunt: null,
     fleeFrom: null,
+    patrol: undefined,
+    charging: undefined,
+    patrolled: undefined,
     lookT: 0,
   });
 }
