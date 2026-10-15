@@ -15,6 +15,57 @@ I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blo
 
 Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
 
+## Feedback del 15 ottobre 2026, in lotti (uno alla volta, ognuno in Plan mode)
+
+- **A. Bug e progressione** ✅ v0.65.0:
+  - esperienza solo dai pesci mangiati, con tetto, e battaglie ×0,6;
+  - la sconfitta non cura più;
+  - vasca anche sull'Aurelia, mostrata al timone;
+  - la stessa bestia resta la stessa (residenti, tracker);
+  - chi combatti è "visto";
+  - le leggende sconfitte tornano nella tana;
+  - le immagini delle bestie delle cacce ora si caricano (il megalodonte invisibile);
+  - mezzi rotti senza perdita di denti, riparati solo al porto;
+  - specie rare più rare nel mare aperto.
+- **B. Bestie in mare:**
+  - pattuglia per tutti i predatori (non sempre; a volte una virata in vista);
+  - sardine che passano oltre invece di girarti intorno;
+  - pesciolini strani da fermo;
+  - arpione un po' più facile;
+  - Folgore che ondeggia come un serpente senza storpiarsi;
+  - ali della manta;
+  - velocità realistiche delle cavalcature;
+  - squalo volpe con l'immagine da compagno sbagliata;
+  - nemici più forti a pari livello (simulazione).
+- **C. Schermate e comandi:**
+  - sonar che tremola e va a capo;
+  - pulsanti del sonar che saltano con "Vai adagio";
+  - finestra dei leggendari che copre la X;
+  - missioni accettate nel cockpit;
+  - resoconto del drone a tempo e come avviso;
+  - mezzi propri su sonar e radar;
+  - avamposti sulla carta anche ad alta velocità;
+  - icona dell'avamposto storta;
+  - audio (non parte subito, gracchia, si ferma al rientro);
+  - scelta dello starter su Android;
+  - bestiario con le versioni rare viste;
+  - riordino della squadra trascinando le sfere.
+- **D. Luci degli U-Boat:**
+  - luce intorno mentre navigano sott'acqua (con la torbidità);
+  - luci rosse che pulsano al buio;
+  - drone e sfera visibili in profondità.
+- **E. Soldi ed economia** (prima un confronto di idee):
+  - sacca senza tetto e prezzo delle sardine;
+  - missioni e commissioni che pagano;
+  - tesori più ricchi, taglie, mercato e baratto di bestie;
+  - vendere pesci domati;
+  - comprare una nave nuova deve essere raggiungibile.
+- **F. Immagini nuove dal fondo verde** (quando il proprietario dice che ha finito):
+  - opponente con la testa a sinistra, compagno, bocca aperta e chiusa delle cavalcature;
+  - nuovi animali.
+- **In ghiaccio:** virata e morso del megalodonte dai video (`public/prove/squalo/`); il proprietario non è soddisfatto, troppe cose da risolvere prima.
+- **Leviatano:** è la bestia del finale della storia (oggi in pausa), per questo non si trova in mare. Torna col blocco 10.
+
 ---
 
 ## Blocco 1 — Nuovo inizio senza storia

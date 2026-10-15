@@ -56,7 +56,7 @@ export const SEA_STATE = {
   /** Flipping over costs a boat this share of its whole hull. */
   capsizeDamage: 0.2,
   /** Mending a broken boat at the harbour: teeth per hull point. */
-  boatRepairPerPoint: 3,
+  boatRepairPerPoint: 4, // teeth per hull point, mended only at a port (owner, 15 ottobre). Tuning.
 };
 
 /** How murky the water is (owner, 9 ottobre): every stretch of sea has its own slow cycle, rough weather adds to it;

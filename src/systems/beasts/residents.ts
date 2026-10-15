@@ -5,6 +5,7 @@
 // empty for a while. Pure logic, no Phaser.
 import { SPECIES_DEPTH } from '../../data/beasts';
 import { ENDLESS } from '../../data/endless';
+import { speciesById } from '../../data/species';
 import { WORLD } from '../../data/worldLayout';
 import { makeRng, range } from '../math';
 import { biomeOf, endlessFloor, regionAt, stretchAt } from '../world/endless';
@@ -45,7 +46,9 @@ export function residentsOf(k: number): Resident[] {
   const x0 = ENDLESS.startX + k * ENDLESS.stretch;
   if (k >= 0 && x0 < ENDLESS.maxX - ENDLESS.endWall) {
     const rng = makeRng(ENDLESS.seed * 7919 + k * 104729 + 13);
-    const kinds = Object.entries(biomeOf(k).beasts);
+    const kinds = Object.entries(biomeOf(k).beasts).map(
+      ([id, n]) => [id, n * (R.rarityWeight[speciesById(id)?.rarity ?? 1] ?? 1)] as [string, number],
+    );
     const total = kinds.reduce((a, [, n]) => a + n, 0);
     for (let i = 0; i < R.perStretch && kinds.length; i++) {
       let r = rng() * total;

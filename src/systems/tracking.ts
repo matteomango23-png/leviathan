@@ -16,11 +16,18 @@ export type Target =
   | { wild: number; speciesId: string; serial?: number };
 
 /** The beast of a slot, as a target: this appearance of it. */
-export const wildTarget = (w: WildBeast): Target => ({ wild: w.id, speciesId: w.spawn.speciesId, serial: w.serial });
+export const wildTarget = (w: WildBeast): Target => ({
+  wild: w.id,
+  speciesId: w.spawn.speciesId,
+  serial: w.serial,
+});
 
 /** This wild beast in the water is still the one the target means. */
 export const isTarget = (w: WildBeast, t: { wild: number; speciesId: string; serial?: number }): boolean =>
-  w.id === t.wild && isInWater(w) && w.spawn.speciesId === t.speciesId && (t.serial === undefined || w.serial === t.serial);
+  w.id === t.wild &&
+  isInWater(w) &&
+  w.spawn.speciesId === t.speciesId &&
+  (t.serial === undefined || w.serial === t.serial);
 
 /** A beast within the sonar's reach: who, and where now. */
 export interface Contact {
@@ -37,7 +44,6 @@ export interface Contact {
 interface TrackWorld {
   beasts: Pick<BeastState, 'wilds' | 'residents' | 'held'>;
 }
-
 
 /** Where the beast is now, with its level when it is out for real; null when it is gone (caught, beaten, away). */
 export function locate(g: TrackWorld, t: Target): { x: number; y: number; level?: number } | null {

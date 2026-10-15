@@ -25,7 +25,7 @@ import {
   type HatchWorld,
 } from './ship/hatch';
 import { sailShip, type ShipWorld } from './ship/ship';
-import { repairSub, restAboard, stepSub, subHull, subModel } from './submarine';
+import { restAboard, stepSub, subHull, subModel } from './submarine';
 import { restSubAir } from './subAir';
 import { BOAT } from '../data/boats';
 import { boatLength, sailBoat, type BoatState } from './boat';
@@ -140,7 +140,6 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
     g.sub.aboard = false;
     Object.assign(g.diver, helmPoint(ship), { vx: 0, vy: 0 });
     freshLevers(ship.face);
-    repairSub(g, events); // in the hold the crew mends it, for teeth, like a port
   }
   return ship.aboard || ramp || inSub || boatRamp || boat.aboard;
 }

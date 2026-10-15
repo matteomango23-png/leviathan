@@ -161,11 +161,11 @@ export const SHIP_TEXT = {
   // owner, 5 ottobre: diving off a moving ship (or out of a moving submarine) left you behind
   stopToDive: 'Ferma la nave prima di tuffarti.',
   stopToLeave: 'Fermati prima di uscire dal sottomarino.',
-  subBroken: 'Il sottomarino è rotto e non hai denti per ripararlo: vendi i pesci al porto, poi riprova.',
+  subBroken: 'Il sottomarino è rotto: si ripara in un porto (costa denti). Nel frattempo resta nella stiva.',
   fuelOutShip: 'La nave è senza carburante: si ferma. Nel cockpit c’è il razzo di soccorso.',
   fuelOutSub: 'Il sottomarino è senza carburante. Puoi uscire e nuotare, o usare il razzo di soccorso.',
   rescued: (where: string, teeth: number): string =>
     `Razzo di soccorso: un rimorchiatore ti porta ${where}${teeth ? `. Paghi ${teeth} denti` : ''}.`,
   wreckedToShip: (teeth: number): string =>
-    `Lo scafo del sottomarino cede. Ti rimorchiano alla nave${teeth ? `: perdi ${teeth} denti` : ''}.`,
+    `Lo scafo del sottomarino cede: torna nella stiva, rotto${teeth ? ` (perdi ${teeth} denti)` : ''}. Si ripara in un porto.`,
 };

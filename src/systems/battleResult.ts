@@ -96,7 +96,9 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
     if (win) {
       removeWild(
         w,
-        legendBeaten
+        // a hunted beast (legend or giant) is back in its den for a long while: a new megalodon used to come out of
+        // the same den half a minute later, "it stays there" (owner, 15 ottobre)
+        legendBeaten || w.spawn.hunt
           ? HUNT_RULES.legendReturnSeconds
           : range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]),
       );

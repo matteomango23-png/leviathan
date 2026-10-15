@@ -2,6 +2,30 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.65.0 — Bug e progressione (15 ottobre 2026)
+
+- **Livelli più lenti:**
+  - l'esperienza dai pesci arriva solo da quelli che la tua bestia mangia, e al massimo due al minuto;
+  - i pesci che prendi tu (arpione, rete, nave) vanno solo nella sacca;
+  - le battaglie danno un po' meno esperienza.
+  - Prima la bestia che ti seguiva tra i banchi di sardine saliva di livello da sola: per questo lo starter e la megattera crescevano di colpo, imparando mosse a raffica.
+- **Sconfitta:** ti risvegli sulla nave con le bestie KO a 1 PV, non più tutte guarite: si curano nella vasca o al porto.
+- **Vasca:**
+  - anche l'Aurelia ne ha una (1 posto);
+  - al timone vedi chi si sta curando ("vasca: Zanna 45%");
+  - nel Recinto c'è la spiegazione.
+- **La stessa bestia resta la stessa:**
+  - una bestia del mare aperto ha sempre la sua versione (una rara resta rara) e il suo livello;
+  - il tracker, la sfera e il sonar seguono quella bestia precisa, non la prossima che esce nello stesso posto.
+- **Sonar:** una bestia con cui hai combattuto non è più "sconosciuta".
+- **Leggende:** sconfitte senza domarle si ritirano ferite nella tana e tornano dopo circa 20 minuti di gioco, invece di sparire per sempre. Anche quelle già sparite nei vecchi salvataggi tornano (lo squalo martello preistorico). I giganti delle cacce (megalodonte, Livyatan) dopo una battaglia restano nella tana per lo stesso tempo.
+- **Megalodonte invisibile:** le immagini delle bestie delle cacce non venivano caricate. Ora si vedono.
+- **Mezzi rotti:**
+  - motoscafo e sottomarino rotti non ti costano più denti;
+  - restano rotti nella stiva finché non li ripari in un porto, a pagamento;
+  - la nave non li ripara più da sola.
+- **Specie rare:** nel mare aperto le bestie da 4 e 5 stelle (come la megattera) sono molto più rare.
+
 ## v0.64.3 — Correzioni dell'11 ottobre (11 ottobre 2026)
 
 - **Vasca della nave:** a bordo la squadra non guarisce più tutta e subito. Nella vasca si curano piano (circa 2 minuti da zero a piena) solo tante bestie quanti i suoi posti, le più ferite per prime; una bestia KO si rialza a un quarto di vita. Nel Recinto del cockpit vedi chi è in vasca. L'Aurelia non ha la vasca. Il porto e il risveglio dopo una sconfitta curano ancora tutto subito.

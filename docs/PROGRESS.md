@@ -1,5 +1,37 @@
 # Progressi
 
+## Lotto A, bug e progressione (15 ottobre 2026) → v0.65.0
+
+Il feedback del 15 ottobre è diviso in lotti A–F in `docs/BACKLOG.md`.
+
+**Fatto in questo lotto:**
+- **Esperienza:** `XP_RULES.fishYield` 6, `fishPerMinute` 2 (budget in `timers.fishXp`), `battleMult` 0,6 (in `xpReward`). I pesci presi non danno più esperienza (`game.ts`).
+- **Sconfitta e vasca:**
+  - `blackout`: KO → 1 PV, nessuna cura;
+  - Aurelia `pool` 1;
+  - `HelmInfo.pool` ("vasca: …") e testo nel Recinto.
+- **Stessa bestia:**
+  - `residentForm(r)` (versione e livello dal seme dell'id) usato in `wakeResident`, nel sonar e nel tracking;
+  - `WildBeast.serial` con `wildTarget`/`isTarget` (`tracking.ts`), usati da tracker, drone, cacce e sonar (`targetKey` con il serial).
+- **Battaglie:** `battleResult` segna come viste le bestie combattute.
+- **Tane:** leggende sconfitte e bestie delle cacce restano nella tana `HUNT_RULES.legendReturnSeconds` (1200 s). `legendsGone` dei vecchi salvataggi viene ignorato.
+- **Immagini:** `neededSpriteKeys` include le specie delle cacce.
+- **Mezzi rotti:**
+  - via `wreckTeethLoss`;
+  - niente riparazione nella stiva (`hatch.ts`, `vehicles.ts`);
+  - `repairPerPoint` sottomarino 5, motoscafo 4.
+- **Rarità:** `ENDLESS.residents.rarityWeight` per stelle.
+- **Test:** `tests/lottoA.test.ts`; aggiornati starter, pokemonGrowth, block2, legends, krill, sonar5a, submarine, fixes11.
+
+**Da provare sull'iPhone:**
+- nuova partita: lo starter dopo un po' di gioco;
+- perdi una battaglia, poi la vasca;
+- il tracker su una bestia rara;
+- la tana del megalodonte;
+- un mezzo rotto e il porto.
+
+**Prossimo:** lotto B (bestie in mare), in Plan mode.
+
 ## Prova dello squalo dai video (11 ottobre 2026)
 
 - `npm run art:video` (`scripts/art/video.ts`, tagli in `scripts/art/videoClips.ts`, dipendenza di sviluppo `ffmpeg-static`): dai video in `art-inbox/video/<id>/` ai fotogrammi in `public/prove/<id>/`.

@@ -907,3 +907,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **ffmpeg-static (solo sviluppo):** sul PC non c'è ffmpeg e serve leggere gli mp4 del proprietario in modo ripetibile; il pacchetto porta il programma già pronto, gira solo con `npm run art:video` e non entra nel gioco. Lo scontorno riusa `removeGreenBackground` e `keepLargest` dello script delle immagini.
 - **Fotogrammi invece della spina dorsale, solo da provare:** la virata di un video è una virata vera (di fronte, in prospettiva), che con un'immagine piatta non si può fare (per questo oggi le bestie non virano in vista). Costo: circa 5 MB e circa 190 immagini per bestia, contro un'immagine sola. La pagina di prova è fuori dalla precache della PWA (`globIgnores: ['prove/**']`); portarla nel gioco è una decisione a parte del proprietario.
+
+## 15 ottobre 2026 — Esperienza, sconfitta, identità delle bestie (v0.65.0)
+
+- **Esperienza dai pesci:** il budget di pesci "che contano" (`timers.fishXp`, si ricarica di `fishPerMinute` al minuto) evita che una bestia che mangia un banco, o che segue il sub tra le sardine, salga di decine di livelli. I pesci presi a mano non danno esperienza: prima ognuno dava 2·livello+1 alla prima bestia.
+- **Sconfitta che non cura:** perdere apposta curava tutta la squadra. Ora le bestie KO tornano a 1 PV; per curarle servono la vasca della nave (anche l'Aurelia ne ha una) o il porto.
+- **Identità:**
+  - Una bestia residente del mare aperto ha versione e livello presi dal seme del suo id (`residentForm`): prima venivano ritirati a sorte a ogni risveglio.
+  - Le bestie della costa hanno `serial`, un contatore della loro casella che sale a ogni comparsa: chi le ricorda (tracker, sfera, sonar) confronta anche quello. Le note salvate senza serial restano valide.
+- **Leggende e giganti:** non spariscono più per sempre; restano nella tana per un tempo lungo. Solo domarle le toglie dal mare.

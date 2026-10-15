@@ -23,7 +23,6 @@ import { rideTank } from '../src/systems/rideAir';
 import { launchShown, launchSub, stepBay } from '../src/systems/ship/hatch';
 import { engineHeard, newShip, sailShip, saveShip, type ShipWorld } from '../src/systems/ship/ship';
 import { iceIn } from '../src/systems/ship/surface';
-import { subModel } from '../src/systems/submarine';
 import { giveTestBeast } from '../src/systems/testTools';
 import { icebergAcross, icebergsOfStretch } from '../src/systems/world/icebergs';
 import { biomeOf } from '../src/systems/world/stretches';
@@ -150,7 +149,7 @@ describe('the submarine', () => {
     expect(g.sub.vx).toBeGreaterThan(5);
   });
 
-  it('back in the hold the ship mends it, for teeth', () => {
+  it('back in the hold it stays broken: only a port mends it, for teeth (owner, 15 ottobre)', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
     g.gear.teeth = 1000;
@@ -159,17 +158,17 @@ describe('the submarine', () => {
     const ev: GameEvent[] = [];
     stepBay(g, 0.5, ev);
     expect(g.ship.bay).toBe('docked');
-    expect(g.sub.hull).toBe(subModel(g.sub.model).hull);
-    expect(g.gear.teeth).toBeLessThan(1000);
-    expect(ev.some((e) => e.type === 'subRepaired')).toBe(true);
+    expect(g.sub.hull).toBe(1);
+    expect(g.gear.teeth).toBe(1000);
+    expect(ev.some((e) => e.type === 'subRepaired')).toBe(false);
   });
 
-  it('broken and no teeth: Cala says how to mend it', () => {
+  it('broken, even with teeth: Cala says how to mend it', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
     Object.assign(g.ship, { aboard: true, hatches: [{ t: 1, open: true }] });
     g.sub.hull = 0;
-    g.gear.teeth = 0;
+    g.gear.teeth = 5000;
     expect(launchShown(g)).toBe(true);
     const ev: GameEvent[] = [];
     launchSub(g, ev);

@@ -77,7 +77,11 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   const seen = (x: number, y: number): boolean => onScreen(g.beasts.view, x, y, WILD_RULES.viewMargin);
   const lured = (w: WildBeast): boolean => !!g.beasts.lure?.species.includes(w.spawn.speciesId);
   /** It comes out of the dark (a resident of the endless sea: where it already is). */
-  const appear = (w: WildBeast, at?: { x: number; y: number }, own?: { form: BeastForm; level: number }): boolean => {
+  const appear = (
+    w: WildBeast,
+    at?: { x: number; y: number },
+    own?: { form: BeastForm; level: number },
+  ): boolean => {
     // a hunted beast is always itself (hunts.ts lets it come only when its hunt is ready); a resident too (its own)
     const form: BeastForm =
       own?.form ??
