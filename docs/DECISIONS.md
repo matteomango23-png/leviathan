@@ -985,3 +985,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 19 ottobre 2026 — Alfa e albini solo con immagini proprie (v0.74.2)
 
 - **Come gli albini dal 3 ottobre, ora anche gli alfa:** una versione rara esiste solo se ha immagini sue. Senza, la bestia è comune. Questo vale per quelle che nascono, per quelle attirate da un'esca pregiata e per quelle già domate nei salvataggi. Il nome "alfa" non promette più qualcosa che non si vede.
+
+## 19 ottobre 2026 — La superficie come acqua vera (v0.75.0)
+
+- **Una sola fisica al posto di "muro o salto":** prima la bestia cavalcata si fermava a una riga fissa sotto la superficie e saltava solo sopra una soglia di velocità. Ora l'acqua tra la riga di nuoto e il pelo dell'acqua la tira giù come una molla e la frena; l'altezza del salto viene da sola dalla velocità (piano niente, normale un saltino, sprint qualche metro, scatto circa 8 m).
+- **Lo scafo della nave è una capsula liscia**, e la bestia cavalcata che ci finisce dentro esce sotto la chiglia: niente gobbe e niente bestie ferme sopra la nave. Il sub a nuoto resta spinto di lato come prima.

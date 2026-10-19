@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.75.0 — Acqua e salto più naturali (19 ottobre 2026)
+
+- **Niente muro sotto la superficie:** in groppa la bestia arriva fino al pelo dell'acqua, e tenendo su resta col dorso appena fuori.
+- **Un solo movimento, dal saltino al salto grande:** l'acqua la riporta giù e la frena. Arrivando a velocità normale fa un saltino (circa mezzo metro), con lo sprint circa 2 m, con lo scatto circa 8 m.
+- **Ricaduta senza scossa dello schermo:** lo spruzzo è grande quanto la caduta.
+- **Vicino alla nave:**
+  - in volo la nave non la blocca più;
+  - se ricade sullo scafo esce sotto, invece di restare a galla;
+  - sotto la chiglia le bestie enormi scorrono dritte, senza su e giù.
+
 ## v0.74.2 — Correzioni a bestiario e immagini (19 ottobre 2026)
 
 - **Alfa solo con immagini proprie:** un alfa che non ha immagini sue è una bestia normale. Non nasce più, e quelli già domati (come lo squalo martello alfa) tornano normali.

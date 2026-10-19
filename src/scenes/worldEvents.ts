@@ -25,9 +25,11 @@ export function showEvent(e: GameEvent, v: EventLooks): void {
   // a leap out of the water on a beast (breach.ts): spray going up, a big splash coming down
   else if (e.type === 'breach') effects.puff(e.x, e.y, 14, 0xe6f3f7, 70);
   else if (e.type === 'breachSplash') {
-    effects.puff(e.x, e.y, Math.min(30, 12 + e.speed / 6), 0xe6f3f7, 40 + e.speed * 0.5);
-    for (let i = 0; i < 10; i++) effects.bubble(e.x + Math.random() * 24 - 12, e.y + 6 + Math.random() * 10);
-    rig.shake();
+    // back in the water: a splash as big as the fall, no jolt of the screen (owner, 19 ottobre: "sembra che bughi")
+    const k = Math.min(1, e.speed / 120);
+    effects.puff(e.x, e.y, Math.round(6 + 14 * k), 0xe6f3f7, 20 + 40 * k);
+    for (let i = 0; i < Math.round(4 + 8 * k); i++)
+      effects.bubble(e.x + Math.random() * 24 - 12, e.y + 6 + Math.random() * 10);
   } else if (e.type === 'birdEaten')
     effects.puff(e.x, e.y, 10, 0xf4f6f8, 35); // feathers
   else if (e.type === 'hurt') rig.shake();

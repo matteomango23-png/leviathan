@@ -122,11 +122,14 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
   // the submarine is solid: you (or the beast you ride) slide along its hull
-  if (!inVehicle(g) && !held)
+  // (not on a leap out of the water: it flies over or past the ship and falls back in the sea, 19 ottobre)
+  if (!inVehicle(g) && !held && !d.airborne)
     pushOutOfVehicles(
       g,
       d,
       g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
+      false,
+      g.beasts.riding,
     );
   // after losing your senses you wake up on your boat
   if (events.some((e) => e.type === 'respawned')) wakeOnShip(g, events);

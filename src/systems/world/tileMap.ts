@@ -139,9 +139,9 @@ export class TileMap {
   /**
    * Moves a body one axis at a time; bounces softly off rock. Returns true if it hit something. A long body passes
    * its circles along the spine; if it is already stuck in rock (spawned or turned into it) only its middle counts,
-   * so it can swim out instead of freezing.
+   * so it can swim out instead of freezing. With `surface` false nothing holds it under the surface (a ridden beast).
    */
-  moveBody(e: Body, shape: number | readonly BodyCircle[], dt: number): boolean {
+  moveBody(e: Body, shape: number | readonly BodyCircle[], dt: number, surface = true): boolean {
     let body = shape;
     if (typeof shape !== 'number' && this.hitShape(e.x, e.y, shape))
       body = shape.reduce((m, c) => (Math.hypot(c.dx, c.dy) < Math.hypot(m.dx, m.dy) ? c : m)).r;
@@ -164,7 +164,8 @@ export class TileMap {
         : body.reduce((m, c) => (Math.abs(c.dx) + Math.abs(c.dy) < Math.abs(m.dx) + Math.abs(m.dy) ? c : m))
             .r;
     const top = this.surfaceY + mid;
-    if (e.y < top) {
+    // (a beast you ride has its own surface, like real water: systems/breach.ts)
+    if (surface && e.y < top) {
       e.y = top;
       if (e.vy < 0) e.vy = 0;
     }

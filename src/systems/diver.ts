@@ -8,7 +8,7 @@ import type { InputState } from './input';
 import { clamp, range, type Rng } from './math';
 import type { BodyCircle, TileMap } from './world/tileMap';
 import { freshPressure, stepPressure, type AirTank } from './breath';
-import { rideTop, stepAirborne, tryBreach } from './breach';
+import { leaveWater, stepAirborne, surfaceWater, upPushShare } from './breach';
 
 export interface DiverState {
   x: number;
@@ -183,7 +183,8 @@ export function stepDiver(
     iy /= m;
   }
   d.vx += ix * accel * dt;
-  d.vy += iy * accel * dt;
+  // riding near the surface, your push up fades as the beast comes out of the water (breach.ts)
+  d.vy += iy * accel * dt * (mounted && iy < 0 ? upPushShare(d.y, map.surfaceY) : 1);
   if (ix === 0 && iy === 0 && !mounted) d.vy += DIVER.sinkWhenIdle * dt;
   const drag = d.dashTime > 0 ? DIVER.dash.drag : DIVER.drag;
   d.vx -= d.vx * drag * dt;
@@ -215,10 +216,10 @@ export function stepDiver(
   }
   d.dashTime = Math.max(0, d.dashTime - dt);
 
-  map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt);
-  // at the surface the beast stops under it, or leaps out if it comes up fast (owner, 16 ottobre)
-  if (mounted && d.y < rideTop(map.surfaceY) && !tryBreach(d, map.surfaceY, opt.mountSpeed!, events))
-    d.y = rideTop(map.surfaceY);
+  if (mounted) surfaceWater(d, map.surfaceY, dt);
+  map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt, !mounted);
+  // the surface like real water: pulled back, slowed, out of the water with enough speed (19 ottobre)
+  if (mounted) leaveWater(d, map.surfaceY, events);
   const drainMult = opt.o2DrainMult ?? 1;
   // holding the sprint while riding costs breath too
   if (mounted && input.dashHeld && Math.hypot(input.moveX, input.moveY) > 0.2)

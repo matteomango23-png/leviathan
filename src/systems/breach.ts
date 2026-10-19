@@ -1,6 +1,9 @@
-// A beast you ride leaps out of the water (owner, 16 ottobre 2026: "tipo Angry Shark"): racing up to the surface it
-// does not stop under it but flies out, arcs through the air with no steering and falls back with a splash
-// (data/beasts.ts RIDE_BREACH). In the air it can snap up a gull (birds.ts eatBirdsNear). Pure logic.
+// The surface for a beast you ride, like real water (owner, 16 and 19 ottobre 2026: "tipo Angry Shark", then "deve
+// sembrare più naturale, come se fosse acqua vera", no wall under the surface). Between its swimming line (a body
+// below the surface) and the surface the water pulls it back down like a spring and slows it, and your push up fades
+// as it comes out: held up it rides with its back just out of the water. Coming up with enough speed it leaves the
+// water: slowly a ripple, at its pace a little hop, sprinting a jump, with a dash the big leap. In the air no
+// steering: it falls back and the water slows it. Numbers in data/beasts.ts RIDE_BREACH. Pure logic.
 import { RIDE_BREACH } from '../data/beasts';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
@@ -14,32 +17,40 @@ export interface BreachBody {
   airborne?: boolean;
 }
 
-/** The line a ridden beast swims under: its rider a body length below the surface. */
+/** The line a ridden beast swims at: its rider a body length below the surface. */
 export const rideTop = (surfaceY: number): number => surfaceY + DIVER.lengthUnits;
 
-/**
- * At the surface going up: fast enough (RIDE_BREACH.minUpShare of the beast's speed) it leaps. True if it did.
- * @param mountSpeed the beast's own speed (units/s), without the sprint
- */
-export function tryBreach(d: BreachBody, surfaceY: number, mountSpeed: number, events: GameEvent[]): boolean {
-  const up = -d.vy;
-  if (up < mountSpeed * RIDE_BREACH.minUpShare) return false;
-  d.airborne = true;
-  d.y = rideTop(surfaceY);
-  d.vy = -Math.min(RIDE_BREACH.maxUpSpeed, up * RIDE_BREACH.boost);
-  events.push({ type: 'breach', x: d.x, y: surfaceY });
-  return true;
+/** How much of your push up is left near the surface: all of it at the swimming line, RIDE_BREACH.pushAtSurface of
+ *  it at the surface. */
+export function upPushShare(y: number, surfaceY: number): number {
+  const under = Math.max(0, Math.min(1, (y - surfaceY) / (rideTop(surfaceY) - surfaceY)));
+  return RIDE_BREACH.pushAtSurface + (1 - RIDE_BREACH.pushAtSurface) * under;
 }
 
-/** One step in the air: it flies on, falls, and splashes back into the water. */
+/** In the water between its swimming line and the surface: pulled back down and slowed (before it moves). */
+export function surfaceWater(d: BreachBody, surfaceY: number, dt: number): void {
+  const out = rideTop(surfaceY) - d.y;
+  if (out <= 0) return;
+  d.vy += RIDE_BREACH.spring * out * dt;
+  d.vy -= d.vy * Math.min(1, RIDE_BREACH.surfaceDrag * dt);
+}
+
+/** After it moved: past the surface going up, it is out of the water. */
+export function leaveWater(d: BreachBody, surfaceY: number, events: GameEvent[]): void {
+  if (d.y >= surfaceY || d.vy >= 0) return;
+  d.airborne = true;
+  d.vy = Math.max(d.vy, -RIDE_BREACH.maxLeapSpeed); // even the strongest dash leaps only so high
+  if (-d.vy >= RIDE_BREACH.sprayFrom) events.push({ type: 'breach', x: d.x, y: surfaceY });
+}
+
+/** One step in the air: it flies on and falls; back in the water the surface's spring and drag take it. */
 export function stepAirborne(d: BreachBody, surfaceY: number, dt: number, events: GameEvent[]): void {
   d.vy += RIDE_BREACH.gravity * dt;
   d.x += d.vx * dt;
   d.y += d.vy * dt;
-  if (d.vy > 0 && d.y >= rideTop(surfaceY)) {
-    events.push({ type: 'breachSplash', x: d.x, y: surfaceY, speed: Math.hypot(d.vx, d.vy) });
+  if (d.vy > 0 && d.y >= surfaceY) {
     d.airborne = false;
-    d.vx *= RIDE_BREACH.landSlow;
-    d.vy *= RIDE_BREACH.landSlow;
+    const speed = Math.hypot(d.vx, d.vy);
+    if (speed >= RIDE_BREACH.sprayFrom) events.push({ type: 'breachSplash', x: d.x, y: surfaceY, speed });
   }
 }

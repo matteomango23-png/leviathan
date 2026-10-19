@@ -1,5 +1,6 @@
 // Lotto J (owner, 16 ottobre 2026): on a beast you ride, racing up to the surface it leaps out of the water like in
-// Angry Shark, arcs through the air and splashes back; in the air it can snap up a gull.
+// Angry Shark, arcs through the air and splashes back; in the air it can snap up a gull. Since 19 ottobre the surface
+// is soft water (lottoL.test.ts): no threshold, the faster the higher.
 import { beforeAll, describe, expect, it } from 'vitest';
 import { RIDE_BREACH } from '../src/data/beasts';
 import { bay, WORLD } from '../src/data/worldLayout';
@@ -59,10 +60,10 @@ describe('il salto fuori dall’acqua', () => {
     expect(d.airborne).toBe(false);
   });
 
-  it('salendo piano si ferma sotto la superficie', () => {
+  it('a velocità normale niente spruzzo grande: al massimo un saltino (19 ottobre)', () => {
     const { events, top } = leap(SPEED * 0.9, true, {}); // swimming up at its cruising speed
     expect(events.some((e) => e.type === 'breach')).toBe(false);
-    expect(top).toBeGreaterThanOrEqual(rideTop(WORLD.surfaceY) - 0.01);
+    expect(top).toBeGreaterThan(WORLD.surfaceY - 1.5 * WORLD.unitsPerMetre);
   });
 
   it('a piedi il sub non salta mai', () => {
@@ -74,10 +75,10 @@ describe('il salto fuori dall’acqua', () => {
     const sprint = heightM(leap(SPEED * 1.45).top);
     const dash = heightM(leap(SPEED * 2.4, true, { dash: true }).top);
     const cap = heightM(leap(1000, true, { dash: true }).top);
-    expect(sprint).toBeGreaterThan(2);
+    expect(sprint).toBeGreaterThan(1);
     expect(dash).toBeGreaterThan(sprint);
     expect(cap).toBeLessThanOrEqual(
-      RIDE_BREACH.maxUpSpeed ** 2 / (2 * RIDE_BREACH.gravity) / WORLD.unitsPerMetre + 0.5,
+      RIDE_BREACH.maxLeapSpeed ** 2 / (2 * RIDE_BREACH.gravity) / WORLD.unitsPerMetre + 2.5, // + the swim line
     );
   });
 });

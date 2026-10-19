@@ -530,18 +530,19 @@ export const SIDE_TAIL_UNIQUES: readonly string[] = ['orca_preistorica_albina'];
  * again (refillPerSec of its bar). Tuning.
  */
 /**
- * Leaping out of the water on a beast you ride (owner, 16 ottobre 2026: "scattare fuori dall'acqua forte, un tuffo
- * tipo Angry Shark, e mangiare gli uccelli"): reaching the surface going up at least `minUpShare` of the beast's
- * speed, it leaves the water at `boost` × that speed (at most `maxUpSpeed` units/s), flies under `gravity` units/s²
- * and falls back with a splash, slowed to `landSlow` of its speed. A gull caught in the air heals it by
- * `birdHealShare` of its health. Tuning: a sprint about 3 m high, a dash about 10 m.
+ * The surface for a beast you ride (systems/breach.ts; owner, 16 and 19 ottobre 2026: a leap like Angry Shark, but
+ * natural water, no wall): between its swimming line and the surface a `spring` (per second², × units out) pulls it
+ * down and `surfaceDrag` (per second) slows it; out of the water it falls under `gravity` (units/s²). Spray and
+ * splash only from `sprayFrom` units/s. A gull caught in the air heals it by `birdHealShare` of its health. Tuning: at its
+ * pace a little hop, sprinting a few metres, a dash about 8-10 m (tests/lottoL.test.ts).
  */
 export const RIDE_BREACH = {
-  minUpShare: 1.1, // above its cruising speed: only with the sprint or the dash
-  boost: 1.25,
-  maxUpSpeed: 130,
-  gravity: 140,
-  landSlow: 0.5,
+  spring: 7,
+  surfaceDrag: 1.2,
+  pushAtSurface: 0.5, // of your push up, left at the surface
+  maxLeapSpeed: 112, // units/s out of the water at most
+  gravity: 130,
+  sprayFrom: 45,
   birdHealShare: 0.08,
 };
 
