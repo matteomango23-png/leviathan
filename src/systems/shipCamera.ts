@@ -21,7 +21,7 @@ interface AimWorld {
   ship: ShipState;
   /** In the speedboat the helm's view follows it (it is fast: you see ahead). */
   boat: BoatState;
-  diver: { x: number; y: number; face: 1 | -1 };
+  diver: { x: number; y: number; face: 1 | -1; airborne?: boolean };
 }
 
 /** Which view: the helm's or the swimming one (a change cuts, behind a fade). */
@@ -54,5 +54,8 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
     };
   }
   const d = g.diver;
-  return { x: d.x + d.face * ahead, y: d.y, viewH: CAMERA.viewHeightUnits, minY: CAMERA.minY };
+  // a leap out of the water on a beast (breach.ts): the view goes up with it, so it never flies out of the top
+  const minY = d.airborne ? Math.min(CAMERA.minY, d.y - CAMERA.viewHeightUnits * 0.3) : CAMERA.minY;
+  const y = d.airborne ? d.y - CAMERA.viewHeightUnits * 0.12 : d.y; // a little above it in the air
+  return { x: d.x + d.face * ahead, y, viewH: CAMERA.viewHeightUnits, minY };
 }

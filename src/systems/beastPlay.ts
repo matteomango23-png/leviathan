@@ -1,7 +1,7 @@
 // Everything about beasts during a game step in the open sea: wild beasts and encounters, calling a mount
 // from the team bar and riding it, its ability, the sardine swarm. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
-import { RIDE_KMH, RIDE_REF_KMH, TEAM_RULES } from '../data/beasts';
+import { RIDE_BREACH, RIDE_KMH, RIDE_REF_KMH, TEAM_RULES } from '../data/beasts';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
@@ -9,7 +9,7 @@ import { speciesById, swimSpeedOf } from '../data/species';
 import { DIVER } from '../data/diver';
 import { formLengthUnits, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
-import { teamMembers, type TeamBeast } from './beasts/team';
+import { maxHpOf, teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
 
@@ -106,4 +106,14 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     } else if (reached && m.state === 'in') m.state = 'follow';
     if (m.state === 'leaving' && m.t <= 0) bs.mount = null;
   }
+}
+
+/** The beast you ride caught a gull in the air (breach.ts, birds.ts): a little health back (RIDE_BREACH). */
+export function mountAteBird(g: BeastWorld, x: number, y: number, events: GameEvent[]): void {
+  const b = activeBeast(g);
+  if (!b) return;
+  const max = maxHpOf(b);
+  const before = b.hp;
+  b.hp = Math.min(max, b.hp + Math.ceil(max * RIDE_BREACH.birdHealShare));
+  events.push({ type: 'birdEaten', x, y, healed: Math.round(b.hp - before) });
 }

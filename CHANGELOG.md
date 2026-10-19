@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.73.0 — Il salto fuori dall'acqua (19 ottobre 2026)
+
+- **Salto, tipo Angry Shark:** cavalcando, se arrivi alla superficie salendo forte (tenendo lo sprint o con lo scatto), la bestia **esce dall'acqua**, vola con te in groppa e ricade con un grande spruzzo.
+  - Con lo sprint il salto è alto circa 5-6 m, con lo scatto circa 10 m.
+  - In aria non si sterza: la bestia segue il suo arco.
+- **Gabbiani al volo:** in aria la bestia può prendere i gabbiani davanti alle sue fauci e recupera un po' di vita.
+
 ## v0.72.0 — Bestiario e squadra (19 ottobre 2026)
 
 - **Bestiario:**

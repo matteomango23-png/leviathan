@@ -91,7 +91,7 @@ Il primo tester ha trovato lo squalo bianco ma non ha capito che esistono i legg
   - via l'alone chiaro delle bestie rare in acqua (`views/beastsLayer.ts`);
   - nei menu solo la squadra (max 5);
   - sulla nave una stiva di bestie che dipende dalla nave (barca piccola 0, navi grandi 5-10), le altre al Recinto.
-- **J. Salto fuori dall'acqua cavalcando** (tipo Angry Shark), mangiando anche gli uccelli.
+- **J. Salto fuori dall'acqua cavalcando** ✅ v0.73.0 (tipo Angry Shark), mangiando anche gli uccelli.
 - **K. Tutorial:** spiegazioni brevi la prima volta (barca, sonar, voci, trovare un leggendario).
 
 ---

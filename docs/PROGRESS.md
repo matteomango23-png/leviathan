@@ -1,5 +1,23 @@
 # Progressi
 
+## Lotto J, salto fuori dall'acqua (19 ottobre 2026) → v0.73.0
+
+- **Salto:** `systems/breach.ts`:
+  - `tryBreach` alla superficie in `stepDiver`, con la soglia `RIDE_BREACH.minUpShare` 1,1, cioè solo con sprint o scatto;
+  - `stepAirborne`: gravità, nessun comando;
+  - `DiverState.airborne`, non salvato.
+- **Dati:** `RIDE_BREACH` in `data/beasts.ts`.
+- **Eventi:** `breach`, `breachSplash`, `birdEaten`, con gli spruzzi in `WorldScene.handleEvents`.
+- **Gabbiani:** `eatBirdsNear` (`systems/birds.ts`), chiamata da `WorldScene` in volo; `mountAteBird` (`beastPlay.ts`) cura la bestia dell'8%.
+- **Telecamera:** in volo `cameraAim` alza `minY` e guarda un po' sopra la bestia.
+- **Test:** `tests/lottoJ.test.ts`.
+
+**Da provare sull'iPhone:**
+- in groppa a uno squalo, tenere lo sprint verso l'alto fino alla superficie, poi provare anche con lo scatto;
+- vicino a uno stormo di gabbiani (sopra i banchi di pesce, col bel tempo), prenderne uno al volo.
+
+**Prossimo:** lotto K (tutorial).
+
 ## Lotto I, bestiario e squadra (19 ottobre 2026) → v0.72.0
 
 - **Bestiario:** `systems/beasts/bestiaryEntries.ts`.

@@ -222,6 +222,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         `La tua squadra è tutta KO: perdi i sensi. Ti risvegli ${e.place} con le bestie curate${e.teethLost ? `. Hai perso ${e.teethLost} denti` : ''}.`,
         5,
       ];
+    case 'birdEaten':
+      return [e.healed > 0 ? `Gabbiano preso al volo! +${e.healed} PS` : 'Gabbiano preso al volo!', 2];
     case 'battleLost':
       return ['La tua squadra è sfinita. Curala al porto o sulla nave.', 3.5];
     case 'tamed': {

@@ -8,6 +8,10 @@ export type GameEvent =
   | { type: 'respawned' }
   | { type: 'oxygenLow' }
   | { type: 'dash'; x: number; y: number }
+  /** A beast you ride leaps out of the water, and falls back into it (breach.ts); a gull snapped up in the air. */
+  | { type: 'breach'; x: number; y: number }
+  | { type: 'breachSplash'; x: number; y: number; speed: number }
+  | { type: 'birdEaten'; x: number; y: number; healed: number }
   | { type: 'bubble'; x: number; y: number }
   | { type: 'harpoonFired' }
   | { type: 'harpoonHitRock'; x: number; y: number }

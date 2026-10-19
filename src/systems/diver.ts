@@ -8,6 +8,7 @@ import type { InputState } from './input';
 import { clamp, range, type Rng } from './math';
 import type { BodyCircle, TileMap } from './world/tileMap';
 import { freshPressure, stepPressure, type AirTank } from './breath';
+import { rideTop, stepAirborne, tryBreach } from './breach';
 
 export interface DiverState {
   x: number;
@@ -32,6 +33,8 @@ export interface DiverState {
   /** Too deep for the suit: 1 = safe … 0 = it hurts (breath.ts). */
   pressure: number;
   pressureHurt: number;
+  /** Riding, out of the water on a leap (breach.ts; not saved). */
+  airborne?: boolean;
 }
 
 export function createDiver(x = START.x, y = START.y): DiverState {
@@ -160,6 +163,12 @@ export function stepDiver(
     return;
   }
   const mounted = opt.mountSpeed !== undefined;
+  // leaping out of the water on the beast: no steering in the air (breach.ts)
+  if (!mounted) d.airborne = false;
+  else if (d.airborne) {
+    stepAirborne(d, map.surfaceY, dt, events);
+    return;
+  }
   const sprint = opt.mountSpeed !== undefined && input.dashHeld ? (opt.mountSprint ?? 1) : 1;
   const maxSpeed =
     opt.mountSpeed !== undefined ? opt.mountSpeed * sprint : DIVER.maxSpeed * (opt.speedMult ?? 1);
@@ -207,7 +216,9 @@ export function stepDiver(
   d.dashTime = Math.max(0, d.dashTime - dt);
 
   map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt);
-  if (mounted && d.y < map.surfaceY + DIVER.lengthUnits) d.y = map.surfaceY + DIVER.lengthUnits;
+  // at the surface the beast stops under it, or leaps out if it comes up fast (owner, 16 ottobre)
+  if (mounted && d.y < rideTop(map.surfaceY) && !tryBreach(d, map.surfaceY, opt.mountSpeed!, events))
+    d.y = rideTop(map.surfaceY);
   const drainMult = opt.o2DrainMult ?? 1;
   // holding the sprint while riding costs breath too
   if (mounted && input.dashHeld && Math.hypot(input.moveX, input.moveY) > 0.2)
