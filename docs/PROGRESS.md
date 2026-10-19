@@ -1,5 +1,21 @@
 # Progressi
 
+## Lotto Q, galleria di prova (19 ottobre 2026) → v0.78.0
+
+- **`systems/gallery.ts`:**
+  - `galleryForms()`: bestiario + alfa con immagini + uniche con sprite, 102 forme;
+  - `galleryLevel`: forma finale al livello della forma finale, le altre al massimo dei livelli selvatici;
+  - `setUpGallery`: in acqua nella baia, Titano liv. 100, niente storia;
+  - `showInSea` (calma `GALLERY.calmSeconds`), `fightIt` (`requestBattle`), `makeCompanion` (al posto del compagno precedente, chiamato con `input.summon`: arriva già cavalcato).
+- **`session.gallery`:**
+  - `TitleScene` la avvia senza partita (`slotId` vuoto: `WorldScene.save` non scrive);
+  - `UIScene` monta `ui/galleryBar.ts`;
+  - `WorldScene` riceve `gallery` e cura la squadra a fine battaglia.
+- Numeri in `GALLERY` (`data/beasts.ts`). Da togliere con gli altri strumenti di prova.
+- Provato nel browser: orca matriarca in mare (col suo branco) e in battaglia, orca come compagno cavalcata, Esci, elenco delle partite identico.
+
+**Da provare sull'iPhone:** menu iniziale → Galleria di prova (le prove devono essere attive); scorrere le bestie, provare i tre pulsanti.
+
 ## Lotto R, immagini dall'orca in giù (19 ottobre 2026) → v0.77.1
 
 - 78 immagini nuove da `asset animali ai/` (solo quelle del 19 ottobre, riconosciute per data e una per una) copiate in `art-inbox/` coi nomi del gioco; le 78 sostituite restano come `_vecchia_…`.

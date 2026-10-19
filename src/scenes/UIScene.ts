@@ -17,6 +17,7 @@ import { StarterPicker } from '../ui/starterPicker';
 import { Compass } from '../ui/compass';
 import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
+import { GalleryBar } from '../ui/galleryBar';
 
 export class UIScene extends Phaser.Scene {
   private session!: Session;
@@ -52,6 +53,7 @@ export class UIScene extends Phaser.Scene {
     this.starter = new StarterPicker(this.root, () => this.session.game);
     this.compass = new Compass(this.root, this.session);
     this.subScope = new SubScope(this.root);
+    if (this.session.gallery) new GalleryBar(this.root, this.session);
     const rotate = el('div', 'rotate', document.body);
     el('div', '', rotate, '⟳');
     el('div', '', rotate, 'Ruota il telefono in orizzontale');

@@ -1000,3 +1000,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** un elenco di partite in `localStorage` (indice + una chiave per partita) al posto del salvataggio unico con una copia; la partita si sceglie in una scena nuova (`TitleScene`) prima del mare. Tornare al menu ricarica la pagina.
 - **Motivo:** il proprietario ha perso i salvataggi e vuole iniziare partite nuove senza perdere le vecchie. Ricaricare la pagina evita di dover smontare a mano mondo, viste e suoni della partita lasciata. Una partita illeggibile non si sovrascrive mai, così si può sempre esportare.
+
+## 19 ottobre 2026 — Galleria di prova in una partita usa e getta (v0.78.0)
+
+- **Decisione:** la galleria parte dal menu iniziale come partita senza posto nell'elenco (mai salvata), invece di un pannello dentro la partita vera.
+- **Motivo:** provare 102 bestie (catturarle, cambiare squadra, combattere) avrebbe sporcato la partita del proprietario; così ogni prova si butta via uscendo.

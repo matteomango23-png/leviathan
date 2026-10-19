@@ -124,7 +124,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
   - suoni morbidi ai tocchi;
   - niente suoni troppo forti o ripetuti;
   - una musica del porto.
-- **Q. Galleria di prova:** provare ogni bestia in fila (in acqua, come avversario, come compagno) senza doverla catturare.
+- **Q. Galleria di prova** ✅ v0.78.0: provare ogni bestia in fila (in acqua, come avversario, come compagno) senza doverla catturare.
 
 ---
 

@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { emptyInput, type InputState } from '../systems/input';
+import type { BeastForm } from '../systems/beasts/forms';
 import type { SaveData } from '../systems/save/saveData';
 import { SoundEngine } from '../audio/soundEngine';
 
@@ -21,6 +22,8 @@ export interface SessionEvents {
   saveNow: () => void;
   /** Save and go back to the title menu (its list of games, ui/titleMenu.ts). */
   toTitle: () => void;
+  /** The test gallery's buttons (ui/galleryBar.ts): this form in the sea, as an opponent, as a companion. */
+  gallery: (act: 'sea' | 'fight' | 'companion', form: BeastForm) => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
   /** Test panel: skip to the next kind of weather. */
@@ -41,6 +44,8 @@ export class Session {
    *  (null: a new game). */
   slotId = '';
   startSave: SaveData | null = null;
+  /** The test gallery's throwaway game (systems/gallery.ts): never saved. */
+  gallery = false;
   paused = false;
   /** The ship's cockpit is open: the sea goes on under it (owner, 5 ottobre: sail slowly watching the sonar). */
   inCockpit = false;

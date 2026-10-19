@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.78.0 — Galleria di prova (19 ottobre 2026)
+
+- **Galleria di prova** nel menu iniziale (compare con le prove attive, i 5 tocchi sulla versione): tutte le 102 forme del gioco in fila, dallo squalo bianco alle bestie uniche.
+- Per ognuna tre pulsanti: **In mare** (appare vicino a te e nuota tranquilla), **Avversario** (la battaglia si apre subito), **Compagno** (entra in squadra e la cavalchi subito).
+- Con ◀ ▶ scorri, con l'elenco salti a una bestia; **Esci** torna al menu.
+- È una partita a parte che non viene mai salvata: le tue partite restano come sono.
+
 ## v0.77.1 — Immagini nuove dall'orca in giù (19 ottobre 2026)
 
 - **Nuove immagini** (profilo, bocca aperta, fronte e retro) per orca, orca matriarca, Madre delle madri, orca preistorica albina, pesce spada, rana pescatrice (più il retro dell'alfa), coccodrillo marino, squalo bianco con albino (fronte), Mega albino, Re Alfa, Sfregiato e Titano, squalo martello e martello preistorico, squalo tigre, squalo volpe, tartaruga preistorica, tricheco e varano del Nilo nero.

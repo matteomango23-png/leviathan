@@ -10,6 +10,9 @@ import { applySave, createGame, enterPort, stepGame, toSave, type GameState } fr
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { startNewGame } from '../systems/story';
+import type { BeastForm } from '../systems/beasts/forms';
+import { fightIt, makeCompanion, newGalleryState, setUpGallery, showInSea } from '../systems/gallery';
+import { healAll } from '../systems/testTools';
 import { writeSlot } from '../systems/save/slots';
 import { skipWeather, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
@@ -43,7 +46,9 @@ export class WorldScene extends Phaser.Scene {
     const saved = this.session.startSave;
     this.session.startSave = null;
     this.state = createGame(map, saved);
-    if (!saved) startNewGame(this.state); // a brand new game begins on Aurelio's boat
+    // the test gallery: in open water with a strong beast, no story; otherwise a brand new game begins on Aurelio's boat
+    if (this.session.gallery) setUpGallery(this.state);
+    else if (!saved) startNewGame(this.state);
     this.session.game = this.state;
     this.views = new WorldViews(this, map, this.state);
 
@@ -51,6 +56,8 @@ export class WorldScene extends Phaser.Scene {
     this.session.on('importSave', this.onImport, this);
     this.session.on('saveNow', this.save, this);
     this.session.on('toTitle', this.onToTitle, this);
+    this.session.on('gallery', this.onGallery, this);
+    this.session.on('battle', this.onBattleOver, this);
     this.session.on('skipWeather', this.onSkipWeather, this);
     const onHide = (): void => {
       if (document.visibilityState === 'hidden') this.save();
@@ -62,6 +69,8 @@ export class WorldScene extends Phaser.Scene {
       this.session.off('importSave', this.onImport, this);
       this.session.off('saveNow', this.save, this);
       this.session.off('toTitle', this.onToTitle, this);
+      this.session.off('gallery', this.onGallery, this);
+      this.session.off('battle', this.onBattleOver, this);
       this.session.off('skipWeather', this.onSkipWeather, this);
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', this.save);
@@ -82,9 +91,26 @@ export class WorldScene extends Phaser.Scene {
   private switching = false;
 
   private readonly save = (): void => {
-    if (this.switching) return;
+    if (this.switching || !this.session.slotId) return; // (the test gallery is never saved)
     writeSlot(this.session.slotId, toSave(this.state, new Date()));
   };
+
+  private readonly galleryState = newGalleryState();
+
+  /** The test gallery's buttons (systems/gallery.ts). */
+  private onGallery(act: 'sea' | 'fight' | 'companion', form: BeastForm): void {
+    const g = this.state;
+    const events: GameEvent[] = [];
+    if (act === 'sea') showInSea(g, this.galleryState, form);
+    else if (act === 'fight') fightIt(g, this.galleryState, form, events);
+    else this.session.input.summon = makeCompanion(g, this.galleryState, form, events); // called at your side
+    this.handleEvents(events);
+  }
+
+  /** In the test gallery every battle ends with the team healed. */
+  private onBattleOver(on: boolean): void {
+    if (!on && this.session.gallery) healAll(this.state);
+  }
 
   /** Back to the title menu: saved, then the page starts again from the menu (nothing of this game left running). */
   private onToTitle(): void {
