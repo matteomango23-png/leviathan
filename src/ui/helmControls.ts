@@ -230,7 +230,7 @@ export class HelmControls {
       `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
     ];
     if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
-    if (info.hull) parts.push(`scafo ${Math.round(info.hull[0])}/${info.hull[1]}`);
+    // (the hull: its own bar at the top left, helmBars.ts; owner, 19 ottobre: the line wrapped and ran over the air)
     if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
     if (info.pool) parts.push(info.pool);
     const text = parts.join(' · ');

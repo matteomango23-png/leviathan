@@ -114,7 +114,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
   - ricaduta senza scossa dello schermo;
   - vicino alla nave non si blocca a galla;
   - le bestie enormi contro lo scafo non fanno su e giù.
-- **O. Comandi:**
+- **O. Comandi** ✅ v0.75.1:
   - pulsanti di navigazione meno ingombranti;
   - il sonar non copre i minuti d'aria dell'U-Boat;
   - luce e sonar non si sovrappongono con tutti i portelloni aperti;
