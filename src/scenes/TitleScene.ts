@@ -1,0 +1,46 @@
+// Title: the menu before the sea (owner, 19 ottobre 2026). The old single save moves into the list of games first;
+// the game chosen is read here, so an unreadable one never starts (and is never written over), then World and UI
+// start with it.
+import Phaser from 'phaser';
+import { loadSlot, markBroken, markPlayed, migrateLegacySaves } from '../systems/save/slots';
+import { TitleMenu } from '../ui/titleMenu';
+import type { SceneData, Session } from './session';
+
+export class TitleScene extends Phaser.Scene {
+  private session!: Session;
+  private menu: TitleMenu | null = null;
+
+  constructor() {
+    super('Title');
+  }
+
+  init(data: SceneData): void {
+    this.session = data.session;
+  }
+
+  create(): void {
+    migrateLegacySaves();
+    this.menu = new TitleMenu({
+      play: (id) => this.play(id),
+      tap: () => this.session.sound.tap(),
+    });
+    this.events.once('shutdown', () => {
+      this.menu?.destroy();
+      this.menu = null;
+    });
+  }
+
+  private play(id: string): string | null {
+    const loaded = loadSlot(id);
+    if (!loaded.ok) {
+      markBroken(id, loaded.error);
+      return loaded.error;
+    }
+    markPlayed(id);
+    this.session.slotId = id;
+    this.session.startSave = loaded.save;
+    this.scene.start('World', { session: this.session });
+    this.scene.launch('UI', { session: this.session });
+    return null;
+  }
+}

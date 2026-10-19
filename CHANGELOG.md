@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.77.0 — Menu iniziale e partite che non si perdono (19 ottobre 2026)
+
+- **Menu iniziale:** aprendo il gioco c'è un menu con Riprendi, Nuova partita e Carica partita (lo sfondo definitivo arriva con il tuo disegno).
+- **Più partite insieme:** ogni nuova partita si aggiunge alle altre, non ne cancella nessuna. Ognuna ha un nome (si può rinominare), e nell'elenco vedi bestia di testa, denti, tempo di gioco e ultimo salvataggio. Puoi esportarla o eliminarla (con conferma).
+- **La tua partita di prima è già nell'elenco** come "Partita 1" (e la vecchia "partita precedente", se c'era).
+- **Una partita che non si legge non viene mai sovrascritta:** resta nell'elenco segnata "Non leggibile", da esportare.
+- **In pausa** "Nuova partita" e "Partita precedente" sono diventati "Menu iniziale".
+- **Fucile all'indietro:** sparando alle tue spalle il sub resta girato verso il colpo per un attimo e nuota all'indietro, senza scatti avanti e indietro; tenendo la mira resta girato finché miri.
+- **Gioco aperto già in orizzontale** dall'icona della Home: usa tutto lo schermo (niente barra sotto).
+- **Suoni:** partono dal primo tocco sul menu iniziale.
+
 ## v0.76.0 — Suoni più morbidi e musica del porto (19 ottobre 2026)
 
 - **Niente più silenzio di colpo:** aprendo la pausa o il porto i motori e la pioggia sfumano e il mare continua piano, in lontananza; chiudendo il menu torna come prima.

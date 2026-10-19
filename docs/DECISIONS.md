@@ -995,3 +995,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** `SeaMusic` riceve il brano come parametro (`SEA_MUSIC` o `PORT_MUSIC`) invece di un secondo motore; i menu non spengono più il suono ma lo abbassano (`SoundEngine.menus`).
 - **Motivo:** il proprietario sentiva tutto spegnersi di colpo e voleva una musica del porto; così un solo codice per due brani, e i numeri restano in `data/`.
+
+## 19 ottobre 2026 — Partite multiple e menu iniziale (v0.77.0)
+
+- **Decisione:** un elenco di partite in `localStorage` (indice + una chiave per partita) al posto del salvataggio unico con una copia; la partita si sceglie in una scena nuova (`TitleScene`) prima del mare. Tornare al menu ricarica la pagina.
+- **Motivo:** il proprietario ha perso i salvataggi e vuole iniziare partite nuove senza perdere le vecchie. Ricaricare la pagina evita di dover smontare a mano mondo, viste e suoni della partita lasciata. Una partita illeggibile non si sovrascrive mai, così si può sempre esportare.

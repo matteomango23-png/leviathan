@@ -1,5 +1,19 @@
 # Progressi
 
+## Lotto R, menu iniziale e partite (19 ottobre 2026) → v0.77.0
+
+- **Perché:** il proprietario ha trovato i salvataggi spariti senza avviso. Col vecchio sistema c'era una partita sola più una copia: due "Nuova partita" di fila cancellavano la vera. Un salvataggio illeggibile finiva in una copia nascosta e veniva sovrascritto da una partita nuova. Il codice dei salvataggi non era cambiato nei lotti recenti: la causa esatta non è certa.
+- **`systems/save/slots.ts`:** elenco `leviatano-partite` + una chiave `leviatano-partita-<id>` per partita. `migrateLegacySaves` sposta una volta `leviatano-save`, `-precedente` e `-rotto-*`, togliendo le vecchie chiavi solo dopo la copia. `markBroken`: non si scrive mai sopra. Tolto `storage.ts`.
+- **`TitleScene` + `ui/titleMenu.ts`:** Boot apre il menu; World legge `session.startSave` e salva su `session.slotId`; la pausa ha "Menu iniziale" (`toTitle`: salva e ricarica la pagina).
+- **Sfondo:** `art-inbox/menu_sfondo.jpg` → `npm run art` → `public/ui/menu_sfondo.webp` (intero, 1920); finché manca, `bg/tana_far.webp`.
+- **Fucile:** `DiverState.faceHold` (`DIVER.aimHoldSeconds` 0,6 s): dopo uno sparo, o mentre si mira tenendo il pulsante, il joystick non rigira il sub.
+- **Orizzontale:** `main.ts` nell'app dalla Home misura lo schermo intero (`screen`) e mette `--app-h` sui livelli a schermo intero (`style.css`). Non provato su iPhone vero.
+- Test `tests/slots.test.ts`, `tests/lottoR.test.ts`. Provato nel browser: spostamento del vecchio salvataggio, nuova partita che non tocca l'altra, partita rotta non aperta e non sovrascritta, pausa con "Menu iniziale", elenco a 667 e 844 pixel.
+
+**Da provare sull'iPhone:** aprire il gioco già in orizzontale; vedere "Partita 1" nell'elenco; nuova partita e ritorno alla prima; rinomina; sparare all'indietro nuotando.
+
+**Prossimo:** immagini dall'orca in giù (v0.77.1), poi lotto Q.
+
 ## Lotto P, suoni (19 ottobre 2026) → v0.76.0
 
 - **`audio/seaMusic.ts`:** lo stesso motore suona due brani: `SEA_MUSIC` (mare aperto) e il nuovo `PORT_MUSIC` (`data/music.ts`, fa maggiore, senza tamburo, eco corta).

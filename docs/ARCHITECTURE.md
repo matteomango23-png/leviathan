@@ -85,7 +85,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `lamp.ts` | Da dove parte la luce e quanto è lungo il cono (sub, cavalcatura, motoscafo, U-Boat immerso). |
 | `save/saveData.ts` | Formato del salvataggio con `version` e controllo di validità. |
 | `save/migrations.ts`, `save/guards.ts` | Le migrazioni dei salvataggi vecchi (mai modificarne una: si aggiunge la successiva) e i piccoli controlli condivisi. |
-| `save/storage.ts` | Lettura/scrittura nel browser, mai bloccante; copia di sicurezza se il salvataggio è rotto. |
+| `save/slots.ts` | Le partite del menu iniziale: elenco con nome, una chiave per partita, rinomina, elimina; sposta nell'elenco il vecchio salvataggio unico; non scrive mai sopra una partita illeggibile. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
 | `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
 | `beasts/rareVersions.ts` | Le versioni rare (alfa, albine, forme finali) e se le hai viste o domate, per il bestiario. |
@@ -136,7 +136,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 ## Scene (`src/scenes/`)
 
-- **Boot** (`BootScene.ts`): carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
+- **Boot** (`BootScene.ts`): carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e apre il menu iniziale.
+- **Title** (`TitleScene.ts` + `ui/titleMenu.ts`, `ui/title.css`): Riprendi, Nuova partita, Carica partita (elenco con Gioca, Rinomina, Esporta, Elimina); legge la partita scelta e avvia World + UI con quella (`session.slotId`, `session.startSave`).
 - **World** (`WorldScene.ts`): fa girare il gioco, salva, apre battaglie e porto, suona. Lo disegna `worldViews.ts` (tutte le viste e tre telecamere: sfondo, mondo che segue il sub, sovrapposizione col buio); `worldEvents.ts` mostra gli eventi in mare (bolle, spruzzi, scosse) e fa prendere i gabbiani al volo.
 - **UI** (`UIScene.ts`): HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
 - **Menus** (`MenusScene.ts`): menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto (Bacheca, Mercato, Conchiglie, Cure, Esche, Sub, Mezzi, Zaino, Recinto). Bestiario e scheda della bestia (stile carta).

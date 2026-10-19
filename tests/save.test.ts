@@ -9,23 +9,7 @@ import {
   serializeSave,
   type Migration,
 } from '../src/systems/save/saveData';
-import {
-  backupBrokenSave,
-  loadFromStorage,
-  writeToStorage,
-  type KeyValueStore,
-} from '../src/systems/save/storage';
-import { SAVE } from '../src/data/diver';
-
-const memoryStore = (): KeyValueStore & { data: Map<string, string> } => {
-  const data = new Map<string, string>();
-  return {
-    data,
-    getItem: (k) => data.get(k) ?? null,
-    setItem: (k, v) => void data.set(k, v),
-    removeItem: (k) => void data.delete(k),
-  };
-};
+import { createSlot, listSlots, loadSlot, writeSlot, type SlotStore } from '../src/systems/save/slots';
 
 describe('save format', () => {
   it('round-trips through text', () => {
@@ -85,28 +69,8 @@ describe('migrations', () => {
 });
 
 describe('storage', () => {
-  it('writes and reads back', () => {
-    const store = memoryStore();
-    const s = newSave({ x: 1, y: 2 });
-    expect(writeToStorage(s, store)).toBe(true);
-    expect(loadFromStorage(store)).toEqual({ ok: true, save: s });
-  });
-
-  it('returns nothing when there is no save', () => {
-    expect(loadFromStorage(memoryStore())).toEqual({ ok: true, save: null });
-  });
-
-  it('reports a broken save and can back it up', () => {
-    const store = memoryStore();
-    store.setItem(SAVE.storageKey, '{broken');
-    const r = loadFromStorage(store);
-    expect(r.ok).toBe(false);
-    backupBrokenSave(store);
-    expect([...store.data.keys()].some((k) => k.startsWith(`${SAVE.storageKey}-rotto-`))).toBe(true);
-  });
-
   it('survives a storage that throws', () => {
-    const throwing: KeyValueStore = {
+    const throwing: SlotStore = {
       getItem: () => {
         throw new Error('blocked');
       },
@@ -114,8 +78,12 @@ describe('storage', () => {
         throw new Error('full');
       },
       removeItem: () => {},
+      length: 0,
+      key: () => null,
     };
-    expect(loadFromStorage(throwing)).toEqual({ ok: true, save: null });
-    expect(writeToStorage(newSave({ x: 0, y: 0 }), throwing)).toBe(false);
+    expect(loadSlot('p1', throwing).ok).toBe(false);
+    expect(writeSlot('p1', newSave({ x: 0, y: 0 }), throwing)).toBe(false);
+    expect(createSlot('Prima', throwing)).toBeNull();
+    expect(listSlots(throwing)).toEqual([]);
   });
 });

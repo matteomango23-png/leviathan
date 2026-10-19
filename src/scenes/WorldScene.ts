@@ -10,13 +10,7 @@ import { applySave, createGame, enterPort, stepGame, toSave, type GameState } fr
 import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { startNewGame } from '../systems/story';
-import {
-  backupBrokenSave,
-  loadFromStorage,
-  startOverInStorage,
-  swapWithPreviousGame,
-  writeToStorage,
-} from '../systems/save/storage';
+import { writeSlot } from '../systems/save/slots';
 import { skipWeather, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres } from '../systems/world/zones';
@@ -45,22 +39,18 @@ export class WorldScene extends Phaser.Scene {
 
   create(): void {
     const map = generateWorld();
-    const loaded = loadFromStorage();
-    if (!loaded.ok) {
-      backupBrokenSave();
-      this.time.delayedCall(800, () =>
-        this.session.emit('toast', `Salvataggio non leggibile (${loaded.error}). Ne ho tenuto una copia.`),
-      );
-    }
-    this.state = createGame(map, loaded.ok ? loaded.save : null);
-    if (loaded.ok && !loaded.save) startNewGame(this.state); // a brand new game begins on Aurelio's boat
+    // the game the title menu chose (TitleScene): already read, an unreadable one never gets here
+    const saved = this.session.startSave;
+    this.session.startSave = null;
+    this.state = createGame(map, saved);
+    if (!saved) startNewGame(this.state); // a brand new game begins on Aurelio's boat
     this.session.game = this.state;
     this.views = new WorldViews(this, map, this.state);
 
     this.scale.on('resize', this.onResize, this);
     this.session.on('importSave', this.onImport, this);
     this.session.on('saveNow', this.save, this);
-    this.session.on('switchGame', this.onSwitchGame, this);
+    this.session.on('toTitle', this.onToTitle, this);
     this.session.on('skipWeather', this.onSkipWeather, this);
     const onHide = (): void => {
       if (document.visibilityState === 'hidden') this.save();
@@ -71,7 +61,7 @@ export class WorldScene extends Phaser.Scene {
       this.scale.off('resize', this.onResize, this);
       this.session.off('importSave', this.onImport, this);
       this.session.off('saveNow', this.save, this);
-      this.session.off('switchGame', this.onSwitchGame, this);
+      this.session.off('toTitle', this.onToTitle, this);
       this.session.off('skipWeather', this.onSkipWeather, this);
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', this.save);
@@ -93,24 +83,19 @@ export class WorldScene extends Phaser.Scene {
 
   private readonly save = (): void => {
     if (this.switching) return;
-    writeToStorage(toSave(this.state, new Date()));
+    writeSlot(this.session.slotId, toSave(this.state, new Date()));
   };
 
-  /** New game or back to the previous one: the storage is switched, then the game starts again from it. */
-  private onSwitchGame(to: 'new' | 'previous'): void {
+  /** Back to the title menu: saved, then the page starts again from the menu (nothing of this game left running). */
+  private onToTitle(): void {
     this.save();
-    const ok = to === 'new' ? startOverInStorage() : swapWithPreviousGame();
-    if (!ok) {
-      this.session.emit('toast', 'Non riesco a cambiare partita: la memoria del browser è bloccata.');
-      return;
-    }
     this.switching = true;
     window.location.reload();
   }
 
   private onImport(save: SaveData): void {
     applySave(this.state, save);
-    writeToStorage(toSave(this.state, new Date()));
+    this.save();
     const d = this.state.diver;
     const { rig, terrain } = this.views;
     rig.follow(d.x, d.y, 0, true);

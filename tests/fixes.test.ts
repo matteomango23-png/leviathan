@@ -1,34 +1,14 @@
 // Fixes after the owner's full play test (1 ottobre 2026): each would have caught the problem.
 import { describe, expect, it } from 'vitest';
-import { DIVER, SAVE } from '../src/data/diver';
+import { DIVER } from '../src/data/diver';
 import { WRECKS } from '../src/data/economy';
 import { callMount } from '../src/systems/beasts/mount';
 import { createGame, currentAction, stepGame, type GameState } from '../src/systems/game';
 import { emptyInput } from '../src/systems/input';
-import {
-  hasPreviousGame,
-  startOverInStorage,
-  swapWithPreviousGame,
-  type KeyValueStore,
-} from '../src/systems/save/storage';
 import { giveTestBeast } from '../src/systems/testTools';
 import { generateWorld } from '../src/systems/world/worldGen';
 
 const map = generateWorld();
-
-function memoryStore(): KeyValueStore & { data: Record<string, string> } {
-  const data: Record<string, string> = {};
-  return {
-    data,
-    getItem: (k) => data[k] ?? null,
-    setItem: (k, v) => {
-      data[k] = v;
-    },
-    removeItem: (k) => {
-      delete data[k];
-    },
-  };
-}
 
 /** A diver with a white shark following close by. */
 function withMount(x: number, y: number): GameState {
@@ -41,20 +21,7 @@ function withMount(x: number, y: number): GameState {
   return g;
 }
 
-describe('new game and previous game', () => {
-  it('a new game keeps the current one aside, and you can swap back', () => {
-    const s = memoryStore();
-    s.setItem(SAVE.storageKey, 'A');
-    expect(startOverInStorage(s)).toBe(true);
-    expect(s.getItem(SAVE.storageKey)).toBeNull();
-    expect(hasPreviousGame(s)).toBe(true);
-    s.setItem(SAVE.storageKey, 'B');
-    expect(swapWithPreviousGame(s)).toBe(true);
-    expect(s.getItem(SAVE.storageKey)).toBe('A');
-    expect(swapWithPreviousGame(s)).toBe(true);
-    expect(s.getItem(SAVE.storageKey)).toBe('B');
-  });
-});
+// (the new game and the previous game: now a list of games, tests/slots.test.ts)
 
 describe('the context button (bug: it offered to ride instead of opening)', () => {
   it('a chest nearby: Apri, even while riding', () => {

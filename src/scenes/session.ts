@@ -19,8 +19,8 @@ export interface SessionEvents {
   importSave: (save: SaveData) => void;
   /** Save now (e.g. before exporting). */
   saveNow: () => void;
-  /** Leave this game: 'new' starts over (the current one becomes the previous game), 'previous' swaps back. */
-  switchGame: (to: 'new' | 'previous') => void;
+  /** Save and go back to the title menu (its list of games, ui/titleMenu.ts). */
+  toTitle: () => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
   /** Test panel: skip to the next kind of weather. */
@@ -37,6 +37,10 @@ export class Session {
   /** A tap on the screen to shoot at, in CSS pixels (converted to world by the World scene). */
   tapScreen: { x: number; y: number } | null = null;
   game: GameState | null = null;
+  /** The game being played in the list of games (systems/save/slots.ts), and what the title menu read of it
+   *  (null: a new game). */
+  slotId = '';
+  startSave: SaveData | null = null;
   paused = false;
   /** The ship's cockpit is open: the sea goes on under it (owner, 5 ottobre: sail slowly watching the sonar). */
   inCockpit = false;
