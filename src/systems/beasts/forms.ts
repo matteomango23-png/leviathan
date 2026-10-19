@@ -89,7 +89,7 @@ export function hasFinalForm(speciesId: string, variant: Variant): boolean {
 }
 
 /** Size multiplier over the species' standard length (RENDER / VARIANT_RULES / UNIQUE_VARIANTS / FINAL_FORM_SIZE_MULT). */
-export function formSizeMult(form: BeastForm, level = 1): number {
+function formSizeMult(form: BeastForm, level = 1): number {
   if (form.final) return FINAL_FORM_SIZE_MULT;
   const u = uniqueOf(form);
   const variant = u ? u.sizeMult : form.variant === 'comune' ? 1 : VARIANT_RULES[form.variant].sizeMult;

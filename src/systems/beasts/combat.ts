@@ -33,7 +33,7 @@ export interface BodyPose {
 }
 
 /** Unit vector from tail to head. */
-export function bodyAxis(p: BodyPose): { dx: number; dy: number } {
+function bodyAxis(p: BodyPose): { dx: number; dy: number } {
   return { dx: Math.cos(p.pitch) * p.face, dy: Math.sin(p.pitch) };
 }
 

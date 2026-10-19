@@ -15,7 +15,7 @@ export const typeColor = (type: MoveTypeId): string => (type === 'variabile' ? '
 export const typeName = (type: MoveTypeId): string => (type === 'variabile' ? 'Variabile' : TYPES[type].name);
 
 /** A type pill: its icon and name on its colour. */
-export function typePill(parent: HTMLElement, type: MoveTypeId): HTMLSpanElement {
+function typePill(parent: HTMLElement, type: MoveTypeId): HTMLSpanElement {
   const pill = el('span', 'mtype', parent);
   pill.style.setProperty('--tc', typeColor(type));
   pill.append(typeIcon(type, '#fff'), document.createTextNode(typeName(type)));

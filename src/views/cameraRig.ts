@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import { CAMERA } from '../data/diver';
 import type { ViewInfo } from './backgroundView';
 
-export interface Layers {
+interface Layers {
   bg: Phaser.GameObjects.Layer;
   world: Phaser.GameObjects.Layer;
   front: Phaser.GameObjects.Layer;

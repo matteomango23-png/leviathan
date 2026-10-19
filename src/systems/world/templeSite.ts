@@ -52,7 +52,7 @@ export function templeAt(x: number, y: number): TempleSite | null {
 }
 
 /** The layout character at a point of a temple. */
-export function templeCharAt(t: TempleSite, x: number, y: number): string {
+function templeCharAt(t: TempleSite, x: number, y: number): string {
   const c = t.def.cell;
   return t.def.layout[Math.floor((y - t.y0) / c)]?.[Math.floor((x - t.x0) / c)] ?? '#';
 }

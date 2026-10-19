@@ -7,9 +7,9 @@ import type { GameEvent } from './events';
 import type { Fish, FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 
-export const BASE_HARPOON = WEAPONS.find((w) => w.id === 'arpione')!;
+const BASE_HARPOON = WEAPONS.find((w) => w.id === 'arpione')!;
 
-export interface HarpoonShot {
+interface HarpoonShot {
   x: number;
   y: number;
   vx: number;

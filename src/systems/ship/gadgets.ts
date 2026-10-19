@@ -15,7 +15,7 @@ import { SHIP } from '../../data/ship';
 import { TRACKER } from '../../data/hunts';
 
 /** One beast in the drone's report, as it found it. */
-export interface ReconEntry {
+interface ReconEntry {
   target: Target;
   name: string;
   speciesId: string;
@@ -50,7 +50,7 @@ export interface GadgetsState {
   trackLeft: number | null;
 }
 
-export interface GadgetsWorld {
+interface GadgetsWorld {
   ship: ShipState;
   sub: SubState;
   beasts: BeastState;

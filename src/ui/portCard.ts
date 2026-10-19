@@ -2,7 +2,7 @@
 import { el } from './dom';
 import { icon, type IconName } from './icons';
 
-export interface CardOptions {
+interface CardOptions {
   icon: IconName;
   title: string;
   text?: string;

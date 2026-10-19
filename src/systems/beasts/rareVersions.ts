@@ -5,7 +5,7 @@ import { rareAlphas } from './bestiaryEntries';
 import { formKey, type BeastForm } from './forms';
 import type { TeamBeast } from './team';
 
-export interface RareVersion {
+interface RareVersion {
   form: BeastForm;
   state: 'tamed' | 'seen' | 'unknown';
 }

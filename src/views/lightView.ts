@@ -15,7 +15,7 @@ function mixColor(a: number, b: number, t: number): number {
   return m(16) | m(8) | m(0);
 }
 
-export interface LampInfo {
+interface LampInfo {
   x: number; // world
   y: number;
   angle: number; // radians

@@ -10,13 +10,13 @@ import { maxHpOf, type TeamBeast } from '../beasts/team';
 export const itemDef = (id: string): ItemDef | undefined => ITEMS.find((i) => i.id === id);
 
 /** The taming shells, weakest first (ItemDef.shell; owner, 16 ottobre: like Pokémon's balls). */
-export const SHELL_ITEMS: readonly ItemDef[] = ITEMS.filter((i) => i.shell !== undefined);
+const SHELL_ITEMS: readonly ItemDef[] = ITEMS.filter((i) => i.shell !== undefined);
 /** The shells you have, weakest first. */
 export const shellsOwned = (items: Record<string, number>): ItemDef[] =>
   SHELL_ITEMS.filter((i) => (items[i.id] ?? 0) > 0);
 
 /** What an item can change on a beast. */
-export interface Care {
+interface Care {
   hp: number;
   maxHp: number;
   ko: boolean;
@@ -26,7 +26,7 @@ export interface Care {
 }
 
 /** What an item did. */
-export interface CareResult {
+interface CareResult {
   healed: number;
   revived: boolean;
   cured: StatusId | null;
@@ -102,7 +102,7 @@ export function careOfBeast(b: TeamBeast): Care {
     maxPp,
   };
 }
-export function writeBeast(b: TeamBeast, c: Care): void {
+function writeBeast(b: TeamBeast, c: Care): void {
   b.hp = c.hp;
   b.ko = c.ko;
   b.status = c.status ?? undefined;

@@ -8,7 +8,7 @@ import type { BeastForm } from '../systems/beasts/forms';
 import type { SaveData } from '../systems/save/saveData';
 import { SoundEngine } from '../audio/soundEngine';
 
-export interface SessionEvents {
+interface SessionEvents {
   /** Game events of the last step (World → UI). */
   gameEvents: (events: GameEvent[]) => void;
   /** A short message for the player. */

@@ -24,7 +24,7 @@ export interface Bird {
   diveX: number;
 }
 
-export interface Flock {
+interface Flock {
   active: boolean;
   /** Going away (bad weather, or no fish left near you): flies off the screen, then rests. */
   leaving: boolean;
@@ -49,7 +49,7 @@ export interface BirdsState {
   rng: Rng;
 }
 
-export interface Splash {
+interface Splash {
   x: number;
   y: number;
 }
@@ -90,7 +90,7 @@ export function createBirds(seed: number = BIRDS.seed): BirdsState {
 }
 
 /** Is a world x beyond the edge of the screen (with room for a whole bird)? */
-export const offScreen = (x: number, view: BirdsView): boolean =>
+const offScreen = (x: number, view: BirdsView): boolean =>
   Math.abs(x - view.x) > view.halfW + BIRDS.offscreenMargin;
 
 /** Is the whole flock beyond the edge of the screen (its centre and every bird)? */

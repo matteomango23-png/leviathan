@@ -70,7 +70,7 @@ export function landHeight(x: number): number {
 }
 
 /** How far out the shore reaches at depth y: a quick drop under the pier, then a long gentle beach. */
-export function coastX(y: number): number {
+function coastX(y: number): number {
   const d = Math.max(0, y - WORLD.surfaceY);
   const drop = Math.min(d, COAST.dropDepth);
   return COAST.shoreX + drop * COAST.dropSlope + Math.max(0, d - COAST.dropDepth) * COAST.slope;

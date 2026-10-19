@@ -16,7 +16,7 @@ import { shipModel, shipTank, shipTopSpeed, sonarMaxKnots } from './model';
 import { fullAir } from './uboat';
 
 /** Where the submarine is: in the hold, going down or up the ramp, or out in the sea (or not yours yet). */
-export type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
+type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
 
 export interface ShipState {
   owned: boolean;
@@ -78,7 +78,7 @@ export interface ShipState {
   broken: BrokenIce[];
 }
 
-export interface HatchState {
+interface HatchState {
   t: number;
   open: boolean;
 }

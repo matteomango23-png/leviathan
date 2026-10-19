@@ -25,7 +25,7 @@ interface SlotIndex {
   slots: SlotMeta[];
 }
 
-export type SlotLoad = { ok: true; save: SaveData | null } | { ok: false; error: string };
+type SlotLoad = { ok: true; save: SaveData | null } | { ok: false; error: string };
 
 /** The browser's storage (localStorage), or a stand-in in the tests. Never trusted not to throw: storage can be
  *  blocked or full. It can also list its keys (for the old hidden copies of unreadable saves). */
@@ -66,7 +66,7 @@ function writeIndex(store: SlotStore, index: SlotIndex): void {
 }
 
 /** What the list shows of a save. */
-export function metaOf(id: string, name: string, save: SaveData): SlotMeta {
+function metaOf(id: string, name: string, save: SaveData): SlotMeta {
   const lead = save.team[0];
   return {
     id,

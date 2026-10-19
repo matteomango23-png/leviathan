@@ -35,7 +35,7 @@ import { unloadParts } from './ship/spareParts';
 import { boatBay, shipLength } from './ship/model';
 import { submerged } from './ship/uboat';
 
-export type VehicleWorld = HatchWorld &
+type VehicleWorld = HatchWorld &
   ShipWorld & {
     boat: BoatState;
     diver: { dead: boolean };
@@ -162,7 +162,7 @@ function freeSubFromHull(g: VehicleWorld): void {
  * feel the submarine (owner, 9 ottobre: ships and U-Boats pass them by as if overtaking; diving, a U-Boat pressed
  * them into the rock).
  */
-export function vehicleHulls(g: VehicleWorld, ship = true): HullPart[] {
+function vehicleHulls(g: VehicleWorld, ship = true): HullPart[] {
   const sub = g.ship.bay === 'docked' || onRamp(g) ? [] : subHull(g.sub);
   return ship && g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
 }

@@ -7,9 +7,9 @@ import type { SubState } from '../subState';
 import type { GadgetsState } from './gadgets';
 import type { ShipState } from './ship';
 
-export type OwnKind = 'boat' | 'sub' | 'drone' | 'sphere';
+type OwnKind = 'boat' | 'sub' | 'drone' | 'sphere';
 
-export interface OwnMark {
+interface OwnMark {
   kind: OwnKind;
   /** One letter for the screen. */
   letter: string;
@@ -18,7 +18,7 @@ export interface OwnMark {
   depthM: number;
 }
 
-export interface OwnWorld {
+interface OwnWorld {
   ship: ShipState;
   boat: BoatState;
   sub: SubState;

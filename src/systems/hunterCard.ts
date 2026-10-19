@@ -5,7 +5,7 @@ import { GAME_SPECIES } from '../data/species';
 import { RELICS } from '../data/temples';
 import type { GameState } from './game';
 
-export interface HunterCard {
+interface HunterCard {
   teeth: number;
   playTime: number;
   seen: number;

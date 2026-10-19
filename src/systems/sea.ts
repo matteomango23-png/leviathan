@@ -68,7 +68,7 @@ export const seaHeight = (x: number, t: number, w: SeaWeather, water?: WaterColu
 export const troughDepth = (w: SeaWeather): number => S.waves.swell + S.waves.amp * w.waves * w.waves + 2;
 
 /** How strong the current is now, 0 (calm) … 1 (full storm). */
-export const currentShare = (w: SeaWeather): number =>
+const currentShare = (w: SeaWeather): number =>
   Math.max(0, Math.min(1, (w.wind - S.calmWind) / (1 - S.calmWind)));
 
 /** The share of its top speed a vehicle keeps against the current. */

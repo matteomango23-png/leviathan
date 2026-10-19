@@ -12,9 +12,9 @@ import { ICONS } from './icons';
 import { setArt } from './art';
 import { infoPage, movesPage, statsPage, type PageContext } from './sheetPages';
 
-export type SheetPage = 'info' | 'stats' | 'moves';
+type SheetPage = 'info' | 'stats' | 'moves';
 
-export interface SheetExtra {
+interface SheetExtra {
   hp?: number;
   ko?: boolean;
   count?: number; // how many of this form you own

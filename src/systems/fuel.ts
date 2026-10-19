@@ -74,7 +74,7 @@ export function canRefuel(g: FuelWorld, which: FuelTarget): boolean {
   return (g.ship.bay === 'docked' && shipHere) || Math.abs(g.sub.x - p.x) < FUEL.portReach;
 }
 
-export interface FuelBuy {
+interface FuelBuy {
   ok: boolean;
   litres: number;
   cost: number;

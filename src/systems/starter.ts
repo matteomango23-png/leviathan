@@ -7,7 +7,7 @@ import { addTamed, makeTeamBeast, type TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
 
 /** What the choice needs from the game. */
-export interface StarterWorld {
+interface StarterWorld {
   beasts: { team: TeamBeast[]; nextUid: number };
   story: { step: string; seen: string[] };
   seen: Set<string>;

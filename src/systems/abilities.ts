@@ -11,7 +11,7 @@ import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
 
 /** Turns the bone tiles within `radius` of a point into water; returns their indices. */
-export function breakBones(map: TileMap, x: number, y: number, radius: number): number[] {
+function breakBones(map: TileMap, x: number, y: number, radius: number): number[] {
   const T = map.tileSize;
   const out: number[] = [];
   for (let ty = Math.floor((y - radius) / T); ty <= Math.floor((y + radius) / T); ty++) {

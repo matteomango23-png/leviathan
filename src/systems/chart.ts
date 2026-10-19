@@ -13,7 +13,7 @@ import { huntOpen } from './hunts';
 
 export type ChartKind = 'harbour' | 'border' | 'sub' | 'boat' | 'den' | 'target' | 'end';
 
-export interface ChartMark {
+interface ChartMark {
   kind: ChartKind;
   /** Metres from the ship (+ east). */
   dx: number;

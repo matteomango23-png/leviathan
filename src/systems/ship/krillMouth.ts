@@ -14,7 +14,7 @@ import { lightCan, type LightWorld } from './underLight';
 
 const M = SHIP.mouth;
 
-export interface MouthWorld extends LightWorld {
+interface MouthWorld extends LightWorld {
   fish: FishState;
   gear: { bag: Record<string, number> };
   fishCaught: Record<string, number>;
@@ -30,7 +30,7 @@ export function mouthPoint(s: ShipState): { x: number; y: number } {
 }
 
 /** It can open now: still, with fuel. */
-export const mouthCan = (g: { ship: ShipState }): boolean => lightCan(g);
+const mouthCan = (g: { ship: ShipState }): boolean => lightCan(g);
 
 function shut(s: ShipState, events: GameEvent[]): void {
   const ate = s.mouthEaten;

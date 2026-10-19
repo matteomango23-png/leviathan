@@ -74,7 +74,7 @@ function inArea(w: WildBeast, x: number, y: number, margin: number): boolean {
 }
 
 /** Big aggressive beasts come at your submarine and ram it (owner: "quelli enormi te lo rompono"). */
-export const ramsSubmarine = (w: WildBeast): boolean =>
+const ramsSubmarine = (w: WildBeast): boolean =>
   temperOf(w) === 'aggressive' && formLengthM(w.form) >= SUBMARINE.giantLengthM;
 
 /** Wild beasts appear, swim, leave when you are far, and touch you. */

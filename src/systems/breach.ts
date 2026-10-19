@@ -8,7 +8,7 @@ import { RIDE_BREACH } from '../data/beasts';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
 
-export interface BreachBody {
+interface BreachBody {
   x: number;
   y: number;
   vx: number;

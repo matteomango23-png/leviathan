@@ -5,7 +5,7 @@ import { PortMenu } from '../ui/portMenu';
 import { Cockpit } from '../ui/cockpit';
 import type { SceneData, Session } from './session';
 
-export interface MenusData extends SceneData {
+interface MenusData extends SceneData {
   mode: 'pause' | 'port' | 'cockpit';
 }
 

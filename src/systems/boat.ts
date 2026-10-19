@@ -17,7 +17,7 @@ import { icebergAcross } from './world/icebergs';
 import { SHIP } from '../data/ship';
 
 /** Where it is: in the hold, on its ramp (down / up), out on the water (or none: the ship has no boat). */
-export type BoatBay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
+type BoatBay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
 
 export interface BoatState {
   owned: boolean;
@@ -123,7 +123,7 @@ export function boatFromYard(b: BoatState, model: string | null): void {
   Object.assign(b, newBoat({ model, x: 0, face: 1, fuel: Infinity, drums: 0, out: false, aboard: false }));
 }
 
-export interface BoatWorld {
+interface BoatWorld {
   boat: BoatState;
   map: TileMap;
   diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 };

@@ -10,6 +10,7 @@ export type { HelmInfo } from './helmTypes';
 import type { Session } from '../scenes/session';
 import { diveOf, freshHelm } from '../systems/helm';
 import { el } from './dom';
+import { gaugeLine, lightLabel } from './helmGauges';
 
 const TRACK = 150; // px: travel of the vertical levers
 
@@ -224,16 +225,7 @@ export class HelmControls {
     this.west.classList.toggle('on', helm.dir === -1);
     this.east.classList.toggle('on', helm.dir === 1);
 
-    const parts = [
-      `${Math.round(info.knots)} nodi`,
-      `gas ${Math.round(helm.throttle * 100)}%`,
-      `${Math.round(info.fuel)} L · ${info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : Math.round(info.rangeKm)} km`,
-    ];
-    if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
-    // (the hull: its own bar at the top left, helmBars.ts; owner, 19 ottobre: the line wrapped and ran over the air)
-    if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
-    if (info.pool) parts.push(info.pool);
-    const text = parts.join(' · ');
+    const text = gaugeLine(info, helm.throttle);
     if (text !== this.gaugeText) {
       this.gaugeText = text;
       this.gauges.textContent = text;
@@ -284,15 +276,7 @@ export class HelmControls {
     this.reconBtn.hidden = !info.canRecon;
     this.trackerBtn.hidden = !info.canTrack;
     this.lightBtn.hidden = !ship;
-    const lightText = info.mouth
-      ? info.mouth.open
-        ? info.mouth.full
-          ? 'Chiudi bocca (sazia)'
-          : 'Chiudi bocca'
-        : 'Apri bocca'
-      : info.lightOn
-        ? 'Spegni luce'
-        : 'Luce';
+    const lightText = lightLabel(info);
     if (this.lightBtn.textContent !== lightText) this.lightBtn.textContent = lightText;
     this.lightBtn.classList.toggle('on', !!info.lightOn);
     this.sphereBtn.hidden = !info.sphere;

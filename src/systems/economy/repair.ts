@@ -12,7 +12,7 @@ import { subModel } from '../subState';
 
 export type Vehicle = 'ship' | 'boat' | 'sub';
 
-export interface RepairQuote {
+interface RepairQuote {
   owned: boolean;
   /** It is here, at this harbour. */
   here: boolean;

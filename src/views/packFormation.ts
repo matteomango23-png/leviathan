@@ -3,7 +3,7 @@
 // they close up in a line, fleeing they scatter. Look only: the leader is the beast of the game.
 
 /** Where the rest of a pack swims, as shares of the leader's length (behind it, above and below). */
-export const PACK_PLACES: [number, number][] = [
+const PACK_PLACES: [number, number][] = [
   [0.55, -0.32],
   [0.7, 0.3],
   [1.15, -0.05],

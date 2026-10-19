@@ -20,7 +20,7 @@ import { el } from './dom';
 import { exportText } from './saveTransfer';
 import './title.css';
 
-export interface TitleActions {
+interface TitleActions {
   /** Open this game; returns an error to show if it cannot be read. */
   play(id: string): string | null;
   /** A touch on a button (its tick). */
@@ -41,7 +41,7 @@ const when = (iso: string): string => {
 };
 
 /** One line under a game's name: its first beast, teeth, time played, last save. */
-export function slotDetails(s: SlotMeta): string {
+function slotDetails(s: SlotMeta): string {
   if (s.broken) return `Non leggibile (${s.broken.replace(/\.$/, '')}): puoi esportarla`;
   if (!s.savedAt) return 'Appena iniziata';
   return [

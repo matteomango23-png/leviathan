@@ -18,7 +18,7 @@ import { submerged } from './uboat';
 const H = SHIP.hull;
 
 /** What the hull needs of the ship (ship.ts imports this file: no import back). */
-export interface HullShip {
+interface HullShip {
   owned: boolean;
   model: string;
   x: number;
