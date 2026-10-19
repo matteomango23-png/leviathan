@@ -84,7 +84,7 @@ export const SHIP = {
   /** The surface radar of the cockpit (block 5c): what is within `rangeM` of the hull's ends, swept round once every
    *  `sweepSeconds`; the parking-sensor beeps for an obstacle ahead within `rangeM` faster than `beepFromKnots`,
    *  every `beepFar` s far away down to `beepNear` s close. Tuning. */
-  radar: { rangeM: 30, sweepSeconds: 3, beepFromKnots: 4, beepFar: 1.2, beepNear: 0.18 },
+  radar: { rangeM: 30, sweepSeconds: 3, beepFromKnots: 4, beepFar: 1.4, beepNear: 0.3 }, // calmer (19 ottobre)
   /** The Krill Hunter's mouth (owner, 10 ottobre 2026): it opens with the ship still (hatches open or not) and stays
    *  open as long as you like, lights the sea, draws the sardine schools within `reach` (units) and swallows the fish
    *  within `bite` of it; its appetite is `maxSardines`, refilled over `rechargeSeconds` (no endless feast). Tuning. */

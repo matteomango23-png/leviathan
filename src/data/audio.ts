@@ -6,6 +6,12 @@ export const AUDIO = {
   master: 0.7,
   storageKey: 'leviatano-suono', // per device: '0' = muted
   fade: 0.6, // seconds to cross between the sea and a battle
+  /** In the menus and at the port the sea goes on, far: × its volume, faded in `menuFade` seconds (owner, 19 ottobre:
+   *  everything stopped at once). */
+  menuSea: 0.35,
+  menuFade: 0.5,
+  /** A touch on a menu's button: a soft wooden tick, falling from the first pitch to the second. */
+  tap: { freq: [1100, 760] as [number, number], seconds: 0.05, volume: 0.035 },
 };
 
 export const SEA_SOUND = {
@@ -37,9 +43,9 @@ export const ENGINE_SOUND = {
   startStop: { freq: [22, 60] as [number, number], seconds: 1.4, volume: 0.22, coughs: 3, coughGap: 0.16 },
   /** Gliding from one level to the next (seconds). */
   glide: 0.4,
-  ping: { freq: 1250, seconds: 0.9, volume: 0.12, echoDelay: 0.42, echoGain: 0.35 },
+  ping: { freq: 1250, seconds: 0.9, volume: 0.07, echoDelay: 0.42, echoGain: 0.3 }, // softer (19 ottobre)
   /** The radar's parking-sensor beep (block 5c): short and soft, not to be in the way. */
-  beep: { freq: 1900, seconds: 0.07, volume: 0.06 },
+  beep: { freq: 1500, seconds: 0.07, volume: 0.045 }, // lower and softer (19 ottobre)
 };
 
 /** Rain and thunder (owner, 9 ottobre: storms): the rain's hiss at full rain, the thunder's crack and rumble. */

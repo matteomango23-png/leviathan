@@ -81,6 +81,14 @@ export class UIScene extends Phaser.Scene {
     };
     document.addEventListener('visibilitychange', onHide);
     this.events.once('shutdown', () => document.removeEventListener('visibilitychange', onHide));
+    // a soft tick on every button of the menus (owner, 19 ottobre: the touches had no sound); not on the controls
+    // held while playing (dash, harpoon, the helm's arrows), which have their own sounds
+    const onTap = (e: PointerEvent): void => {
+      const b = e.target instanceof Element ? e.target.closest('button') : null;
+      if (b && !b.disabled && !b.closest('.act, .helm-dir-btn')) this.session.sound.tap();
+    };
+    document.addEventListener('pointerdown', onTap, true);
+    this.events.once('shutdown', () => document.removeEventListener('pointerdown', onTap, true));
   }
 
   private onGameEvents(events: GameEvent[]): void {
@@ -112,7 +120,8 @@ export class UIScene extends Phaser.Scene {
     else {
       s.paused = true;
       this.scene.pause('World');
-      s.sound.silence(); // owner, 8 ottobre: the engine went on in the pause menu
+      // the engines and the rain fade, the sea goes on far away, the port has its music (owner, 8 and 19 ottobre)
+      s.sound.menus(mode === 'port' ? 'port' : 'pause');
     }
     this.scene.launch('Menus', { session: s, mode });
   }
@@ -130,6 +139,7 @@ export class UIScene extends Phaser.Scene {
   }
 
   private onResume(): void {
+    this.session.sound.menus(null);
     this.session.paused = false;
     this.session.inCockpit = false;
     this.controls.releaseAll();

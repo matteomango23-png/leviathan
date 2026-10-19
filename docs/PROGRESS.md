@@ -1,5 +1,17 @@
 # Progressi
 
+## Lotto P, suoni (19 ottobre 2026) → v0.76.0
+
+- **`audio/seaMusic.ts`:** lo stesso motore suona due brani: `SEA_MUSIC` (mare aperto) e il nuovo `PORT_MUSIC` (`data/music.ts`, fa maggiore, senza tamburo, eco corta).
+- **`SoundEngine.menus('pause'|'port'|null)`:** motori e pioggia sfumano, il mare scende a `AUDIO.menuSea`, al porto parte la sua musica; `UIScene` lo chiama aprendo e chiudendo i menu (prima c'era `silence()`).
+- **`SoundEngine.tap()`:** tic per ogni `button` premuto (ascolto su tutto il documento in `UIScene`), esclusi `.act` e le frecce del timone.
+- **Numeri:** `AUDIO.menuSea/menuFade/tap`, ping del sonar 0,07, bip del radar 1500 Hz e 0,045, `SHIP.radar` beepFar 1,4 e beepNear 0,3. Il radar taceva già sotto i 4 nodi.
+- Test `tests/lottoP.test.ts`. Provato nel browser: porto e pausa cambiano lo stato del suono, il tic parte sui pulsanti dei menu e non su Scatto.
+
+**Da provare sull'iPhone (con l'audio acceso):** aprire e chiudere pausa e porto, ascoltare la musica del porto, toccare i pulsanti dei menu, avvicinarsi a un molo con la nave.
+
+**Prossimo:** lotto Q (galleria di prova delle bestie).
+
 ## Lotto O, comandi (19 ottobre 2026) → v0.75.1
 
 - **`ui/helm.css`:**

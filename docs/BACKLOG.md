@@ -119,7 +119,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
   - il sonar non copre i minuti d'aria dell'U-Boat;
   - luce e sonar non si sovrappongono con tutti i portelloni aperti;
   - "Doma" senza il numero di conchiglie.
-- **P. Suoni:**
+- **P. Suoni** ✅ v0.76.0:
   - nei menu e al porto niente silenzio di colpo, ma una sfumatura;
   - suoni morbidi ai tocchi;
   - niente suoni troppo forti o ripetuti;

@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.76.0 — Suoni più morbidi e musica del porto (19 ottobre 2026)
+
+- **Niente più silenzio di colpo:** aprendo la pausa o il porto i motori e la pioggia sfumano e il mare continua piano, in lontananza; chiudendo il menu torna come prima.
+- **Musica del porto:** al porto suona una melodia calma tutta sua, più dolce di quella del mare aperto.
+- **Suono dei tocchi:** ogni pulsante dei menu fa un piccolo tic leggero (non i comandi di gioco come Scatto e Fucile).
+- **Meno fastidiosi:** il "bip" del radar è più basso, più morbido e meno fitto; il ping del sonar è più piano.
+
 ## v0.75.1 — Comandi del timone più leggeri (19 ottobre 2026)
 
 - **Al timone pulsanti più piccoli:** leve, frecce, pulsanti della nave, motore e Cockpit occupano meno spazio.

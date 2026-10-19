@@ -3,7 +3,7 @@
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
 import { AUDIO, STORM_SOUND } from '../data/audio';
 import { StormSound } from './stormSound';
-import { SEA_MUSIC } from '../data/music';
+import { PORT_MUSIC, SEA_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
 import { EngineSound } from './engineSound';
@@ -15,6 +15,9 @@ export class SoundEngine {
   private sea: SeaAmbience | null = null;
   private music: BattleMusic | null = null;
   private openSea: SeaMusic | null = null;
+  private port: SeaMusic | null = null;
+  /** A menu open over the sea: the pause menu or the port (its own music). */
+  private menu: 'pause' | 'port' | null = null;
   private storm: StormSound | null = null;
   private engines: EngineSound | null = null;
   private battle = false;
@@ -88,10 +91,44 @@ export class SoundEngine {
     this.engines?.update(this.battle ? null : ship, this.battle ? null : sub, shipNear);
   }
 
-  /** The sea stops (pause, menus): the engines fall silent at once (they are not updated while it waits). */
+  /** The sea stops (a battle): the engines and the rain fall silent (they are not updated while it waits). */
   silence(): void {
     this.engines?.update(null, null);
     this.storm?.setRain(0);
+  }
+
+  /**
+   * A menu opens over the sea (pause, port) or closes (null): no more cutting everything at once (owner, 19 ottobre).
+   * The engines and the rain fade, the sea goes on far away; at the port its own calm music plays.
+   */
+  menus(kind: 'pause' | 'port' | null): void {
+    if (kind === this.menu) return;
+    this.menu = kind;
+    if (kind) this.silence();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    if (!this.battle) this.sea?.fadeTo(kind ? AUDIO.menuSea : 1, t, AUDIO.menuFade);
+    if (kind) this.openSea?.set(false, AUDIO.menuFade * 2); // the sea brings it back when you are out there again
+    this.port?.set(kind === 'port');
+  }
+
+  /** A touch on a menu's button: a soft tick. */
+  tap(): void {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || !this.master) return;
+    const T = AUDIO.tap;
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(T.freq[0], t);
+    o.frequency.exponentialRampToValueAtTime(T.freq[1], t + T.seconds);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(T.volume, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0005, t + T.seconds);
+    o.connect(g).connect(this.master);
+    o.start(t);
+    o.stop(t + T.seconds + 0.02);
   }
 
   /** The ship's engine starting or stopping, heard as near as you are (1 aboard … 0 far). */
@@ -152,6 +189,10 @@ export class SoundEngine {
     this.music = new BattleMusic(this.ctx, this.master);
     this.engines = new EngineSound(this.ctx, this.master);
     this.openSea = new SeaMusic(this.ctx, this.master);
+    this.port = new SeaMusic(this.ctx, this.master, PORT_MUSIC);
+    const open = this.menu;
+    this.menu = null;
+    if (open) this.menus(open); // the sound started with a menu already open
     this.storm = new StormSound(this.ctx, this.master);
     if (this.battle) {
       this.sea.fadeTo(0, this.ctx.currentTime, 0.01);
