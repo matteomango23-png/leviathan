@@ -108,7 +108,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
   - lo scorfano gigante va scontornato meglio;
   - torna la card di prima del coccodrillo albino;
   - la bocca aperta della megattera finale (immagine mandata dal proprietario).
-- **L. Acqua e salto:**
+- **L. Acqua e salto** ✅ v0.75.0:
   - superficie morbida: la bestia emerge un po' e fa un saltino, niente muro;
   - salto proporzionato alla velocità;
   - ricaduta senza scossa dello schermo;

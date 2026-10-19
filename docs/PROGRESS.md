@@ -1,5 +1,31 @@
 # Progressi
 
+## Lotto L, acqua e salto (19 ottobre 2026) → v0.75.0
+
+- **Superficie** (`systems/breach.ts`):
+  - `surfaceWater`: una molla e un freno tra la riga di nuoto e il pelo dell'acqua;
+  - `upPushShare`: la spinta verso l'alto cala al 50% in superficie;
+  - `leaveWater`: esce oltre il pelo dell'acqua, con la velocità limitata a `maxLeapSpeed`;
+  - `stepAirborne`: in aria, gravità e nessun comando.
+  - Numeri in `RIDE_BREACH`: molla 7, freno 1,2, gravità 130, spruzzo da 45.
+  - Tolta la soglia dell'110% e il "muro" di `rideTop`.
+  - `moveBody(..., surface = false)` per la bestia cavalcata (`tileMap.ts`).
+- **Scafo** (`hull.ts`):
+  - `HullPart.link`: i cerchi della nave formano una capsula liscia (`ship/geometry.ts`);
+  - con `under` (solo la bestia cavalcata) chi è dentro lo scafo esce sotto la chiglia;
+  - in volo niente spinta della nave (`game.ts`).
+- **Ricaduta:** spruzzo proporzionato, niente `rig.shake` (`worldEvents.ts`).
+- **Test:**
+  - `tests/lottoL.test.ts`: altezze per piano, velocità normale, sprint e scatto; la quiete in superficie; scafo liscio; uscita sotto la chiglia;
+  - `lottoJ` aggiornato.
+
+**Da provare sull'iPhone:**
+- in groppa salire piano, a velocità normale, con sprint e con scatto;
+- saltare accanto alla nave e sopra la nave;
+- una bestia enorme spinta contro la chiglia.
+
+**Prossimo:** lotto O (comandi).
+
 ## Lotti M+N, bestiario e immagini (19 ottobre 2026) → v0.74.2
 
 - **Alfa:** `hasAlfaArt` e `withOwnArt` (`beasts/forms.ts`).

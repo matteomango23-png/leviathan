@@ -69,7 +69,13 @@ export function shipHull(s: ShipPose): HullPart[] {
   for (let k = 0; k < n; k++) {
     const u = 0.1 + (k / (n - 1)) * 0.8;
     const taper = k === 0 || k === n - 1 ? 0.7 : 1;
-    parts.push({ ...shipPoint(s, u, 0), y: WORLD.surfaceY + (s.dive ?? 0) + r, r: r * taper });
+    // linked to the next: one smooth capsule along the keel (hull.ts; owner, 19 ottobre)
+    parts.push({
+      ...shipPoint(s, u, 0),
+      y: WORLD.surfaceY + (s.dive ?? 0) + r,
+      r: r * taper,
+      link: k < n - 1,
+    });
   }
   return parts;
 }
