@@ -9,7 +9,7 @@ import { createWild, type WildBeast } from './beasts/wildState';
 import { newResidents, type ResidentsState } from './beasts/residents';
 import type { TileMap } from './world/tileMap';
 
-export interface Decoy {
+interface Decoy {
   id: string; // swarm id
   t: number; // seconds left: while it lasts, the swarm hides you and no beast comes at you
 }

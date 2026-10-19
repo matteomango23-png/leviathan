@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.78.3 — Riordino (19 ottobre 2026)
+
+- Nessun cambiamento nel gioco: codice e documenti riordinati (stili inutilizzati tolti, file del timone diviso, storia dei progressi archiviata).
+
 ## v0.78.2 — Il compagno in battaglia nella galleria (19 ottobre 2026)
 
 - **Galleria di prova:** nuovo pulsante **In battaglia**. La bestia scelta combatte per te (la vedi di schiena) contro una selvatica uguale (di fronte).

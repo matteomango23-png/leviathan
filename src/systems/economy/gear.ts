@@ -15,7 +15,7 @@ import {
 } from '../../data/world';
 import { DIVER } from '../../data/diver';
 
-export interface MissionState {
+interface MissionState {
   active: string[];
   done: string[];
   progress: Record<string, number>;
@@ -62,7 +62,7 @@ export function newGear(): GearState {
   };
 }
 
-export type SlotKind = 'weapon' | 'swarm' | 'item';
+type SlotKind = 'weapon' | 'swarm' | 'item';
 export function slotKind(id: string): SlotKind | null {
   if (WEAPONS.some((w) => w.id === id)) return 'weapon';
   if (SWARMS.some((s) => s.id === id)) return 'swarm';
@@ -70,7 +70,7 @@ export function slotKind(id: string): SlotKind | null {
   return null;
 }
 
-export function suitOf(g: GearState): SuitDef {
+function suitOf(g: GearState): SuitDef {
   return SUITS.find((s) => s.id === g.suit) ?? SUITS[0]!;
 }
 

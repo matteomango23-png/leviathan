@@ -21,7 +21,7 @@ export interface BodyCircle {
 const RING = Array.from({ length: 8 }, (_, i) => [Math.cos((i * Math.PI) / 4), Math.sin((i * Math.PI) / 4)]);
 
 /** Makes the tiles of columns tx0 … tx0 + cols - 1 (all rows) past the hand-made world: the endless sea. */
-export type ChunkMaker = (tx0: number, cols: number, rows: number, tileSize: number) => Uint8Array;
+type ChunkMaker = (tx0: number, cols: number, rows: number, tileSize: number) => Uint8Array;
 
 export class TileMap {
   /** The hand-made world (columns 0 … cols - 1). */

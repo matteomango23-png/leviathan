@@ -13,7 +13,7 @@ import type { ViewRect } from '../beastState';
 
 const U = DIVER.lengthUnits;
 
-export interface RoamContext {
+interface RoamContext {
   diver: { x: number; y: number; dead: boolean; vx?: number };
   /** What the camera shows: the big hunters' passes go out of it and back (beasts/patrol.ts). */
   view?: ViewRect | null;

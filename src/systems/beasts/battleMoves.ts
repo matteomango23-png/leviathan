@@ -14,7 +14,7 @@ export function evolvedAtOf(speciesId: string): number {
 }
 
 /** Everything this beast could know by its level, in the order it learned it. */
-export function learnableMoves(form: BeastForm, level: number): string[] {
+function learnableMoves(form: BeastForm, level: number): string[] {
   const id = speciesOf(form).id;
   return learnedBy(id, level, evolvedAtOf(id)).filter((m) => BATTLE_MOVE_BY_ID[m]);
 }

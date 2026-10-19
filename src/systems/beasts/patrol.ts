@@ -16,7 +16,7 @@ export type { Patrol } from './wildState';
 const U = DIVER.lengthUnits;
 
 /** A big hunter (not a named beast) may patrol. */
-export const canPatrol = (b: WildBeast): boolean => {
+const canPatrol = (b: WildBeast): boolean => {
   const size = speciesOf(b.form).size;
   return !b.boss && (size === 'grande' || size === 'colossale');
 };
@@ -51,7 +51,7 @@ export function startPatrol(b: WildBeast, rng: Rng): boolean {
   return true;
 }
 
-export interface PatrolStep {
+interface PatrolStep {
   tx: number;
   ty: number;
   speed: number;

@@ -9,7 +9,7 @@ import { shipLength, shipTopSpeed } from './ship/model';
 import { boatTopSpeed, type BoatState } from './boat';
 import { BOAT } from '../data/boats';
 
-export interface CameraAim {
+interface CameraAim {
   x: number;
   y: number;
   /** World units of sea shown from top to bottom, and how far above the surface it may go. */

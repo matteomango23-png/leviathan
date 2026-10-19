@@ -22,7 +22,7 @@ import type { TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
 /** Where a hunt has got to (saved). */
-export interface HuntProgress {
+interface HuntProgress {
   heard?: boolean;
   echo?: boolean;
   traces?: boolean;
@@ -46,7 +46,7 @@ export function placeDens(map: TileMap): Den[] {
 }
 
 /** The waters each hunted beast comes out in: a wild slot per hunt, around its den. */
-export function huntSpawns(dens: Den[]): WildSpawnDef[] {
+function huntSpawns(dens: Den[]): WildSpawnDef[] {
   return HUNTS.map((h, i) => {
     const d = dens[i]!;
     return {
@@ -77,7 +77,7 @@ export function addHuntSlots(wilds: WildBeast[], dens: Den[]): void {
 export const weatherNow = (w: { from: WeatherId; to: WeatherId; blend: number }): WeatherId =>
   w.blend < 0.5 ? w.from : w.to;
 
-export const conditionMet = (h: HuntDef, weather: WeatherId): boolean =>
+const conditionMet = (h: HuntDef, weather: WeatherId): boolean =>
   h.condition === 'sempre' || h.condition === weather;
 
 /** Still out there: a legend not tamed nor gone (a giant can always be hunted again). */
@@ -166,7 +166,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
   });
 }
 
-export interface SonarEcho {
+interface SonarEcho {
   /** What it is, as far as the sonar tells. */
   label: string;
   /** Metres ahead (+ east) and depth. */

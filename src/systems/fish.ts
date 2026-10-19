@@ -92,7 +92,7 @@ export function createFish(map: TileMap, rng: Rng): FishState {
   return { schools, fish };
 }
 
-export interface Threat {
+interface Threat {
   x: number;
   y: number;
   alive: boolean;

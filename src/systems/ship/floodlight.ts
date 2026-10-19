@@ -9,9 +9,9 @@ import type { ShipState } from './ship';
 import { diveShare } from './uboat';
 
 /** How much the murk shortens the floodlights (share of their reach at the murkiest). Tuning. */
-export const FLOOD_MURK = 0.6;
+const FLOOD_MURK = 0.6;
 
-export interface LightSpot {
+interface LightSpot {
   x: number;
   y: number;
   r: number;

@@ -30,7 +30,7 @@ export const lightCan = (g: { ship: ShipState }): boolean =>
   g.ship.owned && g.ship.aboard && g.ship.speed < SHIP.stillBelow && g.ship.fuel > 0;
 
 /** How far it calls the beasts (units each side): its sonar's range. */
-export const lightReach = (s: { model: string }): number => HUNT_RULES.bigEchoRange * sonarRange(s);
+const lightReach = (s: { model: string }): number => HUNT_RULES.bigEchoRange * sonarRange(s);
 
 export function toggleLight(g: LightWorld, events: GameEvent[]): void {
   if (g.ship.lightOn) {

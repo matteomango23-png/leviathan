@@ -26,7 +26,7 @@ import { kmFromCoast, regionAt } from '../systems/world/endless';
 import { el } from './dom';
 import { chartStrip, dial } from './instruments';
 
-export interface BridgeContext {
+interface BridgeContext {
   g: GameState;
   say: (text: string, error?: boolean) => void;
   redraw: () => void;

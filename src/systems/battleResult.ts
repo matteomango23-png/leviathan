@@ -25,7 +25,7 @@ import { fighterFromTeam, makeFighter, ppUsedOf } from './battle/fighter';
 import { battlePlace } from './battle/stage';
 import type { BattlePlace } from '../data/battle';
 
-export interface BattleOutcome {
+interface BattleOutcome {
   wildId: number;
   over: 'won' | 'lost' | 'caught' | 'fled';
   /** Health of your team beasts after the battle. */
@@ -39,7 +39,7 @@ export interface BattleOutcome {
 }
 
 /** The beasts that fight for you: the team, worn-out ones included (they cannot be sent in). */
-export const battleTeam = (g: BackpackWorld) => teamMembers(g.beasts.team);
+const battleTeam = (g: BackpackWorld) => teamMembers(g.beasts.team);
 
 /** @param g with its ship, a tamed beast with no room in the team goes to the hold (beasts/hold.ts) */
 export function finishBattle(

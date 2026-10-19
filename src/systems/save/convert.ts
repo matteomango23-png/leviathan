@@ -21,10 +21,7 @@ import type { GadgetsState } from '../ship/gadgets';
 import type { SonarNotes } from '../sonarNotes';
 
 /** The parts of the game that are saved. */
-export interface SaveSource extends Pick<
-  BackpackWorld,
-  'diver' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'
-> {
+interface SaveSource extends Pick<BackpackWorld, 'diver' | 'seen' | 'beasts' | 'brokenTiles' | 'gear'> {
   sub: SubState;
   ship: ShipState;
   boat: BoatState;

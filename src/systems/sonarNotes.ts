@@ -4,7 +4,7 @@
 import type { EchoClass } from '../data/hunts';
 import { speciesById } from '../data/species';
 
-export interface SonarNote {
+interface SonarNote {
   /** The regions or zones where you heard it, in the order you did. */
   places: string[];
   /** The shallowest and the deepest you heard it (m). */

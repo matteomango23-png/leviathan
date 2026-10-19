@@ -50,7 +50,7 @@ export function claimMission(s: GearState, id: string): number {
   return m.reward;
 }
 
-export type MissionSignal =
+type MissionSignal =
   | { kind: 'catch'; fish: string }
   | { kind: 'sell'; count: number }
   | { kind: 'exhaust'; species: string }

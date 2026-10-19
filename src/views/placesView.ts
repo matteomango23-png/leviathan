@@ -11,7 +11,7 @@ import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
 
 /** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
-export const PORT_HOUSES: [number, number, number][] = [
+const PORT_HOUSES: [number, number, number][] = [
   [COAST.shoreX - 100, 20, 20],
   [COAST.shoreX - 74, 18, 24],
   [COAST.shoreX - 50, 20, 18],

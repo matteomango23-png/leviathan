@@ -21,7 +21,7 @@ export interface MooredShip {
   boat?: { fuel: number; drums: number };
 }
 
-export interface ShipyardWorld {
+interface ShipyardWorld {
   ship: ShipState;
   sub: SubState;
   boat: BoatState;

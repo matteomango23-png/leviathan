@@ -10,7 +10,7 @@ import type { CameraRig } from '../views/cameraRig';
 import type { EffectsView } from '../views/effectsView';
 import type { TerrainView } from '../views/terrainView';
 
-export interface EventLooks {
+interface EventLooks {
   effects: EffectsView;
   rig: CameraRig;
   terrain: TerrainView;

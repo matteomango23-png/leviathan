@@ -124,7 +124,7 @@ function updateOxygen(
   if (d.o2 > d.maxO2 * 0.5) d.oxygenWarned = false;
 }
 
-export interface DiverOptions {
+interface DiverOptions {
   /** Where to wake up after dying (your ship, or your harbour). */
   respawnAt: { x: number; y: number };
   /** Riding a beast: its speed (u/s) replaces the diver's, and the dash is the beast's. */

@@ -7,7 +7,7 @@ import { maxHpOf, type TeamBeast } from '../beasts/team';
 import { shipModel } from './model';
 import type { ShipState } from './ship';
 
-export interface PoolWorld {
+interface PoolWorld {
   ship: ShipState;
   beasts: { team: TeamBeast[] };
 }

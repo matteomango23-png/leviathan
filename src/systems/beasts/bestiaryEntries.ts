@@ -9,7 +9,7 @@ import type { TeamBeast } from './team';
 
 export type EntryKind = 'specie' | 'albino' | 'evoluzione';
 
-export interface BestiaryEntry {
+interface BestiaryEntry {
   form: BeastForm;
   kind: EntryKind;
   /** The species' number in the bestiary (an albino or a final form shares it). */

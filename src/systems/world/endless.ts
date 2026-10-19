@@ -23,7 +23,7 @@ interface Mound {
 const moundCache = new Map<number, Mound[]>();
 
 /** The rock mounds of a stretch, standing on its floor (fixed by the seed). */
-export function moundsOf(k: number): Mound[] {
+function moundsOf(k: number): Mound[] {
   const hit = moundCache.get(k);
   if (hit) return hit;
   const b = biomeOf(k);

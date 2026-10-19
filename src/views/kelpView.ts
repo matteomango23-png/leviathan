@@ -35,7 +35,7 @@ function kelpDefAt(x: number): KelpDef {
 }
 
 /** Where kelp grows in columns tx0 … tx1 - 1 (port of genKelp from the prototype). */
-export function growKelp(map: TileMap, tx0 = 0, tx1 = map.cols): { back: Strand[]; front: Strand[] } {
+function growKelp(map: TileMap, tx0 = 0, tx1 = map.cols): { back: Strand[]; front: Strand[] } {
   const back: Strand[] = [];
   const front: Strand[] = [];
   const T = map.tileSize;

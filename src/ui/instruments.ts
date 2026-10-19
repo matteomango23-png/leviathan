@@ -25,7 +25,7 @@ const arc = (cx: number, cy: number, r: number, a0: number, a1: number): string 
   return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
 };
 
-export interface DialSpec {
+interface DialSpec {
   label: string;
   /** 0 … 1 where the needle points. */
   share: number;

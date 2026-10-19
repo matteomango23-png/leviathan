@@ -6,7 +6,7 @@ export { isGiant };
 import type { Side } from './battle';
 
 /** Where a battle picture is not transparent, in its pixels: [left, top, right, bottom] (BATTLE_ART_BOX). */
-export type PictureBox = readonly [number, number, number, number];
+type PictureBox = readonly [number, number, number, number];
 
 /** What the stage needs to know about a beast to size it. */
 export interface StageBeast {
@@ -59,7 +59,7 @@ function reach(box: PictureBox) {
 }
 
 /** The biggest size at which the picture stays whole on a screen `aspect` times wider than tall. */
-export function fitSize(side: Side, beast: StageBeast, aspect: number): number {
+function fitSize(side: Side, beast: StageBeast, aspect: number): number {
   const { margin, foeLowest, foeLeft, youMax, youWide, youTall, youRight, youTop } = BATTLE_STAGE.fit;
   const r = reach(beast.box ?? cardBox());
   // yours may be cut by the screen's edges (placePicture), like Pokémon, but not too much

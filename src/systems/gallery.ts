@@ -56,7 +56,7 @@ export function setUpGallery(g: GameState): void {
 }
 
 /** The beast of the gallery swimming in the sea now (its wild's id), so the next one takes its place. */
-export interface GalleryState {
+interface GalleryState {
   wildId: number | null;
   /** The uid of the gallery's companion in the team. */
   companion: string | null;

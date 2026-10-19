@@ -7,7 +7,7 @@ import { BEAST_SPRITE } from '../data/beasts';
 const { frameW: IW, segments: N, whaleWave, serpentWave } = BEAST_SPRITE;
 const SEG = IW / N;
 
-export interface SwimPoseIn {
+interface SwimPoseIn {
   pitch: number;
   pitchV: number;
   phase: number;

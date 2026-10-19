@@ -81,7 +81,7 @@ function learnNewMoves(b: TeamBeast, evolved: boolean): string[] {
 }
 
 /** Its species evolves at its level (a starter line, pesce palla, pesce napoleone…). */
-export function canEvolve(b: TeamBeast): boolean {
+function canEvolve(b: TeamBeast): boolean {
   const sp = speciesOf(b.form);
   return !!sp.evolvesTo && sp.evolveLevel !== undefined && b.level >= sp.evolveLevel;
 }

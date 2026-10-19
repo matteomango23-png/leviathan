@@ -9,7 +9,7 @@ import { itemDef } from '../systems/economy/items';
 import { el } from './dom';
 
 /** What the bag needs from the battle interface. */
-export interface BagHost {
+interface BagHost {
   page(kind: string, caption?: string): HTMLDivElement;
   button(parent: HTMLElement, label: string, onClick: () => void, cls?: string): HTMLButtonElement;
   back(m: HTMLElement, onClick: () => void): void;

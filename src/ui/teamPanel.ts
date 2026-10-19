@@ -20,7 +20,7 @@ import { el } from './dom';
 import { growthBars } from './growthBars';
 
 /** Where the panel is open: in the water (pause), at the helm, at a harbour's pen. */
-export type TeamPanelMode = 'dive' | 'ship' | 'port';
+type TeamPanelMode = 'dive' | 'ship' | 'port';
 
 const MOVE_LABEL: Record<Place, string> = { team: 'In squadra', hold: 'In stiva', pen: 'Al recinto' };
 

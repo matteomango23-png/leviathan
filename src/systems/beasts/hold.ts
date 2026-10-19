@@ -9,7 +9,7 @@ import { teamMembers, type TeamBeast } from './team';
 
 export type Place = 'team' | 'hold' | 'pen';
 
-export interface HoldWorld {
+interface HoldWorld {
   ship: { owned: boolean; model: string };
   beasts: { team: TeamBeast[]; mount?: { uid: string } | null };
 }

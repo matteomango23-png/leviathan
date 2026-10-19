@@ -5,7 +5,7 @@ import { WORLD } from '../../data/worldLayout';
 import type { HullPart } from '../hull';
 import { bayHatch, shipLength, shipPicture, subBay } from './model';
 
-export interface ShipPose {
+interface ShipPose {
   x: number;
   face: 1 | -1;
   /** U-Boats (block 4c): units under its floating line (0 or missing: afloat). */
@@ -17,7 +17,7 @@ export interface ShipPose {
 /** Height of the picture in world units. */
 export const shipHeight = (s: { model: string }): number => shipLength(s) * shipPicture(s).aspect;
 /** World y of the top of the picture (its waterline on the surface; a U-Boat's that much deeper when it dives). */
-export const shipTop = (s: { model: string; dive?: number }): number =>
+const shipTop = (s: { model: string; dive?: number }): number =>
   WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + (s.dive ?? 0);
 /** Depth of the keel under the surface (units). */
 export const shipDraft = (s: { model: string }): number =>
@@ -39,7 +39,7 @@ export const holdPoint = (s: ShipPose, bay = subBay(s)): { x: number; y: number 
   shipPoint(s, bayHatch(s, bay).x, bayHatch(s, bay).y);
 
 /** The foot of a hatch's open ramp. */
-export function rampFoot(s: ShipPose, bay = subBay(s)): { x: number; y: number } {
+function rampFoot(s: ShipPose, bay = subBay(s)): { x: number; y: number } {
   const h = bayHatch(s, bay);
   return shipPoint(s, h.rampX ?? h.x, h.rampEnd);
 }

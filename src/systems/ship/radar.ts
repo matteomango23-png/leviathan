@@ -21,14 +21,14 @@ const M = WORLD.unitsPerMetre;
 
 export type ContactKind = 'ice' | 'rock' | 'port' | 'boat' | 'sub' | 'beast';
 
-export interface RadarContact {
+interface RadarContact {
   kind: ContactKind;
   /** Metres from the ship's middle (east > 0) and from the waterline (down > 0). */
   dxM: number;
   dyM: number;
 }
 
-export interface RadarWorld {
+interface RadarWorld {
   ship: ShipState;
   map: TileMap;
   boat: BoatState;

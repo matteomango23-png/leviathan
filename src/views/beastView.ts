@@ -12,7 +12,7 @@ const SEG = IW / N;
 const OVERLAP = 1.07;
 const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened // strips overlap a little so no seams show on the outside of a bend
 
-export const spriteUrl = (key: string, open: boolean): string =>
+const spriteUrl = (key: string, open: boolean): string =>
   assetUrl(`sprites/${key}${open ? '_open' : ''}.webp`);
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
 
@@ -29,8 +29,8 @@ export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
  * Beasts that have no side profile yet but a picture from the front (the Re Corallo: a crab walks sideways, so
  * seen from the front it moves across the screen as crabs do). Drawn whole, with a scuttling sway.
  */
-export const frontTextureKey = (key: string): string => `beast-front-${key}`;
-export const frontOnlyKeys = (ids: string[]): string[] =>
+const frontTextureKey = (key: string): string => `beast-front-${key}`;
+const frontOnlyKeys = (ids: string[]): string[] =>
   ids.filter((id) => !SPRITE_KEYS.includes(id) && BATTLE_ART_KEYS.includes(`${id}_front`));
 export function loadFrontSprites(scene: Phaser.Scene, ids: string[]): void {
   for (const id of frontOnlyKeys(ids))
@@ -58,7 +58,7 @@ export function addStripFrames(scene: Phaser.Scene, key: string): boolean {
   return ok;
 }
 
-export interface BeastPoseView {
+interface BeastPoseView {
   key: string;
   x: number;
   y: number;

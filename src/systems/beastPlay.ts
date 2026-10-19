@@ -17,7 +17,7 @@ export { activeBeast, createBeasts } from './beastState';
 export type { BeastState, BeastWorld } from './beastState';
 export { weaponHitsBeast } from './encounters';
 
-export type ContextAction = 'sfonda' | 'scendi' | null;
+type ContextAction = 'sfonda' | 'scendi' | null;
 
 /** What the beast part of the context button does right now. */
 export function contextAction(g: BeastWorld): ContextAction {

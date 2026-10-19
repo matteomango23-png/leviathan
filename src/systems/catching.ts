@@ -5,7 +5,7 @@ import { checkSwarmBinding, type BackpackWorld } from './economy/backpack';
 import type { GameEvent } from './events';
 import { takeFish, type Fish } from './fish';
 
-export interface CatchWorld extends BackpackWorld {
+interface CatchWorld extends BackpackWorld {
   fishCaught: Record<string, number>;
 }
 

@@ -136,17 +136,17 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
 - Zona protetta: la costa fino a Porto Fango non ha superpredatori (niente squalo bianco né coccodrillo marino); restano innocui e mediamente pericolosi. Le bestie pericolose hanno sempre livelli alti.
 
 ## Blocco 2 — Correzioni rapide
-- Suono del motore della nave: non in battaglia, non lontano dalla nave, non in pausa.
-- Pulsante **Spegni motore** (cockpit e vista del timone): in folle oggi consuma carburante.
+- ✅ Suono del motore della nave: non in battaglia, non lontano dalla nave, non in pausa. (verificato nel codice il 19 ottobre: silenzio in battaglia, sfumato nei menu, sentito solo vicino alla nave)
+- ✅ Pulsante **Spegni motore** (cockpit e vista del timone): in folle oggi consuma carburante. (verificato nel codice il 19 ottobre: pulsante ⏻ al timone)
 - Ghiaccio: il limite di 10 nodi solo attraversando gli iceberg, non entrando nella zona.
 - Sottomarino: le leve tornano al centro quando non le tocchi; dopo un urto il gas può bloccarsi (bisogna uscire e rientrare); quando è rotto non si capisce come ripararlo.
 - Danni delle mosse incoerenti: una mossa mostra 60, dopo averne imparata un'altra mostra un valore diverso.
-- **Aria dei cetacei**: in groppa, scendendo in profondità l'aria cala, ma risalendo in superficie non si ricarica (risposta del proprietario, 8 ottobre).
+- ✅ **Aria dei cetacei**: in groppa, scendendo in profondità l'aria cala, ma risalendo in superficie non si ricarica (risposta del proprietario, 8 ottobre). (verificato nel codice il 19 ottobre: si ricarica in superficie contando dal dorso della bestia, diver.ts)
 - **Avamposto**: il pulsante Porto compare solo stando a destra con la nave; deve comparire in tutta la zona intorno (destra, sinistra, sopra).
 - Megalodonte assente tra le Leggende nel bestiario; verificare la categoria delle leggende.
 - Sardine → denti: troppi denti troppo in fretta (migliaia in 2 minuti); restare soddisfacente.
 - Megattera che guadagna livelli a manciate; controllare la curva XP.
-- Orca preistorica albina: coda da squalo (di lato), non da cetaceo.
+- ✅ Orca preistorica albina: coda da squalo (di lato), non da cetaceo. (verificato nel codice il 19 ottobre: SIDE_TAIL_UNIQUES in data/beasts.ts)
 - Granchi: stanno sul fondale, non nuotano come pesci.
 - Salendo sulla nave il personaggio entra/gira dal lato sbagliato.
 - Evoluzione del Roccaguscio: due animazioni; tenere quella sull'immagine della bestia (non quella con le card) per tutte le evoluzioni.

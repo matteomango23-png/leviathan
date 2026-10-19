@@ -14,7 +14,7 @@ import './screens.css';
 const POCKETS: Pocket[] = ['cure', 'battaglia', 'esche', 'varie'];
 
 /** A beast of yours in a list: name, level, health bar, condition. */
-export function beastLine(
+function beastLine(
   parent: HTMLElement,
   b: TeamBeast,
   onClick: () => void,

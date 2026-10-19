@@ -66,7 +66,7 @@ export function createStory(saved: SavedStory | null, hasSave: boolean, shipOwne
 export const saveStory = (s: StoryState): SavedStory | null =>
   s.step === 'off' ? null : { step: s.step, tutorial: s.tutorial, count: s.count, seen: [...s.seen] };
 
-export function setStep(s: StoryState, step: StoryStep, events: GameEvent[]): void {
+function setStep(s: StoryState, step: StoryStep, events: GameEvent[]): void {
   s.step = step;
   s.t = 0;
   events.push({ type: 'storyStep', step });

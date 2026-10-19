@@ -9,7 +9,7 @@ import { boatBay, shipModel, shipTank } from './model';
 import { hatchT, type ShipState } from './ship';
 import { SHIP } from '../../data/ship';
 
-export interface BoatBayWorld {
+interface BoatBayWorld {
   ship: ShipState;
   boat: BoatState;
   diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 };
@@ -61,7 +61,7 @@ export function startDockBoat(g: BoatBayWorld, events: GameEvent[]): void {
 }
 
 /** Back in the hold: the drums into the ship (as far as it has room), then the boat's tank from the ship. */
-export function pourDrums(g: BoatBayWorld): { poured: number; filled: number } {
+function pourDrums(g: BoatBayWorld): { poured: number; filled: number } {
   const b = g.boat;
   const s = g.ship;
   const poured = Math.max(0, Math.min(b.drums, shipTank(s) - s.fuel));

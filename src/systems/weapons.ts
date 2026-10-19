@@ -6,7 +6,7 @@ import type { GameEvent } from './events';
 import type { Fish, FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 
-export interface Projectile {
+interface Projectile {
   kind: 'dart' | 'net';
   x: number;
   y: number;
@@ -25,8 +25,8 @@ export interface WeaponState {
 
 export const createWeapons = (): WeaponState => ({ projectiles: [], cooldown: 0, bursts: [] });
 
-export const weaponCooldown = (id: string): number => WEAPONS.find((w) => w.id === id)?.cooldown ?? 1;
-export const weaponDamage = (id: string): number => WEAPONS.find((w) => w.id === id)?.damage ?? 0;
+const weaponCooldown = (id: string): number => WEAPONS.find((w) => w.id === id)?.cooldown ?? 1;
+const weaponDamage = (id: string): number => WEAPONS.find((w) => w.id === id)?.damage ?? 0;
 
 export function fireProjectileWeapon(
   s: WeaponState,
@@ -68,7 +68,7 @@ export function fireProjectileWeapon(
   return true;
 }
 
-export interface ProjectileHooks {
+interface ProjectileHooks {
   /** A fish was caught by a dart or the net. */
   catchFish: (f: Fish) => void;
   /** A dart touched a beast at (x, y): apply damage, return true if it hit. */

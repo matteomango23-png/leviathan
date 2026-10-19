@@ -31,7 +31,7 @@ export interface ScanState {
   results: Record<string, string>;
 }
 
-export interface ScanWorld {
+interface ScanWorld {
   ship: ShipState;
   beasts: Pick<BeastState, 'wilds' | 'residents' | 'held'>;
   seen: Set<string>;
@@ -83,7 +83,7 @@ function formOf(g: ScanWorld, t: Target): BeastForm {
 }
 
 /** Where in the sea: the region out in the open sea, the zone along the coast. */
-export function placeName(x: number, y: number): string {
+function placeName(x: number, y: number): string {
   if (biomeAt(x)) return regionAt(x).name;
   return zoneAt(x, y).split(' · ')[0] || 'Costa';
 }

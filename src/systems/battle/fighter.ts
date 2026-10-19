@@ -20,7 +20,7 @@ import { defaultMoves } from '../beasts/battleMoves';
 import type { TeamBeast } from '../beasts/team';
 import { effectiveStat } from './status';
 
-export interface BattleMove {
+interface BattleMove {
   move: BattleMoveDef;
   /** PP left (it cannot be used at 0), out of `maxPp`. */
   pp: number;
@@ -125,7 +125,7 @@ export function rollHits(move: BattleMoveDef, rng: Rng): number {
 export const averageHits = (move: BattleMoveDef): number =>
   move.hits ? (move.hits[0] === 2 ? 3 : move.hits[0]) : 1;
 
-export interface Hit {
+interface Hit {
   damage: number;
   crit: boolean;
 }

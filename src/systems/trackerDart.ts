@@ -13,7 +13,7 @@ import type { GadgetsState } from './ship/gadgets';
 import type { SubState } from './subState';
 import { locate, wildTarget } from './tracking';
 
-export interface TrackerWorld {
+interface TrackerWorld {
   sub: SubState;
   beasts: Pick<BeastState, 'wilds' | 'residents' | 'held'>;
   gadgets: GadgetsState;

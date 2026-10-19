@@ -22,10 +22,10 @@ export type { SavedGear } from './gearSave';
 export type { Migration } from './migrations';
 
 export const SAVE_VERSION = 20;
-export const SAVE_GAME_ID = 'leviatano';
+const SAVE_GAME_ID = 'leviatano';
 
 /** A tamed beast as stored in the save. */
-export interface SavedBeast {
+interface SavedBeast {
   uid: string;
   form: {
     speciesId: string;

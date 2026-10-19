@@ -13,7 +13,7 @@ import { bandAt, rollWildForm, rollWildLevel, type BeastForm } from './forms';
 
 const R = ENDLESS.residents;
 
-export interface Resident {
+interface Resident {
   id: string;
   speciesId: string;
   homeX: number;

@@ -25,14 +25,14 @@ export interface MapBeast {
   share: number;
 }
 
-export interface MapZone {
+interface MapZone {
   name: string;
   visited: boolean;
   depth: [number, number | null];
   beasts: MapBeast[];
 }
 
-export interface MapRegion {
+interface MapRegion {
   name: string;
   visited: boolean;
   km: [number, number];

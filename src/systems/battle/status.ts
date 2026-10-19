@@ -40,7 +40,7 @@ export function effectiveStat(
 }
 
 /** Why a fighter cannot act this turn, if it cannot ('woke' / 'thawed': it can, and says so). */
-export type TurnBlock = 'flinch' | 'sleep' | 'frozen' | 'paralyzed';
+type TurnBlock = 'flinch' | 'sleep' | 'frozen' | 'paralyzed';
 export function checkTurn(
   f: Body,
   rng: Rng,

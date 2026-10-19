@@ -40,7 +40,7 @@ export function nearWreck(
   return wrecks.find((w) => !gear.wrecks.includes(w.def.id) && Math.hypot(w.x - x, w.y - 6 - y) < reach);
 }
 
-export interface WreckLoot {
+interface WreckLoot {
   weapon?: string;
   teeth: number;
   item?: string;
@@ -69,7 +69,7 @@ export const outpostKey = (id: string): string => `avamposto:${id}`;
 
 /** How near (units) an outpost has to be to be found: you see its lantern from afar, 500 m (owner, 15 ottobre: at speed
  *  it showed on the chart only once passed; it was 100 m). */
-export const OUTPOST_SIGHT = 3000;
+const OUTPOST_SIGHT = 3000;
 
 /** Sailing or swimming near an outpost finds it: it shows on the map from then on. */
 export function discoverOutposts(g: { seen: Set<string>; diver: { x: number } }, events: GameEvent[]): void {

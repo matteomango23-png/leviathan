@@ -28,7 +28,7 @@ import {
 } from './forms';
 
 /** A battle move, like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
-export interface SheetMove {
+interface SheetMove {
   /** Its id: the sheet's rows find their move by it, never by their place in a list. */
   id: string;
   name: string;
@@ -44,7 +44,7 @@ export interface SheetMove {
 }
 
 /** A move of the open sea (riding), unlocked at 1, 7 and 15. */
-export interface SeaMove {
+interface SeaMove {
   name: string;
   unlockLevel: number;
   unlocked: boolean;
@@ -96,7 +96,7 @@ function whereItLives(id: string): { depth: string; seas: string } {
 }
 
 /** The stages of a line with the level each is reached at (empty for a beast that does not evolve). */
-export function stageLine(speciesId: string): { id: string; name: string; level: number | null }[] {
+function stageLine(speciesId: string): { id: string; name: string; level: number | null }[] {
   const stages = speciesStages(speciesId);
   return stages.length > 1
     ? stages.map((st, i) => ({
