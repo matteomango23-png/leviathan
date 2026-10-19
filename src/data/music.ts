@@ -110,6 +110,38 @@ export const SEA_MUSIC = {
   tickMs: 250,
 };
 
+export type MusicSpec = typeof SEA_MUSIC;
+
+// ---------------------------------------------------------------------------------------------------------------
+// The harbour (owner, 19 ottobre 2026: "serve una musica del porto"): the same voices, but a calm lullaby in F major,
+// slower, softer, no drum, a shorter echo: a warm room by the water after the dark sea.
+
+const PORT_BARS: { chord: ChordName; melody: Sung[] }[] = [
+  { chord: 'F', melody: [[0, 2], [-4, 1]] },
+  { chord: 'F', melody: [[-2, 1], [0, 1], [3, 1]] },
+  { chord: 'Bb', melody: [[1, 2], [-2, 1]] },
+  { chord: 'C', melody: [[-2, 3]] },
+  { chord: 'Dm', melody: [[-4, 2], [-2, 1]] },
+  { chord: 'Bb', melody: [[1, 1], [0, 1], [-2, 1]] },
+  { chord: 'C', melody: [[-5, 2], [-2, 1]] },
+  { chord: 'F', melody: [[-4, 2], [null, 1]] },
+];
+
+export const PORT_MUSIC: MusicSpec = {
+  ...SEA_MUSIC,
+  volume: 0.16,
+  fadeIn: 2.5,
+  fadeOut: 1.5,
+  bpm: 60,
+  bars: PORT_BARS,
+  melodyEvery: 1,
+  choir: { ...SEA_MUSIC.choir, volume: 0.035 },
+  lead: { ...SEA_MUSIC.lead, volume: 0.05, formants: [[300, 1], [870, 0.35], [2250, 0.08]], vibratoCents: 8 },
+  drone: { notes: [-16, -9], volume: 0.06, cutoff: 300, breathS: 9, breathDepth: 0.3 },
+  drum: { ...SEA_MUSIC.drum, bars: [] },
+  reverb: { seconds: 2.4, wet: 0.45, dry: 0.7, cutoff: 3000 },
+};
+
 // ---------------------------------------------------------------------------------------------------------------
 // Battles: 16 steps a bar (sixteenth notes). An intro played once that closes in, then a loop.
 

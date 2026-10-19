@@ -1,9 +1,8 @@
 // The open sea's music (data/music.ts, owner 9 ottobre 2026): a slow dirge sung by a low choir, a bass voice on
 // the melody every other time round, a breathing drone and a far drum, all in a long echo. It fades in beyond a
-// kilometre from the coast and out back under it; scheduled a bar at a time ahead on the audio clock.
-import { noteHz, SEA_MUSIC, type VoiceSpec } from '../data/music';
-
-const M = SEA_MUSIC;
+// kilometre from the coast and out back under it; scheduled a bar at a time ahead on the audio clock. The same engine
+// plays the harbour's calm piece (PORT_MUSIC) in the port's menu (owner, 19 ottobre).
+import { noteHz, SEA_MUSIC, type MusicSpec, type VoiceSpec } from '../data/music';
 
 export class SeaMusic {
   private readonly out: GainNode;
@@ -15,24 +14,26 @@ export class SeaMusic {
   private pass = 0;
   private nextAt = 0;
 
+  /** @param m the piece: the open sea's (SEA_MUSIC) or the harbour's (PORT_MUSIC) */
   constructor(
     private readonly ctx: AudioContext,
     dest: AudioNode,
+    private readonly m: MusicSpec = SEA_MUSIC,
   ) {
     this.out = ctx.createGain();
     this.out.gain.value = 0;
     this.out.connect(dest);
     this.bus = ctx.createGain();
     const dry = ctx.createGain();
-    dry.gain.value = M.reverb.dry;
+    dry.gain.value = this.m.reverb.dry;
     this.bus.connect(dry).connect(this.out);
     const verb = ctx.createConvolver();
-    verb.buffer = echo(ctx, M.reverb.seconds);
+    verb.buffer = echo(ctx, this.m.reverb.seconds);
     const tone = ctx.createBiquadFilter();
     tone.type = 'lowpass';
-    tone.frequency.value = M.reverb.cutoff;
+    tone.frequency.value = this.m.reverb.cutoff;
     const wet = ctx.createGain();
-    wet.gain.value = M.reverb.wet;
+    wet.gain.value = this.m.reverb.wet;
     this.bus.connect(verb).connect(tone).connect(wet).connect(this.out);
   }
 
@@ -42,13 +43,13 @@ export class SeaMusic {
 
   /** In the open sea (true) or not: fades in or out (in `fade` seconds, or the music's own); a fade back in goes on
    *  from where it was. */
-  set(on: boolean, fade = on ? M.fadeIn : M.fadeOut): void {
+  set(on: boolean, fade = on ? this.m.fadeIn : this.m.fadeOut): void {
     if (on === this.on) return;
     this.on = on;
     const t = this.ctx.currentTime;
     this.out.gain.cancelScheduledValues(t);
     this.out.gain.setValueAtTime(this.out.gain.value, t);
-    this.out.gain.setTargetAtTime(on ? M.volume : 0, t, fade / 3);
+    this.out.gain.setTargetAtTime(on ? this.m.volume : 0, t, fade / 3);
     if (!on) {
       window.setTimeout(() => this.halt(), fade * 1000 * 1.5);
       return;
@@ -58,7 +59,7 @@ export class SeaMusic {
     this.pass = 0;
     this.nextAt = t + 0.1;
     this.startDrone(t);
-    this.timer = window.setInterval(() => this.schedule(), M.tickMs);
+    this.timer = window.setInterval(() => this.schedule(), this.m.tickMs);
     this.schedule();
   }
 
@@ -72,11 +73,11 @@ export class SeaMusic {
   }
 
   private schedule(): void {
-    const barS = (60 / M.bpm) * M.beatsPerBar;
-    while (this.nextAt < this.ctx.currentTime + M.lookahead) {
+    const barS = (60 / this.m.bpm) * this.m.beatsPerBar;
+    while (this.nextAt < this.ctx.currentTime + this.m.lookahead) {
       this.playBar(this.bar, this.nextAt, barS);
       this.nextAt += barS;
-      if (++this.bar >= M.bars.length) {
+      if (++this.bar >= this.m.bars.length) {
         this.bar = 0;
         this.pass++;
       }
@@ -84,17 +85,17 @@ export class SeaMusic {
   }
 
   private playBar(i: number, at: number, barS: number): void {
-    const b = M.bars[i]!;
-    for (const n of M.chords[b.chord]) this.sing(noteHz(n), at, barS, M.choir);
-    if (this.pass % M.melodyEvery === 0) {
-      const beatS = 60 / M.bpm;
+    const b = this.m.bars[i]!;
+    for (const n of this.m.chords[b.chord]) this.sing(noteHz(n), at, barS, this.m.choir);
+    if (this.pass % this.m.melodyEvery === 0) {
+      const beatS = 60 / this.m.bpm;
       let t = at;
       for (const [n, beats] of b.melody) {
-        if (n !== null) this.sing(noteHz(n), t, beats * beatS, M.lead);
+        if (n !== null) this.sing(noteHz(n), t, beats * beatS, this.m.lead);
         t += beats * beatS;
       }
     }
-    if (M.drum.bars.includes(i)) this.drum(at);
+    if (this.m.drum.bars.includes(i)) this.drum(at);
   }
 
   /** A sung note: two detuned sawtooths with a vibrato, through the vowel's formants. */
@@ -141,16 +142,16 @@ export class SeaMusic {
     const c = this.ctx;
     const f = c.createBiquadFilter();
     f.type = 'lowpass';
-    f.frequency.value = M.drone.cutoff;
+    f.frequency.value = this.m.drone.cutoff;
     const g = c.createGain();
-    g.gain.value = M.drone.volume;
+    g.gain.value = this.m.drone.volume;
     const lfo = c.createOscillator();
     const depth = c.createGain();
-    lfo.frequency.value = 1 / M.drone.breathS;
-    depth.gain.value = M.drone.volume * M.drone.breathDepth;
+    lfo.frequency.value = 1 / this.m.drone.breathS;
+    depth.gain.value = this.m.drone.volume * this.m.drone.breathDepth;
     lfo.connect(depth).connect(g.gain);
     f.connect(g).connect(this.bus);
-    const oscs = M.drone.notes.map((n) => {
+    const oscs = this.m.drone.notes.map((n) => {
       const o = c.createOscillator();
       o.type = 'sawtooth';
       o.frequency.value = noteHz(n);
@@ -164,17 +165,17 @@ export class SeaMusic {
   /** A far drum: a deep sine falling in pitch, long. */
   private drum(at: number): void {
     const c = this.ctx;
-    const [from, to] = M.drum.freq;
+    const [from, to] = this.m.drum.freq;
     const o = c.createOscillator();
     const g = c.createGain();
     o.frequency.setValueAtTime(from, at);
     o.frequency.exponentialRampToValueAtTime(to, at + 0.3);
     g.gain.setValueAtTime(0, at);
-    g.gain.linearRampToValueAtTime(M.drum.volume, at + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.001, at + M.drum.seconds);
+    g.gain.linearRampToValueAtTime(this.m.drum.volume, at + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, at + this.m.drum.seconds);
     o.connect(g).connect(this.bus);
     o.start(at);
-    o.stop(at + M.drum.seconds + 0.05);
+    o.stop(at + this.m.drum.seconds + 0.05);
   }
 }
 

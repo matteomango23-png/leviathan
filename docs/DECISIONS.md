@@ -990,3 +990,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Una sola fisica al posto di "muro o salto":** prima la bestia cavalcata si fermava a una riga fissa sotto la superficie e saltava solo sopra una soglia di velocità. Ora l'acqua tra la riga di nuoto e il pelo dell'acqua la tira giù come una molla e la frena; l'altezza del salto viene da sola dalla velocità (piano niente, normale un saltino, sprint qualche metro, scatto circa 8 m).
 - **Lo scafo della nave è una capsula liscia**, e la bestia cavalcata che ci finisce dentro esce sotto la chiglia: niente gobbe e niente bestie ferme sopra la nave. Il sub a nuoto resta spinto di lato come prima.
+
+## 19 ottobre 2026 — Musica del porto con lo stesso motore del mare (v0.76.0)
+
+- **Decisione:** `SeaMusic` riceve il brano come parametro (`SEA_MUSIC` o `PORT_MUSIC`) invece di un secondo motore; i menu non spengono più il suono ma lo abbassano (`SoundEngine.menus`).
+- **Motivo:** il proprietario sentiva tutto spegnersi di colpo e voleva una musica del porto; così un solo codice per due brani, e i numeri restano in `data/`.
