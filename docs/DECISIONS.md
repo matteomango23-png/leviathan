@@ -981,3 +981,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 19 ottobre 2026 — Il tutorial come consigli di Aurelio (v0.74.0)
 
 - **Niente lezione lunga all'inizio:** la prima immersione guidata resta com'è. Il resto lo spiega Aurelio in due o tre righe la prima volta che succede (nave, voce, eco, sottomarino, leggenda…), un consiglio alla volta. Si possono rileggere tutti nella Guida e spegnere.
+
+## 19 ottobre 2026 — Alfa e albini solo con immagini proprie (v0.74.2)
+
+- **Come gli albini dal 3 ottobre, ora anche gli alfa:** una versione rara esiste solo se ha immagini sue. Senza, la bestia è comune. Questo vale per quelle che nascono, per quelle attirate da un'esca pregiata e per quelle già domate nei salvataggi. Il nome "alfa" non promette più qualcosa che non si vede.

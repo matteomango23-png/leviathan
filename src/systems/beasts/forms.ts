@@ -150,6 +150,24 @@ export function hasAlbinoArt(speciesId: string): boolean {
 }
 
 /**
+ * An alpha exists only where it has pictures of its own (owner, 19 ottobre 2026: "se ho degli animali alfa ma non
+ * hanno gli asset pronti, quello è uno squalo martello normale"): its own sprite and card, or the species' alfaArt
+ * (the matriarch orca).
+ */
+export function hasAlfaArt(speciesId: string): boolean {
+  const s = SPECIES.find((x) => x.id === speciesId);
+  return !!s?.alfaArt || ART_KEYS.includes(`${speciesId}_alfa`);
+}
+
+/** A version without pictures of its own goes back to the common one (a beast tamed before, an old save). */
+export function withOwnArt(form: BeastForm): BeastForm {
+  if (form.unique) return form;
+  if (form.variant === 'albino' && !hasAlbinoArt(form.speciesId)) return { ...form, variant: 'comune' };
+  if (form.variant === 'alfa' && !hasAlfaArt(form.speciesId)) return { ...form, variant: 'comune' };
+  return form;
+}
+
+/**
  * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance). The legends never come by chance any
  * more: they are hunted (hunts.ts).
  */
@@ -159,7 +177,7 @@ export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
     if (hasAlbinoArt(speciesId)) return { speciesId, variant: 'albino' };
     return { speciesId, variant: 'comune' };
   }
-  if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance)
+  if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance && hasAlfaArt(speciesId))
     return { speciesId, variant: 'alfa' };
   return { speciesId, variant: 'comune' };
 }

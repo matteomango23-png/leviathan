@@ -140,3 +140,20 @@ describe('squadra, stiva, recinto', () => {
     expect(back.beasts.team.map(placeOf)).toEqual(['team', 'hold', 'pen']);
   });
 });
+
+describe('versioni solo con immagini proprie (19 ottobre)', () => {
+  it('un alfa senza immagini proprie non nasce, e uno domato prima torna normale', async () => {
+    const { rollWildForm, withOwnArt, hasAlfaArt } = await import('../src/systems/beasts/forms');
+    expect(hasAlfaArt('squalo_martello')).toBe(false);
+    expect(hasAlfaArt('squalo_bianco')).toBe(true);
+    expect(hasAlfaArt('orca')).toBe(true); // the matriarch's pictures
+    for (let r = 0; r < 1; r += 0.01)
+      expect(rollWildForm('squalo_martello', () => r).variant).not.toBe('alfa');
+    expect(withOwnArt({ speciesId: 'squalo_martello', variant: 'alfa' }).variant).toBe('comune');
+    expect(withOwnArt({ speciesId: 'squalo_bianco', variant: 'alfa' }).variant).toBe('alfa');
+    const g: GameState = createGame(map, null, 4);
+    g.beasts.team.push(makeTeamBeast('m1', { speciesId: 'squalo_martello', variant: 'alfa' }, 10, true));
+    const back = createGame(map, parseSave(JSON.stringify(toSave(g, new Date()))), 4);
+    expect(back.beasts.team[0]!.form.variant).toBe('comune');
+  });
+});

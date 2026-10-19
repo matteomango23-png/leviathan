@@ -2,7 +2,7 @@
 // seen ones are in shadow, tamed ones are in colour. Tap a beast to open its sheet.
 import { RARITY } from '../data/cards';
 import { FISH, SWARMS } from '../data/world';
-import { formKey, formName, formStars, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, formKey, formName, formStars, type BeastForm } from '../systems/beasts/forms';
 import { ART_KEYS } from '../data/sprites.generated';
 import type { GameState } from '../systems/game';
 import { openBeastSheet } from './beastSheet';
@@ -92,7 +92,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     card.dataset.stars = String(stars);
     card.style.setProperty('--rarity', RARITY[stars].color);
     // never met: the same dark tile with a paw for every beast (its painting would show as a black block)
-    if (seen && (e.kind !== 'specie' || ART_KEYS.includes(form.speciesId))) {
+    if (seen && artKeysOf(form).some((k) => ART_KEYS.includes(k))) {
       const img = el('img', '', card);
       setArt(img, form);
       img.alt = '';

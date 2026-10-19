@@ -545,6 +545,10 @@ export const RIDE_BREACH = {
   birdHealShare: 0.08,
 };
 
+/** Forms whose two profile pictures are wings up and down, not a mouth shut and open (owner, 19 ottobre: the
+ *  manta's final form): they alternate as it swims, and it never "bites" with them. */
+export const WING_FRAME_FORMS: readonly string[] = ['manta_finale'];
+
 export const RIDE_AIR = {
   // owner, 9 ottobre: the whales no longer lend you air (the submarines and U-Boats are for long dives); was
   // { megattera: 5, capodoglio: 7, livyatan: 8, orca: 3, beluga: 2.5, narvalo: 2.5 }

@@ -100,13 +100,13 @@ describe('le conchiglie', () => {
 
 describe('l’esca pregiata', () => {
   const shark = { speciesId: 'squalo_bianco', variant: 'comune' as const };
-  it('a volte porta un alfa o un albino, mai un albino senza immagini proprie', () => {
+  it('a volte porta un alfa o un albino, mai una versione senza immagini proprie (19 ottobre)', () => {
     expect(luredForm(shark, 0.12, () => 0.99)).toBe(shark); // most of the time: itself
     const rare = luredForm(shark, 0.12, () => 0.01);
     expect(['alfa', 'albino']).toContain(rare.variant);
     const plain = { speciesId: 'barracuda', variant: 'comune' as const };
     expect(hasAlbinoArt('barracuda')).toBe(false);
-    expect(luredForm(plain, 0.12, () => 0.01).variant).toBe('alfa');
+    expect(luredForm(plain, 0.12, () => 0.01)).toBe(plain); // no alpha or albino pictures: it stays itself
     expect(luredForm(shark, undefined, () => 0)).toBe(shark); // a plain bait
   });
 });
