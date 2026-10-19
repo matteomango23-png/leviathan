@@ -85,8 +85,73 @@ export const DIALOGUES = {
     },
     { who: 'aurelio', text: 'E tieni d’occhio il carburante: il mare aperto è grande.' },
   ],
+  // Aurelio's tips (owner, 16 ottobre 2026: the first tester "non aveva capito nulla del gioco"): each once, the
+  // first time it happens (systems/tips.ts); all of them can be read again in the pause menu's Guida
+  tipShip: [
+    { who: 'aurelio', text: 'Al timone: la leva a sinistra è il gas, a destra la direzione. Più vai forte, più carburante bruci.' },
+    { who: 'aurelio', text: 'Il pulsante Sonar ascolta il mare intorno alla nave: le bestie grandi rispondono con un’eco.' },
+    { who: 'aurelio', text: 'Il pieno e le riparazioni si fanno in ogni porto e avamposto, nella scheda Mezzi.' },
+  ],
+  tipRumour: [
+    { who: 'aurelio', text: 'Hai sentito una voce: una leggenda vive in quei mari. La trovi in Bacheca, tra i Ricercati, e nel diario della nave.' },
+    { who: 'aurelio', text: 'Ogni caccia ha quattro passi: la Voce, l’Eco col sonar della nave, le Tracce col sottomarino, poi la Bestia.' },
+    { who: 'aurelio', text: 'Tocca la caccia e premi Segui: la vedrai in plancia e al timone, con la strada da fare.' },
+  ],
+  tipEcho: [
+    { who: 'aurelio', text: 'Un’eco anomala! Lì sotto c’è la sua tana. Ferma la nave vicino e cala il sottomarino.' },
+    { who: 'aurelio', text: 'Vicino alla tana troverai le tracce. La bestia esce solo col suo tempo: pioggia, nebbia, tempesta… come dice la voce.' },
+  ],
+  tipSub: [
+    { who: 'aurelio', text: 'Nel sottomarino respiri, ma la sua aria finisce: tieni d’occhio la barra.' },
+    { who: 'aurelio', text: 'Non scendere oltre la sua profondità massima, o la pressione lo schiaccia. Per tornare, riportalo nella stiva della nave.' },
+  ],
+  tipBoat: [
+    { who: 'aurelio', text: 'Il motoscafo è veloce ma le onde lo rovinano: con il mare grosso vai piano.' },
+    { who: 'aurelio', text: 'Può portare fusti di carburante per la nave, e ricambi da Porto Fango se la nave si rompe in mare.' },
+  ],
+  tipLegend: [
+    { who: 'aurelio', text: 'Quella non è una bestia qualunque: è una leggenda, o un gigante antico.' },
+    { who: 'aurelio', text: 'Sfiniscila bene prima di domarla, e lancia la conchiglia migliore che hai. La Conchiglia del Re non sbaglia mai.' },
+  ],
+  tipRide: [
+    { who: 'aurelio', text: 'Sei in groppa! Tieni premuto lo scatto per andare più forte.' },
+    { who: 'aurelio', text: 'Sali verso la superficie a tutta velocità e salterai fuori dall’acqua: in aria puoi prendere i gabbiani. Scendi quando vuoi.' },
+  ],
+  tipTeamFull: [
+    { who: 'aurelio', text: 'La squadra è piena: porti con te cinque bestie. Le altre vanno nella stiva della nave, se ha posto.' },
+    { who: 'aurelio', text: 'Quando la stiva è piena aspettano al Recinto del porto: lì le scambi, e puoi anche venderle.' },
+  ],
+  tipPort: [
+    { who: 'aurelio', text: 'Ogni porto ha le sue schede: guarda prima la Bacheca, coi Ricercati di questi mari e le taglie.' },
+    { who: 'aurelio', text: 'Conchiglie, cure ed esche si comprano qui. Un’esca pregiata a volte porta un alfa, o un albino.' },
+  ],
 } satisfies Record<string, DialogueLine[]>;
 export type DialogueId = keyof typeof DIALOGUES;
+
+/** Aurelio's tips, in the order of the Guida: its title, its dialogue, the game event that opens it the first time. */
+export type TipTrigger =
+  | 'shipBoarded'
+  | 'rumourHeard'
+  | 'echoFound'
+  | 'boarded'
+  | 'boatBoarded'
+  | 'legendAppeared'
+  | 'mounted'
+  | 'tamedOutOfTeam'
+  | 'portArrived';
+export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
+  { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
+  { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
+  { id: 'tipEcho', title: 'L’eco anomala', on: 'echoFound' },
+  { id: 'tipSub', title: 'Il sottomarino', on: 'boarded' },
+  { id: 'tipBoat', title: 'Il motoscafo', on: 'boatBoarded' },
+  { id: 'tipLegend', title: 'Le leggende', on: 'legendAppeared' },
+  { id: 'tipRide', title: 'In groppa', on: 'mounted' },
+  { id: 'tipTeamFull', title: 'Squadra, stiva e Recinto', on: 'tamedOutOfTeam' },
+  { id: 'tipPort', title: 'Il porto', on: 'portArrived' },
+];
+/** In story.seen: the tips are switched off (the Guida in the pause menu). */
+export const TIPS_OFF = 'tips-off';
 
 /** The guided first dive, in order (owner, 8 ottobre: swim, catch sardines, tame your first beast). */
 export const TUTORIAL = [

@@ -8,6 +8,7 @@ import {
   SCENES,
   TUTORIAL,
   TUTORIAL_SWIM_DISTANCE,
+  TIPS_OFF,
   type DialogueId,
   type DialogueLine,
   type SavedStory,
@@ -58,7 +59,8 @@ export function createStory(saved: SavedStory | null, hasSave: boolean, shipOwne
   const base = { dialogue: null, t: 0, swimFrom: null, pending: [], resume: null };
   if (saved) return { ...saved, seen: [...saved.seen], ...base };
   const step: StoryStep = !hasSave ? 'off' : shipOwned ? 'free' : 'toPortoFango';
-  return { step, tutorial: 0, count: 0, seen: [], ...base };
+  // games made by tests and tools: no tips either (they would stop them with a dialogue)
+  return { step, tutorial: 0, count: 0, seen: hasSave ? [] : [TIPS_OFF], ...base };
 }
 
 export const saveStory = (s: StoryState): SavedStory | null =>
@@ -78,6 +80,9 @@ export function openDialogue(s: StoryState, id: DialogueId, events: GameEvent[])
 /** A brand new game: it begins on Aurelio's boat. */
 export function startNewGame(g: StoryWorld): void {
   const s = g.story;
+  // a brand new game has Aurelio's tips (a game made without a save starts with them off); replaying the opening
+  // from the pause menu keeps your choice
+  if (!s.resume) s.seen = s.seen.filter((x) => x !== TIPS_OFF);
   s.step = 'intro';
   s.t = 0;
   Object.assign(g.diver, { x: SCENES.boat.x, y: SCENES.boat.y, vx: 0, vy: 0, face: 1 });

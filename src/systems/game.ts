@@ -1,6 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
+import { stepTips } from './tips';
 import { diverCurrentMult } from './sea';
 import { weatherLook } from './weather';
 import { depthMetres } from './world/zones';
@@ -290,6 +291,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
+  stepTips(g.story, events); // Aurelio's tips, the first time each thing happens
   stepTemples(g, events);
   for (const e of events) if (e.type === 'gateOpened') g.brokenTiles.push(...e.tiles);
   const zone = zoneAt(d.x, d.y);

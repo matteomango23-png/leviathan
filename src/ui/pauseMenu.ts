@@ -17,6 +17,7 @@ import { renderMissions } from './missionList';
 import { openBag } from './bagScreen';
 import { formatTime, openHunterCard } from './hunterCardView';
 import { renderTestPanel } from './testPanel';
+import { openGuide } from './guide';
 
 export class PauseMenu {
   private readonly root: HTMLDivElement;
@@ -46,6 +47,9 @@ export class PauseMenu {
     const map = el('button', 'menu-btn', panel);
     map.append(icon('dive'), document.createTextNode(' Mappa'));
     map.addEventListener('click', () => openSeaMap(parent, game));
+    const guide = el('button', 'menu-btn', panel);
+    guide.append(icon('scroll'), document.createTextNode(' Guida'));
+    guide.addEventListener('click', () => openGuide(parent, game));
     const replay = el('button', 'menu-btn', panel, 'Rivedi l’inizio');
     replay.addEventListener('click', () => {
       replayIntro(game);

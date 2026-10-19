@@ -92,7 +92,7 @@ Il primo tester ha trovato lo squalo bianco ma non ha capito che esistono i legg
   - nei menu solo la squadra (max 5);
   - sulla nave una stiva di bestie che dipende dalla nave (barca piccola 0, navi grandi 5-10), le altre al Recinto.
 - **J. Salto fuori dall'acqua cavalcando** ✅ v0.73.0 (tipo Angry Shark), mangiando anche gli uccelli.
-- **K. Tutorial:** spiegazioni brevi la prima volta (barca, sonar, voci, trovare un leggendario).
+- **K. Tutorial** ✅ v0.74.0 (i consigli di Aurelio e la Guida): spiegazioni brevi la prima volta (barca, sonar, voci, trovare un leggendario).
 
 ---
 

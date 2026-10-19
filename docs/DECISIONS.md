@@ -977,3 +977,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Si salta solo con lo sprint o lo scatto** (soglia sopra la velocità normale della bestia). Nuotando piano verso la superficie la bestia si ferma sotto, come prima: niente salti per sbaglio.
 - **In aria nessun comando:** come nei giochi di squali, il salto è un arco. I gabbiani restano solo aspetto (non salvati): presi al volo spariscono dal loro stormo e curano un po' la bestia.
+
+## 19 ottobre 2026 — Il tutorial come consigli di Aurelio (v0.74.0)
+
+- **Niente lezione lunga all'inizio:** la prima immersione guidata resta com'è. Il resto lo spiega Aurelio in due o tre righe la prima volta che succede (nave, voce, eco, sottomarino, leggenda…), un consiglio alla volta. Si possono rileggere tutti nella Guida e spegnere.
