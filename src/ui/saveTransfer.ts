@@ -3,8 +3,11 @@
 import { exportFileName, parseSave, serializeSave, type SaveData } from '../systems/save/saveData';
 
 export async function exportSave(save: SaveData): Promise<'shared' | 'downloaded' | 'cancelled'> {
-  const text = serializeSave(save);
-  const name = exportFileName(new Date());
+  return exportText(serializeSave(save), exportFileName(new Date()));
+}
+
+/** Shares or downloads a save's text as it is (also one the game cannot read: the title menu's list). */
+export async function exportText(text: string, name: string): Promise<'shared' | 'downloaded' | 'cancelled'> {
   const file = new File([text], name, { type: 'application/json' });
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
   if (nav.canShare?.({ files: [file] }) && navigator.share) {

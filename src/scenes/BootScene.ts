@@ -1,4 +1,4 @@
-// Boot: loads the beast sprites, paints the procedural textures, then starts the world and the interface.
+// Boot: loads the beast sprites, paints the procedural textures, then opens the title menu.
 import Phaser from 'phaser';
 import { addStripFrames, loadBeastSprites, loadFrontSprites } from '../views/beastView';
 import { SPECIES } from '../data/species';
@@ -34,7 +34,7 @@ export class BootScene extends Phaser.Scene {
       return;
     }
     const session = new Session();
-    this.scene.start('World', { session });
-    this.scene.launch('UI', { session });
+    // first the title menu: which game to play (TitleScene)
+    this.scene.start('Title', { session });
   }
 }

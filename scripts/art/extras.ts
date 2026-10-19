@@ -3,6 +3,7 @@
 //   bg_<place>_mid|front|ground.jpg    → public/bg/<place>_<layer>.webp (green background removed)
 //   conchiglia.jpg, conchiglia_aperta  → public/items/<name>.webp       (black removed, 512×512)
 //   icona_<name>.jpg, tipo_<name>.jpg  → public/ui/<name>.webp          (white icon, 160×160, tinted in game)
+//   menu_sfondo.jpg                    → public/ui/menu_sfondo.webp     (the title menu's painting, whole, 1920 wide)
 //   parete_<name>.jpg, iceberg_<n>.jpg  → public/world/<name>.webp      (black removed; an iceberg also gets
 //                                          public/world/<name>.json: its waterline and a solid mask for collisions)
 //   nave_<n>.jpg, nave_<n>_aperta.jpg  → public/world/<name>.webp      (background read from the edges, green or
@@ -120,7 +121,7 @@ async function cropped(
 export async function makeExtra(src: string, dest: string, e: ExtraName): Promise<string> {
   await mkdir(join(dest, '..'), { recursive: true });
   const webp = { quality: 84, alphaQuality: 90, effort: 5 };
-  if (e.kind === 'bg' && e.layer === 'far') {
+  if (e.kind === 'screen' || (e.kind === 'bg' && e.layer === 'far')) {
     await sharp(src).resize({ width: 1920, withoutEnlargement: true }).webp(webp).toFile(dest);
     return 'sfondo intero';
   }

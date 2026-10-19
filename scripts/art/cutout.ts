@@ -393,6 +393,7 @@ export type ExtraName =
   | { kind: 'bg'; place: string; layer: 'far' | 'mid' | 'front' | 'ground' }
   | { kind: 'item'; id: string }
   | { kind: 'icon'; id: string }
+  | { kind: 'screen'; id: string }
   | { kind: 'world'; id: string };
 
 /** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
@@ -403,6 +404,7 @@ export function parseExtraName(file: string): ExtraName | null {
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
+  if (base === 'menu_sfondo') return { kind: 'screen', id: base }; // the title menu's painting (19 ottobre)
   if (
     /^(parete_[a-z]+(_\d)?|iceberg_\d|molo_[a-z]+|sottomarino_[a-z0-9]+(_moto)?|sfera_[a-z0-9]+|nave_[a-z0-9]+(_aperta(_\d)?|_moto|_bocca(_moto)?)?|(motoscafo|moto)_[a-z0-9]+(_moto)?|avamposto_[a-z]+|rimorchiatore|porto_[a-z]+)$/.test(
       base,

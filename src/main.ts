@@ -6,6 +6,7 @@ import { CAMERA } from './data/diver';
 import { BattleScene } from './scenes/BattleScene';
 import { BootScene } from './scenes/BootScene';
 import { MenusScene } from './scenes/MenusScene';
+import { TitleScene } from './scenes/TitleScene';
 import { UIScene } from './scenes/UIScene';
 import { WorldScene } from './scenes/WorldScene';
 import { registerOffline } from './pwa';
@@ -13,10 +14,35 @@ import { loadGameFont } from './ui/fonts';
 
 const dpr = (): number => Math.min(CAMERA.maxDpr, window.devicePixelRatio || 1);
 // The page can start with no size (e.g. opened in the background): fall back, then resize when shown.
-const size = (): { w: number; h: number } => ({
-  w: Math.max(64, Math.round((window.innerWidth || 1280) * dpr())),
-  h: Math.max(64, Math.round((window.innerHeight || 720) * dpr())),
-});
+const size = (): { w: number; h: number } => {
+  const css = screenCss();
+  return { w: Math.max(64, Math.round(css.w * dpr())), h: Math.max(64, Math.round(css.h * dpr())) };
+};
+
+/** Opened from the Home screen the game fills the whole screen. */
+const standalone = (): boolean =>
+  (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+  window.matchMedia?.('(display-mode: standalone)').matches === true;
+
+/**
+ * The game's size in CSS pixels. Opened from the Home screen already in landscape, iOS can report (and lay out) a
+ * page shorter than the screen and never correct it (owner, 11 and 19 ottobre: a band at the bottom, everything
+ * squashed): there the whole screen is used, measured from `screen` in the window's orientation.
+ */
+function screenCss(): { w: number; h: number } {
+  let w = window.innerWidth || 1280;
+  let h = window.innerHeight || 720;
+  const sw = window.screen?.width ?? 0;
+  const sh = window.screen?.height ?? 0;
+  if (standalone() && sw > 0 && sh > 0) {
+    const landscape = w > h;
+    w = Math.max(w, landscape ? Math.max(sw, sh) : Math.min(sw, sh));
+    h = Math.max(h, landscape ? Math.min(sw, sh) : Math.max(sw, sh));
+  }
+  // the page, the game and the controls take that height too (style.css: --app-h)
+  document.documentElement.style.setProperty('--app-h', `${h}px`);
+  return { w, h };
+}
 
 void loadGameFont();
 const { w, h } = size();
@@ -29,7 +55,7 @@ const game = new Phaser.Game({
   input: { keyboard: false, mouse: false, touch: false, gamepad: false },
   disableContextMenu: true,
   banner: false,
-  scene: [BootScene, WorldScene, UIScene, MenusScene, BattleScene],
+  scene: [BootScene, TitleScene, WorldScene, UIScene, MenusScene, BattleScene],
 });
 
 let resizeTimer = 0;

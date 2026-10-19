@@ -35,6 +35,9 @@ export interface DiverState {
   pressureHurt: number;
   /** Riding, out of the water on a leap (breach.ts; not saved). */
   airborne?: boolean;
+  /** Seconds the diver keeps facing his last shot, swimming backwards meanwhile (not saved; owner, 19 ottobre:
+   *  shooting behind him he flipped back and forth). */
+  faceHold?: number;
 }
 
 export function createDiver(x = START.x, y = START.y): DiverState {
@@ -196,7 +199,8 @@ export function stepDiver(
       d.vy *= maxSpeed / s;
     }
   }
-  if (Math.abs(ix) > 0.2) d.face = ix > 0 ? 1 : -1;
+  if (d.faceHold && d.faceHold > 0) d.faceHold = Math.max(0, d.faceHold - dt);
+  else if (Math.abs(ix) > 0.2) d.face = ix > 0 ? 1 : -1;
   const wantAim = Math.hypot(ix, iy) > 0.2 ? Math.atan2(iy, ix) : d.face > 0 ? 0 : Math.PI;
   let da = wantAim - d.aim;
   while (da > Math.PI) da -= Math.PI * 2;

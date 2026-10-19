@@ -7,6 +7,7 @@ import { storyHoldsDiver } from './story';
 import { needsStarter } from './starter';
 import { atPort, nearWreck, openWreck, portStart } from './economy/places';
 import { PORT, PORTS } from '../data/economy';
+import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
 import { fireHarpoon } from './harpoon';
 import type { InputState } from './input';
@@ -87,5 +88,11 @@ export function fire(g: GameState, input: InputState, events: GameEvent[]): void
           ...g.beasts.wilds.filter((w) => w.motion === 'roam'),
         ])
       : fireProjectileWeapon(g.weapons, weapon, d.x, d.y, angle, events);
-  if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
+  // he turns to the shot (and while the aim is held, to where it points) and keeps facing it a moment, swimming
+  // backwards meanwhile: no flip back the next frame, nor between two shots (owner, 19 ottobre)
+  const aiming = input.fireHeld && input.aim !== null;
+  if ((fired || aiming) && Math.abs(Math.cos(angle)) > 0.2) {
+    d.face = Math.cos(angle) > 0 ? 1 : -1;
+    d.faceHold = DIVER.aimHoldSeconds;
+  }
 }

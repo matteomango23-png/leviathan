@@ -12,6 +12,7 @@ export const DIVER = {
   drag: 3.2,
   sinkWhenIdle: 10, // slow sinking when not swimming
   aimTurnRate: 10,
+  aimHoldSeconds: 0.6, // after a shot he keeps facing it this long (swims backwards meanwhile)
   invulnerableAfterHit: 1.2,
   invulnerableAfterRespawn: 1.5,
   respawnDelay: 2,
@@ -162,6 +163,19 @@ export const TERRAIN = {
 
 /** Saving. */
 export const SAVE = {
-  storageKey: 'leviatano-save',
+  storageKey: 'leviatano-save', // the single save before the list of games (moved into it, systems/save/slots.ts)
   autosaveSeconds: 10,
+};
+
+/** The list of games of the title menu (owner, 19 ottobre 2026). */
+export const SLOTS = {
+  indexKey: 'leviatano-partite',
+  keyPrefix: 'leviatano-partita-',
+  defaultName: 'Partita',
+  previousName: 'Partita precedente',
+  brokenName: 'Non leggibile',
+  maxNameLength: 24,
+  /** About what a phone's browser keeps for one site (5 MB); the menu warns past `warnAt` of it. */
+  storageBytes: 5_000_000,
+  warnAt: 0.8,
 };
