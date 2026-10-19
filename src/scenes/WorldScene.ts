@@ -11,7 +11,7 @@ import { consumePresses } from '../systems/input';
 import type { SaveData } from '../systems/save/saveData';
 import { startNewGame } from '../systems/story';
 import type { BeastForm } from '../systems/beasts/forms';
-import { fightIt, makeCompanion, newGalleryState, setUpGallery, showInSea } from '../systems/gallery';
+import { fightIt, makeCompanion, newGalleryState, rideIt, setUpGallery, showInSea } from '../systems/gallery';
 import { healAll } from '../systems/testTools';
 import { writeSlot } from '../systems/save/slots';
 import { skipWeather, weatherName } from '../systems/weather';
@@ -98,11 +98,12 @@ export class WorldScene extends Phaser.Scene {
   private readonly galleryState = newGalleryState();
 
   /** The test gallery's buttons (systems/gallery.ts). */
-  private onGallery(act: 'sea' | 'fight' | 'companion', form: BeastForm): void {
+  private onGallery(act: 'sea' | 'fight' | 'companion' | 'ride', form: BeastForm): void {
     const g = this.state;
     const events: GameEvent[] = [];
     if (act === 'sea') showInSea(g, this.galleryState, form);
     else if (act === 'fight') fightIt(g, this.galleryState, form, events);
+    else if (act === 'ride') rideIt(g, this.galleryState, form, events);
     else this.session.input.summon = makeCompanion(g, this.galleryState, form, events); // called at your side
     this.handleEvents(events);
   }

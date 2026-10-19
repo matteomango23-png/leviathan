@@ -6,13 +6,15 @@ import { ART_KEYS, SPRITE_KEYS } from '../src/data/sprites.generated';
 import { artKeysOf, formKey } from '../src/systems/beasts/forms';
 import { teamMembers } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
-import { createGame } from '../src/systems/game';
+import { createGame, stepGame } from '../src/systems/game';
+import { emptyInput } from '../src/systems/input';
 import {
   fightIt,
   galleryForms,
   galleryLevel,
   makeCompanion,
   newGalleryState,
+  rideIt,
   setUpGallery,
   showInSea,
 } from '../src/systems/gallery';
@@ -84,5 +86,14 @@ describe('the three tries', () => {
     const team = teamMembers(g.beasts.team);
     expect(team).toHaveLength(2);
     expect(team.some((b) => b.form.speciesId === 'tricheco')).toBe(true);
+  });
+
+  it('on its back: even a beast that only swims at your side in the game carries you', () => {
+    const g = fresh();
+    const s = newGalleryState();
+    rideIt(g, s, { speciesId: 'pesce_spada', variant: 'comune' }, []);
+    for (let i = 0; i < 240 && !g.beasts.riding; i++) stepGame(g, emptyInput(), 1 / 60);
+    expect(g.beasts.riding).toBe(true);
+    expect(g.beasts.mount?.uid).toBe(s.companion);
   });
 });

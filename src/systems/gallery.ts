@@ -9,6 +9,7 @@ import { bay } from '../data/worldLayout';
 import { bestiaryEntries, rareAlphas } from './beasts/bestiaryEntries';
 import { formKey, wildLevelRange, type BeastForm } from './beasts/forms';
 import { addTamed, makeTeamBeast, teamMembers } from './beasts/team';
+import { callMount } from './beasts/mount';
 import { removeWild } from './beasts/wildState';
 import { requestBattle } from './encounters';
 import { dismount } from './beastState';
@@ -112,4 +113,14 @@ export function makeCompanion(g: GameState, s: GalleryState, form: BeastForm, ev
 function newest(g: GameState, form: BeastForm) {
   const k = formKey(form);
   return g.beasts.wilds.find((w) => w.motion !== 'gone' && formKey(w.form) === k);
+}
+
+/** "In groppa": like a companion, but always ridden, even a beast that only swims at your side in the game (owner,
+ *  19 ottobre: to see every one with the diver on its back). Only in the gallery. */
+export function rideIt(g: GameState, s: GalleryState, form: BeastForm, events: GameEvent[]): void {
+  makeCompanion(g, s, form, events);
+  const b = g.beasts.team.find((x) => x.uid === s.companion);
+  if (!b) return;
+  g.beasts.mount = callMount(b, g.diver, g.map, true);
+  events.push({ type: 'summoned', uid: b.uid });
 }
