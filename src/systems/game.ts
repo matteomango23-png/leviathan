@@ -17,14 +17,7 @@ import { rideTank } from './rideAir';
 import { bodyCircles, headOf } from './beasts/combat';
 import { formName } from './beasts/forms';
 import { isInWater } from './beasts/wildState';
-import {
-  activeBeast,
-  beastAction,
-  contextAction,
-  mountSpeed,
-  stepBeasts,
-  weaponHitsBeast,
-} from './beastPlay';
+import { activeBeast, mountSpeed, stepBeasts, weaponHitsBeast } from './beastPlay';
 import { stepDiver } from './diver';
 import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
@@ -34,7 +27,7 @@ import { stepStory, storyHoldsDiver } from './story';
 import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
-import { atPort, discoverOutposts, nearWreck, openWreck, portAt, portStart } from './economy/places';
+import { discoverOutposts, portAt } from './economy/places';
 import { PORT, PORTS } from '../data/economy';
 import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
@@ -43,106 +36,26 @@ import { stepLight, toggleLight } from './ship/underLight';
 import { hasMouth, stepMouth, toggleMouth } from './ship/krillMouth';
 import { stepShipRams } from './ship/shipHull';
 import { stepPool } from './ship/shipPool';
-import { fireHarpoon, stepHarpoon } from './harpoon';
+import { stepHarpoon } from './harpoon';
 import type { InputState } from './input';
-import { fireProjectileWeapon, stepProjectiles } from './weapons';
+import { stepProjectiles } from './weapons';
 import { zoneAt } from './world/zones';
 import { regionAt } from './world/stretches';
 import { ENDLESS } from '../data/endless';
 import { zoneKey } from './seaMap';
 import { stepEndlessSchools, stepVents } from './endlessLife';
-import { board, canBoard, leaveSub, ramSub, subModel } from './submarine';
-import { dismount } from './beastState';
+import { ramSub, subModel } from './submarine';
 import { rescue } from './fuel';
 import { stepHunts } from './hunts';
-import { helmPoint } from './ship/geometry';
-import { canDock } from './ship/hatch';
-import {
-  doVehicleAction,
-  inVehicle,
-  onRamp,
-  pushOutOfVehicles,
-  shipPort,
-  stepVehicles,
-  vehicleAction,
-  wakeOnShip,
-} from './vehicles';
+import { inVehicle, pushOutOfVehicles, shipPort, stepVehicles, wakeOnShip } from './vehicles';
 import { hitLever, stepTemples } from './temple';
 
 export { toSave } from './save/convert';
 export { applySave, createGame, type GameState } from './newGame';
 export { enterPort, restAtPort, sellAtPort } from './port';
+export { canDashNow, currentAction, respawnPoint, type Action } from './playerActions';
+import { doAction, fire, respawnPoint } from './playerActions';
 import type { GameState } from './newGame';
-
-/** Where you wake up (owner, 4 ottobre: you heal only on the ship and at the port): your ship, or your harbour. */
-export function respawnPoint(g: GameState): { x: number; y: number } {
-  if (g.ship.owned) return helmPoint(g.ship);
-  return portStart(PORTS.find((p) => p.id === g.homePort) ?? PORT);
-}
-
-/** Is there a dash now? Not in the submarine, nor in a suit without one (the palombaro), unless you ride a beast. */
-export function canDashNow(g: GameState): boolean {
-  if (inVehicle(g)) return false;
-  return g.beasts.riding || diverModifiers(g.gear).canDash;
-}
-
-/** What the context button does right now. */
-export type Action =
-  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo';
-export function currentAction(g: GameState): Action {
-  if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
-  const d = g.diver;
-  if (g.ship.aboard) return shipPort(g) ? 'porto' : null; // the rest is on the helm's own buttons
-  if (onRamp(g)) return null;
-  if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
-  if (g.boat.aboard) return vehicleAction(g) ?? (shipPort(g) ? 'porto' : null);
-  // a chest first, even while riding
-  if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
-  const beast = contextAction(g);
-  if (beast === 'sfonda') return beast;
-  // next to your submarine you climb in, even at the pier (it was moored there and the port button hid it)
-  if (g.ship.bay !== 'docked' && canBoard(g)) return 'sali'; // in the hold it is reached from the helm
-  const vehicle = vehicleAction(g); // by the ship's hull: A bordo
-  if (vehicle) return vehicle;
-  if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
-  return beast;
-}
-
-function doAction(g: GameState, events: GameEvent[]): void {
-  const act = currentAction(g);
-  const d = g.diver;
-  if (act === 'apri') {
-    const w = nearWreck(g.wrecks, g.gear, d.x, d.y);
-    const loot = w && openWreck(w, g.gear);
-    if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
-  } else if (act === 'porto') events.push({ type: 'portArrived' });
-  else if (act === 'sali') {
-    dismount(g, events); // your beast swims off, you climb in
-    board(g, events);
-  } else if (act === 'esci') leaveSub(g, events);
-  else if (act === 'aggancia' || act === 'abordo') {
-    if (act === 'abordo') dismount(g, events);
-    doVehicleAction(g, act, events);
-  } else beastAction(g, events);
-}
-
-function fire(g: GameState, input: InputState, events: GameEvent[]): void {
-  const d = g.diver;
-  if (d.dead || g.beasts.riding) return; // in the saddle you do not shoot
-  let angle: number | null = null;
-  if (input.shotAt) angle = Math.atan2(input.shotAt.y - d.y, input.shotAt.x - d.x);
-  else if (input.fireHeld) angle = input.aim ?? d.aim;
-  if (angle === null) return;
-  const weapon = g.gear.activeWeapon;
-  const fired =
-    weapon === 'arpione'
-      ? fireHarpoon(g.harpoon, d, angle, events, [
-          ...g.fish.fish.filter((f) => f.alive && !f.hooked),
-          ...g.beasts.wilds.filter((w) => w.motion === 'roam'),
-        ])
-      : fireProjectileWeapon(g.weapons, weapon, d.x, d.y, angle, events);
-  if (fired && !g.beasts.riding && Math.abs(Math.cos(angle)) > 0.2) d.face = Math.cos(angle) > 0 ? 1 : -1;
-}
 
 export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);

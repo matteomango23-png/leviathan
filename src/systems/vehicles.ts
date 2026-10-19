@@ -24,7 +24,8 @@ import {
   toggleHatch,
   type HatchWorld,
 } from './ship/hatch';
-import { sailShip, type ShipWorld } from './ship/ship';
+import { type ShipWorld } from './ship/ship';
+import { sailShip } from './ship/sail';
 import { restAboard, stepSub, subHull, subModel } from './submarine';
 import { restSubAir } from './subAir';
 import { BOAT } from '../data/boats';

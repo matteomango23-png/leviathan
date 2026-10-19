@@ -50,18 +50,6 @@ export const PROGRESSION = {
   nourishmentPerGrowthLevel: 3,              // tuning: fish to eat for each level from 51 upward (was 8 for 20 levels)
 };
 
-/** Taming minigame difficulty grows with the level gap between the wild beast and your strongest beast. */
-export const TAMING = {
-  hitsNeeded: 3,
-  missesAllowed: 3,
-  baseZoneWidths: [0.30, 0.26, 0.22],        // fraction of the bar, per hit
-  baseNeedleSpeeds: [0.5, 0.62, 0.75],       // bar-widths per second, per hit
-  tolerance: 0.035,
-  // Applied when the wild beast is above your strongest beast: zone /= (1 + gap * k), speed *= (1 + gap * k)
-  levelGapFactor: 0.06,                      // tuning: a 15-level gap ≈ zones almost half as wide
-  exhaustionThresholdFraction: 0.25,         // tuning: beast is exhausted below 25% HP (shown as a notch on the HP bar)
-};
-
 /**
  * On-screen size. All sprites of a species share the same 1000×460 frame (body midline at y=250) (so closed/open and variants swap cleanly);
  * the real size difference is applied at runtime:

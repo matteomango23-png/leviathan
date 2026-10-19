@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { STARTER } from '../src/data/story';
 import { emptyInput } from '../src/systems/input';
 import { evolve, fishXp, raiseLevel, stopEvolution, xpBetween, xpReward } from '../src/systems/beasts/growth';
-import { movesFor } from '../src/systems/beasts/team';
+import { seaMovesOf } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave } from '../src/systems/game';
 import { parseSave } from '../src/systems/save/saveData';
@@ -60,7 +60,7 @@ describe('evolutions', () => {
     const g = createGame(map, null, 1);
     g.story.step = 'tutorial';
     const b = chooseStarter(g, 'zanna', [])!;
-    const moves = movesFor(b).map((m) => m.move.id);
+    const moves = seaMovesOf(b.form, b.level).map((m) => m.move.id);
     const events: GameEvent[] = [];
     raiseLevel(b, 16 - b.level, events);
     // stopped (Pokémon's B): it stays as it is and tries again at the next level
@@ -71,7 +71,7 @@ describe('evolutions', () => {
     evolve(b, events);
     expect(b.form.speciesId).toBe('squarcio');
     expect(events).toContainEqual({ type: 'evolved', uid: b.uid, from: 'Zanna', fromId: 'zanna' });
-    expect(movesFor(b).map((m) => m.move.id)).toEqual(moves);
+    expect(seaMovesOf(b.form, b.level).map((m) => m.move.id)).toEqual(moves);
     raiseLevel(b, 36 - b.level, events);
     evolve(b, events);
     expect(b.form.speciesId).toBe('zannarossa');

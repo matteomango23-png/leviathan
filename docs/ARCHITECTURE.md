@@ -126,13 +126,20 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `world/lair.ts` | Forma della grotta delle ossa della Baia: grotta, pozzo, guscio di roccia (scenario, `data/scenery.ts`). |
 | `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse di battaglia (e le prossime), mosse in mare. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
+| `playerActions.ts` | Cosa fanno i pulsanti: l'azione contestuale (relitto, porto, sottomarino, a bordo, l'azione della bestia), lo sparo, se puoi scattare, dove ti risvegli. |
+| `starter.ts` | La prima bestia, scelta subito dopo l'apertura. |
+| `seaReport.ts` | Il mare a parole per la plancia: vento, onde, corrente, visibilità. |
+| `ship/sail.ts` | Un passo della nave: timone, velocità, carburante, ghiaccio, onde, immersione degli U-Boat, scafo. |
+| `ship/stats.ts`, `ship/bayStats.ts`, `ship/statRow.ts` | I numeri della card di una nave confrontabili con la flotta; i mezzi nei suoi portelloni; una riga della card. |
+| `save/vehicleSave.ts` | Sottomarino, motoscafo e nave controllati quando si carica un salvataggio. |
+| `beasts/lure.ts` | L'esca pregiata: a volte la bestia attirata è un alfa o un albino. |
 
 ## Scene (`src/scenes/`)
 
 - **Boot** (`BootScene.ts`): carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e avvia World + UI.
-- **World** (`WorldScene.ts`): fa girare il gioco e lo disegna con tre telecamere: sfondo (schermo), mondo (zoom, segue il sub), sovrapposizione (buio e luce).
+- **World** (`WorldScene.ts`): fa girare il gioco, salva, apre battaglie e porto, suona. Lo disegna `worldViews.ts` (tutte le viste e tre telecamere: sfondo, mondo che segue il sub, sovrapposizione col buio); `worldEvents.ts` mostra gli eventi in mare (bolle, spruzzi, scosse) e fa prendere i gabbiani al volo.
 - **UI** (`UIScene.ts`): HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
-- **Menus** (`MenusScene.ts`): menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto di Portofosco (Mercato, Mute, Zaino, Bacheca, Recinto). Bestiario e scheda della bestia (stile carta).
+- **Menus** (`MenusScene.ts`): menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto (Bacheca, Mercato, Conchiglie, Cure, Esche, Sub, Mezzi, Zaino, Recinto). Bestiario e scheda della bestia (stile carta).
 - Le scene si passano un oggetto `Session` (`session.ts`: stato, input, messaggi): niente variabili globali.
 - Fuori dalle scene: `main.ts` crea il gioco a piena risoluzione (massimo 2×), `pwa.ts` registra il service worker per giocare offline.
 
@@ -156,17 +163,24 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `icons.ts` | Icone SVG disegnate per il gioco. |
 | `art.ts` | Indirizzo dell'illustrazione di una bestia. |
 | `beastSheet.ts`, `bestiary.ts` | Scheda della bestia e bestiario. |
-| `portMenu.ts`, `portTabs.ts`, `portCard.ts` | Porto a schermo intero: schede, card, zaino e bacheca. |
+| `portMenu.ts`, `portTabs.ts`, `portCard.ts` | Porto a schermo intero: la barra delle schede, il Mercato col listino, lo Zaino, le card. |
+| `portBoard.ts` | La Bacheca: i Ricercati con le card grandi (in ombra quelli lontani), le taglie con l'immagine della bestia, gli incarichi. |
+| `portShop.ts` | Le schede negozio (Conchiglie, Cure, Esche, Sub) a scaffali, da `data/economy.ts` `SHOP`. |
+| `portVehicles.ts` | La scheda Mezzi: carburante e "pieno a tutti", riparazione di ogni mezzo, ricambi e cantiere a Porto Fango. |
+| `shipyardPanel.ts`, `shipPage.ts`, `shipStats.ts` | Il cantiere: card delle navi, pagina di una nave, numeri confrontati con la flotta. |
+| `missionList.ts`, `reconPopup.ts` | Le missioni accettate, nel diario della nave; il resoconto del drone appena torna. |
+| `guide.ts` | La Guida del menu di pausa: i consigli di Aurelio da rileggere e l'interruttore. |
+| `starterPicker.ts` | La scelta della prima bestia. |
 | `teamPanel.ts`, `pauseMenu.ts` | Squadra (con "Nutri" al porto) e menu di pausa. |
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |
 | `growthBars.ts` | Barre di esperienza e cibo. |
-| `eventMessages.ts` | Il messaggio breve per ogni evento del gioco. |
+| `eventMessages.ts`, `vehicleMessages.ts` | Il messaggio breve per ogni evento del gioco; quelli dei mezzi e delle cacce in `vehicleMessages.ts`. |
 | `hunterCardView.ts` (con `systems/hunterCard.ts`) | La tessera del cacciatore: numeri del viaggio e medaglie dei Guardiani battuti. |
 | `bagScreen.ts`, `battleBag.ts` | Lo zaino a tasche come Pokémon, dal menu e in battaglia (su chi usare una cura, su quale mossa un Muschio). |
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
-| `shipView.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, scia, corsia lontana dietro le rocce. |
+| `shipView.ts`, `shipWake.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, corsia lontana dietro le rocce; scia e bolle dell'elica in `shipWake.ts`. |
 | `sweepScope.ts`, `radarScreen.ts`, `subScope.ts` (ui) | Lo schermo rotondo col fascio che gira: radar nel cockpit, sonar sul vetro del sottomarino con la freccia verso la nave. |
 | `packFormation.ts` (views) | Il branco che nuota insieme: i compagni seguono la scia della guida, larghi, stretti o sparpagliati secondo l'umore. |
 | `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |
@@ -185,7 +199,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/battleItems.ts`, `systems/economy/items.ts` | Cosa fa ogni oggetto (vita, rianimare, stati, PP, X) a una bestia, fuori e dentro la battaglia. |
 | `systems/battle/fighter.ts` | Una bestia in battaglia: vita, mosse con i loro PP, stato e statistiche alzate o abbassate, danno di un colpo. |
 | `systems/battle/status.ts` | Gli stati alterati (avvelenato, ferito, paralizzato, stordito, congelato) e le statistiche da −6 a +6. |
-| `systems/battle/battle.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, domare, fuggire, cambiare bestia, fine. |
+| `systems/battle/battle.ts`, `tameFlee.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, cambiare bestia, fine; domare (con la conchiglia scelta) e fuggire in `tameFlee.ts`. |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi; a fine battaglia chiede quale mossa dimenticare. |
 | `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo, sempre tutta nello schermo), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
 | `views/swimPose.ts` | La forma del corpo delle bestie grandi lungo la spina (squalo, cetaceo, serpente, ali che battono), senza Phaser: `beastView.ts` la disegna a strisce. |
@@ -206,7 +220,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 3. **Mondo**: la nave (`shipView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), gabbiani (`birdsView`), bolle e linea della superficie, più mossa col brutto tempo (`effectsView`); alcune alghe davanti al sub. Aurelio sul molo durante l'inizio è in `storyView`, coralli dell'anfiteatro e galeone in `sceneryView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra. Il cielo coperto scurisce un po' vicino alla superficie.
 4b. **Meteo** (`weatherView`, sopra il buio): pioggia o neve fino alla superficie, nebbia sull'acqua, lampi; tutto sparisce scendendo (`weatherReach`, 60 m).
-5. Le bestie rare brillano un poco nel buio (`beastsLayer`). La vita e i danni si vedono solo in battaglia.
+5. Le bestie rare si riconoscono dall'immagine e dalla dimensione: nessun alone (16 ottobre). La vita e i danni si vedono solo in battaglia. Gli spruzzi contro gli scafi sono in `seaFx.ts`; quali sprite si caricano all'avvio in `neededSprites.ts`.
 
 ## Comandi
 

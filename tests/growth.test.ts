@@ -12,7 +12,7 @@ import {
   xpReward,
   xpToNext,
 } from '../src/systems/beasts/growth';
-import { makeTeamBeast, maxHpOf, movesFor } from '../src/systems/beasts/team';
+import { makeTeamBeast, maxHpOf, seaMovesOf } from '../src/systems/beasts/team';
 import { createGame } from '../src/systems/game';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveTestBeast } from '../src/systems/testTools';
@@ -31,7 +31,7 @@ describe('experience and levels', () => {
     gainXp(b, xpToNext(b), events);
     expect(b.level).toBe(9);
     expect(events).toContainEqual({ type: 'levelUp', uid: 'b1', level: 9, move: 'Guizzo' });
-    expect(movesFor(b).filter((m) => m.unlocked)).toHaveLength(2);
+    expect(seaMovesOf(b.form, b.level).filter((m) => m.unlocked)).toHaveLength(2);
   });
 
   it('can gain several levels at once and keeps the leftover', () => {

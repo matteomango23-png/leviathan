@@ -3,16 +3,16 @@
 import { BIOMES } from '../../data/endless';
 import { SEA_REGIONS } from '../../data/regions';
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
-import { SPECIES } from '../../data/species';
-import { MOVES } from '../../data/moves';
 import { PROGRESSION, TYPES } from '../../data/rules';
 import { REGIONS } from '../../data/world';
-import type { SpeciesDef, Stats } from '../../data/species';
+import type { Stats } from '../../data/species';
 import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
 import { learnedAt } from '../../data/learnsets';
 import { CATEGORY_NAMES, type BattleMoveDef } from '../../data/moveBattle';
 import type { MoveTypeId } from '../../data/rules';
 import { defaultMoves, evolvedAtOf } from './battleMoves';
+import { speciesStages } from './bestiaryEntries';
+import { seaMovesOf } from './team';
 import { ABILITIES, DANGER_NAMES, SPECIES_DEPTH } from '../../data/beasts';
 import {
   breaksBones,
@@ -25,7 +25,6 @@ import {
   wildLevelRange,
   speciesOf,
   type BeastForm,
-  moveSpeciesOf,
 } from './forms';
 
 /** A battle move, like Pokémon: power (0: no damage), accuracy (null: never misses), PP and category. */
@@ -96,23 +95,16 @@ function whereItLives(id: string): { depth: string; seas: string } {
   return { depth, seas: seas.length ? seas.join(', ') : 'solo lungo la costa' };
 }
 
-/** The stages of the line a species belongs to, first to last. */
-export function evolutionLine(speciesId: string): { id: string; name: string; level: number | null }[] {
-  const byId = (id: string | undefined): SpeciesDef | undefined => SPECIES.find((x) => x.id === id);
-  let first = byId(speciesId);
-  // walk back to the first stage
-  let prev = first && SPECIES.find((x) => x.evolvesTo === first!.id);
-  while (prev) {
-    first = prev;
-    prev = SPECIES.find((x) => x.evolvesTo === first!.id);
-  }
-  const line: { id: string; name: string; level: number | null }[] = [];
-  let level: number | null = null;
-  for (let st = first; st; st = byId(st.evolvesTo)) {
-    line.push({ id: st.id, name: st.name, level });
-    level = st.evolveLevel ?? null;
-  }
-  return line.length > 1 ? line : [];
+/** The stages of a line with the level each is reached at (empty for a beast that does not evolve). */
+export function stageLine(speciesId: string): { id: string; name: string; level: number | null }[] {
+  const stages = speciesStages(speciesId);
+  return stages.length > 1
+    ? stages.map((st, i) => ({
+        id: st.id,
+        name: st.name,
+        level: i ? (stages[i - 1]!.evolveLevel ?? null) : null,
+      }))
+    : [];
 }
 
 function specialOf(form: BeastForm): Sheet['special'] {
@@ -158,12 +150,12 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
       const m = BATTLE_MOVE_BY_ID[id];
       if (m) nextMoves.push({ level: l, name: m.name, typeColor: typeColorOf(m.type) });
     }
-  const seaMoves = MOVES.filter((m) => m.species === moveSpeciesOf(form))
-    .sort((a, b) => a.slot - b.slot)
-    .map((m) => {
-      const unlockLevel = PROGRESSION.moveUnlockLevels[m.slot - 1] ?? 1;
-      return { name: m.name, unlockLevel, unlocked: lv >= unlockLevel, text: m.text };
-    });
+  const seaMoves = seaMovesOf(form, lv).map(({ move, unlockLevel, unlocked }) => ({
+    name: move.name,
+    unlockLevel,
+    unlocked,
+    text: move.text,
+  }));
   return {
     name: formName(form),
     stars,
@@ -185,7 +177,7 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     nextMoves,
     seaMoves,
     fieldMove: fieldMoveOf(form, lv),
-    evolution: evolutionLine(form.speciesId).map((x) => ({
+    evolution: stageLine(form.speciesId).map((x) => ({
       name: x.name,
       level: x.level,
       current: x.id === form.speciesId,

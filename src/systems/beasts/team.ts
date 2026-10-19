@@ -73,12 +73,18 @@ export function strongestLevel(all: TeamBeast[]): number {
   return m.length ? Math.max(...m.map((b) => b.level)) : TEAM_RULES.levelWithoutTeam;
 }
 
-/** Its moves in the open sea (riding), in slot order, with their unlock level and whether it has them. */
-export function movesFor(b: TeamBeast): { move: MoveDef; unlockLevel: number; unlocked: boolean }[] {
-  return movesOf(moveSpeciesOf(b.form)).map((move) => {
-    const unlockLevel = PROGRESSION.moveUnlockLevels[move.slot - 1] ?? 1;
-    return { move, unlockLevel, unlocked: b.level >= unlockLevel };
-  });
+/** A form's moves in the open sea (riding), in slot order, with their unlock level and whether it has them at this
+ *  level (its sheet shows them, beasts/sheet.ts). */
+export function seaMovesOf(
+  form: BeastForm,
+  level: number,
+): { move: MoveDef; unlockLevel: number; unlocked: boolean }[] {
+  return movesOf(moveSpeciesOf(form))
+    .sort((a, b) => a.slot - b.slot)
+    .map((move) => {
+      const unlockLevel = PROGRESSION.moveUnlockLevels[move.slot - 1] ?? 1;
+      return { move, unlockLevel, unlocked: level >= unlockLevel };
+    });
 }
 
 /** Moves a team member one place up (-1) or down (+1) in the team order (the first one leads in battle). */

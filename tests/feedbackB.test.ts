@@ -9,7 +9,8 @@ import { bay as bayX } from '../src/data/worldLayout';
 import { maxHpOf, moveInTeam, teamMembers } from '../src/systems/beasts/team';
 import { spawnWild } from '../src/systems/beasts/wildState';
 import { stepRoam } from '../src/systems/beasts/roam';
-import { useItemOn, useSlot } from '../src/systems/economy/backpack';
+import { useSlot } from '../src/systems/economy/backpack';
+import { useOnBeast } from '../src/systems/economy/items';
 import { newGear, slotKind } from '../src/systems/economy/gear';
 import { createGame, stepGame, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput } from '../src/systems/input';
@@ -54,11 +55,11 @@ describe('team', () => {
     b!.ko = true;
     g.gear.inventory.alga_curativa = 1;
     g.gear.inventory.ambra_risveglio = 1;
-    expect(useItemOn(g, 'alga_curativa', b!.uid, [])).toBe(false); // worn out: a potion does nothing
-    expect(useItemOn(g, 'ambra_risveglio', b!.uid, [])).toBe(true);
+    expect(!!useOnBeast(g.gear.inventory, 'alga_curativa', b!)).toBe(false); // worn out: a potion does nothing
+    expect(!!useOnBeast(g.gear.inventory, 'ambra_risveglio', b!)).toBe(true);
     expect(b!.ko).toBe(false);
     expect(b!.hp).toBe(Math.floor(maxHpOf(b!) / 2));
-    expect(useItemOn(g, 'alga_curativa', a!.uid, [])).toBe(true);
+    expect(!!useOnBeast(g.gear.inventory, 'alga_curativa', a!)).toBe(true);
     expect(a!.hp).toBe(Math.min(maxHpOf(a!), 21));
     expect(g.gear.inventory.alga_curativa ?? 0).toBe(0);
   });

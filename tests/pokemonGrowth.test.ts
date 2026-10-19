@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { BATTLE } from '../src/data/battle';
 import { GROWTH_CURVES, XP_RULES, scaledXp } from '../src/data/progression';
-import { createBattle, tameChance } from '../src/systems/battle/battle';
+import { createBattle } from '../src/systems/battle/battle';
+import { tameChance } from '../src/systems/battle/tameFlee';
 import { makeFighter } from '../src/systems/battle/fighter';
 import { growthOf, xpBetween, xpReward } from '../src/systems/beasts/growth';
 

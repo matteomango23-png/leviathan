@@ -14,9 +14,6 @@ const hash = (k: number, salt: number): number => {
   return s - Math.floor(s);
 };
 
-/** The stretch of sea at x. */
-export const clarityZone = (x: number): number => Math.floor(x / (C.zoneKm * 1000 * WORLD.unitsPerMetre));
-
 /** A stretch's own cycle now, 0 (clear) … CLARITY.cycleMax: clear most of the time, murky for a part of each period. */
 function zoneMurk(k: number, t: number): number {
   const period = C.periodS * (1 - C.jitter + 2 * C.jitter * hash(k, 1));

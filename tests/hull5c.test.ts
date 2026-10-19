@@ -12,7 +12,7 @@ import { rescue } from '../src/systems/fuel';
 import { createGame, toSave, type GameState } from '../src/systems/game';
 import { parseSave } from '../src/systems/save/saveData';
 import { obstacleAhead, radarContacts } from '../src/systems/ship/radar';
-import { sailShip } from '../src/systems/ship/ship';
+import { sailShip } from '../src/systems/ship/sail';
 import { bumpShip, damageShip, hullMax, stepShipHull, stepShipRams } from '../src/systems/ship/shipHull';
 import { loadParts, repairPerPoint, unloadParts } from '../src/systems/ship/spareParts';
 import { repairVehicle } from '../src/systems/economy/repair';

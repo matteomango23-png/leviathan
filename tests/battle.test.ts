@@ -6,11 +6,10 @@ import {
   endRound,
   firstSide,
   switchTo,
-  tameChance,
-  tryTame,
   useMove,
   you,
 } from '../src/systems/battle/battle';
+import { tameChance, tryTame } from '../src/systems/battle/tameFlee';
 import { canUse, makeFighter } from '../src/systems/battle/fighter';
 import { makeRng } from '../src/systems/math';
 
