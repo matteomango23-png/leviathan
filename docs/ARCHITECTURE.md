@@ -93,6 +93,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `beasts/bestiaryEntries.ts` | Le voci del bestiario (specie, albini, forme finali) e la catena delle evoluzioni. |
 | `beasts/hold.ts` | Dove sta ogni bestia: squadra, stiva della nave, Recinto del porto. |
 | `breach.ts` | Il salto della bestia cavalcata fuori dall'acqua. |
+| `tips.ts` | I consigli di Aurelio: un dialogo breve la prima volta che succede una cosa. |
 | `economy/market.ts` | Il mercato del pesce: il prezzo di un tipo scende se ne vendi tanti e risale col tempo. |
 | `economy/beastSale.ts` | La vendita delle bestie domate al Recinto del porto: prezzo per stelle, livello e versione. |
 | `ship/floodlight.ts` | I fari degli U-Boat e dei sottomarini migliori sott'acqua: punti di luce intorno allo scafo, ridotti dalla torbidità. |

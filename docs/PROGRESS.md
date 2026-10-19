@@ -1,5 +1,21 @@
 # Progressi
 
+## Lotto K, i consigli di Aurelio (19 ottobre 2026) → v0.74.0
+
+- **Dati** (`data/story.ts`): 9 dialoghi `tip*` in `DIALOGUES`, e `TIPS` (titolo + evento che li apre) con `TIPS_OFF`.
+- **Logica:** `systems/tips.ts`:
+  - `stepTips`, dopo `stepStory` in `game.ts`: un consiglio la prima volta, solo da `toPortoFango` in poi, mai con un altro dialogo aperto;
+  - `setTipsOn` / `tipsOn`.
+  - Le partite senza salvataggio (test, strumenti) partono coi consigli spenti; `startNewGame` li riaccende.
+- **Guida:** `ui/guide.ts`, pulsante nel menu di pausa, CSS in `screens.css`.
+- **Test:** `tests/lottoK.test.ts`.
+
+**Da provare sull'iPhone:**
+- la Guida nel menu di pausa;
+- salire sulla nave, sentire una voce in un porto, calare il sottomarino: compare il consiglio, una volta sola.
+
+**Fatti tutti i lotti del 16 ottobre (G-K).** Prossimo: la sessione di pulizia (rimasta indietro), poi il blocco 6 e il resto delle immagini (dall'orca in giù).
+
 ## Lotto J, salto fuori dall'acqua (19 ottobre 2026) → v0.73.0
 
 - **Salto:** `systems/breach.ts`:

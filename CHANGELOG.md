@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.74.0 — I consigli di Aurelio (19 ottobre 2026)
+
+- **Tutorial:** la prima volta che succede una cosa, Nonno Aurelio spiega in due o tre righe:
+  - la nave e il sonar;
+  - le voci e i quattro passi di una caccia (Voce, Eco, Tracce, Bestia);
+  - l'eco anomala;
+  - il sottomarino;
+  - il motoscafo;
+  - le leggende;
+  - la bestia in groppa e il salto;
+  - la squadra piena, la stiva e il Recinto;
+  - le schede del porto.
+- **Guida** nel menu di pausa: tutti i consigli da rileggere, e un interruttore per spegnerli.
+
 ## v0.73.0 — Il salto fuori dall'acqua (19 ottobre 2026)
 
 - **Salto, tipo Angry Shark:** cavalcando, se arrivi alla superficie salendo forte (tenendo lo sprint o con lo scatto), la bestia **esce dall'acqua**, vola con te in groppa e ricade con un grande spruzzo.
