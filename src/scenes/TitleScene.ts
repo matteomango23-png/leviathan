@@ -3,6 +3,7 @@
 // start with it.
 import Phaser from 'phaser';
 import { loadSlot, markBroken, markPlayed, migrateLegacySaves } from '../systems/save/slots';
+import type { SaveData } from '../systems/save/saveData';
 import { TitleMenu } from '../ui/titleMenu';
 import type { SceneData, Session } from './session';
 
@@ -22,6 +23,7 @@ export class TitleScene extends Phaser.Scene {
     migrateLegacySaves();
     this.menu = new TitleMenu({
       play: (id) => this.play(id),
+      gallery: () => this.start(null, true),
       tap: () => this.session.sound.tap(),
     });
     this.events.once('shutdown', () => {
@@ -38,9 +40,16 @@ export class TitleScene extends Phaser.Scene {
     }
     markPlayed(id);
     this.session.slotId = id;
-    this.session.startSave = loaded.save;
+    this.start(loaded.save, false);
+    return null;
+  }
+
+  /** The sea and the interface start with this game (or the test gallery's throwaway one: no slot, never saved). */
+  private start(save: SaveData | null, gallery: boolean): void {
+    if (gallery) this.session.slotId = '';
+    this.session.startSave = save;
+    this.session.gallery = gallery;
     this.scene.start('World', { session: this.session });
     this.scene.launch('UI', { session: this.session });
-    return null;
   }
 }

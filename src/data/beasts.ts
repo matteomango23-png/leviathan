@@ -556,3 +556,13 @@ export const RIDE_AIR = {
   bySpecies: {} as Record<string, number>,
   refillAwayPerSec: 0.05,
 };
+
+/** The test gallery (systems/gallery.ts; owner, 19 ottobre 2026): where its throwaway game starts, the beast you
+ *  fight with, how long a beast shown in the sea stays calm. Part of the test tools, to be removed with them. */
+export const GALLERY = {
+  bayX: 900, // units into the bay: open water
+  depth: 120, // units under the surface
+  fighter: { speciesId: 'squalo_bianco', variant: 'comune' as const, final: true },
+  calmSeconds: 600,
+  respawnSeconds: 5,
+};

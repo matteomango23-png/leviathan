@@ -126,6 +126,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `world/lair.ts` | Forma della grotta delle ossa della Baia: grotta, pozzo, guscio di roccia (scenario, `data/scenery.ts`). |
 | `beasts/sheet.ts` | Dati della scheda di una bestia: rarità, ruolo, statistiche, mosse di battaglia (e le prossime), mosse in mare. |
 | `testTools.ts` | Strumenti del pannello di prova (`?prove`). |
+| `gallery.ts` | Galleria di prova: tutte le forme con immagini in fila, partita usa e getta mai salvata; In mare (calma), Avversario (battaglia subito), Compagno (in squadra e in groppa). Da togliere con gli strumenti di prova. |
 | `playerActions.ts` | Cosa fanno i pulsanti: l'azione contestuale (relitto, porto, sottomarino, a bordo, l'azione della bestia), lo sparo, se puoi scattare, dove ti risvegli. |
 | `starter.ts` | La prima bestia, scelta subito dopo l'apertura. |
 | `seaReport.ts` | Il mare a parole per la plancia: vento, onde, corrente, visibilità. |
@@ -160,6 +161,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
 | `saveTransfer.ts` | Esporta e importa il salvataggio come file. |
 | `testPanel.ts` | Pannello di prova (link con `?prove`). |
+| `galleryBar.ts` | La barra della galleria di prova: ◀ forma ▶, elenco, In mare / Avversario / Compagno / Esci. |
 | `dom.ts` | Piccolo aiuto per creare gli elementi della pagina. |
 | `icons.ts` | Icone SVG disegnate per il gioco. |
 | `art.ts` | Indirizzo dell'illustrazione di una bestia. |

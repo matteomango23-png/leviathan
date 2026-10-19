@@ -15,6 +15,7 @@ import {
   storageUse,
   type SlotMeta,
 } from '../systems/save/slots';
+import { testMode } from '../systems/testTools';
 import { el } from './dom';
 import { exportText } from './saveTransfer';
 import './title.css';
@@ -24,6 +25,8 @@ export interface TitleActions {
   play(id: string): string | null;
   /** A touch on a button (its tick). */
   tap(): void;
+  /** The test gallery (with the test tools on). */
+  gallery(): void;
 }
 
 const hours = (s: number): string => {
@@ -103,6 +106,8 @@ export class TitleMenu {
     this.button(box, 'Nuova partita', () => this.newGame(), last ? '' : 'primary');
     const games = listSlots();
     if (games.length) this.button(box, 'Carica partita', () => this.list());
+    // every beast one after another, never saved (test tools on: 5 taps on the version in the pause menu)
+    if (testMode()) this.button(box, 'Galleria di prova', () => this.actions.gallery());
     if (storageUse() > SLOTS.warnAt)
       this.note(box, 'La memoria del gioco è quasi piena: esporta ed elimina le partite che non usi.', true);
   }
