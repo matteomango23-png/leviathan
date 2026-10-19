@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.77.1 — Immagini nuove dall'orca in giù (19 ottobre 2026)
+
+- **Nuove immagini** (profilo, bocca aperta, fronte e retro) per orca, orca matriarca, Madre delle madri, orca preistorica albina, pesce spada, rana pescatrice (più il retro dell'alfa), coccodrillo marino, squalo bianco con albino (fronte), Mega albino, Re Alfa, Sfregiato e Titano, squalo martello e martello preistorico, squalo tigre, squalo volpe, tartaruga preistorica, tricheco e varano del Nilo nero.
+- **Sistemati:** il tricheco e il varano aprono davvero la bocca (prima avevano la stessa immagine), lo squalo volpe ha un retro vero (prima era uguale al fronte), la rana pescatrice alfa vista da dietro non ha più le lanterne doppie.
+- Le card restano quelle di prima.
+
 ## v0.77.0 — Menu iniziale e partite che non si perdono (19 ottobre 2026)
 
 - **Menu iniziale:** aprendo il gioco c'è un menu con Riprendi, Nuova partita e Carica partita (lo sfondo definitivo arriva con il tuo disegno).

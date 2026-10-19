@@ -267,10 +267,15 @@ function smoothEdgeAlpha(px: Uint8ClampedArray, edge: Uint8Array, w: number, h: 
 }
 
 /** Clears rectangles of a picture (shares of its width and height): stray bits like a blurred far fin. */
+/** Clears rectangles [x0, y0, x1, y1] (shares of the picture). A fifth number keeps what is more opaque than it:
+ *  only a faint ghost goes, the solid body crossing the rectangle stays (the orca's blurred second fin, 19 ottobre). */
 export function eraseRects(px: Uint8ClampedArray, w: number, h: number, rects: readonly number[][]): void {
-  for (const [x0, y0, x1, y1] of rects)
+  for (const [x0, y0, x1, y1, keepAbove = 256] of rects)
     for (let y = Math.round(y0! * h); y < Math.round(y1! * h); y++)
-      for (let x = Math.round(x0! * w); x < Math.round(x1! * w); x++) px[(y * w + x) * 4 + 3] = 0;
+      for (let x = Math.round(x0! * w); x < Math.round(x1! * w); x++) {
+        const i = (y * w + x) * 4 + 3;
+        if (px[i]! < keepAbove) px[i] = 0;
+      }
 }
 
 export interface Box {

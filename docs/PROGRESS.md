@@ -1,5 +1,16 @@
 # Progressi
 
+## Lotto R, immagini dall'orca in giù (19 ottobre 2026) → v0.77.1
+
+- 78 immagini nuove da `asset animali ai/` (solo quelle del 19 ottobre, riconosciute per data e una per una) copiate in `art-inbox/` coi nomi del gioco; le 78 sostituite restano come `_vecchia_…`.
+- Stessi versi delle vecchie (`_flip` dove c'era). Controllate su fogli di confronto: nemico in battaglia rivolto a sinistra, retro verso destra, bocca aperta e chiusa sovrapponibili.
+- **`scripts/art.ts`:**
+  - tolte le correzioni fatte per le immagini vecchie (cancellature dello squalo bianco e del volpe, gola del martello, vignetta del martello preistorico), che avrebbero tagliato le nuove;
+  - `orca_side`: cancellato il fantasma sfocato di una seconda pinna, seguendo il bordo della pinna vera;
+  - `eraseRects` accetta un quinto numero (soglia di trasparenza).
+- Restano le immagini vecchie per: albino (profili e retro), rana pescatrice alfa (fronte e profili), card di tutte.
+- Il fronte dello squalo bianco nuovo è più chiaro (grigio sabbia) dei suoi profili: da guardare in battaglia.
+
 ## Lotto R, menu iniziale e partite (19 ottobre 2026) → v0.77.0
 
 - **Perché:** il proprietario ha trovato i salvataggi spariti senza avviso. Col vecchio sistema c'era una partita sola più una copia: due "Nuova partita" di fila cancellavano la vera. Un salvataggio illeggibile finiva in una copia nascosta e veniva sovrascritto da una partita nuova. Il codice dei salvataggi non era cambiato nei lotti recenti: la causa esatta non è certa.
