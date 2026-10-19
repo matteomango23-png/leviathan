@@ -1,5 +1,9 @@
 # Progressi
 
+## Lotto Q, compagno in battaglia nella galleria (19 ottobre 2026) → v0.78.2
+
+- `gallery.ts` `fightWithIt`: la forma entra in squadra per prima (è lei che scende in campo) e affronta una selvatica della stessa forma; pulsante "In battaglia". Provato col tricheco a 667 px: retro del tuo, fronte del selvatico, barra a 6 pulsanti dentro lo schermo.
+
 ## Lotto Q, in groppa nella galleria (19 ottobre 2026) → v0.78.1
 
 - `gallery.ts` `rideIt`: come Compagno ma con `callMount(..., true)`, quindi si cavalca anche una bestia col ruolo compagno. Pulsante "In groppa" in `galleryBar.ts`. Provato sul pesce spada.

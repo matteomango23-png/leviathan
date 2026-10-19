@@ -124,3 +124,13 @@ export function rideIt(g: GameState, s: GalleryState, form: BeastForm, events: G
   g.beasts.mount = callMount(b, g.diver, g.map, true);
   events.push({ type: 'summoned', uid: b.uid });
 }
+
+/** "In battaglia": it fights for you (its back to you) against a wild one of the same form (owner, 19 ottobre: to
+ *  see the companion in battle too). It goes first in the team, so it is the one sent in. */
+export function fightWithIt(g: GameState, s: GalleryState, form: BeastForm, events: GameEvent[]): void {
+  makeCompanion(g, s, form, events);
+  const team = g.beasts.team;
+  const at = team.findIndex((b) => b.uid === s.companion);
+  if (at > 0) team.unshift(...team.splice(at, 1));
+  fightIt(g, s, form, events);
+}

@@ -35,6 +35,9 @@ export class GalleryBar {
     el('button', 'gallery-btn', acts, 'In groppa').addEventListener('click', () =>
       session.emit('gallery', 'ride', form()),
     );
+    el('button', 'gallery-btn', acts, 'In battaglia').addEventListener('click', () =>
+      session.emit('gallery', 'withIt', form()),
+    );
     el('button', 'gallery-btn exit', acts, 'Esci').addEventListener('click', () => session.emit('toTitle'));
     const go = (d: number): void => {
       this.at = (this.at + d + this.forms.length) % this.forms.length;
