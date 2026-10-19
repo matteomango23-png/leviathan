@@ -16,7 +16,7 @@ import {
 import {
   addTamed,
   makeTeamBeast,
-  movesFor,
+  seaMovesOf,
   strongestLevel,
   type TeamBeast,
 } from '../src/systems/beasts/team';
@@ -110,7 +110,7 @@ describe('team', () => {
 
   it('unlocks moves at levels 1, 7 and 15', () => {
     const unlocked = (level: number) =>
-      movesFor(makeTeamBeast('x', shark(), level, true))
+      seaMovesOf(shark(), level)
         .filter((m) => m.unlocked)
         .map((m) => m.move.slot);
     expect(unlocked(1)).toEqual([1]);

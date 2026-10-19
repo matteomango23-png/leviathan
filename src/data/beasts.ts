@@ -457,12 +457,6 @@ export const ABILITIES = {
   boneHint: { reach: 70, everySeconds: 25 },
 };
 
-/** Move effects shared by the battle (fx names in moves.ts). */
-export const MOVE_RULES = {
-  executeHpFraction: 0.25, // 'executeLowHp': targets under this share of health are overwhelmed
-  woundedFraction: 0.5, // 'x2vsWounded': double damage under this share of health
-};
-
 /** Sprite frame of big beasts (docs/ART.md). */
 export const BEAST_SPRITE = {
   frameW: 1000,

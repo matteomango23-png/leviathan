@@ -76,8 +76,6 @@ export const SEA_REGIONS: SeaRegionDef[] = [
   },
 ];
 
-/** Where the sea ends (km from the beach). */
-export const SEA_END_KM = 30;
 
 /** Chests of the wrecks of each region: at these shares of the region's width, richer farther and deeper. */
 export const REGION_CHESTS = {

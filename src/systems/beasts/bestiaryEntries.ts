@@ -2,7 +2,7 @@
 // evoluzioni come animali distinti, uno vicino all'altro"): every species, and right after it each version of it that
 // has pictures of its own (the albino, the final forms) as a beast of its own. An alpha stays a rare version, and
 // only with its own pictures. Each entry is seen or tamed by its own form. Pure logic.
-import { GAME_SPECIES, SPECIES } from '../../data/species';
+import { GAME_SPECIES, SPECIES, type SpeciesDef } from '../../data/species';
 import { ART_KEYS } from '../../data/sprites.generated';
 import { formKey, hasAlbinoArt, hasFinalForm, type BeastForm, type Variant } from './forms';
 import type { TeamBeast } from './team';
@@ -66,6 +66,22 @@ export function entryState(
   return g.seen.has(key) ? 'seen' : 'unknown';
 }
 
+/** The stages of the line a species belongs to, first to last (Zanna → Squarcio → Zannarossa); one for most. */
+export function speciesStages(speciesId: string): SpeciesDef[] {
+  let first = SPECIES.find((s) => s.id === speciesId);
+  if (!first) return [];
+  for (
+    let prev = SPECIES.find((s) => s.evolvesTo === first!.id);
+    prev;
+    prev = SPECIES.find((s) => s.evolvesTo === first!.id)
+  )
+    first = prev;
+  const line: SpeciesDef[] = [];
+  for (let st: SpeciesDef | undefined = first; st; st = SPECIES.find((s) => s.id === st!.evolvesTo))
+    line.push(st);
+  return line;
+}
+
 /**
  * A beast's line of forms, for the icons on its sheet: the stages before and after it (evolvesTo), then its final form;
  * an albino or an alpha: itself and its own final form. Only forms with pictures of their own.
@@ -78,16 +94,11 @@ export function evolutionLine(form: BeastForm): BeastForm[] {
     const f = finalOf(form.speciesId, v);
     return f ? [base, f] : [base];
   }
-  // back to the first stage, then forward
-  let first = form.speciesId;
-  for (;;) {
-    const prev = SPECIES.find((s) => s.evolvesTo === first);
-    if (!prev) break;
-    first = prev.id;
-  }
-  const line: BeastForm[] = [];
-  for (let id: string | undefined = first; id; id = SPECIES.find((s) => s.id === id)?.evolvesTo)
-    line.push({ speciesId: id, variant: 'comune' });
+  const line: BeastForm[] = speciesStages(form.speciesId).map((s) => ({
+    speciesId: s.id,
+    variant: 'comune',
+  }));
+  if (!line.length) return [form];
   const last = line[line.length - 1]!;
   const f = finalOf(last.speciesId, 'comune');
   if (f) line.push(f);

@@ -1,5 +1,35 @@
 # Progressi
 
+## Pulizia dopo i lotti A-K (19 ottobre 2026) → v0.74.1
+
+- **Codice morto tolto:**
+  - `MOVE_RULES`, `MOVE_POWER`, `SEA_END_KM`, `TAMING` (il vecchio minigioco), `Rect`, `clarityZone`, `isBigClass`;
+  - `useItemOn` e il suo parametro `uid` in `useItem` (le cure su una bestia scelta passano da `useOnBeast`).
+- **Doppioni uniti:**
+  - `speciesStages` (`beasts/bestiaryEntries.ts`) fa da base all'`evolutionLine` delle icone e a `stageLine` (`sheet.ts`, prima anch'esso `evolutionLine`);
+  - `seaMovesOf(form, level)` (`team.ts`) sostituisce `movesFor` ed è usata dalla scheda.
+- **File divisi** (solo spostamenti, nessun cambio di comportamento):
+
+  | Prima | Ora |
+  |---|---|
+  | `WorldScene` 457 righe | `WorldScene` 228 + `worldViews` + `worldEvents` |
+  | `ship.ts` | `ship.ts` + `sail.ts` |
+  | `shipView` | `shipView` + `shipWake` |
+  | `eventMessages` | `eventMessages` + `vehicleMessages` |
+  | `battle.ts` | `battle.ts` + `tameFlee.ts` |
+  | `saveData` | `saveData` + `vehicleSave` |
+  | `game.ts` | `game.ts` + `playerActions` |
+  | `ship/stats` | `stats` + `bayStats` + `statRow` |
+
+  Restano tra 302 e 316 righe: `helmControls`, `gadgets`, `birds`, `battleView`, `battleUi`.
+- **`docs/ARCHITECTURE.md`:** aggiornato con tutti i file nuovi dei lotti e della pulizia.
+- **Controlli:** `npm run check` verde, 1493 test come prima. Prova nel browser (avvio, porto con tutte le schede, battaglia con la Conchiglia del Re) senza errori.
+
+**Prossimo:**
+- il blocco 6 (cattura e combattimento);
+- le immagini dall'orca in giù, quando ci sono;
+- gli strumenti di prova da togliere più avanti.
+
 ## Lotto K, i consigli di Aurelio (19 ottobre 2026) → v0.74.0
 
 - **Dati** (`data/story.ts`): 9 dialoghi `tip*` in `DIALOGUES`, e `TIPS` (titolo + evento che li apre) con `TIPS_OFF`.

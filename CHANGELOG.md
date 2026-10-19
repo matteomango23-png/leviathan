@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.74.1 — Pulizia (19 ottobre 2026)
+
+- **Nessun cambiamento nel gioco:** riordinato il codice dopo i lotti A-K. Tolte le parti che non servivano più, unite due logiche scritte due volte, divisi i file troppo lunghi.
+
 ## v0.74.0 — I consigli di Aurelio (19 ottobre 2026)
 
 - **Tutorial:** la prima volta che succede una cosa, Nonno Aurelio spiega in due o tre righe:

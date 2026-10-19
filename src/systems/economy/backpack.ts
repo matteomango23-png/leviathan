@@ -32,19 +32,14 @@ export function checkSwarmBinding(
   }
 }
 
-/** Uses an item on one beast of yours (the team panel: heal this one, raise this one). */
-export function useItemOn(g: BackpackWorld, id: string, uid: string, events: GameEvent[]): boolean {
-  return useItem(g, id, events, uid);
-}
-
-function useItem(g: BackpackWorld, id: string, events: GameEvent[], uid?: string): boolean {
+/** Uses an item from the backpack (a slot, or the bag screen's Usa): a bait, or medicine on the beast that needs it.
+ *  On a beast you choose, the bag screen uses useOnBeast (items.ts). */
+function useItem(g: BackpackWorld, id: string, events: GameEvent[]): boolean {
   const gear = g.gear;
   if ((gear.inventory[id] ?? 0) <= 0) return false;
   const d = g.diver;
   const team = teamMembers(g.beasts.team);
-  const target = uid
-    ? g.beasts.team.find((b) => b.uid === uid)
-    : (activeBeast(g) ?? team.find((b) => b.ko || b.hp < maxHpOf(b)) ?? team[0]);
+  const target = activeBeast(g) ?? team.find((b) => b.ko || b.hp < maxHpOf(b)) ?? team[0];
   const def = ITEMS.find((i) => i.id === id);
   const bait = def?.lure ? BAIT_GROUPS[def.lure].species : undefined;
   if (bait) {
@@ -58,9 +53,9 @@ function useItem(g: BackpackWorld, id: string, events: GameEvent[], uid?: string
     events.push({ type: 'itemUsed', id });
     return true;
   }
-  // medicine (Pokémon's): on the beast you chose, or the one in the water, or the most hurt
+  // medicine (Pokémon's): on the one in the water, or the most hurt
   if (itemDef(id)?.use && !itemDef(id)?.battleOnly) {
-    const pick = uid ? target : (team.find((b) => canApply(itemDef(id)!.use!, careOfBeast(b))) ?? target);
+    const pick = team.find((b) => canApply(itemDef(id)!.use!, careOfBeast(b))) ?? target;
     if (!pick || !useOnBeast(gear.inventory, id, pick)) return false;
     cleanBackpack(gear);
     events.push({ type: 'itemUsed', id });

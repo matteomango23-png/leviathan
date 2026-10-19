@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BATTLE } from '../src/data/battle';
-import { createBattle, fleeChance } from '../src/systems/battle/battle';
+import { createBattle } from '../src/systems/battle/battle';
+import { fleeChance } from '../src/systems/battle/tameFlee';
 import { makeFighter } from '../src/systems/battle/fighter';
 
 const shark = (level: number) => makeFighter({ speciesId: 'squalo_bianco', variant: 'comune' }, level);

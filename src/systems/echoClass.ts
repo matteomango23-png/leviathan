@@ -24,9 +24,6 @@ export function heardClass(c: EchoClass, classes: number): EchoClass {
   return best;
 }
 
-/** Bigger than "media": what the helm counts as a big echo. */
-export const isBigClass = (c: EchoClass): boolean => ORDER.indexOf(c) >= ORDER.indexOf('grande');
-
 /** In words, for one echo or many: "grande" / "grandi". */
 export const CLASS_PLURAL: Record<EchoClass, string> = {
   piccola: 'piccole',

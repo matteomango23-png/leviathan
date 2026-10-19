@@ -13,8 +13,6 @@ import {
   nextFoe,
   nextStanding,
   switchTo,
-  tryFlee,
-  tryTame,
   useMove,
   you,
   type Action,
@@ -22,6 +20,7 @@ import {
   type Side,
   type Step,
 } from '../systems/battle/battle';
+import { tryFlee, tryTame } from '../systems/battle/tameFlee';
 import { makeFighter, named } from '../systems/battle/fighter';
 import { useBattleItem } from '../systems/battle/battleItems';
 import { itemDef, shellsOwned } from '../systems/economy/items';

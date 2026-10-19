@@ -64,13 +64,6 @@ export interface WildBeast extends BodyPose {
   lookT: number;
 }
 
-export interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
 export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
   const form: BeastForm = { speciesId: spawn.speciesId, variant: 'comune' };
   return {

@@ -1,30 +1,17 @@
 // A ship's numbers, comparable (owner, 8 ottobre 2026: "sonar buono" said nothing, and nothing showed why the
 // Expedition Hunter 1 is worth 6000 teeth): real values with their units, a share of the best of the fleet for the
 // bars, and the difference from the ship in use. Pure; ui/shipStats.ts draws them.
-import { BOAT_MODELS } from '../../data/boats';
 import { SHIP_MODELS, type ShipModelDef } from '../../data/fleet';
 import { HUNT_RULES } from '../../data/hunts';
 import { HELM, SHIP } from '../../data/ship';
-import { SUB_MODELS } from '../../data/submarine';
 import { WORLD } from '../../data/worldLayout';
 import { autonomyKm } from '../fuelBurn';
+import { bayRows } from './bayStats';
+import { type StatRow } from './statRow';
 
-export interface StatRow {
-  /** Same key on every ship: what is compared. */
-  key: string;
-  /** The section: the ship, or one of its vehicles ("Sottomarino con sonar"). */
-  group: string;
-  label: string;
-  value: number;
-  text: string;
-  /** Which way is better (none: just a fact, like the length). */
-  better: 'high' | 'low' | 'none';
-  /** The difference shown, in its unit ("+13 km"). */
-  unit: string;
-}
+export type { StatRow } from './statRow';
 
 const one = (v: number): string => (Math.round(v * 10) / 10).toString().replace('.', ',');
-const knots = (unitsPerSec: number): number => Math.round(unitsPerSec * HELM.knotsPerUnit);
 /** How far the ship's sonar hears a big beast and a den, in metres. */
 export const sonarMetres = (m: ShipModelDef): { big: number; den: number } => ({
   big: Math.round((HUNT_RULES.bigEchoRange * m.sonar.range) / WORLD.unitsPerMetre),
@@ -178,133 +165,7 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       better: 'high',
       unit: 'm',
     });
-  for (const b of m.bays) {
-    const sub = b.kind === 'sub' ? SUB_MODELS.find((x) => x.id === b.model) : undefined;
-    const boat = BOAT_MODELS.find((x) => x.id === b.model);
-    if (sub) {
-      const v = b.name;
-      rows.push(
-        {
-          key: 'sub.speed',
-          group: v,
-          label: 'Velocità',
-          value: knots(sub.speed),
-          text: `${knots(sub.speed)} nodi`,
-          better: 'high',
-          unit: 'nodi',
-        },
-        {
-          key: 'sub.depth',
-          group: v,
-          label: 'Profondità',
-          value: sub.maxDepthM,
-          text: `fino a ${sub.maxDepthM} m`,
-          better: 'high',
-          unit: 'm',
-        },
-        {
-          key: 'sub.hull',
-          group: v,
-          label: 'Scafo',
-          value: sub.hull,
-          text: `${sub.hull} punti`,
-          better: 'high',
-          unit: 'punti',
-        },
-        {
-          key: 'sub.tank',
-          group: v,
-          label: 'Serbatoio',
-          value: sub.tank,
-          text: `${sub.tank} L`,
-          better: 'high',
-          unit: 'L',
-        },
-        {
-          key: 'sub.sonar',
-          group: v,
-          label: 'Sonar',
-          value: sub.scope?.rangeM ?? 0,
-          text: sub.scope
-            ? `a 360° sul vetro, fino a ${sub.scope.rangeM} m, ${sub.scope.classes} grandezze`
-            : 'no',
-          better: 'high',
-          unit: 'm',
-        },
-        {
-          key: 'sub.remote',
-          group: v,
-          label: 'Da remoto',
-          value: sub.recon || sub.remoteTracker ? 1 : 0,
-          text: sub.recon
-            ? 'ricognizione di tutte le bestie a portata del sonar'
-            : sub.remoteTracker
-              ? 'pianta il tracker a una bestia scelta sul sonar'
-              : 'no',
-          better: 'none',
-          unit: '',
-        },
-        {
-          key: 'sub.parts',
-          group: v,
-          label: 'Ricambi',
-          value: SHIP.hull.partsSub,
-          text: `porta ${SHIP.hull.partsSub} punti di ricambi per la nave`,
-          better: 'high',
-          unit: 'punti',
-        },
-      );
-    } else if (boat) {
-      const v = b.name;
-      rows.push(
-        {
-          key: 'boat.speed',
-          group: v,
-          label: 'Velocità',
-          value: boat.knots,
-          text: `${boat.knots} nodi`,
-          better: 'high',
-          unit: 'nodi',
-        },
-        {
-          key: 'boat.tank',
-          group: v,
-          label: 'Serbatoio',
-          value: boat.tank,
-          text: `${boat.tank} L`,
-          better: 'high',
-          unit: 'L',
-        },
-        {
-          key: 'boat.drums',
-          group: v,
-          label: 'Fusti',
-          value: boat.drums,
-          text: `${boat.drums} L di carburante per la nave`,
-          better: 'high',
-          unit: 'L',
-        },
-        {
-          key: 'boat.parts',
-          group: v,
-          label: 'Ricambi',
-          value: SHIP.hull.partsBoat,
-          text: `porta ${SHIP.hull.partsBoat} punti di ricambi per la nave`,
-          better: 'high',
-          unit: 'punti',
-        },
-      );
-    } else
-      rows.push({
-        key: `bay.${b.kind}`,
-        group: b.name,
-        label: 'In arrivo',
-        value: 0,
-        text: 'arriverà con le prossime versioni',
-        better: 'none',
-        unit: '',
-      });
-  }
+  rows.push(...bayRows(m)); // the vehicles in its hatches (bayStats.ts)
   return rows;
 }
 

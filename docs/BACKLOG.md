@@ -13,7 +13,7 @@ I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blo
 9. Audio e atmosfera
 10. Storia nuova e villain (ed eventuale equipaggio)
 
-Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6).
+Ogni 3 blocchi: una sessione di pulizia (fatta dopo il blocco 4, v0.58.6; dopo il blocco 5 e i lotti A-K, v0.74.1).
 
 ## Feedback del 15 ottobre 2026, in lotti (uno alla volta, ognuno in Plan mode)
 
