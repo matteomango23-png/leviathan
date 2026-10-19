@@ -81,9 +81,11 @@ const NAVY_VIGNETTE: CutoutOptions = { low: 20, high: 34, soft: 24 };
 // specks and light glows around it go).
 // Stray light in a profile picture, as rectangles [x0, y0, x1, y1] in shares of the picture.
 const SIDE_ERASE: Record<string, number[][]> = {
+  // the shadows of other fins on the dark background (owner, 19 ottobre: "non è ben scontornato")
   scorfano_side: [
-    [0.7, 0, 1, 0.34],
-    [0.42, 0, 0.7, 0.26],
+    [0, 0, 1, 0.285],
+    [0.74, 0, 1, 0.37],
+    [0.3, 0, 0.56, 0.33],
   ],
 };
 const SIDE_FLOOD: CutoutOptions = { low: 3, high: 16, soft: 30 };
@@ -160,7 +162,9 @@ async function makeSprite(src: string, dest: string, mirror: boolean): Promise<s
         ? removeDarkBackground(raw, borderColor(raw), radius, SIDE_FLOOD)
         : removeBlackBackground(raw);
   eraseRects(cut, info.width, info.height, SIDE_ERASE[basename(src, extname(src))] ?? []);
-  if (flood) keepLargest(cut, info.width, info.height);
+  // flooded, or with background shadows erased: only the beast, no specks left around it
+  const erased = !!SIDE_ERASE[basename(src, extname(src))];
+  if (flood || erased) keepLargest(cut, info.width, info.height, erased ? 90 : 20);
   // a textured dark-grey background (not flat black) survives the plain cut and fills the whole frame:
   // cut again like those (SIDE_CUTOUT_LOOSE)
   const first = opaqueBox(cut, info.width, info.height);

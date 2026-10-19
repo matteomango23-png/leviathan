@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.74.2 — Correzioni a bestiario e immagini (19 ottobre 2026)
+
+- **Alfa solo con immagini proprie:** un alfa che non ha immagini sue è una bestia normale. Non nasce più, e quelli già domati (come lo squalo martello alfa) tornano normali.
+- **Bestiario:** le evoluzioni senza immagine propria (Rocciaguscio) mostrano quella che usano, non più la zampa.
+- **Immagini:**
+  - torna la manta di prima;
+  - il delfino avversario guarda dalla parte giusta;
+  - la manta finale batte le ali con le sue due immagini, senza mordere;
+  - lo scorfano gigante è scontornato bene;
+  - torna la card originale del coccodrillo albino;
+  - la megattera finale apre la bocca.
+
 ## v0.74.1 — Pulizia (19 ottobre 2026)
 
 - **Nessun cambiamento nel gioco:** riordinato il codice dopo i lotti A-K. Tolte le parti che non servivano più, unite due logiche scritte due volte, divisi i file troppo lunghi.

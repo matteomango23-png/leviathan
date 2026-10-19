@@ -1,5 +1,30 @@
 # Progressi
 
+## Lotti M+N, bestiario e immagini (19 ottobre 2026) → v0.74.2
+
+- **Alfa:** `hasAlfaArt` e `withOwnArt` (`beasts/forms.ts`).
+  - `rollWildForm` e `luredForm` danno un alfa solo con immagini proprie.
+  - `convert.ts` riporta a comuni gli alfa e gli albini senza immagini.
+  - `rareAlphas` usa `hasAlfaArt`.
+- **Bestiario:** la casella mostra l'immagine di `artKeysOf` (anche quella presa in prestito da un'evoluzione).
+- **Manta finale:** `WING_FRAME_FORMS` (`data/beasts.ts`): in `beastView` le due immagini si alternano col nuoto.
+- **Immagini** (`art-inbox`; le scartate sono `_scartata_*`):
+  - manta di prima;
+  - `delfino_front_flip`;
+  - card del coccodrillo albino di prima;
+  - `megattera_finale_side_open` dal proprietario;
+  - scorfano: `SIDE_ERASE` nuovo; con zone cancellate lo script tiene solo il pezzo più grande (soglia 90).
+- **Test:** `lottoI` (alfa), `lottoG` (esca pregiata).
+
+**Da provare sull'iPhone:**
+- la manta e la manta finale in acqua;
+- il delfino in battaglia;
+- lo scorfano;
+- il bestiario (Rocciaguscio);
+- lo squalo martello alfa diventato normale.
+
+**Prossimo:** lotto L (acqua e salto).
+
 ## Pulizia dopo i lotti A-K (19 ottobre 2026) → v0.74.1
 
 - **Codice morto tolto:**

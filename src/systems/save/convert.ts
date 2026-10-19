@@ -9,7 +9,7 @@ import { portStart } from '../economy/places';
 import { seedFrom } from '../../data/stats';
 import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
 import { MOVE_SLOTS, type StatusId } from '../../data/moveBattle';
-import { hasAlbinoArt } from '../beasts/forms';
+import { withOwnArt } from '../beasts/forms';
 import { xpToNext } from '../beasts/growth';
 import { makeTeamBeast, maxHpOf, type TeamBeast } from '../beasts/team';
 import { newGear, type GearState } from '../economy/gear';
@@ -43,8 +43,8 @@ export interface SaveSource extends Pick<
 export function restoreTeam(save: SaveData): TeamBeast[] {
   return save.team.map((s) => {
     const form = { ...s.form };
-    // an albino without pictures of its own was the species drawn pale: it goes back to the common one
-    if (form.variant === 'albino' && !form.unique && !hasAlbinoArt(form.speciesId)) form.variant = 'comune';
+    // an albino or an alpha without pictures of its own goes back to the common one (3 and 19 ottobre)
+    form.variant = withOwnArt(form).variant;
     form.seed ??= seedFrom(s.uid); // its individual values (data/stats.ts), kept from now on
     const b = makeTeamBeast(s.uid, form, s.level, s.inTeam);
     b.hp = Math.min(s.hp, maxHpOf(b));

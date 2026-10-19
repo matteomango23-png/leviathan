@@ -94,6 +94,38 @@ Il primo tester ha trovato lo squalo bianco ma non ha capito che esistono i legg
 - **J. Salto fuori dall'acqua cavalcando** ✅ v0.73.0 (tipo Angry Shark), mangiando anche gli uccelli.
 - **K. Tutorial** ✅ v0.74.0 (i consigli di Aurelio e la Guida): spiegazioni brevi la prima volta (barca, sonar, voci, trovare un leggendario).
 
+## Feedback del 19 ottobre 2026, in lotti (ordine scelto dal proprietario: M+N, L, O, P, Q)
+
+Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la scheda dello squalo martello nel bestiario (v0.72.0).
+
+- **M. Bestiario e versioni** ✅ v0.74.2:
+  - un'evoluzione senza immagine propria (Rocciaguscio) mostra quella che usa, non la zampa;
+  - un alfa senza immagini proprie è una bestia normale: non nasce più, e quelli già domati tornano normali.
+- **N. Immagini** ✅ v0.74.2:
+  - torna la manta di prima (si toglieva solo l'animazione delle ali);
+  - il delfino avversario era girato al contrario;
+  - la manta finale batte le ali con le sue due immagini invece di mordere;
+  - lo scorfano gigante va scontornato meglio;
+  - torna la card di prima del coccodrillo albino;
+  - la bocca aperta della megattera finale (immagine mandata dal proprietario).
+- **L. Acqua e salto:**
+  - superficie morbida: la bestia emerge un po' e fa un saltino, niente muro;
+  - salto proporzionato alla velocità;
+  - ricaduta senza scossa dello schermo;
+  - vicino alla nave non si blocca a galla;
+  - le bestie enormi contro lo scafo non fanno su e giù.
+- **O. Comandi:**
+  - pulsanti di navigazione meno ingombranti;
+  - il sonar non copre i minuti d'aria dell'U-Boat;
+  - luce e sonar non si sovrappongono con tutti i portelloni aperti;
+  - "Doma" senza il numero di conchiglie.
+- **P. Suoni:**
+  - nei menu e al porto niente silenzio di colpo, ma una sfumatura;
+  - suoni morbidi ai tocchi;
+  - niente suoni troppo forti o ripetuti;
+  - una musica del porto.
+- **Q. Galleria di prova:** provare ogni bestia in fila (in acqua, come avversario, come compagno) senza doverla catturare.
+
 ---
 
 ## Blocco 1 — Nuovo inizio senza storia

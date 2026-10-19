@@ -3,7 +3,7 @@
 // each strip follows one spine segment (rotated and shortened in perspective as the tail swings).
 import Phaser from 'phaser';
 import { assetUrl } from '../data/assets';
-import { BEAST_SPRITE } from '../data/beasts';
+import { BEAST_SPRITE, WING_FRAME_FORMS } from '../data/beasts';
 import { spineOf } from './swimPose';
 import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 
@@ -122,7 +122,9 @@ export class BeastSprite {
   }
 
   update(p: BeastPoseView): void {
-    if (!this.setTextures(p.key, p.jaw > 0)) {
+    // wings up and down (WING_FRAME_FORMS): the two pictures alternate with its swimming, never a bite
+    const open = WING_FRAME_FORMS.includes(p.key) ? Math.sin(p.phase) > 0 : p.jaw > 0;
+    if (!this.setTextures(p.key, open)) {
       this.updateFront(p);
       return;
     }

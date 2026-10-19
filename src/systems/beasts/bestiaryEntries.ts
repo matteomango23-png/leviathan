@@ -4,7 +4,7 @@
 // only with its own pictures. Each entry is seen or tamed by its own form. Pure logic.
 import { GAME_SPECIES, SPECIES, type SpeciesDef } from '../../data/species';
 import { ART_KEYS } from '../../data/sprites.generated';
-import { formKey, hasAlbinoArt, hasFinalForm, type BeastForm, type Variant } from './forms';
+import { formKey, hasAlbinoArt, hasAlfaArt, hasFinalForm, type BeastForm, type Variant } from './forms';
 import type { TeamBeast } from './team';
 
 export type EntryKind = 'specie' | 'albino' | 'evoluzione';
@@ -42,7 +42,7 @@ export function bestiaryEntries(): BestiaryEntry[] {
 
 /** The alphas with pictures of their own (their own sprite, or the species' alfaArt like the matriarch orca). */
 export function rareAlphas(): BeastForm[] {
-  return GAME_SPECIES.filter((s) => ART_KEYS.includes(`${s.id}_alfa`) || !!s.alfaArt).map((s) => ({
+  return GAME_SPECIES.filter((s) => hasAlfaArt(s.id)).map((s) => ({
     speciesId: s.id,
     variant: 'alfa' as const,
   }));
