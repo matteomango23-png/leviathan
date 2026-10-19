@@ -23,7 +23,7 @@ export interface SessionEvents {
   /** Save and go back to the title menu (its list of games, ui/titleMenu.ts). */
   toTitle: () => void;
   /** The test gallery's buttons (ui/galleryBar.ts): this form in the sea, as an opponent, as a companion. */
-  gallery: (act: 'sea' | 'fight' | 'companion' | 'ride', form: BeastForm) => void;
+  gallery: (act: 'sea' | 'fight' | 'companion' | 'ride' | 'withIt', form: BeastForm) => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
   /** Test panel: skip to the next kind of weather. */

@@ -10,6 +10,7 @@ import { createGame, stepGame } from '../src/systems/game';
 import { emptyInput } from '../src/systems/input';
 import {
   fightIt,
+  fightWithIt,
   galleryForms,
   galleryLevel,
   makeCompanion,
@@ -18,6 +19,7 @@ import {
   setUpGallery,
   showInSea,
 } from '../src/systems/gallery';
+import { battleSetup } from '../src/systems/battleResult';
 import { generateWorld } from '../src/systems/world/worldGen';
 
 const map = generateWorld();
@@ -95,5 +97,14 @@ describe('the three tries', () => {
     for (let i = 0; i < 240 && !g.beasts.riding; i++) stepGame(g, emptyInput(), 1 / 60);
     expect(g.beasts.riding).toBe(true);
     expect(g.beasts.mount?.uid).toBe(s.companion);
+  });
+
+  it('in battle: it is your beast sent in, against a wild one of the same form', () => {
+    const g = fresh();
+    const events: GameEvent[] = [];
+    fightWithIt(g, newGalleryState(), { speciesId: 'tricheco', variant: 'comune' }, events);
+    const setup = battleSetup(g)!;
+    expect(setup.state.team[0]!.form.speciesId).toBe('tricheco');
+    expect(setup.state.foe.form.speciesId).toBe('tricheco');
   });
 });
