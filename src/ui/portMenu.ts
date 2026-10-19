@@ -113,7 +113,7 @@ export class PortMenu {
     else if (t === 'conchiglie' || t === 'cure' || t === 'esche' || t === 'sub') renderShop(b, ctx, t);
     else if (t === 'mezzi') renderVehicles(b, ctx);
     else if (t === 'zaino') renderBackpack(b, ctx);
-    else renderTeamPanel(b, this.g, true, true);
+    else renderTeamPanel(b, this.g, 'port');
     this.body.scrollTop = keep;
   }
 

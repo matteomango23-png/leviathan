@@ -966,3 +966,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Conchiglie come le Poké Ball:** la Conchiglia del Re prende il posto dell'arpione mitico, che non serviva più (i Guardiani, che ne rinnovavano la scorta, sono fermi con la storia). Se ne porta una sola alla volta: usata, se ne ricompra un'altra.
 - **Esche per gruppo, i dati in `BAIT_GROUPS`:** i giganti da caccia non si attirano mai. Le pregiate costano il triplo e il 12% delle volte portano un alfa, o un albino dove ha immagini proprie.
 - **Riparazioni in ogni porto, un solo carburante** (scelta del proprietario). I ricambi restano per una nave rotta in mare.
+
+## 19 ottobre 2026 — Bestiario per forme, stiva della nave (v0.72.0)
+
+- **Ogni versione con immagini proprie è una voce del bestiario:** albini e forme finali sono bestie a sé (il proprietario), accanto alla specie con lo stesso numero. Gli alfa restano "versioni rare", e solo con immagini proprie. Una forma senza immagini proprie non ha una voce: niente card prese in prestito.
+- **Tre posti per le bestie:** squadra (5), stiva della nave (`hold`, per modello: un motivo in più per comprare una nave grande) e Recinto del porto. Dalla plancia si scambia fra squadra e stiva; il Recinto si raggiunge solo al porto, e la stiva solo con la nave ormeggiata lì.
+- **Niente alone sulle bestie rare in acqua:** si riconoscono dall'immagine e dalla dimensione.

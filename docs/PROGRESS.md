@@ -1,5 +1,35 @@
 # Progressi
 
+## Lotto I, bestiario e squadra (19 ottobre 2026) → v0.72.0
+
+- **Bestiario:** `systems/beasts/bestiaryEntries.ts`.
+  - `bestiaryEntries`: specie + albino + forme finali con immagini proprie, in fila.
+  - `entryState` e `countsFor`, per forma.
+  - `rareAlphas`: solo alfa con immagini (`<id>_alfa` o `alfaArt`).
+  - `evolutionLine` e `knowsForm`.
+  - `ui/bestiary.ts` le usa; `rareVersions.ts` resta per gli alfa.
+- **Scheda:** `evolutionIcons` in `ui/beastSheet.ts` (`SheetExtra.known`), CSS `.sheet-evo`.
+- **Niente alone:** tolti l'ellisse, le scintille e `glowSpots` delle bestie (`views/beastsLayer.ts`, `WorldScene.ts`).
+- **Stiva:**
+  - `ShipModelDef.hold` (`data/fleet.ts`, nella card del cantiere);
+  - `TeamBeast.aboard` (salvato);
+  - `systems/beasts/hold.ts` (`placeOf`, `holdRoom`, `reachable`, `cannotMove`, `moveBeast`);
+  - `addTamed(all, b, holdRoom)`;
+  - `renderTeamPanel(…, 'dive' | 'ship' | 'port')`;
+  - tolto `toggleInTeam`.
+  - Nei salvataggi vecchi la riserva è al Recinto.
+- **Test:** `tests/lottoI.test.ts`; aggiornati beasts, lottoC, lottoF2.
+
+**Da provare sull'iPhone:**
+- il bestiario (squalo, albino, Titano in fila);
+- una scheda con le icone delle evoluzioni;
+- il menu in acqua (solo la squadra);
+- la plancia (squadra e stiva);
+- il Recinto al porto;
+- una bestia rara in acqua, senza alone.
+
+**Prossimo:** lotto J (salto fuori dall'acqua cavalcando, uccelli), poi K (tutorial).
+
 ## Lotto G+H, porto a schede e bacheca nuova (16 ottobre 2026) → v0.71.0
 
 - **Schede** (`ui/portMenu.ts`):

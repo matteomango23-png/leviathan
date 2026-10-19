@@ -79,7 +79,7 @@ export class PauseMenu {
       });
     }
     this.msg = el('p', 'menu-msg', panel);
-    renderTeamPanel(panel, game, false);
+    renderTeamPanel(panel, game, 'dive');
     renderMissions(panel, game.gear);
     if (testMode())
       renderTestPanel(

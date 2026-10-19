@@ -2,6 +2,21 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.72.0 — Bestiario e squadra (19 ottobre 2026)
+
+- **Bestiario:**
+  - albini e forme finali sono **bestie a sé**, subito accanto alla loro specie, con lo stesso numero e un'etichetta ("albino", "evoluzione");
+  - ognuna è vista o domata per conto suo: con solo uno squalo albino, lo squalo comune resta "visto" e apre la sua scheda;
+  - le **versioni rare** sono solo gli alfa con immagini proprie.
+- **Icone delle evoluzioni** sulla scheda di una bestia, in basso a destra: tocchi un'icona e vedi quella forma; le forme che non hai mai visto sono un'ombra.
+- **Via l'alone chiaro** intorno alle bestie rare e ai leggendari in acqua.
+- **Squadra:**
+  - in acqua, nel menu, vedi solo i 5 della squadra;
+  - sulla nave c'è una **stiva per le bestie**, che dipende dalla nave: nessun posto sulla prima nave, da 2 a 10 su quelle comprate;
+  - le altre aspettano al **Recinto** del porto, dove le scambi;
+  - una bestia domata con la squadra piena va in stiva se c'è posto, altrimenti al Recinto;
+  - si vende solo dal Recinto.
+
 ## v0.71.0 — Porto a schede e bacheca nuova (16 ottobre 2026)
 
 - **Il porto è diviso in schede, una per argomento:** Bacheca, Mercato, Conchiglie, Cure, Esche, Sub, Mezzi, Zaino, Recinto.

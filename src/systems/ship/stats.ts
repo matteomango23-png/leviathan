@@ -138,6 +138,15 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       unit: 'posti',
     },
     {
+      key: 'hold',
+      group: g,
+      label: 'Stiva per le bestie',
+      value: m.hold,
+      text: m.hold ? `${m.hold} bestie oltre la squadra` : 'nessuna: solo la squadra',
+      better: 'high',
+      unit: 'bestie',
+    },
+    {
       key: 'length',
       group: g,
       label: 'Lunghezza',

@@ -171,7 +171,7 @@ export class Cockpit {
             ? `In vasca (${places} posti): ${now.join(', ')}. Le bestie ferite guariscono piano qui a bordo (circa due minuti), le più ferite per prime; al porto guarisce tutta la squadra subito.`
             : `Vasca (${places} posti): la squadra sta bene. Le bestie ferite guariscono piano qui a bordo; al porto subito.`,
       );
-      renderTeamPanel(this.body, this.g, true);
+      renderTeamPanel(this.body, this.g, 'ship');
     }
     this.body.scrollTop = keep;
   }

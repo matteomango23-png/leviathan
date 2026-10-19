@@ -230,7 +230,9 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         ? [
             e.toTeam
               ? `${formName(b.form)} entra nella tua squadra!`
-              : `${formName(b.form)} va in riserva: la squadra è piena.`,
+              : b.aboard
+                ? `${formName(b.form)} va nella stiva della nave: la squadra è piena.`
+                : `${formName(b.form)} va al Recinto del porto: la squadra è piena e la nave non ha posto.`,
             3.5,
           ]
         : null;

@@ -84,7 +84,7 @@ Il primo tester ha trovato lo squalo bianco ma non ha capito che esistono i legg
   - prima della voce si vede solo la sagoma scura con un indizio, dopo la card intera;
   - taglie con le card;
   - missioni ordinate meglio.
-- **I. Bestiario e squadra:**
+- **I. Bestiario e squadra** ✅ v0.72.0:
   - gli albini sono voci separate;
   - le versioni rare mostrano solo quelle con immagini proprie;
   - le evoluzioni stanno una accanto all'altra, con le icone delle evoluzioni sulla card;
