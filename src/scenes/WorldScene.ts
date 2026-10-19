@@ -25,7 +25,8 @@ import {
   swapWithPreviousGame,
   writeToStorage,
 } from '../systems/save/storage';
-import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
+import { createBirds, eatBirdsNear, stepBirds, type BirdsState } from '../systems/birds';
+import { mountAteBird } from '../systems/beastPlay';
 import { coldAt, skipWeather, stepWeather, weatherLook, weatherName } from '../systems/weather';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres } from '../systems/world/zones';
@@ -232,6 +233,15 @@ export class WorldScene extends Phaser.Scene {
       if (e.type === 'bubble') this.effects.bubble(e.x, e.y);
       else if (e.type === 'dash')
         for (let i = 0; i < 5; i++) this.effects.bubble(e.x + Math.random() * 8 - 4, e.y);
+      // a leap out of the water on a beast (breach.ts): spray going up, a big splash coming down
+      else if (e.type === 'breach') this.effects.puff(e.x, e.y, 14, 0xe6f3f7, 70);
+      else if (e.type === 'breachSplash') {
+        this.effects.puff(e.x, e.y, Math.min(30, 12 + e.speed / 6), 0xe6f3f7, 40 + e.speed * 0.5);
+        for (let i = 0; i < 10; i++)
+          this.effects.bubble(e.x + Math.random() * 24 - 12, e.y + 6 + Math.random() * 10);
+        this.rig.shake();
+      } else if (e.type === 'birdEaten')
+        this.effects.puff(e.x, e.y, 10, 0xf4f6f8, 35); // feathers
       else if (e.type === 'hurt') {
         this.hurtFlash = 0.5;
         this.rig.shake();
@@ -368,6 +378,14 @@ export class WorldScene extends Phaser.Scene {
       g.fish.schools,
     ))
       this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
+    // on a leap out of the water the beast snaps up the gulls in front of its jaws (owner, 16 ottobre)
+    const mount = g.beasts.mount;
+    if (d.airborne && g.beasts.riding && mount) {
+      const mouthX = d.x + d.face * mount.length * 0.45;
+      // the events go out with the next step (game.ts), its message and feathers with them
+      for (const b of eatBirdsNear(this.birds, mouthX, d.y, mount.length * 0.3 + 4))
+        mountAteBird(g, b.x, b.y, g.story.pending);
+    }
     this.bg.update(info, g.time, sky);
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);

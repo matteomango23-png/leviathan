@@ -535,6 +535,22 @@ export const SIDE_TAIL_UNIQUES: readonly string[] = ['orca_preistorica_albina'];
  * has to come up to breathe; empty, you are back on your own air. × your air, by species. Away from you it breathes
  * again (refillPerSec of its bar). Tuning.
  */
+/**
+ * Leaping out of the water on a beast you ride (owner, 16 ottobre 2026: "scattare fuori dall'acqua forte, un tuffo
+ * tipo Angry Shark, e mangiare gli uccelli"): reaching the surface going up at least `minUpShare` of the beast's
+ * speed, it leaves the water at `boost` × that speed (at most `maxUpSpeed` units/s), flies under `gravity` units/s²
+ * and falls back with a splash, slowed to `landSlow` of its speed. A gull caught in the air heals it by
+ * `birdHealShare` of its health. Tuning: a sprint about 3 m high, a dash about 10 m.
+ */
+export const RIDE_BREACH = {
+  minUpShare: 1.1, // above its cruising speed: only with the sprint or the dash
+  boost: 1.25,
+  maxUpSpeed: 130,
+  gravity: 140,
+  landSlow: 0.5,
+  birdHealShare: 0.08,
+};
+
 export const RIDE_AIR = {
   // owner, 9 ottobre: the whales no longer lend you air (the submarines and U-Boats are for long dives); was
   // { megattera: 5, capodoglio: 7, livyatan: 8, orca: 3, beluga: 2.5, narvalo: 2.5 }

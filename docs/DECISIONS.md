@@ -972,3 +972,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Ogni versione con immagini proprie è una voce del bestiario:** albini e forme finali sono bestie a sé (il proprietario), accanto alla specie con lo stesso numero. Gli alfa restano "versioni rare", e solo con immagini proprie. Una forma senza immagini proprie non ha una voce: niente card prese in prestito.
 - **Tre posti per le bestie:** squadra (5), stiva della nave (`hold`, per modello: un motivo in più per comprare una nave grande) e Recinto del porto. Dalla plancia si scambia fra squadra e stiva; il Recinto si raggiunge solo al porto, e la stiva solo con la nave ormeggiata lì.
 - **Niente alone sulle bestie rare in acqua:** si riconoscono dall'immagine e dalla dimensione.
+
+## 19 ottobre 2026 — Il salto fuori dall'acqua (v0.73.0)
+
+- **Si salta solo con lo sprint o lo scatto** (soglia sopra la velocità normale della bestia). Nuotando piano verso la superficie la bestia si ferma sotto, come prima: niente salti per sbaglio.
+- **In aria nessun comando:** come nei giochi di squali, il salto è un arco. I gabbiani restano solo aspetto (non salvati): presi al volo spariscono dal loro stormo e curano un po' la bestia.
