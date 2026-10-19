@@ -1,5 +1,19 @@
 # Progressi
 
+## Lotto O, comandi (19 ottobre 2026) → v0.75.1
+
+- **`ui/helm.css`:**
+  - leve 38×128, frecce 46, pulsanti 11 px su una riga, motore e Cockpit 30 px, barre in alto 96 px;
+  - `.helm-buttons` parte a 70 px (sotto il sonar), sempre 3 per colonna (tolta la regola dei 5);
+  - il sonar è una riga sola larga al massimo 320 px; la riga del timone sta su una linea con i puntini se è lunga.
+- **`helmControls.ts`:** tolto "scafo" dalla riga centrale (c'è la barra con la chiave).
+- **`battleUi.ts`:** "Doma" senza il numero.
+- Provato nel browser a 667 e 844 pixel col Nightmare a portelloni aperti e sonar acceso.
+
+**Da provare sull'iPhone:** il timone di ogni nave, soprattutto Nightmare e U-Boat, con portelloni aperti e sonar acceso.
+
+**Prossimo:** lotto P (suoni).
+
 ## Lotto L, acqua e salto (19 ottobre 2026) → v0.75.0
 
 - **Superficie** (`systems/breach.ts`):

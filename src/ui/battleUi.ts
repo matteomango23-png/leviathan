@@ -173,9 +173,8 @@ export class BattleUi {
         this.command(m, 'Zaino', 'icona_zaino', 'c-bag', bag);
         this.command(m, 'Squadra', 'icona_squadra', 'c-team', team);
         const owned = shellsOwned(items);
-        const shells = owned.reduce((a, i) => a + (items[i.id] ?? 0), 0);
         // more than one kind of shell: choose which (owner, 16 ottobre: like Pokémon's balls)
-        this.command(m, `Doma ×${shells}`, 'icona_doma', 'c-tame', () =>
+        this.command(m, 'Doma', 'icona_doma', 'c-tame', () =>
           owned.length > 1 ? shellPick() : done({ kind: 'tame', shell: owned[0]?.id }),
         );
         this.command(m, 'Fuggi', 'icona_fuggi', 'c-flee', () => done({ kind: 'flee' }));

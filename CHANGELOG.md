@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.75.1 — Comandi del timone più leggeri (19 ottobre 2026)
+
+- **Al timone pulsanti più piccoli:** leve, frecce, pulsanti della nave, motore e Cockpit occupano meno spazio.
+- **Niente più sovrapposizioni:**
+  - il sonar è una riga sola e non copre più i minuti d'aria degli U-Boat;
+  - i pulsanti della nave (portelloni, drone, sfera, luce) stanno sotto il sonar, al massimo tre per colonna, e non arrivano più sulla leva Sali/Scendi;
+  - la riga con nodi, carburante e profondità sta su una linea (lo scafo ha già la sua barra).
+- **In battaglia** "Doma" non mostra più quante conchiglie hai: le vedi quando scegli quale lanciare.
+
 ## v0.75.0 — Acqua e salto più naturali (19 ottobre 2026)
 
 - **Niente muro sotto la superficie:** in groppa la bestia arriva fino al pelo dell'acqua, e tenendo su resta col dorso appena fuori.
