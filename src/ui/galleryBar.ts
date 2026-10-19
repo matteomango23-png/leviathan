@@ -1,5 +1,5 @@
 // The test gallery's bar (systems/gallery.ts): ◀ the beast ▶ with a list to jump to one, and its three tries: in the
-// sea, as an opponent, as a companion. Only in the gallery's throwaway game; part of the test tools.
+// sea, as an opponent, as a companion, on its back. Only in the gallery's throwaway game; part of the test tools.
 import type { Session } from '../scenes/session';
 import { formName } from '../systems/beasts/forms';
 import { galleryForms } from '../systems/gallery';
@@ -31,6 +31,9 @@ export class GalleryBar {
     );
     el('button', 'gallery-btn', acts, 'Compagno').addEventListener('click', () =>
       session.emit('gallery', 'companion', form()),
+    );
+    el('button', 'gallery-btn', acts, 'In groppa').addEventListener('click', () =>
+      session.emit('gallery', 'ride', form()),
     );
     el('button', 'gallery-btn exit', acts, 'Esci').addEventListener('click', () => session.emit('toTitle'));
     const go = (d: number): void => {

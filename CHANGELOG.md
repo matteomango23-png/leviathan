@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.78.1 — In groppa a ogni bestia nella galleria (19 ottobre 2026)
+
+- **Galleria di prova:** nuovo pulsante **In groppa** per salire su qualunque bestia, anche su quelle che nel gioco nuotano solo al tuo fianco (pesce spada, tricheco…). Vale solo nella galleria.
+
 ## v0.78.0 — Galleria di prova (19 ottobre 2026)
 
 - **Galleria di prova** nel menu iniziale (compare con le prove attive, i 5 tocchi sulla versione): tutte le 102 forme del gioco in fila, dallo squalo bianco alle bestie uniche.

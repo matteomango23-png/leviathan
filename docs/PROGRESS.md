@@ -1,5 +1,9 @@
 # Progressi
 
+## Lotto Q, in groppa nella galleria (19 ottobre 2026) → v0.78.1
+
+- `gallery.ts` `rideIt`: come Compagno ma con `callMount(..., true)`, quindi si cavalca anche una bestia col ruolo compagno. Pulsante "In groppa" in `galleryBar.ts`. Provato sul pesce spada.
+
 ## Lotto Q, galleria di prova (19 ottobre 2026) → v0.78.0
 
 - **`systems/gallery.ts`:**
