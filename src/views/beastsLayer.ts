@@ -1,5 +1,5 @@
-// Draws the wild beasts and the mount you ride, and works out where the rider sits. Rare beasts (albino,
-// alfa, legendary, Guardians) shimmer with a pale glow so you notice them in the dark. Health is shown in
+// Draws the wild beasts and the mount you ride, and works out where the rider sits. Rare beasts are told by their
+// pictures and size: no glow around them any more (owner, 16 ottobre 2026: "fa schifo"). Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
 import { CLARITY } from '../data/sea';
@@ -9,7 +9,7 @@ import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, formKey, speciesOf, swimLook, type BeastForm } from '../systems/beasts/forms';
 import { riderSeat } from '../systems/beasts/combat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
-import { isInWater, isRare } from '../systems/beasts/wildState';
+import { isInWater } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
 import { BeastSprite } from './beastView';
 import { PackTrail } from './packFormation';
@@ -35,7 +35,6 @@ export class BeastsLayer {
   /** The rest of a school (barracudas): drawn around the leader, who is the one you fight. */
   private readonly school: BeastSprite[][];
   private readonly mount: BeastSprite;
-  private readonly glow: Phaser.GameObjects.Graphics;
   /** How much each wild beast shows as a dark shape now (easing towards the water's own), and the last time. */
   private readonly shapeNow: number[] = [];
   private lastTime = NaN;
@@ -43,8 +42,6 @@ export class BeastsLayer {
   private readonly trails: PackTrail[] = [];
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
-    this.glow = scene.add.graphics();
-    layer.add(this.glow);
     this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
     this.school = g.beasts.wilds.map((w) =>
       Array.from(
@@ -70,19 +67,11 @@ export class BeastsLayer {
     return { x: c.x + (lx * cos - ly * sin) * c.face, y: c.y + lx * sin + ly * cos, pitch: c.pitch };
   }
 
-  /** Rare beasts in the water: they light up the dark a little (for the light mask). */
-  glowSpots(g: GameState): { x: number; y: number; r: number }[] {
-    return g.beasts.wilds
-      .filter((w) => isInWater(w) && isRare(w))
-      .map((w) => ({ x: w.x, y: w.y, r: w.length * 0.5 }));
-  }
-
   /** @param shapes murky water (clarity.ts): how murky, and where your light is (the beasts far from it are dark
    *  shapes) */
   update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
     const dt = Number.isNaN(this.lastTime) ? 1 : Math.max(0, Math.min(1, time - this.lastTime));
     this.lastTime = time;
-    this.glow.clear();
     // out of the picture nothing is drawn (owner, 11 ottobre: slow with many beasts and their packs under the ship)
     const v = g.beasts.view;
     const unseen = (x: number, y: number, len: number): boolean =>
@@ -102,20 +91,6 @@ export class BeastsLayer {
       const now = Number.isNaN(was) ? want : was + (want - was) * Math.min(1, dt * CLARITY.shapesEase);
       this.shapeNow[i] = now;
       const shade = now > 0.01 ? mixTint(0xffffff, CLARITY.shapeTint, now) : undefined;
-      if (isRare(w)) {
-        const pulse = 0.5 + 0.5 * Math.sin(time * 2.4 + w.id);
-        this.glow.fillStyle(0xdff6ff, 0.05 + 0.05 * pulse);
-        this.glow.fillEllipse(w.x, w.y, w.length * 1.3, w.length * 0.5);
-        this.glow.fillStyle(0xffffff, 0.5 * pulse);
-        for (let k = 0; k < 4; k++) {
-          const a = time * 0.8 + k * 1.6 + w.id;
-          this.glow.fillCircle(
-            w.x + Math.cos(a) * w.length * 0.45,
-            w.y + Math.sin(a * 1.3) * w.length * 0.14,
-            0.9,
-          );
-        }
-      }
       if (unseen(w.x, w.y, w.length)) s.hide();
       else
         s.update({

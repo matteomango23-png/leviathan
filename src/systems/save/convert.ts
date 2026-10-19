@@ -51,6 +51,7 @@ export function restoreTeam(save: SaveData): TeamBeast[] {
     b.ko = s.ko || b.hp <= 0;
     b.xp = Math.min(s.xp, xpToNext(b)); // v0.23: the experience needed changed (Pokémon groups)
     b.food = s.food;
+    if (s.aboard && !s.inTeam) b.aboard = true;
     // its battle moves (0.24: Pokémon moves); an older save had the sea moves' PP, which no longer match
     const known = (s.known ?? []).filter((id) => BATTLE_MOVE_BY_ID[id]).slice(0, MOVE_SLOTS);
     if (known.length) {
@@ -129,6 +130,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
     hp: Math.round(b.hp * 10) / 10,
     ko: b.ko,
     inTeam: b.inTeam,
+    ...(b.aboard && !b.inTeam ? { aboard: true } : {}),
     ...(b.ppUsed ? { ppUsed: [...b.ppUsed] } : {}),
     known: [...b.known],
     ...(b.pendingMoves?.length ? { pendingMoves: [...b.pendingMoves] } : {}),

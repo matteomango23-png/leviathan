@@ -421,7 +421,6 @@ export class WorldScene extends Phaser.Scene {
     const murk = this.murkShown;
     const glows = [
       ...this.places.glowSpots(g.gear),
-      ...this.beasts.glowSpots(g),
       ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),

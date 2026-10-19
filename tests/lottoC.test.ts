@@ -69,12 +69,13 @@ describe('the bestiary', () => {
   it('lists the rare versions seen, not only the tamed ones', () => {
     const g = createGame(map, null, 4);
     g.seen.add('squalo_bianco_alfa');
-    giveTestBeast(g, { speciesId: 'barracuda', variant: 'alfa' }, 5);
+    giveTestBeast(g, { speciesId: 'tricheco', variant: 'alfa' }, 5);
     const v = rareVersions(g);
     expect(v.find((r) => r.form.speciesId === 'squalo_bianco' && r.form.variant === 'alfa')?.state).toBe(
       'seen',
     );
-    expect(v.find((r) => r.form.speciesId === 'barracuda' && r.form.variant === 'alfa')?.state).toBe('tamed');
+    expect(v.find((r) => r.form.speciesId === 'tricheco' && r.form.variant === 'alfa')?.state).toBe('tamed');
+    expect(v.some((r) => r.form.speciesId === 'barracuda')).toBe(false); // no pictures of its own (16 ottobre)
     expect(v.some((r) => r.state === 'unknown')).toBe(true);
   });
 });

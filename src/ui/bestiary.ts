@@ -1,7 +1,6 @@
 // The bestiary (like a Pokédex): every beast, swarm and fish. Unknown ones are silhouettes,
 // seen ones are in shadow, tamed ones are in colour. Tap a beast to open its sheet.
 import { RARITY } from '../data/cards';
-import { GAME_SPECIES } from '../data/species';
 import { FISH, SWARMS } from '../data/world';
 import { formKey, formName, formStars, type BeastForm } from '../systems/beasts/forms';
 import { ART_KEYS } from '../data/sprites.generated';
@@ -12,6 +11,13 @@ import { ICONS, icon } from './icons';
 import { setArt } from './art';
 import { LEGEND_GIANTS, LEGENDS } from '../systems/beasts/legends';
 import { rareVersions } from '../systems/beasts/rareVersions';
+import {
+  bestiaryEntries,
+  countsFor,
+  entryState,
+  knowsForm,
+  type EntryKind,
+} from '../systems/beasts/bestiaryEntries';
 
 export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   const root = el('div', 'sheet bestiary', parent);
@@ -25,15 +31,16 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
   x.addEventListener('click', close);
 
   const team = g.beasts.team;
-  const tamedCount = (id: string) => team.filter((b) => b.form.speciesId === id).length;
-  const seenBeasts = GAME_SPECIES.filter((s) => g.seen.has(s.id) || tamedCount(s.id) > 0).length;
-  const tamedBeasts = GAME_SPECIES.filter((s) => tamedCount(s.id) > 0).length;
+  const entries = bestiaryEntries().map((e) => ({ e, state: entryState(e, g) }));
+  const seenN = entries.filter((x) => x.state !== 'unknown').length;
+  const tamedN = entries.filter((x) => x.state === 'tamed').length;
   el(
     'p',
     'bestiary-count',
     panel,
-    `Bestie viste ${seenBeasts}/${GAME_SPECIES.length} · domate ${tamedBeasts}/${GAME_SPECIES.length}`,
+    `Bestie viste ${seenN}/${entries.length} · domate ${tamedN}/${entries.length}`,
   );
+  const known = (f: BeastForm): boolean => knowsForm(f, g);
 
   const body = el('div', 'bestiary-body', panel);
   el('h3', '', body, 'Bestie');
@@ -72,32 +79,40 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     tiles.sort((a, b) => (byRarity ? n(b, 'stars') - n(a, 'stars') : 0) || n(a, 'order') - n(b, 'order'));
     grid.append(...tiles);
   });
-  GAME_SPECIES.forEach((s, i) => {
-    const owned = team.filter((b) => b.form.speciesId === s.id);
-    const seen = g.seen.has(s.id) || owned.length > 0;
-    const form: BeastForm = { speciesId: s.id, variant: 'comune' };
+  // a species, then its albino and its final forms right beside it, each a beast of its own (16 ottobre)
+  const TAG: Record<EntryKind, string> = { specie: '', albino: 'albino', evoluzione: 'evoluzione' };
+  entries.forEach(({ e, state }, i) => {
+    const form = e.form;
+    const owned = team.filter((b) => countsFor(e, b));
+    const seen = state !== 'unknown';
     const stars = formStars(form) as 1 | 2 | 3 | 4 | 5;
-    const state = owned.length ? 'tamed' : seen ? 'seen' : 'unknown';
-    const card = el('button', `beast-tile ${state}`, grid);
+    const card = el('button', `beast-tile ${state}${e.kind !== 'specie' ? ' version' : ''}`, grid);
     card.dataset.state = state;
     card.dataset.order = String(i);
     card.dataset.stars = String(stars);
     card.style.setProperty('--rarity', RARITY[stars].color);
     // never met: the same dark tile with a paw for every beast (its painting would show as a black block)
-    if (seen && ART_KEYS.includes(s.id)) {
+    if (seen && (e.kind !== 'specie' || ART_KEYS.includes(form.speciesId))) {
       const img = el('img', '', card);
       setArt(img, form);
       img.alt = '';
     } else card.append(icon('paw'));
-    el('span', 'tile-num', card, `#${String(i + 1).padStart(2, '0')}`);
-    el('span', 'tile-name', card, seen ? s.name : '???');
+    el('span', 'tile-num', card, `#${String(e.num).padStart(2, '0')}`);
+    el('span', 'tile-name', card, seen ? formName(form) : '???');
+    if (TAG[e.kind]) el('span', 'tile-tag', card, TAG[e.kind]);
     if (owned.length) el('span', 'tile-badge', card, `×${owned.length}`);
     if (!seen) return;
     card.addEventListener('click', () => {
+      // its own sheet: a common shark's, even if you only have its albino (owner, 16 ottobre)
       const best = [...owned].sort((a, b) => b.level - a.level)[0];
       if (best)
-        openBeastSheet(parent, best.form, best.level, { hp: best.hp, ko: best.ko, count: owned.length });
-      else openBeastSheet(parent, form);
+        openBeastSheet(parent, best.form, best.level, {
+          hp: best.hp,
+          ko: best.ko,
+          count: owned.length,
+          known,
+        });
+      else openBeastSheet(parent, form, undefined, { known });
     });
   });
   applyFilter('all');
@@ -143,8 +158,8 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     el('span', 'tile-sub', card, mine ? 'domata' : 'gigante preistorico');
     if (met) card.addEventListener('click', () => openBeastSheet(parent, form, mine?.level));
   }
-  // the rare versions (albino, alpha, final forms): the ones you have seen, in shadow, and the ones you tamed, in
-  // colour (owner, 15 ottobre: only the tamed ones were listed)
+  // the rare versions: the alphas with pictures of their own, seen or tamed (an albino or a final form is a beast of
+  // its own above)
   const rare = rareVersions(g);
   const met = rare.filter((r) => r.state !== 'unknown');
   if (met.length) {
@@ -162,7 +177,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
       el('span', 'tile-name', card, formName(r.form));
       el('span', 'tile-sub', card, r.state === 'tamed' ? 'domata' : 'vista');
       card.addEventListener('click', () =>
-        openBeastSheet(parent, r.form, b?.level, b ? { hp: b.hp, ko: b.ko } : undefined),
+        openBeastSheet(parent, r.form, b?.level, b ? { hp: b.hp, ko: b.ko, known } : { known }),
       );
     }
   }

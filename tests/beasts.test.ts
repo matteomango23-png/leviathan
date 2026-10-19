@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { moveBeast, reachable } from '../src/systems/beasts/hold';
 import { MOVES } from '../src/data/moves';
 import { SPECIES_DANGER, WILD_SPAWNS } from '../src/data/beasts';
 import { BIOMES } from '../src/data/endless';
@@ -17,7 +18,6 @@ import {
   makeTeamBeast,
   movesFor,
   strongestLevel,
-  toggleInTeam,
   type TeamBeast,
 } from '../src/systems/beasts/team';
 
@@ -87,14 +87,17 @@ describe('team', () => {
   const tame = (all: TeamBeast[], form: BeastForm, level = 5) =>
     addTamed(all, makeTeamBeast(`b${all.length + 1}`, form, level, true));
 
-  it('keeps five in the team, the rest go to the reserve', () => {
+  it('keeps five in the team, the rest go to the pen (no ship to carry them)', () => {
     const all: TeamBeast[] = [];
     for (let i = 0; i < 6; i++) tame(all, shark({ variant: i % 2 ? 'albino' : 'alfa' }));
     expect(all.filter((b) => b.inTeam)).toHaveLength(5);
     expect(all[5]!.inTeam).toBe(false);
-    expect(toggleInTeam(all, 'b6')).toBe(false); // team is full
-    expect(toggleInTeam(all, 'b1')).toBe(true);
-    expect(toggleInTeam(all, 'b6')).toBe(true);
+    expect(all[5]!.aboard).toBeUndefined();
+    const g = { ship: { owned: false, model: 'aurelia' }, beasts: { team: all } };
+    const open = reachable('port', false);
+    expect(moveBeast(g, 'b6', 'team', open)).toBe(false); // team is full
+    expect(moveBeast(g, 'b1', 'pen', open)).toBe(true);
+    expect(moveBeast(g, 'b6', 'team', open)).toBe(true);
   });
 
   it('measures taming difficulty against the strongest team beast', () => {

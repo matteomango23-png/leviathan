@@ -6,7 +6,7 @@ import { ART_KEYS, SPRITE_KEYS } from '../src/data/sprites.generated';
 import { speciesById } from '../src/data/species';
 import { finalFormAt } from '../src/systems/beasts/growth';
 import { formName, hasAlbinoArt, hasFinalForm } from '../src/systems/beasts/forms';
-import { allRareForms } from '../src/systems/beasts/rareVersions';
+import { bestiaryEntries } from '../src/systems/beasts/bestiaryEntries';
 import { PROGRESSION } from '../src/data/rules';
 
 const MAX = PROGRESSION.finalFormLevel;
@@ -44,8 +44,10 @@ describe('correzioni del lotto F', () => {
     expect(SPRITE_KEYS).not.toContain('coccodrillo_marino_finale');
   });
 
-  it('nel bestiario delle versioni rare: il Re Alfa e il Varano d’osso (il varano albino ha tutte le immagini)', () => {
-    const keys = allRareForms().map((f) => `${f.speciesId}:${f.variant}:${!!f.final}`);
+  it('nel bestiario: il Re Alfa e il Varano d’osso (il varano albino ha tutte le immagini)', () => {
+    const keys = bestiaryEntries()
+      .map((e) => e.form)
+      .map((f) => `${f.speciesId}:${f.variant}:${!!f.final}`);
     expect(keys).toContain('squalo_bianco:alfa:true');
     expect(keys).toContain('varano_nilo:albino:true');
     expect(hasAlbinoArt('varano_nilo')).toBe(true);

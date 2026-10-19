@@ -42,6 +42,7 @@ export interface SavedBeast {
   hp: number;
   ko: boolean;
   inTeam: boolean;
+  aboard?: boolean; // out of the team, in the ship's hold (16 ottobre 2026); missing: at a harbour's pen
   ppUsed?: number[]; // v13: PP its moves have spent (same order as known)
   known?: string[]; // its battle moves (0.24); missing: the last 4 it learned by its level
   pendingMoves?: string[]; // moves waiting for you to choose what to forget
@@ -215,6 +216,7 @@ function validateBeast(raw: unknown): SavedBeast {
     hp: raw.hp,
     ko: raw.ko === true,
     inTeam: raw.inTeam === true,
+    ...(raw.inTeam !== true && raw.aboard === true ? { aboard: true } : {}),
     ...(Array.isArray(raw.ppUsed) && raw.ppUsed.every((n) => Number.isInteger(n) && (n as number) >= 0)
       ? { ppUsed: raw.ppUsed as number[] }
       : {}),

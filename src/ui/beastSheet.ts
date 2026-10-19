@@ -2,7 +2,8 @@
 // name and three pages on the right (Info, Statistiche, Mosse: ui/sheetPages.ts).
 import { SPECIAL_FRAMES } from '../data/cards';
 import { buildSheet } from '../systems/beasts/sheet';
-import type { BeastForm } from '../systems/beasts/forms';
+import { formKey, formName, type BeastForm } from '../systems/beasts/forms';
+import { evolutionLine } from '../systems/beasts/bestiaryEntries';
 import type { TeamBeast } from '../systems/beasts/team';
 import type { GameEvent } from '../systems/events';
 import { el } from './dom';
@@ -27,6 +28,8 @@ export interface SheetExtra {
   events?: GameEvent[];
   /** The page it opens on. */
   page?: SheetPage;
+  /** Which forms you know: the others are shadows among its evolution icons (none: all known). */
+  known?: (form: BeastForm) => boolean;
 }
 
 const PAGES: [SheetPage, string, (box: HTMLElement, c: PageContext) => void][] = [
@@ -68,6 +71,8 @@ export function openBeastSheet(
     banner,
     s.special ? `${s.rarityName} · ${SPECIAL_FRAMES[s.special].label}` : s.rarityName,
   );
+
+  evolutionIcons(art, parent, b?.form ?? form, extra.known, close);
 
   const info = el('div', 'sheet-info', card);
   const head = el('div', 'sheet-head', info);
@@ -111,4 +116,36 @@ export function openBeastSheet(
   }
   show();
   return close;
+}
+
+/**
+ * Its line of evolutions, bottom right on the picture (owner, 16 ottobre: "due icone di due evoluzioni"): one round
+ * icon per form, this one lit; a form you have not met yet is a shadow. Tapping one opens its sheet.
+ */
+function evolutionIcons(
+  art: HTMLElement,
+  parent: HTMLElement,
+  form: BeastForm,
+  known: ((f: BeastForm) => boolean) | undefined,
+  close: () => void,
+): void {
+  const line = evolutionLine(form);
+  if (line.length < 2) return;
+  const row = el('div', 'sheet-evo', art);
+  const here = formKey(form);
+  line.forEach((f, i) => {
+    if (i > 0) el('span', 'sheet-evo-arrow', row, '›');
+    const met = !known || known(f);
+    const b = el('button', `sheet-evo-icon${formKey(f) === here ? ' on' : ''}${met ? '' : ' unknown'}`, row);
+    b.title = met ? formName(f) : '???';
+    const img = el('img', '', b);
+    setArt(img, f);
+    img.alt = '';
+    if (!met || formKey(f) === here) return;
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      close();
+      openBeastSheet(parent, f, undefined, { known });
+    });
+  });
 }

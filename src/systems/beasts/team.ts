@@ -1,4 +1,5 @@
-// Tamed beasts: the team (up to PROGRESSION.teamSize, the ones that fight in battle) and the reserve.
+// Tamed beasts: the team (up to PROGRESSION.teamSize, the ones that fight in battle); the others are in the ship's
+// hold or at a harbour's pen (hold.ts).
 import { TEAM_RULES } from '../../data/beasts';
 import { movesOf, type MoveDef } from '../../data/moves';
 import { PROGRESSION } from '../../data/rules';
@@ -17,6 +18,8 @@ export interface TeamBeast {
   hp: number;
   ko: boolean;
   inTeam: boolean;
+  /** Out of the team: in the ship's hold (true) or waiting at a harbour's pen (beasts/hold.ts, 16 ottobre). */
+  aboard?: boolean;
   /** Its battle moves (data/battleMoves.ts), at most 4, like Pokémon. */
   known: string[];
   /** PP each of its moves has spent (same order as `known`); back to full when the beast is fully healed. */
@@ -55,9 +58,11 @@ export function makeTeamBeast(uid: string, form: BeastForm, level: number, inTea
 
 export const teamMembers = (all: TeamBeast[]): TeamBeast[] => all.filter((b) => b.inTeam);
 
-/** Adds a newly tamed beast: to the team if there is room, otherwise to the reserve. */
-export function addTamed(all: TeamBeast[], b: TeamBeast): TeamBeast {
+/** Adds a newly tamed beast: to the team if there is room, then to the ship's hold (`holdRoom` places free), else
+ *  to a harbour's pen. */
+export function addTamed(all: TeamBeast[], b: TeamBeast, holdRoom = 0): TeamBeast {
   b.inTeam = teamMembers(all).length < PROGRESSION.teamSize;
+  b.aboard = !b.inTeam && holdRoom > 0 ? true : undefined;
   all.push(b);
   return b;
 }
@@ -74,19 +79,6 @@ export function movesFor(b: TeamBeast): { move: MoveDef; unlockLevel: number; un
     const unlockLevel = PROGRESSION.moveUnlockLevels[move.slot - 1] ?? 1;
     return { move, unlockLevel, unlocked: b.level >= unlockLevel };
   });
-}
-
-/** Moves a beast between team and reserve (the team never exceeds its size). */
-export function toggleInTeam(all: TeamBeast[], uid: string): boolean {
-  const b = all.find((x) => x.uid === uid);
-  if (!b) return false;
-  if (b.inTeam) {
-    b.inTeam = false;
-    return true;
-  }
-  if (teamMembers(all).length >= PROGRESSION.teamSize) return false;
-  b.inTeam = true;
-  return true;
 }
 
 /** Moves a team member one place up (-1) or down (+1) in the team order (the first one leads in battle). */

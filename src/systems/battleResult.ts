@@ -2,6 +2,7 @@
 // the wild beast gone (or calm for a while if you fled), or back to your ship or harbour if
 // the whole team was worn out. Pure logic; the World scene sends the returned events with the next step.
 import { residentGone } from './beasts/residents';
+import { holdRoom } from './beasts/hold';
 import { HUNT_RULES } from '../data/hunts';
 import type { StatusId } from '../data/moveBattle';
 import { REGIONS } from '../data/world';
@@ -40,7 +41,11 @@ export interface BattleOutcome {
 /** The beasts that fight for you: the team, worn-out ones included (they cannot be sent in). */
 export const battleTeam = (g: BackpackWorld) => teamMembers(g.beasts.team);
 
-export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
+/** @param g with its ship, a tamed beast with no room in the team goes to the hold (beasts/hold.ts) */
+export function finishBattle(
+  g: BackpackWorld & { ship?: { owned: boolean; model: string } },
+  o: BattleOutcome,
+): GameEvent[] {
   const events: GameEvent[] = [];
   g.beasts.battle = null;
   for (const t of o.team) {
@@ -84,6 +89,7 @@ export function finishBattle(g: BackpackWorld, o: BattleOutcome): GameEvent[] {
     const b = addTamed(
       g.beasts.team,
       makeTeamBeast(`b${g.beasts.nextUid++}`, { ...o.foe.form }, o.foe.level, true),
+      g.ship ? holdRoom({ ship: g.ship, beasts: g.beasts }) : 0,
     );
     b.hp = Math.max(1, Math.min(maxHpOf(b), o.foe.hp));
     // where you met it, for its sheet (its home waters)
