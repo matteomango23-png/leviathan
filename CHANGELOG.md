@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.81.3 — Il nemico gigante scende fino a poco sopra il menu (20 ottobre 2026)
+
+- **Battaglia:** il gioco misura lo schermo (altezza e barra in basso dell'iPhone). Un nemico grande scende fino a pochi millimetri sopra il menu dei comandi, sempre con un po' di spazio tra lui e il menu. Sugli schermi più alti sta più in basso e si vede meglio.
+
 ## v0.81.2 — I giganti di nuovo grandi, sopra il menu (20 ottobre 2026)
 
 - **Battaglia:** tornano le grandezze di prima (v0.81.0). Un nemico gigante sale invece di rimpicciolirsi: se è troppo alto esce dallo schermo in alto (e a destra con la coda), con testa e parte davanti del corpo in vista. Non scende mai dietro al menu.

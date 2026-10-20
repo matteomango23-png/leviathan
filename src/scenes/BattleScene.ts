@@ -2,6 +2,8 @@
 // the interface for your action and plays the steps with the battle view. Without a game it starts on its own
 // with the test team (link with ?battaglia).
 import Phaser from 'phaser';
+import { foeFloor } from '../systems/battle/stage';
+import { safeBottomPx } from '../ui/dom';
 import { BATTLE_PROTOTYPE } from '../data/battle';
 import { BATTLE_TEXT, type Named } from '../data/battleText';
 import { ITEMS } from '../data/world';
@@ -113,6 +115,8 @@ export class BattleScene extends Phaser.Scene {
     await loadBattleArt(this, this.s, place);
     const s = this.s;
     this.view = new BattleView(this, place, paintedLayers(place));
+    // the wild one stands just above the commands, measured on this screen (its height and safe area)
+    this.view.floor = foeFloor(window.innerHeight, safeBottomPx());
     this.view.setFighter('foe', s.foe.form, s.foe.level);
     this.view.setFighter('you', you(s).form, you(s).level, true); // known from the start: sizes are relative
     this.ui.show(s);

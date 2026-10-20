@@ -8,7 +8,14 @@ import { PROGRESSION } from '../src/data/rules';
 import { SPECIES, UNIQUE_VARIANTS } from '../src/data/species';
 import { BATTLE_ART_BOX } from '../src/data/sprites.generated';
 import type { Side } from '../src/systems/battle/battle';
-import { battleSize, cardBox, isGiant, placePicture, type StageBeast } from '../src/systems/battle/stage';
+import {
+  battleSize,
+  cardBox,
+  foeFloor,
+  isGiant,
+  placePicture,
+  type StageBeast,
+} from '../src/systems/battle/stage';
 import { formKey, formLengthM, type BeastForm } from '../src/systems/beasts/forms';
 import { battleArt } from '../src/views/battle/beastArt';
 
@@ -32,9 +39,10 @@ function onScreen(side: Side, form: BeastForm, level: number, w: number, h: numb
   const art = battleArt(form, side);
   const box = art.own ? BATTLE_ART_BOX[art.textureKey.replace(/^battle-/, '')] : undefined;
   const beast: StageBeast = { lengthM: formLengthM(form, level), giant: isGiant(form), box };
-  const size = battleSize(side, beast, w / h);
+  const floor = foeFloor(h); // as the battle measures it (no safe area here)
+  const size = battleSize(side, beast, w / h, floor);
   const b = box ?? cardBox();
-  const p = placePicture(side, size, w, h, b);
+  const p = placePicture(side, size, w, h, b, floor);
   const P = BATTLE_STAGE.picture;
   const pw = (b[2] - b[0]) * p.scale;
   const ph = (Math.min(b[3], P.foot) - b[1]) * p.scale;
@@ -69,7 +77,10 @@ describe('battle framing', () => {
               const inW = (Math.min(r.right, screen.w) - r.left) / width;
               expect(inW, `${at}: width in view`).toBeGreaterThanOrEqual(F.foeKeepW - 0.01);
               // never down behind the commands' menu, at most a little of it out at the top (owner, 20 ottobre)
-              expect(r.bottom, `${at}: above the commands`).toBeLessThanOrEqual(F.foeLowest * screen.h + 1);
+              // a few millimetres above the commands' menu (owner, 20 ottobre)
+              expect(r.bottom, `${at}: above the commands`).toBeLessThanOrEqual(
+                screen.h - F.menuPx - F.menuGapPx + 1,
+              );
               const inH = (r.bottom - Math.max(0, r.top)) / height;
               expect(inH, `${at}: height in view`).toBeGreaterThanOrEqual(F.foeKeepH - 0.01);
             } else {

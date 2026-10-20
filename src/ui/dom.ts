@@ -14,3 +14,12 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 }
 
 export const isTouchDevice = (): boolean => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+/** The screen's bottom safe area in CSS pixels (the iPhone's home bar), read with a probe. */
+export function safeBottomPx(): number {
+  const probe = el('div', '', document.body);
+  probe.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom, 0px)';
+  const h = probe.getBoundingClientRect().height;
+  probe.remove();
+  return h;
+}

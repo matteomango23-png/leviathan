@@ -114,7 +114,12 @@ export const BATTLE_STAGE = {
     /** The wild one's ground never lower than this: the top of the commands' menu (ui/battle.css .bmenu, made compact
      *  so it leaves it room). Was 0.62, then a giant could leave the screen at the bottom: Moby Dick hid behind the
      *  menu (owner, 20 ottobre: "non deve succedere mai"). */
-    foeLowest: 0.54, // the menu starts at 0.54 of the height on the smallest phone (667×375), 0.6 on the biggest
+    /** The commands' menu: its height over the bottom safe area (ui/battle.css .bmenu.main with its caption and
+     *  padding, measured 20 ottobre), and the gap kept between it and the wild one (a few millimetres). The battle
+     *  measures the screen (stage.ts foeFloor); foeLowest is for when it cannot. */
+    menuPx: 172,
+    menuGapPx: 14,
+    foeLowest: 0.5, // the menu starts at 0.54 of the height on the smallest phone (667×375), 0.6 on the biggest
     //                  (the picture's bottom is the hover above it)
     foeLeft: 0.52, // the wild one stays right of this share of the width, its head never further left
     /** A big wild one may leave the screen on the right (its tail: it looks left) and at the top, keeping at least
