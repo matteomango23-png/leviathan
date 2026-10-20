@@ -2,6 +2,12 @@
 
 Nel gioco le bestie sono sprite di profilo dipinti (sezione "Sprite di gioco"); le illustrazioni servono per card di squadra, bestiario e scheda della bestia. La descrizione di ogni bestia è il campo `artPrompt` in `data/species.ts` (e in `UNIQUE_VARIANTS` per Lo Sfregiato e La Regina bianca, in `SWARMS` di `data/world.ts` per i 4 sciami).
 
+**Formato delle card (20 ottobre 2026):**
+- la card è 2:3, ma le illustrazioni arrivano spesso in 4:5 o 9:16;
+- `npm run art` le mostra **intere**, senza tagliare naso o coda: l'immagine sta tutta dentro e lo spazio rimasto si riempie con la stessa immagine sfocata e scurita, con il bordo sfumato;
+- le card della flotta invece si ritagliano ancora;
+- per rifare tutte le card delle bestie: `npm run art -- --cards`.
+
 ## Come generarle
 
 1. Stesso strumento AI per tutte le bestie.

@@ -4,9 +4,10 @@
 //   <id>_side_open.jpg → public/sprites/<id>_open.webp   (same, mouth open)
 //   <id>_front.jpg, <id>_back.jpg (+ _open) → public/sprites/<id>_front.webp … (battle, three-quarter, 800×800)
 // Originals in art-inbox/ are never modified or deleted.
-// Options: --force (overwrite existing files), --only=<id>, --out=<folder> (write elsewhere, for checks).
+// Options: --force (overwrite existing files), --only=<id>, --out=<folder> (write elsewhere, for checks),
+//   --cards (remake only the beasts' card illustrations, over the old ones).
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
@@ -135,6 +136,9 @@ const args = process.argv.slice(2);
 const force = args.includes('--force');
 const only = args.find((a) => a.startsWith('--only='))?.slice(7);
 const outRoot = args.find((a) => a.startsWith('--out='))?.slice(6) ?? 'public';
+const cardsOnly = args.includes('--cards');
+/** A card picture this close to 2:3 is just cropped; any other is shown whole (makeCard). */
+const CARD_RATIO_SLACK = 0.02;
 
 async function knownIds(): Promise<Set<string>> {
   const ids = new Set<string>();
@@ -275,15 +279,51 @@ async function makeBattlePicture(src: string, dest: string, mirror: boolean, nam
   return `${w}×${h} in un quadrato ${BATTLE_PIC}×${BATTLE_PIC}`;
 }
 
-async function makeCard(src: string, dest: string): Promise<string> {
+/**
+ * A card: 2:3. A beast's picture of another shape is shown whole (owner, 20 ottobre: "molte illustrazioni del
+ * bestiario sono tagliate, es. il naso"; the 4:5 pictures lost their sides to the crop): fitted inside, the room left
+ * filled with the same picture blurred and darkened, the seam faded. The fleet's cards are still cropped.
+ */
+async function makeCard(src: string, dest: string, whole: boolean): Promise<string> {
   const meta = await sharp(src).metadata();
-  const c = coverCrop(meta.width!, meta.height!, CARD.w / CARD.h);
+  const [w, h] = [meta.width!, meta.height!];
+  const aspect = CARD.w / CARD.h;
+  if (whole && Math.abs(w / h / aspect - 1) > CARD_RATIO_SLACK) {
+    const k = Math.min(CARD.w / w, CARD.h / h);
+    const [cw, ch] = [Math.round(w * k), Math.round(h * k)];
+    const tall = ch < CARD.h; // room above and below (a wide picture), or at the sides (a narrow one)
+    const pad = tall ? (CARD.h - ch) / 2 : (CARD.w - cw) / 2;
+    const feather = Math.max(8, Math.min(60, Math.round(pad)));
+    const [x2, y2] = tall ? ['0', '1'] : ['1', '0'];
+    const f = (feather / (tall ? ch : cw)).toFixed(4);
+    const mask = Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}"><defs><linearGradient id="g" x1="0" y1="0" x2="${x2}" y2="${y2}">` +
+        `<stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${f}" stop-color="#fff" stop-opacity="1"/>` +
+        `<stop offset="${1 - Number(f)}" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>` +
+        `</linearGradient></defs><rect width="${cw}" height="${ch}" fill="url(#g)"/></svg>`,
+    );
+    const fg = await sharp(src)
+      .resize(cw, ch, { kernel: 'lanczos3' })
+      .ensureAlpha()
+      .composite([{ input: mask, blend: 'dest-in' }])
+      .png()
+      .toBuffer();
+    await sharp(src)
+      .resize(CARD.w, CARD.h, { fit: 'cover' })
+      .blur(28)
+      .modulate({ brightness: 0.55 })
+      .composite([{ input: fg, left: Math.round((CARD.w - cw) / 2), top: Math.round((CARD.h - ch) / 2) }])
+      .webp({ quality: 84, effort: 5 })
+      .toFile(dest);
+    return `intera ${cw}×${ch} da ${w}×${h}, il resto sfumato`;
+  }
+  const c = coverCrop(w, h, aspect);
   await sharp(src)
     .extract(c)
     .resize(CARD.w, CARD.h, { kernel: 'lanczos3' })
     .webp({ quality: 84, effort: 5 })
     .toFile(dest);
-  return `ritaglio 2:3 da ${meta.width}×${meta.height}`;
+  return `ritaglio 2:3 da ${w}×${h}`;
 }
 
 /** Writes src/data/sprites.generated.ts: which beast sprites exist (so the game never asks for a missing one). */
@@ -372,6 +412,9 @@ async function main(): Promise<void> {
     return;
   }
   const ids = await knownIds();
+  const fleetCards = new Set(
+    [...(await readFile('src/data/fleet.ts', 'utf8')).matchAll(/card: '([a-z0-9_]+)'/g)].map((m) => m[1]!),
+  );
   await mkdir(join(outRoot, 'art'), { recursive: true });
   await mkdir(join(outRoot, 'sprites'), { recursive: true });
   const files = (await readdir(INBOX)).sort();
@@ -381,10 +424,11 @@ async function main(): Promise<void> {
   for (const file of files) {
     if (file.startsWith('_')) continue; // set aside by hand (e.g. a discarded alternative)
     if (file === 'video') continue; // the videos of npm run art:video
+    if (statSync(join(INBOX, file)).isDirectory()) continue; // a batch waiting to be sorted (e.g. lotto8/)
     const extra = parseExtraName(file);
     if (extra) {
       const dest = extraDest(outRoot, extra);
-      if (only) continue;
+      if (only || cardsOnly) continue;
       if (existsSync(dest) && !force) {
         skipped++;
         continue;
@@ -407,6 +451,7 @@ async function main(): Promise<void> {
       continue;
     }
     if (only && parsed.id !== only) continue;
+    if (cardsOnly && (parsed.kind !== 'card' || fleetCards.has(parsed.id))) continue;
     if (!baseSpecies(parsed.id, ids))
       console.log(`! ${file}: "${parsed.id}" non corrisponde a nessuna bestia di src/data/species.ts`);
     const dest =
@@ -415,7 +460,7 @@ async function main(): Promise<void> {
         : parsed.kind === 'side' || parsed.kind === 'side_open'
           ? join(outRoot, 'sprites', `${parsed.id}${parsed.kind === 'side_open' ? '_open' : ''}.webp`)
           : join(outRoot, 'sprites', `${parsed.id}_${parsed.kind}.webp`);
-    if (existsSync(dest) && !force) {
+    if (existsSync(dest) && !force && !cardsOnly) {
       skipped++;
       continue;
     }
@@ -423,7 +468,7 @@ async function main(): Promise<void> {
       const src = join(INBOX, file);
       const note =
         parsed.kind === 'card'
-          ? await makeCard(src, dest)
+          ? await makeCard(src, dest, !fleetCards.has(parsed.id))
           : parsed.kind === 'side' || parsed.kind === 'side_open'
             ? await makeSprite(src, dest, parsed.mirror)
             : await makeBattlePicture(src, dest, parsed.mirror, `${parsed.id}_${parsed.kind}`);

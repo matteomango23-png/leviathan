@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.86.0 — Card del bestiario intere (20 ottobre 2026)
+
+- **Bestiario, squadra e schede:** le illustrazioni non sono più tagliate. Molte perdevano il naso o la coda: ora si vede tutto l'animale, e lo spazio in più è riempito dallo stesso fondale sfocato. Sistemate 69 card.
+
 ## v0.85.0 — Giganti che nuotano, luce sotto la nave, silenzio in pausa (20 ottobre 2026)
 
 - **Battaglia, giganti:** Moby Dick, il megalodonte e gli altri giganti tagliati dallo schermo restano grandi come prima. Ogni 9 secondi circa nuotano piano un po' più lontano, così li vedi quasi interi, schiena compresa, e poi tornano vicini. Non scendono mai sul menu.
