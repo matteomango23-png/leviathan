@@ -156,7 +156,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `cockpit.ts`, `cockpit.css`, `cockpitTheme.ts` | Il cockpit della nave: Plancia, Sonar, Drone (Nightmare), Diario, Recinto e Zaino; colori per nave (tema rosso del Nightmare). |
 | `bridgePanel.ts`, `instruments.ts` | La plancia: obiettivo seguito, carta nautica ±2 km, quadranti (carburante, velocità), meteo, travaso, razzo. |
 | `sonarScreen.ts` | Lo schermo sonar del cockpit (canvas animato). |
-| `helmControls.ts`, `helmGauges.ts`, `helmInfo.ts`, `helmTypes.ts`, `helmBars.ts`, `helm.css` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), gli strumenti (nodi, gas, profondità) e i pulsanti della nave (portellone, cala, tuffati). |
+| `helmControls.ts`, `helmGauges.ts`, `helmDials.ts`, `helmInfo.ts`, `helmTypes.ts`, `helmBars.ts`, `helm.css` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), i quadranti in alto (velocità, autonomia, carburante, profondità; valori in `helmGauges.ts`, disegno in `helmDials.ts`) e i pulsanti della nave (portellone, cala, tuffati). |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
 | `saveTransfer.ts` | Esporta e importa il salvataggio come file. |

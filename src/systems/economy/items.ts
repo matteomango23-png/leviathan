@@ -145,3 +145,10 @@ export function useOnBeast(
   inventory[id] = (inventory[id] ?? 0) - 1;
   return r;
 }
+
+/** The items in the bag that would help this beast now, out of battle (the team list's "Dai oggetto"). */
+export function itemsForBeast(inv: Record<string, number>, b: TeamBeast): ItemDef[] {
+  return ITEMS.filter(
+    (x) => (inv[x.id] ?? 0) > 0 && !!x.use && !x.battleOnly && canApply(x.use, careOfBeast(b)),
+  );
+}

@@ -18,6 +18,7 @@ import { openBag } from './bagScreen';
 import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { growthBars } from './growthBars';
+import { itemsForBeast } from '../systems/economy/items';
 
 /** Where the panel is open: in the water (pause), at the helm, at a harbour's pen. */
 type TeamPanelMode = 'dive' | 'ship' | 'port';
@@ -112,8 +113,20 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, mode: TeamPan
       down.disabled = i >= members.length - 1;
       down.addEventListener('click', () => moveInTeam(g.beasts.team, b.uid, 1) && draw());
     }
-    const item = el('button', 'menu-btn small', r, 'Oggetto');
-    item.addEventListener('click', () => openBag(document.getElementById('ui') ?? document.body, g, draw, b));
+    // an item for it (a cure, a tonic…): the bag opens over the window you are in, the cockpit too (owner, 20
+    // ottobre: it opened under the cockpit and showed only once it was closed)
+    const item = el('button', 'menu-btn small', r, 'Dai oggetto');
+    const none = !itemsForBeast(g.gear.inventory, b).length;
+    item.disabled = none;
+    if (none) item.title = 'Nessuna cura o oggetto per lei nella sacca';
+    item.addEventListener('click', () =>
+      openBag(
+        box.closest<HTMLElement>('.port, .menu') ?? document.getElementById('ui') ?? document.body,
+        g,
+        draw,
+        b,
+      ),
+    );
     if (!editable) return;
     if (isHungry(b)) {
       const feed = el('button', 'menu-btn small', r, 'Nutri');

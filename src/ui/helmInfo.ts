@@ -13,8 +13,6 @@ import { boatModel } from '../systems/boat';
 import { SHIP_MODELS } from '../data/fleet';
 import { SHIP } from '../data/ship';
 import { inPool } from '../systems/ship/shipPool';
-import { formName } from '../systems/beasts/forms';
-import { maxHpOf } from '../systems/beasts/team';
 import { keelDepthM } from '../systems/ship/uboat';
 import { canRecon, canSendSphere, hasDrone, reconOut, sphereBay, sphereOut } from '../systems/ship/gadgets';
 import { subModel } from '../systems/submarine';
@@ -98,10 +96,12 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       mode: 'ship',
       face: s.face,
       knots: knotsOf(s.speed),
+      topKnots: shipModel(s).knots,
       fuel: s.fuel,
       tank: shipModel(s).tank,
       still: s.speed < SHIP.stillBelow,
       rangeKm: autonomyKm(s.fuel, shipModel(s).perKm, throttle),
+      fullRangeKm: autonomyKm(shipModel(s).tank, shipModel(s).perKm, throttle),
       sonar: sonarLine(g),
       sonarOn: s.sonarOn,
       lightOn: s.lightOn,
@@ -109,7 +109,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       // its hull (block 5c): the bar, and broken down
       hull: [s.hull, hullMax(s)],
       broken: s.hull <= 0,
-      pool: poolLine(g),
+      poolCount: inPool(g).length,
       objective: objectiveLine(g),
       hatchCanMove: hatchCanMove(s) && !boatOnRamp(g),
       hatches: hatchButtons(g),
@@ -139,9 +139,11 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       mode: 'boat',
       face: b.face,
       knots: knotsOf(b.speed),
+      topKnots: boatModel(b.model).knots,
       fuel: b.fuel,
       tank: boatModel(b.model).tank,
       rangeKm: autonomyKm(b.fuel, boatModel(b.model).perKm, throttle),
+      fullRangeKm: autonomyKm(boatModel(b.model).tank, boatModel(b.model).perKm, throttle),
       drums: [b.drums, boatModel(b.model).drums],
       engineOn: b.engineOn,
       canDiveOff: canDiveFromBoat(g),
@@ -152,9 +154,11 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       mode: 'sub',
       face: g.sub.face,
       knots: knotsOf(Math.hypot(g.sub.vx, g.sub.vy)),
+      topKnots: knotsOf(subModel(g.sub.model).speed),
       fuel: g.sub.fuel,
       tank: subModel(g.sub.model).tank,
       rangeKm: autonomyKm(g.sub.fuel, subModel(g.sub.model).perKm, throttle),
+      fullRangeKm: autonomyKm(subModel(g.sub.model).tank, subModel(g.sub.model).perKm, throttle),
       depthM: Math.max(0, (g.sub.y - WORLD.surfaceY) / WORLD.unitsPerMetre),
       maxDepthM: subModel(g.sub.model).maxDepthM,
       hull: [g.sub.hull, subModel(g.sub.model).hull],
@@ -163,13 +167,4 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       canTrack: !!trackerTarget(g),
     };
   return null;
-}
-
-/** The ship's pool at the helm: the most hurt beast resting in it (and how many more), while it heals. */
-function poolLine(g: GameState): string | undefined {
-  const now = inPool(g);
-  const b = now[0];
-  if (!b) return undefined;
-  const more = now.length > 1 ? ` +${now.length - 1}` : '';
-  return `vasca: ${formName(b.form)} ${Math.round((100 * b.hp) / maxHpOf(b))}%${more}`;
 }

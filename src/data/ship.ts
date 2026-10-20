@@ -144,6 +144,9 @@ export const RESCUE = {
 export const HELM = {
   /** Shown speed: knots per unit/s. One factor for both: the ship at full throttle shows ~24 knots. */
   knotsPerUnit: 24 / 220,
+  /** The instruments at the top of the helm (owner, 20 ottobre: "3 indicatori tipo contachilometri anni 70
+   *  quadrati… icone senza scritte"): square dials of this side (px), the needle sweeping this many degrees. */
+  dials: { size: 46, sweepDeg: 240 },
   diveDeadzone: 0.15, // the dive lever snaps to the middle this close to it
   keyThrottlePerSec: 0.6, // keyboard: W / S move the throttle this much per second
   subTurnBelow: 18, // units/s: the submarine turns round below this speed

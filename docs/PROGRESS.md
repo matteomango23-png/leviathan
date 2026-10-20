@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.82.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.83.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,22 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, poi W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, poi X mare, Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto W, timone e recinto (20 ottobre 2026) → v0.83.0
+
+- **Quadranti:** `ui/helmDials.ts` (nuovo) disegna in SVG i quadranti quadrati: tacche, icona, lancetta e numero. I valori sono calcolati in `helmGauges.ts` da `dialValues` (velocità, autonomia, carburante con i fusti, profondità se c'è) e testati. `HelmInfo` ha in più `topKnots` e `fullRangeKm`. La grandezza e l'arco della lancetta stanno in `HELM.dials` (`data/ship.ts`). Non esistono più `gaugeLine` e `poolLine`.
+- **Vasca:** `HelmInfo.poolCount`, mostrato come segno "≈N" sul pulsante Cockpit (`helmControls.ts`).
+- **Dai oggetto:** `itemsForBeast` (`economy/items.ts`) filtra gli oggetti utili a una bestia. `teamPanel.ts` spegne il pulsante se non ce ne sono e apre la sacca dentro `.port` o `.menu`, davanti alla finestra.
+- **Misure nel browser:** a 667×375 e 932×430 i quadranti, il sonar, le barre e i pulsanti in alto non si sovrappongono.
+
+**Da provare sull'iPhone:**
+- al timone di nave, motoscafo e sottomarino: guarda i quadranti mentre acceleri e consumi carburante;
+- con bestie nella vasca, guarda il segno sul pulsante Cockpit;
+- nel cockpit apri "Dai oggetto" con una cura nella sacca.
 
 ## Lotto V, sonar, drone e cacce (20 ottobre 2026) → v0.82.0
 

@@ -6,7 +6,7 @@ import { ITEMS, POCKET_NAMES, type Pocket } from '../data/world';
 import { formName } from '../systems/beasts/forms';
 import { maxHpOf, type TeamBeast } from '../systems/beasts/team';
 import { useItemNow } from '../systems/economy/backpack';
-import { canApply, careOfBeast, itemDef, useOnBeast } from '../systems/economy/items';
+import { canApply, careOfBeast, itemDef, itemsForBeast, useOnBeast } from '../systems/economy/items';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
 import './screens.css';
@@ -111,13 +111,9 @@ export function openBag(parent: HTMLElement, g: GameState, onChange?: () => void
         t.addEventListener('click', () => ((pocket = p), draw()));
       }
     body.replaceChildren();
-    const list = ITEMS.filter(
-      (it) =>
-        (inv[it.id] ?? 0) > 0 &&
-        (only
-          ? !!it.use && !it.battleOnly && canApply(it.use, careOfBeast(only))
-          : (it.pocket ?? 'varie') === pocket),
-    );
+    const list = only
+      ? itemsForBeast(inv, only)
+      : ITEMS.filter((it) => (inv[it.id] ?? 0) > 0 && (it.pocket ?? 'varie') === pocket);
     if (!list.length)
       el(
         'p',
