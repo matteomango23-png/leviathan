@@ -3,6 +3,8 @@
 import { BODY_BACKS, BODY_SHAPES } from '../../data/bodyShapes.generated';
 import {
   ABILITIES,
+  BEAST_TEMPER,
+  CEPHALOPODS,
   CETACEANS,
   DANGER_LEVELS,
   DANGER_RULES,
@@ -272,10 +274,15 @@ export function backOfForm(form: BeastForm): readonly number[] | undefined {
   return backCache.get(key);
 }
 
-/** How it swims when drawn: a whale's tail up and down, a serpent's wave (data/beasts.ts). */
-export const swimLook = (form: BeastForm): { whale: boolean; serpent: boolean } => ({
+/** How it swims when drawn: a whale's tail up and down, a serpent's wave, an octopus's arms, a crab's walk
+ *  (data/beasts.ts). */
+export const swimLook = (
+  form: BeastForm,
+): { whale: boolean; serpent: boolean; cephalopod: boolean; walker: boolean } => ({
   whale: tailUpDown(form),
   serpent: SERPENTS.includes(form.speciesId),
+  cephalopod: CEPHALOPODS.includes(form.speciesId),
+  walker: !!BEAST_TEMPER[form.speciesId]?.floor,
 });
 
 /** Whales and dolphins beat the tail up and down; a few of their uniques swim like a shark (SIDE_TAIL_UNIQUES). */

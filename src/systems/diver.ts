@@ -9,6 +9,7 @@ import { clamp, range, type Rng } from './math';
 import type { BodyCircle, TileMap } from './world/tileMap';
 import { freshPressure, stepPressure, type AirTank } from './breath';
 import { leaveWater, stepAirborne, surfaceWater, upPushShare } from './breach';
+import { floating, floatPushShare, floatWater, keepInWater } from './floatSurface';
 
 export interface DiverState {
   x: number;
@@ -100,9 +101,10 @@ function updateOxygen(
   /** Riding: how far above you the beast's back reaches (≤ 0). The surface counts from it: a sperm whale's body kept
    *  its rider just under the band, and its air never came back (owner, 8 ottobre). */
   topOffset = 0,
+  waterLine = map.surfaceY,
 ): void {
   const o = DIVER.oxygen;
-  if (d.y + topOffset < map.surfaceY + o.surfaceBand + DIVER.radius) {
+  if (d.y + topOffset < waterLine + o.surfaceBand + DIVER.radius) {
     d.o2 = Math.min(d.maxO2, d.o2 + o.surfaceRefill * dt);
     if (air) air.o2 = Math.min(air.max, air.o2 + o.surfaceRefill * (air.max / d.maxO2) * dt);
   } else {
@@ -143,6 +145,8 @@ interface DiverOptions {
   body?: readonly BodyCircle[];
   /** Riding a whale: you breathe its air while it lasts (breath.ts). */
   air?: AirTank;
+  /** The water's line over you now, with its waves (sea.ts seaHeight); the flat resting line if not given. */
+  waterLine?: number;
 }
 
 export function stepDiver(
@@ -156,12 +160,13 @@ export function stepDiver(
 ): void {
   d.invulnerable = Math.max(0, d.invulnerable - dt);
   d.dashCooldown = Math.max(0, d.dashCooldown - dt);
+  const line = opt.waterLine ?? map.surfaceY;
 
   if (d.dead) {
     d.deadTime -= dt;
     d.vx *= 0.9;
     d.vy = -20;
-    d.y = Math.max(map.surfaceY + DIVER.radius, d.y + d.vy * dt);
+    d.y = Math.max(line + DIVER.radius, d.y + d.vy * dt);
     if (d.deadTime <= 0) respawn(d, opt.respawnAt, events);
     return;
   }
@@ -169,7 +174,7 @@ export function stepDiver(
   // leaping out of the water on the beast: no steering in the air (breach.ts)
   if (!mounted) d.airborne = false;
   else if (d.airborne) {
-    stepAirborne(d, map.surfaceY, dt, events);
+    stepAirborne(d, line, dt, events);
     return;
   }
   const sprint = opt.mountSpeed !== undefined && input.dashHeld ? (opt.mountSprint ?? 1) : 1;
@@ -186,9 +191,11 @@ export function stepDiver(
     iy /= m;
   }
   d.vx += ix * accel * dt;
-  // riding near the surface, your push up fades as the beast comes out of the water (breach.ts)
-  d.vy += iy * accel * dt * (mounted && iy < 0 ? upPushShare(d.y, map.surfaceY) : 1);
-  if (ix === 0 && iy === 0 && !mounted) d.vy += DIVER.sinkWhenIdle * dt;
+  // near the surface your push up fades: riding as the beast comes out of the water (breach.ts), swimming as you
+  // come up to float (floatSurface.ts)
+  const upShare = iy >= 0 ? 1 : mounted ? upPushShare(d.y, line) : floatPushShare(d, line);
+  d.vy += iy * accel * dt * upShare;
+  if (ix === 0 && iy === 0 && !mounted && !floating(d, line)) d.vy += DIVER.sinkWhenIdle * dt;
   const drag = d.dashTime > 0 ? DIVER.dash.drag : DIVER.drag;
   d.vx -= d.vx * drag * dt;
   d.vy -= d.vy * drag * dt;
@@ -220,10 +227,12 @@ export function stepDiver(
   }
   d.dashTime = Math.max(0, d.dashTime - dt);
 
-  if (mounted) surfaceWater(d, map.surfaceY, dt);
-  map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt, !mounted);
-  // the surface like real water: pulled back, slowed, out of the water with enough speed (19 ottobre)
-  if (mounted) leaveWater(d, map.surfaceY, events);
+  if (mounted) surfaceWater(d, line, dt);
+  else floatWater(d, line, iy > 0.2, dt);
+  map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt, false);
+  // the surface like real water: riding, out of the water with enough speed (19 ottobre); swimming, never out of it
+  if (mounted) leaveWater(d, line, events);
+  else keepInWater(d, line);
   const drainMult = opt.o2DrainMult ?? 1;
   // holding the sprint while riding costs breath too
   if (mounted && input.dashHeld && Math.hypot(input.moveX, input.moveY) > 0.2)
@@ -242,10 +251,10 @@ export function stepDiver(
     hurtDiver(d, 1, events);
   }
   const topOffset = opt.body ? Math.min(0, ...opt.body.map((c) => c.dy - c.r)) : 0;
-  updateOxygen(d, map, dt, events, drainMult, opt.air, topOffset);
+  updateOxygen(d, map, dt, events, drainMult, opt.air, topOffset, line);
 
   d.bubbleTime -= dt;
-  if (d.bubbleTime <= 0 && d.y > map.surfaceY + 6) {
+  if (d.bubbleTime <= 0 && d.y > line + 6) {
     d.bubbleTime = range(rng, DIVER.bubbleEvery[0], DIVER.bubbleEvery[1]);
     events.push({ type: 'bubble', x: d.x + d.face * DIVER.lengthUnits * 0.45, y: d.y - 2 });
   }

@@ -80,6 +80,10 @@ interface BeastPoseView {
   whale?: boolean;
   /** A serpent or an eel: a wave along the whole body, no piece shortened (BEAST_SPRITE.serpentWave). */
   serpent?: boolean;
+  /** An octopus or a squid: arms waving and opening with the jet (BEAST_SPRITE.cephalopodWave). */
+  cephalopod?: boolean;
+  /** Walking on the floor (a crab): the body whole. */
+  walker?: boolean;
   /** Murky water, far from your light: only its dark shape shows (this tint; clarity.ts). */
   shade?: number;
 }
@@ -132,7 +136,7 @@ export class BeastSprite {
     for (const s of this.strips) s.setVisible(true);
     // no turning animation: a beast faces its new way at once (owner, 4 ottobre: every animated turn of a flat
     // painted profile looked like a sheet of paper)
-    const { pts, ang, lens } = spineOf(p);
+    const { pts, ang, lens, tall } = spineOf(p);
     const mid = pts[Math.round(N * 0.45)]!;
     // a thicker body (species girth) is made thicker piece by piece, across each piece: thickening the whole beast
     // stretched the pieces as they turned (owner, 20 ottobre: Folgore longer, shorter, thinner going up and down)
@@ -143,7 +147,7 @@ export class BeastSprite {
       const a = (ang[i]! + ang[i + 1]!) / 2;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
-        .setScale((lens[i]! / SEG) * OVERLAP, girth);
+        .setScale((lens[i]! / SEG) * OVERLAP, girth * ((tall[i]! + tall[i + 1]!) / 2));
       if (p.shade !== undefined && p.flash <= 0) {
         s.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.shade);
         continue;

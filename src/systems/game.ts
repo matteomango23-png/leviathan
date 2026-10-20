@@ -2,7 +2,7 @@
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING, TEAM_RULES } from '../data/beasts';
 import { stepTips } from './tips';
-import { diverCurrentMult } from './sea';
+import { diverCurrentMult, seaHeight } from './sea';
 import { weatherLook } from './weather';
 import { depthMetres } from './world/zones';
 import { clearTarget, pickTarget, reconOut, sendSphere, startRecon, stepGadgets } from './ship/gadgets';
@@ -117,6 +117,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
       body: g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : undefined,
       air: tank,
+      // the surface over you with its waves, the same the views draw and the boats ride (floatSurface.ts)
+      waterLine: g.map.surfaceY - seaHeight(d.x, g.time, weatherLook(g.weather), g.water),
     });
     const whale = activeBeast(g);
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });

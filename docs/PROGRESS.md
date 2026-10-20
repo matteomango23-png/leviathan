@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.83.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.84.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,29 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, poi X mare, Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, X ✅, poi Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto X, il mare (20 ottobre 2026) → v0.84.0
+
+- **Branchi:** `PackTrail.at` (`views/packFormation.ts`) fonde i due punti della scia attorno al momento cercato. Prima prendeva il punto più vicino: i compagni stavano fermi qualche fotogramma e poi saltavano.
+- **Sub in superficie:**
+  - `systems/floatSurface.ts` (nuovo): `floatPushShare`, `floatWater`, `keepInWater`, `floating`, con i numeri in `DIVER.float`;
+  - `stepDiver` riceve `waterLine`, che `game.ts` calcola con `seaHeight`, le stesse onde della vista;
+  - `moveBody` non blocca più il sub sulla linea piatta;
+  - anche `breach.ts` (in groppa) usa la linea delle onde.
+- **Tentacoli:** `CEPHALOPODS` e `BEAST_SPRITE.cephalopodWave`. `spineOf` ha il ramo cefalopode e restituisce `tall` (altezza di ogni pezzo); `beastView` la applica. `swimLook` dà `cephalopod` e `walker`.
+- **Granchio:** in `roam.ts`, `floorNear` dà il fondale un po' più avanti; le bestie `floor` lo seguono (`ROAM.floorHug`) e se sono sopra il fondo ci scendono (`ROAM.floorSink`). Il corpo resta rigido, con un piccolo passo (`walkerStep`).
+- **Test:** `tests/lottoX.test.ts`.
+- **Nel browser:** il granchio messo a mezz'acqua dalla galleria scende al fondo in circa 8 s e poi resta a 4-10 unità dal fondale. Polpo, calamaro e Piovra si muovono in mare senza errori. Il pannello del browser era nascosto: niente immagini, quindi l'aspetto va guardato sull'iPhone.
+
+**Da provare sull'iPhone:**
+- un branco di barracuda o di delfini;
+- risalire in superficie, con il mare calmo e in tempesta;
+- polpo, calamaro e Piovra nella galleria ("In mare" e, per la Piovra, "In groppa");
+- il granchio ragno.
 
 ## Lotto W, timone e recinto (20 ottobre 2026) → v0.83.0
 

@@ -46,9 +46,25 @@ export class PackTrail {
     ];
   }
 
-  /** Where the leader was `ago` seconds before `now` (the oldest point if the wake is shorter). */
+  /** Where the leader was `ago` seconds before `now` (the oldest point if the wake is shorter), blended between the
+   *  two kept points around that moment: taking the nearest one made the mates stand still for a few frames and
+   *  then jump (owner, 20 ottobre: "piccoli scatti"). The turn stays the kept point's. */
   private at(now: number, ago: number): Point | undefined {
-    for (let i = this.pts.length - 1; i >= 0; i--) if (now - this.pts[i]!.t >= ago) return this.pts[i];
+    const when = now - ago;
+    for (let i = this.pts.length - 1; i >= 0; i--) {
+      const a = this.pts[i]!;
+      if (a.t > when) continue;
+      const b = this.pts[i + 1];
+      if (!b || b.face !== a.face || b.t <= a.t) return a;
+      const k = Math.min(1, (when - a.t) / (b.t - a.t));
+      return {
+        t: when,
+        face: a.face,
+        x: a.x + (b.x - a.x) * k,
+        y: a.y + (b.y - a.y) * k,
+        pitch: a.pitch + (b.pitch - a.pitch) * k,
+      };
+    }
     return this.pts[0];
   }
 
