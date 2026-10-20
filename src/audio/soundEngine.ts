@@ -3,7 +3,7 @@
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
 import { AUDIO, STORM_SOUND } from '../data/audio';
 import { StormSound } from './stormSound';
-import { PORT_MUSIC, SEA_MUSIC } from '../data/music';
+import { PORT_MUSIC, SEA_MUSIC, TITLE_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
 import { EngineSound } from './engineSound';
@@ -16,6 +16,9 @@ export class SoundEngine {
   private music: BattleMusic | null = null;
   private openSea: SeaMusic | null = null;
   private port: SeaMusic | null = null;
+  private title: SeaMusic | null = null;
+  /** The title menu is showing (its own dark music). */
+  private onTitle = false;
   /** A menu open over the sea: the pause menu or the port (its own music). */
   private menu: 'pause' | 'port' | null = null;
   private storm: StormSound | null = null;
@@ -33,12 +36,18 @@ export class SoundEngine {
     };
     for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'])
       window.addEventListener(ev, unlock, { capture: true, passive: true });
-    // back to the app: try at once (if iOS keeps it "interrupted", the next touch wakes it)
+    // leaving the app: silent at once, no sound or music behind your back (owner, 20 ottobre); back to it: try at
+    // once (if iOS keeps it "interrupted", the next touch wakes it), the game waiting in its pause menu
     const back = (): void => {
-      if (document.visibilityState === 'visible') this.wake();
+      if (document.visibilityState === 'hidden') this.hush();
+      else {
+        this.wake();
+        this.applyMaster();
+      }
     };
     document.addEventListener('visibilitychange', back);
     window.addEventListener('pageshow', back);
+    window.addEventListener('pagehide', () => this.hush());
     window.addEventListener('focus', back);
   }
 
@@ -55,6 +64,15 @@ export class SoundEngine {
     } catch {
       // a closed context: nothing to wake
     }
+  }
+
+  /** Silent now (no fade) and the sound stopped, until the app is back. */
+  private hush(): void {
+    const c = this.ctx;
+    if (!c || !this.master) return;
+    this.master.gain.cancelScheduledValues(c.currentTime);
+    this.master.gain.setValueAtTime(0, c.currentTime);
+    if (c.state === 'running') void c.suspend().catch(() => undefined);
   }
 
   get enabled(): boolean {
@@ -108,8 +126,15 @@ export class SoundEngine {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     if (!this.battle) this.sea?.fadeTo(kind ? AUDIO.menuSea : 1, t, AUDIO.menuFade);
-    if (kind) this.openSea?.set(false, AUDIO.menuFade * 2); // the sea brings it back when you are out there again
+    // no music in the pause (owner, 20 ottobre): the sea brings it back when you are out there again
+    if (kind) this.openSea?.set(false, AUDIO.menuFade);
     this.port?.set(kind === 'port');
+  }
+
+  /** The title menu shows (true) or the sea starts (false): its dark music fades in or out. */
+  titleMusic(on: boolean): void {
+    this.onTitle = on;
+    this.title?.set(on);
   }
 
   /** The ship's engine starting or stopping, heard as near as you are (1 aboard … 0 far). */
@@ -171,6 +196,8 @@ export class SoundEngine {
     this.engines = new EngineSound(this.ctx, this.master);
     this.openSea = new SeaMusic(this.ctx, this.master);
     this.port = new SeaMusic(this.ctx, this.master, PORT_MUSIC);
+    this.title = new SeaMusic(this.ctx, this.master, TITLE_MUSIC);
+    if (this.onTitle) this.title.set(true); // the sound started on the title menu
     const open = this.menu;
     this.menu = null;
     if (open) this.menus(open); // the sound started with a menu already open
@@ -183,6 +210,7 @@ export class SoundEngine {
 
   private applyMaster(): void {
     if (!this.ctx || !this.master) return;
+    if (document.visibilityState === 'hidden') return; // away from the app it stays silent
     this.master.gain.setTargetAtTime(this.on ? AUDIO.master : 0, this.ctx.currentTime, 0.05);
   }
 }

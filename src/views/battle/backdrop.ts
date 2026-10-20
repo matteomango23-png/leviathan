@@ -60,6 +60,7 @@ export class BattleBackdrop {
   private readonly motes: { x: number; y: number; s: number }[] = [];
   private bubbles: { x: number; y: number; r: number; t: number }[] = [];
   private readonly groundWidth: Record<Side, number> = { you: 0, foe: 0 };
+  private readonly groundAlpha: Record<Side, number> = { you: 1, foe: 1 };
   /** The slow camera drift, in pixels (layers move a share of it). */
   readonly cam = { x: 0, y: 0 };
 
@@ -136,6 +137,11 @@ export class BattleBackdrop {
     return { x: this.cam.x * depth, y: this.cam.y * depth };
   }
 
+  /** How much of the ground under a beast shows (0 … 1): it fades in with a new beast. */
+  setGroundAlpha(side: Side, a: number): void {
+    this.groundAlpha[side] = a;
+  }
+
   /** The ground under a beast grows with it (pixels wide). */
   setGroundWidth(side: Side, px: number): void {
     this.groundWidth[side] = px;
@@ -177,13 +183,16 @@ export class BattleBackdrop {
       const a = anchors[side];
       const gw = this.groundWidth[side] || w * 0.3;
       const g = this.grounds[side];
-      g.setPosition(a.x, a.y).setScale(gw / g.width);
+      const ga = this.groundAlpha[side];
+      g.setPosition(a.x, a.y)
+        .setScale(gw / g.width)
+        .setAlpha(ga);
       this.caustics[side].forEach((c, i) => {
         const k = 0.5 + 0.5 * Math.sin(time * (0.9 + i * 0.4) + i * 2);
         c.setPosition(a.x + Math.sin(time * 0.3 + i) * gw * 0.03, a.y)
           .setScale((gw * 0.95) / c.width, ((gw * 0.95) / c.width) * (1 + 0.08 * Math.sin(time + i)))
           .setRotation(Math.sin(time * 0.2 + i) * 0.04)
-          .setAlpha(0.18 * k);
+          .setAlpha(0.18 * k * ga);
       });
       if (Math.random() < dt * 0.8)
         this.bubbles.push({

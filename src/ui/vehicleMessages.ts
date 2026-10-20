@@ -167,6 +167,8 @@ export function vehicleMessage(e: GameEvent, g: GameState): [string, number] | n
     case 'subRammed':
       if (e.by === 'pressure') return [SUB_TEXT.crushed(e.hull, e.max), 2];
       return e.by === 'rock' ? [SUB_TEXT.bumped, 1.5] : [SUB_TEXT.rammed(e.hull, e.max), 2];
+    case 'subRecovered':
+      return [SHIP_TEXT.subRecovered(e.toShip), 5];
     case 'subWrecked':
       return [e.toShip ? SHIP_TEXT.wreckedToShip(e.teeth) : SUB_TEXT.wrecked(), 6];
     case 'subRepaired':

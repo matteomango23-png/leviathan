@@ -34,6 +34,11 @@ export class ShipView {
   /** Spray where its bow buries itself in the sea. */
   private readonly spray: SeaFx;
   private readonly glow: Phaser.GameObjects.Graphics;
+  /** The light under the still ship: behind the hull and its hatches, as if it shone from beneath them (owner, 20
+   *  ottobre: drawn over the ship, it lit part of the open hatch). */
+  private readonly beam: Phaser.GameObjects.Graphics;
+  /** How far the waves move the ship from its resting place now (the light spot rides with it). */
+  private lift = 0;
   private readonly fallback: Phaser.GameObjects.Graphics;
   private readonly tug: Phaser.GameObjects.Image | null;
   private tugLeft = 0;
@@ -48,7 +53,8 @@ export class ShipView {
   ) {
     const smoke = scene.add.graphics(); // behind the ship
     this.fallback = scene.add.graphics();
-    layer.add([smoke, this.fallback]);
+    this.beam = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
+    layer.add([smoke, this.beam, this.fallback]);
     for (const m of SHIP_MODELS) {
       const art = m.art;
       if (!art || this.pics.has(art.closed)) continue;
@@ -83,6 +89,7 @@ export class ShipView {
   update(s: ShipState, time: number, dt: number, sea: SeaNow): void {
     this.fx.clear();
     this.glow.clear();
+    this.beam.clear();
     this.fallback.clear();
     if (!s.owned) {
       for (const p of this.pics.values()) p?.hide();
@@ -132,7 +139,8 @@ export class ShipView {
     this.effects.iceShards(s, dt);
     this.drawLights(s, top, time);
     // its light rides the waves with it (owner, 11 ottobre: the hull rocked, the light stood still)
-    this.drawBeam(s, top - this.restTop(s), time, dt);
+    this.lift = top - this.restTop(s);
+    this.drawBeam(s, this.lift, time, dt);
     this.drawTug(s, top, dt);
   }
 
@@ -189,13 +197,13 @@ export class ShipView {
       const w = half + (B.spread + B.glow) * (i / 6);
       const depth = B.below[1] * 1.6 * (0.55 + 0.45 * (i / 6));
       const [ax, bx, y1] = [s.x - half * 0.8, s.x + half * 0.8, keel + depth];
-      this.glow
+      this.beam
         .fillStyle(0xfff1c8, 0.05 * k)
         .fillTriangle(ax, keel, bx, keel, s.x + w, y1)
         .fillTriangle(ax, keel, s.x + w, y1, s.x - w, y1);
     }
     for (let r = 4; r >= 1; r--)
-      this.glow.fillStyle(0xffe6a8, 0.08 * k).fillEllipse(s.x, keel + 6, half * 0.9 * r * 0.5, 10 * r * 0.5);
+      this.beam.fillStyle(0xffe6a8, 0.08 * k).fillEllipse(s.x, keel + 6, half * 0.9 * r * 0.5, 10 * r * 0.5);
   }
 
   /** The Krill Hunter's light: out of its mouth, a blue-green beam fanning forward and down into the sea. */
@@ -207,11 +215,11 @@ export class ShipView {
     for (let i = 6; i >= 1; i--) {
       const spread = len * (0.18 + 0.32 * (i / 6));
       const far = { x: m.x + s.face * len * (0.6 + 0.4 * (i / 6)), y: m.y + len * 0.35 };
-      this.glow
+      this.beam
         .fillStyle(0x8ff7ff, 0.05 * k)
         .fillTriangle(m.x, m.y - 4, far.x, far.y - spread, far.x, far.y + spread);
     }
-    for (let r = 4; r >= 1; r--) this.glow.fillStyle(0xc8fbff, 0.1 * k).fillCircle(m.x, m.y, 5 * r);
+    for (let r = 4; r >= 1; r--) this.beam.fillStyle(0xc8fbff, 0.1 * k).fillCircle(m.x, m.y, 5 * r);
   }
 
   /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
@@ -222,16 +230,22 @@ export class ShipView {
     const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
     spots.push(...floodSpots(s, murk));
     // the light under the still ship (block 5b): a wide glow below the keel
+    // riding the waves with the ship, and below its keel: the hull and its hatches are not lit by it (owner, 20
+    // ottobre)
     if (s.lightOn && hasMouth(s)) {
       const m = mouthPoint(s);
       spots.push({
         x: m.x + s.face * SHIP.mouth.reach * 0.4,
-        y: m.y + SHIP.mouth.reach * 0.2,
+        y: m.y + this.lift + SHIP.mouth.reach * 0.2,
         r: SHIP.underLight.glow,
       });
     } else if (s.lightOn) {
-      const keel = WORLD.surfaceY + s.dive + shipDraft(s);
-      spots.push({ x: s.x, y: keel + SHIP.underLight.glow * 0.4, r: SHIP.underLight.glow });
+      const keel = WORLD.surfaceY + s.dive + shipDraft(s) + this.lift;
+      spots.push({
+        x: s.x,
+        y: keel + SHIP.underLight.glow * SHIP.underLight.spotBelow,
+        r: SHIP.underLight.glow,
+      });
     }
     return spots;
   }
