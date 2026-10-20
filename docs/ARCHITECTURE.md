@@ -37,7 +37,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/ship.ts` | La nave da spedizione: regalo di Aurelio a Porto Fango, navigazione (inerzia, ghiaccio, corsia lontana, fondale basso), salvataggio (`data/ship.ts`). |
 | `ship/hatch.ts` | Portelloni (uno per vano), rampa del sottomarino (cala e aggancia), A bordo e Tuffati. |
 | `ship/boatBay.ts` | Il vano del motoscafo o della moto d'acqua: cala sull'acqua, Aggancia, travaso dei fusti nella nave all'aggancio. |
-| `ship/gadgets.ts` | L'Ocean's Nightmare: il drone (che è anche il suo sottomarino) fa la ricognizione da solo degli animali a portata del sonar e porta il resoconto; la bestia scelta diventa il bersaglio e la sfera va a bloccarla per un minuto, poi torna e si ricarica. Numeri in `data/nightmare.ts`. |
+| `ship/gadgets.ts`, `ship/gadgetsState.ts`, `ship/sphere.ts` | L'Ocean's Nightmare: il drone (che è anche il suo sottomarino) fa la ricognizione da solo degli animali a portata del sonar, prima quelli sconosciuti e grandi, e porta il resoconto; la bestia scelta diventa il bersaglio e la sfera (`sphere.ts`) va a bloccarla per un minuto, poi torna e si ricarica. Stato e movimento comune in `gadgetsState.ts`. Numeri in `data/nightmare.ts`. |
 | `tracking.ts` | Il bersaglio seguito (residente del mare aperto o bestia della costa): dov'è ora, gli animali a portata del sonar, la bussola, il salvataggio del bersaglio. |
 | `ship/uboat.ts` | Gli U-Boat: immersione con la leva fino alla profondità del modello, scafo che urta le rocce, aria (avviso, risalita automatica, ricarica a galla), passaggio sotto il ghiaccio. |
 | `ship/geometry.ts` | Dove stanno nel mondo le parti dell'immagine della nave del modello (linea d'acqua, portellone, rampa, timone, scafo). |
@@ -73,7 +73,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `harpoon.ts` | Arpione: va, aggancia un pesce o rimbalza sulla roccia, torna. |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
-| `birds.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. |
+| `birds.ts`, `birdsCatch.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. Una bestia che salta fuori dall'acqua li acchiappa (`birdsCatch.ts`). |
 | `game.ts` | Un passo di gioco completo + conversione da/verso il salvataggio. |
 | `newGame.ts` | Lo stato di una partita (`GameState`) e come comincia: nuova o da un salvataggio (`createGame`, `applySave`). |
 | `port.ts` | Al porto: arrivo, riposo, vendita del pesce. |
@@ -204,9 +204,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/status.ts` | Gli stati alterati (avvelenato, ferito, paralizzato, stordito, congelato) e le statistiche da −6 a +6. |
 | `systems/battle/battle.ts`, `tameFlee.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, cambiare bestia, fine; domare (con la conchiglia scelta) e fuggire in `tameFlee.ts`. |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi; a fine battaglia chiede quale mossa dimenticare. |
-| `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo, sempre tutta nello schermo), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
-| `views/swimPose.ts` | La forma del corpo delle bestie grandi lungo la spina (squalo, cetaceo, serpente, ali che battono), senza Phaser: `beastView.ts` la disegna a strisce. |
-| `views/battleView.ts` | Le due bestie: grandezza, respiro e ondeggio, rincorsa e affondo, colpi, svenimenti, ombra e luce dietro; mette insieme sfondo, effetti e conchiglia. |
+| `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo; il nemico mai sotto il menu, un gigante tagliato che si allontana piano e torna con `foeSway`), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
+| `views/swimPose.ts` | La forma del corpo delle bestie grandi lungo la spina (squalo, cetaceo, serpente, polpo e calamaro, granchio che cammina, ali che battono), senza Phaser: `beastView.ts` la disegna a strisce. |
+| `views/battleView.ts`, `views/battle/drawBeast.ts` | Le due bestie: grandezza, rincorsa e affondo, colpi, svenimenti; il fondale che sfuma con una bestia nuova; mette insieme sfondo, effetti e conchiglia. `drawBeast.ts` disegna ogni bestia a ogni fotogramma (respiro, ondeggio, ombra, luce dietro, luccichio). |
 | `views/battle/backdrop.ts` | Lo sfondo a strati che si muove (acqua, rocce lontane, raggi, foschia, rocce medie, pedane con riflessi, neve marina e bolle, piante in primo piano, vignetta); usa gli strati dipinti quando ci sono. |
 | `views/battle/backdropArt.ts`, `paint.ts` | I pezzi dello sfondo disegnati dal codice (in attesa di quelli dipinti) e i loro aiuti (colori, creste, grana). |
 | `views/battle/typeFx.ts` | Gli effetti dei colpi per tipo: graffi, fulmini, schegge di ghiaccio, inchiostro, onde d'urto e sassi. |
@@ -214,7 +214,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `views/battle/pose.ts`, `tween.ts` | La posa di una bestia (spostamenti, luce, buio, aura) e le animazioni come promesse. |
 | `views/battle/beastArt.ts`, `battleAssets.ts` | Quale immagine usa ogni bestia e cosa si carica prima della battaglia. |
 | `data/assets.ts` | Indirizzi delle immagini con la loro impronta, così il telefono non mostra copie vecchie. |
-| `ui/battleUi.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri, messaggi, comandi e mosse nello stile dei Pokémon recenti; icone dei comandi e dei tipi; il carattere Baloo 2. |
+| `ui/battleUi.ts`, `ui/battleInfoBox.ts`, `ui/battleResultText.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri delle bestie (`battleInfoBox.ts`), messaggi, comandi e mosse nello stile dei Pokémon recenti, i testi di fine battaglia; icone dei comandi e dei tipi; il carattere Baloo 2. |
 
 ## Come si disegna il mare
 

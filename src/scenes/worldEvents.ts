@@ -3,7 +3,8 @@
 // leap out of the water (breach.ts). Split from WorldScene in the cleanup of 19 ottobre 2026.
 import { WORLD } from '../data/worldLayout';
 import { mountAteBird } from '../systems/beastPlay';
-import { eatBirdsNear, type BirdsState } from '../systems/birds';
+import type { BirdsState } from '../systems/birds';
+import { eatBirdsNear } from '../systems/birdsCatch';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import type { CameraRig } from '../views/cameraRig';

@@ -171,14 +171,16 @@ export class ShipView {
           .fillEllipse(p.x, p.y, L.radius * k * 0.45, L.radius * k * 0.3);
   }
 
-  /** The light under the still ship (block 5b; owner, 10 ottobre: on and off looked the same): a wide beam fanning
-   *  down from the keel, flickering on and fading out. */
   /** The top of its picture with no waves (the light was computed from it). */
   private restTop(s: ShipState): number {
     return WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
   }
 
-  /** @param lift how far the waves move the ship from its resting place now (down > 0) */
+  /**
+   * The light under the still ship (block 5b; owner, 10 ottobre: on and off looked the same): a wide beam fanning
+   * down from the keel, flickering on and fading out, behind the hull (owner, 20 ottobre).
+   * @param lift how far the waves move the ship from its resting place now (down > 0)
+   */
   private drawBeam(s: ShipState, lift: number, time: number, dt: number): void {
     const want = s.lightOn ? 1 : 0;
     this.beamK += (want - this.beamK) * Math.min(1, dt * (want ? 2.5 : 4));

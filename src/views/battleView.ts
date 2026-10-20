@@ -20,14 +20,12 @@ import {
 import { formLengthM, type BeastForm } from '../systems/beasts/forms';
 import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
-import { newPose, poseTint, type Pose } from './battle/pose';
+import { newPose, type Pose } from './battle/pose';
+import { drawBeast } from './battle/drawBeast';
 import { BattleBackdrop, DEPTH, type PaintedLayers } from './battle/backdrop';
 import { TameShell } from './battle/tameShell';
 import { TypeFx } from './battle/typeFx';
 import { tweenTo } from './battle/tween';
-
-/** Battle pictures are 800×800 with the beast's longest side 760 px, its lowest point at y = 780. */
-const PIC = { box: BATTLE_STAGE.picture.box, foot: BATTLE_STAGE.picture.foot / BATTLE_STAGE.picture.square };
 
 const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout(r, ms));
 
@@ -157,45 +155,11 @@ export class BattleView {
       const key = p.own ? p.key : fadedCard(this.scene, p.key);
       if (im.texture.key !== key) im.setTexture(key);
       p.t += dt;
-      // big beasts move slower and heavier
-      const slow = 1 / (0.7 + p.size);
-      const bob = Math.sin(p.t * 1.1 * slow) * this.h * 0.012;
-      const sway = Math.sin(p.t * 0.7 * slow) * 0.025;
-      const breathe = 1 + Math.sin(p.t * 1.6 * slow) * 0.015;
-      const hover = BATTLE_STAGE.hover * this.h;
-      const g = grounds[side];
-      const s = (px / (p.own ? PIC.box : im.height)) * p.scale;
-      const mirror = side === 'you' && !p.own ? -1 : 1; // the card of your beast, mirrored
-      const dx = p.dx;
-      im.setVisible(true)
-        .setOrigin(0.5, p.own ? PIC.foot : 0.9)
-        .setPosition(g.x + dx, g.y - hover + bob + p.dy)
-        .setRotation(sway + p.rot)
-        .setScale(s * mirror * breathe, s / breathe)
-        .setAlpha(p.alpha);
-      if (p.white > 0 || p.flash > 0)
-        im.setTintMode(Phaser.TintModes.FILL)
-          .setTint(p.white > 0 ? 0xfff6dc : 0xffffff)
-          .setAlpha(p.alpha * (p.white > 0 ? 0.4 + 0.6 * p.white : 0.5 + 0.5 * p.flash));
-      else im.setTintMode(Phaser.TintModes.MULTIPLY).setTint(poseTint(p));
-      // the shadow on the seabed shrinks when the beast rises
-      const lift = Math.max(0, -p.dy) / this.h;
-      sh.setVisible(true)
-        .setPosition(g.x + dx * 0.8, g.y)
-        .setScale((px * 1.0) / 256 / (1 + lift * 3), (px * 0.16) / 256)
-        .setAlpha(0.5 * p.alpha * (1 - Math.min(0.7, lift * 2)));
-      bl.setVisible(true)
-        .setPosition(g.x + dx, g.y - hover - px * 0.5 + p.dy)
-        .setScale((px * 1.5) / 256, (px * 1.2) / 256)
-        .setTint(p.aura === 2 ? p.auraColor : this.rayColor)
-        .setAlpha((p.aura === 2 ? 0.22 : 0.13) * (1 + 0.25 * Math.sin(p.t * 0.8)) * p.alpha * (1 - p.dark));
-      if (p.aura && p.alpha > 0.6 && p.dark < 0.3 && Math.random() < dt * (p.aura === 2 ? 14 : 5))
-        this.fx.sparkle(
-          g.x + dx + (Math.random() - 0.5) * px * 0.9,
-          g.y - hover - Math.random() * px + p.dy,
-          px,
-          p.auraColor,
-        );
+      drawBeast({ image: im, shadow: sh, backlight: bl }, p, side, grounds[side], px, this.h, {
+        dt,
+        rayColor: this.rayColor,
+        fx: this.fx,
+      });
     }
     this.backdrop.update(dt, time, grounds);
     this.fx.update(dt);

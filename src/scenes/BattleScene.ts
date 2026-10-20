@@ -2,7 +2,7 @@
 // the interface for your action and plays the steps with the battle view. Without a game it starts on its own
 // with the test team (link with ?battaglia).
 import Phaser from 'phaser';
-import { foeFloor } from '../systems/battle/stage';
+import { battlePlace, foeFloor } from '../systems/battle/stage';
 import { safeBottomPx } from '../ui/dom';
 import { BATTLE_PROTOTYPE } from '../data/battle';
 import { BATTLE_TEXT, type Named } from '../data/battleText';
@@ -26,17 +26,15 @@ import { tryFlee, tryTame } from '../systems/battle/tameFlee';
 import { makeFighter, named } from '../systems/battle/fighter';
 import { useBattleItem } from '../systems/battle/battleItems';
 import { itemDef, shellsOwned } from '../systems/economy/items';
-import type { BeastForm } from '../systems/beasts/forms';
-import { xpReward } from '../systems/beasts/growth';
+import { speciesOf, type BeastForm } from '../systems/beasts/forms';
 import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
 import { afterBattleScreens, snapshotTeam } from '../ui/afterBattle';
+import { resultText } from '../ui/battleResultText';
 import type { Session } from './session';
 import { BattleView } from '../views/battleView';
 import { loadBattleArt, paintedLayers } from '../views/battle/battleAssets';
-import { speciesOf } from '../systems/beasts/forms';
-import { battlePlace } from '../systems/battle/stage';
 
 export class BattleScene extends Phaser.Scene {
   private ui!: BattleUi;
@@ -273,13 +271,7 @@ export class BattleScene extends Phaser.Scene {
 
   private async finish(): Promise<void> {
     const s = this.s;
-    const lines: string[] = [];
-    let title: string = BATTLE_TEXT.won;
-    if (s.over === 'won' || s.over === 'caught')
-      lines.push(BATTLE_TEXT.xp(this.name('you'), xpReward(s.foe.form, s.foe.level, you(s).level)));
-    if (s.over === 'caught') title = BATTLE_TEXT.tamed(this.name('foe'));
-    if (s.over === 'lost') title = BATTLE_TEXT.lost;
-    if (s.over === 'fled') title = BATTLE_TEXT.fleeOk;
+    const { title, lines } = resultText(s, (side) => this.name(side));
     const g = this.session?.game;
     if (!g || !this.setupInGame) {
       this.ui.result(title, lines, BATTLE_TEXT.again, () => this.scene.restart());
