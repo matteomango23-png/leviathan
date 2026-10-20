@@ -102,7 +102,6 @@ export class BeastSprite {
     this.root = scene.add.container(0, 0);
     for (let i = 0; i < N; i++) this.strips.push(scene.add.image(0, 0, '__WHITE').setOrigin(1, CY / IH));
     // tail first so the head is drawn on top
-    // tail first so the head is drawn on top
     this.root.add([...this.strips].reverse());
     this.front = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.root.add(this.front);

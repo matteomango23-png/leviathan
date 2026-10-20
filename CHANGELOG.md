@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.86.1 — Ordine nel codice (20 ottobre 2026)
+
+- Nessun cambiamento nel gioco: pulizia del codice e dei documenti dopo i lotti S–Z. File troppo lunghi divisi in parti più piccole, uno stile non più usato tolto, appunti di lavoro aggiornati.
+
 ## v0.86.0 — Card del bestiario intere (20 ottobre 2026)
 
 - **Bestiario, squadra e schede:** le illustrazioni non sono più tagliate. Molte perdevano il naso o la coda: ora si vede tutto l'animale, e lo spazio in più è riempito dallo stesso fondale sfocato. Sistemate 69 card.

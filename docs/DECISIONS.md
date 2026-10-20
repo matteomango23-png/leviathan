@@ -1024,3 +1024,36 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** `npm run shapes` scrive anche la linea del dorso di ogni profilo, senza le pinne sottili (cima "tipica" delle colonne vicine, non la più alta). Il sub ci si siede sopra.
 - **Motivo:** il sedile prendeva il punto più alto del corpo, che negli squali è la punta della pinna dorsale. Ricavarlo dall'immagine vale per tutte le bestie, anche quelle che arriveranno, senza numeri a mano per ognuna.
+
+## 20 ottobre 2026 — Il sub galleggia sulla linea delle onde (v0.84.0)
+
+- **Decisione:** il sub a piedi non è più fermato su una linea piatta. Vicino alla superficie la spinta verso l'alto svanisce, l'acqua frena e una molla lo tiene a galla. La linea è quella delle onde (`seaHeight`, le stesse della vista e delle barche), e non la supera mai (`systems/floatSurface.ts`).
+- **Motivo:** il proprietario sentiva un muro invisibile salendo e in tempesta vedeva il sub sospeso fra le onde. Usare le stesse onde della vista tiene sempre d'accordo quello che si vede e quello che succede.
+
+## 20 ottobre 2026 — Polpi e calamari con un'animazione propria (v0.84.0)
+
+- **Decisione:** un terzo modo di disegnare la spina (`cephalopod` in `spineOf`):
+  - il mantello resta fermo;
+  - un'onda corre lungo i tentacoli, con ogni pezzo della stessa lunghezza;
+  - le strisce si aprono e si chiudono in altezza (`tall`) a ogni spinta.
+- **Motivo:** animati come squali, i tentacoli si accorciavano e oscillavano rigidi. Con strisce più alte e più basse si ottiene l'effetto della spinta a getto senza i pezzi separati, che richiederebbero immagini nuove.
+
+## 20 ottobre 2026 — I giganti si allontanano, non scendono e non rimpiccioliscono (v0.85.0)
+
+- **Decisione:** un nemico tagliato dallo schermo resta grande come oggi, ma ogni 9 secondi circa si allontana piano fino alla grandezza in cui è intero (al massimo fino al 75%) e torna (`foeSway`). Il suo pavimento non cambia mai.
+- **Motivo:** il proprietario voleva vedere tutto il gigante senza rimpicciolirlo e senza che finisse dietro al menu. Moby Dick in battaglia è visto di fronte e tagliato in alto: l'unico modo era allontanarlo per un momento. Scelta del proprietario fra tre proposte.
+
+## 20 ottobre 2026 — Silenzio quando l'app va in secondo piano (v0.85.0)
+
+- **Decisione:** quando la pagina si nasconde, il motore audio porta il volume a zero subito e sospende il contesto audio; al ritorno riparte, con il gioco fermo nel menu di pausa.
+- **Motivo:** sull'iPhone, uscendo dall'app, suoni e musica continuavano. Sospendere il contesto ferma tutto, anche la battaglia, che non ha un suo menu di pausa.
+
+## 20 ottobre 2026 — Il sottomarino torna nella stiva quando svieni (v0.85.0)
+
+- **Decisione:** `wakeOnShip` riporta nella stiva il sottomarino rimasto in mare (senza nave, all'ormeggio di Portofosco), come già faceva l'equipaggio con il motoscafo.
+- **Motivo:** lasciato più in fondo di quanto regge la tuta, il sottomarino era perso per sempre e il cantiere non ne vendeva un altro. Scelta del proprietario: recupero gratuito.
+
+## 20 ottobre 2026 — Le card mostrano l'immagine intera (v0.86.0)
+
+- **Decisione:** `npm run art` non ritaglia più le illustrazioni delle bestie che non sono in 2:3. Le mette intere nella card, su sé stesse sfocate e scurite, con il bordo sfumato. La flotta resta ritagliata.
+- **Motivo:** Gemini consegna le card in 4:5 o 9:16, e il ritaglio al centro tagliava naso e coda. Riempire con la stessa immagine sfocata tiene i colori del fondale senza bande nere.

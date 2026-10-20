@@ -136,72 +136,13 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
 - cavalcabili: sì a Varano d'osso, pesce spada Corazzato e tartaruga preistorica; no a pesce vela e polpo gigante;
 - la megattera finale si chiama "Megattera Titanica".
 
-Il proprietario manderà altre note; poi si sceglie l'ordine. Raggruppati per tipo:
-
-- **Menu di pausa:** togliere "Rivedi l'inizio"; Esporta/Importa salvataggio spostati in un sottomenu del menu iniziale.
-- **Branchi in mare:** i pesci dietro la guida fanno piccoli scatti (barracuda, delfini, tutti i branchi).
-- **Battaglia, la tua bestia (il problema più diffuso):**
-  - le bestie medio-grandi stanno troppo in basso e la barra col nome copre corpo e testa;
-  - casi segnalati: squalo bianco e tutte le sue forme, Zanna, Squarcio, Zannarossa, martello del Tuono, pesce leone, pastinaca, pesce vela (anche alfa), chimera (meno), granchio, tonno, pesce luna, scorfano, napoleone e corazzato, pesce spada, squalo tigre, orca, rana pescatrice (anche alfa), squalo goblin, capodoglio, megalodonte, squalo volpe alfa;
-  - il dragone nero ha il problema opposto: è troppo avanti;
-  - tartarughe e Guscio sono già giuste.
-  - Da studiare bene per non far tornare le sovrapposizioni tra le due bestie.
-- **Battaglia, grandezze:**
-  - il nemico sembra più grosso della tua bestia della stessa forma o più grande: squalo bianco contro Titano, Saetta contro Folgore, coccodrillo albino leggendario contro se stesso;
-  - i giganti non sembrano giganti: Moby Dick, mosasauro (uguale a un pesce palla), megattera cantore, orca preistorica albina, Madre delle madri. Va bene tagliare la coda fuori dallo schermo pur di mostrarne la stazza.
-- **Battaglia, verso sbagliato del nemico** (la testa deve guardare il centro): Folgore, megattera, megattera cantore, rana pescatrice, orca preistorica albina, Madre delle madri. Da controllare su tutte, sempre.
-- **In groppa, il sub sopra la pinna dorsale** (deve stare sul dorso, all'attaccatura della pinna): Re Alfa, Zannarossa, squalo bianco alfa, orca matriarca, Madre delle madri, martello preistorico, squalo elefante, megattera cantore.
-- **In groppa, altro:**
-  - Folgore si allunga e si accorcia salendo e scendendo (problema vecchio, da risolvere);
-  - lo squalo elefante è mappato al contrario (testa che si muove come la coda);
-  - Archelon: i neri dell'immagine in groppa sono rovinati.
-- **Chi si cavalca:**
-  - **da aggiungere:** Varano d'osso, pesce spada Corazzato, tartaruga preistorica;
-  - **da togliere:** pesce vela, polpo gigante;
-  - **da confermare:** nel gioco normale non si cavalcano tartarughe, pesce palla, murena, ecc. Oggi si cavalcano solo le cavalcature; il pulsante "In groppa" della galleria le forza tutte.
-- **Grandezze in mare:** Archelon, tartaruga liuto e Varano d'osso troppo piccoli (le terze forme devono essere mastodontiche).
-- **Immagini da rifare o sistemare:**
-  - Saetta (fronte e retro, scontorno);
-  - squalo bianco albino (retro, alone nero);
-  - murena (retro, cerchio nero in faccia);
-  - manta (fronte, bocca scontornata male);
-  - lontra marina (alone della sfera di luce: o tutto o niente);
-  - tartaruga liuto (retro inutilizzabile);
-  - squalo balena (retro: ingrandito dalla pinna dorsale in su);
-  - coccodrilli in battaglia (non convincono);
-  - megattera (fronte, non convince);
-  - Archelon in groppa.
-- **Movimento:** polpo gigante e calamaro gigante (come la Piovra) troppo statici, non muovono i tentacoli; il granchio non può fluttuare come un pesce.
-- **Immagini mancanti:**
-  - calamaro colossale, serpente di mare, Kraken, Leviatano (non devono comparire in mare né nella galleria finché mancano);
-  - il Leviatano: le immagini le dà il proprietario (20 ottobre), non usare quelle di Moby Dick;
-  - lo Sfregiato in groppa;
-  - il Dunkleosteus in mare: la galleria non carica le immagini delle bestie che non vivono ancora nelle zone del gioco.
-- **Galleria:** si deve poter sempre fuggire.
-- **Regole:**
-  - forme finali al livello 100 irraggiungibili: proposta del proprietario, livello 70;
-  - i compagni in acqua non servono a nulla, da ripensare (blocco 7);
-  - nome "Megattera cantore" da cambiare.
-- **Sub e superficie:** muro invisibile salendo; deve galleggiare come le bestie (senza saltare fuori); in tempesta sembra fluttuare tra un'onda e l'altra.
-
-- **Altre note del 20 ottobre (partita normale):**
-  - **Sonar e cacce:**
-    - un leggendario appena battuto resta sul sonar;
-    - le tane dei leggendari si vedono in plancia (da togliere);
-    - una specie già vista e catturata risulta "specie sconosciuta" al sonar;
-    - il drone della Ocean's Nightmare non trova la bestia "sconosciuta di 9 m" che il sonar vede (non sincronizzati).
-  - **Timone:**
-    - la barra gialla del gas va oltre il massimo;
-    - in alto l'indicatore della vasca si sovrappone al pulsante per spegnere il motore. La barra in alto va ridotta a 3 quadranti quadrati stile anni '70, solo icone e niente scritte: velocità, autonomia, litri di carburante.
-  - **Recinto:** il pulsante dell'oggetto non fa nulla subito; uscendo dal cockpit compare "nessun oggetto disponibile" o simile. Chiarire a cosa serve.
-  - **Card e bestiario:**
-    - la scritta delle evoluzioni esce dal riquadro in tutte le card con evoluzioni;
-    - ✅ molte illustrazioni del bestiario sono tagliate (es. il naso): tutto il corpo dentro, centrato (v0.86.0).
-  - **Suoni:** togliere il tic dei tocchi (v0.76.0), è fastidioso.
-  - **Battaglia:**
-    - balena (squalo balena o megattera, da capire) come nemico orientata male;
-    - squalo tigre nemico sempre enorme, anche contro bestie molto più grandi.
-
+Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e nell'archivio). **Ancora aperto:**
+- le 19 immagini da rifare di `docs/GEMINI-LOTTO-8.md` (Saetta, murena, squalo bianco albino, manta, lontra, tartaruga liuto, squalo balena, coccodrilli, megattera, Archelon in groppa): aspetto il proprietario;
+- il **Leviatano**: le immagini le dà il proprietario, non quelle di Moby Dick (ricordarglielo);
+- **calamaro colossale, serpente di mare e Kraken**: senza immagini, non compaiono in mare né nella galleria; il loro lotto Gemini si prepara quando il proprietario vuole;
+- lo **Sfregiato in groppa**: da controllare;
+- i **compagni in acqua** non servono a nulla: da ripensare nel blocco 7;
+- **strumenti di prova** (galleria, "+50.000 denti", 5 tocchi): restano finché il proprietario prova, poi si tolgono.
 
 ## Blocco 1 — Nuovo inizio senza storia
 - La storia attuale (Compagnia dell'Olio Nero, Vedova Nera, capitoli 1–4) va ripensata del tutto: **in pausa** fino al blocco 10.
