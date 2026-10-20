@@ -251,12 +251,6 @@ export function serializeSave(save: SaveData): string {
   return JSON.stringify(save, null, 2);
 }
 
-/** Suggested file name for an export, e.g. leviatano-salvataggio-2026-09-30.json */
-export function exportFileName(date: Date): string {
-  const d = date.toISOString().slice(0, 10);
-  return `leviatano-salvataggio-${d}.json`;
-}
-
 /** The hunting diary, checked: only the hunts that exist, only true steps. */
 function checkedHunts(raw: unknown): SaveData['hunts'] {
   const out: SaveData['hunts'] = {};

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   SAVE_VERSION,
   SaveError,
-  exportFileName,
   migrate,
   newSave,
   parseSave,
@@ -39,10 +38,6 @@ describe('save format', () => {
   it('removes duplicate bestiary entries', () => {
     const s = { ...newSave({ x: 0, y: 0 }), seen: ['sardina', 'sardina'] };
     expect(parseSave(JSON.stringify(s)).seen).toEqual(['sardina']);
-  });
-
-  it('names export files with the date', () => {
-    expect(exportFileName(new Date('2026-09-30T12:00:00Z'))).toBe('leviatano-salvataggio-2026-09-30.json');
   });
 });
 

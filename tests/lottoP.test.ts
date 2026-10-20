@@ -1,6 +1,7 @@
-// Lot P (19 ottobre 2026): the sounds. The harbour's music, the menus' softer sea, the touches' tick, calmer beeps.
+// Lot P (19 ottobre 2026): the sounds. The harbour's music, the menus' softer sea, calmer beeps (the touches' tick went on
+// 20 ottobre).
 import { describe, expect, it } from 'vitest';
-import { AUDIO, ENGINE_SOUND } from '../src/data/audio';
+import { AUDIO } from '../src/data/audio';
 import { PORT_MUSIC, SEA_MUSIC } from '../src/data/music';
 import { SHIP } from '../src/data/ship';
 
@@ -25,11 +26,6 @@ describe('the menus and the touches', () => {
     expect(AUDIO.menuSea).toBeGreaterThan(0);
     expect(AUDIO.menuSea).toBeLessThan(1);
     expect(AUDIO.menuFade).toBeGreaterThan(0.2);
-  });
-
-  it('a touch is a short soft tick, quieter than the radar', () => {
-    expect(AUDIO.tap.seconds).toBeLessThan(0.1);
-    expect(AUDIO.tap.volume).toBeLessThan(ENGINE_SOUND.beep.volume);
   });
 
   it('the radar beeps no faster than about three times a second', () => {

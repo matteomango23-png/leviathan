@@ -267,23 +267,12 @@
   fill: #ffd34d;
   font-size: 16px;
 }
-.chart-mark.den {
-  fill: var(--phosphor);
-}
-.chart-mark.target {
-  fill: #ff785a;
-  font-size: 28px;
-}
 .chart-mark.end {
   fill: #ff5a4a;
 }
 .chart-label {
   font-size: 12px;
   fill: #cfe0e4;
-}
-.chart-label.target {
-  fill: #ffb09d;
-  font-weight: 700;
 }
 
 /* the sonar */

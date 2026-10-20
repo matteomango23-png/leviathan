@@ -6,9 +6,8 @@ import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard } from '../systems/ship/ship';
 import { boatEngineLevel } from '../systems/boat';
 import type { GameEvent } from '../systems/events';
-import { applySave, createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
+import { createGame, enterPort, stepGame, toSave, type GameState } from '../systems/game';
 import { consumePresses } from '../systems/input';
-import type { SaveData } from '../systems/save/saveData';
 import { startNewGame } from '../systems/story';
 import type { BeastForm } from '../systems/beasts/forms';
 import {
@@ -61,7 +60,6 @@ export class WorldScene extends Phaser.Scene {
     this.views = new WorldViews(this, map, this.state);
 
     this.scale.on('resize', this.onResize, this);
-    this.session.on('importSave', this.onImport, this);
     this.session.on('saveNow', this.save, this);
     this.session.on('toTitle', this.onToTitle, this);
     this.session.on('gallery', this.onGallery, this);
@@ -74,7 +72,6 @@ export class WorldScene extends Phaser.Scene {
     window.addEventListener('pagehide', this.save);
     this.events.once('shutdown', () => {
       this.scale.off('resize', this.onResize, this);
-      this.session.off('importSave', this.onImport, this);
       this.session.off('saveNow', this.save, this);
       this.session.off('toTitle', this.onToTitle, this);
       this.session.off('gallery', this.onGallery, this);
@@ -127,17 +124,6 @@ export class WorldScene extends Phaser.Scene {
     this.save();
     this.switching = true;
     window.location.reload();
-  }
-
-  private onImport(save: SaveData): void {
-    applySave(this.state, save);
-    this.save();
-    const d = this.state.diver;
-    const { rig, terrain } = this.views;
-    rig.follow(d.x, d.y, 0, true);
-    terrain.invalidateTiles(this.state.brokenTiles);
-    terrain.update(rig.worldView(), true);
-    this.session.emit('toast', 'Salvataggio caricato.');
   }
 
   /** A wild beast touched you or your weapon hit it: the sea stops and the battle opens. */

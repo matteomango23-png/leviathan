@@ -45,7 +45,9 @@ export const PROGRESSION = {
   statGrowthPerLevel: 0.04,                   // tuning: base stats scale the same way
   growthStartLevel: 51,                       // from here each level also needs nourishment (was 31 of 50)
   growthSizePerLevel: 0.008,                  // +0.8% size per level from 51 to 99 (about +40% in all, as before)
-  finalFormLevel: 100,                        // iconic species reach their final form (was 50)
+  // iconic species reach their final form this many levels over the top of their wild levels (owner, 20 ottobre
+  // 2026: level 100 was out of reach; "+15/20 over the species' range"): 30 for the manta … 93 for the giants
+  finalFormOverWild: 18,
   teamSize: 5,                                // beasts in the team; reserve is unlimited
   nourishmentPerGrowthLevel: 3,              // tuning: fish to eat for each level from 51 upward (was 8 for 20 levels)
 };

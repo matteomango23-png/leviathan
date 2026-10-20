@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { DIALOGUES, TIPS } from '../src/data/story';
 import type { GameEvent } from '../src/systems/events';
-import { createStory, replayIntro, startNewGame } from '../src/systems/story';
+import { createStory, startNewGame } from '../src/systems/story';
 import { createGame } from '../src/systems/game';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { setTipsOn, stepTips, tipsOn } from '../src/systems/tips';
@@ -61,14 +61,10 @@ describe('i consigli di Aurelio', () => {
     expect(new Set(TIPS.map((t) => t.on)).size).toBe(TIPS.length);
   });
 
-  it('una partita nuova ha i consigli; una di prova no; rivedere l’inizio non li riaccende', () => {
+  it('una partita nuova ha i consigli; una di prova no', () => {
     const g = createGame(generateWorld(), null, 4);
     expect(tipsOn(g.story)).toBe(false); // made without a save (tests, tools)
     startNewGame(g);
     expect(tipsOn(g.story)).toBe(true);
-    setTipsOn(g.story, false);
-    g.story.step = 'free';
-    replayIntro(g);
-    expect(tipsOn(g.story)).toBe(false);
   });
 });

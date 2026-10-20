@@ -197,6 +197,15 @@ export function slotText(id: string, store = defaultStore()): string | null {
   }
 }
 
+/** A game read from a file joins the list as a new one (named after the file): no other game changes. Its id, or
+ *  null if the storage is blocked or full. */
+export function importSlot(name: string, save: SaveData, store = defaultStore()): string | null {
+  const id = createSlot(name, store);
+  if (id && writeSlot(id, save, store)) return id;
+  if (id) deleteSlot(id, store);
+  return null;
+}
+
 /** Saves the game into its place in the list; false if the storage is blocked or full. */
 export function writeSlot(id: string, save: SaveData, store = defaultStore()): boolean {
   if (!store) return false;

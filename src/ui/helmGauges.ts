@@ -1,5 +1,5 @@
-// The words of the helm (helmControls.ts): the instruments' line and the light button's label. Split from
-// helmControls in the cleanup of 19 ottobre 2026.
+// The words and measures of the helm (helmControls.ts): the instruments' line, the light button's label, the levers'
+// travel. Split from helmControls in the cleanup of 19 ottobre 2026.
 import type { HelmInfo } from './helmTypes';
 
 /** Knots, gas, fuel and range, depth, drums, the hold: one line under the sonar. */
@@ -22,4 +22,11 @@ export function lightLabel(info: HelmInfo): string {
   if (info.mouth)
     return info.mouth.open ? (info.mouth.full ? 'Chiudi bocca (sazia)' : 'Chiudi bocca') : 'Apri bocca';
   return info.lightOn ? 'Spegni luce' : 'Luce';
+}
+
+/** How far a lever's knob travels: its track's inner height, read from the page (owner, 20 ottobre: after the levers
+ *  got smaller the gas knob went past the top of its track, a fixed 150 px). */
+export function travel(track: HTMLElement): number {
+  const st = getComputedStyle(track);
+  return Math.max(0, track.clientHeight - parseFloat(st.paddingTop) - parseFloat(st.paddingBottom));
 }

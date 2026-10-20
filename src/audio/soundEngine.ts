@@ -112,25 +112,6 @@ export class SoundEngine {
     this.port?.set(kind === 'port');
   }
 
-  /** A touch on a menu's button: a soft tick. */
-  tap(): void {
-    const c = this.ctx;
-    if (!c || c.state !== 'running' || !this.master) return;
-    const T = AUDIO.tap;
-    const t = c.currentTime;
-    const o = c.createOscillator();
-    const g = c.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(T.freq[0], t);
-    o.frequency.exponentialRampToValueAtTime(T.freq[1], t + T.seconds);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(T.volume, t + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.0005, t + T.seconds);
-    o.connect(g).connect(this.master);
-    o.start(t);
-    o.stop(t + T.seconds + 0.02);
-  }
-
   /** The ship's engine starting or stopping, heard as near as you are (1 aboard … 0 far). */
   engineStartStop(start: boolean, near: number): void {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.startStop(start, near);

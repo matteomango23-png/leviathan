@@ -88,17 +88,23 @@ export function hasFinalForm(speciesId: string, variant: Variant): boolean {
   return !!s.iconic;
 }
 
+/** The level a species reaches its final form at: a little over the top of its wild levels (owner, 20 ottobre). */
+export function finalFormLevelOf(speciesId: string): number {
+  const top = wildLevelRange({ speciesId, variant: 'comune' })[1];
+  return Math.min(PROGRESSION.maxLevel, top + PROGRESSION.finalFormOverWild);
+}
+
 /** Size multiplier over the species' standard length (RENDER / VARIANT_RULES / UNIQUE_VARIANTS / FINAL_FORM_SIZE_MULT). */
 function formSizeMult(form: BeastForm, level = 1): number {
   if (form.final) return FINAL_FORM_SIZE_MULT;
   const u = uniqueOf(form);
   const variant = u ? u.sizeMult : form.variant === 'comune' ? 1 : VARIANT_RULES[form.variant].sizeMult;
-  const grow =
-    level >= PROGRESSION.growthStartLevel
-      ? 1 +
-        PROGRESSION.growthSizePerLevel *
-          (Math.min(level, PROGRESSION.finalFormLevel - 1) - PROGRESSION.growthStartLevel + 1)
-      : 1;
+  // it grows from growthStartLevel until the level before its final form (or to the top, with none)
+  const cap = hasFinalForm(form.speciesId, form.variant)
+    ? finalFormLevelOf(form.speciesId)
+    : PROGRESSION.maxLevel;
+  const grown = Math.min(level, cap - 1) - PROGRESSION.growthStartLevel + 1;
+  const grow = grown > 0 ? 1 + PROGRESSION.growthSizePerLevel * grown : 1;
   return variant * grow;
 }
 

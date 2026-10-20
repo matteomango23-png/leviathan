@@ -5,6 +5,7 @@ import { newSave, serializeSave } from '../src/systems/save/saveData';
 import {
   createSlot,
   deleteSlot,
+  importSlot,
   lastSlot,
   listSlots,
   loadSlot,
@@ -101,6 +102,19 @@ describe('games side by side', () => {
     expect(lastSlot(st)).toBeNull(); // Riprendi does not open it
     expect(writeSlot(g.id, saveAt(5), st)).toBe(false);
     expect(slotText(g.id, st)).toBe('{ rotto'); // still there, to export
+  });
+
+  it('a game imported from a file joins the list; the others stay as they are (20 ottobre)', () => {
+    const st = memoryStore();
+    const a = createSlot('Prima', st)!;
+    writeSlot(a, saveAt(10), st);
+    const before = slotText(a, st);
+    const b = importSlot('leviatano-backup', saveAt(77), st)!;
+    expect(b).not.toBe(a);
+    expect(slotText(a, st)).toBe(before);
+    expect(listSlots(st).find((g) => g.id === b)?.name).toBe('leviatano-backup');
+    const loaded = loadSlot(b, st);
+    expect(loaded.ok && loaded.save?.diver.x).toBe(77);
   });
 
   it('rename and delete', () => {

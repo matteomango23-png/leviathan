@@ -2,16 +2,14 @@
 // found, the borders of the regions, the submarine when it is out, the dens whose echo you heard (the one you follow
 // stands out) and the end of the known sea. Pure logic; ui/bridgeChart.ts draws it.
 import { SHIP } from '../data/ship';
-import { HUNTS } from '../data/hunts';
 import { OUTPOSTS, PORTO_FANGO } from '../data/economy';
 import { ENDLESS } from '../data/endless';
 import { kmToX, SEA_REGIONS } from '../data/regions';
 import { WORLD } from '../data/worldLayout';
 import { outpostKey } from './economy/places';
 import type { GameState } from './game';
-import { huntOpen } from './hunts';
 
-export type ChartKind = 'harbour' | 'border' | 'sub' | 'boat' | 'den' | 'target' | 'end';
+export type ChartKind = 'harbour' | 'border' | 'sub' | 'boat' | 'end';
 
 interface ChartMark {
   kind: ChartKind;
@@ -26,10 +24,7 @@ export interface Chart {
   marks: ChartMark[];
 }
 
-type ChartWorld = Pick<
-  GameState,
-  'ship' | 'sub' | 'boat' | 'seen' | 'hunts' | 'huntPinned' | 'dens' | 'beasts'
->;
+type ChartWorld = Pick<GameState, 'ship' | 'sub' | 'boat' | 'seen'>;
 
 export function chartAround(g: ChartWorld): Chart {
   const halfM = SHIP.chart.halfKm * 1000;
@@ -45,11 +40,7 @@ export function chartAround(g: ChartWorld): Chart {
   add('end', ENDLESS.maxX - ENDLESS.endWall, 'Fine del mare conosciuto');
   if (g.sub.owned && g.ship.bay === 'out' && !g.sub.aboard) add('sub', g.sub.x, 'Sottomarino');
   if (g.boat.owned && g.boat.bay === 'out' && !g.boat.aboard) add('boat', g.boat.x, 'Motoscafo');
-  HUNTS.forEach((h, i) => {
-    const den = g.dens[i];
-    if (!den || !g.hunts[h.id]?.echo || !huntOpen(h, g.beasts.gone, g.beasts.team)) return;
-    add(h.id === g.huntPinned ? 'target' : 'den', den.x, h.name);
-  });
+  // (no legends' dens: owner, 20 ottobre; the hunt is followed with the sonar and the diary)
   marks.sort((a, b) => a.dx - b.dx);
   return { halfM, marks };
 }

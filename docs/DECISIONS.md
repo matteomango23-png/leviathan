@@ -1005,3 +1005,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** la galleria parte dal menu iniziale come partita senza posto nell'elenco (mai salvata), invece di un pannello dentro la partita vera.
 - **Motivo:** provare 102 bestie (catturarle, cambiare squadra, combattere) avrebbe sporcato la partita del proprietario; così ogni prova si butta via uscendo.
+
+## 20 ottobre 2026 — Forma finale legata ai livelli della specie (v0.79.0)
+
+- **Decisione:** la forma finale arriva `PROGRESSION.finalFormOverWild` (18) livelli sopra il massimo selvatico della forma comune di ogni specie, calcolato (`finalFormLevelOf`), non più a 100 per tutte.
+- **Motivo:** il proprietario trovava il 100 irraggiungibile e ha chiesto "+15/20 livelli sopra il range della specie". Calcolato dai dati: nessuna tabella scritta a mano, e se cambiano i livelli selvatici cambia da sé.
