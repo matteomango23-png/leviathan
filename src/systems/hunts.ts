@@ -230,6 +230,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): Son
     const den = g.dens[i]!;
     if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarRange(g.ship)) return;
     if (!huntOpen(h, g.beasts.gone, g.beasts.team)) return;
+    if (g.beasts.wilds.some((w) => w.spawn.hunt === h.id && w.resting)) return; // beaten, resting in its den
     out.echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
   });
   out.echoes.sort((a, b) => Math.abs(a.dx) - Math.abs(b.dx));

@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.81.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.82.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,19 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, poi V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, poi W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto V, sonar, drone e cacce (20 ottobre 2026) → v0.82.0
+
+- **Leggenda a riposo:** `WildBeast.resting`, messo da `finishBattle` per una bestia di caccia battuta e tolto da `spawnWild`. `sonarReadout` salta l'eco anomala della sua tana.
+- **Echi sconosciuti:** `sonarScan.unknown` (chiave → specie), riempito da `stepScan` quando la specie non è vista. `nameSeenEchoes` (a ogni passo) mette il nome appena `seen` la contiene; `echoKnown` dice se un'eco è già riconosciuta.
+- **Drone:** `startRecon(g, events, known)` ordina il giro (sconosciute, più lunghe, più vicine) prima di prendere le `RECON.maxBeasts`; `game.ts` passa `echoKnown`.
+- Test `tests/lottoV.test.ts`. Nel browser non provato: serve una caccia avanzata con nave e sonar.
+
+**Da provare sull'iPhone:** batti una leggenda di una caccia e guarda il sonar; analizza un'eco sconosciuta, poi vedi o cattura la specie; manda il drone dove il sonar ha un'eco grande sconosciuta.
 
 ## Correzione: nemico fino a poco sopra il menu (20 ottobre 2026) → v0.81.3
 

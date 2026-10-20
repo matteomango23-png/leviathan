@@ -50,6 +50,9 @@ export interface WildBeast extends BodyPose {
   boss?: string;
   /** Its pack (block 5b): how many mates swim with it now. */
   pack: number;
+  /** A hunted beast beaten, back in its den until it comes out again: the sonar hears no anomalous echo meanwhile
+   *  (owner, 20 ottobre: the legend just beaten stayed on the sonar). */
+  resting?: boolean;
   /** The light under the still ship calls it there (ship/underLight.ts), or null. */
   drawn: { x: number; y: number } | null;
   /** What it hunts now (a sardine school, a smaller beast), or what hunts it (beasts/packHunt.ts), or null. */
@@ -110,6 +113,7 @@ export function spawnWild(
   face: 1 | -1,
 ): void {
   Object.assign(b, {
+    resting: false,
     serial: (b.serial ?? 0) + 1,
     form,
     level,

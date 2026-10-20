@@ -29,6 +29,8 @@ export interface ScanState {
   picked: Target | null;
   /** What the analyses of this outing found, by echo (targetKey): the words shown by its dot. */
   results: Record<string, string>;
+  /** The echoes analysed while their species was still unknown (key → species): named as soon as you see it. */
+  unknown?: Record<string, string>;
 }
 
 interface ScanWorld {
@@ -91,6 +93,7 @@ function placeName(x: number, y: number): string {
 /** One step: the locked echo's analysis goes on, is lost, or ends (its words, the diary's note). */
 export function stepScan(g: ScanWorld, dt: number, events: GameEvent[]): void {
   const s = g.sonarScan;
+  nameSeenEchoes(g);
   if (!s.lock) return;
   const range = HUNT_RULES.bigEchoRange * sonarRange(g.ship);
   const p = locate(g, s.lock);
@@ -118,8 +121,30 @@ export function stepScan(g: ScanWorld, dt: number, events: GameEvent[]): void {
     ? `${formName(form)}${p.level ? ` · liv. ${p.level}` : ''}`
     : `Sconosciuta · ${type} · circa ${lengthM < 3 ? lengthM.toFixed(1).replace('.', ',') : Math.round(lengthM)} m`;
   s.results[targetKey(t)] = text;
+  if (!known) (s.unknown ??= {})[targetKey(t)] = t.speciesId;
   addNote(g.sonarNotes, t.speciesId, { place: placeName(p.x, p.y), depthM, cls, type });
   events.push({ type: 'scanDone', text, known });
+}
+
+/**
+ * An echo analysed as unknown whose species you have seen since (met it, caught it): its name now, without analysing
+ * it again (owner, 20 ottobre: a species seen and caught still "sconosciuta" on the sonar; the beasts of the open sea
+ * come back the same, so the old answer stayed).
+ */
+export function nameSeenEchoes(g: ScanWorld): void {
+  const unknown = g.sonarScan.unknown;
+  if (!unknown) return;
+  for (const [key, speciesId] of Object.entries(unknown)) {
+    if (!g.seen.has(speciesId)) continue;
+    g.sonarScan.results[key] = speciesById(speciesId)?.name ?? speciesId;
+    delete unknown[key];
+  }
+}
+
+/** Whether the sonar already knows what this echo is (analysed, and not as unknown). */
+export function echoKnown(s: ScanState, t: Target): boolean {
+  const key = targetKey(t);
+  return s.results[key] !== undefined && !s.unknown?.[key];
 }
 
 /** The drone's report (ship/gadgets.ts): every beast it reached is named on the sonar at once, and noted in the
@@ -139,6 +164,7 @@ export function learnFromReport(
   const classes = shipModel(g.ship).sonar.classes;
   for (const e of report) {
     g.sonarScan.results[targetKey(e.target)] = `${e.name}${e.level ? ` · liv. ${e.level}` : ''}`;
+    delete g.sonarScan.unknown?.[targetKey(e.target)];
     const sp = speciesById(e.speciesId);
     const x = g.ship.x + e.dxM * WORLD.unitsPerMetre;
     const y = WORLD.surfaceY + e.depthM * WORLD.unitsPerMetre;
