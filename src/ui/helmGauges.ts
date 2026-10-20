@@ -2,19 +2,40 @@
 // travel. Split from helmControls in the cleanup of 19 ottobre 2026.
 import type { HelmInfo } from './helmTypes';
 
-/** Knots, gas, fuel and range, depth, drums, the hold: one line under the sonar. */
-export function gaugeLine(info: HelmInfo, throttle: number): string {
+export type DialKind = 'speed' | 'range' | 'fuel' | 'depth';
+
+/** One dial at the top of the helm: its needle (0 … 1 of its sweep) and its number, no words (helmDials.ts). */
+export interface DialValue {
+  kind: DialKind;
+  share: number;
+  text: string;
+  /** Red: out of fuel. */
+  warn?: boolean;
+}
+
+const clamp01 = (v: number): number => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
+
+/** Speed, range and fuel (the drums' litres with it), and the depth under water (owner, 20 ottobre). */
+export function dialValues(info: HelmInfo): DialValue[] {
   const km = info.rangeKm < 10 ? info.rangeKm.toFixed(1).replace('.', ',') : String(Math.round(info.rangeKm));
-  const parts = [
-    `${Math.round(info.knots)} nodi`,
-    `gas ${Math.round(throttle * 100)}%`,
-    `${Math.round(info.fuel)} L · ${km} km`,
+  const [drums, drumsMax] = info.drums ?? [0, 0];
+  const out: DialValue[] = [
+    { kind: 'speed', share: clamp01(info.knots / info.topKnots), text: String(Math.round(info.knots)) },
+    { kind: 'range', share: clamp01(info.rangeKm / info.fullRangeKm), text: km },
+    {
+      kind: 'fuel',
+      share: clamp01((info.fuel + drums) / (info.tank + drumsMax)),
+      text: String(Math.round(info.fuel + drums)),
+      warn: info.fuel <= 0,
+    },
   ];
-  if (info.depthM !== undefined) parts.push(`${Math.round(info.depthM)} / ${info.maxDepthM} m`);
-  // (the hull: its own bar at the top left, helmBars.ts; owner, 19 ottobre: the line wrapped and ran over the air)
-  if (info.drums) parts.push(`fusti ${Math.round(info.drums[0])}/${info.drums[1]} L`);
-  if (info.pool) parts.push(info.pool);
-  return parts.join(' · ');
+  if (info.depthM !== undefined && info.maxDepthM)
+    out.push({
+      kind: 'depth',
+      share: clamp01(info.depthM / info.maxDepthM),
+      text: String(Math.round(info.depthM)),
+    });
+  return out;
 }
 
 /** The ship's light, or the Krill Hunter's mouth. */

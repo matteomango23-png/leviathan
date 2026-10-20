@@ -4,6 +4,8 @@ export interface HelmInfo {
   mode: 'ship' | 'sub' | 'boat';
   face: 1 | -1;
   knots: number;
+  /** Its top speed (knots), for the speed dial. */
+  topKnots: number;
   /** The ship's sonar (only at its helm): its line, and whether it is switched on. */
   sonar?: string;
   sonarOn?: boolean;
@@ -13,6 +15,8 @@ export interface HelmInfo {
   fuel: number;
   tank: number;
   rangeKm: number;
+  /** How far a full tank takes it at that throttle (km), for the range dial. */
+  fullRangeKm: number;
   /** A U-Boat at the helm (block 4c): the dive lever shows. Submarine and U-Boat: the air left and full (seconds). */
   canDive?: boolean;
   air?: number;
@@ -37,8 +41,8 @@ export interface HelmInfo {
   canLaunchBoat?: boolean;
   /** "motoscafo", "moto d’acqua": for "Cala …". */
   boatName?: string;
-  /** Ship only: the beast resting in its pool now and how far healed ("vasca: Zanna 45%"). */
-  pool?: string;
+  /** Beasts resting in the ship's pool now (a mark on the Cockpit button). */
+  poolCount?: number;
   /** Speedboat only: litres in its drums, and how many they hold. */
   drums?: [number, number];
   /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */

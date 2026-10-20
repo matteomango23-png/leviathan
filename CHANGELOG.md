@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.83.0 — Quadranti al timone, oggetti nel recinto (20 ottobre 2026)
+
+- **Timone:** la lunga riga di scritte in alto lascia il posto a tre quadranti quadrati d'epoca, con cornice d'ottone e lancetta: velocità, autonomia e carburante (i fusti di scorta si sommano ai litri). Niente parole, solo un'icona e un numero. Sott'acqua c'è un quarto quadrante per la profondità. Con il serbatoio vuoto il quadrante del carburante diventa rosso.
+- **Vasca della nave:** non sta più nella riga in alto, dove copriva il pulsante del motore. Ora è un piccolo segno sul pulsante Cockpit con il numero di bestie a riposo.
+- **Recinto e squadra:** il pulsante si chiama "Dai oggetto" e apre la sacca davanti alla finestra in cui sei, non più dietro. Se nella sacca non c'è niente da dare a quella bestia, il pulsante è spento.
+
 ## v0.82.0 — Sonar e drone più affidabili (20 ottobre 2026)
 
 - **Leggendario battuto:** finché riposa nella sua tana il sonar non mostra più la sua eco anomala; torna quando la leggenda riappare.

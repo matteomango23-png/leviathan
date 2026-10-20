@@ -10,7 +10,8 @@ export type { HelmInfo } from './helmTypes';
 import type { Session } from '../scenes/session';
 import { diveOf, freshHelm } from '../systems/helm';
 import { el } from './dom';
-import { gaugeLine, lightLabel, travel } from './helmGauges';
+import { HelmDials } from './helmDials';
+import { lightLabel, travel } from './helmGauges';
 
 export class HelmControls {
   private readonly root: HTMLDivElement;
@@ -21,7 +22,7 @@ export class HelmControls {
   private readonly diveKnob: HTMLDivElement;
   private readonly west: HTMLButtonElement;
   private readonly east: HTMLButtonElement;
-  private readonly gauges: HTMLDivElement;
+  private readonly dials: HelmDials;
   private readonly sonar: HTMLButtonElement;
   private sonarText = '';
   private readonly buttons: HTMLDivElement;
@@ -45,7 +46,7 @@ export class HelmControls {
   private readonly dragging = new Map<number, 'throttle' | 'dive'>();
   private readonly keys = new Set<string>();
   private readonly cleanup: (() => void)[] = [];
-  private gaugeText = '';
+  private readonly poolMark: HTMLSpanElement;
   /** The arrow keys were held last frame (to let the dive lever go back to the middle when released). */
   private keyDive = false;
   /** The ship at the helm is a U-Boat: its dive lever works like the submarine's. */
@@ -75,7 +76,7 @@ export class HelmControls {
     // fixed bands (owner, 5 ottobre: nothing on top of anything): the instruments in the middle at the top, the
     // ship's buttons in a column on the right, the cockpit next to the pause button, the objective on the left
     const panel = el('div', 'helm-panel', this.root);
-    this.gauges = el('div', 'helm-gauges', panel);
+    this.dials = new HelmDials(panel);
     // the sonar's line is its switch too
     this.sonar = el('button', 'helm-sonar', panel);
     this.buttons = el('div', 'helm-buttons', this.root);
@@ -83,6 +84,8 @@ export class HelmControls {
     const corner = el('div', 'helm-corner', this.root);
     this.engineBtn = el('button', 'helm-power', corner, '⏻');
     this.cockpitBtn = el('button', 'helm-btn helm-cockpit', corner, 'Cockpit');
+    // beasts resting in the pool: a small mark on it (owner, 20 ottobre: the pool's words ran over the engine)
+    this.poolMark = el('span', 'helm-pool-mark', this.cockpitBtn);
     this.bars = new HelmBars(this.root);
     // the buttons that work only with the ship still, in one group that fades as a whole (owner, 9 ottobre: on the
     // iPhone fading them one by one over the game left them half drawn)
@@ -223,11 +226,10 @@ export class HelmControls {
     this.west.classList.toggle('on', helm.dir === -1);
     this.east.classList.toggle('on', helm.dir === 1);
 
-    const text = gaugeLine(info, helm.throttle);
-    if (text !== this.gaugeText) {
-      this.gaugeText = text;
-      this.gauges.textContent = text;
-    }
+    this.dials.update(info);
+    const pool = info.poolCount ?? 0;
+    this.poolMark.hidden = pool <= 0;
+    if (pool > 0 && this.poolMark.textContent !== `≈${pool}`) this.poolMark.textContent = `≈${pool}`;
     this.sonar.hidden = !info.sonar;
     if (info.sonar && info.sonar !== this.sonarText) {
       this.sonarText = info.sonar;
@@ -288,7 +290,6 @@ export class HelmControls {
     this.engineBtn.title = info.engineOn ? 'Spegni il motore' : 'Accendi il motore';
     // dry or broken down (block 5c); the boat crawls on its reserve
     this.rescueBtn.hidden = (info.fuel > 0 && !info.broken) || info.mode === 'boat';
-    this.gauges.classList.toggle('dry', info.fuel <= 0);
   }
 
   destroy(): void {
