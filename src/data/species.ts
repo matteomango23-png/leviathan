@@ -45,6 +45,7 @@ export interface SpeciesDef {
   rideSpeedMult?: number;      // not a mount but you can ride it anyway, at this × its riding speed (second stages)
   riderForward?: number;       // where you sit along it, × its length from the middle (+ towards the head); default TEAM_RULES.riderOffset
   girth?: number;              // the side picture drawn this much thicker (a thin serpent made massive)
+  finalSizeMult?: number;      // its final forms × this instead of FINAL_FORM_SIZE_MULT (the Varano d'osso: much bigger, owner 20 ottobre)
   alfaName?: string;           // the alfa has its own name (and pictures, alfaArt): the orca's is the Matriarch
   alfaArt?: string;
 }
@@ -78,7 +79,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'rocciaguscio', name: 'Rocciaguscio', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 3, rideSpeedMult: 0.75, trait: 'Tartaruga corazzata coperta di spuntoni',
     evolvesTo: 'archelon', evolveLevel: 36, movesFrom: 'guscio', artFrom: 'tartaruga_marina',
     artPrompt: 'a young armoured prehistoric sea turtle, 3 metres long, its stone shell covered in sharp bronze spikes and barnacles, a hooked beak, heavy and stubborn' },
-  { id: 'archelon', name: 'Archelon', type: 'corazzato', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 8, trait: 'Tartaruga titanica preistorica, una fortezza viva',
+  { id: 'archelon', name: 'Archelon', type: 'corazzato', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 14, trait: 'Tartaruga titanica preistorica, una fortezza viva', // 14 m (was 8: owner, 20 ottobre, "le terze forme mastodontiche")
     movesFrom: 'guscio', artFrom: 'tartaruga_marina', legendary: true,
     artPrompt: 'a titanic prehistoric sea turtle (Archelon), 6 metres long, an ancient living fortress, a shell like a cliff of stone and bronze with spikes and coral growing on it, a massive hooked beak, slow and unstoppable' },
   { id: 'scintilla', name: 'Scintilla', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [5, 5], rarity: 4, size: 'piccola', lengthM: 1, trait: 'Anguillina che crepita di scintille',
@@ -116,7 +117,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a giant oceanic manta ray gliding on enormous wings, lightning flowing along its wing tips' },
   // ---- The open sea (tappa 11, the owner's pictures of 2 ottobre 2026): mostly common beasts of the endless sea
   { id: 'varano_nilo', name: 'Varano del Nilo nero', type: 'predatore', role: 'compagno', region: 'delta', wildLevel: [8, 11], rarity: 3, size: 'media', lengthM: 2.5, trait: 'Nuota tra le radici a pelo d’acqua, morso velenoso',
-    albinoFinalFormName: 'Varano d\u2019osso',
+    albinoFinalFormName: 'Varano d\u2019osso', finalSizeMult: 3.5, // the Varano d'osso 8,75 m (owner, 20 ottobre)
     artPrompt: 'a black Nile monitor lizard, long muscular tail, scaly dark armor with faint pale bands, forked tongue, swimming' },
   // more life (owner, 3 ottobre 2026: "riempire il mare di animali medi e piccoli"; pictures: lotto Gemini 2)
   { id: 'cernia', name: 'Cernia bruna', type: 'corazzato', role: 'compagno', region: 'baia', wildLevel: [3, 6], rarity: 1, size: 'media', lengthM: 1.5, trait: 'Bocca enorme: risucchia la preda',
@@ -129,7 +130,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a nurse shark, tan-brown smooth skin, small barbels under the snout, rounded fins and a long tail' },
   { id: 'medusa_gigante', name: 'Medusa criniera di leone', type: 'tempesta', role: 'supporto', region: 'barriera', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2, trait: 'Tentacoli lunghissimi e urticanti',
     artPrompt: 'a giant lion\u2019s mane jellyfish, a glowing translucent red-orange bell and a mass of very long trailing tentacles' },
-  { id: 'pesce_vela', name: 'Pesce vela', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [7, 10], rarity: 2, size: 'media', lengthM: 3, trait: 'Il più veloce del mare aperto',
+  { id: 'pesce_vela', name: 'Pesce vela', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [7, 10], rarity: 2, size: 'media', lengthM: 3, trait: 'Il più veloce del mare aperto',
     artPrompt: 'a sailfish, a huge blue sail-like dorsal fin, a long sharp bill, silver-blue body with dark vertical bars' },
   { id: 'chimera', name: 'Chimera', type: 'abissale', role: 'supporto', region: 'fossa', wildLevel: [18, 21], rarity: 1, size: 'media', lengthM: 1.5, trait: 'Occhi enormi che vedono nel buio',
     artPrompt: 'a ghost shark chimaera, pale silvery pearly skin, huge reflective green eyes, wing-like pectoral fins, a long thin whip tail' },
@@ -168,7 +169,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a mahi-mahi dolphinfish, blunt forehead, golden-green flanks, a long blue dorsal fin' },
   { id: 'pesce_sega', name: 'Pesce sega', type: 'corazzato', role: 'compagno', region: 'delta', wildLevel: [8, 11], rarity: 2, size: 'grande', lengthM: 6, trait: 'Rostro seghettato che fruga nel fango e falcia i banchi',
     artPrompt: 'a largetooth sawfish, a long flat saw-like rostrum lined with teeth, a shark-like body' },
-  { id: 'tartaruga_liuto', name: 'Tartaruga liuto', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [7, 10], rarity: 2, size: 'media', lengthM: 2, trait: 'La tartaruga più grande: guscio di cuoio, attraversa gli oceani',
+  { id: 'tartaruga_liuto', name: 'Tartaruga liuto', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [7, 10], rarity: 2, size: 'media', lengthM: 3, trait: 'La tartaruga più grande: guscio di cuoio, attraversa gli oceani',
     artPrompt: 'a leatherback sea turtle, a dark ridged leathery shell, huge front flippers' },
   { id: 'squalo_balena', name: 'Squalo balena', type: 'corazzato', role: 'cavalcatura', region: 'barriera', wildLevel: [10, 13], rarity: 3, size: 'colossale', lengthM: 12, trait: 'Il pesce più grande del mare, mansueto: filtra il plancton',
     artPrompt: 'a whale shark, a wide flat head and mouth, dark grey skin with white spots and stripes' },

@@ -1,6 +1,6 @@
 // Which version of a beast this is (common, albino, alpha, a Guardian's unique variant, final form),
 // and everything that follows from it: name, sprite, size, stats, stars.
-import { BODY_SHAPES } from '../../data/bodyShapes.generated';
+import { BODY_BACKS, BODY_SHAPES } from '../../data/bodyShapes.generated';
 import {
   ABILITIES,
   CETACEANS,
@@ -96,7 +96,7 @@ export function finalFormLevelOf(speciesId: string): number {
 
 /** Size multiplier over the species' standard length (RENDER / VARIANT_RULES / UNIQUE_VARIANTS / FINAL_FORM_SIZE_MULT). */
 function formSizeMult(form: BeastForm, level = 1): number {
-  if (form.final) return FINAL_FORM_SIZE_MULT;
+  if (form.final) return speciesOf(form).finalSizeMult ?? FINAL_FORM_SIZE_MULT;
   const u = uniqueOf(form);
   const variant = u ? u.sizeMult : form.variant === 'comune' ? 1 : VARIANT_RULES[form.variant].sizeMult;
   // it grows from growthStartLevel until the level before its final form (or to the top, with none)
@@ -255,6 +255,21 @@ export function shapeOfForm(form: BeastForm): readonly (readonly [number, number
         .find((x) => x),
     );
   return shapeCache.get(key);
+}
+
+const backCache = new Map<string, readonly number[] | undefined>();
+
+/** Its back from head to tail, fins left out (bodyShapes BODY_BACKS): where a rider sits. */
+export function backOfForm(form: BeastForm): readonly number[] | undefined {
+  const key = formKey(form);
+  if (!backCache.has(key))
+    backCache.set(
+      key,
+      artKeysOf(form)
+        .map((k) => BODY_BACKS[k])
+        .find((x) => x),
+    );
+  return backCache.get(key);
 }
 
 /** How it swims when drawn: a whale's tail up and down, a serpent's wave (data/beasts.ts). */

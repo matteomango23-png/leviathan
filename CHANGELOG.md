@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.81.0 — In groppa: sul dorso, Folgore intero, cavalcature nuove (20 ottobre 2026)
+
+- **Il sub sta sul dorso**, attaccato al corpo vicino all'attaccatura della pinna, e mai più sopra la pinna dorsale (squali, orche, megattere, Zannarossa, Re Alfa…).
+- **Folgore non si deforma più** salendo e scendendo.
+- **Squalo elefante** girato dal verso giusto: la testa davanti e la coda dietro.
+- **Nuove cavalcature:** Varano d'osso, pesce spada Corazzato, tartaruga preistorica.
+- **Il pesce vela non si cavalca più:** se ne hai uno resta tuo, come compagno.
+- **Più grandi in mare:** Archelon 14 m (era 8), tartaruga liuto 3 m (era 2), Varano d'osso quasi 9 m (era meno di 4).
+- **Battaglia:** fra le due bestie c'è ora un limite. La più grande non sembra mai più di 3 volte la più piccola, e anche la più piccola resta ben visibile (un pesce palla contro Moby Dick si vede).
+
 ## v0.80.0 — Battaglia: la tua bestia si vede, grandezze giuste, versi giusti (20 ottobre 2026)
 
 - **La tua bestia si vede:** sta più in alto, tra la barra del nemico e la tua, con testa e dorso sopra la sua barra. La barra col nome è più piccola e più in basso, nell'angolo.
