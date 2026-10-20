@@ -130,7 +130,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
 
 ## Feedback del 20 ottobre 2026 (prova di tutte le bestie nella galleria), in lotti
 
-**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia ✅ v0.80.0 (posizione della tua bestia, grandezze, giganti, versi, forma finale nella scheda), U in groppa ✅ v0.81.0 (sub sul dorso, Folgore, squalo elefante, cavalcature, grandezze, limite in battaglia), V sonar/drone/cacce ✅ v0.82.0 (leggenda a riposo, echi riconosciuti, drone), W timone e recinto ✅ v0.83.0 (quadranti, vasca sul Cockpit, Dai oggetto), X mare ✅ v0.84.0 (branchi fluidi, sub che galleggia sulle onde, tentacoli, granchio sul fondo), Z altre note ✅ v0.85.0 (giganti che nuotano avanti e indietro, fondale in dissolvenza, luce sotto la nave, silenzio uscendo dall'app, musica del menu, sottomarino recuperato), Y immagini.
+**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia ✅ v0.80.0 (posizione della tua bestia, grandezze, giganti, versi, forma finale nella scheda), U in groppa ✅ v0.81.0 (sub sul dorso, Folgore, squalo elefante, cavalcature, grandezze, limite in battaglia), V sonar/drone/cacce ✅ v0.82.0 (leggenda a riposo, echi riconosciuti, drone), W timone e recinto ✅ v0.83.0 (quadranti, vasca sul Cockpit, Dai oggetto), X mare ✅ v0.84.0 (branchi fluidi, sub che galleggia sulle onde, tentacoli, granchio sul fondo), Z altre note ✅ v0.85.0 (giganti che nuotano avanti e indietro, fondale in dissolvenza, luce sotto la nave, silenzio uscendo dall'app, musica del menu, sottomarino recuperato), Y immagini ✅ v0.86.0 (card intere; lista per Gemini in `docs/GEMINI-LOTTO-8.md`).
 **Decisioni:**
 - forma finale circa 15-20 livelli sopra i livelli selvatici di ogni specie, non più 100 per tutte;
 - cavalcabili: sì a Varano d'osso, pesce spada Corazzato e tartaruga preistorica; no a pesce vela e polpo gigante;
@@ -196,7 +196,7 @@ Il proprietario manderà altre note; poi si sceglie l'ordine. Raggruppati per ti
   - **Recinto:** il pulsante dell'oggetto non fa nulla subito; uscendo dal cockpit compare "nessun oggetto disponibile" o simile. Chiarire a cosa serve.
   - **Card e bestiario:**
     - la scritta delle evoluzioni esce dal riquadro in tutte le card con evoluzioni;
-    - molte illustrazioni del bestiario sono tagliate (es. il naso): tutto il corpo dentro, centrato.
+    - ✅ molte illustrazioni del bestiario sono tagliate (es. il naso): tutto il corpo dentro, centrato (v0.86.0).
   - **Suoni:** togliere il tic dei tocchi (v0.76.0), è fastidioso.
   - **Battaglia:**
     - balena (squalo balena o megattera, da capire) come nemico orientata male;

@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.85.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.86.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,22 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, X ✅, Z ✅ (altre note), poi Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, X ✅, Z ✅ (altre note), Y ✅ (card intere; aspetto le immagini di `docs/GEMINI-LOTTO-8.md`). Poi la pulizia del codice (in ritardo) (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto Y, immagini (20 ottobre 2026) → v0.86.0
+
+- **Card:**
+  - in `scripts/art.ts`, `makeCard` mette le illustrazioni non 2:3 (4:5 e 9:16, 69 bestie) **intere** nella card, su sé stesse sfocate e scurite, con il bordo sfumato da una maschera SVG;
+  - quelle quasi 2:3 (scarto 2%) e la flotta si ritagliano ancora;
+  - opzione nuova `--cards`, che rifà solo le card delle bestie, sopra le vecchie;
+  - le sottocartelle di `art-inbox/` vengono ignorate.
+- **Lista per Gemini:** `docs/GEMINI-LOTTO-8.md`, 19 immagini su fondo verde (Saetta, murena, squalo bianco albino, manta, lontra, tartaruga liuto, squalo balena, tre coccodrilli, megattera, Archelon in groppa). Il proprietario le salva in `art-inbox/lotto8/`; io le metto al posto delle vecchie, che diventano `_vecchia_…`.
+- **Galleria di prova e strumenti di prova:** restano, il proprietario li usa ancora per provare.
+
+**Da provare sull'iPhone:** bestiario, squadra e scheda di una bestia (per esempio beluga, archelon, capodoglio).
 
 ## Lotto Z, battaglia, luce della nave, suoni, sottomarino (20 ottobre 2026) → v0.85.0
 
