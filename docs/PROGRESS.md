@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.79.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.80.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,32 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, poi T battaglia, U in groppa, V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, poi U in groppa, V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto T, battaglia (20 ottobre 2026) → v0.80.0
+
+- **`systems/battle/stage.ts`:**
+  - `placePicture('you')`: la cima tra `fit.youTop` (0,27, sotto la barra del nemico) e `fit.youBoxTop - youShowAbove × altezza` (0,83 e 0,6), così testa e dorso stanno sopra la barra;
+  - il nemico può uscire a destra e in basso tenendo `fit.foeKeepW`/`foeKeepH` (0,72) in vista, sia in `fitSize` sia in `placePicture`.
+- **`battleSizes`:**
+  - confronta `seenPresence`, cioè la radice dell'area in vista, la tua sopra la barra (tolto `presence`);
+  - rapporto = (lunghezza nemico / tua)^`size.lengthExponent` (0,6) × pictureMult;
+  - il nemico ≤ tua × rapporto × `foeVsYours` (1); la tua ≤ nemico / rapporto × `smallerYours`;
+  - mai sotto `minSeen` (0,16); qualche giro perché chi esce dallo schermo non si riduce in proporzione.
+- `BATTLE_STAGE.framePictureMult` per immagine (`squalo_tigre_front: 0.8`).
+- **CSS:** `.binfo.you` più piccola e più in basso.
+- **Prototipo:** `?battaglia&nemico=…&mio=…&miofinale&miovariante=…&miounico=…`.
+- **Versi:**
+  - fogli di tutti i fronti e i retri; girati con `_flip` i fronti di folgore, megattera, megattera_finale, rana_pescatrice, orca_matriarca_finale, orca_preistorica_albina;
+  - `data/battleFacing.ts` (199 chiavi) e il test che lo impone; procedura in `docs/ART.md`.
+- **Scheda:** `evolutionOf` in `beasts/sheet.ts` aggiunge la forma finale (nome e `finalFormLevelOf`).
+- **Test:** `battleFraming` riscritto alle regole nuove (nemico con la testa nella sua metà e al massimo un po' fuori; tua sopra la barra); `tests/lottoT.test.ts` (stessa forma, più lunga = più grande, nessuna sovrapposizione, versi, scheda).
+- **Provato nel browser** a 844 e 667: bianco/bianco, Titano/bianco, mosasauro/pesce palla, Moby Dick/Moby Dick, Folgore/Saetta, dragone/dragone, Guscio/megalodonte, tigre/Orca Imperatrice.
+
+**Da provare sull'iPhone:** battaglie con bestie di grandezze diverse, la tua bestia grande sopra la barra, i giganti nemici.
 
 ## Lotto S, correzioni rapide (20 ottobre 2026) → v0.79.0
 

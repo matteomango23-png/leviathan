@@ -69,10 +69,12 @@ function fitSize(side: Side, beast: StageBeast, aspect: number): number {
       (youWide * youRight * aspect) / (r.left + r.right),
       (youTall * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
     );
-  // the wild one may use its whole side: placePicture slides it within it
+  // the wild one may use its whole side (placePicture slides it within it), a big one leaving the screen on the
+  // right and at the bottom with foeKeepW and foeKeepH of it still in view
+  const { foeKeepW, foeKeepH } = BATTLE_STAGE.fit;
   return Math.min(
-    (foeLowest - BATTLE_STAGE.hover - margin) / r.up,
-    ((1 - foeLeft) * aspect - margin) / (r.left + r.right),
+    (foeLowest - BATTLE_STAGE.hover - margin) / (r.up * foeKeepH),
+    ((1 - foeLeft) * aspect - margin) / ((r.left + r.right) * foeKeepW),
   );
 }
 
@@ -87,28 +89,47 @@ export function battleSize(side: Side, beast: StageBeast, aspect: number): numbe
   return Math.min(size, fitSize(side, beast, aspect));
 }
 
-/** How big a beast looks: the square root of its drawn area, in screen heights. */
-export function presence(beast: StageBeast, size: number): number {
+/**
+ * How big a beast looks where it stands: the square root of the part of its picture box in view (on a screen
+ * `aspect` wide and 1 high; yours above its name box), in screen heights. Yours is partly off screen, so its whole
+ * picture would overstate it (owner, 20 ottobre: your Titano looked no bigger than a wild white shark).
+ */
+export function seenPresence(side: Side, beast: StageBeast, size: number, aspect: number): number {
   const b = beast.box ?? cardBox();
-  return (size * Math.sqrt((b[2] - b[0]) * (b[3] - b[1]))) / BATTLE_STAGE.picture.box;
+  const P = BATTLE_STAGE.picture;
+  const p = placePicture(side, size, aspect, 1, b);
+  const left = Math.max(0, p.x + (b[0] - P.square / 2) * p.scale);
+  const right = Math.min(aspect, p.x + (b[2] - P.square / 2) * p.scale);
+  const top = Math.max(0, p.y + (b[1] - P.foot) * p.scale);
+  const floor = side === 'you' ? BATTLE_STAGE.fit.youBoxTop : 1;
+  const bottom = Math.min(floor, p.y + (Math.min(b[3], P.foot) - P.foot) * p.scale);
+  return Math.sqrt(Math.max(0, right - left) * Math.max(0, bottom - top));
 }
 
 /**
- * Both sizes: each from battleSize, then the shorter beast shrunk so it does not look bigger than the other
- * (BATTLE_STAGE.size.smallerYours).
+ * Both sizes: each from battleSize, then kept in proportion to their lengths. Each fits its own place, so two big
+ * ones would both reach their limit and look alike (owner, 20 ottobre: the wild white shark looked bigger than your
+ * Titano): the one that looks too big for its length next to the other is drawn smaller.
  */
 export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): Record<Side, number> {
+  const S = BATTLE_STAGE.size;
   const sizes = { you: battleSize('you', you, aspect), foe: battleSize('foe', foe, aspect) };
-  // the shorter of the two never looks bigger than the other (by more than smallerYours for yours, which is closer)
-  const k = BATTLE_STAGE.size.smallerYours;
-  if (you.lengthM < foe.lengthM) {
-    const most = presence(foe, sizes.foe) * k * (spectrumSize(you) / spectrumSize(foe));
-    const now = presence(you, sizes.you);
-    if (now > most) sizes.you *= most / now;
-  } else if (foe.lengthM < you.lengthM) {
-    const most = (presence(you, sizes.you) / k) * (spectrumSize(foe) / spectrumSize(you));
-    const now = presence(foe, sizes.foe);
-    if (now > most) sizes.foe *= most / now;
+  // how much bigger the wild one should look: its length over yours, softened (lengthExponent; a 9 m Titano clearly
+  // bigger than a 6 m shark, a 15 m mosasaur far bigger than a pufferfish), × their pictureMult
+  const ratio =
+    Math.pow(Math.max(0.01, foe.lengthM) / Math.max(0.01, you.lengthM), S.lengthExponent) *
+    ((foe.pictureMult ?? 1) / (you.pictureMult ?? 1));
+  // the wild one never looks bigger than that (× foeVsYours: yours is closer, so at the same length it wins)
+  // (both measured by what is in view: seenPresence. A beast partly off screen does not shrink in proportion, the
+  // hidden part coming into view: a few rounds settle it)
+  for (let round = 0; round < 4; round++) {
+    const maxFoe = seenPresence('you', you, sizes.you, aspect) * ratio * S.foeVsYours;
+    const foeNow = seenPresence('foe', foe, sizes.foe, aspect);
+    if (foeNow > maxFoe * 1.001) sizes.foe *= Math.min(1, Math.max(maxFoe, S.minSeen) / foeNow); // a small one stays readable
+    // yours never looks bigger than that by more than smallerYours (Guscio next to a hammerhead, 3 ottobre)
+    const maxYou = (seenPresence('foe', foe, sizes.foe, aspect) / ratio) * S.smallerYours;
+    const youNow = seenPresence('you', you, sizes.you, aspect);
+    if (youNow > maxYou * 1.001) sizes.you *= Math.min(1, Math.max(maxYou, S.minSeen) / youNow);
   }
   return sizes;
 }
@@ -139,21 +160,28 @@ export function placePicture(
   box: PictureBox = cardBox(),
 ): { x: number; y: number; scale: number } {
   const a = BATTLE_STAGE.anchors[side];
-  const { margin, foeLowest, youRight, youTop } = BATTLE_STAGE.fit;
+  const { margin, foeLowest, youRight, youTop, youBoxTop, youShowAbove, foeKeepW, foeKeepH } =
+    BATTLE_STAGE.fit;
   const r = reach(box);
   const hover = BATTLE_STAGE.hover;
   const scale = (size * h) / BATTLE_STAGE.picture.box;
   if (side === 'you') {
-    // its top no higher than youTop (a big one sinks below the screen) and its right edge no further than youRight
-    const ground = Math.max(a.y, youTop + hover + r.up * size);
+    // standing on its anchor, raised so that youShowAbove of it is above your name box, but its top no higher than
+    // youTop (a big one sinks below the screen) and its right edge no further than youRight
+    const tall = r.up * size;
+    const top = Math.max(youTop, Math.min(a.y - hover - tall, youBoxTop - youShowAbove * tall));
+    const ground = top + hover + tall;
     const x = Math.min(a.x * w, youRight * w - r.right * size * h);
     return { x, y: (ground - hover) * h, scale };
   }
-  const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + r.up * size));
+  // standing lower if too tall, down to foeLowest, then with its bottom out of the screen (foeKeepH of it in view)
+  const tall = r.up * size;
+  const ground = Math.min(foeLowest + (1 - foeKeepH) * tall, Math.max(a.y, margin + hover + tall));
   // at its anchor if it fits; else slid right of foeLeft, or left of the right margin
   const { foeLeft } = BATTLE_STAGE.fit;
   let x = a.x * w;
   x = Math.max(x, foeLeft * w + r.left * size * h);
-  x = Math.min(x, w - margin * h - r.right * size * h);
+  // (a big one may leave the screen on the right, its tail, with foeKeepW of it in view)
+  x = Math.min(x, w - margin * h - r.right * size * h + (1 - foeKeepW) * (r.left + r.right) * size * h);
   return { x, y: (ground - hover) * h, scale };
 }

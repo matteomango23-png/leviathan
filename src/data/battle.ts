@@ -86,6 +86,14 @@ export const BATTLE_STAGE = {
     /** A shorter beast of yours never looks bigger than the wild one: its presence (√ of its drawn area) is at most
      *  this × the wild one's × the ratio of their sizes by length (owner, 3 ottobre: Guscio bigger than a hammerhead). */
     smallerYours: 1.15,
+    /** And the wild one never looks bigger than yours × the ratio of their sizes by length × this (owner, 20 ottobre:
+     *  the same form looked bigger as the wild one; yours, seen from behind and partly off screen, needs the edge). */
+    foeVsYours: 1,
+    /** Next to each other their sizes follow their lengths' ratio to this power (1 = true scale: a pufferfish would
+     *  vanish next to a whale; 0 = all alike, as on 19 ottobre)… */
+    lengthExponent: 0.6,
+    /** …but a beast never looks smaller than this (√ of its area in view, in screen heights). */
+    minSeen: 0.16,
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {
@@ -101,7 +109,12 @@ export const BATTLE_STAGE = {
   fit: {
     margin: 0.03,
     foeLowest: 0.62, // was 0.97: a big crocodile stood on top of your beast (owner, 3 ottobre)
-    foeLeft: 0.52, // the wild one stays whole, right of this share of the width
+    foeLeft: 0.52, // the wild one stays right of this share of the width, its head never further left
+    /** A big wild one may leave the screen on the right (its tail: it looks left) and at the bottom, keeping at least
+     *  these shares of its width and height in view, instead of shrinking (owner, 20 ottobre: "i giganti non sembrano
+     *  giganti… tagliamo la coda"). */
+    foeKeepW: 0.72,
+    foeKeepH: 0.72,
     /**
      * Yours is placed like Pokémon (owner, 3 ottobre: "il mio animale quando è grosso mettilo più giù e più a sinistra,
      * mi basta vedere un po' di schiena, le zampe davanti e la testa"): its right edge (the head, seen from behind)
@@ -109,7 +122,14 @@ export const BATTLE_STAGE = {
      * bottom and on the left. A small one just stands at the bottom.
      */
     youRight: 0.4, // was 0.46: two big ones met head to head in the middle (owner, 3 ottobre)
-    youTop: 0.45,
+    /** Its top no higher than this: under the wild one's name box (top left). Was 0.45: a big one sank so low that
+     *  its name box covered it, head and all (owner, 20 ottobre). */
+    youTop: 0.27,
+    /** The top of your name box (bottom left; ui/battle.css .binfo.you), as a share of the screen height… */
+    youBoxTop: 0.83,
+    /** …and at least this share of your beast's height stands above it (head and back in view), as far as youTop
+     *  allows (owner, 20 ottobre: "tutto il corpo coperto dalla scritta"). */
+    youShowAbove: 0.6,
     youMax: 1.8, // and it is never drawn bigger than this share of the screen height (was 1.5)
     youWide: 1.3, // …nor wider than this × the width left of youRight… (was 1.5: a long thin one left the screen)
     youTall: 2.4, // …nor taller than this × the height under youTop (more than half of a whale may be below the screen; was 2)
@@ -126,6 +146,9 @@ export const BATTLE_STAGE = {
    * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).
    */
   pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
+  /** The same for one battle picture only (its texture key without "battle-"): a close-up looks bigger than the
+   *  beast is (owner, 20 ottobre: the tiger shark's front "sempre enorme"). */
+  framePictureMult: { squalo_tigre_front: 0.8 } as Record<string, number>,
   /**
    * A picture much wider than tall (a turtle from behind, a hammerhead head-on) looks smaller than a square one
    * of the same length: it is drawn bigger by (longest side / sqrt(width × height)) ^ exponent, up to max (owner,

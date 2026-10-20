@@ -7,7 +7,7 @@ import {
   battleSizes,
   isGiant,
   lengthSpectrum,
-  presence,
+  seenPresence,
   spectrumSize,
 } from '../src/systems/battle/stage';
 
@@ -38,11 +38,11 @@ describe('battle stage', () => {
     expect(battleSize('you', beast(2), WIDE)).toBeGreaterThan(battleSize('foe', beast(2), WIDE));
   });
 
-  it('shrinks a wild beast that would leave the screen; yours is only kept from growing too much', () => {
+  it('shrinks a wild beast that would leave too much of itself off screen; yours is only kept from growing too much', () => {
     const tall = { lengthM: 30, giant: true, box: [300, 20, 500, 780] as const };
     const F = BATTLE_STAGE.fit;
     expect(battleSize('foe', tall, 2.16)).toBeLessThanOrEqual(
-      F.foeLowest - BATTLE_STAGE.hover - F.margin + 1e-9,
+      (F.foeLowest - BATTLE_STAGE.hover - F.margin) / F.foeKeepH + 1e-9,
     );
     expect(battleSize('you', tall, 2.16)).toBeLessThanOrEqual(F.youMax);
   });
@@ -57,7 +57,9 @@ describe('battle stage', () => {
     const hammer = { lengthM: 6, giant: false, box: BATTLE_ART_BOX.squalo_martello_front! };
     for (const aspect of [2.16, 1.33]) {
       const s = battleSizes(guscio, hammer, aspect);
-      expect(presence(guscio, s.you)).toBeLessThan(presence(hammer, s.foe));
+      expect(seenPresence('you', guscio, s.you, aspect)).toBeLessThan(
+        seenPresence('foe', hammer, s.foe, aspect),
+      );
     }
   });
 

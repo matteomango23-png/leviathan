@@ -1010,3 +1010,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** la forma finale arriva `PROGRESSION.finalFormOverWild` (18) livelli sopra il massimo selvatico della forma comune di ogni specie, calcolato (`finalFormLevelOf`), non più a 100 per tutte.
 - **Motivo:** il proprietario trovava il 100 irraggiungibile e ha chiesto "+15/20 livelli sopra il range della specie". Calcolato dai dati: nessuna tabella scritta a mano, e se cambiano i livelli selvatici cambia da sé.
+
+## 20 ottobre 2026 — Battaglia: grandezze misurate su ciò che si vede (v0.80.0)
+
+- **Decisione:**
+  - le due bestie si confrontano per l'area in vista (`seenPresence`), con un rapporto dalle lunghezze vere addolcito (esponente 0,6) e un minimo leggibile;
+  - il nemico grande può uscire dallo schermo con la coda invece di rimpicciolirsi;
+  - la tua bestia sale sopra la sua barra.
+- **Motivo:** ognuna si riduceva per conto suo per stare nello schermo, e i grandi arrivavano tutti allo stesso tetto. La tua, tagliata e coperta, sembrava più piccola del nemico della stessa forma.
+- Il verso di ogni immagine di battaglia ha un elenco controllato (`data/battleFacing.ts`) imposto da un test, perché non dipende dal codice.

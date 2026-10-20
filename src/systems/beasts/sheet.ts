@@ -16,6 +16,8 @@ import { seaMovesOf } from './team';
 import { ABILITIES, DANGER_NAMES, SPECIES_DEPTH } from '../../data/beasts';
 import {
   breaksBones,
+  finalFormLevelOf,
+  hasFinalForm,
   formLengthM,
   formName,
   formStars,
@@ -107,6 +109,27 @@ function stageLine(speciesId: string): { id: string; name: string; level: number
     : [];
 }
 
+/**
+ * Its line on the sheet: the species it becomes (a starter's line) and its final form with the level it comes at
+ * (owner, 20 ottobre: the hammerhead showed only a dark ball, not "del Tuono" nor when). Empty if it never changes.
+ */
+function evolutionOf(form: BeastForm): Sheet['evolution'] {
+  const line = stageLine(form.speciesId).map((x) => ({
+    name: x.name,
+    level: x.level,
+    current: x.id === form.speciesId && !form.final,
+  }));
+  if (form.unique || !hasFinalForm(form.speciesId, form.variant)) return line;
+  const base = { speciesId: form.speciesId, variant: form.variant };
+  if (!line.length) line.push({ name: formName(base), level: null, current: !form.final });
+  line.push({
+    name: formName({ ...base, final: true }),
+    level: finalFormLevelOf(form.speciesId),
+    current: !!form.final,
+  });
+  return line;
+}
+
 function specialOf(form: BeastForm): Sheet['special'] {
   if (form.unique) return 'unique';
   if (form.final) return 'final';
@@ -177,11 +200,7 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     nextMoves,
     seaMoves,
     fieldMove: fieldMoveOf(form, lv),
-    evolution: stageLine(form.speciesId).map((x) => ({
-      name: x.name,
-      level: x.level,
-      current: x.id === form.speciesId,
-    })),
+    evolution: evolutionOf(form),
   };
 }
 
