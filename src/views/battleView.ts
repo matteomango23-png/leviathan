@@ -36,6 +36,8 @@ export class BattleView {
   private readonly poses: Record<Side, Pose> = { you: newPose(), foe: newPose() };
   /** Length, giant flag and picture box of each beast on stage, for its size. */
   private readonly stage: Record<Side, StageBeast | null> = { you: null, foe: null };
+  /** The wild one's lowest ground on this screen, just above the commands (stage.ts foeFloor; BattleScene sets it). */
+  floor = BATTLE_STAGE.fit.foeLowest;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -68,7 +70,7 @@ export class BattleView {
   /** The ground under each beast (screen pixels), moving with the camera drift. */
   private ground(side: Side): { x: number; y: number } {
     const d = this.backdrop.shift(DEPTH.ground);
-    const p = placePicture(side, this.poses[side].size, this.w, this.h, this.stage[side]?.box); // the framing test checks it
+    const p = placePicture(side, this.poses[side].size, this.w, this.h, this.stage[side]?.box, this.floor); // the framing test checks it
     return { x: p.x + d.x, y: p.y + BATTLE_STAGE.hover * this.h + d.y };
   }
 
@@ -102,8 +104,8 @@ export class BattleView {
     const foe = this.stage.foe;
     const sizes =
       you && foe
-        ? battleSizes(you, foe, this.w / this.h)
-        : { [side]: battleSize(side, this.stage[side]!, this.w / this.h) };
+        ? battleSizes(you, foe, this.w / this.h, this.floor)
+        : { [side]: battleSize(side, this.stage[side]!, this.w / this.h, this.floor) };
     for (const s of ['you', 'foe'] as Side[]) {
       const size = sizes[s];
       if (size === undefined) continue;

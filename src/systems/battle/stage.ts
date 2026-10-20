@@ -5,6 +5,21 @@ import { formStars, isGiant, type BeastForm } from '../beasts/forms';
 export { isGiant };
 import type { Side } from './battle';
 
+/**
+ * The lowest the wild one's ground goes, as a share of the screen height: just above the commands (fit.foeLowest, the
+ * smallest phone's) unless the screen tells better (foeFloor).
+ */
+const FLOOR = BATTLE_STAGE.fit.foeLowest;
+
+/**
+ * The wild one's ground on a screen `h` CSS pixels high with `safeBottom` pixels of safe area: the commands' height
+ * and a gap above them (owner, 20 ottobre: lower on a big screen, "almeno qualche millimetro" from the menu).
+ */
+export function foeFloor(h: number, safeBottom = 0): number {
+  const F = BATTLE_STAGE.fit;
+  return (h - safeBottom - F.menuPx - F.menuGapPx) / h + BATTLE_STAGE.hover;
+}
+
 /** Where a battle picture is not transparent, in its pixels: [left, top, right, bottom] (BATTLE_ART_BOX). */
 type PictureBox = readonly [number, number, number, number];
 
@@ -59,8 +74,8 @@ function reach(box: PictureBox) {
 }
 
 /** The biggest size at which the picture stays whole on a screen `aspect` times wider than tall. */
-function fitSize(side: Side, beast: StageBeast, aspect: number): number {
-  const { margin, foeLowest, foeLeft, youMax, youWide, youTall, youRight, youTop } = BATTLE_STAGE.fit;
+function fitSize(side: Side, beast: StageBeast, aspect: number, floor = FLOOR): number {
+  const { margin, foeLeft, youMax, youWide, youTall, youRight, youTop } = BATTLE_STAGE.fit;
   const r = reach(beast.box ?? cardBox());
   // yours may be cut by the screen's edges (placePicture), like Pokémon, but not too much
   if (side === 'you')
@@ -75,7 +90,7 @@ function fitSize(side: Side, beast: StageBeast, aspect: number): number {
   // rimpicciolire così… spostare un pochino più su")
   const { foeKeepW, foeKeepH } = BATTLE_STAGE.fit;
   return Math.min(
-    (foeLowest - BATTLE_STAGE.hover - margin) / (r.up * foeKeepH),
+    (floor - BATTLE_STAGE.hover - margin) / (r.up * foeKeepH),
     ((1 - foeLeft) * aspect - margin) / ((r.left + r.right) * foeKeepW),
   );
 }
@@ -85,10 +100,10 @@ function fitSize(side: Side, beast: StageBeast, aspect: number): number {
  * between BATTLE_STAGE.size.min and max (flat pictures a little bigger), yours closer to the camera and the
  * wild one farther, then shrunk only if it would not fit on screen.
  */
-export function battleSize(side: Side, beast: StageBeast, aspect: number): number {
+export function battleSize(side: Side, beast: StageBeast, aspect: number, floor = FLOOR): number {
   const S = BATTLE_STAGE.size;
   const size = spectrumSize(beast) * flatBoost(beast.box) * (side === 'you' ? S.youCloser : S.foeDistance);
-  return Math.min(size, fitSize(side, beast, aspect));
+  return Math.min(size, fitSize(side, beast, aspect, floor));
 }
 
 /**
@@ -96,15 +111,21 @@ export function battleSize(side: Side, beast: StageBeast, aspect: number): numbe
  * `aspect` wide and 1 high; yours above its name box), in screen heights. Yours is partly off screen, so its whole
  * picture would overstate it (owner, 20 ottobre: your Titano looked no bigger than a wild white shark).
  */
-export function seenPresence(side: Side, beast: StageBeast, size: number, aspect: number): number {
+export function seenPresence(
+  side: Side,
+  beast: StageBeast,
+  size: number,
+  aspect: number,
+  floor = FLOOR,
+): number {
   const b = beast.box ?? cardBox();
   const P = BATTLE_STAGE.picture;
-  const p = placePicture(side, size, aspect, 1, b);
+  const p = placePicture(side, size, aspect, 1, b, floor);
   const left = Math.max(0, p.x + (b[0] - P.square / 2) * p.scale);
   const right = Math.min(aspect, p.x + (b[2] - P.square / 2) * p.scale);
   const top = Math.max(0, p.y + (b[1] - P.foot) * p.scale);
-  const floor = side === 'you' ? BATTLE_STAGE.fit.youBoxTop : 1;
-  const bottom = Math.min(floor, p.y + (Math.min(b[3], P.foot) - P.foot) * p.scale);
+  const seenTo = side === 'you' ? BATTLE_STAGE.fit.youBoxTop : 1;
+  const bottom = Math.min(seenTo, p.y + (Math.min(b[3], P.foot) - P.foot) * p.scale);
   return Math.sqrt(Math.max(0, right - left) * Math.max(0, bottom - top));
 }
 
@@ -113,9 +134,14 @@ export function seenPresence(side: Side, beast: StageBeast, size: number, aspect
  * ones would both reach their limit and look alike (owner, 20 ottobre: the wild white shark looked bigger than your
  * Titano): the one that looks too big for its length next to the other is drawn smaller.
  */
-export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): Record<Side, number> {
+export function battleSizes(
+  you: StageBeast,
+  foe: StageBeast,
+  aspect: number,
+  floor = FLOOR,
+): Record<Side, number> {
   const S = BATTLE_STAGE.size;
-  const sizes = { you: battleSize('you', you, aspect), foe: battleSize('foe', foe, aspect) };
+  const sizes = { you: battleSize('you', you, aspect, floor), foe: battleSize('foe', foe, aspect, floor) };
   // how much bigger the wild one should look: its length over yours, softened (lengthExponent; a 9 m Titano clearly
   // bigger than a 6 m shark, a 15 m mosasaur far bigger than a pufferfish), × their pictureMult
   const ratio =
@@ -124,29 +150,29 @@ export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): R
   // the wild one never looks bigger than that (× foeVsYours: yours is closer, so at the same length it wins)
   // (both measured by what is in view: seenPresence. A beast partly off screen does not shrink in proportion, the
   // hidden part coming into view: a few rounds settle it)
-  for (let round = 0; round < 12; round++) {
-    const maxFoe = seenPresence('you', you, sizes.you, aspect) * ratio * S.foeVsYours;
-    const foeNow = seenPresence('foe', foe, sizes.foe, aspect);
+  for (let round = 0; round < 40; round++) {
+    const maxFoe = seenPresence('you', you, sizes.you, aspect, floor) * ratio * S.foeVsYours;
+    const foeNow = seenPresence('foe', foe, sizes.foe, aspect, floor);
     if (foeNow > maxFoe * 1.001) sizes.foe *= Math.min(1, Math.max(maxFoe, S.minSeen) / foeNow); // a small one stays readable
     // yours never looks bigger than that by more than smallerYours (Guscio next to a hammerhead, 3 ottobre)
-    const maxYou = (seenPresence('foe', foe, sizes.foe, aspect) / ratio) * S.smallerYours;
-    const youNow = seenPresence('you', you, sizes.you, aspect);
+    const maxYou = (seenPresence('foe', foe, sizes.foe, aspect, floor) / ratio) * S.smallerYours;
+    const youNow = seenPresence('you', you, sizes.you, aspect, floor);
     if (youNow > maxYou * 1.001) sizes.you *= Math.min(1, Math.max(maxYou, S.minSeen) / youNow);
   }
   // and never too far apart (owner, 20 ottobre: a pufferfish next to Moby Dick could hardly be seen): the small one
   // grows as far as its place allows, then the big one shrinks, until the big one is at most maxSeenRatio times it
   const most = S.maxSeenRatio;
-  for (let round = 0; round < 12; round++) {
-    const seenYou = seenPresence('you', you, sizes.you, aspect);
-    const seenFoe = seenPresence('foe', foe, sizes.foe, aspect);
+  for (let round = 0; round < 40; round++) {
+    const seenYou = seenPresence('you', you, sizes.you, aspect, floor);
+    const seenFoe = seenPresence('foe', foe, sizes.foe, aspect, floor);
     const [small, big, seenSmall, seenBig] =
       seenYou < seenFoe
         ? (['you', 'foe', seenYou, seenFoe] as const)
         : (['foe', 'you', seenFoe, seenYou] as const);
     if (seenBig <= seenSmall * most * 1.001) break;
-    const room = fitSize(small, small === 'you' ? you : foe, aspect) / sizes[small];
+    const room = fitSize(small, small === 'you' ? you : foe, aspect, floor) / sizes[small];
     sizes[small] *= Math.max(1, Math.min(room, seenBig / most / seenSmall));
-    const now = seenPresence(small, small === 'you' ? you : foe, sizes[small], aspect);
+    const now = seenPresence(small, small === 'you' ? you : foe, sizes[small], aspect, floor);
     if (seenBig > now * most) sizes[big] *= (now * most) / seenBig;
   }
   return sizes;
@@ -176,9 +202,10 @@ export function placePicture(
   w: number,
   h: number,
   box: PictureBox = cardBox(),
+  floor = FLOOR,
 ): { x: number; y: number; scale: number } {
   const a = BATTLE_STAGE.anchors[side];
-  const { margin, foeLowest, youRight, youTop, youBoxTop, youShowAbove, foeKeepW } = BATTLE_STAGE.fit;
+  const { margin, youRight, youTop, youBoxTop, youShowAbove, foeKeepW } = BATTLE_STAGE.fit;
   const r = reach(box);
   const hover = BATTLE_STAGE.hover;
   const scale = (size * h) / BATTLE_STAGE.picture.box;
@@ -194,7 +221,7 @@ export function placePicture(
   // standing lower if too tall, but never below foeLowest (under it are the commands): a taller one leaves the screen
   // at the top instead, foeKeepH of it in view (fitSize)
   const tall = r.up * size;
-  const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + tall));
+  const ground = Math.min(floor, Math.max(a.y, margin + hover + tall));
   // at its anchor if it fits; else slid right of foeLeft, or left of the right margin
   const { foeLeft } = BATTLE_STAGE.fit;
   let x = a.x * w;

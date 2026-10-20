@@ -14,6 +14,14 @@
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
 
+## Correzione: nemico fino a poco sopra il menu (20 ottobre 2026) → v0.81.3
+
+- **`stage.ts foeFloor(h, safeBottom)`:** il pavimento del nemico è l'altezza dello schermo meno area sicura, menu (`fit.menuPx` 172, misurato) e spazio (`fit.menuGapPx` 14).
+- **Passaggio dei dati:** `BattleScene` lo calcola (`safeBottomPx` in `ui/dom.ts` misura la barra dell'iPhone con un elemento di prova) e lo passa alla vista (`BattleView.floor`). Da lì va a `battleSizes`, `battleSize`, `seenPresence`, `placePicture` e `fitSize` (parametro `floor`).
+- `fit.foeLowest` (0,5) resta solo quando lo schermo non si misura.
+- **Test:** `battleFraming` controlla il bordo basso del nemico ≤ altezza − menu − spazio per ogni schermo; i giri di `battleSizes` portati a 40.
+- **Provato a 932×430:** Moby Dick contro Titano, il nemico più in basso e grande, con spazio sopra il menu.
+
 ## Correzione: giganti grandi sopra il menu (20 ottobre 2026) → v0.81.2
 
 - **Il proprietario non voleva la v0.81.1:** i giganti erano stati rimpiccioliti. Voleva le grandezze della v0.81.0, solo spostate più su.
