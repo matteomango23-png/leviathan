@@ -22,6 +22,9 @@ import type { TileMap } from '../systems/world/tileMap';
 import { depthMetres } from '../systems/world/zones';
 import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
+import { SurfaceOver } from '../views/surfaceOver';
+import { isInWater } from '../systems/beasts/wildState';
+import { activeBeast } from '../systems/beastPlay';
 import { BirdsView } from '../views/birdsView';
 import { BoatView } from '../views/boatView';
 import { CameraRig } from '../views/cameraRig';
@@ -65,6 +68,8 @@ export class WorldViews {
   private readonly hunts: HuntView;
   private readonly fishView: FishView;
   private readonly beasts: BeastsLayer;
+  /** The waves' line and the water's veil across a beast half out of the water, in front of it and its rider. */
+  private readonly surfaceOver: SurfaceOver;
   private readonly places: PlacesView;
   private readonly story: StoryView;
   private readonly gearFx: GearFxView;
@@ -107,6 +112,7 @@ export class WorldViews {
     this.beasts = new BeastsLayer(scene, L.world, g);
     this.birdsView = new BirdsView(scene, L.world);
     this.diverView = new DiverView(scene, L.world);
+    this.surfaceOver = new SurfaceOver(scene, L.world);
     this.effects = new EffectsView(scene, L.world);
     this.gearFx = new GearFxView(scene, L.world);
     this.light = new LightView(scene, L.overlay);
@@ -171,6 +177,15 @@ export class WorldViews {
     this.beasts.update(g, g.time, { murk: turbidityAt(d.x, d.y, g.time, sky), x: d.x, y: d.y });
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
+    const nearTop = (y: number, len: number): boolean => Math.abs(y - WORLD.surfaceY) < len;
+    this.surfaceOver.update(
+      [
+        ...(g.beasts.mount && activeBeast(g) ? [g.beasts.mount] : []),
+        ...g.beasts.wilds.filter((w) => isInWater(w) && nearTop(w.y, w.length)),
+      ],
+      g.time,
+      sea,
+    );
     this.birdsView.update(this.birds, view);
     this.effects.update(g.time, dt);
     this.places.update(g.gear, g.time);

@@ -108,7 +108,7 @@ export const BATTLE_STAGE = {
    *  away and back, so in turn you see it whole (owner, 20 ottobre: "che fluttuassero un po' di più… vederlo un po'
    *  tutto"; "avanti e indietro"): down to `farShare` of its size at the most, a full swing every `period` seconds.
    *  Never down behind the commands: it stands on its ground, smaller. Tuning. */
-  giantDrift: { farShare: 0.75, period: 9 },
+  giantDrift: { farShare: 0.55, period: 18 }, // (was 0.75 and 9 s: owner, 20 ottobre "più lento… vederlo tutto, coda compresa")
   /** The ground under a beast fades in when it comes on stage, in this many seconds (owner, 20 ottobre: it appeared
    *  at a stroke, changing from a big beast whose ground was off screen). */
   groundFade: 0.6,

@@ -558,6 +558,10 @@ export const RIDE_BREACH = {
   gravity: 130,
   sprayFrom: 45,
   birdHealShare: 0.08,
+  /** Its jaws open this many seconds on a gull caught, and already when one is within `birdBiteReach` × the reach
+   *  of its mouth (owner, 20 ottobre: "devono aprire la bocca"). */
+  birdJawSeconds: 0.45,
+  birdBiteReach: 2.2,
 };
 
 /** Forms whose two profile pictures are wings up and down, not a mouth shut and open (owner, 19 ottobre: the

@@ -27,9 +27,11 @@ export const REGIONS: RegionDef[] = [
 ];
 
 /** Small fish: caught with harpoon, fiocine or net; sold for teeth; eaten by beasts (nourishment). */
-export interface FishDef { id: string; name: string; sellPrice: number; effect?: 'cuore' | 'ossigeno'; }
+export interface FishDef { id: string; name: string; sellPrice: number; effect?: 'cuore' | 'ossigeno'; /** Caught in the air, not fished. */ bird?: boolean; }
 export const FISH: FishDef[] = [
   { id: 'sardina', name: 'Sardina argentea', sellPrice: 2, effect: 'cuore' }, // the market lowers it as you sell (MARKET_RULES)
+  // caught in the air by a beast leaping out of the water (owner, 20 ottobre: "valgono decisamente di più dei pesci")
+  { id: 'gabbiano', name: 'Gabbiano', sellPrice: 30, bird: true },
   { id: 'sgombro', name: 'Sgombro', sellPrice: 3 },
   { id: 'cefalo', name: 'Cefalo', sellPrice: 4 },
   { id: 'pesce_arciere', name: 'Pesce arciere', sellPrice: 7 },

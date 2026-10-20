@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.87.0 — La linea dell'acqua sulle bestie, gabbiani da vendere (20 ottobre 2026)
+
+- **Bestie a metà fuori dall'acqua:** la linea dell'onda ora attraversa il loro corpo e la parte sott'acqua è più azzurra, come nella realtà. Segue le onde vere, anche in tempesta.
+- **Gabbiani:** la bestia su cui sei apre la bocca quando salta e ne prende uno. Il gabbiano va nella sacca e al mercato vale molto più dei pesci (30 denti).
+- **Battaglia, giganti:** si allontanano e tornano molto più piano (un giro ogni 18 secondi). La piattaforma sotto di loro resta ferma. Allontanandosi Moby Dick e gli altri giganti si vedono interi, coda e schiena comprese, sempre sopra il menu.
+
 ## v0.86.1 — Ordine nel codice (20 ottobre 2026)
 
 - Nessun cambiamento nel gioco: pulizia del codice e dei documenti dopo i lotti S–Z. File troppo lunghi divisi in parti più piccole, uno stile non più usato tolto, appunti di lavoro aggiornati.

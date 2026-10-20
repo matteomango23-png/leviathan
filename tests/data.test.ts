@@ -34,7 +34,7 @@ describe('kit data integrity', () => {
     for (const s of SPECIES) expect(regions.has(s.region)).toBe(true);
     for (const sw of SWARMS) expect(regions.has(sw.region)).toBe(true);
     for (const r of REGIONS) for (const f of r.fish) expect(fish.has(f)).toBe(true);
-    expect(FISH).toHaveLength(14); // + pesce farfalla, pesce angelo (3 ottobre)
+    expect(FISH).toHaveLength(15); // + pesce farfalla, pesce angelo (3 ottobre), gabbiano (20 ottobre)
     expect(SWARMS).toHaveLength(4);
   });
 

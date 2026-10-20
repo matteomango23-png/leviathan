@@ -27,7 +27,8 @@ function stageOf(form: BeastForm, side: 'you' | 'foe', level: number) {
   return { lengthM: formLengthM(form, level), giant: isGiant(form), box };
 }
 
-/** The opaque box of a beast on screen (px), moved right by dx. */
+/** The opaque box of a beast on screen (px), standing where it stands at `size`, its picture × k (a giant farther
+ *  away shrinks around the point it rests on: battleView). */
 function boxOf(
   side: 'you' | 'foe',
   size: number,
@@ -35,15 +36,15 @@ function boxOf(
   h: number,
   box = cardBox(),
   floor: number,
-  dx = 0,
+  k = 1,
 ) {
   const P = BATTLE_STAGE.picture;
   const p = placePicture(side, size, w, h, box, floor);
   return {
-    left: p.x + dx + (box[0] - P.square / 2) * p.scale,
-    right: p.x + dx + (box[2] - P.square / 2) * p.scale,
-    top: p.y + (box[1] - P.foot) * p.scale,
-    bottom: p.y + (Math.min(box[3], P.foot) - P.foot) * p.scale,
+    left: p.x + (box[0] - P.square / 2) * p.scale * k,
+    right: p.x + (box[2] - P.square / 2) * p.scale * k,
+    top: p.y + (box[1] - P.foot) * p.scale * k,
+    bottom: p.y + (Math.min(box[3], P.foot) - P.foot) * p.scale * k,
   };
 }
 
@@ -69,10 +70,14 @@ describe('a wild giant swims farther away and back (owner: "vederlo tutto", "ava
         const k = foeSway(period / 2, s.foe, w, h, box, floor);
         expect(k).toBeGreaterThanOrEqual(farShare - 1e-9);
         expect(k).toBeLessThan(1);
-        const far = boxOf('foe', s.foe * k, w, h, box, floor);
-        if (k > farShare + 1e-6) expect(far.top).toBeGreaterThanOrEqual(BATTLE_STAGE.fit.margin * h - 1);
-        expect(far.bottom).toBeLessThanOrEqual(near.bottom + 0.5); // never down towards the commands
-        expect(far.right).toBeLessThanOrEqual(Math.max(w, near.right));
+        const far = boxOf('foe', s.foe, w, h, box, floor, k);
+        // whole, back and tail (owner, 20 ottobre: "svelare tutto il corpo, coda compresa")
+        const m = BATTLE_STAGE.fit.margin * h;
+        expect(k, `${f.speciesId} whole at ${w}`).toBeGreaterThan(farShare + 1e-6);
+        expect(far.top).toBeGreaterThanOrEqual(m - 1);
+        expect(far.right).toBeLessThanOrEqual(w - m + 1);
+        // never below the point it rests on, the floor kept above the commands
+        expect(far.bottom).toBeLessThanOrEqual(boxOf('foe', s.foe, w, h, box, floor, 0).bottom + 0.5);
       }
     }
   });
