@@ -28,6 +28,8 @@ import { type ShipWorld } from './ship/ship';
 import { sailShip } from './ship/sail';
 import { restAboard, stepSub, subHull, subModel } from './submarine';
 import { restSubAir } from './subAir';
+import { SUBMARINE } from '../data/submarine';
+import { subTopY } from './subState';
 import { BOAT } from '../data/boats';
 import { boatLength, sailBoat, type BoatState } from './boat';
 import { boatHome, boatOnRamp, canDockBoat, launchBoat, startDockBoat, stepBoatBay } from './ship/boatBay';
@@ -208,9 +210,24 @@ export function doVehicleAction(g: VehicleWorld, act: 'aggancia' | 'abordo', eve
 /** After losing your senses: you wake up at the helm of your ship (or in your submarine without one). */
 export function wakeOnShip(g: VehicleWorld, events: GameEvent[]): boolean {
   const s = g.ship;
-  if (!s.owned) return false;
+  if (!s.owned) {
+    // no ship: the submarine left out in the sea is brought back to its mooring at Portofosco
+    const sub = g.sub;
+    if (sub.owned && !sub.aboard && Math.abs(sub.x - SUBMARINE.mooredX) > 1) {
+      Object.assign(sub, { x: SUBMARINE.mooredX, y: subTopY(sub), vx: 0, vy: 0, sinkT: 0 });
+      events.push({ type: 'subRecovered', toShip: false });
+    }
+    return false;
+  }
   if (onRamp(g)) s.bay = 'docked'; // it was on the ramp: back in the hold
-  g.sub.aboard = false; // out in the sea it stays where it was
+  g.sub.aboard = false;
+  // out in the sea the crew brings it back to the hold (owner, 20 ottobre: left deeper than your suit allows, it
+  // was lost for good); broken it stays broken, mended at a harbour
+  if (g.sub.owned && s.bay === 'out') {
+    s.bay = 'docked';
+    g.sub.sinkT = 0;
+    events.push({ type: 'subRecovered', toShip: true });
+  }
   boatHome(g.boat); // the crew brings the boat back
   s.aboard = true;
   Object.assign(g.diver, helmPoint(s), { vx: 0, vy: 0 });

@@ -9,7 +9,14 @@ import { BATTLE_ART_BOX } from '../data/sprites.generated';
 import { BATTLE_PALETTES, BATTLE_STAGE, type BattlePlace } from '../data/battle';
 import type { MoveTypeId } from '../data/rules';
 import type { Side } from '../systems/battle/battle';
-import { battleSize, battleSizes, isGiant, placePicture, type StageBeast } from '../systems/battle/stage';
+import {
+  battleSize,
+  battleSizes,
+  foeSway,
+  isGiant,
+  placePicture,
+  type StageBeast,
+} from '../systems/battle/stage';
 import { formLengthM, type BeastForm } from '../systems/beasts/forms';
 import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
@@ -34,6 +41,8 @@ export class BattleView {
   private readonly backlights: Record<Side, Phaser.GameObjects.Image>;
   private readonly rayColor: number;
   private readonly poses: Record<Side, Pose> = { you: newPose(), foe: newPose() };
+  /** How far each ground has faded in since its beast came on stage (0 … 1). */
+  private readonly groundK: Record<Side, number> = { you: 1, foe: 1 };
   /** Length, giant flag and picture box of each beast on stage, for its size. */
   private readonly stage: Record<Side, StageBeast | null> = { you: null, foe: null };
   /** The wild one's lowest ground on this screen, just above the commands (stage.ts foeFloor; BattleScene sets it). */
@@ -70,19 +79,27 @@ export class BattleView {
   /** The ground under each beast (screen pixels), moving with the camera drift. */
   private ground(side: Side): { x: number; y: number } {
     const d = this.backdrop.shift(DEPTH.ground);
-    const p = placePicture(side, this.poses[side].size, this.w, this.h, this.stage[side]?.box, this.floor); // the framing test checks it
+    const p = placePicture(side, this.seen(side), this.w, this.h, this.stage[side]?.box, this.floor); // the framing test checks it
     return { x: p.x + d.x, y: p.y + BATTLE_STAGE.hover * this.h + d.y };
   }
 
   /** The centre of a beast's body and its height in pixels (for effects, numbers, the shell). */
   centre(side: Side): { x: number; y: number; size: number } {
     const g = this.ground(side);
-    const size = this.poses[side].size * this.h;
+    const size = this.seen(side) * this.h;
     return { x: g.x + this.poses[side].dx, y: g.y - size * 0.5 + this.poses[side].dy, size };
+  }
+
+  /** Its size now: a wild giant cut off by the screen swims slowly farther away and back (stage.ts foeSway). */
+  private seen(side: Side): number {
+    const p = this.poses[side];
+    if (side !== 'foe') return p.size;
+    return p.size * foeSway(p.t, p.size, this.w, this.h, this.stage.foe?.box, this.floor);
   }
 
   /** Puts a beast on stage (hidden: placed but not shown yet). */
   setFighter(side: Side, form: BeastForm, level: number, hidden = false): void {
+    this.groundK[side] = 0; // its ground fades in (owner, 20 ottobre: it appeared at a stroke)
     const art = battleArt(form, side);
     const aura = beastAura(form);
     this.stage[side] = {
@@ -124,8 +141,10 @@ export class BattleView {
     for (const side of ['foe', 'you'] as Side[]) {
       const p = this.poses[side];
       p.size += (p.target - p.size) * Math.min(1, dt * 3);
-      const px = p.size * this.h;
+      const px = this.seen(side) * this.h;
       this.backdrop.setGroundWidth(side, Math.min(this.w * 0.75, Math.max(this.w * 0.2, px * 1.25)));
+      this.groundK[side] = Math.min(1, this.groundK[side] + dt / BATTLE_STAGE.groundFade);
+      this.backdrop.setGroundAlpha(side, this.groundK[side]);
       const im = this.images[side];
       const sh = this.shadows[side];
       const bl = this.backlights[side];
@@ -147,9 +166,10 @@ export class BattleView {
       const g = grounds[side];
       const s = (px / (p.own ? PIC.box : im.height)) * p.scale;
       const mirror = side === 'you' && !p.own ? -1 : 1; // the card of your beast, mirrored
+      const dx = p.dx;
       im.setVisible(true)
         .setOrigin(0.5, p.own ? PIC.foot : 0.9)
-        .setPosition(g.x + p.dx, g.y - hover + bob + p.dy)
+        .setPosition(g.x + dx, g.y - hover + bob + p.dy)
         .setRotation(sway + p.rot)
         .setScale(s * mirror * breathe, s / breathe)
         .setAlpha(p.alpha);
@@ -161,17 +181,17 @@ export class BattleView {
       // the shadow on the seabed shrinks when the beast rises
       const lift = Math.max(0, -p.dy) / this.h;
       sh.setVisible(true)
-        .setPosition(g.x + p.dx * 0.8, g.y)
+        .setPosition(g.x + dx * 0.8, g.y)
         .setScale((px * 1.0) / 256 / (1 + lift * 3), (px * 0.16) / 256)
         .setAlpha(0.5 * p.alpha * (1 - Math.min(0.7, lift * 2)));
       bl.setVisible(true)
-        .setPosition(g.x + p.dx, g.y - hover - px * 0.5 + p.dy)
+        .setPosition(g.x + dx, g.y - hover - px * 0.5 + p.dy)
         .setScale((px * 1.5) / 256, (px * 1.2) / 256)
         .setTint(p.aura === 2 ? p.auraColor : this.rayColor)
         .setAlpha((p.aura === 2 ? 0.22 : 0.13) * (1 + 0.25 * Math.sin(p.t * 0.8)) * p.alpha * (1 - p.dark));
       if (p.aura && p.alpha > 0.6 && p.dark < 0.3 && Math.random() < dt * (p.aura === 2 ? 14 : 5))
         this.fx.sparkle(
-          g.x + p.dx + (Math.random() - 0.5) * px * 0.9,
+          g.x + dx + (Math.random() - 0.5) * px * 0.9,
           g.y - hover - Math.random() * px + p.dy,
           px,
           p.auraColor,

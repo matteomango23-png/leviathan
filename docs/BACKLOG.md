@@ -130,7 +130,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
 
 ## Feedback del 20 ottobre 2026 (prova di tutte le bestie nella galleria), in lotti
 
-**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia ✅ v0.80.0 (posizione della tua bestia, grandezze, giganti, versi, forma finale nella scheda), U in groppa ✅ v0.81.0 (sub sul dorso, Folgore, squalo elefante, cavalcature, grandezze, limite in battaglia), V sonar/drone/cacce ✅ v0.82.0 (leggenda a riposo, echi riconosciuti, drone), W timone e recinto ✅ v0.83.0 (quadranti, vasca sul Cockpit, Dai oggetto), X mare ✅ v0.84.0 (branchi fluidi, sub che galleggia sulle onde, tentacoli, granchio sul fondo), Y immagini.
+**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia ✅ v0.80.0 (posizione della tua bestia, grandezze, giganti, versi, forma finale nella scheda), U in groppa ✅ v0.81.0 (sub sul dorso, Folgore, squalo elefante, cavalcature, grandezze, limite in battaglia), V sonar/drone/cacce ✅ v0.82.0 (leggenda a riposo, echi riconosciuti, drone), W timone e recinto ✅ v0.83.0 (quadranti, vasca sul Cockpit, Dai oggetto), X mare ✅ v0.84.0 (branchi fluidi, sub che galleggia sulle onde, tentacoli, granchio sul fondo), Z altre note ✅ v0.85.0 (giganti che nuotano avanti e indietro, fondale in dissolvenza, luce sotto la nave, silenzio uscendo dall'app, musica del menu, sottomarino recuperato), Y immagini.
 **Decisioni:**
 - forma finale circa 15-20 livelli sopra i livelli selvatici di ogni specie, non più 100 per tutte;
 - cavalcabili: sì a Varano d'osso, pesce spada Corazzato e tartaruga preistorica; no a pesce vela e polpo gigante;
@@ -174,7 +174,7 @@ Il proprietario manderà altre note; poi si sceglie l'ordine. Raggruppati per ti
 - **Movimento:** polpo gigante e calamaro gigante (come la Piovra) troppo statici, non muovono i tentacoli; il granchio non può fluttuare come un pesce.
 - **Immagini mancanti:**
   - calamaro colossale, serpente di mare, Kraken, Leviatano (non devono comparire in mare né nella galleria finché mancano);
-  - il Leviatano doveva usare altre immagini (chiarire con il proprietario);
+  - il Leviatano: le immagini le dà il proprietario (20 ottobre), non usare quelle di Moby Dick;
   - lo Sfregiato in groppa;
   - il Dunkleosteus in mare: la galleria non carica le immagini delle bestie che non vivono ancora nelle zone del gioco.
 - **Galleria:** si deve poter sempre fuggire.

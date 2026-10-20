@@ -51,6 +51,8 @@ export const SHIP = {
     spread: 120,
     below: [25, 90] as [number, number],
     glow: 90,
+    /** The light's spot in the dark sits this share of `glow` below the keel: under the hull and its hatches. */
+    spotBelow: 0.85,
     /** Not every beast around comes (owner, 11 ottobre): each a chance at each pulse, the nearer the likelier, and
      *  at most this many called at once. */
     drawChance: 0.35,
@@ -169,6 +171,11 @@ export const SHIP_TEXT = {
   fuelOutSub: 'Il sottomarino è senza carburante. Puoi uscire e nuotare, o usare il razzo di soccorso.',
   rescued: (where: string, teeth: number): string =>
     `Razzo di soccorso: un rimorchiatore ti porta ${where}${teeth ? `. Paghi ${teeth} denti` : ''}.`,
+  /** After you lost your senses the crew brought the submarine back (owner, 20 ottobre: stranded too deep). */
+  subRecovered: (toShip: boolean): string =>
+    toShip
+      ? "L'equipaggio ha recuperato il sottomarino: è di nuovo nella stiva."
+      : "Il sottomarino è stato riportato all'ormeggio di Portofosco.",
   wreckedToShip: (teeth: number): string =>
     `Lo scafo del sottomarino cede: torna nella stiva, rotto${teeth ? ` (perdi ${teeth} denti)` : ''}. Si ripara in un porto.`,
 };

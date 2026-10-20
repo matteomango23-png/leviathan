@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.85.0 — Giganti che nuotano, luce sotto la nave, silenzio in pausa (20 ottobre 2026)
+
+- **Battaglia, giganti:** Moby Dick, il megalodonte e gli altri giganti tagliati dallo schermo restano grandi come prima. Ogni 9 secondi circa nuotano piano un po' più lontano, così li vedi quasi interi, schiena compresa, e poi tornano vicini. Non scendono mai sul menu.
+- **Battaglia, fondale:** il cerchio di fondale sotto una bestia appare con una leggera dissolvenza, anche cambiando da una bestia grande a una piccola.
+- **Luce sotto la nave:** ora sta sotto la nave. Non illumina più i portelloni aperti, e sale e scende con la nave quando ondeggia.
+- **Uscendo dall'app:** il gioco va in pausa e si zittisce all'istante, suoni e musica compresi. In pausa non c'è musica.
+- **Menu iniziale:** una nuova musica oscura e lentissima, con il buio sotto di te.
+- **Sottomarino perso:** se svieni mentre il sottomarino è in mare, l'equipaggio lo riporta nella stiva; senza nave torna all'ormeggio di Portofosco. Prima, lasciato più in fondo di quanto regge la tua tuta, era perso per sempre.
+
 ## v0.84.0 — Il mare più vero (20 ottobre 2026)
 
 - **Branchi:** barracuda, delfini e tutti i branchi seguono la guida in modo fluido, senza piccoli scatti.

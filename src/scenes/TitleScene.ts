@@ -23,6 +23,7 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     migrateLegacySaves();
+    this.session.sound.titleMusic(true); // the dark under you (it starts with the first touch on the iPhone)
     this.menu = new TitleMenu({
       play: (id) => this.play(id),
       gallery: () => this.openGallery(),
@@ -61,6 +62,7 @@ export class TitleScene extends Phaser.Scene {
     if (gallery) this.session.slotId = '';
     this.session.startSave = save;
     this.session.gallery = gallery;
+    this.session.sound.titleMusic(false);
     this.scene.start('World', { session: this.session });
     this.scene.launch('UI', { session: this.session });
   }

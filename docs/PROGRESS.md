@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.84.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.85.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,33 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, X ✅, poi Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, V ✅, W ✅, X ✅, Z ✅ (altre note), poi Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto Z, battaglia, luce della nave, suoni, sottomarino (20 ottobre 2026) → v0.85.0
+
+- **Giganti:**
+  - `foeSway` (`battle/stage.ts`): se il nemico è tagliato dallo schermo, rimpicciolisce piano fino alla grandezza in cui è intero (non sotto `giantDrift.farShare` 0,75) e torna, ogni `period` 9 s;
+  - `battleView.seen()` lo usa per il disegno e per il fondale; il pavimento non cambia;
+  - misurato nel browser a 667×375: Moby Dick scende fino a circa l'85% della grandezza e il fondo dell'immagine resta sopra il menu.
+- **Fondale:** `groundK` in `battleView` riparte da 0 a ogni `setFighter`; `backdrop.setGroundAlpha` (`BATTLE_STAGE.groundFade`).
+- **Luce della nave:** il fascio è in una grafica `beam` sotto i quadri della nave. Il cerchio nel buio (`glowSpots`) segue `lift` e sta sotto la chiglia (`SHIP.underLight.spotBelow`).
+- **Audio:**
+  - `SoundEngine.hush` (volume a zero e `suspend`) quando la pagina si nasconde; al ritorno riparte;
+  - in pausa la musica del mare aperto si ferma subito;
+  - `TITLE_MUSIC` (`data/music.ts`) e `titleMusic(on)`, chiamata da `TitleScene`.
+- **Sottomarino:** `wakeOnShip` lo rimette nella stiva (`subRecovered`); senza nave lo riporta a `SUBMARINE.mooredX`.
+- **Test:** `tests/lottoZ.test.ts`.
+
+**Da provare sull'iPhone:**
+- battaglia contro Moby Dick e il megalodonte (galleria);
+- cambiare bestia in battaglia da una grande a una piccola;
+- accendere la luce sotto la nave ferma con i portelloni aperti, anche con il mare mosso;
+- uscire dall'app durante la musica (anche in battaglia) e rientrare;
+- il menu iniziale;
+- morire con il sottomarino in fondo al mare.
 
 ## Lotto X, il mare (20 ottobre 2026) → v0.84.0
 

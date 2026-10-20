@@ -104,6 +104,14 @@ export const BATTLE_STAGE = {
     you: { x: 0.35, y: 0.9 }, // was 1.0: a small beast of yours hid behind its health box
   },
   hover: 0.03, // swimming beasts float this share of the screen height above their ground
+  /** A wild giant cut off by the screen (its back at the top, its tail on the right) swims slowly a little farther
+   *  away and back, so in turn you see it whole (owner, 20 ottobre: "che fluttuassero un po' di più… vederlo un po'
+   *  tutto"; "avanti e indietro"): down to `farShare` of its size at the most, a full swing every `period` seconds.
+   *  Never down behind the commands: it stands on its ground, smaller. Tuning. */
+  giantDrift: { farShare: 0.75, period: 9 },
+  /** The ground under a beast fades in when it comes on stage, in this many seconds (owner, 20 ottobre: it appeared
+   *  at a stroke, changing from a big beast whose ground was off screen). */
+  groundFade: 0.6,
   /**
    * Every beast stays whole on screen: at least `margin` (share of the screen height) from every edge, also while
    * it bobs. A wild beast too tall for its place stands lower, down to `foeLowest`; if it still does not fit, or is

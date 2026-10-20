@@ -196,6 +196,40 @@ export function rarityTier(form: BeastForm): 0 | 1 | 2 {
  * A wild beast too tall for its place stands lower (down to fit.foeLowest), so its head stays in; yours is placed
  * like Pokémon (fit.youRight, fit.youTop).
  */
+/** Is the wild one at this size cut off by the screen (its top, or its right side)? */
+function foeCut(size: number, w: number, h: number, box: PictureBox, floor: number): boolean {
+  const p = placePicture('foe', size, w, h, box, floor);
+  const r = reach(box);
+  const m = BATTLE_STAGE.fit.margin * h;
+  return p.x + r.right * size * h > w - m + 0.5 || p.y - r.up * size * h < m - 0.5;
+}
+
+/**
+ * A wild giant's size now, as a share of its own (≤ 1): one cut off by the screen swims slowly farther away until it
+ * is whole (at most down to giantDrift.farShare), then comes back (BATTLE_STAGE.giantDrift). 1 for one in full view.
+ */
+export function foeSway(
+  t: number,
+  size: number,
+  w: number,
+  h: number,
+  box: PictureBox = cardBox(),
+  floor = FLOOR,
+): number {
+  const { farShare, period } = BATTLE_STAGE.giantDrift;
+  if (!foeCut(size, w, h, box, floor)) return 1;
+  // the biggest size at which it is whole, found by halving
+  let lo = size * farShare;
+  let hi = size;
+  for (let i = 0; i < 18; i++) {
+    const mid = (lo + hi) / 2;
+    if (foeCut(mid, w, h, box, floor)) hi = mid;
+    else lo = mid;
+  }
+  const swing = 0.5 - 0.5 * Math.cos((t * Math.PI * 2) / period);
+  return 1 - (1 - lo / size) * swing;
+}
+
 export function placePicture(
   side: Side,
   size: number,
