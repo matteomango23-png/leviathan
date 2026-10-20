@@ -70,11 +70,12 @@ function fitSize(side: Side, beast: StageBeast, aspect: number): number {
       (youTall * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
     );
   // the wild one may use its whole side (placePicture slides it within it), a big one leaving the screen on the
-  // right (its tail) with foeKeepW of it still in view; never below foeLowest, the top of the commands (owner, 20
-  // ottobre: Moby Dick behind the menu, "non deve succedere mai")
-  const { foeKeepW } = BATTLE_STAGE.fit;
+  // right (its tail) with foeKeepW of it in view, and at the top with foeKeepH in view; never below foeLowest, the top
+  // of the commands (owner, 20 ottobre: Moby Dick behind the menu "non deve succedere mai"; then "non me li puoi
+  // rimpicciolire così… spostare un pochino più su")
+  const { foeKeepW, foeKeepH } = BATTLE_STAGE.fit;
   return Math.min(
-    (foeLowest - BATTLE_STAGE.hover - margin) / r.up,
+    (foeLowest - BATTLE_STAGE.hover - margin) / (r.up * foeKeepH),
     ((1 - foeLeft) * aspect - margin) / ((r.left + r.right) * foeKeepW),
   );
 }
@@ -123,7 +124,7 @@ export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): R
   // the wild one never looks bigger than that (× foeVsYours: yours is closer, so at the same length it wins)
   // (both measured by what is in view: seenPresence. A beast partly off screen does not shrink in proportion, the
   // hidden part coming into view: a few rounds settle it)
-  for (let round = 0; round < 4; round++) {
+  for (let round = 0; round < 12; round++) {
     const maxFoe = seenPresence('you', you, sizes.you, aspect) * ratio * S.foeVsYours;
     const foeNow = seenPresence('foe', foe, sizes.foe, aspect);
     if (foeNow > maxFoe * 1.001) sizes.foe *= Math.min(1, Math.max(maxFoe, S.minSeen) / foeNow); // a small one stays readable
@@ -135,7 +136,7 @@ export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): R
   // and never too far apart (owner, 20 ottobre: a pufferfish next to Moby Dick could hardly be seen): the small one
   // grows as far as its place allows, then the big one shrinks, until the big one is at most maxSeenRatio times it
   const most = S.maxSeenRatio;
-  for (let round = 0; round < 4; round++) {
+  for (let round = 0; round < 12; round++) {
     const seenYou = seenPresence('you', you, sizes.you, aspect);
     const seenFoe = seenPresence('foe', foe, sizes.foe, aspect);
     const [small, big, seenSmall, seenBig] =
@@ -190,7 +191,8 @@ export function placePicture(
     const x = Math.min(a.x * w, youRight * w - r.right * size * h);
     return { x, y: (ground - hover) * h, scale };
   }
-  // standing lower if too tall, but never below foeLowest: under it are the commands
+  // standing lower if too tall, but never below foeLowest (under it are the commands): a taller one leaves the screen
+  // at the top instead, foeKeepH of it in view (fitSize)
   const tall = r.up * size;
   const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + tall));
   // at its anchor if it fits; else slid right of foeLeft, or left of the right margin

@@ -14,6 +14,16 @@
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
 
+## Correzione: giganti grandi sopra il menu (20 ottobre 2026) → v0.81.2
+
+- **Il proprietario non voleva la v0.81.1:** i giganti erano stati rimpiccioliti. Voleva le grandezze della v0.81.0, solo spostate più su.
+- **Ora il nemico:**
+  - non scende mai sotto `fit.foeLowest` (0,54);
+  - se è troppo alto esce **in alto**, tenendo `fit.foeKeepH` (0,68) in vista (`fitSize` divide per `foeKeepH`), e a destra con `foeKeepW`.
+- `battleSizes` fa fino a 12 giri (con il taglio in alto la riduzione non è proporzionale).
+- **Test `battleFraming`:** il nemico sopra `foeLowest`, almeno `foeKeepH` in vista; il bordo alto vale solo per la tua bestia.
+- Provato a 932 e 667: Moby Dick contro Moby Dick (grandi, coda fuori in alto a destra), Orca Imperatrice di fronte (pinna tagliata in alto, muso intero).
+
 ## Correzione: nemico dietro al menu (20 ottobre 2026) → v0.81.1
 
 - Il proprietario ha mandato una schermata: Moby Dick nemico coperto dal menu dei comandi. Lo permetteva il taglio in basso del lotto T (`foeKeepH`), che ho tolto: ora il nemico non scende mai sotto `fit.foeLowest` (0,52). Il menu comincia a 0,54 dell'altezza sul telefono più piccolo e a 0,60 sul più grande (misurato).
