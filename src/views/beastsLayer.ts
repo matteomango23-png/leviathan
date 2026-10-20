@@ -6,7 +6,7 @@ import { CLARITY } from '../data/sea';
 import { shapeShare } from '../systems/clarity';
 import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
-import { artKeysOf, formKey, speciesOf, swimLook, type BeastForm } from '../systems/beasts/forms';
+import { artKeysOf, backOfForm, formKey, speciesOf, swimLook, type BeastForm } from '../systems/beasts/forms';
 import { riderSeat } from '../systems/beasts/combat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater } from '../systems/beasts/wildState';
@@ -59,7 +59,12 @@ export class BeastsLayer {
     if (!g.beasts.riding || !c) return null;
     const b = activeBeast(g);
     const sp = b ? speciesOf(b.form) : undefined;
-    const [fwd, up] = riderSeat(c, sp?.riderForward ?? TEAM_RULES.riderOffset[0], TEAM_RULES.riderOffset[1]);
+    const [fwd, up] = riderSeat(
+      c,
+      sp?.riderForward ?? TEAM_RULES.riderOffset[0],
+      TEAM_RULES.riderOffset[1],
+      b ? backOfForm(b.form) : undefined,
+    );
     const cos = Math.cos(c.pitch);
     const sin = Math.sin(c.pitch);
     const lx = fwd * c.length;

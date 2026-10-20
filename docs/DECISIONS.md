@@ -1019,3 +1019,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - la tua bestia sale sopra la sua barra.
 - **Motivo:** ognuna si riduceva per conto suo per stare nello schermo, e i grandi arrivavano tutti allo stesso tetto. La tua, tagliata e coperta, sembrava più piccola del nemico della stessa forma.
 - Il verso di ogni immagine di battaglia ha un elenco controllato (`data/battleFacing.ts`) imposto da un test, perché non dipende dal codice.
+
+## 20 ottobre 2026 — Il sedile in groppa dalla linea del dorso (v0.81.0)
+
+- **Decisione:** `npm run shapes` scrive anche la linea del dorso di ogni profilo, senza le pinne sottili (cima "tipica" delle colonne vicine, non la più alta). Il sub ci si siede sopra.
+- **Motivo:** il sedile prendeva il punto più alto del corpo, che negli squali è la punta della pinna dorsale. Ricavarlo dall'immagine vale per tutte le bestie, anche quelle che arriveranno, senza numeri a mano per ognuna.

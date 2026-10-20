@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.80.0)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.81.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,22 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, poi U in groppa, V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, T ✅, U ✅, poi V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto U, in groppa (20 ottobre 2026) → v0.81.0
+
+- **Dorso:** `scripts/body-shapes.ts` scrive `BODY_BACKS`, la linea del dorso per punto. Per ogni punto prende la cima delle colonne in una fascia di ±130 px al 75° percentile, così la pinna sottile resta fuori. `riderSeat` la usa (`backOfForm` in `beasts/forms.ts`, `beastsLayer.riderPose`).
+- **Folgore:** `girth` applicato a ogni striscia (`beastView.update`), radice con scala uniforme: prima la scala non uniforme della radice deformava le strisce ruotate.
+- **Profili:** foglio di tutti e 99. Lo squalo elefante aveva la testa a sinistra: `_flip` sui due profili in `art-inbox`. Elenco `PROFILE_FACING_CHECKED` in `data/battleFacing.ts`, imposto da `tests/lottoU.test.ts`.
+- **Cavalcature:** `RIDEABLE_FORMS` in `data/beasts.ts` (`varano_nilo_albino_finale`, `pesce_spada_finale`, `tartaruga_preistorica`); `canRide` lo guarda. Pesce vela da "cavalcatura" a "compagno"; il polpo era già "supporto".
+- **Grandezze:** `archelon.lengthM` 14, `tartaruga_liuto` 3, `SpeciesDef.finalSizeMult` (varano_nilo 3,5 → 8,75 m).
+- **Battaglia:** `size.maxSeenRatio` 3 (prima cresce la piccola fino al suo spazio, poi cala la grande) e `minSeen` 0,22.
+- Provato nel browser (galleria): Re Alfa con il sub alla base della pinna, Folgore che si curva in immersione senza deformarsi, Varano d'osso grande e cavalcabile con "Compagno".
+
+**Da provare sull'iPhone:** in groppa agli squali e alle orche (dove sta il sub), Folgore su e giù, squalo elefante, le tre cavalcature nuove, una battaglia Moby Dick contro un pesce piccolo.
 
 ## Lotto T, battaglia (20 ottobre 2026) → v0.80.0
 

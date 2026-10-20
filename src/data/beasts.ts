@@ -566,3 +566,7 @@ export const GALLERY = {
   calmSeconds: 600,
   respawnSeconds: 5,
 };
+
+/** Forms you can ride though their species only swims at your side: grown big enough (owner, 20 ottobre). Keys as
+ *  formKey (systems/beasts/forms.ts). */
+export const RIDEABLE_FORMS: readonly string[] = ['varano_nilo_albino_finale', 'pesce_spada_finale', 'tartaruga_preistorica'];

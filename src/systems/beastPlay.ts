@@ -1,13 +1,13 @@
 // Everything about beasts during a game step in the open sea: wild beasts and encounters, calling a mount
 // from the team bar and riding it, its ability, the sardine swarm. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
-import { RIDE_BREACH, RIDE_KMH, RIDE_REF_KMH, TEAM_RULES } from '../data/beasts';
+import { RIDE_BREACH, RIDE_KMH, RIDE_REF_KMH, RIDEABLE_FORMS, TEAM_RULES } from '../data/beasts';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { speciesById, swimSpeedOf } from '../data/species';
 import { DIVER } from '../data/diver';
-import { formLengthUnits, speciesOf } from './beasts/forms';
+import { formKey, formLengthUnits, speciesOf } from './beasts/forms';
 import { callMount, stepMount } from './beasts/mount';
 import { maxHpOf, teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
@@ -44,10 +44,14 @@ export function mountSpeed(g: BeastWorld): number | undefined {
   return Math.max(DIVER.maxSpeed * 1.1, base * TEAM_RULES.rideSpeedMult * mult);
 }
 
-/** Mounts (GDD "cavalcatura") and the second stages that can carry you; not while worn out. */
+/** Mounts (GDD "cavalcatura"), the second stages that can carry you and the forms big enough to (RIDEABLE_FORMS:
+ *  the Varano d'osso, the armoured swordfish, the prehistoric turtle); not while worn out. */
 export const canRide = (b: TeamBeast): boolean => {
   const sp = speciesOf(b.form);
-  return !b.ko && (sp.role === 'cavalcatura' || sp.rideSpeedMult !== undefined);
+  return (
+    !b.ko &&
+    (sp.role === 'cavalcatura' || sp.rideSpeedMult !== undefined || RIDEABLE_FORMS.includes(formKey(b.form)))
+  );
 };
 
 /** A tap on a team slot: call that beast (to ride it, or to swim with you), or send it away if it is out. */

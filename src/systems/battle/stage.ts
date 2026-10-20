@@ -131,6 +131,22 @@ export function battleSizes(you: StageBeast, foe: StageBeast, aspect: number): R
     const youNow = seenPresence('you', you, sizes.you, aspect);
     if (youNow > maxYou * 1.001) sizes.you *= Math.min(1, Math.max(maxYou, S.minSeen) / youNow);
   }
+  // and never too far apart (owner, 20 ottobre: a pufferfish next to Moby Dick could hardly be seen): the small one
+  // grows as far as its place allows, then the big one shrinks, until the big one is at most maxSeenRatio times it
+  const most = S.maxSeenRatio;
+  for (let round = 0; round < 4; round++) {
+    const seenYou = seenPresence('you', you, sizes.you, aspect);
+    const seenFoe = seenPresence('foe', foe, sizes.foe, aspect);
+    const [small, big, seenSmall, seenBig] =
+      seenYou < seenFoe
+        ? (['you', 'foe', seenYou, seenFoe] as const)
+        : (['foe', 'you', seenFoe, seenYou] as const);
+    if (seenBig <= seenSmall * most * 1.001) break;
+    const room = fitSize(small, small === 'you' ? you : foe, aspect) / sizes[small];
+    sizes[small] *= Math.max(1, Math.min(room, seenBig / most / seenSmall));
+    const now = seenPresence(small, small === 'you' ? you : foe, sizes[small], aspect);
+    if (seenBig > now * most) sizes[big] *= (now * most) / seenBig;
+  }
   return sizes;
 }
 

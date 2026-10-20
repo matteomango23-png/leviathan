@@ -67,11 +67,18 @@ export function bodyCircles(p: BodyPose): BodyCircle[] {
  * Where you sit on a beast you ride, × its length (forward from its middle, up from its spine): on top of its
  * real back at that point when its outline is known (owner, 4 ottobre: on the Piovra you floated over the tentacles).
  */
-export function riderSeat(p: BodyPose, forward: number, fallbackUp: number): [number, number] {
-  if (!p.shape?.length) return [forward, fallbackUp];
-  const n = p.shape.length;
+export function riderSeat(
+  p: BodyPose,
+  forward: number,
+  fallbackUp: number,
+  back?: readonly number[],
+): [number, number] {
+  // on its back with the dorsal fin left out (bodyShapes BODY_BACKS; owner, 20 ottobre: the diver sat on the fin)
+  const line = back?.length ? back : p.shape?.map((s) => s[0]);
+  if (!line?.length) return [forward, fallbackUp];
+  const n = line.length;
   const k = Math.max(0, Math.min(n - 1, Math.floor((0.45 - forward) * n)));
-  return [forward, p.shape[k]![0] - 0.01];
+  return [forward, line[k]! - 0.01];
 }
 
 /** Do two bodies touch (their circles overlap, with a little margin)? */

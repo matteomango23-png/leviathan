@@ -93,7 +93,10 @@ export const BATTLE_STAGE = {
      *  vanish next to a whale; 0 = all alike, as on 19 ottobre)… */
     lengthExponent: 0.6,
     /** …but a beast never looks smaller than this (√ of its area in view, in screen heights). */
-    minSeen: 0.16,
+    minSeen: 0.22, // was 0.16 (20 ottobre)
+    /** …and the bigger one never looks more than this times the smaller one (√ of the area in view: 3 = nine
+     *  times the area), the small one growing first (owner, 20 ottobre: a pufferfish next to Moby Dick). */
+    maxSeenRatio: 3,
   },
   /** Where the two beasts stand, as shares of the screen (the ground under each of them). */
   anchors: {

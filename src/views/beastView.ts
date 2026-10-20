@@ -134,13 +134,16 @@ export class BeastSprite {
     // painted profile looked like a sheet of paper)
     const { pts, ang, lens } = spineOf(p);
     const mid = pts[Math.round(N * 0.45)]!;
+    // a thicker body (species girth) is made thicker piece by piece, across each piece: thickening the whole beast
+    // stretched the pieces as they turned (owner, 20 ottobre: Folgore longer, shorter, thinner going up and down)
+    const girth = p.girth ?? 1;
     for (let i = 0; i < N; i++) {
       const s = this.strips[i]!;
       const [x, y] = pts[i]!;
       const a = (ang[i]! + ang[i + 1]!) / 2;
       s.setPosition(x - mid[0], y - mid[1])
         .setRotation(a)
-        .setScale((lens[i]! / SEG) * OVERLAP, 1);
+        .setScale((lens[i]! / SEG) * OVERLAP, girth);
       if (p.shade !== undefined && p.flash <= 0) {
         s.setTintMode(Phaser.TintModes.MULTIPLY).setTint(p.shade);
         continue;
@@ -161,7 +164,7 @@ export class BeastSprite {
     this.root
       .setVisible(true)
       .setPosition(p.x + shake, p.y + shake)
-      .setScale(p.face * sc, sc * (p.girth ?? 1))
+      .setScale(p.face * sc, sc)
       .setAlpha(p.alpha);
   }
 
