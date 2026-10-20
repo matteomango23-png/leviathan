@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.81.1 — Il nemico mai dietro al menu (20 ottobre 2026)
+
+- **Battaglia:** il nemico, anche gigante, non scende più dietro al menu dei comandi (Lotta, Zaino, Doma…). Può uscire dallo schermo solo a destra, con la coda.
+- Il menu dei comandi e quello delle mosse sono un po' più compatti e lasciano più spazio al nemico.
+
 ## v0.81.0 — In groppa: sul dorso, Folgore intero, cavalcature nuove (20 ottobre 2026)
 
 - **Il sub sta sul dorso**, attaccato al corpo vicino all'attaccatura della pinna, e mai più sopra la pinna dorsale (squali, orche, megattere, Zannarossa, Re Alfa…).

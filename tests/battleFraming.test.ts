@@ -67,9 +67,9 @@ describe('battle framing', () => {
               // on the right and at the bottom
               expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(F.foeLeft * screen.w - 1);
               const inW = (Math.min(r.right, screen.w) - r.left) / width;
-              const inH = (Math.min(r.bottom - bob, screen.h) - r.top) / height;
               expect(inW, `${at}: width in view`).toBeGreaterThanOrEqual(F.foeKeepW - 0.01);
-              expect(inH, `${at}: height in view`).toBeGreaterThanOrEqual(F.foeKeepH - 0.01);
+              // never down behind the commands' menu (owner, 20 ottobre)
+              expect(r.bottom, `${at}: above the commands`).toBeLessThanOrEqual(F.foeLowest * screen.h + 1);
             } else {
               // yours, like Pokémon: in its half, under the wild one's name box, its head and back above its own
               expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(F.youRight * screen.w + 1);

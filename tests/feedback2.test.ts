@@ -121,10 +121,10 @@ describe('wild levels by danger (4 ottobre 2026)', () => {
 
 describe('battle picture sizes', () => {
   it('a coiled moray is drawn smaller and a flat manta bigger than their length alone says', () => {
-    const plain = battleSize('foe', { lengthM: 3, giant: false }, 3);
+    const plain = battleSize('foe', { lengthM: 1, giant: false }, 3);
     const moray = battleSize(
       'foe',
-      { lengthM: 3, giant: false, pictureMult: BATTLE_STAGE.pictureMult.murena },
+      { lengthM: 1, giant: false, pictureMult: BATTLE_STAGE.pictureMult.murena },
       3,
     );
     expect(moray).toBeLessThan(plain);
