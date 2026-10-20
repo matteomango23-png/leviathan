@@ -70,10 +70,11 @@ function fitSize(side: Side, beast: StageBeast, aspect: number): number {
       (youTall * (1 - youTop)) / r.up, // a tall one is not cut too much at the bottom either
     );
   // the wild one may use its whole side (placePicture slides it within it), a big one leaving the screen on the
-  // right and at the bottom with foeKeepW and foeKeepH of it still in view
-  const { foeKeepW, foeKeepH } = BATTLE_STAGE.fit;
+  // right (its tail) with foeKeepW of it still in view; never below foeLowest, the top of the commands (owner, 20
+  // ottobre: Moby Dick behind the menu, "non deve succedere mai")
+  const { foeKeepW } = BATTLE_STAGE.fit;
   return Math.min(
-    (foeLowest - BATTLE_STAGE.hover - margin) / (r.up * foeKeepH),
+    (foeLowest - BATTLE_STAGE.hover - margin) / r.up,
     ((1 - foeLeft) * aspect - margin) / ((r.left + r.right) * foeKeepW),
   );
 }
@@ -176,8 +177,7 @@ export function placePicture(
   box: PictureBox = cardBox(),
 ): { x: number; y: number; scale: number } {
   const a = BATTLE_STAGE.anchors[side];
-  const { margin, foeLowest, youRight, youTop, youBoxTop, youShowAbove, foeKeepW, foeKeepH } =
-    BATTLE_STAGE.fit;
+  const { margin, foeLowest, youRight, youTop, youBoxTop, youShowAbove, foeKeepW } = BATTLE_STAGE.fit;
   const r = reach(box);
   const hover = BATTLE_STAGE.hover;
   const scale = (size * h) / BATTLE_STAGE.picture.box;
@@ -190,9 +190,9 @@ export function placePicture(
     const x = Math.min(a.x * w, youRight * w - r.right * size * h);
     return { x, y: (ground - hover) * h, scale };
   }
-  // standing lower if too tall, down to foeLowest, then with its bottom out of the screen (foeKeepH of it in view)
+  // standing lower if too tall, but never below foeLowest: under it are the commands
   const tall = r.up * size;
-  const ground = Math.min(foeLowest + (1 - foeKeepH) * tall, Math.max(a.y, margin + hover + tall));
+  const ground = Math.min(foeLowest, Math.max(a.y, margin + hover + tall));
   // at its anchor if it fits; else slid right of foeLeft, or left of the right margin
   const { foeLeft } = BATTLE_STAGE.fit;
   let x = a.x * w;

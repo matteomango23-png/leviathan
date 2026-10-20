@@ -111,13 +111,15 @@ export const BATTLE_STAGE = {
    */
   fit: {
     margin: 0.03,
-    foeLowest: 0.62, // was 0.97: a big crocodile stood on top of your beast (owner, 3 ottobre)
+    /** The wild one's ground never lower than this: the top of the commands' menu (ui/battle.css .bmenu, made compact
+     *  so it leaves it room). Was 0.62, then a giant could leave the screen at the bottom: Moby Dick hid behind the
+     *  menu (owner, 20 ottobre: "non deve succedere mai"). */
+    foeLowest: 0.52, // the menu starts at 0.54 of the height on the smallest phone (667×375), 0.6 on the biggest
     foeLeft: 0.52, // the wild one stays right of this share of the width, its head never further left
-    /** A big wild one may leave the screen on the right (its tail: it looks left) and at the bottom, keeping at least
-     *  these shares of its width and height in view, instead of shrinking (owner, 20 ottobre: "i giganti non sembrano
-     *  giganti… tagliamo la coda"). */
+    /** A big wild one may leave the screen on the right (its tail: it looks left), keeping at least this share of its
+     *  width in view, instead of shrinking (owner, 20 ottobre: "i giganti non sembrano giganti… tagliamo la coda").
+     *  Never at the bottom: the commands are there. */
     foeKeepW: 0.72,
-    foeKeepH: 0.72,
     /**
      * Yours is placed like Pokémon (owner, 3 ottobre: "il mio animale quando è grosso mettilo più giù e più a sinistra,
      * mi basta vedere un po' di schiena, le zampe davanti e la testa"): its right edge (the head, seen from behind)

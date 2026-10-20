@@ -14,6 +14,12 @@
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
 
+## Correzione: nemico dietro al menu (20 ottobre 2026) → v0.81.1
+
+- Il proprietario ha mandato una schermata: Moby Dick nemico coperto dal menu dei comandi. Lo permetteva il taglio in basso del lotto T (`foeKeepH`), che ho tolto: ora il nemico non scende mai sotto `fit.foeLowest` (0,52). Il menu comincia a 0,54 dell'altezza sul telefono più piccolo e a 0,60 sul più grande (misurato).
+- **`ui/battle.css`:** comandi (36 px, Lotta 42) e mosse (48) più bassi.
+- `battleFraming` controlla che il nemico finisca sopra `foeLowest`.
+
 ## Lotto U, in groppa (20 ottobre 2026) → v0.81.0
 
 - **Dorso:** `scripts/body-shapes.ts` scrive `BODY_BACKS`, la linea del dorso per punto. Per ogni punto prende la cima delle colonne in una fascia di ±130 px al 75° percentile, così la pinna sottile resta fuori. `riderSeat` la usa (`backOfForm` in `beasts/forms.ts`, `beastsLayer.riderPose`).
