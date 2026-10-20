@@ -113,9 +113,18 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
 }
 
 /** The beast you ride caught a gull in the air (breach.ts, birds.ts): a little health back (RIDE_BREACH). */
-export function mountAteBird(g: BeastWorld, x: number, y: number, events: GameEvent[]): void {
+export function mountAteBird(
+  g: BeastWorld & { gear: { bag: Record<string, number> }; fishCaught: Record<string, number> },
+  x: number,
+  y: number,
+  events: GameEvent[],
+): void {
   const b = activeBeast(g);
   if (!b) return;
+  // its jaws snap on it, and the gull goes into the bag to sell at the market (owner, 20 ottobre)
+  if (g.beasts.mount) g.beasts.mount.jaw = Math.max(g.beasts.mount.jaw, RIDE_BREACH.birdJawSeconds);
+  g.gear.bag.gabbiano = (g.gear.bag.gabbiano ?? 0) + 1;
+  g.fishCaught.gabbiano = (g.fishCaught.gabbiano ?? 0) + 1; // in the bestiary's catches
   const max = maxHpOf(b);
   const before = b.hp;
   b.hp = Math.min(max, b.hp + Math.ceil(max * RIDE_BREACH.birdHealShare));

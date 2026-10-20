@@ -190,23 +190,20 @@ export function rarityTier(form: BeastForm): 0 | 1 | 2 {
   return form.variant !== 'comune' || formStars(form) >= 4 ? 1 : 0;
 }
 
-/**
- * Where a beast's picture goes on a screen of w × h pixels when its box is `size` of the screen height: the
- * point under the middle of its picture's bottom (its ground, minus the hover) and the picture's scale.
- * A wild beast too tall for its place stands lower (down to fit.foeLowest), so its head stays in; yours is placed
- * like Pokémon (fit.youRight, fit.youTop).
- */
-/** Is the wild one at this size cut off by the screen (its top, or its right side)? */
-function foeCut(size: number, w: number, h: number, box: PictureBox, floor: number): boolean {
+/** Is the wild one drawn at `seen` cut off by the screen (its top, or its right side)? It stands where it stands at
+ *  its full `size` (its ground does not move), its picture shrunk around the point it rests on. */
+function foeCut(seen: number, size: number, w: number, h: number, box: PictureBox, floor: number): boolean {
   const p = placePicture('foe', size, w, h, box, floor);
   const r = reach(box);
   const m = BATTLE_STAGE.fit.margin * h;
-  return p.x + r.right * size * h > w - m + 0.5 || p.y - r.up * size * h < m - 0.5;
+  return p.x + r.right * seen * h > w - m + 0.5 || p.y - r.up * seen * h < m - 0.5;
 }
 
 /**
  * A wild giant's size now, as a share of its own (≤ 1): one cut off by the screen swims slowly farther away until it
- * is whole (at most down to giantDrift.farShare), then comes back (BATTLE_STAGE.giantDrift). 1 for one in full view.
+ * is whole, its back and tail too (at most down to giantDrift.farShare), then comes back (BATTLE_STAGE.giantDrift).
+ * Its ground stays where it is: shrinking around the point it rests on, it seems to go a little down, never further
+ * than the commands allow (owner, 20 ottobre). 1 for one in full view.
  */
 export function foeSway(
   t: number,
@@ -217,19 +214,25 @@ export function foeSway(
   floor = FLOOR,
 ): number {
   const { farShare, period } = BATTLE_STAGE.giantDrift;
-  if (!foeCut(size, w, h, box, floor)) return 1;
+  if (!foeCut(size, size, w, h, box, floor)) return 1;
   // the biggest size at which it is whole, found by halving
   let lo = size * farShare;
   let hi = size;
   for (let i = 0; i < 18; i++) {
     const mid = (lo + hi) / 2;
-    if (foeCut(mid, w, h, box, floor)) hi = mid;
+    if (foeCut(mid, size, w, h, box, floor)) hi = mid;
     else lo = mid;
   }
   const swing = 0.5 - 0.5 * Math.cos((t * Math.PI * 2) / period);
   return 1 - (1 - lo / size) * swing;
 }
 
+/**
+ * Where a beast's picture goes on a screen of w × h pixels when its box is `size` of the screen height: the
+ * point under the middle of its picture's bottom (its ground, minus the hover) and the picture's scale.
+ * A wild beast too tall for its place stands lower (down to fit.foeLowest), so its head stays in; yours is placed
+ * like Pokémon (fit.youRight, fit.youTop).
+ */
 export function placePicture(
   side: Side,
   size: number,

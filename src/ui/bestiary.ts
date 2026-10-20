@@ -198,7 +198,7 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     const t = el('div', `fish-tile ${n ? 'tamed' : seen ? 'seen' : 'unknown'}`, fg);
     t.append(icon('fish'));
     el('span', 'tile-name', t, seen ? f.name : '???');
-    if (n) el('span', 'tile-sub', t, `pescati ${n}`);
+    if (n) el('span', 'tile-sub', t, `${f.bird ? 'presi' : 'pescati'} ${n}`);
   }
   return close;
 }

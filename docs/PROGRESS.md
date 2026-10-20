@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.86.1)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.87.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -13,6 +13,31 @@
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.86.1 (20 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 19 ottobre; qui sotto il dettaglio del 20 ottobre.
+
+## Lotto AA, acqua sulle bestie, gabbiani, giganti più lenti (20 ottobre 2026) → v0.87.0
+
+- **Linea dell'acqua:** `views/surfaceOver.ts` (nuovo), in `worldViews` davanti alle bestie e al sub.
+  - Per la bestia cavalcata e per le selvatiche vicine alla superficie prende le colonne del corpo (`bodyCircles`).
+  - Sotto la linea delle onde (`seaHeight`) stende un velo del colore dell'acqua a quella profondità; sulla linea traccia una riga chiara.
+  - Il velo cresce man mano che il corpo esce dall'acqua (`fadeOut`).
+  - I numeri sono in `SEA.bodyWater`.
+  - **Nuovo modo di provare:** `renderer.snapshot` più un piccolo server locale che riceve l'immagine (`node scripts/snap-server.mjs <cartella>`). Così si vedono le foto anche con il pannello del browser nascosto.
+  - Provato in groppa al megalodonte con il mare calmo e in tempesta.
+- **Gabbiani:**
+  - `mountAteBird` apre la bocca (`RIDE_BREACH.birdJawSeconds`) e mette il gabbiano in sacca e nelle catture;
+  - `snapGulls` apre la bocca già quando un uccello è vicino (`birdNear`);
+  - `FISH` ha `gabbiano` (30 denti, `bird: true`).
+- **Giganti in battaglia:**
+  - `giantDrift` diventa `{ farShare: 0.55, period: 18 }`;
+  - `foeCut` considera il gigante fermo sulla sua piattaforma, con l'immagine che rimpicciolisce attorno al punto d'appoggio;
+  - in `battleView` la piattaforma usa la grandezza piena;
+  - provato con una foto: da lontano Moby Dick si vede tutto.
+- **Test:** `tests/lottoAA.test.ts` e `tests/lottoZ.test.ts` aggiornato (i giganti interi, coda compresa).
+
+**Da provare sull'iPhone:**
+- in groppa a una bestia grande in superficie;
+- saltare sui gabbiani e poi venderli al porto;
+- una battaglia contro Moby Dick.
 
 ## Pulizia dopo i lotti S–Z (20 ottobre 2026) → v0.86.1
 

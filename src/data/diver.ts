@@ -133,6 +133,23 @@ export const SEA = {
   /** The sky fades from skyBottom at the horizon to skyTop at the top of the view, over at least this (units). */
   skyFade: 60,
   surfaceLine: 'rgba(150,200,210,0.55)',
+  /**
+   * The surface across a beast half out of the water (views/surfaceOver.ts; owner, 20 ottobre): under the waves a
+   * veil of the water's colour, from `veil[0]` at the line to `veil[1]` `fullDepth` units down, in bands of
+   * `band` units and columns of `step`; along the waves a line `line` units thick. Tuning.
+   */
+  bodyWater: {
+    veil: [0.26, 0.58] as [number, number],
+    fullDepth: 30,
+    band: 3,
+    step: 2,
+    line: 1.2,
+    lineAlpha: 0.6,
+    lineColor: [210, 240, 250] as [number, number, number],
+    veilFill: 1.18, // × the body's circles: the veil a little outside its outline
+    lineFill: 0.9, // …the line a little inside it
+    fadeOut: 8, // units out of the water before the veil is whole (it grows in as a beast breaks the surface)
+  },
   lightRays: { count: 6, alpha: 0.06, fadeY: 420 },
   snow: { count: 160, alpha: 0.5 },
   rockByY: [

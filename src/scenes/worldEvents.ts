@@ -4,7 +4,8 @@
 import { WORLD } from '../data/worldLayout';
 import { mountAteBird } from '../systems/beastPlay';
 import type { BirdsState } from '../systems/birds';
-import { eatBirdsNear } from '../systems/birdsCatch';
+import { birdNear, eatBirdsNear } from '../systems/birdsCatch';
+import { RIDE_BREACH } from '../data/beasts';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import type { CameraRig } from '../views/cameraRig';
@@ -67,6 +68,8 @@ export function snapGulls(g: GameState, birds: BirdsState): void {
   const mount = g.beasts.mount;
   if (!d.airborne || !g.beasts.riding || !mount) return;
   const mouthX = d.x + d.face * mount.length * 0.45;
-  for (const b of eatBirdsNear(birds, mouthX, d.y, mount.length * 0.3 + 4))
-    mountAteBird(g, b.x, b.y, g.story.pending);
+  const reach = mount.length * 0.3 + 4;
+  // its jaws open as it comes at them, then snap shut on them (mountAteBird)
+  if (birdNear(birds, mouthX, d.y, reach * RIDE_BREACH.birdBiteReach)) mount.jaw = Math.max(mount.jaw, 0.15);
+  for (const b of eatBirdsNear(birds, mouthX, d.y, reach)) mountAteBird(g, b.x, b.y, g.story.pending);
 }

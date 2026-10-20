@@ -59,7 +59,12 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         5,
       ];
     case 'birdEaten':
-      return [e.healed > 0 ? `Gabbiano preso al volo! +${e.healed} PS` : 'Gabbiano preso al volo!', 2];
+      return [
+        e.healed > 0
+          ? `Gabbiano preso al volo, in sacca! +${e.healed} PS`
+          : 'Gabbiano preso al volo, in sacca!',
+        2,
+      ];
     case 'battleLost':
       return ['La tua squadra è sfinita. Curala al porto o sulla nave.', 3.5];
     case 'tamed': {

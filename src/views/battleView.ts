@@ -77,7 +77,8 @@ export class BattleView {
   /** The ground under each beast (screen pixels), moving with the camera drift. */
   private ground(side: Side): { x: number; y: number } {
     const d = this.backdrop.shift(DEPTH.ground);
-    const p = placePicture(side, this.seen(side), this.w, this.h, this.stage[side]?.box, this.floor); // the framing test checks it
+    // at its full size: the ground stays where it is while a giant swims farther away (owner, 20 ottobre)
+    const p = placePicture(side, this.poses[side].size, this.w, this.h, this.stage[side]?.box, this.floor); // the framing test checks it
     return { x: p.x + d.x, y: p.y + BATTLE_STAGE.hover * this.h + d.y };
   }
 
@@ -140,7 +141,8 @@ export class BattleView {
       const p = this.poses[side];
       p.size += (p.target - p.size) * Math.min(1, dt * 3);
       const px = this.seen(side) * this.h;
-      this.backdrop.setGroundWidth(side, Math.min(this.w * 0.75, Math.max(this.w * 0.2, px * 1.25)));
+      const full = p.size * this.h; // the ground keeps its size while a giant swims farther away
+      this.backdrop.setGroundWidth(side, Math.min(this.w * 0.75, Math.max(this.w * 0.2, full * 1.25)));
       this.groundK[side] = Math.min(1, this.groundK[side] + dt / BATTLE_STAGE.groundFade);
       this.backdrop.setGroundAlpha(side, this.groundK[side]);
       const im = this.images[side];
