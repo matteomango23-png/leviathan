@@ -2,12 +2,11 @@
 // another, in the sea, as an opponent and as a companion, in a throwaway game that is never saved. Part of the test
 // tools (testTools.ts): to be removed with them before the game is finished.
 import { GALLERY } from '../data/beasts';
-import { PROGRESSION } from '../data/rules';
 import { UNIQUE_VARIANTS } from '../data/species';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { bay } from '../data/worldLayout';
 import { bestiaryEntries, rareAlphas } from './beasts/bestiaryEntries';
-import { formKey, wildLevelRange, type BeastForm } from './beasts/forms';
+import { finalFormLevelOf, formKey, wildLevelRange, type BeastForm } from './beasts/forms';
 import { addTamed, makeTeamBeast, teamMembers } from './beasts/team';
 import { callMount } from './beasts/mount';
 import { removeWild } from './beasts/wildState';
@@ -18,7 +17,7 @@ import type { GameState } from './game';
 import { healAll, spawnTestBeast } from './testTools';
 
 /** Every form to try, in the bestiary's order: each species with its final forms and albino, then the alphas with
- *  pictures of their own, then the unique beasts. No doubles. */
+ *  pictures of their own, then the unique beasts. No doubles, and only species with pictures. */
 export function galleryForms(): BeastForm[] {
   const out: BeastForm[] = [
     ...bestiaryEntries().map((e) => e.form),
@@ -32,7 +31,8 @@ export function galleryForms(): BeastForm[] {
   const seen = new Set<string>();
   return out.filter((f) => {
     const k = formKey(f);
-    if (seen.has(k)) return false;
+    // a species with no pictures yet (the Kraken, the Leviatano…) is not tried (owner, 20 ottobre)
+    if (seen.has(k) || !SPRITE_KEYS.includes(f.speciesId)) return false;
     seen.add(k);
     return true;
   });
@@ -40,7 +40,7 @@ export function galleryForms(): BeastForm[] {
 
 /** The level it is tried at: a final form at the level it comes at, the others at the top of their wild levels. */
 export function galleryLevel(form: BeastForm): number {
-  return form.final ? PROGRESSION.finalFormLevel : wildLevelRange(form)[1];
+  return form.final ? finalFormLevelOf(form.speciesId) : wildLevelRange(form)[1];
 }
 
 /** Where the throwaway game starts: in open water in the bay, a strong beast in the team to fight with. */
@@ -49,7 +49,7 @@ export function setUpGallery(g: GameState): void {
   const fighter = makeTeamBeast(
     `b${g.beasts.nextUid++}`,
     { ...GALLERY.fighter },
-    PROGRESSION.finalFormLevel,
+    finalFormLevelOf(GALLERY.fighter.speciesId),
     true,
   );
   addTamed(g.beasts.team, fighter);

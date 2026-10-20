@@ -61,7 +61,7 @@ export function infoPage(box: HTMLElement, c: PageContext): void {
   }
   if (s.evolution.length) {
     // the line, like a Pokédex: Zanna → Squarcio (Lv 16) → Zannarossa (Lv 36), the current stage lit
-    const evo = el('div', 'sheet-evo', box);
+    const evo = el('div', 'sheet-evo-line', box); // (not .sheet-evo: that is the row of round pictures on the art)
     s.evolution.forEach((st, i) => {
       if (i) el('span', 'evo-arrow', evo, '→');
       const step = el('span', `evo-step${st.current ? ' current' : ''}`, evo, st.name);

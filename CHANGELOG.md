@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.79.0 — Correzioni rapide e forme finali raggiungibili (20 ottobre 2026)
+
+- **Forme finali molto prima:** non più al livello 100, ma circa 18 livelli sopra quelli in cui la specie si incontra in mare. La manta al 30, squalo martello, pesce spada, megattera e squalo tigre al 53, squalo bianco, coccodrillo marino, orca, calamaro gigante e capodoglio al 73, i giganti (mosasauro, megalodonte, Livyatan, Dunkleosteus) al 93. Una bestia che ha già superato il suo livello cambia forma al prossimo livello che prende.
+- **La forma finale della megattera** si chiama "Megattera Titanica".
+- **Menu di pausa più pulito:** tolti "Rivedi l'inizio", Esporta e Importa. Esporta è accanto a ogni partita in "Carica partita"; lì c'è anche **Importa partita**, che aggiunge la partita del file all'elenco senza toccare le altre.
+- **Tolto il tic dei tocchi.**
+- **Al timone** la leva del gas non esce più dalla sua barra.
+- **Schede delle bestie:** la riga delle evoluzioni (Zanna → Squarcio → Zannarossa) non copre più i dati.
+- **Carta nautica:** non mostra più le tane delle leggende.
+- **Galleria di prova:**
+  - si fugge sempre;
+  - le bestie delle zone non ancora aperte (Dunkleosteus, Sfregiato…) hanno le loro immagini;
+  - le bestie ancora senza immagini (Kraken, Leviatano, calamaro colossale, serpente di mare) non ci sono più.
+
 ## v0.78.3 — Riordino (19 ottobre 2026)
 
 - Nessun cambiamento nel gioco: codice e documenti riordinati (stili inutilizzati tolti, file del timone diviso, storia dei progressi archiviata).

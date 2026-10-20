@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 19 ottobre 2026, v0.78.3)
+## Dove siamo (aggiornato il 20 ottobre 2026, v0.79.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -9,10 +9,29 @@
   - conchiglie (`docs/GEMINI-LOTTO-7.md`);
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Il proprietario sta provando** tutte le bestie nella galleria: i suoi appunti arriveranno come lotti nuovi.
+- **Feedback del 20 ottobre** (prova di tutte le bestie): lotti S ✅, poi T battaglia, U in groppa, V sonar/drone, W timone e recinto, X mare, Y immagini (`docs/BACKLOG.md`).
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.78.3 (19 ottobre), la prossima dopo altri 3 lotti.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino all'11 ottobre; qui sotto il dettaglio dal 15 ottobre in poi.
+
+## Lotto S, correzioni rapide (20 ottobre 2026) → v0.79.0
+
+- **Forme finali:** `PROGRESSION.finalFormOverWild: 18` al posto di `finalFormLevel`; `finalFormLevelOf(speciesId)` (`beasts/forms.ts`) = massimo selvatico della forma comune + 18, mai oltre 100. La usano `finalFormAt`, la crescita della grandezza (cresce fino al livello prima della forma finale, mai sotto 1) e la galleria.
+- **Pausa:**
+  - tolti "Rivedi l'inizio" (`replayIntro` e `story.resume`), Esporta e Importa (`importSave`, `onImport`, `exportSave`, `exportFileName`);
+  - nel menu iniziale "Importa partita" (`importSlot` in `slots.ts`; `pickSaveFile` dà anche il nome del file).
+- Tolto il tic (`SoundEngine.tap`, `AUDIO.tap`).
+- **Leva del gas:** la corsa è letta dalla leva vera (`travel` in `helmGauges.ts`); era fissa a 150 px da quando nel lotto O la leva è diventata alta 128.
+- **Scheda:** la riga delle evoluzioni ha la sua classe `.sheet-evo-line` (prendeva lo stile assoluto dei pallini `.sheet-evo`).
+- **Carta nautica:** tolti i segni `den` e `target` (`systems/chart.ts`, `ui/instruments.ts`).
+- **Galleria:**
+  - fuga sempre riuscita;
+  - `TitleScene.openGallery` carica tutte le immagini di profilo prima di partire;
+  - fuori le specie senza immagini (98 forme). In mare quelle specie già non uscivano: le zone usano solo bestie con immagini, c'è un test.
+- Test `tests/lottoS.test.ts` e import in `tests/slots.test.ts`. Provato nel browser: pausa, Importa, scheda di Zanna, Dunkleosteus in mare con la sua immagine, fuga, leva (corsa 128 px).
+- Il browser di prova aveva perso tutte le partite per conto suo (cancellata anche l'impostazione delle prove, che il gioco non tocca): non è il gioco.
+
+**Da provare sull'iPhone:** pausa; Carica partita → Importa partita con un file esportato prima; leva del gas al massimo; scheda di una bestia con evoluzioni; carta nautica in plancia; galleria con fuga e Dunkleosteus.
 
 ## Pulizia (19 ottobre 2026) → v0.78.3
 

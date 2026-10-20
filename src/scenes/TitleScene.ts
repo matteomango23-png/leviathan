@@ -4,7 +4,9 @@
 import Phaser from 'phaser';
 import { loadSlot, markBroken, markPlayed, migrateLegacySaves } from '../systems/save/slots';
 import type { SaveData } from '../systems/save/saveData';
+import { SPRITE_KEYS } from '../data/sprites.generated';
 import { TitleMenu } from '../ui/titleMenu';
+import { addStripFrames, loadBeastSprites } from '../views/beastView';
 import type { SceneData, Session } from './session';
 
 export class TitleScene extends Phaser.Scene {
@@ -23,8 +25,7 @@ export class TitleScene extends Phaser.Scene {
     migrateLegacySaves();
     this.menu = new TitleMenu({
       play: (id) => this.play(id),
-      gallery: () => this.start(null, true),
-      tap: () => this.session.sound.tap(),
+      gallery: () => this.openGallery(),
     });
     this.events.once('shutdown', () => {
       this.menu?.destroy();
@@ -42,6 +43,17 @@ export class TitleScene extends Phaser.Scene {
     this.session.slotId = id;
     this.start(loaded.save, false);
     return null;
+  }
+
+  /** The test gallery tries every beast, also those of the places not open yet, whose pictures Boot did not load
+   *  (owner, 20 ottobre: the Dunkleosteus and the Sfregiato showed with no picture): loaded first, then it opens. */
+  private openGallery(): void {
+    for (const key of SPRITE_KEYS) loadBeastSprites(this, key);
+    this.load.once('complete', () => {
+      for (const key of SPRITE_KEYS) addStripFrames(this, key);
+      this.start(null, true);
+    });
+    this.load.start();
   }
 
   /** The sea and the interface start with this game (or the test gallery's throwaway one: no slot, never saved). */

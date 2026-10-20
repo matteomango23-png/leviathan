@@ -7,6 +7,7 @@ import { UI_ICON_KEYS } from '../data/sprites.generated';
 import {
   createSlot,
   deleteSlot,
+  importSlot,
   lastSlot,
   listSlots,
   nextGameName,
@@ -17,14 +18,13 @@ import {
 } from '../systems/save/slots';
 import { testMode } from '../systems/testTools';
 import { el } from './dom';
-import { exportText } from './saveTransfer';
+import { exportText, pickSaveFile } from './saveTransfer';
+import { SaveError } from '../systems/save/saveData';
 import './title.css';
 
 interface TitleActions {
   /** Open this game; returns an error to show if it cannot be read. */
   play(id: string): string | null;
-  /** A touch on a button (its tick). */
-  tap(): void;
   /** The test gallery (with the test tools on). */
   gallery(): void;
 }
@@ -61,9 +61,6 @@ export class TitleMenu {
     // the owner's painting when it is there (public/ui/menu_sfondo.webp), the painted sea under it meanwhile
     const painted = UI_ICON_KEYS.includes('menu_sfondo') ? 'ui/menu_sfondo.webp' : 'bg/tana_far.webp';
     this.root.style.backgroundImage = `linear-gradient(180deg, rgba(2,7,12,0.15), rgba(2,7,12,0.55)), url(${assetUrl(painted)})`;
-    this.root.addEventListener('pointerdown', (e) => {
-      if (e.target instanceof Element && e.target.closest('button')) this.actions.tap();
-    });
     el('h1', 'title-name', this.root, 'Leviatano');
     this.box = el('div', 'title-box', this.root);
     this.home();
@@ -104,8 +101,8 @@ export class TitleMenu {
       el('span', 'title-sub', b, last.name);
     }
     this.button(box, 'Nuova partita', () => this.newGame(), last ? '' : 'primary');
-    const games = listSlots();
-    if (games.length) this.button(box, 'Carica partita', () => this.list());
+    // (always: from there a game can also be imported from a file)
+    this.button(box, 'Carica partita', () => this.list());
     // every beast one after another, never saved (test tools on: 5 taps on the version in the pause menu)
     if (testMode()) this.button(box, 'Galleria di prova', () => this.actions.gallery());
     if (storageUse() > SLOTS.warnAt)
@@ -163,6 +160,8 @@ export class TitleMenu {
       );
     }
     if (!games.length) this.note(box, 'Nessuna partita salvata.');
+    // a game from a file joins the list (owner, 20 ottobre: export and import here, not in the pause menu)
+    this.button(box, 'Importa partita', () => void this.importGame(msg));
     this.button(box, 'Indietro', () => this.home());
   }
 
@@ -179,6 +178,21 @@ export class TitleMenu {
     input.addEventListener('blur', done);
     input.focus();
     input.select();
+  }
+
+  private async importGame(msgAt: HTMLElement): Promise<void> {
+    try {
+      const file = await pickSaveFile();
+      if (!file) return;
+      if (!importSlot(file.name, file.save)) {
+        this.note(msgAt, 'Non riesco a salvare: la memoria del browser è bloccata o piena.', true);
+        return;
+      }
+      this.list();
+      this.note(this.box, `Partita "${file.name}" aggiunta all'elenco.`);
+    } catch (e) {
+      this.note(msgAt, e instanceof SaveError ? e.message : 'Impossibile leggere il file.', true);
+    }
   }
 
   private async exportGame(s: SlotMeta): Promise<void> {

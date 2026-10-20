@@ -51,7 +51,7 @@ describe('battle framing', () => {
   for (const form of allForms())
     for (const side of ['foe', 'you'] as Side[])
       it(`${formKey(form)} as ${side === 'foe' ? 'the wild beast' : 'yours'}`, () => {
-        const levels = form.final ? [PROGRESSION.finalFormLevel] : [1, PROGRESSION.finalFormLevel - 1];
+        const levels = form.final ? [PROGRESSION.maxLevel] : [1, PROGRESSION.maxLevel - 1];
         for (const screen of SCREENS)
           for (const level of levels) {
             const r = onScreen(side, form, level, screen.w, screen.h);

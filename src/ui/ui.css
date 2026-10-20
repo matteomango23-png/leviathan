@@ -1422,8 +1422,8 @@ img.albino-art {
   filter: grayscale(1) brightness(1.55) contrast(0.9) sepia(0.12);
 }
 
-/* the evolution line of a starter on its sheet */
-.sheet-evo {
+/* the evolution line of a beast on its sheet, in the flow of the text (owner, 20 ottobre: it sat over the data) */
+.sheet-evo-line {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1432,15 +1432,15 @@ img.albino-art {
   font-size: 13px;
   color: #b9c6c9;
 }
-.sheet-evo .evo-step.current {
+.sheet-evo-line .evo-step.current {
   color: #ffd9a0;
   font-weight: 700;
 }
-.sheet-evo .evo-level {
+.sheet-evo-line .evo-level {
   font-size: 11px;
   opacity: 0.8;
 }
-.sheet-evo .evo-arrow {
+.sheet-evo-line .evo-arrow {
   opacity: 0.6;
 }
 

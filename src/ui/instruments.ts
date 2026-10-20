@@ -80,8 +80,6 @@ const MARK_GLYPH: Record<ChartKind, string> = {
   border: '',
   sub: '●',
   boat: '▲',
-  den: '◎',
-  target: '◎',
   end: '▌',
 };
 
@@ -134,25 +132,14 @@ export function chartStrip(parent: HTMLElement, c: Chart, face: 1 | -1): HTMLEle
     row = x - lastX < 150 ? (row + 1) % 2 : 0;
     lastX = x;
     const y = sea - 14 - row * 30;
-    // dens sit under the surface, their name beside them (under them is the km scale)
-    const deep = mk.kind === 'den' || mk.kind === 'target';
-    const g = svgEl('text', { x, y: deep ? sea + 30 : y, class: `chart-mark ${mk.kind}` }, svg);
+    const g = svgEl('text', { x, y, class: `chart-mark ${mk.kind}` }, svg);
     g.textContent = MARK_GLYPH[mk.kind];
-    const leftSide = x > W - 260;
     const t = svgEl(
       'text',
       {
-        x: deep ? x + (leftSide ? -18 : 18) : x,
-        y: deep ? sea + 24 : y - 16,
-        'text-anchor': deep
-          ? leftSide
-            ? 'end'
-            : 'start'
-          : x < 110
-            ? 'start'
-            : x > W - 110
-              ? 'end'
-              : 'middle',
+        x,
+        y: y - 16,
+        'text-anchor': x < 110 ? 'start' : x > W - 110 ? 'end' : 'middle',
         class: `chart-label ${mk.kind}`,
       },
       svg,

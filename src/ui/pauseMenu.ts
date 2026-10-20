@@ -1,16 +1,13 @@
-// Pause menu: resume, bestiary, replay the opening, export and import the save.
+// Pause menu: resume, bestiary, bag, card, map, guide, sound, back to the title menu (where the games are
+// exported and imported, owner 20 ottobre).
 import type { GameState } from '../systems/game';
 import pkg from '../../package.json';
-import { SaveError } from '../systems/save/saveData';
-import { toSave } from '../systems/game';
 import type { Session } from '../scenes/session';
-import { replayIntro } from '../systems/story';
 import { testMode, toggleTestMode } from '../systems/testTools';
 import { el } from './dom';
 import { openSeaMap } from './seaMapPanel';
 import { openBestiary } from './bestiary';
 import { icon } from './icons';
-import { exportSave, pickSaveFile } from './saveTransfer';
 import { renderTeamPanel } from './teamPanel';
 import { renderMissions } from './missionList';
 import { openBag } from './bagScreen';
@@ -25,7 +22,7 @@ export class PauseMenu {
   constructor(
     parent: HTMLElement,
     private readonly session: Session,
-    private readonly game: GameState,
+    game: GameState,
     onResume: () => void,
   ) {
     this.root = el('div', 'menu', parent);
@@ -49,11 +46,6 @@ export class PauseMenu {
     const guide = el('button', 'menu-btn', panel);
     guide.append(icon('scroll'), document.createTextNode(' Guida'));
     guide.addEventListener('click', () => openGuide(parent, game));
-    const replay = el('button', 'menu-btn', panel, 'Rivedi l’inizio');
-    replay.addEventListener('click', () => {
-      replayIntro(game);
-      onResume();
-    });
     const sound = el('button', 'menu-btn', panel);
     const soundLabel = (): string => `Suono: ${this.session.sound.enabled ? 'sì' : 'no'}`;
     sound.textContent = soundLabel();
@@ -61,10 +53,8 @@ export class PauseMenu {
       this.session.sound.setEnabled(!this.session.sound.enabled);
       sound.textContent = soundLabel();
     });
-    el('h3', '', panel, 'Partite');
-    const exp = el('button', 'menu-btn', panel, 'Esporta salvataggio');
-    const imp = el('button', 'menu-btn', panel, 'Importa salvataggio');
-    // new games, loading and renaming: in the title menu, where every game stays (owner, 19 ottobre)
+    // new games, loading, renaming, export and import: in the title menu, where every game stays (owner, 19 and
+    // 20 ottobre)
     const title = el('button', 'menu-btn', panel, 'Menu iniziale');
     title.addEventListener('click', () => this.session.emit('toTitle'));
     this.msg = el('p', 'menu-msg', panel);
@@ -102,33 +92,11 @@ export class PauseMenu {
     });
 
     resume.addEventListener('click', onResume);
-    exp.addEventListener('click', () => void this.doExport());
-    imp.addEventListener('click', () => void this.doImport());
   }
 
   private say(text: string, error = false): void {
     this.msg.textContent = text;
     this.msg.classList.toggle('error', error);
-  }
-
-  private async doExport(): Promise<void> {
-    this.session.emit('saveNow');
-    const result = await exportSave(toSave(this.game, new Date()));
-    if (result === 'shared') this.say('Salvataggio condiviso.');
-    else if (result === 'downloaded') this.say('File del salvataggio scaricato.');
-  }
-
-  private async doImport(): Promise<void> {
-    try {
-      const save = await pickSaveFile();
-      if (!save) return;
-      const ok = window.confirm('Sostituire la partita attuale con quella del file?');
-      if (!ok) return;
-      this.session.emit('importSave', save);
-      this.say('Salvataggio caricato.');
-    } catch (e) {
-      this.say(e instanceof SaveError ? e.message : 'Impossibile leggere il file.', true);
-    }
   }
 
   destroy(): void {

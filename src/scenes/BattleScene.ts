@@ -188,11 +188,13 @@ export class BattleScene extends Phaser.Scene {
       if (step.caught) await this.ui.say(BATTLE_TEXT.tamed(this.name('foe')), 2);
       else await this.ui.say(BATTLE_TEXT.tameBroke[Math.min(step.shakes, 2)]!);
     } else if (action.kind === 'flee') {
-      if (this.setupInGame?.noFlee) {
+      // the test gallery: you always get away (owner, 20 ottobre: many fish would not let you go)
+      const gallery = !!this.session?.gallery;
+      if (this.setupInGame?.noFlee && !gallery) {
         await this.ui.say(BATTLE_TEXT.noFlee);
         return;
       }
-      const ok = tryFlee(s, this.rng);
+      const ok = tryFlee(s, gallery ? () => 0 : this.rng);
       await this.ui.say(ok ? BATTLE_TEXT.fleeOk : BATTLE_TEXT.fleeFail);
     }
   }

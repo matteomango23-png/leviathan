@@ -185,7 +185,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'plesiosauro', name: 'Plesiosauro', type: 'abissale', role: 'cavalcatura', region: 'barriera', wildLevel: [28, 30], rarity: 4, size: 'colossale', lengthM: 12, trait: 'Collo lunghissimo: colpisce da lontano, quattro pinne come remi',
     artPrompt: 'a prehistoric plesiosaur, a very long neck, a small head with needle teeth, four large paddle flippers' },
   { id: 'megattera', name: 'Megattera', type: 'glaciale', role: 'cavalcatura', region: 'barriera', wildLevel: [9, 14], rarity: 4, size: 'colossale', lengthM: 16, trait: 'Il suo canto cura la squadra; con lei non consumi ossigeno',
-    abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Megattera Cantore',
+    abilities: ['staz_ossigeno'], iconic: true, finalFormName: 'Megattera Titanica',
     artPrompt: 'a colossal humpback whale with long white pectoral fins and a knobby head, singing, icy bubbles' },
   { id: 're_corallo', name: 'Re Corallo', type: 'corazzato', role: 'compagno', region: 'barriera', wildLevel: [20, 20], rarity: 4, size: 'grande', lengthM: 5, trait: 'Incassa per tutta la squadra', storyOnly: true,
     artPrompt: 'a colossal ancient crab whose shell is a living red coral reef, one claw locked in a rusted iron collar' },

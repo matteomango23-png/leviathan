@@ -16,8 +16,6 @@ interface SessionEvents {
   /** Ask to open or close the pause menu. */
   pause: () => void;
   resume: () => void;
-  /** A save file was imported and must replace the current game. */
-  importSave: (save: SaveData) => void;
   /** Save now (e.g. before exporting). */
   saveNow: () => void;
   /** Save and go back to the title menu (its list of games, ui/titleMenu.ts). */

@@ -41,8 +41,6 @@ export interface StoryState {
   swimFrom: { x: number; y: number } | null;
   /** Events made outside a game step (a dialogue closed from the interface): sent with the next step. */
   pending: GameEvent[];
-  /** Replaying the opening from the pause menu: the step to go back to afterwards. */
-  resume: StoryStep | null;
 }
 
 export interface StoryWorld extends BackpackWorld {
@@ -56,7 +54,7 @@ export interface StoryWorld extends BackpackWorld {
  * @param shipOwned an older save without a story: the sea is already open if the ship is yours
  */
 export function createStory(saved: SavedStory | null, hasSave: boolean, shipOwned: boolean): StoryState {
-  const base = { dialogue: null, t: 0, swimFrom: null, pending: [], resume: null };
+  const base = { dialogue: null, t: 0, swimFrom: null, pending: [] };
   if (saved) return { ...saved, seen: [...saved.seen], ...base };
   const step: StoryStep = !hasSave ? 'off' : shipOwned ? 'free' : 'toPortoFango';
   // games made by tests and tools: no tips either (they would stop them with a dialogue)
@@ -80,20 +78,11 @@ export function openDialogue(s: StoryState, id: DialogueId, events: GameEvent[])
 /** A brand new game: it begins on Aurelio's boat. */
 export function startNewGame(g: StoryWorld): void {
   const s = g.story;
-  // a brand new game has Aurelio's tips (a game made without a save starts with them off); replaying the opening
-  // from the pause menu keeps your choice
-  if (!s.resume) s.seen = s.seen.filter((x) => x !== TIPS_OFF);
+  // a brand new game has Aurelio's tips (a game made without a save starts with them off)
+  s.seen = s.seen.filter((x) => x !== TIPS_OFF);
   s.step = 'intro';
   s.t = 0;
   Object.assign(g.diver, { x: SCENES.boat.x, y: SCENES.boat.y, vx: 0, vy: 0, face: 1 });
-}
-
-/** "Rivedi l'inizio" (pause menu): the opening again, without losing progress. */
-export function replayIntro(g: StoryWorld): void {
-  const s = g.story;
-  if (s.step === 'intro' || g.diver.dead || g.beasts.riding) return;
-  s.resume = s.step === 'off' ? 'free' : s.step;
-  startNewGame(g);
 }
 
 /** On the boat the diver does not swim or shoot. */
@@ -167,15 +156,10 @@ export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
   s.dialogue = null;
   if (!s.seen.includes(id)) s.seen.push(id);
   if (id === 'intro') {
-    // into the water with a splash (or back where you were, when replayed from the pause menu)
+    // into the water with a splash
     Object.assign(g.diver, { ...SCENES.jumpIn, vx: 30, vy: 20 });
     for (let i = 0; i < 6; i++)
       events.push({ type: 'bubble', x: SCENES.jumpIn.x + i * 2 - 5, y: SCENES.jumpIn.y });
-    if (s.resume) {
-      setStep(s, s.resume, events);
-      s.resume = null;
-      return;
-    }
     s.swimFrom = { ...SCENES.jumpIn };
     s.tutorial = 0;
     s.count = 0;

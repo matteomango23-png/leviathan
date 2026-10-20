@@ -83,14 +83,6 @@ export class UIScene extends Phaser.Scene {
     };
     document.addEventListener('visibilitychange', onHide);
     this.events.once('shutdown', () => document.removeEventListener('visibilitychange', onHide));
-    // a soft tick on every button of the menus (owner, 19 ottobre: the touches had no sound); not on the controls
-    // held while playing (dash, harpoon, the helm's arrows), which have their own sounds
-    const onTap = (e: PointerEvent): void => {
-      const b = e.target instanceof Element ? e.target.closest('button') : null;
-      if (b && !b.disabled && !b.closest('.act, .helm-dir-btn')) this.session.sound.tap();
-    };
-    document.addEventListener('pointerdown', onTap, true);
-    this.events.once('shutdown', () => document.removeEventListener('pointerdown', onTap, true));
   }
 
   private onGameEvents(events: GameEvent[]): void {

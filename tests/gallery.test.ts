@@ -1,9 +1,8 @@
 // The test gallery (lot Q, 19 ottobre 2026): every beast with pictures, in the sea, as an opponent, as a companion.
 import { describe, expect, it } from 'vitest';
-import { PROGRESSION } from '../src/data/rules';
 import { GAME_SPECIES } from '../src/data/species';
 import { ART_KEYS, SPRITE_KEYS } from '../src/data/sprites.generated';
-import { artKeysOf, formKey } from '../src/systems/beasts/forms';
+import { artKeysOf, finalFormLevelOf, formKey } from '../src/systems/beasts/forms';
 import { teamMembers } from '../src/systems/beasts/team';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame } from '../src/systems/game';
@@ -32,14 +31,18 @@ const fresh = () => {
 describe('the forms of the gallery', () => {
   const forms = galleryForms();
 
-  it('every species of the game, no doubles; albinos, alphas, finals and uniques only with pictures', () => {
+  it('every species of the game with pictures, no doubles; none without (the Kraken, 20 ottobre)', () => {
     const keys = forms.map(formKey);
     expect(new Set(keys).size).toBe(keys.length);
-    for (const s of GAME_SPECIES) expect(forms.some((f) => f.speciesId === s.id)).toBe(true);
-    // (a species with no pictures yet, like the Kraken, is shown as the game draws it meanwhile)
+    for (const s of GAME_SPECIES)
+      expect(
+        forms.some((f) => f.speciesId === s.id),
+        s.id,
+      ).toBe(SPRITE_KEYS.includes(s.id));
+    for (const id of ['kraken', 'leviatano', 'calamaro_colossale', 'serpente_di_mare'])
+      expect(forms.some((f) => f.speciesId === id)).toBe(false);
     const pictured = (k: string) => ART_KEYS.includes(k) || SPRITE_KEYS.includes(k);
-    for (const f of forms.filter((x) => x.variant !== 'comune' || x.final || x.unique))
-      expect(artKeysOf(f).some(pictured), formKey(f)).toBe(true);
+    for (const f of forms) expect(artKeysOf(f).some(pictured), formKey(f)).toBe(true);
   });
 
   it('final forms at their level, the matriarch, the Sfregiato and the albinos are there', () => {
@@ -47,7 +50,7 @@ describe('the forms of the gallery', () => {
     expect(forms.some((f) => f.speciesId === 'orca' && f.variant === 'alfa')).toBe(true);
     expect(forms.some((f) => f.variant === 'albino')).toBe(true);
     const fin = forms.find((f) => f.final)!;
-    expect(galleryLevel(fin)).toBe(PROGRESSION.finalFormLevel);
+    expect(galleryLevel(fin)).toBe(finalFormLevelOf(fin.speciesId));
   });
 });
 

@@ -10,8 +10,6 @@ export const AUDIO = {
    *  everything stopped at once). */
   menuSea: 0.35,
   menuFade: 0.5,
-  /** A touch on a menu's button: a soft wooden tick, falling from the first pitch to the second. */
-  tap: { freq: [1100, 760] as [number, number], seconds: 0.05, volume: 0.035 },
 };
 
 export const SEA_SOUND = {

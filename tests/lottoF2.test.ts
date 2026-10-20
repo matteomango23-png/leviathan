@@ -9,7 +9,7 @@ import { formName, hasAlbinoArt, hasFinalForm } from '../src/systems/beasts/form
 import { bestiaryEntries } from '../src/systems/beasts/bestiaryEntries';
 import { PROGRESSION } from '../src/data/rules';
 
-const MAX = PROGRESSION.finalFormLevel;
+const MAX = PROGRESSION.maxLevel; // over every final form's level
 
 describe('correzioni del lotto F', () => {
   it('lo squalo pinna nera era un mako', () => {
