@@ -59,7 +59,7 @@ describe('battle framing', () => {
             const at = `${screen.name}, level ${level}`;
             const bob = BOB * screen.h;
             const F = BATTLE_STAGE.fit;
-            expect(r.top - bob, `${at}: top edge`).toBeGreaterThanOrEqual(0);
+            if (side === 'you') expect(r.top - bob, `${at}: top edge`).toBeGreaterThanOrEqual(0); // (the wild one may leave the top)
             const width = r.right - r.left;
             const height = r.bottom - r.top;
             if (side === 'foe') {
@@ -68,8 +68,10 @@ describe('battle framing', () => {
               expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(F.foeLeft * screen.w - 1);
               const inW = (Math.min(r.right, screen.w) - r.left) / width;
               expect(inW, `${at}: width in view`).toBeGreaterThanOrEqual(F.foeKeepW - 0.01);
-              // never down behind the commands' menu (owner, 20 ottobre)
+              // never down behind the commands' menu, at most a little of it out at the top (owner, 20 ottobre)
               expect(r.bottom, `${at}: above the commands`).toBeLessThanOrEqual(F.foeLowest * screen.h + 1);
+              const inH = (r.bottom - Math.max(0, r.top)) / height;
+              expect(inH, `${at}: height in view`).toBeGreaterThanOrEqual(F.foeKeepH - 0.01);
             } else {
               // yours, like Pokémon: in its half, under the wild one's name box, its head and back above its own
               expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(F.youRight * screen.w + 1);

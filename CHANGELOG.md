@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.81.2 — I giganti di nuovo grandi, sopra il menu (20 ottobre 2026)
+
+- **Battaglia:** tornano le grandezze di prima (v0.81.0). Un nemico gigante sale invece di rimpicciolirsi: se è troppo alto esce dallo schermo in alto (e a destra con la coda), con testa e parte davanti del corpo in vista. Non scende mai dietro al menu.
+
 ## v0.81.1 — Il nemico mai dietro al menu (20 ottobre 2026)
 
 - **Battaglia:** il nemico, anche gigante, non scende più dietro al menu dei comandi (Lotta, Zaino, Doma…). Può uscire dallo schermo solo a destra, con la coda.
