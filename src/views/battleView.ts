@@ -86,7 +86,9 @@ export class BattleView {
     this.stage[side] = {
       lengthM: formLengthM(form, level),
       giant: isGiant(form),
-      pictureMult: BATTLE_STAGE.pictureMult[form.speciesId],
+      pictureMult:
+        BATTLE_STAGE.framePictureMult[art.textureKey.replace(/^battle-/, '')] ??
+        BATTLE_STAGE.pictureMult[form.speciesId],
       box: art.own ? BATTLE_ART_BOX[art.textureKey.replace(/^battle-/, '')] : undefined,
     };
     Object.assign(this.poses[side], newPose(), {

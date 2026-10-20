@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.80.0 — Battaglia: la tua bestia si vede, grandezze giuste, versi giusti (20 ottobre 2026)
+
+- **La tua bestia si vede:** sta più in alto, tra la barra del nemico e la tua, con testa e dorso sopra la sua barra. La barra col nome è più piccola e più in basso, nell'angolo.
+- **Grandezze in proporzione:**
+  - a parità di bestia la tua non sembra mai più piccola della selvatica;
+  - una bestia più lunga sembra sempre più grande (il Titano rispetto allo squalo bianco, Folgore rispetto a Saetta);
+  - si confronta quello che si vede davvero di ognuna.
+- **I giganti sembrano giganti:** il nemico enorme può uscire dallo schermo con la coda (a destra e in basso) invece di rimpicciolirsi; la testa resta sempre nella sua metà. Lo squalo tigre di fronte, che è un primo piano, è un po' più piccolo.
+- **Versi:** controllate tutte le 199 immagini di battaglia. Girate le 6 sbagliate: Folgore, megattera, Megattera Titanica, rana pescatrice, Madre delle madri, orca preistorica albina. D'ora in poi ogni immagine nuova va controllata, e un test lo impone.
+- **Scheda:** la riga delle evoluzioni mostra anche la forma finale con il suo livello (es. "Squalo martello → Squalo martello del Tuono Lv 53").
+
 ## v0.79.0 — Correzioni rapide e forme finali raggiungibili (20 ottobre 2026)
 
 - **Forme finali molto prima:** non più al livello 100, ma circa 18 livelli sopra quelli in cui la specie si incontra in mare. La manta al 30, squalo martello, pesce spada, megattera e squalo tigre al 53, squalo bianco, coccodrillo marino, orca, calamaro gigante e capodoglio al 73, i giganti (mosasauro, megalodonte, Livyatan, Dunkleosteus) al 93. Una bestia che ha già superato il suo livello cambia forma al prossimo livello che prende.

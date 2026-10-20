@@ -134,6 +134,13 @@ Due immagini con il fondo difficile hanno soglie proprie in `scripts/art.ts` (`B
 
 **Grandezza:** la applica il gioco, relativa tra le due bestie (`BATTLE_STAGE` in `data/battle.ts`): la più grande ha la misura standard, l'altra in proporzione; i giganti (leggendari, forme finali, Guardiani, specie colossali) sono sempre enormi.
 
+### Verso in battaglia (obbligatorio per ogni immagine nuova, 20 ottobre 2026)
+
+- **Fronte** (`<id>_front`, la bestia selvatica): la testa guarda **a sinistra**, verso il centro dello schermo.
+- **Retro** (`<id>_back`, la tua): nuota via **verso destra**, verso il nemico.
+- Dopo `npm run art` si fa un foglio con tutti i fronti e tutti i retri (nome sotto ogni immagine) e si guardano uno per uno. Quelli sbagliati si girano aggiungendo o togliendo `_flip` nel nome in `art-inbox`.
+- Solo dopo si aggiunge la chiave in `src/data/battleFacing.ts`: `tests/lottoT.test.ts` fallisce finché un'immagine di battaglia nuova non è nell'elenco.
+
 ## Sfondi a strati, conchiglia e icone della battaglia
 
 I prompt pronti sono in `docs/PROMPT-BATTAGLIA.md`. Salva i file in `art-inbox/` con questi nomi, poi lancia `npm run art`:

@@ -72,8 +72,15 @@ export class BattleScene extends Phaser.Scene {
     // the prototype (?battaglia): the test team against a random wild beast of the bay or the delta
     const P = BATTLE_PROTOTYPE;
     const mine = new URLSearchParams(window.location.search).get('mio'); // ?battaglia&mio=orca: your first beast
+    const q0 = new URLSearchParams(window.location.search);
+    const myForm = (): BeastForm => ({
+      speciesId: mine!,
+      variant: (['albino', 'alfa'] as const).find((v) => v === q0.get('miovariante')) ?? 'comune',
+      ...(q0.has('miofinale') ? { final: true } : {}),
+      ...(q0.get('miounico') ? { unique: q0.get('miounico')! } : {}),
+    });
     const team = P.team.map((t, i) =>
-      makeFighter({ speciesId: i === 0 && mine ? mine : t.speciesId, variant: 'comune' }, t.level),
+      makeFighter(i === 0 && mine ? myForm() : { speciesId: t.speciesId, variant: 'comune' }, t.level),
     );
     const pick = P.foes[Math.floor(this.rng() * P.foes.length)]!;
     const [a, b] = pick.level;

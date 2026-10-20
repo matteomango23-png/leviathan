@@ -1,6 +1,7 @@
 // Every beast must be well framed in battle, as the wild one and as yours, on a phone and on a tablet in
-// landscape, at every size it can have (level 1 to its final form): whole on screen, and never too small
-// (owner, 3 ottobre: "deve essere tutto bene visibile… senza uscire dallo schermo").
+// landscape, at every size it can have (level 1 to its final form), never too small (owner, 3 ottobre). The wild one
+// in its half with its head in view (a giant's tail may leave the screen: owner, 20 ottobre); yours with its head
+// and back above its name box (20 ottobre: "coperto dalla scritta").
 import { describe, expect, it } from 'vitest';
 import { BATTLE_STAGE } from '../src/data/battle';
 import { PROGRESSION } from '../src/data/rules';
@@ -59,18 +60,23 @@ describe('battle framing', () => {
             const bob = BOB * screen.h;
             const F = BATTLE_STAGE.fit;
             expect(r.top - bob, `${at}: top edge`).toBeGreaterThanOrEqual(0);
+            const width = r.right - r.left;
+            const height = r.bottom - r.top;
             if (side === 'foe') {
-              // the wild one: whole, in its half
+              // the wild one: in its half (its head, on the left, never past foeLeft), at most a little of it out
+              // on the right and at the bottom
               expect(r.left, `${at}: left edge`).toBeGreaterThanOrEqual(F.foeLeft * screen.w - 1);
-              expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(screen.w);
-              expect(r.bottom - bob, `${at}: bottom edge`).toBeLessThanOrEqual(screen.h);
+              const inW = (Math.min(r.right, screen.w) - r.left) / width;
+              const inH = (Math.min(r.bottom - bob, screen.h) - r.top) / height;
+              expect(inW, `${at}: width in view`).toBeGreaterThanOrEqual(F.foeKeepW - 0.01);
+              expect(inH, `${at}: height in view`).toBeGreaterThanOrEqual(F.foeKeepH - 0.01);
             } else {
-              // yours, like Pokémon: head and back in view, in its half; the rest may leave the screen
+              // yours, like Pokémon: in its half, under the wild one's name box, its head and back above its own
               expect(r.right, `${at}: right edge`).toBeLessThanOrEqual(F.youRight * screen.w + 1);
               expect(r.top, `${at}: top`).toBeGreaterThanOrEqual(F.youTop * screen.h - 1);
-              const vw = Math.min(r.right, screen.w) - Math.max(r.left, 0);
-              const vh = Math.min(r.bottom, screen.h) - Math.max(r.top, 0);
-              expect((vw * vh) / r.area, `${at}: visible`).toBeGreaterThan(0.3);
+              const above = F.youBoxTop * screen.h - r.top;
+              const want = Math.min(F.youShowAbove * height, (F.youBoxTop - F.youTop) * screen.h);
+              expect(above, `${at}: above its name box`).toBeGreaterThanOrEqual(want - 1);
             }
             const longest = Math.max(r.right - r.left, r.bottom - r.top);
             expect(longest, `${at}: big enough`).toBeGreaterThanOrEqual(screen.minLongest * screen.h);

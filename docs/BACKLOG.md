@@ -130,7 +130,7 @@ Già fatti prima: gli aloni sulle bestie rare (v0.72.0); il conteggio e la sched
 
 ## Feedback del 20 ottobre 2026 (prova di tutte le bestie nella galleria), in lotti
 
-**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia, U in groppa, V sonar/drone/cacce, W timone e recinto, X mare, Y immagini.
+**Ordine scelto (20 ottobre):** S correzioni rapide ✅ v0.79.0 (pausa, tic, gas, evoluzioni, tane in plancia, forme finali, Megattera Titanica, galleria), T battaglia ✅ v0.80.0 (posizione della tua bestia, grandezze, giganti, versi, forma finale nella scheda), U in groppa, V sonar/drone/cacce, W timone e recinto, X mare, Y immagini.
 **Decisioni:**
 - forma finale circa 15-20 livelli sopra i livelli selvatici di ogni specie, non più 100 per tutte;
 - cavalcabili: sì a Varano d'osso, pesce spada Corazzato e tartaruga preistorica; no a pesce vela e polpo gigante;
