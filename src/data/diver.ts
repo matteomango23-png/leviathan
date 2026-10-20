@@ -33,6 +33,12 @@ export const DIVER = {
     chokeInterval: 1.6, // with no air, lose a heart every this many seconds
   },
   bubbleEvery: [0.4, 0.9] as [number, number], // seconds between breath bubbles
+  /**
+   * At the surface (systems/floatSurface.ts; owner, 20 ottobre: no invisible wall, floating like the beasts): within
+   * `band` units of the wave over him his push up fades and the water slows him (`drag` per second); he floats with
+   * his middle `rest` units under the wave, held there by a `spring` (per second², per unit). Tuning.
+   */
+  float: { band: 16, rest: 2, drag: 5, spring: 60 },
 };
 
 /**

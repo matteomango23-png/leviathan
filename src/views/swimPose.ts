@@ -1,10 +1,11 @@
 // The shape of a big beast's body this frame, along its spine (no Phaser: beastView.ts draws it, tests check it).
 // Sharks and fish swing the tail sideways, shortening in perspective; whales and dolphins beat it up and down;
 // serpents and eels carry one wave down the whole body (owner, 15 ottobre: Folgore stretched and shrank); wings that
-// beat (the manta) stretch their strips up and down in turn.
+// beat (the manta) stretch their strips up and down in turn. Octopuses and squids keep the mantle whole and wave
+// their arms, opening and closing them with each stroke of their jet; crabs walk, the body whole (owner, 20 ottobre).
 import { BEAST_SPRITE } from '../data/beasts';
 
-const { frameW: IW, segments: N, whaleWave, serpentWave } = BEAST_SPRITE;
+const { frameW: IW, segments: N, whaleWave, serpentWave, cephalopodWave: CW, walkerStep } = BEAST_SPRITE;
 const SEG = IW / N;
 
 interface SwimPoseIn {
@@ -13,21 +14,43 @@ interface SwimPoseIn {
   phase: number;
   whale?: boolean;
   serpent?: boolean;
+  cephalopod?: boolean;
+  walker?: boolean;
 }
 
-/** The spine's points (head first), the angle at each and each piece's length, in picture pixels. */
-export function spineOf(p: SwimPoseIn): { pts: [number, number][]; ang: number[]; lens: number[] } {
+/** The spine's points (head first), the angle at each, each piece's length and how tall each piece is drawn (× the
+ *  picture), in picture pixels. */
+export function spineOf(p: SwimPoseIn): {
+  pts: [number, number][];
+  ang: number[];
+  lens: number[];
+  tall: number[];
+} {
   const bend = Math.max(-1.2, Math.min(1.2, p.pitchV * 0.35));
   const pts: [number, number][] = [];
   const ang: number[] = [];
   const lens: number[] = [];
+  const tall: number[] = [];
+  // the jet's stroke: 0 … 1, the arms open at its top (cephalopods only)
+  const stroke = 0.5 + 0.5 * Math.sin(p.phase * CW.pulse);
   let px = 0;
-  let py = 0;
+  let py = p.walker ? walkerStep * Math.abs(Math.sin(p.phase)) * -1 : 0;
   for (let i = 0; i <= N; i++) {
     const u = i / N;
     let a: number;
     let len: number;
-    if (p.serpent) {
+    let h = 1;
+    if (p.walker) {
+      // a crab: the body whole, tilted with the floor
+      a = p.pitch;
+      len = SEG;
+    } else if (p.cephalopod) {
+      // the mantle whole; down the arms a slow wave growing to the tips, every piece its full length
+      const arm = Math.max(0, (u - CW.from) / (1 - CW.from));
+      a = p.pitch + bend * u * 0.4 + CW.amp * arm * Math.sin(p.phase - arm * CW.waves * Math.PI);
+      len = SEG;
+      h = 1 + CW.spread * arm * (stroke * 2 - 1);
+    } else if (p.serpent) {
       // one wave down the whole body, every piece its full length: never stretching or shrinking, up or down
       const env = serpentWave.head + (1 - serpentWave.head) * u;
       a =
@@ -50,10 +73,11 @@ export function spineOf(p: SwimPoseIn): { pts: [number, number][]; ang: number[]
     pts.push([px, py]);
     ang.push(a);
     lens.push(len);
+    tall.push(h);
     if (i < N) {
       px -= Math.cos(a) * len;
       py -= Math.sin(a) * len;
     }
   }
-  return { pts, ang, lens };
+  return { pts, ang, lens, tall };
 }

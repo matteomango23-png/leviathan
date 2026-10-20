@@ -26,6 +26,8 @@ export const ROAM = {
   senseRange: 380, // units: the beast swimming with you (or carrying you) feels a wild one this close, still in the dark…
   senseMin: 150, // …but not if it is already near enough to see // a beast shorter than this × the one you ride does not come at you: it keeps away
   steer: 1.6,
+  floorHug: 3, // a crab keeps to the floor: its height follows the floor ahead this fast (× the gap, per second)
+  floorSink: 30, // u/s: a crab above the floor (dropped, or off a ledge) sinks down to it this fast
   turnSeconds: 0.8, // a turn (only out of the light), animated from the head
   pitchMax: 0.4,
   pitchRate: 3,
@@ -475,6 +477,15 @@ export const BEAST_SPRITE = {
    * `head` share of it at the head. Tuning.
    */
   serpentWave: { amp: 0.32, head: 0.25, waves: 1.6 },
+  /**
+   * Octopuses and squids (owner, 20 ottobre: "troppo statici, non muovono i tentacoli"): the mantle (the head, the
+   * front `from` of the picture) stays whole; down the arms runs a slow wave growing to the tips (`amp` radians,
+   * `waves` along them), every piece its full length; with each stroke of their jet the arms open and close across
+   * (`spread`: × their height at the most), `pulse` strokes per swimming cycle. Tuning.
+   */
+  cephalopodWave: { from: 0.42, amp: 0.26, waves: 1.4, spread: 0.18, pulse: 0.5 },
+  /** Crabs walking on the floor: no wave down the body, a little step up and down (picture pixels). Tuning. */
+  walkerStep: 6,
 };
 
 /**
@@ -517,6 +528,9 @@ export const RIDE_REF_KMH = 40;
 /** The beasts drawn with the serpent's wave (BEAST_SPRITE.serpentWave). */
 export const SERPENTS: readonly string[] = ['folgore', 'saetta', 'murena', 'anguilla_elettrica', 'serpente_di_mare'];
 
+
+/** The beasts drawn with the octopus's arms (BEAST_SPRITE.cephalopodWave). */
+export const CEPHALOPODS: readonly string[] = ['polpo_gigante', 'calamaro_gigante', 'calamaro_colossale', 'piovra', 'kraken'];
 
 /** Whales and dolphins: they swim with an up-and-down tail and lend you their air (RIDE_AIR). */
 export const CETACEANS: readonly string[] = ['megattera', 'capodoglio', 'livyatan', 'orca', 'beluga', 'narvalo', 'delfino'];

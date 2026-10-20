@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.84.0 — Il mare più vero (20 ottobre 2026)
+
+- **Branchi:** barracuda, delfini e tutti i branchi seguono la guida in modo fluido, senza piccoli scatti.
+- **Il sub galleggia:** salendo non sbatte più contro un muro invisibile. Rallenta, arriva in superficie e resta a galla con testa e spalle fuori, salendo e scendendo con le onde. Non salta mai fuori dall'acqua. Fermo in superficie resta a galla e respira; per scendere spingi in giù.
+- **Tempesta:** il sub, e anche la bestia che cavalchi, seguono le onde vere, invece di restare sospesi tra un'onda e l'altra.
+- **Polpi e calamari:** polpo gigante, calamaro gigante e Piovra (e più avanti Kraken e calamaro colossale) muovono i tentacoli: un'onda lenta che corre fino alle punte, e i tentacoli che si aprono e si chiudono a ogni spinta. La testa resta ferma.
+- **Granchio:** cammina sempre sul fondale, sale e scende lungo i pendii, non nuota più a mezz'acqua. Neanche la luce della nave lo fa salire. Se si trova sopra il fondo, ci scende.
+
 ## v0.83.0 — Quadranti al timone, oggetti nel recinto (20 ottobre 2026)
 
 - **Timone:** la lunga riga di scritte in alto lascia il posto a tre quadranti quadrati d'epoca, con cornice d'ottone e lancetta: velocità, autonomia e carburante (i fusti di scorta si sommano ai litri). Niente parole, solo un'icona e un numero. Sott'acqua c'è un quarto quadrante per la profondità. Con il serbatoio vuoto il quadrante del carburante diventa rosso.

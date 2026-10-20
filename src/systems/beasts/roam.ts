@@ -57,6 +57,17 @@ export function wanderPoint(
   return p;
 }
 
+/** The floor's top at x near height y: climbing out if y is in rock, down to it if y is in water. */
+export function floorNear(map: TileMap, x: number, y: number): number {
+  let yy = y;
+  if (map.solidAt(x, yy)) {
+    const limit = yy - 2000;
+    while (yy > limit && map.solidAt(x, yy)) yy -= 2;
+    return yy + 2;
+  }
+  return map.floorBelow(x, yy);
+}
+
 /** A place in the dark to appear: in its area, at least ROAM.spawnMinDistance from you. */
 export function appearPoint(
   b: WildBeast,
@@ -163,7 +174,10 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
     ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
   } else ty = Math.max(ty, top);
   if ((spec?.surface || uniqueOf(b.form)?.surface) && b.mood !== 'chase') ty = top;
-  if (spec?.floor && b.mood === 'flee') ty = b.y; // slipping away along the floor, not swimming up
+  // crabs walk on the floor whatever they do: chasing, fleeing or called by the light (owner, 20 ottobre: "il
+  // granchio non può fluttuare come un pesce"); the floor a little ahead, so it climbs and goes down its slopes
+  const walker = !!spec?.floor;
+  if (walker) ty = floorNear(map, b.x + b.face * b.length * 0.4, b.y) - bodyRadius(b);
 
   // turn around only out of the light (a visible turn is allowed against a wall)
   const want = Math.sign(tx - b.x) || b.face;
@@ -172,7 +186,9 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
 
   const len = Math.hypot(tx - b.x, ty - b.y) || 1;
   const wantVx = b.face * Math.abs(((tx - b.x) / len) * speed) || b.face * speed * 0.3;
-  const wantVy = ((ty - b.y) / len) * speed;
+  const wantVy = walker
+    ? clamp((ty - b.y) * ROAM.floorHug, -speed, Math.max(speed, ROAM.floorSink))
+    : ((ty - b.y) / len) * speed;
   const k = Math.min(1, dt * ROAM.steer);
   b.vx += (wantVx - b.vx) * k;
   b.vy += (wantVy - b.vy) * k;
