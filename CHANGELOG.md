@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.82.0 — Sonar e drone più affidabili (20 ottobre 2026)
+
+- **Leggendario battuto:** finché riposa nella sua tana il sonar non mostra più la sua eco anomala; torna quando la leggenda riappare.
+- **Il sonar si ricorda chi hai visto:** un'eco analizzata come "Sconosciuta" prende il nome della specie appena la vedi o la catturi, senza rifare l'analisi.
+- **Il drone della Ocean's Nightmare va prima dove serve:** prima le bestie che il sonar non conosce ancora, poi le più grandi, poi le più vicine. La grande eco sconosciuta è la prima che va a vedere.
+
 ## v0.81.3 — Il nemico gigante scende fino a poco sopra il menu (20 ottobre 2026)
 
 - **Battaglia:** il gioco misura lo schermo (altezza e barra in basso dell'iPhone). Un nemico grande scende fino a pochi millimetri sopra il menu dei comandi, sempre con un po' di spazio tra lui e il menu. Sugli schermi più alti sta più in basso e si vede meglio.

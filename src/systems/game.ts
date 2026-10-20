@@ -7,7 +7,7 @@ import { weatherLook } from './weather';
 import { depthMetres } from './world/zones';
 import { clearTarget, pickTarget, reconOut, sendSphere, startRecon, stepGadgets } from './ship/gadgets';
 import { shootTracker, stepTracker } from './trackerDart';
-import { learnFromReport, stepScan } from './sonarScan';
+import { learnFromReport, echoKnown, stepScan } from './sonarScan';
 import { XP_RULES } from '../data/progression';
 import { DIVER, SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
@@ -72,7 +72,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   if (input.action) doAction(g, events);
   if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
-  if (input.helmCmd === 'recon') startRecon(g, events);
+  if (input.helmCmd === 'recon') startRecon(g, events, (t) => echoKnown(g.sonarScan, t));
   // no diving off while the drone is out: you would see it race through the rock (owner, 9 ottobre)
   if (input.helmCmd === 'dive' && reconOut(g)) input.helmCmd = null;
   if (input.helmCmd === 'sphere') sendSphere(g, events);

@@ -108,6 +108,7 @@ export function finishBattle(
           ? HUNT_RULES.legendReturnSeconds
           : range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]),
       );
+      if (w.spawn.hunt) w.resting = true; // in its den: no anomalous echo on the sonar meanwhile (hunts.ts)
       // a resident of the endless sea: its place stays empty for a while (beasts/residents.ts)
       if (w.spawn.resident) residentGone(g.beasts.residents, w.spawn.resident, g.rng);
     } else {

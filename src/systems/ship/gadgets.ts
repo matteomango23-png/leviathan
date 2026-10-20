@@ -139,11 +139,23 @@ export const canRecon = (g: GadgetsWorld): boolean =>
 /** The drone is away on its round (the submarine stays hidden, it cannot be launched). */
 export const reconOut = (g: { gadgets: GadgetsState }): boolean => g.gadgets.recon.phase !== 'idle';
 
-export function startRecon(g: GadgetsWorld, events: GameEvent[]): void {
+/** @param known whether the sonar already knows what a beast is (sonarScan.ts echoKnown): those come last */
+export function startRecon(
+  g: GadgetsWorld,
+  events: GameEvent[],
+  known: (t: Target) => boolean = () => false,
+): void {
   if (!canRecon(g)) return;
   const r = g.gadgets.recon;
   const home = holdPoint(g.ship);
-  const queue = beastsInRange(g, g.ship).slice(0, RECON.maxBeasts);
+  // first what the sonar does not know yet, then the biggest, then the nearest (owner, 20 ottobre: the sonar's unknown
+  // 9 m echo was never in the drone's round of the 8 nearest, all small fish)
+  const fresh = (c: { target: Target }): number => (known(c.target) ? 1 : 0);
+  const queue = beastsInRange(g, g.ship)
+    .map((c, near) => ({ c, near }))
+    .sort((a, b) => fresh(a.c) - fresh(b.c) || b.c.lengthM - a.c.lengthM || a.near - b.near)
+    .map((x) => x.c)
+    .slice(0, RECON.maxBeasts);
   if (!queue.length) {
     events.push({ type: 'reconEmpty' });
     return;
