@@ -2,6 +2,7 @@
 // the port, sounds): bubbles, spray, dust, feathers, the camera's jolts. And the gulls snapped up by a beast on its
 // leap out of the water (breach.ts). Split from WorldScene in the cleanup of 19 ottobre 2026.
 import { WORLD } from '../data/worldLayout';
+import { TYPES } from '../data/rules';
 import { mountAteBird } from '../systems/beastPlay';
 import type { BirdsState } from '../systems/birds';
 import { birdNear, eatBirdsNear } from '../systems/birdsCatch';
@@ -9,11 +10,13 @@ import { RIDE_BREACH } from '../data/beasts';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import type { CameraRig } from '../views/cameraRig';
+import type { EchoView } from '../views/echoView';
 import type { EffectsView } from '../views/effectsView';
 import type { TerrainView } from '../views/terrainView';
 
 interface EventLooks {
   effects: EffectsView;
+  echo: EchoView;
   rig: CameraRig;
   terrain: TerrainView;
   g: GameState;
@@ -23,6 +26,9 @@ interface EventLooks {
 export function showEvent(e: GameEvent, v: EventLooks): void {
   const { effects, rig, g } = v;
   if (e.type === 'bubble') effects.bubble(e.x, e.y);
+  else if (e.type === 'packEcho')
+    v.echo.ping(e.x, e.y, e.found); // a Glaciale's echo (systems/pack.ts)
+  else if (e.type === 'packPower') effects.puff(e.x, e.y, 6, parseInt(TYPES[e.power].color.slice(1), 16), 24);
   else if (e.type === 'dash') for (let i = 0; i < 5; i++) effects.bubble(e.x + Math.random() * 8 - 4, e.y);
   // a leap out of the water on a beast (breach.ts): spray going up, a big splash coming down
   else if (e.type === 'breach') effects.puff(e.x, e.y, 14, 0xe6f3f7, 70);

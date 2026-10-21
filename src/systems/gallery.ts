@@ -2,6 +2,8 @@
 // another, in the sea, as an opponent and as a companion, in a throwaway game that is never saved. Part of the test
 // tools (testTools.ts): to be removed with them before the game is finished.
 import { GALLERY } from '../data/beasts';
+import { PACK } from '../data/beasts';
+import { ridesForm } from './beasts/mountTraits';
 import { UNIQUE_VARIANTS } from '../data/species';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { bay } from '../data/worldLayout';
@@ -60,9 +62,11 @@ interface GalleryState {
   wildId: number | null;
   /** The uid of the gallery's companion in the team. */
   companion: string | null;
+  /** The companions that swim in your pack (systems/pack.ts), oldest first: up to PACK.size stay. */
+  mates: string[];
 }
 
-export const newGalleryState = (): GalleryState => ({ wildId: null, companion: null });
+export const newGalleryState = (): GalleryState => ({ wildId: null, companion: null, mates: [] });
 
 function clearWild(g: GameState, s: GalleryState): void {
   const w = g.beasts.wilds.find((x) => x.id === s.wildId);
@@ -95,14 +99,23 @@ export function fightIt(g: GameState, s: GalleryState, form: BeastForm, events: 
  *  to be called at the diver's side. */
 export function makeCompanion(g: GameState, s: GalleryState, form: BeastForm, events: GameEvent[]): number {
   const team = g.beasts.team;
-  // the beast at your side (the last companion, or the fighter) swims off first: you climb down if riding
-  if (g.beasts.mount) {
-    dismount(g, events);
-    g.beasts.mount = null;
-  }
-  const old = team.findIndex((b) => b.uid === s.companion);
-  if (old >= 0) team.splice(old, 1);
+  const drop = (uid: string | null): void => {
+    const i = team.findIndex((b) => b.uid === uid);
+    if (i >= 0) team.splice(i, 1);
+  };
   const b = makeTeamBeast(`b${g.beasts.nextUid++}`, { ...form }, galleryLevel(form), true);
+  if (ridesForm(form)) {
+    // a new mount: the one you ride swims off first, you climb down
+    if (g.beasts.mount) {
+      dismount(g, events);
+      g.beasts.mount = null;
+    }
+    if (s.companion && !s.mates.includes(s.companion)) drop(s.companion);
+  } else {
+    // a companion joins your pack, beside the mount you ride; the oldest of three goes (owner, 21 ottobre)
+    s.mates.push(b.uid);
+    while (s.mates.length > PACK.size) drop(s.mates.shift()!);
+  }
   addTamed(team, b);
   s.companion = b.uid;
   healAll(g);

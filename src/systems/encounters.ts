@@ -2,6 +2,7 @@
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
+import { noSurprise, scaredOfPack } from './pack';
 import { fearOf, openingFor, type Fear } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
 import { ENDLESS } from '../data/endless';
@@ -18,7 +19,14 @@ import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { luredForm } from './beasts/lure';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
-import { activeBeast, isHeld, onScreen, type BattleRequest, type BeastWorld } from './beastState';
+import {
+  activeBeast,
+  isHeld,
+  onScreen,
+  packMembers,
+  type BattleRequest,
+  type BeastWorld,
+} from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
@@ -200,7 +208,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
     // a superpredator far above it: it keeps away (mountTraits.ts fearOf)
-    const fearful = fearOf(ridden, w).keepAway;
+    // …and the small ones go round your pack (systems/pack.ts)
+    const fearful = fearOf(ridden, w).keepAway || scaredOfPack(g, w);
     const rams = aboard && ramsSubmarine(w);
     const scared = aboard && !rams;
     const rider = g.beasts.riding ? (g.beasts.mount ?? undefined) : undefined;
@@ -225,7 +234,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       const first = openingFor(
         ridden,
         d.rideDashT !== undefined,
-        ambush(w, d, g.beasts.riding ? g.beasts.mount : null),
+        // with a Tempesta in the pack nobody takes you by surprise
+        noSurprise(g) ? 'normal' : ambush(w, d, g.beasts.riding ? g.beasts.mount : null),
       );
       requestBattle(g, w, first, events, fearOf(ridden, w, g.rng()));
     }
@@ -250,7 +260,11 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
  * once per beast (the nearest, if several come at once), while it is between ROAM.senseMin and ROAM.senseRange from you.
  */
 export function stepSenses(g: BeastWorld, events: GameEvent[]): void {
-  const m = g.beasts.mount;
+  // the beast you ride, or else the first of your pack
+  const m =
+    g.beasts.mount && g.beasts.mount.state !== 'in' && g.beasts.mount.state !== 'leaving'
+      ? g.beasts.mount
+      : (packMembers(g).find((p) => p.m.state === 'follow')?.m ?? null);
   const s = g.beasts.sensed;
   for (let i = s.length - 1; i >= 0; i--)
     if (!g.beasts.wilds.some((w) => w.id === s[i] && isInWater(w))) s.splice(i, 1);

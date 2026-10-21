@@ -55,7 +55,7 @@ export interface GameState extends StoryWorld {
   temples: TempleState;
   /** Seconds before your big beast can eat the next fish (not saved). */
   /** feed: the pause between bites; vent; fishXp: eaten fish still worth experience this minute (XP_RULES). */
-  timers: { feed: number; vent: number; fishXp: number };
+  timers: { feed: number; vent: number; fishXp: number; packEcho?: number };
   /** The air of the whales of your team, which you breathe while riding them (breath.ts, not saved). */
   rideTanks: RideTanks;
   /** The weather above the sea (weather.ts, not saved; the World scene steps it). */

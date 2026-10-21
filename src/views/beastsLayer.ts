@@ -2,6 +2,9 @@
 // pictures and size: no glow around them any more (owner, 16 ottobre 2026: "fa schifo"). Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
+import { PACK } from '../data/beasts';
+import type { Mount } from '../systems/beasts/mount';
+import type { TeamBeast } from '../systems/beasts/team';
 import { CLARITY } from '../data/sea';
 import { shapeShare } from '../systems/clarity';
 import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
@@ -35,6 +38,8 @@ export class BeastsLayer {
   /** The rest of a school (barracudas): drawn around the leader, who is the one you fight. */
   private readonly school: BeastSprite[][];
   private readonly mount: BeastSprite;
+  /** Your companions (systems/pack.ts): two with you and one leaving, at most. */
+  private readonly pack: BeastSprite[];
   /** How much each wild beast shows as a dark shape now (easing towards the water's own), and the last time. */
   private readonly shapeNow: number[] = [];
   private lastTime = NaN;
@@ -51,6 +56,7 @@ export class BeastsLayer {
       ),
     );
     this.mount = new BeastSprite(scene, layer);
+    this.pack = Array.from({ length: PACK.size + 1 }, () => new BeastSprite(scene, layer));
   }
 
   /** Where the diver sits on the ridden beast (world), or null on foot. */
@@ -147,25 +153,32 @@ export class BeastsLayer {
         });
       });
     });
-    const c = g.beasts.mount;
-    const b = activeBeast(g);
-    if (c && b)
-      this.mount.update({
-        key: spriteOf(b.form),
-        pale: isPaleSprite(b.form),
-        x: c.x,
-        y: c.y,
-        face: c.face,
-        pitch: c.pitch,
-        pitchV: c.pitchV,
-        phase: c.phase,
-        jaw: c.jaw,
-        length: c.length,
-        girth: speciesOf(b.form).girth,
-        ...swimLook(b.form),
-        flash: c.flash,
-        alpha: c.alpha,
-      });
-    else this.mount.hide();
+    drawOwn(this.mount, g.beasts.mount, activeBeast(g));
+    // your companions (systems/pack.ts)
+    this.pack.forEach((sp, i) => {
+      const c = g.beasts.pack[i];
+      drawOwn(sp, c, c && g.beasts.team.find((x) => x.uid === c.uid));
+    });
   }
+}
+
+/** One of your beasts in the water: the one you ride or a companion. */
+function drawOwn(s: BeastSprite, c: Mount | null | undefined, b: TeamBeast | undefined): void {
+  if (!c || !b) return s.hide();
+  s.update({
+    key: spriteOf(b.form),
+    pale: isPaleSprite(b.form),
+    x: c.x,
+    y: c.y,
+    face: c.face,
+    pitch: c.pitch,
+    pitchV: c.pitchV,
+    phase: c.phase,
+    jaw: c.jaw,
+    length: c.length,
+    girth: speciesOf(b.form).girth,
+    ...swimLook(b.form),
+    flash: c.flash,
+    alpha: c.alpha,
+  });
 }

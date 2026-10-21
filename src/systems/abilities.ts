@@ -4,7 +4,7 @@
 // Other abilities arrive with their regions.
 import { ABILITIES } from '../data/beasts';
 import { TILE } from '../data/worldLayout';
-import { activeBeast, type BeastWorld } from './beastState';
+import { activeBeast, packMembers, type BeastWorld } from './beastState';
 import { headOf } from './beasts/combat';
 import { breaksBones } from './beasts/forms';
 import { talentOf } from './beasts/mountTraits';
@@ -37,14 +37,19 @@ function tilesNear(map: TileMap, x: number, y: number, r: number, kind: Breakabl
   return false;
 }
 
-/** Where the bones (or the ice) are hit from: the head of the beast you ride, or you, with the beast at your side. */
+/** Where the bones (or the ice) are hit from: the head of the beast you ride, or you, with a bone breaker of your pack
+ *  at your side. */
 function breakPoint(g: BeastWorld): { x: number; y: number; kind: Breakable } | null {
+  const R0 = ABILITIES.sfondaOssa.reach;
+  const mate = packMembers(g).find(({ m, b }) => m.state === 'follow' && breaksBones(b.form, b.level));
+  if (mate && tilesNear(g.map, g.diver.x, g.diver.y, R0)) return { ...g.diver, kind: TILE.bone };
   const m = g.beasts.mount;
   const b = activeBeast(g);
   if (!m || !b || (m.state !== 'ride' && m.state !== 'follow')) return null;
   const ridden = m.state === 'ride';
   const R = ABILITIES.sfondaOssa.reach;
   const h = headOf(m);
+  // (a bone breaker in your pack breaks them next to you: the next lines)
   if (breaksBones(b.form, b.level) || (ridden && talentOf(b.form) === 'corazzato')) {
     if (tilesNear(g.map, h.x, h.y, R)) return { ...h, kind: TILE.bone };
     if (m.state === 'follow' && tilesNear(g.map, g.diver.x, g.diver.y, R))

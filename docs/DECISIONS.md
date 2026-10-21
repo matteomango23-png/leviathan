@@ -1086,3 +1086,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - il proprietario vuole che scegliere una cavalcatura abbia senso, e ha fissato lui le soglie della paura;
   - un talento per tipo si impara insieme ai tipi e vale per le bestie future;
   - la soglia di 3 stelle tiene dentro lo squalo bianco, che lui considera un superpredatore, e fuori coccodrillo marino, capopiatto e leuca.
+
+## 21 ottobre 2026 — La cavalcatura e il branco in due posti separati (v0.92.0)
+
+- **Decisione:** `beasts.mount` resta solo per la bestia che ti porta; i compagni stanno in `beasts.pack` (al massimo due), non salvato come la bestia chiamata.
+- **Motivo:** il proprietario vuole una cavalcatura più due compagni insieme. Lo stesso posto per "la bestia che cavalchi" e "quella che ti segue" non poteva tenerne tre. Separarli lascia intatto tutto ciò che riguarda la cavalcatura (movimento, resistenza, talenti) e dà al branco le sue regole: caccia dei pesci in vista, paura dei piccoli, poteri per tipo.

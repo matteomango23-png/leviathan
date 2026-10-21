@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.92.0 — Il branco (21 ottobre 2026)
+
+- **Cavalcatura più due compagni:** toccando nella barra della squadra una bestia che non si cavalca, si unisce al branco e ti nuota accanto, anche mentre cavalchi. Al massimo due: chiamandone un terzo, quello arrivato per primo se ne va. Toccandolo di nuovo lo rimandi via.
+- **Cacciano per te:** i compagni inseguono le sardine e i pesci che vedi sullo schermo (mai fuori dall'inquadratura), ognuno un pesce diverso, e quello che prendono va nella sacca.
+- **I piccoli girano al largo:** le bestie selvatiche più piccole e di livello più basso dei tuoi compagni cambiano strada.
+- **Un potere per tipo** (scritto sulla scheda di ogni compagno):
+  - **Caccia** (Predatore): prende i pesci più lontano e più in fretta;
+  - **Guscio** (Corazzato): la pressione ti fa male solo più in profondità;
+  - **Scarica** (Tempesta): tiene lontani anche predatori più grandi, e nessuno ti prende di sorpresa;
+  - **Eco** (Glaciale): ogni tanto un'onda mostra le bestie nascoste nel buio vicino a te, con un anello;
+  - **Lanterna** (Abissale): una luce attorno a te.
+- Quando il potere lavora, accanto al compagno compare uno sbuffo del colore del suo tipo.
+
 ## v0.91.1 — Ordine nei documenti (21 ottobre 2026)
 
 - Nessun cambiamento nel gioco: pulizia dopo cinque lotti. Il codice era già in ordine; aggiornati e archiviati gli appunti di lavoro.

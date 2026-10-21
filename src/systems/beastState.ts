@@ -41,6 +41,8 @@ export interface BeastState {
   team: TeamBeast[];
   /** The beast you called to ride (swimming to you, carrying you, or leaving). */
   mount: Mount | null;
+  /** The companions swimming with you (systems/pack.ts; owner, 21 ottobre: up to PACK.size; not saved). */
+  pack: Mount[];
   riding: boolean;
   nextUid: number;
   /** A swarm summoned from the backpack around the diver. */
@@ -103,6 +105,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     wilds,
     team,
     mount: null,
+    pack: [],
     riding: false,
     nextUid: maxUid + 1,
     decoy: null,
@@ -127,6 +130,21 @@ export const isHeld = (h: Held | null, w: WildBeast): boolean =>
 
 export const activeBeast = (g: BeastWorld): TeamBeast | undefined =>
   g.beasts.mount ? g.beasts.team.find((b) => b.uid === g.beasts.mount!.uid) : undefined;
+
+/** The companions swimming with you (not the ones leaving), each with its team beast. */
+export function packMembers(g: BeastWorld): { m: Mount; b: TeamBeast }[] {
+  const out: { m: Mount; b: TeamBeast }[] = [];
+  for (const m of g.beasts.pack) {
+    const b = g.beasts.team.find((x) => x.uid === m.uid);
+    if (b && m.state !== 'leaving') out.push({ m, b });
+  }
+  return out;
+}
+
+/** Is this team beast in the water with you (ridden, called or in the pack)? */
+export const isOut = (g: BeastWorld, uid: string): boolean =>
+  (g.beasts.mount?.uid === uid && g.beasts.mount.state !== 'leaving') ||
+  g.beasts.pack.some((m) => m.uid === uid && m.state !== 'leaving');
 
 /** You climb down: the mount swims back into the dark. */
 export function dismount(g: BeastWorld, events: GameEvent[]): void {

@@ -139,7 +139,7 @@ export class WorldScene extends Phaser.Scene {
   private handleEvents(events: GameEvent[]): void {
     const g = this.state;
     const v = this.views;
-    const looks = { effects: v.effects, rig: v.rig, terrain: v.terrain, g };
+    const looks = { effects: v.effects, echo: v.echo, rig: v.rig, terrain: v.terrain, g };
     for (const e of events) {
       showEvent(e, looks); // bubbles, spray, dust, jolts (worldEvents.ts)
       if (e.type === 'hurt') v.hurtFlash = 0.5;

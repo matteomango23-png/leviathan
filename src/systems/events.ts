@@ -1,6 +1,7 @@
 // Things that happened during a game step. Scenes turn them into sounds, toasts and effects.
 
 import type { DialogueId, StoryStep } from '../data/story';
+import type { TypeId } from '../data/rules';
 
 export type GameEvent =
   | { type: 'hurt' }
@@ -46,6 +47,10 @@ export type GameEvent =
   | { type: 'subRecovered'; toShip: boolean }
   | { type: 'mountWorn'; name: string }
   | { type: 'mountStunned'; count: number }
+  /** A Glaciale of the pack sent out its echo: the wild beasts it found near you (systems/pack.ts). */
+  | { type: 'packEcho'; x: number; y: number; found: { x: number; y: number; r: number }[] }
+  /** A companion's power at work (systems/pack.ts): a puff of its type's colour beside it. */
+  | { type: 'packPower'; x: number; y: number; power: TypeId }
   | { type: 'subRepaired'; cost: number }
   | { type: 'engineStarted'; vehicle?: 'boat' }
   | { type: 'harbourApproach' }

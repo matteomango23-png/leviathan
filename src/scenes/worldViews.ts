@@ -24,6 +24,8 @@ import { BackgroundView } from '../views/backgroundView';
 import { BeastsLayer } from '../views/beastsLayer';
 import { WaterFilter } from '../views/waterFilter';
 import { SeaLight } from '../views/seaLight';
+import { EchoView } from '../views/echoView';
+import { lanternRadius } from '../systems/pack';
 import { BirdsView } from '../views/birdsView';
 import { BoatView } from '../views/boatView';
 import { CameraRig } from '../views/cameraRig';
@@ -56,6 +58,8 @@ export class WorldViews {
   readonly rig: CameraRig;
   readonly terrain: TerrainView;
   readonly effects: EffectsView;
+  /** A Glaciale's echo in your pack (views/echoView.ts), over the darkness. */
+  readonly echo: EchoView;
   readonly ship: ShipView;
   private readonly bg: BackgroundView;
   private readonly kelp: KelpView;
@@ -116,6 +120,7 @@ export class WorldViews {
     this.effects = new EffectsView(scene, L.world);
     this.gearFx = new GearFxView(scene, L.world);
     this.waterFilter = new WaterFilter(scene, L.front); // last in the world's layers: over all of it
+    this.echo = new EchoView(scene, L.glow);
     this.seaLight = new SeaLight(scene, L.bg, L.overlay); // its front part before the darkness, so under it
     this.light = new LightView(scene, L.overlay);
     this.weatherView = new WeatherView(scene, L.bg, L.overlay);
@@ -189,6 +194,7 @@ export class WorldViews {
     this.waterFilter.update(view, g.time, sea, turbidityAt(d.x, d.y, g.time, sky));
     this.birdsView.update(this.birds, view);
     this.effects.update(g.time, dt);
+    this.echo.update(dt);
     this.places.update(g.gear, g.time);
     this.story.update(g.story);
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
@@ -218,6 +224,9 @@ export class WorldViews {
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),
     ];
+    // an Abissale in your pack: a light round you (systems/pack.ts Lanterna)
+    const lantern = lanternRadius(g);
+    if (lantern > 0) glows.push({ x: d.x, y: d.y, r: lantern });
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },

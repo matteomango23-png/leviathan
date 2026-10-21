@@ -1,6 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING } from '../data/beasts';
+import { huntWithPack, shellDepthM, stepPackEcho } from './pack';
 import { rideDepthM, rideNow, stepRideStamina } from './rideStamina';
 import { stepRideTalents } from './rideTalents';
 import { stepTips } from './tips';
@@ -115,7 +116,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       o2DrainMult: mods.o2DrainMult,
       canDash: mods.canDash,
       // riding, as deep as the beast takes you if deeper than your suit (mountTraits.ts mountDepthM)
-      maxDepthY: WORLD.surfaceY + Math.max(mods.maxDepthM, rideDepthM(g)) * WORLD.unitsPerMetre,
+      // and a Corazzato in the pack lets you go deeper (systems/pack.ts shellDepthM)
+      maxDepthY:
+        WORLD.surfaceY + Math.max(mods.maxDepthM + shellDepthM(g), rideDepthM(g)) * WORLD.unitsPerMetre,
       body: g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : undefined,
       air: tank,
       // the surface over you with its waves, the same the views draw and the boats ride (floatSurface.ts)
@@ -156,8 +159,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepBeasts(g, input, dt, beastEvents);
   // …and the beasts slide along the submarine too (the ship passes them by): wild ones, and yours with you
   for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w), true);
-  const follower = g.beasts.mount;
-  if (follower && !g.beasts.riding) pushOutOfVehicles(g, follower, bodyCircles(follower), true);
+  for (const m of g.beasts.pack) pushOutOfVehicles(g, m, bodyCircles(m), true); // your companions too
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);
@@ -167,29 +169,35 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (beastEvents.some((e) => e.type === 'noTeam')) blackout(g, events);
   stepHunts(g, events);
 
-  const eater = activeBeast(g);
-  const eaten = beastEats(g.beasts.mount, eater, g.fish, g.timers, dt);
-  // only the fish your beast eats are experience, and only a few a minute (XP_RULES.fishPerMinute); the ones you catch
-  // yourself go in the bag (owner, 15 ottobre)
+  // the beast you ride eats the fish in its mouth, your companions hunt the ones you can see (systems/pack.ts)
   const t = g.timers;
   t.fishXp = Math.min(XP_RULES.fishPerMinute, t.fishXp + (XP_RULES.fishPerMinute / 60) * dt);
-  const worth = Math.min(eaten.length, Math.floor(t.fishXp));
-  if (eater && worth > 0) {
-    t.fishXp -= worth;
-    gainXp(eater, fishXp(eater.level) * worth, events);
+  const rider = activeBeast(g);
+  const meals = huntWithPack(g, g.fish, dt, events);
+  if (g.beasts.mount && rider) meals.unshift({ b: rider, m: g.beasts.mount, eaten: [] });
+  if (meals[0] && g.beasts.mount && meals[0].m === g.beasts.mount)
+    meals[0].eaten = beastEats(g.beasts.mount, rider, g.fish, g.timers, dt);
+  for (const { b: eater, m, eaten } of meals) {
+    // only the fish your beasts eat are experience, and only a few a minute (XP_RULES.fishPerMinute); the ones you
+    // catch yourself go in the bag (owner, 15 ottobre)
+    const worth = Math.min(eaten.length, Math.floor(t.fishXp));
+    if (worth > 0) {
+      t.fishXp -= worth;
+      gainXp(eater, fishXp(eater.level) * worth, events);
+    }
+    // a growing beast (levels 31–50) keeps the fish for its nourishment bar; the rest go in your bag
+    for (const f of eaten) {
+      if (isHungry(eater)) {
+        takeFish(f);
+        feedBeast(eater, events);
+      } else catchFish(g, f, events);
+    }
+    if (eaten.length >= FEEDING.gulpFrom) {
+      const h = headOf(m);
+      events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
+    }
   }
-  // a growing beast (levels 31–50) keeps the fish for its nourishment bar; the rest go in your bag
-  for (const f of eaten) {
-    if (eater && isHungry(eater)) {
-      takeFish(f);
-      feedBeast(eater, events);
-    } else catchFish(g, f, events);
-  }
-  const m = g.beasts.mount;
-  if (m && eaten.length >= FEEDING.gulpFrom) {
-    const h = headOf(m);
-    events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
-  }
+  stepPackEcho(g, dt, events); // a Glaciale's echo shows the beasts hidden near you
   // the packs hunt (beasts/packHunt.ts): the sardines flee from them too
   const hunters = stepPackHunt(g, dt);
   // the sardines dodge you as big as you are: in the submarine, the boat or on a beast (owner, 15 ottobre)

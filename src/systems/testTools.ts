@@ -67,9 +67,10 @@ export function toggleTestMode(): boolean {
 export function raiseTeam(g: GameState, levels: number): void {
   // the level-ups (and evolutions) are shown in the sea, like in play
   for (const b of teamMembers(g.beasts.team)) raiseLevel(b, levels, g.story.pending);
-  const c = g.beasts.mount;
-  const b = g.beasts.team.find((x) => x.uid === c?.uid);
-  if (c && b) c.length = formLengthUnits(b.form, b.level);
+  for (const c of [g.beasts.mount, ...g.beasts.pack]) {
+    const b = g.beasts.team.find((x) => x.uid === c?.uid);
+    if (c && b) c.length = formLengthUnits(b.form, b.level);
+  }
 }
 
 /** Into the Delta delle Mangrovie, under the middle island. */
