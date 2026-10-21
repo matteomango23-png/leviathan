@@ -53,6 +53,12 @@ export const BATTLE_TEXT = {
   tameBroke: ['Oh no! Si è liberata dalla conchiglia!', 'Ci mancava poco!', 'Accidenti, quasi!'],
   fleeOk: 'Sei riuscito a fuggire!',
   fleeFail: 'Non riesci a fuggire!',
+  // the fear of a superpredator you ride (docs/PROPOSTA-RUOLI.md, owner 21 ottobre)
+  terrified: (b: Named): string => `${b.name} è paralizzat${o(b)} dalla paura e non attacca!`,
+  foeTriesFlee: (b: Named): string => `${b.name} selvatic${o(b)} ha paura e prova a fuggire…`,
+  foeFled: (b: Named): string => `${b.name} selvatic${o(b)} scappa terrorizzat${o(b)}!`,
+  foeFleeFail: 'Ma non ci riesce!',
+  foeEscaped: 'È scappato!',
   item: (item: string, b: Named): string => `Usi ${item} su ${b.name}.`,
   won: 'Vittoria!',
   lost: 'Tutta la squadra è sfinita… il mare ti respinge in superficie.',

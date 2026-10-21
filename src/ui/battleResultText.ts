@@ -11,5 +11,6 @@ export function resultText(s: BattleState, name: (side: Side) => Named): { title
   if (s.over === 'caught') title = BATTLE_TEXT.tamed(name('foe'));
   if (s.over === 'lost') title = BATTLE_TEXT.lost;
   if (s.over === 'fled') title = BATTLE_TEXT.fleeOk;
+  if (s.over === 'escaped') title = BATTLE_TEXT.foeEscaped;
   return { title, lines };
 }

@@ -2,6 +2,7 @@
 // at the port a growing beast eats from the fish bag.
 import { FEEDING } from '../data/beasts';
 import { headOf } from './beasts/combat';
+import { biteReach } from './beasts/mountTraits';
 import type { Mount } from './beasts/mount';
 import { feedBeast, isHungry } from './beasts/growth';
 import type { TeamBeast } from './beasts/team';
@@ -24,7 +25,7 @@ export function beastEats(
   if (!c || !b || timer.feed > 0) return [];
   if (c.state !== 'ride' && c.state !== 'follow') return [];
   const h = headOf(c);
-  const reach = Math.max(FEEDING.minReach, c.length * FEEDING.reachFrac);
+  const reach = biteReach(b.form, c.length); // wider for a filter feeder (mountTraits.ts)
   const eaten = fish.fish.filter((x) => x.alive && !x.hooked && Math.hypot(x.x - h.x, x.y - h.y) < reach);
   if (!eaten.length) return [];
   timer.feed = FEEDING.interval;

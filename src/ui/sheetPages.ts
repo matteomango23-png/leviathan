@@ -34,6 +34,29 @@ function line(box: HTMLElement, label: string, value: string): void {
   el('span', 'sinfo-value', r, value);
 }
 
+/** A mount's four bars (1 … 5 notches) and its talent in the sea (owner, 21 ottobre: "scegliere una cavalcatura
+ *  deve avere senso"; beasts/mountTraits.ts). */
+function rideBars(box: HTMLElement, ride: NonNullable<Sheet['ride']>): void {
+  const wrap = el('div', 'ride-bars', box);
+  const rows: [string, number][] = [
+    ['Velocità', ride.bars.speed],
+    ['Resistenza', ride.bars.stamina],
+    ['Boccone', ride.bars.bite],
+    ['Profondità', ride.bars.depth],
+  ];
+  for (const [label, n] of rows) {
+    const row = el('div', 'ride-bar', wrap);
+    el('span', 'ride-bar-label', row, label);
+    const pips = el('span', 'ride-pips', row);
+    for (let i = 1; i <= 5; i++) el('span', i <= n ? 'on' : '', pips);
+  }
+  if (ride.talent) {
+    const t = el('p', 'ride-talent', wrap);
+    el('b', '', t, `${ride.talent.name}: `);
+    t.append(document.createTextNode(ride.talent.text));
+  }
+}
+
 export function infoPage(box: HTMLElement, c: PageContext): void {
   const { s, beast: b } = c;
   const tags = el('div', 'sheet-tags', box);
@@ -60,6 +83,7 @@ export function infoPage(box: HTMLElement, c: PageContext): void {
       }
     }
   }
+  if (s.ride) rideBars(box, s.ride);
   if (b) {
     growthBars(box, b);
     const list = el('div', 'sinfo', box);

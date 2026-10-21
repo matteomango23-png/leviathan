@@ -24,6 +24,8 @@ interface RoamContext {
   hidden: boolean;
   /** Length of the beast you ride (0 on foot): much smaller beasts keep away instead of attacking. */
   riderLength?: number;
+  /** The superpredator you ride is far above it: it keeps away (beasts/mountTraits.ts fearOf). */
+  riderFear?: boolean;
   /** You are inside your submarine and this beast is not one that rams it: it slips away (submarine.ts). */
   scared?: boolean;
   /** The beast you ride: touching its body counts as touching you (owner, 4 ottobre). */
@@ -106,7 +108,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   // on its passes it goes far off the screen and comes back: it does not lose you meanwhile
   const lose = b.boss || b.patrol ? Infinity : ROAM.loseRange * U;
   // a small predator does not come at a diver riding something far bigger than itself: it keeps away
-  const afraid = !b.boss && (ctx.riderLength ?? 0) * ROAM.fearRatio > b.length;
+  const afraid = !b.boss && ((ctx.riderLength ?? 0) * ROAM.fearRatio > b.length || !!ctx.riderFear);
   if (quiet) b.mood = 'wander';
   else if (b.mood === 'wander' && dist < sight) {
     b.mood = temper === 'aggressive' && !afraid ? 'chase' : temper === 'shy' || afraid ? 'flee' : 'wander';

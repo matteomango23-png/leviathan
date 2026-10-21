@@ -2,6 +2,9 @@
 // the speedboat's headlight on its bow, or a diving U-Boat's from its bow, its cone growing as it goes down (owner,
 // 9 ottobre: it snapped). No lamp sitting on the ship afloat or during the opening; shorter in murky water.
 import { DELTA } from '../data/worldLayout';
+import { RIDE_TALENTS } from '../data/beasts';
+import { activeBeast } from './beastState';
+import { talentOf } from './beasts/mountTraits';
 import { boatLength } from './boat';
 import { diverModifiers } from './economy/gear';
 import type { GameState } from './newGame';
@@ -25,6 +28,10 @@ export function lampOf(
       : (rider ?? g.diver);
   const mods = diverModifiers(g.gear);
   const off = storyHoldsDiver(g) || (g.ship.aboard && dive <= 0);
-  const length = (g.ship.aboard ? 1.6 * dive : mods.coneMult) * (1 - (1 - DELTA.murk.lampMult) * murk);
+  // riding an Abissale, its eyes for the dark: your light reaches much farther (beasts/mountTraits.ts)
+  const ridden = g.beasts.riding ? activeBeast(g) : undefined;
+  const abyss = ridden && talentOf(ridden.form) === 'abissale' ? RIDE_TALENTS.abyssLampMult : 1;
+  const length =
+    (g.ship.aboard ? 1.6 * dive : mods.coneMult * abyss) * (1 - (1 - DELTA.murk.lampMult) * murk);
   return { x: at.x, y: at.y, lengthMult: off ? 0 : length, widthMult: mods.coneWidthMult };
 }

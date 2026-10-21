@@ -27,7 +27,7 @@ import type { BattlePlace } from '../data/battle';
 
 interface BattleOutcome {
   wildId: number;
-  over: 'won' | 'lost' | 'caught' | 'fled';
+  over: 'won' | 'lost' | 'caught' | 'fled' | 'escaped';
   /** Health of your team beasts after the battle. */
   team: { uid: string; hp: number; ppUsed?: number[]; status?: StatusId | null; sleepTurns?: number }[];
   /** The beast that was fighting at the end (it gets all the experience). */
@@ -132,6 +132,8 @@ export interface BattleSetup {
   state: BattleState;
   wildId: number;
   first: 'you' | 'foe' | 'normal';
+  /** Frozen with fear of the legendary predator you ride: it loses its first turn (beasts/mountTraits.ts). */
+  frozen: boolean;
   /** Named beasts: no fleeing, like a trainer battle. */
   noFlee: boolean;
   /** Its title, if it has one (a named beast). */
@@ -157,10 +159,12 @@ export function battleSetup(g: BackpackWorld): BattleSetup | null {
       })
     : [];
   const state = createBattle(team, makeFighter({ ...w.form }, w.level), reserve);
+  state.foeFleeTries = req.fear?.fleeTries ?? 0; // afraid of the superpredator you ride (beasts/mountTraits.ts)
   return {
     state,
     wildId: w.id,
     first: req.first,
+    frozen: !!req.fear?.frozen,
     noFlee: !!w.boss,
     title: w.boss,
     place: battlePlace(speciesOf(w.form).region),

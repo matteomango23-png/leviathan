@@ -1,22 +1,24 @@
 // The beast you ride, how it swims and how tired it is (rideMotion.ts, stamina.ts): its profile from its length and
 // speed, whether it can dash now, and each step its stamina spent by the dash and the faster pace, rested otherwise
 // (every beast of the team rests, ridden or not).
-import { TEAM_RULES } from '../data/beasts';
-import { speciesById, swimSpeedOf } from '../data/species';
-import { activeBeast, mountSpeed, type BeastWorld } from './beastPlay';
-import { formLengthM, formName } from './beasts/forms';
+import { activeBeast, type BeastWorld } from './beastPlay';
+import { formName } from './beasts/forms';
+import { mountDepthM, profileOf } from './beasts/mountTraits';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
-import { rideProfile, type RideProfile } from './rideMotion';
+import type { RideProfile } from './rideMotion';
 import { rest, spendDash, spendSprint, staminaOf } from './stamina';
 
 /** How the beast you ride swims (null: not riding). */
 export function mountProfile(g: BeastWorld): RideProfile | null {
   const b = activeBeast(g);
-  const speed = mountSpeed(g);
-  if (!b || speed === undefined) return null;
-  const shark = swimSpeedOf(speciesById('squalo_bianco')!) * TEAM_RULES.rideSpeedMult;
-  return rideProfile(formLengthM(b.form, b.level), speed / shark);
+  return b && g.beasts.riding ? profileOf(b.form, b.level) : null;
+}
+
+/** How deep the beast you ride takes you (metres; 0: not riding). */
+export function rideDepthM(g: BeastWorld): number {
+  const b = activeBeast(g);
+  return b && g.beasts.riding ? mountDepthM(b.form, b.level) : 0;
 }
 
 /** What the diver's step needs about the beast you ride (undefined: not riding). */

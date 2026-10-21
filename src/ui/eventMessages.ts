@@ -58,6 +58,11 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         `La tua squadra è tutta KO: perdi i sensi. Ti risvegli ${e.place} con le bestie curate${e.teethLost ? `. Hai perso ${e.teethLost} denti` : ''}.`,
         5,
       ];
+    case 'mountStunned':
+      return [
+        e.count > 1 ? 'La scarica stordisce le bestie vicine!' : 'La scarica stordisce la bestia vicina!',
+        2,
+      ];
     case 'mountWorn':
       return [`${e.name} non ce la fa più: va piano finché non si riprende.`, 3.5];
     case 'birdEaten':
@@ -153,7 +158,7 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         : [BONE_TEXT.hint, 5];
     }
     case 'bonesBroken':
-      return ['Le ossa antiche cedono!', 1.5];
+      return [e.ice ? 'Il ghiaccio va in pezzi!' : 'Le ossa antiche cedono!', 1.5];
     case 'gateOpened':
       return null; // its storyNote says it
     case 'relicFound':

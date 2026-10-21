@@ -43,7 +43,7 @@ Esempi (indicativi):
 | **Abissale** (capodoglio, plesiosauro) | **Occhi del buio:** la luce intorno a te si allarga molto: vedi più lontano in profondità. |
 
 ### Superpredatori: la paura (risposta del proprietario, 21 ottobre)
-- **Chi fa paura:** un **superpredatore**, leggendario o no (le cavalcature Predatore di rarità 4 e 5: squalo bianco, Zannarossa, megalodonte, Livyatan… e l'orca), quando ha **almeno 30 livelli in più** della bestia selvatica.
+- **Chi fa paura:** un **superpredatore**, leggendario o no (le cavalcature Predatore di rarità 3 o più: squalo bianco, Zannarossa, megalodonte, Livyatan… e l'orca), quando ha **almeno 30 livelli in più** della bestia selvatica.
 - **In acqua:** la bestia selvatica gli sta lontana; non ti viene incontro.
 - **In battaglia:** la bestia selvatica cerca di **fuggire**, **una o al massimo due volte**. Se ci riesce la battaglia finisce, ma non la catturi.
 - **Paralizzata dalla paura per un turno:** solo se la tua cavalcatura è un **predatore leggendario** con **almeno 10 livelli in più**.

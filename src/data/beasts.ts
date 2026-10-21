@@ -400,6 +400,49 @@ export const FEEDING = {
   gulpFrom: 3, // this many fish in one bite: the mouth opens wide and a cloud of scales and bubbles bursts out
 };
 
+/** Filter feeders: a mouth `filterReachMult` × wider when they eat a school (owner, 21 ottobre: "quante sardine mangia"). */
+export const FILTER_FEEDERS: readonly string[] = ['squalo_balena', 'squalo_elefante', 'megattera', 'manta'];
+
+/**
+ * What sets one mount apart from another (docs/PROPOSTA-RUOLI.md, owner 21 ottobre 2026). How deep it takes you
+ * (`depthM` by its type, × up to `giantDepthMult` for a giant: rideMotion size 1); its talent in the sea by its type;
+ * the superpredators' fear: a superpredator (a Predatore of `apexRarity` stars or more, or one of `apexExtra`) with
+ * `fearLevels` levels or more over a wild beast keeps it away and makes it try to flee `fleeTries` times in battle
+ * (each `fleeChance`); a legendary one with `frozenLevels` more freezes it with fear for its first turn. The Tempesta's
+ * dash stuns wild beasts smaller than `stunSizeShare` of it within `stunReachMult` × its length for `stunSeconds`;
+ * the Abissale's light is `abyssLampMult` × longer. The bars on the sheet go 1 … 5 between the `bars` ranges. Tuning.
+ */
+export const RIDE_TALENTS = {
+  depthM: { abissale: 900, glaciale: 450, corazzato: 400, predatore: 250, tempesta: 200 } as Record<string, number>,
+  giantDepthMult: 1.5,
+  filterReachMult: 1.6,
+  apexRarity: 3, // the white shark (3 stars), Zannarossa, the megalodon, Livyatan; with apexExtra the orca
+  apexExtra: ['orca'] as readonly string[],
+  fearLevels: 30,
+  frozenLevels: 10,
+  fleeTries: [1, 2] as [number, number],
+  fleeChance: 0.5,
+  stunReachMult: 1.5,
+  stunSizeShare: 0.6,
+  stunSeconds: 6,
+  abyssLampMult: 1.6,
+  bars: {
+    speed: [0.6, 1.2] as [number, number], // its riding speed over the white shark's
+    stamina: [3, 9] as [number, number], // dashes before it is worn out
+    bite: [6, 36] as [number, number], // units its mouth reaches (log scale)
+    depth: [200, 1350] as [number, number], // metres
+  },
+};
+
+/** Each type's talent when ridden, as the sheet tells it (RIDE_TALENTS). */
+export const RIDE_TALENT_TEXT: Record<string, { name: string; text: string }> = {
+  predatore: { name: 'Assalto', text: 'Se tocchi una bestia mentre scatti, perde il primo turno.' },
+  corazzato: { name: 'Ariete', text: 'Sfonda sempre le ossa antiche.' },
+  tempesta: { name: 'Scarica', text: 'Quando scatta, stordisce le bestie più piccole vicine.' },
+  glaciale: { name: 'Rompighiaccio', text: 'Rompe il ghiaccio degli iceberg.' },
+  abissale: { name: 'Occhi del buio', text: 'La tua luce arriva molto più lontano.' },
+};
+
 /** A beast's body in the water (hits, collisions). */
 export const BEAST_BODY = {
   headRadiusFrac: 0.13, // around the head, × body length

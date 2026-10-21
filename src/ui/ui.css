@@ -1800,3 +1800,39 @@ img.albino-art {
   font-size: 12px;
   color: var(--muted);
 }
+
+/* a mount's four bars and its talent, on its sheet (ui/sheetPages.ts) */
+.ride-bars {
+  display: grid;
+  gap: 3px;
+  margin-top: 6px;
+}
+.ride-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.ride-bar-label {
+  min-width: 78px;
+  color: var(--muted);
+}
+.ride-pips {
+  display: flex;
+  gap: 3px;
+}
+.ride-pips span {
+  width: 14px;
+  height: 7px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.ride-pips span.on {
+  background: var(--lamp);
+  box-shadow: 0 0 4px var(--lamp);
+}
+.ride-talent {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.35;
+}

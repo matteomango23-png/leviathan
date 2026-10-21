@@ -63,7 +63,10 @@ export interface BattleState {
   active: number;
   foe: Fighter;
   fleeTries: number;
-  over: null | 'won' | 'lost' | 'caught' | 'fled';
+  /** Tries left for the wild beast to flee in fear of the superpredator you ride (beasts/mountTraits.ts). */
+  foeFleeTries: number;
+  /** 'escaped': the wild beast ran away in fear. */
+  over: null | 'won' | 'lost' | 'caught' | 'fled' | 'escaped';
   /** The wild beast's move for this round (chosen at the start of the round). */
   foeMove: number;
   /** Its pack waiting to come in, one after the other (block 5b), and the ones already beaten. */
@@ -78,7 +81,7 @@ export function createBattle(team: Fighter[], foe: Fighter, reserve: Fighter[] =
     0,
     team.findIndex((f) => f.hp > 0),
   );
-  return { team, active, foe, fleeTries: 0, over: null, foeMove: 0, reserve, defeated: [] };
+  return { team, active, foe, fleeTries: 0, foeFleeTries: 0, over: null, foeMove: 0, reserve, defeated: [] };
 }
 
 /** The wild beast's choice: its best move with PP against you, sometimes a random one. */

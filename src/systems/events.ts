@@ -45,6 +45,7 @@ export type GameEvent =
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRecovered'; toShip: boolean }
   | { type: 'mountWorn'; name: string }
+  | { type: 'mountStunned'; count: number }
   | { type: 'subRepaired'; cost: number }
   | { type: 'engineStarted'; vehicle?: 'boat' }
   | { type: 'harbourApproach' }
@@ -157,7 +158,7 @@ export type GameEvent =
   | { type: 'evolved'; uid: string; from: string; fromId: string } // a starter became its next stage
   | { type: 'finalForm'; uid: string }
   | { type: 'beastFed'; uid: string; food: number }
-  | { type: 'bonesBroken'; tiles: number[] }
+  | { type: 'bonesBroken'; tiles: number[]; ice?: boolean }
   // the sunken temples (tappa 14)
   | { type: 'gateOpened'; tiles: number[] }
   | { type: 'relicFound'; name: string; text: string }
