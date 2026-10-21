@@ -54,9 +54,11 @@ describe('diver', () => {
     const g = createGame(map, null, 1);
     const events = stepGame(g, { ...emptyInput(), moveX: 1, dash: true }, 1 / 60);
     expect(events.some((e) => e.type === 'dash')).toBe(true);
-    expect(Math.hypot(g.diver.vx, g.diver.vy)).toBeGreaterThan(DIVER.maxSpeed);
     const again = stepGame(g, { ...emptyInput(), moveX: 1, dash: true }, 1 / 60);
     expect(again.some((e) => e.type === 'dash')).toBe(false);
+    // its push builds up (lot AH, 21 ottobre): a moment later he is past his pace
+    for (let i = 0; i < 15; i++) stepGame(g, { ...emptyInput(), moveX: 1 }, 1 / 60);
+    expect(Math.hypot(g.diver.vx, g.diver.vy)).toBeGreaterThan(DIVER.maxSpeed);
   });
 
   it('loses oxygen underwater, refills at the surface', () => {

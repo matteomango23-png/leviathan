@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.96.0 — Scatto del sub con resistenza, freccia verso la nave (21 ottobre 2026)
+
+- **Scatto a nuoto:**
+  - la spinta cresce in circa un terzo di secondo e alla fine torna piano all'andatura normale, senza strappi;
+  - c'è una barra "Resistenza" come per le cavalcature: ogni scatto ne consuma un quarto, si ricarica nuotando;
+  - se si svuota resti senza fiato e non scatti finché non è di nuovo piena;
+  - la barra si vede solo quando non è piena.
+- **Freccia verso la nave:** quando sei in acqua (a nuoto o in groppa) e la nave non è sullo schermo, sul bordo compare una freccia dorata che punta verso di lei, senza metri né profondità. Senza nave punta al tuo porto.
+
 ## v0.95.0 — Evoluzioni nelle schede (21 ottobre 2026)
 
 - **Il pallino nero di Folgore:** una bestia della tua squadra ora conosce le forme da cui è cresciuta. Con Folgore vedi Scintilla e Saetta anche se non le hai mai incontrate in mare. Vale per tutte le bestie.

@@ -46,6 +46,7 @@ export type GameEvent =
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRecovered'; toShip: boolean }
   | { type: 'mountWorn'; name: string }
+  | { type: 'diverWorn' }
   | { type: 'mountStunned'; count: number }
   /** A Glaciale of the pack sent out its echo: the wild beasts it found near you (systems/pack.ts). */
   | { type: 'packEcho'; x: number; y: number; found: { x: number; y: number; r: number }[] }

@@ -63,6 +63,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         e.count > 1 ? 'La scarica stordisce le bestie vicine!' : 'La scarica stordisce la bestia vicina!',
         2,
       ];
+    case 'diverWorn':
+      return ['Sei senza fiato: niente scatti finché non riprendi le forze.', 3];
     case 'mountWorn':
       return [`${e.name} non ce la fa più: va piano finché non si riprende.`, 3.5];
     case 'birdEaten':

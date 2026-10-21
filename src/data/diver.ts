@@ -16,7 +16,23 @@ export const DIVER = {
   invulnerableAfterHit: 1.2,
   invulnerableAfterRespawn: 1.5,
   respawnDelay: 2,
-  dash: { speed: 105, duration: 0.25, cooldown: 0.8, drag: 0.6 }, // tappa 10: was 150, slowed with the swim
+  /**
+   * His dash (owner, 21 ottobre 2026: "più graduale, un po' limitato… la barra stamina"): for `duration` seconds he
+   * pushes along his aim at `accel` (u/s²) up to `speed`, then eases back to his pace at `settle` per second.
+   * Each dash costs one of `dashes` of his stamina, refilled in `regenSeconds`; emptied, no dash until it is full
+   * again, `exhaustedSeconds` later (systems/diverStamina.ts). Tuning.
+   */
+  dash: {
+    speed: 100,
+    accel: 260,
+    duration: 0.45,
+    cooldown: 0.9,
+    drag: 0.6,
+    settle: 2.5,
+    dashes: 4,
+    regenSeconds: 14,
+    exhaustedSeconds: 22,
+  },
   /**
    * Sprinting costs air (owner, 4 ottobre: the dash was spammed): each dash, and every second of holding the sprint
    * while riding. Riding a whale it is the whale's air. Tuning.
@@ -233,3 +249,10 @@ export const SLOTS = {
   storageBytes: 5_000_000,
   warnAt: 0.8,
 };
+
+/**
+ * The arrow to your ship (owner, 21 ottobre 2026: "un indicatore senza metri o profondità… la direzione per ritrovare
+ * la barca"): shown when the ship (or your harbour) is off the screen, on the screen's edge `edge` (share of its
+ * size) in from it. Tuning.
+ */
+export const SHIP_POINTER = { edge: 0.08 };

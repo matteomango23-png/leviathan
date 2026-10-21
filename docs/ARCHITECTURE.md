@@ -220,6 +220,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `views/battle/beastArt.ts`, `battleAssets.ts` | Quale immagine usa ogni bestia e cosa si carica prima della battaglia. |
 | `data/bestiaryOrder.ts` | L'ordine del bestiario: famiglie, e in ognuna dal più piccolo e comune al più raro. |
 | `data/assets.ts` | Indirizzi delle immagini con la loro impronta, così il telefono non mostra copie vecchie. |
+| `systems/diverStamina.ts`, `systems/shipPointer.ts` | La resistenza dello scatto del sub a nuoto; la freccia sul bordo dello schermo verso la nave (o il porto). |
 | `ui/orientation.ts`, `ui/splash.ts` | La misura del gioco (la più grande che il telefono riporta) e la pagina girata quando il telefono è in verticale; la schermata iniziale "Tocca per entrare", che accende i suoni. |
 | `ui/typeWheel.ts` | La ruota dei tipi nel bestiario: chi batte chi, con una frase per ogni vittoria. |
 | `ui/battleUi.ts`, `ui/battleInfoBox.ts`, `ui/battleResultText.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri delle bestie (`battleInfoBox.ts`), messaggi, comandi e mosse nello stile dei Pokémon recenti, i testi di fine battaglia; icone dei comandi e dei tipi; il carattere Baloo 2. |

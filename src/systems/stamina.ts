@@ -36,8 +36,9 @@ export const spendDash = (s: Stamina, p: RideProfile): boolean => spend(s, p.das
 export const spendSprint = (s: Stamina, p: RideProfile, dt: number): boolean =>
   spend(s, p.dashCost * S.sprintDashesPerSec * dt);
 
-/** Rest: worn out it refills in exhaustedSeconds and is fine again only once full; else in regenSeconds. */
-export function rest(s: Stamina, dt: number): void {
-  s.value = Math.min(1, s.value + dt / (s.worn ? S.exhaustedSeconds : S.regenSeconds));
+/** Rest: worn out it refills in exhaustedSeconds and is fine again only once full; else in regenSeconds (the diver
+ *  has his own: diverStamina.ts). */
+export function rest(s: Stamina, dt: number, regen = S.regenSeconds, exhausted = S.exhaustedSeconds): void {
+  s.value = Math.min(1, s.value + dt / (s.worn ? exhausted : regen));
   if (s.worn && s.value >= 1) s.worn = false;
 }
