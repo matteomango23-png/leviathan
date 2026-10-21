@@ -11,6 +11,8 @@ import { UIScene } from './scenes/UIScene';
 import { WorldScene } from './scenes/WorldScene';
 import { registerOffline } from './pwa';
 import { loadGameFont } from './ui/fonts';
+import { gameSize, isTurned, safeSides } from './ui/orientation';
+import { initSplash } from './ui/splash';
 
 const dpr = (): number => Math.min(CAMERA.maxDpr, window.devicePixelRatio || 1);
 // The page can start with no size (e.g. opened in the background): fall back, then resize when shown.
@@ -25,22 +27,30 @@ const standalone = (): boolean =>
   window.matchMedia?.('(display-mode: standalone)').matches === true;
 
 /**
- * The game's size in CSS pixels. Opened from the Home screen already in landscape, iOS can report (and lay out) a
- * page shorter than the screen and never correct it (owner, 11 and 19 ottobre: a band at the bottom, everything
- * squashed): there the whole screen is used, measured from `screen` in the window's orientation.
+ * The game's size in CSS pixels (ui/orientation.ts): the largest the phone reports, the whole screen from the Home
+ * screen, turned a quarter round when the phone is held upright. The page, the game and the controls take it
+ * (style.css: --app-w, --app-h, html.turned), and each side's safe area follows the turn.
  */
 function screenCss(): { w: number; h: number } {
-  let w = window.innerWidth || 1280;
-  let h = window.innerHeight || 720;
-  const sw = window.screen?.width ?? 0;
-  const sh = window.screen?.height ?? 0;
-  if (standalone() && sw > 0 && sh > 0) {
-    const landscape = w > h;
-    w = Math.max(w, landscape ? Math.max(sw, sh) : Math.min(sw, sh));
-    h = Math.max(h, landscape ? Math.min(sw, sh) : Math.max(sw, sh));
-  }
-  // the page, the game and the controls take that height too (style.css: --app-h)
-  document.documentElement.style.setProperty('--app-h', `${h}px`);
+  const v = window.visualViewport;
+  const d = document.documentElement;
+  const m = {
+    inner: { w: window.innerWidth, h: window.innerHeight },
+    visual: v ? { w: v.width, h: v.height } : undefined,
+    client: { w: d.clientWidth, h: d.clientHeight },
+    screen: window.screen ? { w: window.screen.width, h: window.screen.height } : undefined,
+    standalone: standalone(),
+    touch: window.matchMedia?.('(pointer: coarse)').matches === true,
+  };
+  const turned = isTurned(m);
+  const { w, h } = gameSize(m);
+  d.classList.toggle('turned', turned);
+  d.style.setProperty('--app-w', `${w}px`);
+  d.style.setProperty('--app-h', `${h}px`);
+  const sides = safeSides(turned);
+  for (const [k, side] of Object.entries(sides))
+    d.style.setProperty(`--safe-${k}`, `env(safe-area-inset-${side}, 0px)`);
+  window.scrollTo(0, 0); // iOS can leave the page moved by a few pixels
   return { w, h };
 }
 
@@ -76,11 +86,19 @@ window.setInterval(() => {
   const s = size();
   if (Math.abs(s.w - game.scale.width) > 2 || Math.abs(s.h - game.scale.height) > 2) onResize();
 }, 1000);
-window.addEventListener('orientationchange', onResize);
+// iOS updates its sizes late after a turn: once more a little later, and again
+const settle = (): void => {
+  onResize();
+  window.setTimeout(onResize, 300);
+  window.setTimeout(onResize, 900);
+};
+window.addEventListener('orientationchange', settle);
+window.addEventListener('leviatano-entered', settle); // the first tap on the opening screen (ui/splash.ts)
 document.addEventListener('visibilitychange', onResize);
 game.events.once('ready', onResize);
 
 registerOffline();
+initSplash();
 
 // Development only: lets the browser console inspect the running game.
 if (import.meta.env.DEV) Object.assign(window, { __leviatano: game });

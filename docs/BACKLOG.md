@@ -151,6 +151,15 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - ✅ v0.92.0 **AD-3 branco:** cavalcatura più due compagni, caccia dei pesci in vista, i piccoli girano al largo, poteri per tipo spiegati sulla scheda.
 - **AD-4 poteri speciali:** polpo, lontra, beluga, squalo martello, ossigeno.
 
+## Note del 21 ottobre 2026 (sera), in lotti (ordine scelto dal proprietario)
+
+- AE schermo e musica ✅ v0.93.0 (schermata iniziale, verticale girato, barra nera, musica del menu).
+- **Salti e incastri:** salto sulla nave che ributta in acqua di colpo; blocco su iceberg e isolette; bestie grandi incastrate con la pinna negli iceberg; sardine dentro gli iceberg.
+- **Schede:** pallino vuoto della seconda evoluzione di Folgore (controllare tutte); evoluzioni non sbloccate cliccabili con l'immagine sfocata.
+- **Sub:** scatto graduale e barra di resistenza anche senza cavalcatura; freccia che indica la nave.
+- **Bagliori:** rune di Folgore e Saetta che pulsano come una scossa; occhi gialli o verdi che brillano fissi.
+- Poi AD-4 poteri speciali.
+
 ## Blocco 1 — Nuovo inizio senza storia
 - La storia attuale (Compagnia dell'Olio Nero, Vedova Nera, capitoli 1–4) va ripensata del tutto: **in pausa** fino al blocco 10.
 - Fuori dal gioco le bestie solo della storia: Sfregiato, Re Corallo, Piovra (tolte anche dalla partita del proprietario). Il Calamaro colossale diventa una bestia normale.

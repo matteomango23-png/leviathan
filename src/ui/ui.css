@@ -228,29 +228,6 @@
   display: none;
 }
 
-/* Rotate the phone */
-.rotate {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 12px;
-  background: #02070c;
-  color: var(--lamp);
-  font-size: 18px;
-  text-align: center;
-  padding: 24px;
-  pointer-events: auto;
-}
-@media (orientation: portrait) and (pointer: coarse) {
-  .rotate {
-    display: flex;
-  }
-}
-
 /* Pause menu */
 .menu {
   position: fixed;

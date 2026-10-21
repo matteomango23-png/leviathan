@@ -6,6 +6,23 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
 }
+/* The page always fills the whole screen at its largest (owner, 21 ottobre: a black band at the bottom, again): the
+   size main.ts measures (--app-w, --app-h), and never less than the screen without its bars (lvh, lvw). */
+body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: max(var(--app-w, 100%), 100lvw);
+  height: max(var(--app-h, 100%), 100lvh);
+}
+/* Held upright the page is turned a quarter round clockwise and the game played sideways (ui/orientation.ts): the web
+   cannot lock the orientation on an iPhone. Every full-screen layer is fixed inside the turned body. */
+html.turned body {
+  width: var(--app-w);
+  height: var(--app-h);
+  transform-origin: top left;
+  transform: translateX(var(--app-h)) rotate(90deg);
+}
 body {
   font-family: -apple-system, 'Helvetica Neue', system-ui, sans-serif;
   color: #e6ede8;
@@ -39,4 +56,60 @@ body {
 .ship-page,
 .starter {
   height: var(--app-h, 100%);
+}
+
+/* The opening screen (ui/splash.ts; owner, 21 ottobre): the owner's picture when it comes (public/ui/splash.webp),
+   meanwhile the dark sea and the title; its tap starts the sound and the music of the menu. */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(ellipse at 50% 30%, #0f2a33 0%, #031015 55%, #010407 100%);
+  color: #e6ede8;
+  transition: opacity 0.6s ease;
+  touch-action: none;
+}
+#splash.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+.splash-art {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+.splash-title {
+  position: relative;
+  font-size: clamp(30px, 8vh, 64px);
+  letter-spacing: 0.35em;
+  font-weight: 300;
+  text-shadow: 0 0 24px rgba(95, 243, 214, 0.35);
+}
+.splash-tap {
+  position: relative;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  color: #9fd8d0;
+  animation: splash-breathe 2.4s ease-in-out infinite;
+}
+.splash-version {
+  position: absolute;
+  bottom: calc(10px + var(--safe-b, 0px));
+  right: calc(14px + var(--safe-r, 0px));
+  font-size: 11px;
+  color: rgba(230, 237, 232, 0.45);
+}
+@keyframes splash-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
 }

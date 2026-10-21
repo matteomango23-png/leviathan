@@ -6,6 +6,7 @@ import { loadSlot, markBroken, markPlayed, migrateLegacySaves } from '../systems
 import type { SaveData } from '../systems/save/saveData';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { TitleMenu } from '../ui/titleMenu';
+import { splashReady } from '../ui/splash';
 import { addStripFrames, loadBeastSprites } from '../views/beastView';
 import type { SceneData, Session } from './session';
 
@@ -23,7 +24,8 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     migrateLegacySaves();
-    this.session.sound.titleMusic(true); // the dark under you (it starts with the first touch on the iPhone)
+    this.session.sound.titleMusic(true); // the dark under you (it starts with the tap on the opening screen)
+    splashReady(); // the opening screen goes once tapped (ui/splash.ts)
     this.menu = new TitleMenu({
       play: (id) => this.play(id),
       gallery: () => this.openGallery(),

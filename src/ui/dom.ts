@@ -18,7 +18,8 @@ export const isTouchDevice = (): boolean => 'ontouchstart' in window || navigato
 /** The screen's bottom safe area in CSS pixels (the iPhone's home bar), read with a probe. */
 export function safeBottomPx(): number {
   const probe = el('div', '', document.body);
-  probe.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom, 0px)';
+  // the game's bottom side: the phone's bottom, or another side when the page is turned (main.ts, --safe-b)
+  probe.style.cssText = 'position:fixed;visibility:hidden;height:var(--safe-b, 0px)';
   const h = probe.getBoundingClientRect().height;
   probe.remove();
   return h;

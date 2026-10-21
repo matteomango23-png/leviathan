@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.92.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.93.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -15,6 +15,33 @@
 - **Ultima pulizia:** v0.91.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 20 ottobre; qui sotto il dettaglio del 21 ottobre.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AE, schermo e musica (21 ottobre 2026) → v0.93.0
+
+- **Schermata iniziale:**
+  - `#splash` in `index.html` (stile in `style.css`), `ui/splash.ts` (`initSplash`, `splashReady` da `TitleScene`);
+  - il tocco manda `leviatano-entered` e `main.ts` rimisura (subito, dopo 300 ms e dopo 900 ms);
+  - immagine `public/ui/splash.webp` da `art-inbox/splash.jpg` (`npm run art`, tipo "screen"), caricata solo se esiste.
+- **Perché la musica non si sentiva:** l'audio parte al primo tocco, e il primo tocco sceglieva già la partita, spegnendo la musica.
+- **Misure e verticale:**
+  - `ui/orientation.ts` (nuovo): `gameSize` prende la misura più grande fra `inner`, `visualViewport` e `clientWidth`, più lo schermo dalla Home; `isTurned`, `safeSides`;
+  - `main.ts` mette `html.turned`, `--app-w`, `--app-h` e i `--safe-*` scambiati, e fa `scrollTo(0,0)`;
+  - `style.css`: `body` fisso, almeno `100lvw`/`100lvh`; da girato `translateX(--app-h) rotate(90deg)`;
+  - `safeBottomPx` legge `--safe-b`;
+  - tolto il messaggio "Ruota il telefono".
+  - Funziona perché tutti i comandi sono elementi della pagina (Phaser non riceve tocchi).
+- **Musica:** `TITLE_MUSIC` riscritta, 16 battute in re minore a 52 bpm: voce di basso, coro, bordone, tamburo ogni 4 battute.
+- **Test:** `tests/lottoAE.test.ts`.
+- **Nel browser:**
+  - schermata iniziale → tocco → menu;
+  - emulazione verticale 375×812: pagina girata, Phaser 1624×750, il pulsante "Nuova partita" risponde nel punto giusto (`elementFromPoint`).
+- **Limiti:**
+  - la barra nera non si riproduce al computer: serve la prova sull'iPhone;
+  - il verso della rotazione è fisso (orario): tenendo il telefono dall'altra parte il gioco appare capovolto.
+
+**Da provare sull'iPhone:**
+- aprire l'app dalla Home in orizzontale, poi in verticale (e con il blocco della rotazione attivo);
+- ascoltare la musica del menu.
 
 ## Lotto AD-3, il branco (21 ottobre 2026) → v0.92.0
 

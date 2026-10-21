@@ -54,9 +54,6 @@ export class UIScene extends Phaser.Scene {
     this.compass = new Compass(this.root, this.session);
     this.subScope = new SubScope(this.root);
     if (this.session.gallery) new GalleryBar(this.root, this.session);
-    const rotate = el('div', 'rotate', document.body);
-    el('div', '', rotate, '⟳');
-    el('div', '', rotate, 'Ruota il telefono in orizzontale');
 
     this.session.on('gameEvents', this.onGameEvents, this);
     this.session.on('toast', this.onToast, this);
@@ -75,7 +72,6 @@ export class UIScene extends Phaser.Scene {
       this.helm.destroy();
       this.dialogue.destroy();
       this.root.remove();
-      rotate.remove();
     });
     // pause automatically when the app goes to the background
     const onHide = (): void => {
