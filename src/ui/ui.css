@@ -791,8 +791,24 @@
   border: 2px solid var(--lamp);
   box-shadow: 0 0 8px rgba(255, 217, 160, 0.6);
 }
+/* a form not met yet: glimpsed through the murk (21 ottobre) */
 .sheet-evo-icon.unknown img {
-  filter: brightness(0);
+  filter: blur(3px) brightness(0.45) saturate(0.5);
+  transform: scale(1.15);
+}
+.sheet-card.unknown .sheet-art > img {
+  filter: blur(14px) brightness(0.5) saturate(0.4);
+  transform: scale(1.08);
+}
+.sheet-card.unknown .sheet-rarity,
+.sheet-card.unknown .sheet-stars {
+  visibility: hidden;
+}
+.sheet-unknown-text {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
 }
 .tile-badge {
   position: absolute;

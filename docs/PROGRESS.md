@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.94.1)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.95.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,24 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅; poi AG schede, AH sub, AI bagliori, AD-4 poteri speciali.
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅; poi AH sub, AI bagliori, AD-4 poteri speciali.
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅; **prossimo AD-4 poteri speciali** (polpo, lontra, beluga, squalo martello, ossigeno).
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AG, schede (21 ottobre 2026) → v0.95.0
+
+- **Causa del pallino nero:** `knowsForm` guardava solo la squadra di adesso e gli avvistamenti. Evolvendo, le forme precedenti mai viste in mare restavano "sconosciute" (ombra nera, non toccabile).
+- **Ora:**
+  - una bestia della squadra fa conoscere tutte le forme della sua linea fino alla sua (`grewFrom` in `bestiaryEntries.ts`);
+  - `openBeastSheet(..., { unknown: true })` apre la scheda sfocata (`.sheet-card.unknown`), con "???", un testo e niente pagine;
+  - i pallini sconosciuti sono sfocati e toccabili.
+- **Test:** `tests/lottoAG.test.ts`, che controlla anche che ogni forma di ogni linea abbia la sua illustrazione.
+- **Nel browser:** con Saetta in squadra i pallini sono Scintilla (conosciuta), Saetta (accesa), Folgore (sfocata); toccando Folgore si apre la scheda sfocata "???".
+
+**Da provare sull'iPhone:** la scheda di Folgore e le evoluzioni nel bestiario.
 
 ## Pulizia dopo i lotti AD-3, AE, AF (21 ottobre 2026) → v0.94.1
 

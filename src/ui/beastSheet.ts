@@ -30,7 +30,13 @@ interface SheetExtra {
   page?: SheetPage;
   /** Which forms you know: the others are shadows among its evolution icons (none: all known). */
   known?: (form: BeastForm) => boolean;
+  /** A form you have not met yet (owner, 21 ottobre: "l'immagine blurrata che si intravede"): its painting blurred,
+   *  no name, no pages. */
+  unknown?: boolean;
 }
+
+const UNKNOWN_TEXT =
+  'Una forma che non hai ancora incontrato: falla evolvere o trovala in mare per scoprirla.';
 
 const PAGES: [SheetPage, string, (box: HTMLElement, c: PageContext) => void][] = [
   ['info', 'Info', infoPage],
@@ -62,7 +68,8 @@ export function openBeastSheet(
   const art = el('div', 'sheet-art', card);
   const img = el('img', '', art);
   setArt(img, b?.form ?? form);
-  img.alt = s.name;
+  img.alt = extra.unknown ? '' : s.name;
+  card.classList.toggle('unknown', !!extra.unknown);
   const banner = el('div', 'sheet-banner', art);
   el('span', 'sheet-stars', banner).innerHTML = ICONS.star.repeat(s.stars);
   el(
@@ -76,11 +83,15 @@ export function openBeastSheet(
 
   const info = el('div', 'sheet-info', card);
   const head = el('div', 'sheet-head', info);
-  el('h2', '', head, s.name);
+  el('h2', '', head, extra.unknown ? '???' : s.name);
   const x = el('button', 'sheet-close', head);
   x.innerHTML = ICONS.close;
   x.setAttribute('aria-label', 'Chiudi');
   x.addEventListener('click', close);
+  if (extra.unknown) {
+    el('p', 'sheet-unknown-text', info, UNKNOWN_TEXT);
+    return close;
+  }
 
   let page: SheetPage = extra.page ?? 'info';
   const tabs = el('div', 'sheet-tabs', info);
@@ -120,7 +131,8 @@ export function openBeastSheet(
 
 /**
  * Its line of evolutions, bottom right on the picture (owner, 16 ottobre: "due icone di due evoluzioni"): one round
- * icon per form, this one lit; a form you have not met yet is a shadow. Tapping one opens its sheet.
+ * icon per form, this one lit; a form you have not met yet is blurred, and its sheet too (owner, 21 ottobre: "cliccabile
+ * … con l'immagine blurrata"). Tapping one opens its sheet.
  */
 function evolutionIcons(
   art: HTMLElement,
@@ -141,11 +153,11 @@ function evolutionIcons(
     const img = el('img', '', b);
     setArt(img, f);
     img.alt = '';
-    if (!met || formKey(f) === here) return;
+    if (formKey(f) === here) return;
     b.addEventListener('click', (e) => {
       e.stopPropagation();
       close();
-      openBeastSheet(parent, f, undefined, { known });
+      openBeastSheet(parent, f, undefined, { known, unknown: !met });
     });
   });
 }
