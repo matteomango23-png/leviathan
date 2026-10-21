@@ -3,6 +3,8 @@ import { DIVER } from '../data/diver';
 import { airShown, pressureShown } from '../systems/rideAir';
 import { activeBeast } from '../systems/beastPlay';
 import { staminaOf } from '../systems/stamina';
+import { diverStamina } from '../systems/diverStamina';
+import { shipArrow } from '../systems/shipPointer';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/story';
@@ -16,13 +18,16 @@ export class Hud {
   private readonly o2Label: HTMLSpanElement;
   private readonly press: HTMLDivElement;
   private readonly pressFill: HTMLDivElement;
-  /** The stamina of the beast you ride (owner, 21 ottobre; stamina.ts): only while riding. */
+  /** The stamina of the beast you ride (owner, 21 ottobre; stamina.ts); swimming on your own, yours while not full
+   *  (diverStamina.ts). */
   private readonly stamina: HTMLDivElement;
   private readonly staminaFill: HTMLDivElement;
   private readonly info: HTMLDivElement;
   private readonly goal: HTMLDivElement;
   private readonly zone: HTMLDivElement;
   private readonly toastEl: HTMLDivElement;
+  /** The arrow to your ship on the edge of the screen (systems/shipPointer.ts). */
+  private readonly arrow: HTMLDivElement;
   private toastTimer = 0;
   private zoneTimer = 0;
   private cache = { hp: -1, max: -1, o2: -1, whale: false, press: -1, stamina: '', info: '', goal: '' };
@@ -47,6 +52,9 @@ export class Hud {
     this.goal = el('div', 'hud-goal', hud);
     this.zone = el('div', 'zone-name', root);
     this.toastEl = el('div', 'toast', root);
+    this.arrow = el('div', 'ship-arrow', root);
+    this.arrow.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12h13M11 5l8 7-8 7"/></svg>';
+    this.arrow.hidden = true;
   }
 
   toast(text: string, seconds = 2.6): void {
@@ -95,7 +103,8 @@ export class Hud {
       this.press.classList.toggle('low', press < 30);
     }
     const ridden = g.beasts.riding ? activeBeast(g) : undefined;
-    const st = ridden ? staminaOf(g.beasts.stamina, ridden.uid) : null;
+    const own = diverStamina(g);
+    const st = ridden ? staminaOf(g.beasts.stamina, ridden.uid) : own.value < 1 ? own : null;
     const stKey = st ? `${Math.round(st.value * 100)}${st.worn ? 'w' : ''}` : '';
     if (stKey !== this.cache.stamina) {
       this.cache.stamina = stKey;
@@ -116,6 +125,13 @@ export class Hud {
       this.cache.goal = goal;
       this.goal.textContent = goal;
       this.goal.classList.toggle('show', !!goal);
+    }
+    const a = shipArrow(g);
+    this.arrow.hidden = !a;
+    if (a) {
+      this.arrow.style.left = `${(a.x * 100).toFixed(2)}%`;
+      this.arrow.style.top = `${(a.y * 100).toFixed(2)}%`;
+      this.arrow.style.transform = `translate(-50%, -50%) rotate(${a.angle.toFixed(3)}rad)`;
     }
     if (this.toastTimer > 0) {
       this.toastTimer -= dt;

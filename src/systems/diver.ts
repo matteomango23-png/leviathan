@@ -156,6 +156,11 @@ const DEFAULT_RIDE = rideProfile(6, 1);
 
 /** The diver swimming on his own: thrust, the water's drag, his top speed (his dash goes beyond it a moment). */
 function swimSelf(d: DiverState, ix: number, iy: number, maxSpeed: number, line: number, dt: number): void {
+  // the dash: a push along his aim that builds up, not a jump to full speed
+  if (d.dashTime > 0) {
+    d.vx += Math.cos(d.aim) * DIVER.dash.accel * dt;
+    d.vy += Math.sin(d.aim) * DIVER.dash.accel * dt;
+  }
   d.vx += ix * DIVER.accel * dt;
   // near the surface his push up fades as he comes up to float (floatSurface.ts)
   d.vy += iy * DIVER.accel * dt * (iy < 0 ? floatPushShare(d, line) : 1);
@@ -163,12 +168,12 @@ function swimSelf(d: DiverState, ix: number, iy: number, maxSpeed: number, line:
   const drag = d.dashTime > 0 ? DIVER.dash.drag : DIVER.drag;
   d.vx -= d.vx * drag * dt;
   d.vy -= d.vy * drag * dt;
-  if (d.dashTime <= 0) {
-    const s = Math.hypot(d.vx, d.vy);
-    if (s > maxSpeed) {
-      d.vx *= maxSpeed / s;
-      d.vy *= maxSpeed / s;
-    }
+  // over his pace: during the dash up to its top speed; after it he eases back to his pace
+  const s = Math.hypot(d.vx, d.vy);
+  const cap = d.dashTime > 0 ? DIVER.dash.speed : Math.max(maxSpeed, s * (1 - DIVER.dash.settle * dt));
+  if (s > cap) {
+    d.vx *= cap / s;
+    d.vy *= cap / s;
   }
 }
 
@@ -231,9 +236,7 @@ export function stepDiver(
       startMountDash(d);
       d.dashCooldown = ride.profile.cooldown;
     } else {
-      d.vx = Math.cos(d.aim) * DIVER.dash.speed;
-      d.vy = Math.sin(d.aim) * DIVER.dash.speed;
-      d.dashTime = DIVER.dash.duration;
+      d.dashTime = DIVER.dash.duration; // swimSelf pushes him along (owner, 21 ottobre: gradual)
       d.dashCooldown = DIVER.dash.cooldown;
     }
     spendAir(d, opt.air, DIVER.dashAir); // a burst of speed costs breath

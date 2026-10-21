@@ -3,6 +3,7 @@
 import { FEEDING } from '../data/beasts';
 import { huntWithPack, shellDepthM, stepPackEcho } from './pack';
 import { rideDepthM, rideNow, stepRideStamina } from './rideStamina';
+import { diverCanDash, stepDiverStamina } from './diverStamina';
 import { stepRideTalents } from './rideTalents';
 import { stepTips } from './tips';
 import { diverCurrentMult, seaHeight } from './sea';
@@ -115,7 +116,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       // near the surface a storm's current holds you back (sea.ts)
       speedMult: mods.speedMult * diverCurrentMult(depthMetres(d.y), weatherLook(g.weather)),
       o2DrainMult: mods.o2DrainMult,
-      canDash: mods.canDash,
+      canDash: mods.canDash && diverCanDash(g),
       // riding, as deep as the beast takes you if deeper than your suit (mountTraits.ts mountDepthM)
       // and a Corazzato in the pack lets you go deeper (systems/pack.ts shellDepthM)
       maxDepthY:
@@ -129,6 +130,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
   stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
+  stepDiverStamina(g, events, dt); // and your own dash tires you (diverStamina.ts)
   stepRideTalents(g, events); // a Tempesta's dash stuns the small beasts around it (rideTalents.ts)
   // the submarine and the ship are solid: you (or the beast you ride) slide along their hulls. On a leap it bumps
   // off them, and landing on the ship slides back into the sea (21 ottobre: it went through, then snapped under the keel)
