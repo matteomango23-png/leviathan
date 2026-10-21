@@ -61,7 +61,7 @@ interface Swimmer {
   rideDashT?: number;
 }
 
-export interface RideNow {
+interface RideNow {
   /** Its top speed now (u/s): its pace, faster held, slower worn out. */
   speed: number;
   profile: RideProfile;

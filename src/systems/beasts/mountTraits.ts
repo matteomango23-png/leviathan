@@ -34,7 +34,7 @@ export function rideSpeedOf(form: BeastForm): number {
 }
 
 /** Its riding speed over the white shark's. */
-export const speedShareOf = (form: BeastForm): number =>
+const speedShareOf = (form: BeastForm): number =>
   rideSpeedOf(form) / rideSpeedOf({ speciesId: 'squalo_bianco', variant: 'comune' });
 
 /** How its swimming feels (rideMotion.ts) at this level. */
@@ -108,7 +108,7 @@ export function isApex(form: BeastForm): boolean {
 }
 
 /** A legend: legendary species, a legendary unique, or a prehistoric giant with a hunt. */
-export const isLegendary = (form: BeastForm): boolean =>
+const isLegendary = (form: BeastForm): boolean =>
   !!speciesOf(form).legendary ||
   isLegend(form.unique) ||
   LEGEND_GIANTS.some((l) => l.speciesId === form.speciesId);

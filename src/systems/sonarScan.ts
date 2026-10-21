@@ -131,7 +131,7 @@ export function stepScan(g: ScanWorld, dt: number, events: GameEvent[]): void {
  * it again (owner, 20 ottobre: a species seen and caught still "sconosciuta" on the sonar; the beasts of the open sea
  * come back the same, so the old answer stayed).
  */
-export function nameSeenEchoes(g: ScanWorld): void {
+function nameSeenEchoes(g: ScanWorld): void {
   const unknown = g.sonarScan.unknown;
   if (!unknown) return;
   for (const [key, speciesId] of Object.entries(unknown)) {
