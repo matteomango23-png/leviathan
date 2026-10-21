@@ -197,7 +197,8 @@ export function stepDiver(
   // leaping out of the water on the beast: no steering in the air (breach.ts)
   if (!mounted) d.airborne = false;
   else if (d.airborne) {
-    stepAirborne(d, line, dt, events);
+    // against rock with its whole body: never into an iceberg or an islet (21 ottobre)
+    stepAirborne(d, line, dt, events, (t) => map.moveBody(d, opt.body ?? DIVER.radius, t, false));
     return;
   }
   const maxSpeed = DIVER.maxSpeed * (opt.speedMult ?? 1);

@@ -39,6 +39,14 @@ export const ISLAND_X = (LAYOUT.island.x0 + LAYOUT.island.x1) / 2;
 /** Where the open sea begins (past the Isola delle Mangrovie). */
 export const OPEN_SEA_X = east(2460);
 
+/**
+ * Bodies against rock (owner, 21 ottobre 2026: beasts snagged by the fin under an iceberg, sardines and riders stuck
+ * in the ice). A body stopped across can slip along the rock by up to `slideSlope` × its step up or down (a slope, or
+ * the belly of an iceberg) instead of halting; one caught inside rock swims out to the nearest open water at
+ * `unstickSpeed` units/s. Tuning.
+ */
+export const COLLISION = { slideSlope: 2.5, unstickSpeed: 90 };
+
 /** Tile values stored in the map. */
 export const TILE = { water: 0, rock: 1, bone: 2, ice: 3, temple: 4, gate: 5 } as const; // temple, gate: tappa 14
 export type TileValue = (typeof TILE)[keyof typeof TILE];

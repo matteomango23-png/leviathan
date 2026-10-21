@@ -1,7 +1,7 @@
 // The tile map and everything that asks "is there rock here?".
 // Tiles are generated on a grid, but collisions and rendering use a smoothed field
 // (bilinear between tile centres), so rock looks and behaves round instead of blocky.
-import { TILE, type TileValue } from '../../data/worldLayout';
+import { COLLISION, TILE, type TileValue } from '../../data/worldLayout';
 import type { Rng } from '../math';
 
 export interface Body {
@@ -139,17 +139,35 @@ export class TileMap {
   /**
    * Moves a body one axis at a time; bounces softly off rock. Returns true if it hit something. A long body passes
    * its circles along the spine; if it is already stuck in rock (spawned or turned into it) only its middle counts,
-   * so it can swim out instead of freezing. With `surface` false nothing holds it under the surface (a ridden beast).
+   * so it can swim out instead of freezing, and stuck even by its middle it swims out to the nearest open water
+   * (21 ottobre). Stopped across, it slips along a slope or the belly of an iceberg instead of halting (a beast's fin
+   * snagged under the ice). With `surface` false nothing holds it under the surface (a ridden beast).
    */
   moveBody(e: Body, shape: number | readonly BodyCircle[], dt: number, surface = true): boolean {
     let body = shape;
     if (typeof shape !== 'number' && this.hitShape(e.x, e.y, shape))
       body = shape.reduce((m, c) => (Math.hypot(c.dx, c.dy) < Math.hypot(m.dx, m.dy) ? c : m)).r;
+    if (typeof body === 'number' && this.hitCircle(e.x, e.y, body)) {
+      this.unstick(e, body, dt);
+      return true;
+    }
     let blocked = false;
     const nx = e.x + e.vx * dt;
     if (this.hitShape(nx, e.y, body)) {
-      e.vx *= -0.25;
-      blocked = true;
+      // down first (under the ice, off the surface), up if it is on its way up
+      const lift = Math.abs(e.vx * dt) * COLLISION.slideSlope;
+      const first = e.vy < 0 ? -1 : 1;
+      const dy =
+        lift > 0.01
+          ? [first * lift, -first * lift].find((v) => !this.hitShape(nx, e.y + v, body))
+          : undefined;
+      if (dy !== undefined) {
+        e.x = nx;
+        e.y += dy;
+      } else {
+        e.vx *= -0.25;
+        blocked = true;
+      }
     } else e.x = nx;
     const ny = e.y + e.vy * dt;
     if (this.hitShape(e.x, ny, body)) {
@@ -189,20 +207,41 @@ export class TileMap {
     return { x: (x0 + x1) / 2, y: (y0 + y1) / 2 };
   }
 
-  /** The nearest point to (x, y) where a circle of radius r fits in open water (rings of growing size). */
-  nearestOpen(x: number, y: number, r: number): { x: number; y: number } {
-    if (!this.hitCircle(x, y, r)) return { x, y };
+  /**
+   * The nearest point to (x, y) where a circle of radius r fits in open water (rings of growing size). `underwater`:
+   * only under the surface, looking down and to the sides first (out of an iceberg, never up on top of it).
+   */
+  nearestOpen(x: number, y: number, r: number, underwater = false): { x: number; y: number } {
+    const fits = (px: number, py: number): boolean =>
+      !this.hitCircle(px, py, r) && (!underwater || py >= this.surfaceY + r);
+    if (fits(x, y)) return { x, y };
     const step = this.tileSize / 2;
     for (let ring = 1; ring < 60; ring++) {
       const n = ring * 8;
       for (let k = 0; k < n; k++) {
-        const a = (k / n) * Math.PI * 2 - Math.PI / 2; // upwards first: usually the way out of the floor
+        // upwards first: usually the way out of the floor; under the water downwards first, then round both ways
+        const a = underwater
+          ? Math.PI / 2 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * ((Math.PI * 2) / n)
+          : (k / n) * Math.PI * 2 - Math.PI / 2;
         const px = x + Math.cos(a) * ring * step;
         const py = y + Math.sin(a) * ring * step;
-        if (!this.hitCircle(px, py, r)) return { x: px, y: py };
+        if (fits(px, py)) return { x: px, y: py };
       }
     }
     return { x, y };
+  }
+
+  /** Stuck in rock: it swims out to the nearest open water under the surface, at COLLISION.unstickSpeed. */
+  private unstick(e: Body, r: number, dt: number): void {
+    const p = this.nearestOpen(e.x, e.y, r, true);
+    const dx = p.x - e.x;
+    const dy = p.y - e.y;
+    const d = Math.hypot(dx, dy);
+    const step = COLLISION.unstickSpeed * dt;
+    if (d <= step) Object.assign(e, { x: p.x, y: p.y });
+    else Object.assign(e, { x: e.x + (dx / d) * step, y: e.y + (dy / d) * step });
+    e.vx *= 0.5;
+    e.vy *= 0.5;
   }
 
   /** First rock surface straight below a point. */

@@ -665,6 +665,10 @@ export const RIDE_BREACH = {
    *  of its mouth (owner, 20 ottobre: "devono aprire la bocca"). */
   birdJawSeconds: 0.45,
   birdBiteReach: 2.2,
+  /** A leap that lands on something out of the water (the ship, an iceberg, an islet; owner, 21 ottobre): it hops
+   *  `landHop` units/s up and slides back the way it came at `slideSpeed` units/s until it falls in the sea. */
+  landHop: 30,
+  slideSpeed: 70,
 };
 
 /** Forms whose two profile pictures are wings up and down, not a mouth shut and open (owner, 19 ottobre: the

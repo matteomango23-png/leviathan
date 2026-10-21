@@ -154,7 +154,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 ## Note del 21 ottobre 2026 (sera), in lotti (ordine scelto dal proprietario)
 
 - AE schermo e musica ✅ v0.93.0 (schermata iniziale, verticale girato, barra nera, musica del menu).
-- **Salti e incastri:** salto sulla nave che ributta in acqua di colpo; blocco su iceberg e isolette; bestie grandi incastrate con la pinna negli iceberg; sardine dentro gli iceberg.
+- AF salti e incastri ✅ v0.94.0 (più bestiario per famiglie e 13 immagini del lotto 8).
 - **Schede:** pallino vuoto della seconda evoluzione di Folgore (controllare tutte); evoluzioni non sbloccate cliccabili con l'immagine sfocata.
 - **Sub:** scatto graduale e barra di resistenza anche senza cavalcatura; freccia che indica la nave.
 - **Bagliori:** rune di Folgore e Saetta che pulsano come una scossa; occhi gialli o verdi che brillano fissi.

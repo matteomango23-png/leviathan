@@ -2,6 +2,7 @@
 // evoluzioni come animali distinti, uno vicino all'altro"): every species, and right after it each version of it that
 // has pictures of its own (the albino, the final forms) as a beast of its own. An alpha stays a rare version, and
 // only with its own pictures. Each entry is seen or tamed by its own form. Pure logic.
+import { BESTIARY_FAMILIES } from '../../data/bestiaryOrder';
 import { GAME_SPECIES, SPECIES, type SpeciesDef } from '../../data/species';
 import { ART_KEYS } from '../../data/sprites.generated';
 import { formKey, hasAlbinoArt, hasAlfaArt, hasFinalForm, type BeastForm, type Variant } from './forms';
@@ -14,6 +15,8 @@ interface BestiaryEntry {
   kind: EntryKind;
   /** The species' number in the bestiary (an albino or a final form shares it). */
   num: number;
+  /** Its family of kin (data/bestiaryOrder.ts). */
+  family: string;
 }
 
 const ownArt = (form: BeastForm): boolean => ART_KEYS.includes(formKey(form));
@@ -24,17 +27,31 @@ function finalOf(speciesId: string, variant: Variant): BeastForm | null {
   return hasFinalForm(speciesId, variant) && ownArt(f) ? f : null;
 }
 
+/** The game's species in the bestiary's order: by family, smallest and commonest first (data/bestiaryOrder.ts); any
+ *  species not listed there goes last. */
+export function bestiaryOrder(): { s: SpeciesDef; family: string }[] {
+  const out: { s: SpeciesDef; family: string }[] = [];
+  for (const fam of BESTIARY_FAMILIES)
+    for (const id of fam.ids) {
+      const s = GAME_SPECIES.find((x) => x.id === id);
+      if (s) out.push({ s, family: fam.name });
+    }
+  for (const s of GAME_SPECIES) if (!out.some((o) => o.s === s)) out.push({ s, family: 'Altre' });
+  return out;
+}
+
 export function bestiaryEntries(): BestiaryEntry[] {
   const out: BestiaryEntry[] = [];
-  GAME_SPECIES.forEach((s, i) => {
+  bestiaryOrder().forEach(({ s, family }, i) => {
     const num = i + 1;
-    out.push({ form: { speciesId: s.id, variant: 'comune' }, kind: 'specie', num });
+    const add = (form: BeastForm, kind: EntryKind): void => void out.push({ form, kind, num, family });
+    add({ speciesId: s.id, variant: 'comune' }, 'specie');
     const finale = finalOf(s.id, 'comune');
-    if (finale) out.push({ form: finale, kind: 'evoluzione', num });
-    if (hasAlbinoArt(s.id)) out.push({ form: { speciesId: s.id, variant: 'albino' }, kind: 'albino', num });
+    if (finale) add(finale, 'evoluzione');
+    if (hasAlbinoArt(s.id)) add({ speciesId: s.id, variant: 'albino' }, 'albino');
     for (const v of ['albino', 'alfa'] as const) {
       const f = finalOf(s.id, v);
-      if (f) out.push({ form: f, kind: 'evoluzione', num });
+      if (f) add(f, 'evoluzione');
     }
   });
   return out;

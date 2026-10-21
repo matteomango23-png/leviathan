@@ -38,6 +38,7 @@ import { stepPackHunt } from './beasts/packHunt';
 import { stepLight, toggleLight } from './ship/underLight';
 import { hasMouth, stepMouth, toggleMouth } from './ship/krillMouth';
 import { stepShipRams } from './ship/shipHull';
+import { landOn } from './breach';
 import { stepPool } from './ship/shipPool';
 import { stepHarpoon } from './harpoon';
 import type { InputState } from './input';
@@ -129,16 +130,20 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   }
   stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
   stepRideTalents(g, events); // a Tempesta's dash stuns the small beasts around it (rideTalents.ts)
-  // the submarine is solid: you (or the beast you ride) slide along its hull
-  // (not on a leap out of the water: it flies over or past the ship and falls back in the sea, 19 ottobre)
-  if (!inVehicle(g) && !held && !d.airborne)
-    pushOutOfVehicles(
+  // the submarine and the ship are solid: you (or the beast you ride) slide along their hulls. On a leap it bumps
+  // off them, and landing on the ship slides back into the sea (21 ottobre: it went through, then snapped under the keel)
+  if (!inVehicle(g) && !held) {
+    const falling = d.vy > 0;
+    const hit = pushOutOfVehicles(
       g,
       d,
       g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
       false,
-      g.beasts.riding,
+      // out under the keel only a beast already down in the water: one falling back from a leap is pushed aside
+      g.beasts.riding && !d.airborne && d.y > g.map.surfaceY + DIVER.lengthUnits * 0.5,
     );
+    if (hit && d.airborne && falling && d.vy <= 0.5) landOn(d, -d.face);
+  }
   // after losing your senses you wake up on your boat
   if (events.some((e) => e.type === 'respawned')) wakeOnShip(g, events);
   stepVents(d, dt, g.timers, events);

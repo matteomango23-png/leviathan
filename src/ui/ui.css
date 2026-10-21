@@ -662,6 +662,18 @@
   grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
   gap: 8px;
 }
+/* the name of a family of kin over its beasts (21 ottobre) */
+.bestiary-family {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(232, 197, 122, 0.25);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lamp);
+  opacity: 0.85;
+}
 .bestiary-grid.small {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }

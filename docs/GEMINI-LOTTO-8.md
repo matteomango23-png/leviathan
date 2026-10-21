@@ -1,5 +1,7 @@
 # Immagini da Gemini, lotto 8: da rifare (20 ottobre 2026)
 
+**21 ottobre:** arrivate e montate tutte tranne la 7 (squalo balena) e la 8 (coccodrilli).
+
 Sono le immagini che, provando tutte le bestie, non ti convincevano: scontorni rovinati, aloni neri, inquadrature sbagliate.
 
 **Regole:**
