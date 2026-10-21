@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.91.1 — Ordine nei documenti (21 ottobre 2026)
+
+- Nessun cambiamento nel gioco: pulizia dopo cinque lotti. Il codice era già in ordine; aggiornati e archiviati gli appunti di lavoro.
+
 ## v0.91.0 — Ogni cavalcatura ha il suo perché (21 ottobre 2026)
 
 - **Scheda delle cavalcature:** quattro barre da 1 a 5 (velocità, resistenza, boccone, profondità) e il talento in mare del suo tipo.

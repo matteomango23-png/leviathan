@@ -48,6 +48,12 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 
 - **Squadra:** 5 bestie, una in acqua alla volta; riserva al recinto senza limite.
 - **Ruoli** (rivisti l'8 ottobre 2026, vedi "Decisioni di design"): cavalcatura (mezzo per esplorare: velocità, profondità, passaggi), compagno (combatte con te), supporto (un potere in mare ciascuna: luce, forzieri, riparo, eco, raccolta). Nel mare ogni bestia si chiama dalla barra: le cavalcature ti portano in sella, le altre ti seguono e mangiano i pesci. Le seconde forme delle linee iniziali si cavalcano già, più lente.
+  - **Cavalcature (21 ottobre 2026, `docs/PROPOSTA-RUOLI.md`):**
+    - quattro valori da 1 a 5 calcolati dai dati: velocità, resistenza, boccone, profondità;
+    - un talento in mare dal tipo: Assalto, Ariete, Scarica, Rompighiaccio, Occhi del buio;
+    - in groppa accelerazione, scatto, resistenza e salto dipendono dalla bestia.
+  - **Paura dei superpredatori** (squalo bianco, Zannarossa, megalodonte, Livyatan, orca): con almeno 30 livelli in più la bestia selvatica sta lontana e in battaglia prova a fuggire 1-2 volte; un predatore leggendario con almeno 10 livelli in più la paralizza per il primo turno.
+  - **In arrivo (AD-3, AD-4):** cavalcatura più due compagni insieme, che cacciano i pesci in vista; un potere per tipo (Caccia, Guscio contro la pressione, Scarica, Eco, Lanterna) più alcuni poteri speciali.
 - **Tipi:** cinque in cerchio, ognuno batte il successivo: Predatore → Abissale → Glaciale → Tempesta → Corazzato → Predatore. Come Pokémon (dal 3 ottobre 2026): ogni tipo batte il successivo e il terzo dopo nel cerchio, danno ×2 contro chi batti e ×½ contro chi ti batte. Anche mosse, alcune armi e Guardiani hanno un tipo.
   - **La regola per dare un tipo a una bestia** (21 ottobre 2026, `docs/PROPOSTA-RUOLI.md`):
     - **Predatore:** cacciatori a denti e velocità (squali, coccodrilli, barracuda, tonni);

@@ -1074,3 +1074,15 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - accelerazione, scivolata, spinta e durata dello scatto, ricarica, salto e resistenza si ricavano dalla lunghezza e dalla velocità della bestia, interpolando fra una bestia piccola e una gigante (`RIDE_MOTION`), invece di una tabella per specie;
   - la resistenza vive solo durante la partita, per bestia: non va nel salvataggio.
 - **Motivo:** il proprietario vuole che ogni animale si muova a modo suo ("alcuni scattano subito per pochi metri, i grandi accelerano più lentamente ma per più distanza") e che lo scatto non si possa più usare a raffica. Ricavarlo dai dati vale per tutte le bestie, anche future, con pochi numeri da tarare. Una resistenza non salvata evita di toccare i salvataggi: dopo un caricamento le bestie sono riposate, che è quello che ci si aspetta.
+
+## 21 ottobre 2026 — Cavalcature: barre, talenti per tipo e paura dai dati (v0.91.0)
+
+- **Decisione:**
+  - le quattro barre, la profondità in groppa e il boccone sono calcolati dai dati della bestia (lunghezza, velocità, tipo, stelle);
+  - il talento in mare è uno per tipo;
+  - superpredatore = Predatore con 3 stelle o più, più l'orca; paura con 30 livelli di scarto, paralisi con 10 se è un predatore leggendario;
+  - la fuga per paura è un nuovo esito della battaglia (`'escaped'`).
+- **Motivo:**
+  - il proprietario vuole che scegliere una cavalcatura abbia senso, e ha fissato lui le soglie della paura;
+  - un talento per tipo si impara insieme ai tipi e vale per le bestie future;
+  - la soglia di 3 stelle tiene dentro lo squalo bianco, che lui considera un superpredatore, e fuori coccodrillo marino, capopiatto e leuca.
