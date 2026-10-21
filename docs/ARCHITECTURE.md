@@ -217,6 +217,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `views/battle/pose.ts`, `tween.ts` | La posa di una bestia (spostamenti, luce, buio, aura) e le animazioni come promesse. |
 | `views/battle/beastArt.ts`, `battleAssets.ts` | Quale immagine usa ogni bestia e cosa si carica prima della battaglia. |
 | `data/assets.ts` | Indirizzi delle immagini con la loro impronta, così il telefono non mostra copie vecchie. |
+| `ui/typeWheel.ts` | La ruota dei tipi nel bestiario: chi batte chi, con una frase per ogni vittoria. |
 | `ui/battleUi.ts`, `ui/battleInfoBox.ts`, `ui/battleResultText.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri delle bestie (`battleInfoBox.ts`), messaggi, comandi e mosse nello stile dei Pokémon recenti, i testi di fine battaglia; icone dei comandi e dei tipi; il carattere Baloo 2. |
 
 ## Come si disegna il mare

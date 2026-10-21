@@ -142,7 +142,7 @@ export const SPECIES: SpeciesDef[] = [
     artPrompt: 'a giant spider crab with long spindly legs, orange shell with white spots and small spines' },
   { id: 'tonno', name: 'Tonno rosso', type: 'predatore', role: 'compagno', region: 'baia', wildLevel: [4, 7], rarity: 1, size: 'media', lengthM: 2.5, trait: 'Velocissimo, caccia in branco',
     artPrompt: 'a muscular bluefin tuna, steel-blue back and silver flanks, sharp finlets' },
-  { id: 'delfino', name: 'Delfino', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2.5, trait: 'Intelligente e veloce, stordisce col sonar',
+  { id: 'delfino', name: 'Delfino', type: 'glaciale', role: 'compagno', region: 'baia', wildLevel: [5, 8], rarity: 2, size: 'media', lengthM: 2.5, trait: 'Intelligente e veloce, stordisce col sonar',
     artPrompt: 'a sleek dark bottlenose dolphin with scarred skin, curious eyes' },
   { id: 'pesce_luna', name: 'Pesce luna', type: 'corazzato', role: 'supporto', region: 'barriera', wildLevel: [7, 10], rarity: 2, size: 'grande', lengthM: 3, trait: 'Enorme e lento, pelle dura come cuoio',
     artPrompt: 'a giant ocean sunfish, round flat body, rough grey skin covered in parasites, tall fins' },

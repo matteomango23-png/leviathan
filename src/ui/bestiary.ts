@@ -9,6 +9,7 @@ import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
 import { setArt } from './art';
+import { openTypeWheel } from './typeWheel';
 import { LEGEND_GIANTS, LEGENDS } from '../systems/beasts/legends';
 import { rareVersions } from '../systems/beasts/rareVersions';
 import {
@@ -67,6 +68,8 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     t.dataset.f = f;
     t.addEventListener('click', () => applyFilter(f));
   }
+  // the wheel of the types: who beats whom, and why (owner, 21 ottobre)
+  el('button', 'sheet-tab', filters, 'Tipi').addEventListener('click', () => openTypeWheel(root));
   // order: by number (as in the Pokédex) or by rarity, rarest first (owner, 4 ottobre)
   const sortBtn = el('button', 'sheet-tab bestiary-sort', filters, 'Per rarità');
   let byRarity = false;

@@ -144,6 +144,13 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - i **compagni in acqua** non servono a nulla: da ripensare nel blocco 7;
 - **strumenti di prova** (galleria, "+50.000 denti", 5 tocchi): restano finché il proprietario prova, poi si tolgono.
 
+## Ruoli, tipi e compagni (proposta del 21 ottobre 2026, `docs/PROPOSTA-RUOLI.md`)
+
+- AD-1 tipi chiari ✅ v0.90.0.
+- **AD-2 cavalcature:** quattro barre (velocità, resistenza, boccone, profondità), talento per tipo, paura dei superpredatori (≥30 livelli: stanno lontani e fuggono 1-2 volte; paralisi di un turno solo per un predatore leggendario con ≥10 livelli in più).
+- **AD-3 branco:** cavalcatura più due compagni, caccia dei pesci in vista, i piccoli girano al largo, poteri per tipo spiegati sulla scheda.
+- **AD-4 poteri speciali:** polpo, lontra, beluga, squalo martello, ossigeno.
+
 ## Blocco 1 — Nuovo inizio senza storia
 - La storia attuale (Compagnia dell'Olio Nero, Vedova Nera, capitoli 1–4) va ripensata del tutto: **in pausa** fino al blocco 10.
 - Fuori dal gioco le bestie solo della storia: Sfregiato, Re Corallo, Piovra (tolte anche dalla partita del proprietario). Il Calamaro colossale diventa una bestia normale.
