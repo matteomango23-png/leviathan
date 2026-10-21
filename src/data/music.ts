@@ -143,34 +143,47 @@ export const PORT_MUSIC: MusicSpec = {
 };
 
 // ---------------------------------------------------------------------------------------------------------------
-// The title menu (owner, 20 ottobre 2026: "una canzoncina oscura e da talassofobia"): the dark under you. Very slow
-// and low, a deep drone, the choir far away and a bass voice falling a semitone (D to E flat and back, the minor
-// second of the deep), long rests, a far drum and the longest echo. Our own: it borrows a mood, never a tune.
+// The title menu (owner, 21 ottobre 2026: "drammatica, grave, da talassofobia… stile Hoist the Colours"): a slow
+// dirge of doomed sailors. A bass voice sings it, a low choir of men answers every phrase, a deep drone and a far drum
+// like a heartbeat under it, in the longest echo. Four phrases of four bars in D minor: each climbs and falls back a
+// semitone onto a long note. Our own melody: it borrows a mood, never a tune.
 
 const TITLE_BARS: { chord: ChordName; melody: Sung[] }[] = [
+  // the call
   { chord: 'Dm', melody: [[-7, 3]] },
-  { chord: 'Dm', melody: [[-6, 2], [-7, 1]] },
-  { chord: 'Bb', melody: [[null, 1], [-11, 2]] },
-  { chord: 'A', melody: [[-8, 3]] },
-  { chord: 'Dm', melody: [[-4, 2], [-6, 1]] },
-  { chord: 'Gm', melody: [[-7, 3]] },
-  { chord: 'A', melody: [[-8, 1.5], [-11, 1.5]] },
-  { chord: 'Dm', melody: [[null, 3]] },
+  { chord: 'Dm', melody: [[-4, 2], [-5, 1]] },
+  { chord: 'Gm', melody: [[-7, 2], [-2, 1]] },
+  { chord: 'A', melody: [[-5, 2], [-8, 1]] },
+  // the answer
+  { chord: 'Dm', melody: [[-7, 1.5], [-4, 0.5], [0, 1]] },
+  { chord: 'Bb', melody: [[0, 2], [-2, 1]] },
+  { chord: 'Gm', melody: [[-4, 1], [-5, 1], [-7, 1]] },
+  { chord: 'A', melody: [[-5, 3]] },
+  // the climb
+  { chord: 'Dm', melody: [[0, 2], [0, 1]] },
+  { chord: 'F', melody: [[3, 2], [0, 1]] },
+  { chord: 'Gm', melody: [[1, 1], [0, 1], [-2, 1]] },
+  { chord: 'Dm', melody: [[0, 3]] },
+  // the fall into the deep
+  { chord: 'Bb', melody: [[-4, 2], [-2, 1]] },
+  { chord: 'C', melody: [[-5, 1.5], [-4, 0.5], [-2, 1]] },
+  { chord: 'A', melody: [[-5, 2], [-8, 1]] },
+  { chord: 'Dm', melody: [[-7, 3]] },
 ];
 
 export const TITLE_MUSIC: MusicSpec = {
   ...SEA_MUSIC,
-  volume: 0.2,
-  fadeIn: 4,
+  volume: 0.26,
+  fadeIn: 3,
   fadeOut: 1.2,
-  bpm: 40,
+  bpm: 52,
   bars: TITLE_BARS,
   melodyEvery: 1,
-  choir: { ...SEA_MUSIC.choir, volume: 0.04, vibratoCents: 4 },
-  lead: { ...SEA_MUSIC.lead, volume: 0.06, formants: [[300, 1], [870, 0.35], [2250, 0.08]], vibratoCents: 10 },
-  drone: { notes: [-19, -12], volume: 0.12, cutoff: 200, breathS: 14, breathDepth: 0.5 },
-  drum: { bars: [0, 4], freq: [55, 32], volume: 0.4, seconds: 3.5 },
-  reverb: { seconds: 6, wet: 0.7, dry: 0.45, cutoff: 1800 },
+  choir: { ...SEA_MUSIC.choir, volume: 0.06, vibratoCents: 5 },
+  lead: { ...SEA_MUSIC.lead, volume: 0.11, vibratoCents: 12 },
+  drone: { notes: [-19, -12], volume: 0.12, cutoff: 220, breathS: 13, breathDepth: 0.45 },
+  drum: { bars: [0, 4, 8, 12], freq: [55, 34], volume: 0.45, seconds: 3 },
+  reverb: { seconds: 6, wet: 0.7, dry: 0.5, cutoff: 1900 },
 };
 
 // ---------------------------------------------------------------------------------------------------------------

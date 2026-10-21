@@ -18,6 +18,13 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
+    <!-- the opening screen (ui/splash.ts): there before any script, gone after the first tap -->
+    <div id="splash">
+      <div class="splash-art"></div>
+      <div class="splash-title">LEVIATANO</div>
+      <div class="splash-tap">Tocca per entrare</div>
+      <div class="splash-version"></div>
+    </div>
     <div id="game"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

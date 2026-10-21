@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.93.0 — Schermata iniziale, gioco sempre in orizzontale, musica del menu (21 ottobre 2026)
+
+- **Schermata iniziale:** all'apertura compare "LEVIATANO – Tocca per entrare". Il tocco accende i suoni e la musica del menu, rimisura lo schermo e porta al menu. Quando arriva la tua grafica, la schermata la mostrerà (`art-inbox/splash.jpg`).
+- **Musica del menu:** un canto nuovo, lento e grave, di marinai condannati: una voce di basso, il coro di uomini che risponde, un bordone e un tamburo lontano come un cuore. Prima non la sentivi mai: sull'iPhone l'audio parte al primo tocco, e il primo tocco era proprio quello che sceglieva la partita.
+- **Telefono in verticale:** niente più "gira il telefono". Il gioco resta in orizzontale, girato, e si gioca tenendo il telefono di lato.
+- **Barra nera in basso:** il gioco prende la misura più grande che il telefono riporta, e la rimisura anche dopo il tocco iniziale e dopo ogni rotazione.
+
 ## v0.92.0 — Il branco (21 ottobre 2026)
 
 - **Cavalcatura più due compagni:** toccando nella barra della squadra una bestia che non si cavalca, si unisce al branco e ti nuota accanto, anche mentre cavalchi. Al massimo due: chiamandone un terzo, quello arrivato per primo se ne va. Toccandolo di nuovo lo rimandi via.

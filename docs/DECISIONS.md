@@ -1091,3 +1091,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** `beasts.mount` resta solo per la bestia che ti porta; i compagni stanno in `beasts.pack` (al massimo due), non salvato come la bestia chiamata.
 - **Motivo:** il proprietario vuole una cavalcatura più due compagni insieme. Lo stesso posto per "la bestia che cavalchi" e "quella che ti segue" non poteva tenerne tre. Separarli lascia intatto tutto ciò che riguarda la cavalcatura (movimento, resistenza, talenti) e dà al branco le sue regole: caccia dei pesci in vista, paura dei piccoli, poteri per tipo.
+
+## 21 ottobre 2026 — In verticale la pagina si gira, e una schermata iniziale (v0.93.0)
+
+- **Decisione:**
+  - con il telefono in verticale tutta la pagina viene girata di 90° con il CSS (`html.turned`), invece di mostrare "gira il telefono";
+  - all'apertura c'è una schermata "Tocca per entrare".
+- **Motivo:**
+  - su iPhone il web non può bloccare l'orientamento; il proprietario ha scelto di girare il gioco;
+  - funziona senza toccare la logica perché tutti i comandi sono elementi della pagina: il browser li gira e li tocca giusti;
+  - la schermata iniziale serve perché l'audio sull'iPhone parte solo al primo tocco (senza, la musica del menu non si sentiva mai) e dà al telefono il tempo di misurare lo schermo prima del menu.
