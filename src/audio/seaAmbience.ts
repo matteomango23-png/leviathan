@@ -1,5 +1,5 @@
 // The sound of the sea: a muffled low rumble (brown noise through a low-pass filter) that slowly breathes and
-// gets darker the deeper you go, and small rising bubbles while you swim (a burst when you dash).
+// gets darker the deeper you go, and a few small rising bubbles when you dash (none while you swim: owner, 21 ottobre).
 import { SEA_SOUND } from '../data/audio';
 
 /** What the sea sounds depend on, each frame. */
@@ -11,6 +11,12 @@ export interface SeaMoment {
   dash: boolean;
   /** How far from the coast (the open sea's music beyond a kilometre). */
   km: number;
+}
+
+/** How many bubbles to play this step: none while you swim, a few when you dash (SEA_SOUND.bubbles). */
+export function bubblesFor(speed: number, dash: boolean, dt: number): number {
+  const b = SEA_SOUND.bubbles;
+  return speed * b.perSecondAtFullSpeed * dt + (dash ? b.dashBurst : 0);
 }
 
 export class SeaAmbience {
@@ -52,9 +58,7 @@ export class SeaAmbience {
     const swell =
       1 - SEA_SOUND.swell.depth * (0.5 + 0.5 * Math.sin((this.time * Math.PI * 2) / SEA_SOUND.swell.periodS));
     this.rumbleGain.gain.setTargetAtTime(r.volume * swell * (1 + 0.4 * m.speed), t, 0.3);
-    const b = SEA_SOUND.bubbles;
-    this.bubbleDebt += m.speed * b.perSecondAtFullSpeed * dt;
-    if (m.dash) this.bubbleDebt += b.dashBurst;
+    this.bubbleDebt += bubblesFor(m.speed, m.dash, dt);
     let n = 0;
     while (this.bubbleDebt >= 1) {
       this.bubbleDebt -= 1;

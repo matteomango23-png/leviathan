@@ -1,5 +1,5 @@
-// Screen-space background behind the rock: water colour by depth, sky, light rays,
-// distant painted ridges with parallax and drifting marine snow (prototype/prova-realistica.html).
+// Screen-space background behind the rock: water colour by depth, sky and distant painted ridges with parallax
+// (prototype/prova-realistica.html). The light shafts and the particles in the water: views/seaLight.ts.
 import Phaser from 'phaser';
 import { troughDepth } from '../systems/sea';
 import { SEA } from '../data/diver';
@@ -39,11 +39,8 @@ function ridgeLine(t: number, seed: number, amp: number, freq: number): number {
 export class BackgroundView {
   private readonly water: Phaser.GameObjects.Image;
   private readonly waterTex: Phaser.Textures.CanvasTexture;
-  private readonly rays: Phaser.GameObjects.Graphics;
-  private readonly snow: Phaser.GameObjects.Graphics;
   private readonly far: Ridge;
   private readonly mid: Ridge;
-  private readonly flakes: { x: number; y: number; z: number; a: number }[] = [];
   private lastWaterY = NaN;
   private lastClouds = 0;
   private lastWaves = NaN;
@@ -58,14 +55,8 @@ export class BackgroundView {
       : scene.textures.createCanvas(WATER_KEY, 2, WATER_ROWS)!;
     this.water = scene.add.image(0, 0, WATER_KEY).setOrigin(0, 0);
     layer.add(this.water);
-    this.rays = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
-    layer.add(this.rays);
     this.far = this.makeRidge('bg-far', SEA.far.top);
     this.mid = this.makeRidge('bg-mid', SEA.mid.top);
-    this.snow = scene.add.graphics();
-    layer.add(this.snow);
-    for (let i = 0; i < SEA.snow.count; i++)
-      this.flakes.push({ x: hash2(i, 1), y: hash2(i, 2), z: 0.2 + hash2(i, 3), a: 0.2 + hash2(i, 4) * 0.5 });
   }
 
   private makeRidge(key: string, color: string): Ridge {
@@ -195,10 +186,9 @@ export class BackgroundView {
     this.waterTex.refresh();
   }
 
-  /** @param weather cloud cover (darker sky) and strength of the light rays (WeatherLook) */
+  /** @param weather cloud cover (darker sky) and the waves (WeatherLook) */
   update(
     v: ViewInfo,
-    time: number,
     weather: { clouds: number; rays: number; waves?: number; wind?: number } = { clouds: 0, rays: 1 },
   ): void {
     const size = `${v.w}x${v.h}`;
@@ -222,43 +212,5 @@ export class BackgroundView {
     this.water.setDisplaySize(v.w, v.h);
     this.placeRidge(this.far, v, 'far');
     this.placeRidge(this.mid, v, 'mid');
-
-    // light rays from the surface, fading with depth
-    const rays = this.rays;
-    rays.clear();
-    const fade = (1 - Phaser.Math.Clamp((v.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1)) * weather.rays;
-    if (fade > 0) {
-      const t0 = v.h / 2 + (WORLD.surfaceY - v.cy) * v.zoom;
-      const len = v.h * 1.2;
-      rays.fillStyle(0x96d2e1, SEA.lightRays.alpha * fade);
-      for (let i = 0; i < SEA.lightRays.count; i++) {
-        const span = v.w * 1.3;
-        const x =
-          (((((i * 0.19 + time * 0.003) * span - v.cx * v.zoom * 0.1) % span) + span) % span) - v.w * 0.15;
-        rays.fillPoints(
-          [
-            new Phaser.Math.Vector2(x, t0),
-            new Phaser.Math.Vector2(x + v.w * 0.04, t0),
-            new Phaser.Math.Vector2(x + v.w * 0.16, t0 + len),
-            new Phaser.Math.Vector2(x + v.w * 0.09, t0 + len),
-          ],
-          true,
-        );
-      }
-    }
-
-    // marine snow drifting slowly downwards, with parallax
-    const snow = this.snow;
-    snow.clear();
-    const surfaceScreen = v.h / 2 + (WORLD.surfaceY - v.cy) * v.zoom;
-    const px = Math.max(1, v.h / 400);
-    for (const f of this.flakes) {
-      const x = (((f.x * v.w - v.cx * v.zoom * f.z * 0.5) % v.w) + v.w) % v.w;
-      const y = (((f.y * v.h - v.cy * v.zoom * f.z * 0.5 + time * 8 * px * f.z) % v.h) + v.h) % v.h;
-      if (y < surfaceScreen) continue;
-      snow.fillStyle(0xbed7dc, f.a * SEA.snow.alpha);
-      const r = f.z * 1.6 * px;
-      snow.fillRect(x, y, r, r);
-    }
   }
 }

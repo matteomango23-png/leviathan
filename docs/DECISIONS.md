@@ -1057,3 +1057,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** `npm run art` non ritaglia più le illustrazioni delle bestie che non sono in 2:3. Le mette intere nella card, su sé stesse sfocate e scurite, con il bordo sfumato. La flotta resta ritagliata.
 - **Motivo:** Gemini consegna le card in 4:5 o 9:16, e il ritaglio al centro tagliava naso e coda. Riempire con la stessa immagine sfocata tiene i colori del fondale senza bande nere.
+
+## 21 ottobre 2026 — L'acqua è un filtro unico, non un velo sulle bestie (v0.88.0)
+
+- **Decisione:** un solo strato in modalità "moltiplica" sopra tutto il mondo, sotto la linea vera delle onde. Il colore dipende dalla profondità in coordinate del mondo (`SEA.filter.byY`) e dalla torbidità. Tolto il velo per singola bestia della v0.87.0.
+- **Motivo:** il buio del gioco è uniforme sullo schermo e dipende dalla telecamera, quindi una bestia sott'acqua non cambiava rispetto a una fuori. Il velo per bestia, del colore dell'acqua, lasciava un alone dove lo sfondo dipinto ha un altro colore e cambiava di colpo. Un filtro che moltiplica altera quello che c'è sotto invece di coprirlo, come fa l'acqua vera, e vale allo stesso modo per tutto, visto dall'alto o dal basso.
+
+## 21 ottobre 2026 — Raggi di luce e particelle in un modulo proprio (v0.88.0)
+
+- **Decisione:** raggi dai bordi morbidi (una texture generata) che ondeggiano e respirano ognuno per conto suo, dietro e, più deboli, davanti al mondo. Le particelle stanno su tre strati e si accendono quando un raggio le attraversa (`rayLightAt`).
+- **Motivo:** dalla ricerca sui giochi 2D e sottomarini: fasci morbidi che si sovrappongono, con intensità variabile e fase diversa per ognuno, che seguono la superficie e svaniscono in profondità. Le particelle sospese si vedono proprio dove passa la luce.
