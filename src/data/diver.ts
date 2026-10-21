@@ -134,24 +134,55 @@ export const SEA = {
   skyFade: 60,
   surfaceLine: 'rgba(150,200,210,0.55)',
   /**
-   * The surface across a beast half out of the water (views/surfaceOver.ts; owner, 20 ottobre): under the waves a
-   * veil of the water's colour, from `veil[0]` at the line to `veil[1]` `fullDepth` units down, in bands of
-   * `band` units and columns of `step`; along the waves a line `line` units thick. Tuning.
+   * The water as a filter over everything under the waves (views/waterFilter.ts; owner, 21 ottobre): each world y
+   * multiplied by this colour (255 = unchanged), in bands of `band` units, the waves' band in columns of `step`.
+   * Murky water moves it `murkShare` of the way to `murk`. Tuning, checked on real frames of the game.
    */
-  bodyWater: {
-    veil: [0.26, 0.58] as [number, number],
-    fullDepth: 30,
-    band: 3,
-    step: 2,
-    line: 1.2,
-    lineAlpha: 0.6,
-    lineColor: [210, 240, 250] as [number, number, number],
-    veilFill: 1.18, // × the body's circles: the veil a little outside its outline
-    lineFill: 0.9, // …the line a little inside it
-    fadeOut: 8, // units out of the water before the veil is whole (it grows in as a beast breaks the surface)
+  filter: {
+    // red goes first in real water: less of it from the first metres (checked on frames of the game, 21 ottobre)
+    byY: [
+      [24, [196, 228, 238]],
+      [60, [168, 208, 224]],
+      [160, [138, 186, 206]],
+      [400, [112, 160, 186]],
+      [900, [88, 132, 158]],
+    ] as [number, number[]][],
+    murk: [150, 140, 100] as [number, number, number],
+    murkShare: 0.6,
+    band: 5,
+    step: 4,
   },
-  lightRays: { count: 6, alpha: 0.06, fadeY: 420 },
-  snow: { count: 160, alpha: 0.5 },
+  /**
+   * The light shafts from the surface (views/seaRays.ts, seaLight.ts; owner, 21 ottobre: "realistici"): `count` soft
+   * shafts `width` shares of the screen wide, leaning `tilt` radians and swaying `sway`, drifting `drift` px/s and
+   * sliding `parallax` of the camera, `alpha` at their brightest, gone `fadeY` units down; in front of the world a
+   * copy at `frontShare` of it. Tuning.
+   */
+  lightRays: {
+    count: 8,
+    alpha: 0.42,
+    fadeY: 420,
+    fadePower: 0.6, // < 1: they keep their light longer, then go
+    murkShare: 0.6, // murky water dims them by this share of its murk
+    width: [0.06, 0.18] as [number, number],
+    tilt: 0.22,
+    sway: 0.035,
+    drift: 4,
+    parallax: 0.12,
+    frontShare: 0.4,
+  },
+  /**
+   * The particles floating in the water (views/seaLight.ts; owner, 21 ottobre: "microparticelle… quando la luce
+   * attraversa il mare"): far, mid and near ones (the near ones big and out of focus), `size` px at a 400 px tall
+   * screen, barely seen (`alpha`) until a shaft lights them (+ `lit`). They sink `sink` px/s and sway. Tuning.
+   */
+  particles: {
+    far: { count: 140, size: [0.7, 1.2] as [number, number], alpha: 0.14, lit: 0.8, depth: 0.25 },
+    mid: { count: 70, size: [1.2, 2] as [number, number], alpha: 0.16, lit: 0.85, depth: 0.6 },
+    near: { count: 10, size: [7, 16] as [number, number], alpha: 0.025, lit: 0.12, depth: 1.4 },
+    sink: 5,
+    sway: 6,
+  },
   rockByY: [
     [300, [58, 82, 80]],
     [900, [30, 46, 58]],

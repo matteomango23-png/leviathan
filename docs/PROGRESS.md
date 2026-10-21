@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 20 ottobre 2026, v0.87.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.88.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -13,6 +13,31 @@
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.86.1 (20 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 19 ottobre; qui sotto il dettaglio del 20 ottobre.
+
+## Lotto AB, il mare più vero (21 ottobre 2026) → v0.88.0
+
+- **Filtro dell'acqua:** `views/waterFilter.ts` (nuovo).
+  - È una grafica in modalità MULTIPLY, l'ultima del livello `front` del mondo, sotto il buio. Copre dalle onde (`seaHeight`) in giù: a colonne nella fascia delle onde, poi a fasce intere.
+  - Il colore viene da `systems/waterTint.ts` `filterColor` (rampa `SEA.filter.byY`, poco rosso già vicino alla superficie) e vira al marrone con la torbidità.
+  - Tolti `surfaceOver.ts` e `SEA.bodyWater`.
+  - **Perché:** il buio di `lightView` è uniforme sullo schermo e dipende dalla telecamera, non distingue sopra e sotto l'acqua.
+- **Raggi e particelle:** `views/seaLight.ts` (nuovo) e `views/seaRays.ts` (calcoli puri: `raysInView`, `rayLightAt`).
+  - Raggi: texture con bordi morbidi, `SEA.lightRays`; copia davanti nel livello `overlay`, sotto il buio.
+  - Particelle: tre strati (`SEA.particles`), la luce dei raggi le accende.
+  - `backgroundView` non disegna più i vecchi raggi e la neve.
+  - In `worldViews` la luce del giorno dipende da profondità (`fadePower`), meteo e torbidità.
+- **Audio:** `bubblesFor` (`seaAmbience`): nessuna bollicina nuotando (`perSecondAtFullSpeed: 0`), 3 scattando.
+- **Provato con le foto** (`scripts/snap-server.mjs`):
+  - il filtro era troppo debole, l'ho rinforzato;
+  - i raggi erano ammucchiati e quasi spenti: ora sono distribuiti, con la luce più lunga;
+  - il tuffo del megalodonte, con il mare calmo e in tempesta.
+- **Test:** `tests/lottoAB.test.ts`.
+
+**Da provare sull'iPhone:**
+- tuffarsi in groppa vicino alla superficie;
+- nuotare vicino alla superficie di giorno, poi scendere;
+- il Delta torbido;
+- la tempesta.
 
 ## Lotto AA, acqua sulle bestie, gabbiani, giganti più lenti (20 ottobre 2026) → v0.87.0
 

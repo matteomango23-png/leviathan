@@ -1,5 +1,5 @@
 // Leviatano — sound (synthesized in code: no audio files, works offline, no licences).
-// The sea: a low muffled rumble that gets darker with depth, bubbles while you swim; the engines and the sonar.
+// The sea: a low muffled rumble that gets darker with depth, a few bubbles when you dash; the engines and the sonar.
 // The music (open sea, battles) is in data/music.ts. Values are tuning: change them here.
 
 export const AUDIO = {
@@ -17,8 +17,8 @@ export const SEA_SOUND = {
   swell: { periodS: 9, depth: 0.35 }, // slow breathing of the rumble
   bubbles: {
     volume: 0.09,
-    perSecondAtFullSpeed: 6, // while swimming at top speed
-    dashBurst: 7, // bubbles at once when you dash
+    perSecondAtFullSpeed: 0, // none while swimming (owner, 21 ottobre: "togli quel rumore fastidioso di bollicine"; was 6)
+    dashBurst: 3, // bubbles at once when you dash (was 7)
     freq: [500, 1400] as [number, number], // each bubble rises from a random pitch in this range
     rise: 1.8, // × its pitch at the end of the bubble
     seconds: 0.07,

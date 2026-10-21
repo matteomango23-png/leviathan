@@ -185,7 +185,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
 | `shipView.ts`, `shipWake.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, corsia lontana dietro le rocce; scia e bolle dell'elica in `shipWake.ts`. |
 | `sweepScope.ts`, `radarScreen.ts`, `subScope.ts` (ui) | Lo schermo rotondo col fascio che gira: radar nel cockpit, sonar sul vetro del sottomarino con la freccia verso la nave. |
-| `surfaceOver.ts` (views) | La linea delle onde e il velo d'acqua sul corpo delle bestie a metà fuori dall'acqua, davanti a loro e al sub. |
+| `waterFilter.ts` (views), `systems/waterTint.ts` | L'acqua come filtro su tutto ciò che sta sotto le onde: leggermente azzurro in superficie, più blu e scuro in profondità, più marrone nell'acqua torbida. |
+| `seaLight.ts`, `seaRays.ts` (views) | I raggi di luce dalla superficie (dietro e, più deboli, davanti al mondo) e le microparticelle che si accendono quando un raggio le attraversa. |
 | `packFormation.ts` (views) | Il branco che nuota insieme: i compagni seguono la scia della guida, larghi, stretti o sparpagliati secondo l'umore. |
 | `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |
 | `shipFx.ts` (views) | Effetti intorno alla nave: fumo delle ciminiere (dietro la nave), schegge di ghiaccio. Solo aspetto. |

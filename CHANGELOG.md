@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.88.0 — Il mare più vero (21 ottobre 2026)
+
+- **L'acqua è un filtro:** tutto quello che sta sotto le onde (bestie, sub, rocce, pesci, navi) è tinto leggermente di azzurro, e sempre più blu e più scuro man mano che scende. L'acqua torbida lo rende più scuro e più marrone. Il passaggio segue le onde ed è graduale: una bestia a metà fuori dall'acqua non sembra più incollata, né sopra né sotto. Tolti il velo sulle singole bestie e la riga di schiuma; gli spruzzi restano.
+- **Raggi di luce veri:** fasci morbidi che scendono dalla superficie, ondeggiano e respirano ognuno per conto suo e svaniscono in profondità. Passano anche davanti alle bestie e si spengono con le nuvole, la tempesta e l'acqua torbida.
+- **Microparticelle nell'acqua:** piccolissime, su più strati, si accendono quando attraversano un raggio di luce o la tua lampada. Alcune, vicinissime, sono grandi e sfocate.
+- **Niente più rumore di bollicine** mentre nuoti; restano solo poche bollicine quando scatti.
+
 ## v0.87.0 — La linea dell'acqua sulle bestie, gabbiani da vendere (20 ottobre 2026)
 
 - **Bestie a metà fuori dall'acqua:** la linea dell'onda ora attraversa il loro corpo e la parte sott'acqua è più azzurra, come nella realtà. Segue le onde vere, anche in tempesta.
