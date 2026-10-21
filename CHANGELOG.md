@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.95.0 — Evoluzioni nelle schede (21 ottobre 2026)
+
+- **Il pallino nero di Folgore:** una bestia della tua squadra ora conosce le forme da cui è cresciuta. Con Folgore vedi Scintilla e Saetta anche se non le hai mai incontrate in mare. Vale per tutte le bestie.
+- **Evoluzioni non ancora scoperte:** il pallino mostra l'immagine sfocata e scura, ed è toccabile. Si apre la scheda con l'illustrazione sfocata, il nome "???" e due righe su come scoprirla.
+
 ## v0.94.1 — Pulizia (21 ottobre 2026)
 
 - Nessuna novità per il giocatore: codice inutilizzato tolto e documenti in ordine.

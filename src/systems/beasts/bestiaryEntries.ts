@@ -122,12 +122,20 @@ export function evolutionLine(form: BeastForm): BeastForm[] {
   return line;
 }
 
+/** The forms of a beast's line up to and including its own (keys). */
+function grewFrom(form: BeastForm): string[] {
+  const keys = evolutionLine(form).map(formKey);
+  const at = keys.indexOf(formKey(form));
+  return at < 0 ? [formKey(form)] : keys.slice(0, at + 1);
+}
+
 /** Whether you know a form (seen or tamed): an evolution icon you do not know is a shadow on the sheet. */
 export function knowsForm(
   form: BeastForm,
   g: { seen: Set<string>; beasts: { team: readonly TeamBeast[] } },
 ): boolean {
   const key = formKey(form);
-  if (g.beasts.team.some((b) => formKey(b.form) === key)) return true;
+  // a beast of yours knows the forms it grew from (owner, 21 ottobre: Folgore's Saetta was a black dot)
+  if (g.beasts.team.some((b) => grewFrom(b.form).includes(key))) return true;
   return form.variant === 'comune' && !form.final ? g.seen.has(form.speciesId) : g.seen.has(key);
 }
