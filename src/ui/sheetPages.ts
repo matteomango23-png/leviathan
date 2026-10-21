@@ -3,7 +3,7 @@
 // an order you choose, the next ones, the Ricordamosse; then the moves of the open sea).
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { STATUS_NAMES } from '../data/moveBattle';
-import { PROGRESSION } from '../data/rules';
+import { PROGRESSION, TYPES } from '../data/rules';
 import { STAT_IDS, STAT_NAMES } from '../data/stats';
 import { swapMoves } from '../systems/beasts/battleMoves';
 import { totalXp, xpToNext } from '../systems/beasts/growth';
@@ -44,6 +44,22 @@ export function infoPage(box: HTMLElement, c: PageContext): void {
   el('span', 'tag', tags, s.levelLabel);
   if (c.count && c.count > 1) el('span', 'tag', tags, `×${c.count}`);
   if (b?.status) el('span', `tag status-${b.status}`, tags, STATUS_NAMES[b.status]);
+  // what it beats and what beats it, like the wheel in the bestiary (owner, 21 ottobre)
+  if (s.strongAgainst.length) {
+    const vs = el('div', 'sheet-vs', box);
+    for (const [label, list] of [
+      ['Forte contro', s.strongAgainst],
+      ['Debole contro', s.weakAgainst],
+    ] as const) {
+      const row = el('div', 'sheet-vs-row', vs);
+      el('span', 'sheet-vs-label', row, label);
+      for (const t of list) {
+        const tag = el('span', 'tag', row, TYPES[t].name);
+        tag.style.borderColor = TYPES[t].color;
+        tag.style.color = TYPES[t].color;
+      }
+    }
+  }
   if (b) {
     growthBars(box, b);
     const list = el('div', 'sinfo', box);

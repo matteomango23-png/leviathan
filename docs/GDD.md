@@ -49,6 +49,13 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 - **Squadra:** 5 bestie, una in acqua alla volta; riserva al recinto senza limite.
 - **Ruoli** (rivisti l'8 ottobre 2026, vedi "Decisioni di design"): cavalcatura (mezzo per esplorare: velocità, profondità, passaggi), compagno (combatte con te), supporto (un potere in mare ciascuna: luce, forzieri, riparo, eco, raccolta). Nel mare ogni bestia si chiama dalla barra: le cavalcature ti portano in sella, le altre ti seguono e mangiano i pesci. Le seconde forme delle linee iniziali si cavalcano già, più lente.
 - **Tipi:** cinque in cerchio, ognuno batte il successivo: Predatore → Abissale → Glaciale → Tempesta → Corazzato → Predatore. Come Pokémon (dal 3 ottobre 2026): ogni tipo batte il successivo e il terzo dopo nel cerchio, danno ×2 contro chi batti e ×½ contro chi ti batte. Anche mosse, alcune armi e Guardiani hanno un tipo.
+  - **La regola per dare un tipo a una bestia** (21 ottobre 2026, `docs/PROPOSTA-RUOLI.md`):
+    - **Predatore:** cacciatori a denti e velocità (squali, coccodrilli, barracuda, tonni);
+    - **Corazzato:** guscio, scaglie dure o mole enorme e lenta (tartarughe, pesci palla, squalo balena, mosasauro);
+    - **Tempesta:** elettricità e velocità fulminea (torpedini, anguille, manta, pesci vela, squalo martello);
+    - **Glaciale:** mari freddi, mammiferi con il grasso (foche, trichechi, orche, balene, narvalo, delfino);
+    - **Abissale:** corpi molli, veleni, luce propria, profondità (polpi, calamari, murene, rane pescatrici, capodoglio).
+  - Ogni vittoria ha la sua frase (`TYPES.beatsWhy` in `data/rules.ts`); nel bestiario la "ruota dei tipi" le mostra tutte, e la scheda di ogni bestia dice contro chi è forte e contro chi è debole.
 - **Livelli:** 1-100 come Pokémon (dal 3 ottobre 2026; prima 1-50), esperienza combattendo; le statistiche crescono col livello. Le bestie selvatiche hanno livelli legati alla zona.
 - **Mosse:** 3 per bestia, sbloccate ai livelli 1, 7 e 15 (una bestia domata oltre il 15 le ha tutte). Il danno delle mosse cresce del 4% per livello. In sella stanno su 3 pulsanti; compagno e branco le usano da soli. Le mosse firma hanno un'animazione dedicata (`anim` in `data/moves.ts`).
 - **Dimensioni:** ogni specie ha una lunghezza di riferimento (squalo bianco 6 m, orca 8 m, capodoglio 18 m, megalodonte 18 m, Leviatano 120 m). L'alfa è il 15% più grande, gli Sfregiati dei Guardiani il 25%, la forma finale il 50%: lo Squalo bianco Titano arriva a 9 m, sempre la metà di un megalodonte.

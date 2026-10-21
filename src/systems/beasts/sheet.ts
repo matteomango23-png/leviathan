@@ -3,7 +3,7 @@
 import { BIOMES } from '../../data/endless';
 import { SEA_REGIONS } from '../../data/regions';
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
-import { PROGRESSION, TYPES } from '../../data/rules';
+import { PROGRESSION, TYPES, weakAgainst, type TypeId } from '../../data/rules';
 import { REGIONS } from '../../data/world';
 import type { Stats } from '../../data/species';
 import { BATTLE_MOVE_BY_ID } from '../../data/battleMoves';
@@ -61,6 +61,10 @@ export interface Sheet {
   special: keyof typeof SPECIAL_FRAMES | null;
   typeName: string;
   typeColor: string;
+  /** The types it is strong against and weak against (owner, 21 ottobre: "chiaro cosa batte cosa"): none for the
+   *  Leviatano, whose moves take the type that wins. */
+  strongAgainst: TypeId[];
+  weakAgainst: TypeId[];
   roleName: string;
   level: number;
   levelLabel: string;
@@ -187,6 +191,8 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     special: specialOf(form),
     typeName: typeDef?.name ?? 'Variabile',
     typeColor: typeDef?.color ?? '#e6ede8',
+    strongAgainst: typeDef ? [...typeDef.beats] : [],
+    weakAgainst: typeDef ? weakAgainst(typeDef.id) : [],
     roleName: ROLE_NAMES[s.role],
     level: lv,
     levelLabel: level === undefined ? `Liv. ${range[0]}–${range[1]} in natura` : `Livello ${lv}`,

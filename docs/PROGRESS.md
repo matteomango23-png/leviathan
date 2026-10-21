@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.89.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.90.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -13,6 +13,26 @@
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.86.1 (20 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 19 ottobre; qui sotto il dettaglio del 20 ottobre.
+
+## Lotto AD-1, i tipi chiari (21 ottobre 2026) → v0.90.0
+
+- **Proposta su ruoli, tipi e compagni:** `docs/PROPOSTA-RUOLI.md`, confermata dal proprietario con le sue modifiche:
+  - la paura dei superpredatori: almeno 30 livelli in più per tenere lontani e far tentare la fuga 1-2 volte; la paralisi di un turno solo per un predatore leggendario con almeno 10 livelli in più;
+  - il branco di due compagni che caccia solo i pesci in vista;
+  - i poteri per tipo basati su ciò che esiste in mare (Caccia, Guscio contro la pressione, Scarica, Eco, Lanterna).
+  - **Prossimi lotti:** AD-2 cavalcature, AD-3 branco, AD-4 poteri speciali.
+- **Questo lotto:**
+  - `TYPES.beatsWhy` (una frase per vittoria) al posto di `why`; `weakAgainst` in `rules.ts`;
+  - la scheda ha `strongAgainst`/`weakAgainst` e le righe "Forte contro / Debole contro" (`sheetPages.ts`, `.sheet-vs`);
+  - `ui/typeWheel.ts` (nuovo), aperto dal pulsante "Tipi" del bestiario;
+  - il delfino e le sue tre mosse diventano Glaciali;
+  - la regola dei tipi è nel `GDD.md`;
+  - `box-sizing: border-box` su `.bestiary-panel` e `.sheet-card`: uscivano di 5 px a 375 px d'altezza.
+- **Nota:** la ruota è "ognuno batte il successivo e quello tre posti dopo", come nei dati. Nella proposta avevo scritto per sbaglio "i due dopo": corretto.
+- **Test:** `tests/lottoAD1.test.ts`.
+- **Nel browser** a 667×375: ruota, bestiario e scheda misurati dentro lo schermo; le 10 frasi della ruota e le righe "Forte contro / Debole contro" sono presenti.
+
+**Da provare sull'iPhone:** bestiario, pulsante "Tipi", scheda di qualche bestia, una battaglia con il delfino.
 
 ## Lotto AC, il movimento delle cavalcature (21 ottobre 2026) → v0.89.0
 

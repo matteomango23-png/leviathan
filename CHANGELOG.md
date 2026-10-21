@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.90.0 — I tipi chiari (21 ottobre 2026)
+
+- **Ruota dei tipi:** nel bestiario c'è il pulsante "Tipi". Mostra i cinque tipi in cerchio, le frecce di chi batte chi e una frase per ogni vittoria ("Predatore batte Abissale: i denti strappano i corpi molli del buio").
+- **Scheda delle bestie:** sotto il tipo ora c'è scritto contro chi è forte e contro chi è debole, con i colori dei tipi.
+- **Delfino:** ora è di tipo Glaciale, come gli altri mammiferi del mare, e lo sono anche le sue tre mosse.
+- **Bestiario e schede** non escono più di qualche pixel dallo schermo sugli iPhone più piccoli.
+
 ## v0.89.0 — Ogni cavalcatura nuota a modo suo (21 ottobre 2026)
 
 - **Folgore** in groppa è di nuovo lungo e sottile, come in battaglia (era disegnato più spesso del suo profilo).
