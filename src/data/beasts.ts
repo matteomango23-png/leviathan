@@ -442,10 +442,8 @@ export const TEAM_RULES = {
   turnSeconds: 0.6, // turning around sideways, head first (owner, 3 ottobre: no more loop through the vertical)
   /** Your beast leans into the way it swims, up to nearly vertical when you dive straight down (radians). */
   pitchMax: 1.25,
-  accelMult: 1.7, // riding: acceleration × the beast's speed
   rideSpeedMult: 0.48, // tuning: riding speed × the beast's speed stat (tappa 10: a white shark ~55 u/s, 1.3× the diver; was 1.6)
-  rideDash: { speedMult: 2.4, duration: 0.35, cooldown: 1.2 }, // a tap on the dash button while riding…
-  rideSprintMult: 1.45, // …and holding it: the beast keeps a faster pace (owner, 2 ottobre: no more tapping again and again)
+  rideSprintMult: 1.45, // holding the dash button: the beast keeps a faster pace, tiring it (RIDE_MOTION.stamina)
 };
 
 /** What mounts can do while you ride them (abilities in species.ts). */
@@ -486,6 +484,30 @@ export const BEAST_SPRITE = {
   cephalopodWave: { from: 0.42, amp: 0.26, waves: 1.4, spread: 0.18, pulse: 0.5 },
   /** Crabs walking on the floor: no wave down the body, a little step up and down (picture pixels). Tuning. */
   walkerStep: 6,
+};
+
+/**
+ * How a beast you ride swims (systems/rideMotion.ts, stamina.ts; owner, 21 ottobre 2026: "da 0 a 100 in un attimo… in
+ * base all'animale… una barra di stamina"). Each value goes from a small beast (`small`, `size` 0: `sizeM`[0] metres or
+ * less) to a giant (`big`, `size` 1: `sizeM`[1] metres or more), on a log scale of its length:
+ * - `accelSeconds` to reach its top speed from still, the stick held; `glide` how fast it slows without it (per s);
+ * - its dash: up to `boost` × its top speed, rising in `rise` s and fading in `decay` s; `cooldown` s before the next;
+ * - `leap` × the highest leap out of the water (RIDE_BREACH.maxLeapSpeed);
+ * - `turnGrip` (per second): how fast the sideways drift of a turn fades;
+ * - its stamina: `dashes` dashes empty it (fast beasts fewer: × (1 − `fastTires` × how fast it is)); holding the faster
+ *   pace costs `sprintDashesPerSec` dashes a second; it refills in `regenSeconds`; empty, it swims at `exhaustedShare`
+ *   of its speed with no dash until full again, `exhaustedSeconds` later. How fast: its speed over the white shark's,
+ *   0 at `fastFrom`, 1 at `fastTo`. Tuning.
+ */
+export const RIDE_MOTION = {
+  sizeM: [3, 20] as [number, number],
+  small: { accelSeconds: 0.6, glide: 1.6, boost: 2.3, rise: 0, decay: 0.5, cooldown: 1.2, leap: 0.85, dashes: 5 },
+  big: { accelSeconds: 2.5, glide: 0.6, boost: 1.7, rise: 0.4, decay: 1.5, cooldown: 2.2, leap: 1.3, dashes: 9 },
+  fastFrom: 0.7,
+  fastTo: 1.5,
+  fastTires: 0.35,
+  turnGrip: 4, // how fast the sideways drift of a turn fades (per second)
+  stamina: { sprintDashesPerSec: 0.5, regenSeconds: 25, exhaustedSeconds: 60, exhaustedShare: 0.45 },
 };
 
 /**

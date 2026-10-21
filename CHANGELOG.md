@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.89.0 — Ogni cavalcatura nuota a modo suo (21 ottobre 2026)
+
+- **Folgore** in groppa è di nuovo lungo e sottile, come in battaglia (era disegnato più spesso del suo profilo).
+- **Accelerazione:** ogni bestia arriva alla sua velocità massima con i suoi tempi: le piccole quasi subito, i giganti in un paio di secondi. Lasciando il joystick scivola e rallenta piano, invece di fermarsi.
+- **Scatto:** è una spinta oltre la velocità massima che poi cala in modo graduale. Le bestie piccole scattano più forte ma per poco; i giganti spingono meno ma più a lungo. Da quasi fermo lo scatto ti porta subito in velocità. C'è un tempo di ricarica: da circa un secondo per le piccole a circa due per i giganti.
+- **Resistenza:** in groppa c'è una barra gialla sotto l'ossigeno. Lo scatto e l'andatura veloce la consumano; nuotare normalmente no.
+  - Le bestie veloci si stancano prima, le grandi resistono di più.
+  - Quando è vuota la bestia nuota piano, senza scatto, finché la barra non si è riempita (un minuto).
+  - Ogni bestia ha la sua resistenza, e quelle che non cavalchi intanto si riposano: puoi cambiare cavalcatura.
+- **Salto:** quanto vai in alto e lontano dipende dalla velocità con cui esci dall'acqua, e i giganti lanciati volano più in alto.
+
 ## v0.88.0 — Il mare più vero (21 ottobre 2026)
 
 - **L'acqua è un filtro:** tutto quello che sta sotto le onde (bestie, sub, rocce, pesci, navi) è tinto leggermente di azzurro, e sempre più blu e più scuro man mano che scende. L'acqua torbida lo rende più scuro e più marrone. Il passaggio segue le onde ed è graduale: una bestia a metà fuori dall'acqua non sembra più incollata, né sopra né sotto. Tolti il velo sulle singole bestie e la riga di schiuma; gli spruzzi restano.

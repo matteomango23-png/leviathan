@@ -1,5 +1,6 @@
 // Shared state of everything about beasts in the open sea, and the small actions used by several systems.
 import { WILD_SPAWNS } from '../data/beasts';
+import type { Stamina } from './stamina';
 import type { DiverState } from './diver';
 import type { GameEvent } from './events';
 import type { Rng } from './math';
@@ -65,6 +66,8 @@ export interface BeastState {
   view: ViewRect | null;
   /** The light under the still ship (block 5b; not saved): where it shines and how far it calls the beasts. */
   light: { x: number; reach: number } | null;
+  /** Each team beast's stamina when ridden (stamina.ts; not saved), by uid. */
+  stamina: Record<string, Stamina>;
 }
 
 export interface ViewRect {
@@ -111,6 +114,7 @@ export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState
     residents: newResidents(),
     held: null,
     view: null,
+    stamina: {},
     light: null,
   };
 }

@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.88.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.89.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -13,6 +13,27 @@
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.86.1 (20 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 19 ottobre; qui sotto il dettaglio del 20 ottobre.
+
+## Lotto AC, il movimento delle cavalcature (21 ottobre 2026) → v0.89.0
+
+- **Folgore:** tolto `girth: 1.6` (`species.ts`).
+- **`systems/rideMotion.ts` (nuovo):**
+  - `rideProfile(lunghezza, velocità)` ricava tempi di accelerazione, scivolata, spinta e durata dello scatto, ricarica, salto e costo in resistenza da `RIDE_MOTION` (`data/beasts.ts`), dalla bestia piccola a quella gigante;
+  - `swimMount`: il joystick spinge fino alla velocità della bestia e mai oltre; la deriva di lato nelle virate si smorza (`turnGrip`); lo scatto spinge lungo la direzione fino a `boost` volte e poi cala (`dashCurve`); sopra la velocità rallenta piano;
+  - `stepDiver` lo usa quando sei in groppa (il nuoto del sub è in `swimSelf`); tolti `TEAM_RULES.accelMult` e `rideDash`.
+- **Resistenza:** `systems/stamina.ts` (`staminaOf`, `spendDash`, `spendSprint`, `rest`).
+  - È tenuta in `beasts.stamina` per bestia, **non salvata**.
+  - `systems/rideStamina.ts`: `rideNow` per il passo del sub e `stepRideStamina` dopo (evento `mountWorn`).
+  - Barra `.hud-stamina` in `ui/hud.ts`.
+- **Salto:** `leaveWater(..., leap)` con il tetto in base alla grandezza della bestia. Lo scatto non è più smorzato vicino alla superficie: è lui che lancia fuori dall'acqua.
+- **Test:** `tests/lottoAC.test.ts` (11); `lottoL` aggiornato allo scatto vero.
+- **Nel browser:** foto di Folgore in groppa (lungo e sottile); barra di resistenza misurata a 667×375 (sotto l'ossigeno, non tocca niente).
+
+**Da provare sull'iPhone:**
+- in groppa a una bestia piccola e veloce (squalo mako, pesce vela) e a una grande (megattera, Folgore): accelerare, lasciare il joystick, scattare da fermo e in corsa;
+- scattare fino a sfinirla;
+- cambiare cavalcatura;
+- saltare fuori dall'acqua a velocità diverse.
 
 ## Lotto AB, il mare più vero (21 ottobre 2026) → v0.88.0
 

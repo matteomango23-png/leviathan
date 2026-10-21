@@ -67,6 +67,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `endlessLife.ts` | La vita del mare infinito: sardine che seguono il sub, aria degli sfiatatoi (le bestie sono in `beasts/residents.ts`). |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
+| `rideMotion.ts`, `stamina.ts`, `rideStamina.ts` | Come nuota la bestia che cavalchi (accelerazione, scivolata, scatto con ricarica, salto) dalla sua lunghezza e velocità; la resistenza di ogni bestia della squadra (non salvata) e la barra in groppa. |
 | `diver.ts`, `floatSurface.ts` | Nuoto, scatto (costa aria), ossigeno, cuori, morte e rinascita in superficie; il galleggiamento sulle onde in superficie, senza uscire dall'acqua. |
 | `breath.ts` | Barra della pressione (sub e sottomarino) e serbatoi d'aria. |
 | `rideAir.ts` | L'aria del cetaceo che cavalchi e le barre mostrate nell'HUD. |

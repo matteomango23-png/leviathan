@@ -58,6 +58,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         `La tua squadra è tutta KO: perdi i sensi. Ti risvegli ${e.place} con le bestie curate${e.teethLost ? `. Hai perso ${e.teethLost} denti` : ''}.`,
         5,
       ];
+    case 'mountWorn':
+      return [`${e.name} non ce la fa più: va piano finché non si riprende.`, 3.5];
     case 'birdEaten':
       return [
         e.healed > 0

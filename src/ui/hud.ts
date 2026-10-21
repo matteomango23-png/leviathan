@@ -1,6 +1,8 @@
 // Hearts, oxygen, your teeth and messages (top-left, inside the iPhone safe area).
 import { DIVER } from '../data/diver';
 import { airShown, pressureShown } from '../systems/rideAir';
+import { activeBeast } from '../systems/beastPlay';
+import { staminaOf } from '../systems/stamina';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/story';
@@ -14,13 +16,16 @@ export class Hud {
   private readonly o2Label: HTMLSpanElement;
   private readonly press: HTMLDivElement;
   private readonly pressFill: HTMLDivElement;
+  /** The stamina of the beast you ride (owner, 21 ottobre; stamina.ts): only while riding. */
+  private readonly stamina: HTMLDivElement;
+  private readonly staminaFill: HTMLDivElement;
   private readonly info: HTMLDivElement;
   private readonly goal: HTMLDivElement;
   private readonly zone: HTMLDivElement;
   private readonly toastEl: HTMLDivElement;
   private toastTimer = 0;
   private zoneTimer = 0;
-  private cache = { hp: -1, max: -1, o2: -1, whale: false, press: -1, info: '', goal: '' };
+  private cache = { hp: -1, max: -1, o2: -1, whale: false, press: -1, stamina: '', info: '', goal: '' };
 
   constructor(root: HTMLElement) {
     const hud = el('div', 'hud', root);
@@ -34,6 +39,10 @@ export class Hud {
     el('span', '', this.press, 'Pressione');
     this.pressFill = el('div', 'hud-o2-fill', el('div', 'hud-o2-bar', this.press));
     this.press.hidden = true;
+    this.stamina = el('div', 'hud-o2 hud-stamina', hud);
+    el('span', '', this.stamina, 'Resistenza');
+    this.staminaFill = el('div', 'hud-o2-fill', el('div', 'hud-o2-bar', this.stamina));
+    this.stamina.hidden = true;
     this.info = el('div', 'hud-info', hud);
     this.goal = el('div', 'hud-goal', hud);
     this.zone = el('div', 'zone-name', root);
@@ -84,6 +93,17 @@ export class Hud {
       this.press.hidden = press >= 100;
       this.pressFill.style.width = `${press}%`;
       this.press.classList.toggle('low', press < 30);
+    }
+    const ridden = g.beasts.riding ? activeBeast(g) : undefined;
+    const st = ridden ? staminaOf(g.beasts.stamina, ridden.uid) : null;
+    const stKey = st ? `${Math.round(st.value * 100)}${st.worn ? 'w' : ''}` : '';
+    if (stKey !== this.cache.stamina) {
+      this.cache.stamina = stKey;
+      this.stamina.hidden = !st;
+      if (st) {
+        this.staminaFill.style.width = `${Math.round(st.value * 100)}%`;
+        this.stamina.classList.toggle('worn', st.worn);
+      }
     }
     // only your teeth here (owner, 5 ottobre: depth, distances and the bag are cockpit and map things)
     const info = `🦷 ${g.gear.teeth}`;

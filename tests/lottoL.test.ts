@@ -29,15 +29,16 @@ export function climb(
 ): { topM: number; events: GameEvent[]; endY: number; endVy: number } {
   const d = createDiver(bay(1000), rideTop(S) + 5 * WORLD.unitsPerMetre);
   d.vy = -v;
-  if (how.dash) d.dashTime = 0.35;
+  d.aim = -Math.PI / 2; // facing up
   const events: GameEvent[] = [];
   let top = d.y;
-  const input = { ...emptyInput(), moveY: how.drift ? 0 : -1, dashHeld: !!how.sprint };
+  const base = { ...emptyInput(), moveY: how.drift ? 0 : -1, dashHeld: !!how.sprint };
   for (let t = 0; t < seconds; t += DT) {
+    // the dash: pressed once, on the way up (rideMotion.ts: its push rises and fades)
+    const input = how.dash && t === 0 ? { ...base, dash: true } : base;
     stepDiver(d, input, map, DT, makeRng(1), events, {
       respawnAt: { x: bay(1000), y: 100 },
       mountSpeed: SPEED,
-      mountSprint: 1.45,
     });
     top = Math.min(top, d.y);
   }
@@ -55,13 +56,13 @@ describe('la superficie come acqua vera', () => {
     const slow = climb(20, { drift: true }, 3).topM; // coming up slowly, the stick let go
     const pace = climb(SPEED).topM;
     const sprint = climb(SPEED * 1.45, { sprint: true }).topM;
-    const dash = climb(SPEED * 2.4, { dash: true }).topM;
+    const dash = climb(SPEED, { dash: true }).topM;
     console.log('altezze (m):', { slow, pace, sprint, dash });
     expect(slow).toBeLessThan(0.3);
     expect(pace).toBeGreaterThan(slow);
     expect(sprint).toBeGreaterThan(1.5);
     expect(sprint).toBeLessThan(4.5);
-    expect(dash).toBeGreaterThan(6);
+    expect(dash).toBeGreaterThan(sprint + 1.5); // the big leap (21 ottobre: its push, not a fixed speed)
     expect(dash).toBeLessThan(11);
   });
 

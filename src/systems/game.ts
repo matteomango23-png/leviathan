@@ -1,6 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
-import { FEEDING, TEAM_RULES } from '../data/beasts';
+import { FEEDING } from '../data/beasts';
+import { rideNow, stepRideStamina } from './rideStamina';
 import { stepTips } from './tips';
 import { diverCurrentMult, seaHeight } from './sea';
 import { weatherLook } from './weather';
@@ -107,9 +108,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     stepDiver(d, input, g.map, dt, g.rng, events, {
       respawnAt: respawnPoint(g),
       mountSpeed: mountSpeed(g),
-      mountAccelMult: TEAM_RULES.accelMult,
-      mountDash: TEAM_RULES.rideDash,
-      mountSprint: TEAM_RULES.rideSprintMult,
+      ride: rideNow(g),
       // near the surface a storm's current holds you back (sea.ts)
       speedMult: mods.speedMult * diverCurrentMult(depthMetres(d.y), weatherLook(g.weather)),
       o2DrainMult: mods.o2DrainMult,
@@ -123,6 +122,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     const whale = activeBeast(g);
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
+  stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
   // the submarine is solid: you (or the beast you ride) slide along its hull
   // (not on a leap out of the water: it flies over or past the ship and falls back in the sea, 19 ottobre)
   if (!inVehicle(g) && !held && !d.airborne)

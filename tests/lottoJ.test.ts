@@ -40,7 +40,7 @@ function leap(
   for (let t = 0; t < 6; t += DT) {
     stepDiver(d, input, map, DT, makeRng(1), events, {
       respawnAt: { x: bay(1000), y: 100 },
-      ...(mounted ? { mountSpeed: SPEED, mountSprint: 1.45 } : {}),
+      ...(mounted ? { mountSpeed: SPEED } : {}),
     });
     top = Math.min(top, d.y);
     if (events.some((e) => e.type === 'breachSplash')) break;

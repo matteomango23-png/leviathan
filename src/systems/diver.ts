@@ -1,6 +1,7 @@
 // The diver: swimming, dash, oxygen, hearts, death and respawn.
 // Port of the diver part of update() in prototype/leviatano.html.
 import { DIVER } from '../data/diver';
+import { RIDE_MOTION, TEAM_RULES } from '../data/beasts';
 import { SUIT_RULES } from '../data/economy';
 import { START, WORLD } from '../data/worldLayout';
 import type { GameEvent } from './events';
@@ -10,6 +11,7 @@ import type { BodyCircle, TileMap } from './world/tileMap';
 import { freshPressure, stepPressure, type AirTank } from './breath';
 import { leaveWater, stepAirborne, surfaceWater, upPushShare } from './breach';
 import { floating, floatPushShare, floatWater, keepInWater } from './floatSurface';
+import { rideProfile, startMountDash, swimMount, type RideProfile } from './rideMotion';
 
 export interface DiverState {
   x: number;
@@ -36,6 +38,8 @@ export interface DiverState {
   pressureHurt: number;
   /** Riding, out of the water on a leap (breach.ts; not saved). */
   airborne?: boolean;
+  /** Riding: seconds since the beast's dash began (rideMotion.ts; not saved). */
+  rideDashT?: number;
   /** Seconds the diver keeps facing his last shot, swimming backwards meanwhile (not saved; owner, 19 ottobre:
    *  shooting behind him he flipped back and forth). */
   faceHold?: number;
@@ -131,10 +135,8 @@ interface DiverOptions {
   respawnAt: { x: number; y: number };
   /** Riding a beast: its speed (u/s) replaces the diver's, and the dash is the beast's. */
   mountSpeed?: number;
-  mountDash?: { speedMult: number; duration: number; cooldown: number };
-  /** Riding with the dash button held: × this pace. */
-  mountSprint?: number;
-  mountAccelMult?: number;
+  /** Riding: how it swims (rideMotion.ts), whether it can dash now, worn out (stamina.ts). */
+  ride?: { profile: RideProfile; canDash: boolean; worn: boolean };
   /** Suit effects (world.ts SUITS + upgrades). */
   speedMult?: number;
   o2DrainMult?: number;
@@ -147,6 +149,27 @@ interface DiverOptions {
   air?: AirTank;
   /** The water's line over you now, with its waves (sea.ts seaHeight); the flat resting line if not given. */
   waterLine?: number;
+}
+
+/** A beast of middling size and speed, when none is given (tests). */
+const DEFAULT_RIDE = rideProfile(6, 1);
+
+/** The diver swimming on his own: thrust, the water's drag, his top speed (his dash goes beyond it a moment). */
+function swimSelf(d: DiverState, ix: number, iy: number, maxSpeed: number, line: number, dt: number): void {
+  d.vx += ix * DIVER.accel * dt;
+  // near the surface his push up fades as he comes up to float (floatSurface.ts)
+  d.vy += iy * DIVER.accel * dt * (iy < 0 ? floatPushShare(d, line) : 1);
+  if (ix === 0 && iy === 0 && !floating(d, line)) d.vy += DIVER.sinkWhenIdle * dt;
+  const drag = d.dashTime > 0 ? DIVER.dash.drag : DIVER.drag;
+  d.vx -= d.vx * drag * dt;
+  d.vy -= d.vy * drag * dt;
+  if (d.dashTime <= 0) {
+    const s = Math.hypot(d.vx, d.vy);
+    if (s > maxSpeed) {
+      d.vx *= maxSpeed / s;
+      d.vy *= maxSpeed / s;
+    }
+  }
 }
 
 export function stepDiver(
@@ -177,11 +200,12 @@ export function stepDiver(
     stepAirborne(d, line, dt, events);
     return;
   }
-  const sprint = opt.mountSpeed !== undefined && input.dashHeld ? (opt.mountSprint ?? 1) : 1;
-  const maxSpeed =
-    opt.mountSpeed !== undefined ? opt.mountSpeed * sprint : DIVER.maxSpeed * (opt.speedMult ?? 1);
-  // riding: enough thrust to beat the water drag and reach the beast's top speed quickly
-  const accel = mounted ? maxSpeed * (DIVER.drag + (opt.mountAccelMult ?? 1)) : DIVER.accel;
+  const maxSpeed = DIVER.maxSpeed * (opt.speedMult ?? 1);
+  // riding: the beast's own pace, faster with the dash button held, slower worn out (rideMotion.ts, stamina.ts)
+  const ride = mounted ? (opt.ride ?? { profile: DEFAULT_RIDE, canDash: true, worn: false }) : null;
+  const rideSpeed =
+    (opt.mountSpeed ?? 0) *
+    (ride?.worn ? RIDE_MOTION.stamina.exhaustedShare : input.dashHeld ? TEAM_RULES.rideSprintMult : 1);
 
   let ix = input.moveX;
   let iy = input.moveY;
@@ -190,22 +214,8 @@ export function stepDiver(
     ix /= m;
     iy /= m;
   }
-  d.vx += ix * accel * dt;
-  // near the surface your push up fades: riding as the beast comes out of the water (breach.ts), swimming as you
-  // come up to float (floatSurface.ts)
-  const upShare = iy >= 0 ? 1 : mounted ? upPushShare(d.y, line) : floatPushShare(d, line);
-  d.vy += iy * accel * dt * upShare;
-  if (ix === 0 && iy === 0 && !mounted && !floating(d, line)) d.vy += DIVER.sinkWhenIdle * dt;
-  const drag = d.dashTime > 0 ? DIVER.dash.drag : DIVER.drag;
-  d.vx -= d.vx * drag * dt;
-  d.vy -= d.vy * drag * dt;
-  if (d.dashTime <= 0) {
-    const s = Math.hypot(d.vx, d.vy);
-    if (s > maxSpeed) {
-      d.vx *= maxSpeed / s;
-      d.vy *= maxSpeed / s;
-    }
-  }
+  if (ride) swimMount(d, ix, iy, { speed: rideSpeed, profile: ride.profile }, upPushShare(d.y, line), dt);
+  else swimSelf(d, ix, iy, maxSpeed, line, dt);
   if (d.faceHold && d.faceHold > 0) d.faceHold = Math.max(0, d.faceHold - dt);
   else if (Math.abs(ix) > 0.2) d.face = ix > 0 ? 1 : -1;
   const wantAim = Math.hypot(ix, iy) > 0.2 ? Math.atan2(iy, ix) : d.face > 0 ? 0 : Math.PI;
@@ -214,14 +224,17 @@ export function stepDiver(
   while (da < -Math.PI) da += Math.PI * 2;
   d.aim += da * Math.min(1, dt * DIVER.aimTurnRate);
 
-  if (input.dash && d.dashCooldown <= 0 && (mounted || opt.canDash !== false)) {
-    // on foot the diver's own dash; riding, the beast bursts forward (TEAM_RULES.rideDash)
-    const md = opt.mountDash;
-    const speed = mounted && md ? maxSpeed * md.speedMult : DIVER.dash.speed;
-    d.vx = Math.cos(d.aim) * speed;
-    d.vy = Math.sin(d.aim) * speed;
-    d.dashTime = mounted && md ? md.duration : DIVER.dash.duration;
-    d.dashCooldown = mounted && md ? md.cooldown : DIVER.dash.cooldown;
+  if (input.dash && d.dashCooldown <= 0 && (ride ? ride.canDash : opt.canDash !== false)) {
+    // riding, the beast's own push beyond its pace (rideMotion.ts); on foot the diver's own dash
+    if (ride) {
+      startMountDash(d);
+      d.dashCooldown = ride.profile.cooldown;
+    } else {
+      d.vx = Math.cos(d.aim) * DIVER.dash.speed;
+      d.vy = Math.sin(d.aim) * DIVER.dash.speed;
+      d.dashTime = DIVER.dash.duration;
+      d.dashCooldown = DIVER.dash.cooldown;
+    }
     spendAir(d, opt.air, DIVER.dashAir); // a burst of speed costs breath
     events.push({ type: 'dash', x: d.x, y: d.y });
   }
@@ -231,7 +244,7 @@ export function stepDiver(
   else floatWater(d, line, iy > 0.2, dt);
   map.moveBody(d, mounted && opt.body ? opt.body : DIVER.radius, dt, false);
   // the surface like real water: riding, out of the water with enough speed (19 ottobre); swimming, never out of it
-  if (mounted) leaveWater(d, line, events);
+  if (ride) leaveWater(d, line, events, ride.profile.leap);
   else keepInWater(d, line);
   const drainMult = opt.o2DrainMult ?? 1;
   // holding the sprint while riding costs breath too
