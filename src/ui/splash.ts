@@ -46,6 +46,3 @@ export function splashReady(): void {
   ready = true;
   maybeHide();
 }
-
-/** Has the player tapped the opening screen yet? */
-export const splashEntered = (): boolean => entered || !root();

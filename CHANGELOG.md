@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.94.1 — Pulizia (21 ottobre 2026)
+
+- Nessuna novità per il giocatore: codice inutilizzato tolto e documenti in ordine.
+
 ## v0.94.0 — Bestiario per famiglie, salti senza incastri, 13 immagini nuove (21 ottobre 2026)
 
 - **Bestiario:** le bestie sono raggruppate per famiglie (pesci di scogliera, razze, anguille, tartarughe, mammiferi, squali…), ognuna con il suo titolo, e dentro ogni famiglia vanno dalla più piccola e comune alla più grande e rara. Le linee degli starter chiudono la loro famiglia, il megalodonte chiude gli squali.

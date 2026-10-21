@@ -10,7 +10,7 @@ import type { RideProfile } from './rideMotion';
 import { rest, spendDash, spendSprint, staminaOf } from './stamina';
 
 /** How the beast you ride swims (null: not riding). */
-export function mountProfile(g: BeastWorld): RideProfile | null {
+function mountProfile(g: BeastWorld): RideProfile | null {
   const b = activeBeast(g);
   return b && g.beasts.riding ? profileOf(b.form, b.level) : null;
 }
