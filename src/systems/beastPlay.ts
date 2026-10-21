@@ -7,7 +7,8 @@ import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { formLengthUnits } from './beasts/forms';
-import { callMount, stepMount } from './beasts/mount';
+import { callMount, sendAway, stepMount } from './beasts/mount';
+import { joinPack, stepPackSwim } from './pack';
 import { maxHpOf, teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
@@ -46,15 +47,27 @@ function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
     dismount(g, events);
     return;
   }
+  // a companion already with you: a second tap sends it away (systems/pack.ts)
+  const mate = g.beasts.pack.find((x) => x.uid === b.uid && x.state !== 'leaving');
+  if (mate) {
+    sendAway(mate, g.diver.x);
+    return;
+  }
   if (b.ko) {
     events.push({ type: 'cannotRide', uid: b.uid, ko: true });
+    return;
+  }
+  // a beast that carries you is the mount; any other joins the pack (owner, 21 ottobre: the mount and two companions)
+  if (!canRide(b)) {
+    joinPack(g, b);
+    events.push({ type: 'summoned', uid: b.uid });
     return;
   }
   if (m) {
     dismount(g, events);
     g.beasts.mount = null;
   }
-  g.beasts.mount = callMount(b, g.diver, g.map, canRide(b));
+  g.beasts.mount = callMount(b, g.diver, g.map, true);
   events.push({ type: 'summoned', uid: b.uid });
 }
 
@@ -93,6 +106,7 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     } else if (reached && m.state === 'in') m.state = 'follow';
     if (m.state === 'leaving' && m.t <= 0) bs.mount = null;
   }
+  stepPackSwim(g, dt);
 }
 
 /** The beast you ride caught a gull in the air (breach.ts, birds.ts): a little health back (RIDE_BREACH). */

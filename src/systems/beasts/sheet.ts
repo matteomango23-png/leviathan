@@ -1,7 +1,7 @@
 // Everything shown on a beast's card sheet: rarity, type, role, stats, its battle moves (and the next ones it
 // learns), its moves in the open sea, size, habitat. Pure data, rendered by ui/beastSheet.ts.
 import { BIOMES } from '../../data/endless';
-import { RIDE_TALENT_TEXT } from '../../data/beasts';
+import { PACK_POWER_TEXT, RIDE_TALENT_TEXT } from '../../data/beasts';
 import { mountBars, ridesForm, talentOf, type MountBars } from './mountTraits';
 import { SEA_REGIONS } from '../../data/regions';
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
@@ -69,6 +69,8 @@ export interface Sheet {
   weakAgainst: TypeId[];
   /** A mount: its four bars (1 … 5) and its talent in the sea (beasts/mountTraits.ts). */
   ride: { bars: MountBars; talent: { name: string; text: string } | null } | null;
+  /** A companion (it does not carry you): its power in your pack (systems/pack.ts). */
+  packPower: { name: string; text: string } | null;
   roleName: string;
   level: number;
   levelLabel: string;
@@ -200,6 +202,7 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     ride: ridesForm(form)
       ? { bars: mountBars(form, lv), talent: RIDE_TALENT_TEXT[talentOf(form) ?? ''] ?? null }
       : null,
+    packPower: ridesForm(form) ? null : (PACK_POWER_TEXT[talentOf(form) ?? ''] ?? null),
     roleName: ROLE_NAMES[s.role],
     level: lv,
     levelLabel: level === undefined ? `Liv. ${range[0]}–${range[1]} in natura` : `Livello ${lv}`,

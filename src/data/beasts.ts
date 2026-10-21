@@ -443,6 +443,44 @@ export const RIDE_TALENT_TEXT: Record<string, { name: string; text: string }> = 
   abissale: { name: 'Occhi del buio', text: 'La tua luce arriva molto più lontano.' },
 };
 
+/**
+ * The pack (owner, 21 ottobre 2026, docs/PROPOSTA-RUOLI.md): besides the beast you ride, up to `size` companions swim
+ * with you. Each hunts the fish in view within `huntReach` of you (a bite every `eatInterval` s), and the pack makes
+ * the small wild beasts go round it: one shorter than `scareShare` of the biggest companion, and of a lower level.
+ * The second companion keeps `slotBelow` × its length lower. Their powers by type:
+ * - Predatore: hunts `hunterReachMult` × farther and `hunterBiteMult` × as often;
+ * - Corazzato: the pressure hurts you `shellDepthM` + `shellDepthPerLevel` × its level metres deeper;
+ * - Tempesta: scares wild beasts up to `stormScareShare` of it, and no wild beast takes you by surprise;
+ * - Glaciale: every `echoSeconds` an echo shows the wild beasts within `echoReach` units of you, hidden in the dark;
+ * - Abissale: a light around you `lanternRadius` + `lanternPerLevel` × its level units wide. Tuning.
+ */
+export const PACK = {
+  size: 2,
+  huntReach: 140,
+  eatInterval: 0.6,
+  scareShare: 0.9,
+  slotBelow: 0.6,
+  huntSpacing: 1.2, // a second companion hunts a fish at least this × the first one's length away from its fish
+  hunterReachMult: 1.6,
+  hunterBiteMult: 2,
+  shellDepthM: 100,
+  shellDepthPerLevel: 3,
+  stormScareShare: 1.4,
+  echoSeconds: 4,
+  echoReach: 420,
+  lanternRadius: 40,
+  lanternPerLevel: 0.8,
+};
+
+/** Each type's power in the pack, as the sheet tells it (PACK). */
+export const PACK_POWER_TEXT: Record<string, { name: string; text: string }> = {
+  predatore: { name: 'Caccia', text: 'Caccia i pesci più lontano e più in fretta.' },
+  corazzato: { name: 'Guscio', text: 'Con lui la pressione ti fa male solo più in profondità.' },
+  tempesta: { name: 'Scarica', text: 'Tiene lontani anche predatori più grandi; nessuno ti prende di sorpresa.' },
+  glaciale: { name: 'Eco', text: 'Ogni tanto ti mostra le bestie nascoste nel buio vicino a te.' },
+  abissale: { name: 'Lanterna', text: 'Fa luce attorno a te, più ampia con il suo livello.' },
+};
+
 /** A beast's body in the water (hits, collisions). */
 export const BEAST_BODY = {
   headRadiusFrac: 0.13, // around the head, × body length

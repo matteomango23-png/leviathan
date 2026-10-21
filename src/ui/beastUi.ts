@@ -1,6 +1,7 @@
 // Interface for beasts in the open sea: the team bar at the top (tap a mount to call it and ride it, tap it
 // again to climb down) and the context button (Apri, Porto, Sfonda, Scendi). Fights are turn-based battles.
 import { PROGRESSION } from '../data/rules';
+import { isOut } from '../systems/beastState';
 import { activeBeast, canRide } from '../systems/beastPlay';
 import { formKey, formName } from '../systems/beasts/forms';
 import { maxHpOf, swapInTeam, teamMembers } from '../systems/beasts/team';
@@ -114,7 +115,6 @@ export class BeastUi {
 
   update(g: GameState): void {
     const team = teamMembers(g.beasts.team);
-    const out = g.beasts.mount;
     this.slotsEl.hidden = team.length === 0;
     this.slots.forEach((s, i) => {
       const b = team[i];
@@ -127,7 +127,7 @@ export class BeastUi {
       }
       s.root.title = `${formName(b.form)} · liv. ${b.level} · tocca per ${canRide(b) ? 'cavalcarlo' : 'farti seguire'}`;
       s.fill.style.width = `${Math.round((b.hp / maxHpOf(b)) * 100)}%`;
-      s.root.classList.toggle('out', !!out && out.uid === b.uid && out.state !== 'leaving');
+      s.root.classList.toggle('out', isOut(g, b.uid)); // ridden, or swimming in your pack
       s.root.classList.toggle('ko', b.ko);
       s.root.classList.toggle('rideable', canRide(b));
       s.note.textContent = b.ko ? 'KO' : '';

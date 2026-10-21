@@ -67,6 +67,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `endlessLife.ts` | La vita del mare infinito: sardine che seguono il sub, aria degli sfiatatoi (le bestie sono in `beasts/residents.ts`). |
 | `world/tileMap.ts` | La mappa: tile, campo "roccia" smussato, collisioni rotonde, movimento dei corpi. |
 | `world/zones.ts` | Nome della zona e profondità in metri. |
+| `pack.ts`, `views/echoView.ts` | Il branco: fino a due compagni accanto alla cavalcatura, che cacciano i pesci in vista, fanno girare al largo i piccoli e hanno il potere del loro tipo (Caccia, Guscio, Scarica, Eco con gli anelli sopra il buio, Lanterna). |
 | `beasts/mountTraits.ts`, `rideTalents.ts` | Cosa distingue una cavalcatura: velocità, resistenza, boccone e profondità (barre della scheda), il talento del suo tipo (Assalto, Ariete, Scarica, Rompighiaccio, Occhi del buio) e la paura dei superpredatori. |
 | `rideMotion.ts`, `stamina.ts`, `rideStamina.ts` | Come nuota la bestia che cavalchi (accelerazione, scivolata, scatto con ricarica, salto) dalla sua lunghezza e velocità; la resistenza di ogni bestia della squadra (non salvata) e la barra in groppa. |
 | `diver.ts`, `floatSurface.ts` | Nuoto, scatto (costa aria), ossigeno, cuori, morte e rinascita in superficie; il galleggiamento sulle onde in superficie, senza uscire dall'acqua. |

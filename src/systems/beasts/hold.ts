@@ -11,7 +11,7 @@ export type Place = 'team' | 'hold' | 'pen';
 
 interface HoldWorld {
   ship: { owned: boolean; model: string };
-  beasts: { team: TeamBeast[]; mount?: { uid: string } | null };
+  beasts: { team: TeamBeast[]; mount?: { uid: string } | null; pack?: { uid: string }[] };
 }
 
 export const placeOf = (b: TeamBeast): Place => (b.inTeam ? 'team' : b.aboard ? 'hold' : 'pen');
@@ -35,7 +35,8 @@ export function cannotMove(g: HoldWorld, b: TeamBeast, to: Place, open: readonly
   const from = placeOf(b);
   if (from === to) return 'È già lì.';
   if (!open.includes(from) || !open.includes(to)) return 'Da qui non ci arrivi.';
-  if (g.beasts.mount?.uid === b.uid) return 'È in acqua: richiamala prima.';
+  if (g.beasts.mount?.uid === b.uid || g.beasts.pack?.some((m) => m.uid === b.uid))
+    return 'È in acqua: richiamala prima.';
   if (to === 'team' && teamMembers(g.beasts.team).length >= PROGRESSION.teamSize) return 'Squadra piena.';
   if (to === 'hold' && holdRoom(g) <= 0) return holdSize(g) ? 'Stiva piena.' : 'Questa nave non ha posti.';
   if (from === 'team' && teamMembers(g.beasts.team).length <= 1) return 'Ti serve almeno una bestia con te.';

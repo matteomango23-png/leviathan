@@ -148,7 +148,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 
 - AD-1 tipi chiari ✅ v0.90.0.
 - ✅ v0.91.0 **AD-2 cavalcature:** quattro barre (velocità, resistenza, boccone, profondità), talento per tipo, paura dei superpredatori (≥30 livelli: stanno lontani e fuggono 1-2 volte; paralisi di un turno solo per un predatore leggendario con ≥10 livelli in più).
-- **AD-3 branco:** cavalcatura più due compagni, caccia dei pesci in vista, i piccoli girano al largo, poteri per tipo spiegati sulla scheda.
+- ✅ v0.92.0 **AD-3 branco:** cavalcatura più due compagni, caccia dei pesci in vista, i piccoli girano al largo, poteri per tipo spiegati sulla scheda.
 - **AD-4 poteri speciali:** polpo, lontra, beluga, squalo martello, ossigeno.
 
 ## Blocco 1 — Nuovo inizio senza storia

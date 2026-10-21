@@ -2,7 +2,7 @@
 // second stage that can carry you) takes you in the saddle: you go faster and use its ability. Any other
 // beast follows you around and eats the small fish it meets. It never fights in the water (battles are
 // turn-based). Climbing down, or a second tap, sends it away.
-import { BEAST_BODY, ROAM, TEAM_RULES } from '../../data/beasts';
+import { BEAST_BODY, PACK, ROAM, TEAM_RULES } from '../../data/beasts';
 import { DIVER } from '../../data/diver';
 import { clamp } from '../math';
 import type { TileMap } from '../world/tileMap';
@@ -32,6 +32,10 @@ export interface Mount extends BodyPose {
   travel: number;
   /** The side of you it keeps while you stay put. */
   side: 1 | -1;
+  /** In the pack (systems/pack.ts): its place round you (0 or 1), the fish it goes for, seconds to its next bite. */
+  slot?: number;
+  target?: { x: number; y: number } | null;
+  feed?: number;
 }
 
 const U = DIVER.lengthUnits;
@@ -114,6 +118,8 @@ export function stepMount(
   diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 },
   dt: number,
   map?: TileMap,
+  /** Following you: this much farther out (units), clear of the beast you ride (systems/pack.ts). */
+  around = 0,
 ): boolean {
   m.flash = Math.max(0, m.flash - dt);
   m.jaw = Math.max(0, m.jaw - dt);
@@ -142,9 +148,19 @@ export function stepMount(
     const travelling = Math.abs(m.travel) > U * f.travelMin;
     if (travelling) m.side = m.travel > 0 ? -1 : 1; // behind you, the way you go
     m.t += dt;
-    const reach = m.length * f.behind + f.gap;
-    const tx = diver.x + m.side * reach * (travelling ? 1 : 0.8) + Math.sin(m.t * 0.3) * m.length * f.wander;
-    const ty = diver.y + f.below + Math.sin(m.t * 0.45 + 1) * m.length * f.wander * 0.6;
+    const reach = m.length * f.behind + f.gap + around;
+    // in the pack the second one keeps the other side, a little lower (PACK.slotBelow); hunting, it goes for its fish
+    const slot = m.slot ?? 0;
+    const side = slot === 1 ? -m.side : m.side;
+    const tx =
+      m.target?.x ??
+      diver.x + side * reach * (travelling ? 1 : 0.8) + Math.sin(m.t * 0.3) * m.length * f.wander;
+    const ty =
+      m.target?.y ??
+      diver.y +
+        f.below +
+        slot * m.length * PACK.slotBelow +
+        Math.sin(m.t * 0.45 + 1) * m.length * f.wander * 0.6;
     const k = Math.min(1, dt * f.speed);
     m.vx += ((tx - m.x) * f.speed - m.vx) * k;
     m.vy += ((ty - m.y) * f.speed - m.vy) * k;

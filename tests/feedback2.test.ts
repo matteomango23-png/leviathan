@@ -79,7 +79,7 @@ describe('Sfondamento', () => {
       hold();
       stepGame(g, emptyInput(), 1 / 30);
     }
-    expect(g.beasts.mount?.state).toBe('follow');
+    expect(g.beasts.pack[0]?.state).toBe('follow'); // in your pack (systems/pack.ts)
     expect(canBreakBones(g)).toBe(true);
     const ev = stepGame(g, { ...emptyInput(), action: true }, 1 / 30);
     expect(ev.some((e) => e.type === 'bonesBroken')).toBe(true);

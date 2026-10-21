@@ -82,15 +82,20 @@ describe('the three tries', () => {
     expect(formKey(w.form)).toBe('tricheco');
   });
 
-  it('as a companion: in the team in place of the last one, never more than the fighter and one', () => {
+  it('as a companion: a new mount takes the place of the last one, and up to two companions swim beside it', () => {
     const g = fresh();
     const s = newGalleryState();
     const events: GameEvent[] = [];
-    for (const id of ['orca', 'manta', 'tricheco'])
+    // two mounts: the second takes the first one's place
+    for (const id of ['orca', 'manta']) makeCompanion(g, s, { speciesId: id, variant: 'comune' }, events);
+    // three companions (not mounts): the oldest goes, two stay (owner, 21 ottobre: the mount and two companions)
+    for (const id of ['tricheco', 'foca_comune', 'lontra_marina'])
       makeCompanion(g, s, { speciesId: id, variant: 'comune' }, events);
-    const team = teamMembers(g.beasts.team);
-    expect(team).toHaveLength(2);
-    expect(team.some((b) => b.form.speciesId === 'tricheco')).toBe(true);
+    const ids = teamMembers(g.beasts.team).map((b) => b.form.speciesId);
+    expect(ids).toHaveLength(4); // the fighter, the manta and two companions
+    expect(ids).toEqual(expect.arrayContaining(['manta', 'foca_comune', 'lontra_marina']));
+    expect(ids).not.toContain('orca');
+    expect(ids).not.toContain('tricheco');
   });
 
   it('on its back: even a beast that only swims at your side in the game carries you', () => {

@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.91.1)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.92.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,11 +10,46 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Feedback del 20 e del 21 ottobre:** fatto tutto (lotti S–Z, Y, AA, AB, AC). Aspetto le immagini di `docs/GEMINI-LOTTO-8.md` (19 da rifare) e quelle del Leviatano (le dà il proprietario: ricordarglielo).
-- **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅; **prossimi AD-3 il branco** (cavalcatura + due compagni, caccia dei pesci in vista, poteri per tipo) e **AD-4 poteri speciali**.
+- **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅; **prossimo AD-4 poteri speciali** (polpo, lontra, beluga, squalo martello, ossigeno).
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.91.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 20 ottobre; qui sotto il dettaglio del 21 ottobre.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AD-3, il branco (21 ottobre 2026) → v0.92.0
+
+- **Due posti separati:**
+  - `beasts.mount` è solo la cavalcatura;
+  - `beasts.pack` (nuovo, non salvato) tiene fino a `PACK.size` = 2 compagni, ognuno con un posto (`Mount.slot`: il secondo sta dall'altro lato e più in basso), il pesce che insegue (`target`) e il suo morso (`feed`);
+  - `packMembers`, `isOut` in `beastState.ts`;
+  - in `beastPlay` `callFromTeam`: chi non si cavalca va nel branco (`joinPack`), un secondo tocco lo rimanda via.
+- **`systems/pack.ts` (nuovo):**
+  - `stepPackSwim`: con la cavalcatura stanno a mezza sua lunghezza in più;
+  - `huntWithPack`: pesci in vista, ognuno un pesce diverso (`huntSpacing`);
+  - `scaredOfPack`, `noSurprise`, `shellDepthM`, `lanternRadius`, `stepPackEcho`;
+  - eventi `packEcho` e `packPower`.
+- **Collegamenti:**
+  - `game.ts`: pasti di cavalcatura e branco, `maxDepthY` con il Guscio, eco, spinta fuori dagli scafi;
+  - `encounters.ts`: paura del branco, niente sorprese con una Tempesta, avvisi dal primo compagno;
+  - `abilities.ts`: ossa con un compagno che sfonda;
+  - `beastsLayer`: disegna il branco;
+  - `beastUi`, `hold.ts`;
+  - galleria: i compagni restano due accanto alla cavalcatura;
+  - `views/echoView.ts` (anelli sopra il buio);
+  - la Lanterna è una luce in più in `worldViews`.
+- **Scheda:** `sheet.packPower` ("Potere in mare, …") per chi non si cavalca; testi in `PACK_POWER_TEXT`.
+- **Test:** `tests/lottoAD3.test.ts`; `sea`, `feedback2` e `gallery` aggiornati al branco.
+- **Nel browser** (foto):
+  - squalo bianco in groppa con barracuda e tricheco;
+  - all'inizio i due compagni inseguivano lo stesso pesce, sovrapposti, e il barracuda finiva sotto lo squalo: corretti (pesci diversi, distanza dalla cavalcatura);
+  - scheda del tricheco ("Eco") misurata dentro lo schermo.
+
+**Da provare sull'iPhone:**
+- chiamare due compagni mentre cavalchi;
+- un banco di sardine;
+- un compagno Corazzato in profondità;
+- un Glaciale nel buio;
+- un'Abissale (rana pescatrice) nel buio.
 
 ## Pulizia dopo i lotti AA–AD-2 (21 ottobre 2026) → v0.91.1
 
