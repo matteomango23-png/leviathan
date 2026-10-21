@@ -1101,3 +1101,15 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - su iPhone il web non può bloccare l'orientamento; il proprietario ha scelto di girare il gioco;
   - funziona senza toccare la logica perché tutti i comandi sono elementi della pagina: il browser li gira e li tocca giusti;
   - la schermata iniziale serve perché l'audio sull'iPhone parte solo al primo tocco (senza, la musica del menu non si sentiva mai) e dà al telefono il tempo di misurare lo schermo prima del menu.
+
+## 21 ottobre 2026 — Nessun corpo resta incastrato; il bestiario per famiglie (v0.94.0)
+
+- **Decisione:**
+  - un corpo fermato di traverso scivola lungo la roccia;
+  - un corpo dentro la roccia nuota verso l'acqua libera più vicina sotto la superficie;
+  - un salto che atterra su qualcosa fuori dall'acqua (nave, iceberg, isoletta) rimbalza e scivola indietro dalla parte da cui è venuto.
+- **Motivo:** il proprietario restava bloccato su iceberg e isolette e veniva riportato in acqua di colpo dalla nave. Le bestie grandi si impigliavano sotto gli iceberg.
+- **Alternative scartate:**
+  - lasciar salire e restare sopra la nave o il ghiaccio (non ha senso per un animale marino);
+  - ignorare le collisioni in volo (era la causa del problema).
+- **Bestiario:** l'ordine sta in un dato (`data/bestiaryOrder.ts`) e non nella lista delle specie, che resta com'è perché da quell'ordine dipendono altri sistemi.

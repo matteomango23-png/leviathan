@@ -143,8 +143,12 @@ export function stepFish(
     const dy = sc.ty - sc.y;
     const d = Math.hypot(dx, dy) || 1;
     if (d > 2) {
-      sc.x += (dx / d) * SARDINE.schoolSpeed * dt;
-      sc.y += (dy / d) * SARDINE.schoolSpeed * dt;
+      const nx = sc.x + (dx / d) * SARDINE.schoolSpeed * dt;
+      const ny = sc.y + (dy / d) * SARDINE.schoolSpeed * dt;
+      // rock (an iceberg) in its way: it does not swim into it, it picks another goal (owner, 21 ottobre: sardines
+      // caught in an iceberg)
+      if (map.hitCircle(nx, ny, SARDINE.radius * 2)) sc.t = 0;
+      else [sc.x, sc.y] = [nx, ny];
     }
   }
   for (const f of state.fish) {
@@ -163,12 +167,14 @@ export function stepFish(
     }
     let tx = f.school.x + f.ox + Math.sin(time * 1.3 + f.phase) * 6;
     let ty = f.school.y + f.oy + Math.cos(time * 1.1 + f.phase) * 4;
-    // far from you (out of sight): it just keeps its place in the school, no swimming against rock to work out
+    // far from you (out of sight): it just keeps its place in the school, never into rock; caught in it, it swims
+    // out the near way (tileMap.moveBody)
     if (Math.abs(f.x - threat.x) > SARDINE.simRange || Math.abs(f.y - threat.y) > SARDINE.simRange) {
-      f.vx = ((tx - f.x) / Math.max(dt, 1e-3)) * 0.1;
-      f.vy = ((ty - f.y) / Math.max(dt, 1e-3)) * 0.1;
-      f.x += (tx - f.x) * 0.1;
-      f.y += (ty - f.y) * 0.1;
+      const [nx, ny] = [f.x + (tx - f.x) * 0.1, f.y + (ty - f.y) * 0.1];
+      f.vx = (nx - f.x) / Math.max(dt, 1e-3);
+      f.vy = (ny - f.y) / Math.max(dt, 1e-3);
+      if (map.hitCircle(f.x, f.y, SARDINE.radius)) map.moveBody(f, SARDINE.radius, dt);
+      else if (!map.hitCircle(nx, ny, SARDINE.radius)) [f.x, f.y] = [nx, ny];
       continue;
     }
     const mult = FISH_LOOK[f.kind]?.speedMult ?? 1;

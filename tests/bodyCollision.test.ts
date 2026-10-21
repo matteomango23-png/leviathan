@@ -28,13 +28,8 @@ describe('collisioni lungo tutto il corpo (4 ottobre)', () => {
     }
     const head = bodyCircles(w).at(-1)!;
     expect(map.hitCircle(w.x + head.dx, w.y + head.dy, head.r)).toBe(false);
-    // with only the middle circle (as before) it would push its head deep into the wall
-    const old = whaleBeforeWall(260);
-    for (let i = 0; i < 90; i++) {
-      old.vx = 60;
-      map.moveBody(old, 90 * 0.07, 1 / 30);
-    }
-    expect(map.solidAt(old.x + 0.45 * 90, old.y)).toBe(true);
+    // its whole body stays out of the rock (it may slip along the wall: lot AF, 21 ottobre)
+    expect(map.hitShape(w.x, w.y, bodyCircles(w))).toBe(false);
   });
 
   it('una bestia incastrata nella roccia può uscirne (non resta ferma)', () => {

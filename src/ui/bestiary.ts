@@ -62,17 +62,27 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
         f === 'all' || (f === 'seen' ? st !== 'unknown' : f === 'tamed' ? st === 'tamed' : st !== 'tamed');
       (tile as HTMLElement).style.display = show ? '' : 'none'; // the tiles' own display beats [hidden]
     }
+    showFamilies();
+  };
+  // the name of each family over its beasts (21 ottobre), when any of them shows and the order is by number
+  const showFamilies = (): void => {
+    for (const h of grid.querySelectorAll<HTMLElement>('.bestiary-family')) {
+      const any = [...grid.querySelectorAll<HTMLElement>('.beast-tile')].some(
+        (t) => t.dataset.family === h.dataset.family && t.style.display !== 'none',
+      );
+      h.style.display = any && !byRarity ? '' : 'none';
+    }
   };
   for (const [f, label] of FILTERS) {
     const t = el('button', 'sheet-tab', filters, label);
     t.dataset.f = f;
     t.addEventListener('click', () => applyFilter(f));
   }
+  let byRarity = false;
   // the wheel of the types: who beats whom, and why (owner, 21 ottobre)
   el('button', 'sheet-tab', filters, 'Tipi').addEventListener('click', () => openTypeWheel(root));
   // order: by number (as in the Pokédex) or by rarity, rarest first (owner, 4 ottobre)
   const sortBtn = el('button', 'sheet-tab bestiary-sort', filters, 'Per rarità');
-  let byRarity = false;
   sortBtn.addEventListener('click', () => {
     byRarity = !byRarity;
     sortBtn.classList.toggle('on', byRarity);
@@ -81,16 +91,23 @@ export function openBestiary(parent: HTMLElement, g: GameState): () => void {
     const n = (t: HTMLElement, k: string): number => Number(t.dataset[k] ?? 0);
     tiles.sort((a, b) => (byRarity ? n(b, 'stars') - n(a, 'stars') : 0) || n(a, 'order') - n(b, 'order'));
     grid.append(...tiles);
+    showFamilies();
   });
   // a species, then its albino and its final forms right beside it, each a beast of its own (16 ottobre)
   const TAG: Record<EntryKind, string> = { specie: '', albino: 'albino', evoluzione: 'evoluzione' };
   entries.forEach(({ e, state }, i) => {
+    if (e.family !== entries[i - 1]?.e.family) {
+      const h = el('div', 'bestiary-family', grid, e.family);
+      h.dataset.family = e.family;
+      h.dataset.order = String(i - 0.5);
+    }
     const form = e.form;
     const owned = team.filter((b) => countsFor(e, b));
     const seen = state !== 'unknown';
     const stars = formStars(form) as 1 | 2 | 3 | 4 | 5;
     const card = el('button', `beast-tile ${state}${e.kind !== 'specie' ? ' version' : ''}`, grid);
     card.dataset.state = state;
+    card.dataset.family = e.family;
     card.dataset.order = String(i);
     card.dataset.stars = String(stars);
     card.style.setProperty('--rarity', RARITY[stars].color);

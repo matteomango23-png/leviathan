@@ -170,16 +170,16 @@ function vehicleHulls(g: VehicleWorld, ship = true): HullPart[] {
 }
 
 /** Pushes a body (you, your beast, a wild one) out of the hulls; a `beast` goes through the ship's; `under`: out under
- *  the keel (the beast you ride, hull.ts). */
+ *  the keel (the beast you ride, hull.ts). True if it touched one. */
 export function pushOutOfVehicles(
   g: VehicleWorld,
   b: { x: number; y: number; vx: number; vy: number },
   circles: readonly { dx: number; dy: number; r: number }[],
   beast = false,
   under = false,
-): void {
+): boolean {
   const hulls = vehicleHulls(g, !beast);
-  if (hulls.length) pushOutOfHull(hulls, b, circles, under);
+  return hulls.length > 0 && pushOutOfHull(hulls, b, circles, under);
 }
 
 /** At the helm, still, alongside a harbour's pier: the port is there. In the boat, the same at its pier. */

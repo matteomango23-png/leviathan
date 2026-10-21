@@ -46,9 +46,8 @@ const BATTLE_CUTOUT_LOOSE: Record<string, CutoutOptions> = {
 };
 // Pictures with something under the creature (a rock stand): this share of the height is cut from the bottom
 // (the cut then fades like any fin out of frame).
-const BATTLE_CROP_BOTTOM: Record<string, number> = {
-  manta_front: 0.16,
-};
+// (the manta's rock stand, 3 ottobre, went with its new picture of 21 ottobre)
+const BATTLE_CROP_BOTTOM: Record<string, number> = {};
 // Stray bits to erase, as rectangles [x0, y0, x1, y1] in shares of the (mirrored) source picture.
 // (the white shark's and the thresher's, 3 ottobre, went with their new pictures of 19 ottobre)
 const BATTLE_ERASE: Record<string, number[][]> = {};

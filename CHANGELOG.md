@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.94.0 — Bestiario per famiglie, salti senza incastri, 13 immagini nuove (21 ottobre 2026)
+
+- **Bestiario:** le bestie sono raggruppate per famiglie (pesci di scogliera, razze, anguille, tartarughe, mammiferi, squali…), ognuna con il suo titolo, e dentro ogni famiglia vanno dalla più piccola e comune alla più grande e rara. Le linee degli starter chiudono la loro famiglia, il megalodonte chiude gli squali.
+- **Salti contro la nave:** la bestia non attraversa più la nave e non viene più spinta di colpo sotto la chiglia. Se ci atterra sopra fa un piccolo rimbalzo e scivola in acqua dalla parte da cui è saltata.
+- **Salti su iceberg e isolette:** non resti più bloccato. La bestia rimbalza e scivola indietro in mare.
+- **Iceberg:** le bestie grandi non restano più impigliate con la pinna sotto il ghiaccio, ci scivolano sotto. Se qualcosa finisce dentro la roccia, nuota fuori da sola.
+- **Sardine:** non entrano più negli iceberg.
+- **Immagini nuove:** Archelon a due teste (profilo, bocca aperta, battaglia), Saetta, murena, squalo bianco albino, tartaruga liuto, manta, megattera e lontra marina.
+
 ## v0.93.0 — Schermata iniziale, gioco sempre in orizzontale, musica del menu (21 ottobre 2026)
 
 - **Schermata iniziale:** all'apertura compare "LEVIATANO – Tocca per entrare". Il tocco accende i suoni e la musica del menu, rimisura lo schermo e porta al menu. Quando arriva la tua grafica, la schermata la mostrerà (`art-inbox/splash.jpg`).

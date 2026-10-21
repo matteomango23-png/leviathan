@@ -178,6 +178,7 @@ export const BATTLE_FACING_CHECKED: readonly string[] = [
   'squalo_volpe_front',
   'squarcio_back',
   'squarcio_front',
+  'tartaruga_liuto_back',
   'tartaruga_liuto_front',
   'tartaruga_marina_back',
   'tartaruga_marina_front',
