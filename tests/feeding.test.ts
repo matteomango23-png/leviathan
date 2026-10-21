@@ -25,7 +25,7 @@ function school(m: Mount, n: number): FishState {
   );
   return { schools: [], fish };
 }
-const beast = {} as TeamBeast;
+const beast = { form: { speciesId: 'squalo_bianco', variant: 'comune' } } as TeamBeast; // not a filter feeder (mountTraits.ts biteReach)
 
 describe('le bestie mangiano i pesci (4 ottobre: la megattera inghiotte il banco)', () => {
   it('una bestia grande inghiotte tutte le sardine che ha in bocca in un morso', () => {

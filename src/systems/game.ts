@@ -1,7 +1,8 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING } from '../data/beasts';
-import { rideNow, stepRideStamina } from './rideStamina';
+import { rideDepthM, rideNow, stepRideStamina } from './rideStamina';
+import { stepRideTalents } from './rideTalents';
 import { stepTips } from './tips';
 import { diverCurrentMult, seaHeight } from './sea';
 import { weatherLook } from './weather';
@@ -113,7 +114,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       speedMult: mods.speedMult * diverCurrentMult(depthMetres(d.y), weatherLook(g.weather)),
       o2DrainMult: mods.o2DrainMult,
       canDash: mods.canDash,
-      maxDepthY: WORLD.surfaceY + mods.maxDepthM * WORLD.unitsPerMetre,
+      // riding, as deep as the beast takes you if deeper than your suit (mountTraits.ts mountDepthM)
+      maxDepthY: WORLD.surfaceY + Math.max(mods.maxDepthM, rideDepthM(g)) * WORLD.unitsPerMetre,
       body: g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : undefined,
       air: tank,
       // the surface over you with its waves, the same the views draw and the boats ride (floatSurface.ts)
@@ -123,6 +125,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   }
   stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
+  stepRideTalents(g, events); // a Tempesta's dash stuns the small beasts around it (rideTalents.ts)
   // the submarine is solid: you (or the beast you ride) slide along its hull
   // (not on a leap out of the water: it flies over or past the ship and falls back in the sea, 19 ottobre)
   if (!inVehicle(g) && !held && !d.airborne)

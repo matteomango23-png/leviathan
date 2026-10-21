@@ -20,6 +20,8 @@ export interface BattleRequest {
   wildId: number;
   /** 'you': you hit it from behind (it loses its first turn) · 'foe': it touched you (a free attack). */
   first: 'you' | 'foe' | 'normal';
+  /** The fear of the superpredator you ride (beasts/mountTraits.ts): its tries to flee, frozen its first turn. */
+  fear?: { fleeTries: number; frozen: boolean };
 }
 
 /**

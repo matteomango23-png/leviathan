@@ -1,6 +1,7 @@
 // Taming and fleeing in a battle, like Pokémon's catch formula and escape (split from battle.ts in the cleanup of
 // 19 ottobre 2026). Numbers in data/battle.ts BATTLE.catch and BATTLE.flee. Pure logic.
 import { BATTLE } from '../../data/battle';
+import { RIDE_TALENTS } from '../../data/beasts';
 import { formStars, isGiant, speciesOf } from '../beasts/forms';
 import type { Rng } from '../math';
 import { you, type BattleState, type Step } from './battle';
@@ -43,6 +44,16 @@ export function fleeChance(s: BattleState): number {
     f.perStar * (formStars(s.foe.form) - 1) -
     (isGiant(s.foe.form) ? f.giant : 0);
   return Math.min(f.max, Math.max(f.min, p));
+}
+
+/** The wild beast, afraid of the superpredator you ride, tries to flee instead of attacking (RIDE_TALENTS.fleeChance).
+ *  Returns null when it has no try left; true if it got away (the battle is over, nothing tamed, nothing learnt). */
+export function foeTriesFlee(s: BattleState, rng: Rng): boolean | null {
+  if (s.foeFleeTries <= 0) return null;
+  s.foeFleeTries--;
+  const ok = rng() < RIDE_TALENTS.fleeChance;
+  if (ok) s.over = 'escaped';
+  return ok;
 }
 
 export function tryFlee(s: BattleState, rng: Rng): boolean {

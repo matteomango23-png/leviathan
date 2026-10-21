@@ -2,6 +2,21 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.91.0 — Ogni cavalcatura ha il suo perché (21 ottobre 2026)
+
+- **Scheda delle cavalcature:** quattro barre da 1 a 5 (velocità, resistenza, boccone, profondità) e il talento in mare del suo tipo.
+- **Boccone:** i filtratori (squalo balena, squalo elefante, megattera, manta) aprono la bocca molto di più e prendono più sardine in un colpo.
+- **Profondità:** in groppa puoi scendere fin dove regge la bestia, se è più giù di quanto regge la tua muta. Gli abissali vanno più giù di tutti.
+- **Talenti in groppa:**
+  - **Predatore, Assalto:** se tocchi una bestia mentre scatti, perde il primo turno;
+  - **Corazzato, Ariete:** sfonda sempre le ossa antiche;
+  - **Tempesta, Scarica:** quando scatti stordisci le bestie più piccole vicine, che ti lasciano in pace un po';
+  - **Glaciale, Rompighiaccio:** rompe il ghiaccio degli iceberg (pulsante "Sfonda");
+  - **Abissale, Occhi del buio:** la tua luce arriva molto più lontano.
+- **La paura dei superpredatori:** squalo bianco, Zannarossa, megalodonte, Livyatan e orca.
+  - Con almeno 30 livelli in più della bestia selvatica, questa ti sta lontana, e in battaglia prova a scappare una o due volte. Se ci riesce, niente cattura.
+  - Un predatore leggendario (Zannarossa, megalodonte, Livyatan) con almeno 10 livelli in più la paralizza dalla paura per il primo turno.
+
 ## v0.90.0 — I tipi chiari (21 ottobre 2026)
 
 - **Ruota dei tipi:** nel bestiario c'è il pulsante "Tipi". Mostra i cinque tipi in cerchio, le frecce di chi batte chi e una frase per ogni vittoria ("Predatore batte Abissale: i denti strappano i corpi molli del buio").

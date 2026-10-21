@@ -4,12 +4,10 @@
 import Phaser from 'phaser';
 import { battlePlace, foeFloor } from '../systems/battle/stage';
 import { safeBottomPx } from '../ui/dom';
-import { BATTLE_PROTOTYPE } from '../data/battle';
 import { BATTLE_TEXT, type Named } from '../data/battleText';
 import { ITEMS } from '../data/world';
 import {
   chooseFoeMove,
-  createBattle,
   endRound,
   firstSide,
   nextFoe,
@@ -22,14 +20,15 @@ import {
   type Side,
   type Step,
 } from '../systems/battle/battle';
-import { tryFlee, tryTame } from '../systems/battle/tameFlee';
-import { makeFighter, named } from '../systems/battle/fighter';
+import { foeTriesFlee, tryFlee, tryTame } from '../systems/battle/tameFlee';
+import { named } from '../systems/battle/fighter';
 import { useBattleItem } from '../systems/battle/battleItems';
 import { itemDef, shellsOwned } from '../systems/economy/items';
-import { speciesOf, type BeastForm } from '../systems/beasts/forms';
+import { speciesOf } from '../systems/beasts/forms';
 import { makeRng, type Rng } from '../systems/math';
 import { battleOutcome, battleSetup, finishBattle, type BattleSetup } from '../systems/battleResult';
 import { BattleUi } from '../ui/battleUi';
+import { prototypeBattle } from './battlePrototype';
 import { afterBattleScreens, snapshotTeam } from '../ui/afterBattle';
 import { resultText } from '../ui/battleResultText';
 import type { Session } from './session';
@@ -69,35 +68,10 @@ export class BattleScene extends Phaser.Scene {
       this.items = g.gear.inventory; // the real backpack: what you use is gone
       return;
     }
-    // the prototype (?battaglia): the test team against a random wild beast of the bay or the delta
-    const P = BATTLE_PROTOTYPE;
-    const mine = new URLSearchParams(window.location.search).get('mio'); // ?battaglia&mio=orca: your first beast
-    const q0 = new URLSearchParams(window.location.search);
-    const myForm = (): BeastForm => ({
-      speciesId: mine!,
-      variant: (['albino', 'alfa'] as const).find((v) => v === q0.get('miovariante')) ?? 'comune',
-      ...(q0.has('miofinale') ? { final: true } : {}),
-      ...(q0.get('miounico') ? { unique: q0.get('miounico')! } : {}),
-    });
-    const team = P.team.map((t, i) =>
-      makeFighter(i === 0 && mine ? myForm() : { speciesId: t.speciesId, variant: 'comune' }, t.level),
-    );
-    const pick = P.foes[Math.floor(this.rng() * P.foes.length)]!;
-    const [a, b] = pick.level;
-    const roll = this.rng();
-    const variant = roll < P.variantChance / 2 ? 'albino' : roll < P.variantChance ? 'alfa' : 'comune';
-    const form: BeastForm = { speciesId: pick.speciesId, variant };
-    // for trying sizes and pictures: ?battaglia&nemico=tartaruga_marina&variante=albino&finale&unico=sfregiato&mio=orca
-    const q = new URLSearchParams(window.location.search);
-    const asked = q.get('nemico');
-    if (asked) {
-      form.speciesId = asked;
-      form.variant = (['albino', 'alfa'] as const).find((v) => v === q.get('variante')) ?? 'comune';
-      if (q.has('finale')) form.final = true;
-      if (q.get('unico')) form.unique = q.get('unico')!;
-    }
-    this.s = createBattle(team, makeFighter(form, a + Math.floor(this.rng() * (b - a + 1))));
-    this.items = { ...P.items };
+    // the prototype (?battaglia): the test team against a random wild beast (battlePrototype.ts)
+    const proto = prototypeBattle(this.rng);
+    this.s = proto.state;
+    this.items = proto.items;
   }
 
   private name(side: Side): Named {
@@ -124,9 +98,11 @@ export class BattleScene extends Phaser.Scene {
     if (this.setupInGame?.first === 'foe') {
       await this.ui.say(BATTLE_TEXT.ambushed(this.name('foe')), 1.2);
       await this.foeTurn(); // it touched you: a free attack
-    } else if (this.setupInGame?.first === 'you') {
-      s.foe.flinch = true; // you hit it from behind: it loses its first turn
-      await this.ui.say(BATTLE_TEXT.surprise(this.name('foe')), 1.2);
+    } else if (this.setupInGame?.first === 'you' || this.setupInGame?.frozen) {
+      // you hit it from behind, or it froze with fear of the legend you ride: it loses its first turn
+      s.foe.flinch = true;
+      const frozen = this.setupInGame.frozen;
+      await this.ui.say((frozen ? BATTLE_TEXT.terrified : BATTLE_TEXT.surprise)(this.name('foe')), 1.2);
     }
     while (!s.over) {
       // a beast knocked out (also by the ambush before the first round): the next one comes in first
@@ -222,6 +198,12 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private async foeTurn(first = false): Promise<void> {
+    // afraid of the superpredator you ride, it tries to flee instead (beasts/mountTraits.ts)
+    if (this.s.foeFleeTries > 0 && !this.s.foe.flinch) {
+      await this.ui.say(BATTLE_TEXT.foeTriesFlee(this.name('foe')), 1.1);
+      const ok = foeTriesFlee(this.s, this.rng);
+      return this.ui.say(ok ? BATTLE_TEXT.foeFled(this.name('foe')) : BATTLE_TEXT.foeFleeFail, 1.1);
+    }
     await this.play(useMove(this.s, 'foe', this.s.foeMove, this.rng, first));
   }
 

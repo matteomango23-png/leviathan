@@ -2,6 +2,7 @@
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
+import { fearOf, openingFor, type Fear } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
 import { ENDLESS } from '../data/endless';
 import { residentArea, residentsNear, residentForm } from './beasts/residents';
@@ -17,7 +18,7 @@ import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { luredForm } from './beasts/lure';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
-import { isHeld, onScreen, type BattleRequest, type BeastWorld } from './beastState';
+import { activeBeast, isHeld, onScreen, type BattleRequest, type BeastWorld } from './beastState';
 
 /**
  * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
@@ -28,6 +29,7 @@ export function requestBattle(
   w: WildBeast,
   first: BattleRequest['first'],
   events: GameEvent[],
+  fear?: Fear,
 ): void {
   if (g.beasts.battle || g.diver.dead) return;
   if (!teamMembers(g.beasts.team).some((b) => !b.ko && b.hp > 0)) {
@@ -35,7 +37,7 @@ export function requestBattle(
     events.push({ type: 'noTeam' });
     return;
   }
-  g.beasts.battle = { wildId: w.id, first };
+  g.beasts.battle = { wildId: w.id, first, ...(fear && (fear.fleeTries || fear.frozen) ? { fear } : {}) };
   events.push({ type: 'battleStart', id: w.id, first });
 }
 
@@ -155,6 +157,9 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     return true;
   };
   const ready: WildBeast[] = [];
+  // the beast you ride: its fear and its talent (beasts/mountTraits.ts)
+  const rb = g.beasts.riding ? activeBeast(g) : undefined;
+  const ridden = rb ? { form: rb.form, level: rb.level } : null;
   for (const w of g.beasts.wilds) {
     if (!isInWater(w)) {
       if (lured(w)) w.respawn = Math.min(w.respawn, ITEM_RULES.bait.respawn);
@@ -194,6 +199,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       continue;
     }
     const riderLength = g.beasts.riding ? (g.beasts.mount?.length ?? 0) : 0;
+    // a superpredator far above it: it keeps away (mountTraits.ts fearOf)
+    const fearful = fearOf(ridden, w).keepAway;
     const rams = aboard && ramsSubmarine(w);
     const scared = aboard && !rams;
     const rider = g.beasts.riding ? (g.beasts.mount ?? undefined) : undefined;
@@ -205,6 +212,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       dt,
       hidden,
       riderLength,
+      riderFear: fearful,
       scared,
       rider,
       view,
@@ -212,8 +220,15 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
-    } else if (touched && !aboard)
-      requestBattle(g, w, ambush(w, d, g.beasts.riding ? g.beasts.mount : null), events);
+    } else if (touched && !aboard) {
+      // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts)
+      const first = openingFor(
+        ridden,
+        d.rideDashT !== undefined,
+        ambush(w, d, g.beasts.riding ? g.beasts.mount : null),
+      );
+      requestBattle(g, w, first, events, fearOf(ridden, w, g.rng()));
+    }
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the
   // first of the list, so the same few came every time)

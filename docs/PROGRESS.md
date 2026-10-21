@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.90.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.91.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -13,6 +13,35 @@
 - **Prossimi passi possibili:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.86.1 (20 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 19 ottobre; qui sotto il dettaglio del 20 ottobre.
+
+## Lotto AD-2, le cavalcature (21 ottobre 2026) → v0.91.0
+
+- **`systems/beasts/mountTraits.ts` (nuovo):**
+  - `rideSpeedOf` (spostato da `mountSpeed`), `profileOf`, `biteReach` (filtratori ×1,6, `FILTER_FEEDERS`), `mountDepthM` (`RIDE_TALENTS.depthM` per tipo, giganti fino a ×1,5), `mountBars`;
+  - `ridesForm` (ora usata da `canRide`), `talentOf`, `openingFor` (Assalto), `isApex` (Predatore con 3 stelle o più, più l'orca), `isLegendary`, `fearOf`;
+  - i dati sono in `RIDE_TALENTS` e `RIDE_TALENT_TEXT` (`data/beasts.ts`).
+- **Collegamenti:**
+  - `feeding.ts` usa `biteReach`;
+  - `game.ts`: in groppa `maxDepthY` è il massimo fra muta e bestia (`rideDepthM` in `rideStamina.ts`);
+  - `encounters.ts`: `riderFear` passato a `roam` (tiene lontani), `openingFor` e `fear` in `requestBattle` → `BattleRequest.fear`;
+  - `battleSetup`: `foeFleeTries` e `frozen`;
+  - `BattleScene`: paralisi ("paralizzato dalla paura"); `foeTriesFlee` (`tameFlee.ts`) al posto della mossa del nemico; esito `'escaped'`;
+  - `abilities.ts`: `breakTiles` per ossa e ghiaccio (Ariete e Rompighiaccio, evento `bonesBroken` con `ice`);
+  - `rideTalents.ts` (nuovo): la Scarica;
+  - `lamp.ts`: Occhi del buio.
+- **Scheda:** `sheet.ride` (barre e talento), `rideBars` in `sheetPages.ts`.
+- **Pulizia:** la battaglia di prova (`?battaglia`) è in `scenes/battlePrototype.ts`, così `BattleScene` resta sotto le 300 righe.
+- **Test:** `tests/lottoAD2.test.ts`; `feeding.test.ts` ora usa una bestia con la sua specie.
+- **Nel browser** a 667×375: scheda dello squalo bianco, barre 4/3/3/1 e "Assalto", dentro lo schermo.
+- **Da tarare con il proprietario:** gli intervalli delle barre (`RIDE_TALENTS.bars`), le profondità per tipo, la probabilità di fuga (0,5).
+
+**Da provare sull'iPhone:**
+- le schede di più cavalcature;
+- scattare contro una bestia con uno squalo;
+- la Scarica con la manta o Folgore;
+- scendere in profondità con il capodoglio;
+- Rompighiaccio con l'orca vicino agli iceberg;
+- una battaglia con un superpredatore molto più forte.
 
 ## Lotto AD-1, i tipi chiari (21 ottobre 2026) → v0.90.0
 
