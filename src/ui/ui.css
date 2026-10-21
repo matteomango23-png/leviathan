@@ -70,6 +70,14 @@
   background: #e8a33c;
   box-shadow: 0 0 6px #e8a33c;
 }
+.hud-stamina .hud-o2-fill {
+  background: #f2cf5b;
+  box-shadow: 0 0 6px #f2cf5b;
+}
+.hud-stamina.worn .hud-o2-fill {
+  background: var(--blood);
+  box-shadow: 0 0 6px var(--blood);
+}
 .hud-o2[hidden] {
   display: none;
 }

@@ -1067,3 +1067,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** raggi dai bordi morbidi (una texture generata) che ondeggiano e respirano ognuno per conto suo, dietro e, più deboli, davanti al mondo. Le particelle stanno su tre strati e si accendono quando un raggio le attraversa (`rayLightAt`).
 - **Motivo:** dalla ricerca sui giochi 2D e sottomarini: fasci morbidi che si sovrappongono, con intensità variabile e fase diversa per ognuno, che seguono la superficie e svaniscono in profondità. Le particelle sospese si vedono proprio dove passa la luce.
+
+## 21 ottobre 2026 — Il movimento delle cavalcature dai loro dati, con la resistenza (v0.89.0)
+
+- **Decisione:**
+  - accelerazione, scivolata, spinta e durata dello scatto, ricarica, salto e resistenza si ricavano dalla lunghezza e dalla velocità della bestia, interpolando fra una bestia piccola e una gigante (`RIDE_MOTION`), invece di una tabella per specie;
+  - la resistenza vive solo durante la partita, per bestia: non va nel salvataggio.
+- **Motivo:** il proprietario vuole che ogni animale si muova a modo suo ("alcuni scattano subito per pochi metri, i grandi accelerano più lentamente ma per più distanza") e che lo scatto non si possa più usare a raffica. Ricavarlo dai dati vale per tutte le bestie, anche future, con pochi numeri da tarare. Una resistenza non salvata evita di toccare i salvataggi: dopo un caricamento le bestie sono riposate, che è quello che ci si aspetta.

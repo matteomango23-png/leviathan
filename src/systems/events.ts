@@ -44,6 +44,7 @@ export type GameEvent =
   /** The submarine broke; with the ship it is towed to its hold, you at the helm (`toShip`). */
   | { type: 'subWrecked'; teeth: number; toShip?: boolean }
   | { type: 'subRecovered'; toShip: boolean }
+  | { type: 'mountWorn'; name: string }
   | { type: 'subRepaired'; cost: number }
   | { type: 'engineStarted'; vehicle?: 'boat' }
   | { type: 'harbourApproach' }

@@ -35,11 +35,12 @@ export function surfaceWater(d: BreachBody, surfaceY: number, dt: number): void 
   d.vy -= d.vy * Math.min(1, RIDE_BREACH.surfaceDrag * dt);
 }
 
-/** After it moved: past the surface going up, it is out of the water. */
-export function leaveWater(d: BreachBody, surfaceY: number, events: GameEvent[]): void {
+/** After it moved: past the surface going up, it is out of the water: as high and as far as its speed takes it.
+ *  @param leap × the highest leap: a giant thrown out flies higher than a dolphin (rideMotion.ts) */
+export function leaveWater(d: BreachBody, surfaceY: number, events: GameEvent[], leap = 1): void {
   if (d.y >= surfaceY || d.vy >= 0) return;
   d.airborne = true;
-  d.vy = Math.max(d.vy, -RIDE_BREACH.maxLeapSpeed); // even the strongest dash leaps only so high
+  d.vy = Math.max(d.vy, -RIDE_BREACH.maxLeapSpeed * leap); // even the strongest dash leaps only so high
   if (-d.vy >= RIDE_BREACH.sprayFrom) events.push({ type: 'breach', x: d.x, y: surfaceY });
 }
 

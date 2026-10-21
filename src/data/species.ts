@@ -88,7 +88,7 @@ export const SPECIES: SpeciesDef[] = [
   { id: 'saetta', name: 'Saetta', type: 'tempesta', role: 'compagno', region: 'baia', wildLevel: [16, 16], rarity: 4, size: 'media', lengthM: 5, rideSpeedMult: 0.75, trait: 'Anguilla elettrica dalle pinne fulminanti',
     evolvesTo: 'folgore', evolveLevel: 36, movesFrom: 'scintilla', artFrom: 'torpedine',
     artPrompt: 'a long electric sea eel, 5 metres long, dark violet body with glowing yellow stripes, lightning crackling along its fins, sharp needle teeth' },
-  { id: 'folgore', name: 'Folgore', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 18, girth: 1.6, trait: 'Serpente marino della tempesta',
+  { id: 'folgore', name: 'Folgore', type: 'tempesta', role: 'cavalcatura', region: 'baia', wildLevel: [36, 36], rarity: 5, size: 'colossale', lengthM: 18, trait: 'Serpente marino della tempesta',
     movesFrom: 'scintilla', artFrom: 'torpedine', legendary: true,
     artPrompt: 'a gigantic prehistoric sea serpent of the storm, 14 metres long, coiling body with dark violet scales and glowing yellow runes, a crown of fin-spikes, lightning storms crackling around it' },
 
