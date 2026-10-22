@@ -1178,3 +1178,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - va creato e ripreso alla fine di un tocco o con un click, suonando un istante muto nello stesso momento ([Matt Montag](https://www.mattmontag.com/web/unlock-web-audio-in-safari-for-ios-and-macos), [gist](https://gist.github.com/kus/3f01d60569eeadefe3a1));
   - c'è un problema aperto di Apple sulle app dalla Home ([Apple Forum](https://developer.apple.com/forums/thread/805900)).
 - **Arpione:** la quota di vita tolta dipende dal livello (`base + perLevel × livello` colpi per arrivare a metà) e la bestia reagisce (carica o fuga): richiesta del proprietario.
+
+## 22 ottobre 2026 — La caccia dal buio; la cavalcatura morde (v0.104.0)
+
+- **Decisione:**
+  - un predatore colpito non scappa e basta: ti dà la caccia con attesa, avviso, carica e morso, e si schiva con uno scatto di lato;
+  - in groppa la cavalcatura morde (sfianca senza battaglia) e viene morsa;
+  - la battaglia la fai partire tu (contatto senza scatto, Affronta, o tocco su una tua bestia).
+- **Motivo:** il proprietario: "non fa paura… a cosa serve la cavalcatura… come faccio a schivarlo… la mia creatura deve essere morsa anche lei".
+- **Alfa:** i residenti del mare aperto hanno versione fissa; nei primi 2 km solo comuni, per non incontrare sempre lo stesso alfa uscendo dal porto.

@@ -61,15 +61,14 @@ describe('la bestia colpita reagisce (proprietario: "deve iniziare a muoversi pi
     const g = game();
     const w = place(g, 'squalo_tigre', 80);
     weaponHitsBeast(g, w.x, w.y, [], 1);
-    expect(w.patrol?.st).toBe('bolt');
-    expect(w.provoked).toBeGreaterThan(0);
+    expect(w.stalk?.phase).toBe('away'); // lot BE: it stalks you (beasts/stalk.ts)
     let wentOff = false;
     let charged = false;
     for (let i = 0; i < 300 && !charged; i++) {
       run(g, DT);
       const v = g.beasts.view!;
       if (w.x < v.x - w.length * 0.5 || w.x > v.x + v.width + w.length * 0.5) wentOff = true;
-      if (wentOff && w.charging) charged = true;
+      if (wentOff && w.stalk?.phase === 'charge') charged = true;
     }
     expect(wentOff).toBe(true);
     expect(charged).toBe(true);

@@ -13,7 +13,8 @@ import { range } from './math';
 import { distanceToBody } from './beasts/combat';
 import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
-import { hunterAfterYou, swimBite } from './swimFight';
+import { hunterAfterYou, mountBite, stalkBite, swimBite } from './swimFight';
+import { HARPOON_WEAKEN } from '../data/battle';
 import { SUBMARINE } from '../data/submarine';
 import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
@@ -68,6 +69,7 @@ export function ambush(
 export function faceHunter(g: BeastWorld, events: GameEvent[], lead?: string): boolean {
   const w = hunterAfterYou(g);
   if (!w) return false;
+  w.stalk = undefined;
   requestBattle(g, w, 'normal', events);
   if (g.beasts.battle && lead) g.beasts.battle.lead = lead;
   return true;
@@ -177,7 +179,8 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     // you swam far away from its waters: it goes back into the dark (a hunter on your tail a bit later)
     // (not while the sphere holds it: it waits for you there)
     const leash = 400 + (w.mood === 'chase' ? ROAM.chaseLeash : 0);
-    if (!isHeld(g.beasts.held, w) && !w.drawn && !inArea(w, d.x, d.y, leash) && !seen(w.x, w.y)) {
+    // (a hunter stalking you does not leave: it comes back at you out of the dark, beasts/stalk.ts)
+    if (!isHeld(g.beasts.held, w) && !w.drawn && !w.stalk && !inArea(w, d.x, d.y, leash) && !seen(w.x, w.y)) {
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
     }
@@ -221,12 +224,27 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       rider,
       view,
     });
+    if (w.stalk?.toll) {
+      w.stalk.toll = false;
+      events.push({ type: 'chargeWarn', x: w.x, y: w.y });
+    }
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
+    } else if (touched && !aboard && w.stalk) {
+      // its charge reached you (beasts/stalk.ts): it bites you, or your mount
+      stalkBite(g, w, events);
     } else if (touched && !aboard && !g.beasts.riding) {
       // on your own it bites, and you choose: face it or swim away (swimFight.ts; owner, 22 ottobre)
       swimBite(g, w, events);
+    } else if (
+      touched &&
+      !aboard &&
+      d.rideDashT !== undefined &&
+      (w.wounds ?? 0) < HARPOON_WEAKEN.max - 1e-6
+    ) {
+      // riding, dashing into it: your mount bites it, no battle yet (swimFight.ts; owner, 22 ottobre)
+      mountBite(g, w, events);
     } else if (touched && !aboard) {
       // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts)
       const first = openingFor(

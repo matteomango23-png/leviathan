@@ -157,6 +157,7 @@ export class WorldScene extends Phaser.Scene {
         this.save();
       else if (e.type === 'respawned') v.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();
+      else if (e.type === 'chargeWarn') this.session.sound.chargeWarn();
       else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
         const near =
           e.vehicle === 'boat'
@@ -199,6 +200,8 @@ export class WorldScene extends Phaser.Scene {
       this.beepT = beepEvery(ahead);
     }
     const d = g.diver;
+    // a hunter stalking you: the battle music rises while it waits and charges (beasts/stalk.ts)
+    sound.stalkTension(g.beasts.wilds.some((w) => !!w.stalk && w.stalk.phase !== 'away'));
     sound.updateSea(
       {
         // in a vehicle you do not swim: no bubbles (the engines sound instead)

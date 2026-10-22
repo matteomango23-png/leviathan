@@ -186,6 +186,13 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       const otter = e.bonus ? ` (${e.bonus} grazie alla lontra)` : '';
       return [`Tesoro! ${parts.join(', ')}${otter}.${e.weapon ? ' Mettila nello zaino al porto.' : ''}`, 4];
     }
+    case 'mountBitten':
+      return [
+        e.clash
+          ? `Vi siete morsi a vicenda: ${e.name} ha ancora ${Math.round(e.left * 100)}% di vita.`
+          : `Ha morso ${e.name}! Le resta ${Math.round(e.left * 100)}% di vita. Schiva con lo scatto o affrontalo.`,
+        2.6,
+      ];
     case 'bitten':
       return ['Ti ha morso! Affrontalo o allontanati.', 1.8];
     case 'beastWounded':

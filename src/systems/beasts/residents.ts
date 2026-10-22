@@ -135,6 +135,8 @@ export function residentForm(r: Resident): { form: BeastForm; level: number } {
   let seed = 0;
   for (const ch of r.id) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
   const rng = makeRng(seed || 1);
-  const form = rollWildForm(r.speciesId, rng);
+  const near = Number(/^r(-?\d+)\./.exec(r.id)?.[1]) < R.plainFirstStretches; // just out of the coast: common only
+  const drawn = rollWildForm(r.speciesId, rng);
+  const form: BeastForm = near ? { speciesId: r.speciesId, variant: 'comune' } : drawn;
   return { form, level: rollWildLevel(form, rng, r.band) };
 }

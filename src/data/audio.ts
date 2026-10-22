@@ -14,6 +14,16 @@ export const AUDIO = {
   unlockFade: 1.5,
 };
 
+/** A hunter's warning before it charges (beasts/stalk.ts): two low notes (seconds after, Hz), how loud, how long. */
+export const STALK_TOLL = {
+  notes: [
+    [0, 55],
+    [0.38, 52],
+  ] as [number, number][],
+  volume: 0.5,
+  length: 0.9,
+};
+
 export const SEA_SOUND = {
   rumble: { volume: 0.22, cutoffSurface: 520, cutoffDeep: 140, deepM: 300 }, // low-passed brown noise
   swell: { periodS: 9, depth: 0.35 }, // slow breathing of the rumble
