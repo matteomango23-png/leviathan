@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.102.0 — Mosse animate (22 ottobre 2026)
+
+Ogni mossa in battaglia ha il suo movimento e il suo effetto, nel colore del suo tipo:
+- **morsi:** affondo e fauci che si chiudono sul bersaglio;
+- **cariche e testate:** una carica lunga con l'onda d'urto;
+- **code, pinne, artigli e chele:** la bestia si gira e un fendente curvo attraversa l'avversario;
+- **getti, raggi e scariche:** si alza e un colpo vola fino all'avversario;
+- **terremoti, tempeste e frane:** pulsa sul posto e anelli di forza investono l'avversario;
+- **mosse su di sé (potenziamenti e cure):** si gonfia e si illumina;
+- **mosse che indeboliscono (ruggiti, inchiostro, ipnosi):** onde che partono verso l'avversario.
+
 ## v0.101.0 — Vasca a scelta, costa fino a livello 30 (22 ottobre 2026)
 
 - **Vasca della nave:**
