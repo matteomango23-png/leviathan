@@ -2,6 +2,22 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.104.0 — La caccia che fa paura (22 ottobre 2026)
+
+- **Lo squalo colpito ti dà la caccia:**
+  1. sparisce veloce nel buio fuori dallo schermo e aspetta in silenzio un paio di secondi;
+  2. poi una freccia rossa pulsa sul bordo da cui arriverà e senti due rintocchi bassi;
+  3. carica a bocca aperta più veloce di quanto nuoti, con la musica tesa;
+  4. ti morde, ti supera, sparisce e torna.
+- **Come si schiva:** uno scatto di lato all'ultimo momento. La carica punta dove eri e corregge solo di poco.
+- **Quando smette:** se lo affronti, se scappi lontano, o dopo circa 25 secondi senza colpirlo.
+- **In groppa:**
+  - scattando addosso a una bestia la tua cavalcatura la morde e la sfianca molto più dell'arpione, senza battaglia;
+  - le cariche dello squalo mordono la tua cavalcatura, che perde vita;
+  - se scatti contro di lui mentre carica, vi mordete a vicenda;
+  - toccando una bestia senza scatto, o con "Affronta" (ora anche in groppa), la battaglia parte subito.
+- **Alfa e albini:** nei primi 2 km di mare aperto ci sono solo bestie comuni. Prima vicino al porto viveva sempre lo stesso squalo bianco alfa di livello 56, e lo incontravi a ogni uscita.
+
 ## v0.103.0 — Arpione rifatto, "gira il telefono", audio, compagni (22 ottobre 2026)
 
 - **Arpione, secondo il livello:**

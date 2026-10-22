@@ -31,6 +31,8 @@ export const STALK = {
   waitSeconds: [1, 2] as [number, number],
   warnSeconds: 0.8,
   chargeSpeed: 1.55,
+  /** × the usual steering on the charge: it bursts off at once (owner: "va piano"). */
+  burst: 6,
   homing: 0.9,
   passSeconds: 0.9,
   seconds: 25,

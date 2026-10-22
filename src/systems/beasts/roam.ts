@@ -2,7 +2,7 @@
 // your lamp reveals. They turn around only out of the light (or against a wall). By temperament they come at
 // you, ignore you, or slip away slowly — never vanishing at full speed. Touching one starts a battle.
 import { BEAST_TEMPER, PATROL, ROAM, type Temper } from '../../data/beasts';
-import { HARPOON_WEAKEN } from '../../data/battle';
+import { HARPOON_WEAKEN, STALK } from '../../data/battle';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
@@ -209,7 +209,8 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   const wantVy = walker
     ? clamp((ty - b.y) * ROAM.floorHug, -speed, Math.max(speed, ROAM.floorSink))
     : ((ty - b.y) / len) * speed;
-  const k = Math.min(1, dt * ROAM.steer * (st ? 2 : 1)); // stalking it answers faster
+  // stalking it answers faster, and its charge bursts off at once (STALK.burst)
+  const k = Math.min(1, dt * ROAM.steer * (st ? (st.charging ? STALK.burst : 2) : 1));
   b.vx += (wantVx - b.vx) * k;
   b.vy += (wantVy - b.vy) * k;
   const before = b.vx;
