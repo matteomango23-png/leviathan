@@ -2,6 +2,22 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.100.0 — L'arpione sfianca, a nuoto ti mordono (22 ottobre 2026)
+
+- **Arpione e armi:**
+  - colpire una bestia selvatica non fa più partire la battaglia: le toglie un po' di vita, fino a metà al massimo;
+  - sopra la bestia compare una barretta con la vita che le resta;
+  - le bestie calme e timide scappano, quelle aggressive si arrabbiano e ti vengono addosso;
+  - in battaglia la bestia entra con la vita già tolta, quindi domarla è più facile;
+  - le armi più forti la sfiancano prima.
+- **A nuoto da solo:**
+  - un predatore che ti raggiunge prima ti morde (un cuore e una spinta), poi ti lascia un attimo prima di riprovare;
+  - mentre ti insegue il pulsante diventa **Affronta**, oppure tocchi una tua bestia nella barra e la battaglia parte con lei in testa;
+  - se te ne allontani abbastanza lascia perdere;
+  - con la squadra tutta KO non c'è battaglia: ti morde soltanto;
+  - all'inizio del gioco morde più di rado.
+- **In groppa:** come prima, la battaglia parte appena la bestia tocca la tua cavalcatura.
+
 ## v0.99.0 — Poteri speciali (22 ottobre 2026)
 
 - **Polpo gigante, "Mille braccia":** in ogni regione del mare aperto il forziere di mezzo è chiuso e incrostato. Lo apri solo con un polpo gigante nel branco, e contiene il 50 % di denti in più.

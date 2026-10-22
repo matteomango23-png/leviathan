@@ -1150,3 +1150,17 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - nel mondo non c'erano né passaggi nascosti né oggetti sparsi;
   - i forzieri esistevano già e si salvano già per nome, quindi bastava aggiungerne di nuovi senza toccare i salvataggi;
   - i passaggi veri richiederebbero di cambiare il generatore del mondo: restano un'idea per più avanti.
+
+## 22 ottobre 2026 — Sfiancare in mare, morsi a nuoto (v0.100.0)
+
+- **Decisione (scelte del proprietario):**
+  - un colpo d'arma non apre più la battaglia: sfianca la bestia fino a metà vita, che poi entra in battaglia ferita;
+  - a nuoto da solo il predatore morde, e la battaglia la fai partire tu (Affronta o tocco su una tua bestia);
+  - in groppa la battaglia parte al contatto;
+  - nessun freno ai megapredatori.
+- **Motivo:**
+  - era deciso dall'8 ottobre;
+  - rende utile l'arpione per domare;
+  - lascia scegliere se combattere;
+  - all'inizio del gioco i morsi sono più rari.
+- **Le ferite** stanno sulla bestia selvatica (`wounds`, non salvate) e spariscono quando se ne va.

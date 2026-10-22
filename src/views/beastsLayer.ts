@@ -47,6 +47,8 @@ export class BeastsLayer {
   private lastTime = NaN;
   /** Each leader's wake, for its pack to follow (packFormation.ts). */
   private readonly trails: PackTrail[] = [];
+  /** The health a wild beast has left after your weapons wore it down (systems/swimFight.ts), over it. */
+  private readonly bars: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
     this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
@@ -58,6 +60,8 @@ export class BeastsLayer {
       ),
     );
     this.mount = new BeastSprite(scene, layer);
+    this.bars = scene.add.graphics();
+    layer.add(this.bars);
     this.pack = Array.from({ length: PACK.size + 1 }, () => new BeastSprite(scene, layer));
   }
 
@@ -88,6 +92,14 @@ export class BeastsLayer {
 
   /** @param shapes murky water (clarity.ts): how murky, and where your light is (the beasts far from it are dark
    *  shapes) */
+  /** A thin bar over a wounded wild beast: what it has left (red when worn down to the limit). */
+  private woundBar(x: number, y: number, length: number, wounds: number): void {
+    const w = Math.max(14, Math.min(40, length * 0.4));
+    const left = 1 - wounds;
+    this.bars.fillStyle(0x02070c, 0.7).fillRect(x - w / 2 - 0.6, y - 0.6, w + 1.2, 3.2);
+    this.bars.fillStyle(left <= 0.5 ? 0xe0533c : 0xe6c45a, 0.95).fillRect(x - w / 2, y, w * left, 2);
+  }
+
   update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
     const dt = Number.isNaN(this.lastTime) ? 1 : Math.max(0, Math.min(1, time - this.lastTime));
     this.lastTime = time;
@@ -95,6 +107,7 @@ export class BeastsLayer {
     const v = g.beasts.view;
     const unseen = (x: number, y: number, len: number): boolean =>
       !!v && (x + len < v.x || x - len > v.x + v.width || y + len < v.y || y - len > v.y + v.height);
+    this.bars.clear();
     g.beasts.wilds.forEach((w, i) => {
       const s = this.wild[i]!;
       const mates = this.school[i] ?? [];
@@ -129,6 +142,8 @@ export class BeastsLayer {
           alpha: 1,
           shade,
         });
+      if (w.wounds && !unseen(w.x, w.y, w.length))
+        this.woundBar(w.x, w.y - w.length * 0.32, w.length, w.wounds);
       // its pack: as many as are left (block 5b), each following the leader's wake a moment behind
       const schoolSize = Math.min(BEAST_TEMPER[w.form.speciesId]?.school ?? 0, w.pack);
       const trail = (this.trails[i] ??= new PackTrail());

@@ -146,7 +146,11 @@ export function battleSetup(g: BackpackWorld): BattleSetup | null {
   const req = g.beasts.battle;
   const w = req && g.beasts.wilds.find((x) => x.id === req.wildId);
   if (!req || !w) return null;
-  const team = battleTeam(g).map(fighterFromTeam);
+  // the one you tapped to face it goes first (encounters.ts faceHunter)
+  const mine = battleTeam(g);
+  const lead = mine.findIndex((b) => b.uid === req.lead);
+  if (lead > 0) mine.unshift(...mine.splice(lead, 1));
+  const team = mine.map(fighterFromTeam);
   // a wild beast gets its individual values when you meet it; they stay with it if you tame it
   w.form.seed ??= seedFrom(`${w.id}:${w.x.toFixed(1)}:${w.y.toFixed(1)}:${w.level}`);
   // an aggressive pack fights together: its mates come in one after the other (block 5b)
@@ -158,7 +162,10 @@ export function battleSetup(g: BackpackWorld): BattleSetup | null {
         return makeFighter({ speciesId: w.form.speciesId, variant: 'comune', seed }, level);
       })
     : [];
-  const state = createBattle(team, makeFighter({ ...w.form }, w.level), reserve);
+  // worn down by your weapons in the sea, it comes in with less health (encounters.ts weaponHitsBeast)
+  const foe = makeFighter({ ...w.form }, w.level);
+  foe.hp = Math.max(1, Math.round(foe.maxHp * (1 - (w.wounds ?? 0))));
+  const state = createBattle(team, foe, reserve);
   state.foeFleeTries = req.fear?.fleeTries ?? 0; // afraid of the superpredator you ride (beasts/mountTraits.ts)
   return {
     state,

@@ -154,8 +154,8 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
   if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
-  const hitBeast = (x: number, y: number): boolean =>
-    hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events);
+  const hitBeast = (x: number, y: number, damage = 1): boolean =>
+    hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events, damage);
   const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, hitBeast);
   if (caught) catchFish(g, caught, events);
   stepProjectiles(g.weapons, g.fish, g.map, dt, {

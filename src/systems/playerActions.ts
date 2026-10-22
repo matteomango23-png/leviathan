@@ -7,6 +7,8 @@ import { storyHoldsDiver } from './story';
 import { needsStarter } from './starter';
 import { atPort, nearWreck, openWreck, portStart } from './economy/places';
 import { canOpen, scavengerBonus, wreckReach, wreckShown } from './specialPowers';
+import { hunterAfterYou } from './swimFight';
+import { faceHunter } from './encounters';
 import { PORT, PORTS } from '../data/economy';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
@@ -34,7 +36,7 @@ export function canDashNow(g: GameState): boolean {
 
 /** What the context button does right now. */
 export type Action =
-  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo';
+  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo' | 'affronta';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
@@ -42,6 +44,8 @@ export function currentAction(g: GameState): Action {
   if (onRamp(g)) return null;
   if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
   if (g.boat.aboard) return vehicleAction(g) ?? (shipPort(g) ? 'porto' : null);
+  // a hunter after you while you swim on your own: face it (swimFight.ts)
+  if (hunterAfterYou(g)) return 'affronta';
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y, wreckReach(g), (w) => wreckShown(g, w))) return 'apri';
   const beast = contextAction(g);
@@ -64,7 +68,8 @@ export function doAction(g: GameState, events: GameEvent[]): void {
     if (w && !canOpen(g, w)) events.push({ type: 'wreckLocked' });
     const loot = w && canOpen(g, w) && openWreck(w, g.gear, scavengerBonus(g));
     if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
-  } else if (act === 'porto') events.push({ type: 'portArrived' });
+  } else if (act === 'affronta') faceHunter(g, events);
+  else if (act === 'porto') events.push({ type: 'portArrived' });
   else if (act === 'sali') {
     dismount(g, events); // your beast swims off, you climb in
     board(g, events);

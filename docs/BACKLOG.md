@@ -171,21 +171,21 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - Inizio: tutorial breve a Portofosco (nuota, prendi le sardine, doma la prima bestia; lo starter resta), poi Aurelio: "ci vediamo a Porto Fango". A Porto Fango ti dà la nave e il sottomarino ("tocca questo pulsante per calare il sottomarino").
 - Zona protetta: la costa fino a Porto Fango non ha superpredatori (niente squalo bianco né coccodrillo marino); restano innocui e mediamente pericolosi. Le bestie pericolose hanno sempre livelli alti.
 
-## Blocco 2 — Correzioni rapide
+## Blocco 2 — Correzioni rapide ✅ (tutto fatto nella v0.48.0; verificato il 22 ottobre)
 - ✅ Suono del motore della nave: non in battaglia, non lontano dalla nave, non in pausa. (verificato nel codice il 19 ottobre: silenzio in battaglia, sfumato nei menu, sentito solo vicino alla nave)
 - ✅ Pulsante **Spegni motore** (cockpit e vista del timone): in folle oggi consuma carburante. (verificato nel codice il 19 ottobre: pulsante ⏻ al timone)
-- Ghiaccio: il limite di 10 nodi solo attraversando gli iceberg, non entrando nella zona.
-- Sottomarino: le leve tornano al centro quando non le tocchi; dopo un urto il gas può bloccarsi (bisogna uscire e rientrare); quando è rotto non si capisce come ripararlo.
-- Danni delle mosse incoerenti: una mossa mostra 60, dopo averne imparata un'altra mostra un valore diverso.
+- ✅ Ghiaccio: il limite di 10 nodi solo attraversando gli iceberg, non entrando nella zona.
+- ✅ Sottomarino: le leve tornano al centro quando non le tocchi; dopo un urto il gas può bloccarsi (bisogna uscire e rientrare); quando è rotto non si capisce come ripararlo.
+- ✅ Danni delle mosse incoerenti: una mossa mostra 60, dopo averne imparata un'altra mostra un valore diverso.
 - ✅ **Aria dei cetacei**: in groppa, scendendo in profondità l'aria cala, ma risalendo in superficie non si ricarica (risposta del proprietario, 8 ottobre). (verificato nel codice il 19 ottobre: si ricarica in superficie contando dal dorso della bestia, diver.ts)
-- **Avamposto**: il pulsante Porto compare solo stando a destra con la nave; deve comparire in tutta la zona intorno (destra, sinistra, sopra).
-- Megalodonte assente tra le Leggende nel bestiario; verificare la categoria delle leggende.
-- Sardine → denti: troppi denti troppo in fretta (migliaia in 2 minuti); restare soddisfacente.
-- Megattera che guadagna livelli a manciate; controllare la curva XP.
+- ✅ **Avamposto**: il pulsante Porto compare solo stando a destra con la nave; deve comparire in tutta la zona intorno (destra, sinistra, sopra).
+- ✅ Megalodonte assente tra le Leggende nel bestiario; verificare la categoria delle leggende.
+- ✅ Sardine → denti: troppi denti troppo in fretta (migliaia in 2 minuti); restare soddisfacente.
+- ✅ Megattera che guadagna livelli a manciate; controllare la curva XP.
 - ✅ Orca preistorica albina: coda da squalo (di lato), non da cetaceo. (verificato nel codice il 19 ottobre: SIDE_TAIL_UNIQUES in data/beasts.ts)
-- Granchi: stanno sul fondale, non nuotano come pesci.
-- Salendo sulla nave il personaggio entra/gira dal lato sbagliato.
-- Evoluzione del Roccaguscio: due animazioni; tenere quella sull'immagine della bestia (non quella con le card) per tutte le evoluzioni.
+- ✅ Granchi: stanno sul fondale, non nuotano come pesci.
+- ✅ Salendo sulla nave il personaggio entra/gira dal lato sbagliato.
+- ✅ Evoluzione del Roccaguscio: due animazioni; tenere quella sull'immagine della bestia (non quella con le card) per tutte le evoluzioni.
 
 ## Blocco 3 — Decisioni di design ✅ (risposte dell'8 ottobre nel GDD, "Decisioni di design")
 1. Funzione delle cavalcature.
@@ -235,7 +235,9 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - Branchi: quali bestie, quando, perché, come reagiscono al giocatore.
 - Orientamento col sottomarino (ci si perde): sottomarini premium.
 
-## Blocco 6 — Cattura e combattimento
+## Blocco 6 — Cattura e combattimento (in corso dal 22 ottobre)
+
+- **Scelte del 22 ottobre:** arpione che sfianca prima della battaglia ✅ v0.100.0; battaglie a nuoto come da proposta ✅ v0.100.0; nessun freno ai megapredatori; da fare ora: vasca della nave (BB), costa fino a livello 30 (BB), animazioni per mossa (BC).
 
 - **Deciso l'8 ottobre:** arpione in mare che indebolisce fino a metà vita (la bestia si arrabbia o scappa); conchiglie di qualità diverse; pastura sì, pesca con la canna rimandata; Nutri dà un piccolo vantaggio per un po'; squadra cambiabile al porto e nella vasca della nave.
 - Pastura; pesca dalla nave (tieni premuto e rilascia); arpioni; arpionare e sfiancare le bestie per combatterle con meno vita e favorire la cattura (o rende il ciclo troppo macchinoso? da provare prima).
@@ -255,7 +257,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - Megalodonte cavalcabile: manca l'immagine. Sul desktop c'è un nuovo squalo preistorico (immagini e video di nuoto e virata) come possibile sostituto: **prova della virata da video** su una pagina separata (link) prima di metterlo nel gioco. Su iPhone: fotogrammi scontornati della sola virata, non il video intero.
 - Raccogliere sardine è divertente: altre attività con le bestie?
 
-## Blocco 8 — Immagini
+## Blocco 8 — Immagini (rimandato dal proprietario il 22 ottobre: solo quando lo dice lui)
 - Rifare gli scontorni sbagliati (molte immagini fatte senza green screen).
 - Varianti alfa e albine: le genera il proprietario (mai lo stesso disegno con un alone chiaro).
 - Evoluzioni per ogni animale.

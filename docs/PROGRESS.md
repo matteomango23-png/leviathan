@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.99.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.100.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,34 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Prossimo: pulizia (sono passati più di 3 lotti), poi le correzioni del "Blocco 2" e il Blocco 6 (`docs/BACKLOG.md`).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, poi BB vasca e costa fino a livello 30, BC mosse animate. Poi la pulizia. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto BA, l'arpione e i morsi (22 ottobre 2026, Blocco 6) → v0.100.0
+
+- **Blocco 2:** tutte le correzioni erano già fatte (v0.48.0); segnate nel `BACKLOG.md`.
+- **Arpione:**
+  - `systems/swimFight.ts` (nuovo): `weaponHitsBeast` toglie `HARPOON_WEAKEN.perDamage` × il danno dell'arma fino a `max` (`w.wounds`); l'aggressiva insegue (`chase`, `charging`), le altre scappano;
+  - `battleSetup` fa entrare la bestia con `maxHp × (1 − wounds)`;
+  - `beastsLayer.woundBar` disegna la barretta.
+- **Morso a nuoto:**
+  - `swimBite`: un cuore, `SWIM_BITE.push`, tregua `truce` (× `gentleTruce` sotto `gentleUntilLevel`);
+  - in `encounters.ts` il contatto senza cavalcatura morde, in groppa fa partire la battaglia come prima.
+- **Affrontare:**
+  - `hunterAfterYou` (inseguitore aggressivo entro `engageRadius`, se hai qualcuno in piedi) attiva il pulsante `affronta`;
+  - `faceHunter` (`encounters.ts`) apre la battaglia; il tocco su una bestia della barra la mette in testa (`BattleRequest.lead`, `battleSetup`).
+- **Test:** `tests/lottoBA.test.ts`; `sea.test.ts` aggiornato (il contatto a nuoto non apre più la battaglia; il colpo d'arpione non la apre più).
+- **Nel browser:**
+  - tre colpi d'arpione su uno squalo tigre: barretta al 70 %;
+  - lui ti insegue, ti morde (un cuore, messaggio) e il pulsante diventa "Affronta".
+
+**Da provare sull'iPhone:**
+- sfiancare una bestia con l'arpione e poi domarla;
+- farsi raggiungere da un predatore a nuoto e affrontarlo, o scappare.
 
 ## Lotto AD-4, poteri speciali (22 ottobre 2026) → v0.99.0
 

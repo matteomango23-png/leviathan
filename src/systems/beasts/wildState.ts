@@ -65,6 +65,8 @@ export interface WildBeast extends BodyPose {
   charging?: boolean;
   /** Seconds before it looks again for something to hunt. */
   lookT: number;
+  /** Share of its health your weapons took in the sea (0 … HARPOON_WEAKEN.max): it starts the battle without it. */
+  wounds?: number;
 }
 
 export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
@@ -89,6 +91,7 @@ export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
     mood: 'wander',
     target: null,
     calm: 0,
+    wounds: 0,
     respawn: 0,
     turn: 0,
     turnFrom: 1,
@@ -128,6 +131,7 @@ export function spawnWild(
     mood: 'wander',
     target: null,
     calm: 0,
+    wounds: 0,
     turn: 0,
     jaw: 0,
     flash: 0,

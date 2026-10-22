@@ -8,7 +8,9 @@ import { canBreakBones } from '../src/systems/abilities';
 import { contextAction, mountSpeed } from '../src/systems/beastPlay';
 import { stepRoam } from '../src/systems/beasts/roam';
 import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
-import { ambush, weaponHitsBeast } from '../src/systems/encounters';
+import { ambush } from '../src/systems/encounters';
+import { weaponHitsBeast } from '../src/systems/swimFight';
+import { currentAction, doAction } from '../src/systems/playerActions';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
@@ -83,14 +85,19 @@ describe('wild beasts in the open sea', () => {
     expect(turnedInLight).toBe(false);
   });
 
-  it('an aggressive one comes at you: when it touches you a battle starts (face to face: no free attack)', () => {
+  it('an aggressive one comes at you: swimming on your own it bites, then you face it (lot BA, 22 ottobre)', () => {
     const g = bay();
     const w = place(g, 'squalo_tigre', X + 70, 200, -1);
     const ev = run(g, 6);
-    const start = ev.find((e) => e.type === 'battleStart');
-    expect(start).toBeDefined();
-    expect(start && start.type === 'battleStart' && start.first).toBe(ambush(w, g.diver));
-    expect(g.beasts.battle).not.toBeNull();
+    expect(ev.some((e) => e.type === 'bitten')).toBe(true);
+    expect(ev.some((e) => e.type === 'hurt')).toBe(true);
+    expect(g.beasts.battle).toBeNull(); // no battle at its touch
+    // the context button: Affronta, an even battle
+    expect(currentAction(g)).toBe('affronta');
+    const face: GameEvent[] = [];
+    doAction(g, face);
+    expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'normal' });
+    expect(ambush).toBeDefined();
   });
 
   it('a shy one slips away, but slower than you', () => {
@@ -102,29 +109,27 @@ describe('wild beasts in the open sea', () => {
     expect(ROAM.shySpeed * U).toBeLessThan(DIVER.maxSpeed);
   });
 
-  it('hitting one from behind with the gun starts a battle where you strike first', () => {
+  it('hitting one with the gun wears it down (no battle), and a calm one slips away (lot BA, 22 ottobre)', () => {
     const g = bay();
-    const w = place(g, 'tartaruga_marina', X + 100, 200, 1); // facing away from you
+    const w = place(g, 'tartaruga_marina', X + 100, 200, 1);
     const ev: GameEvent[] = [];
     expect(weaponHitsBeast(g, w.x, w.y, ev)).toBe(true);
-    expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'you' });
+    expect(g.beasts.battle).toBeNull();
+    expect(w.wounds).toBeGreaterThan(0);
+    expect(w.mood).toBe('flee');
   });
 
-  it('with every beast of yours KO you black out, like Pokémon: you wake up healed, a few teeth lost', () => {
+  it('with every beast of yours KO: no battle, it only bites, and there is no Affronta (lot BA, 22 ottobre)', () => {
     const g = bay();
     for (const b of g.beasts.team) {
       b.hp = 0;
       b.ko = true;
     }
-    g.gear.teeth = 100;
     place(g, 'squalo_tigre', X + 60, 200, -1);
     const ev = run(g, 4);
-    expect(ev.some((e) => e.type === 'blackout')).toBe(true);
+    expect(ev.some((e) => e.type === 'bitten')).toBe(true);
     expect(g.beasts.battle).toBeNull();
-    expect(g.gear.teeth).toBe(90);
-    expect(g.beasts.team.every((b) => !b.ko && b.hp > 0)).toBe(true);
-    const out = ev.find((e) => e.type === 'blackout');
-    expect(out && out.type === 'blackout' && out.place).toBe('a Portofosco'); // no ship yet: the harbour
+    expect(currentAction(g)).not.toBe('affronta');
   });
 
   it('the sea waits while a battle is on', () => {
