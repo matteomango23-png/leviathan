@@ -90,6 +90,12 @@ export function infoPage(box: HTMLElement, c: PageContext): void {
     el('b', '', t, `Potere in mare, ${s.packPower.name}: `);
     t.append(document.createTextNode(s.packPower.text));
   }
+  if (s.specialPower) {
+    // its own power, besides its type's (data/powers.ts; owner, 22 ottobre)
+    const t = el('p', 'ride-talent pack-power', box);
+    el('b', '', t, `Potere speciale, ${s.specialPower.name}: `);
+    t.append(document.createTextNode(s.specialPower.text));
+  }
   if (b) {
     growthBars(box, b);
     const list = el('div', 'sinfo', box);

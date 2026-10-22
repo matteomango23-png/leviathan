@@ -36,22 +36,30 @@ export function nearWreck(
   x: number,
   y: number,
   reach = WRECK_REACH,
+  /** Whether it can be seen now (a buried chest only near a hammerhead: systems/specialPowers.ts). */
+  shown: (w: Wreck) => boolean = () => true,
 ): Wreck | undefined {
-  return wrecks.find((w) => !gear.wrecks.includes(w.def.id) && Math.hypot(w.x - x, w.y - 6 - y) < reach);
+  return wrecks.find(
+    (w) => !gear.wrecks.includes(w.def.id) && Math.hypot(w.x - x, w.y - 6 - y) < reach && shown(w),
+  );
 }
 
 interface WreckLoot {
   weapon?: string;
   teeth: number;
   item?: string;
+  /** Of those, the more the otter found. */
+  bonus?: number;
 }
 
 /** Opens a wreck or chest once and puts the loot in the gear. */
-export function openWreck(w: Wreck, gear: GearState): WreckLoot | null {
+/** @param more share of more teeth (the otter: systems/specialPowers.ts scavengerBonus) */
+export function openWreck(w: Wreck, gear: GearState, more = 0): WreckLoot | null {
   if (gear.wrecks.includes(w.def.id)) return null;
   gear.wrecks.push(w.def.id);
   const r = w.def.reward;
-  const loot: WreckLoot = { teeth: r.teeth ?? 0 };
+  const bonus = Math.round((r.teeth ?? 0) * more);
+  const loot: WreckLoot = { teeth: (r.teeth ?? 0) + bonus, ...(bonus ? { bonus } : {}) };
   gear.teeth += loot.teeth;
   if (r.weapon && !gear.weapons.includes(r.weapon)) {
     gear.weapons.push(r.weapon);

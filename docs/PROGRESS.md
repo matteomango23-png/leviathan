@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.98.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.99.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,35 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; poi AD-4 poteri speciali (da proporre in Plan mode).
-- **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅; **prossimo AD-4 poteri speciali** (polpo, lontra, beluga, squalo martello, ossigeno).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Prossimo: pulizia (sono passati più di 3 lotti), poi le correzioni del "Blocco 2" e il Blocco 6 (`docs/BACKLOG.md`).
+- **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AD-4, poteri speciali (22 ottobre 2026) → v0.99.0
+
+- **Dati:** `data/powers.ts` (`SPECIAL_POWER_OF`, `SPECIAL_POWERS`, `SPECIAL_POWER_TEXT`).
+- **Logica:** `systems/specialPowers.ts` (`powerHolder`, `wreckShown`, `canOpen`, `wreckReach`, `scavengerBonus`, `longEcho`, `stepAirStation`, `stepBuried`). Un potere vale con la bestia nel branco (`follow`) o sotto di te.
+- **Forzieri:**
+  - `WreckDef.kind`: il forziere di mezzo di ogni regione è `locked` (denti × 1,5);
+  - un quarto forziere, `relitto_<regione>_4`, è `buried` (denti × 2 e oggetto, al 40 % della regione);
+  - `nearWreck` accetta portata e filtro, `openWreck` il bonus della lontra;
+  - "Apri" su un forziere chiuso senza polpo manda l'evento `wreckLocked`.
+- **Disegno:** `placesView.ts` disegna le incrostazioni del forziere chiuso e un mucchio di sabbia per quello sepolto (visibile solo vicino al martello, con un alone azzurro pulsante).
+- **Eco:** `stepPackEcho` usa il beluga, anche cavalcato (portata × 2, ogni 3 s).
+- **Cambiato rispetto al piano:** la lontra non porta i pesci nella borsa, perché i pesci del branco ci finiscono già per tutti.
+- **Test:** `tests/lottoAD4.test.ts`.
+- **Nel browser:**
+  - in groppa allo squalo martello, vicino a `relitto_barriera_esterna_4` il forziere sepolto brilla e compare il messaggio;
+  - al forziere chiuso "Apri" risponde "serve un polpo gigante".
+- **Salvataggi:** il formato non cambia; i forzieri già aperti restano aperti (stessi nomi).
+
+**Da provare sull'iPhone:**
+- un forziere chiuso, prima senza e poi con il polpo;
+- lo squalo martello in mare aperto;
+- l'aria del tricheco da fermo.
 
 ## Lotto AJ, salire in groppa e ruoli (22 ottobre 2026) → v0.98.0
 

@@ -12,6 +12,7 @@ import { isInWater, type WildBeast } from './beasts/wildState';
 import type { TeamBeast } from './beasts/team';
 import type { GameEvent } from './events';
 import { beastEats } from './feeding';
+import { longEcho, powerHolder } from './specialPowers';
 import type { Fish, FishState } from './fish';
 
 const typeOf = (b: TeamBeast): TypeId | 'variabile' => speciesOf(b.form).type;
@@ -110,26 +111,31 @@ export const shellDepthM = (g: BeastWorld): number =>
 export const lanternRadius = (g: BeastWorld): number =>
   Math.max(0, ...has(g, 'abissale').map((b) => PACK.lanternRadius + PACK.lanternPerLevel * b.level));
 
-/** With a Glaciale in the pack, every PACK.echoSeconds an echo shows the wild beasts near you. */
+/** With a Glaciale in the pack, every PACK.echoSeconds an echo shows the wild beasts near you; a beluga's (at your
+ *  side or under you: systems/specialPowers.ts) reaches farther and comes more often. */
 export function stepPackEcho(
   g: BeastWorld & { timers: { packEcho?: number } },
   dt: number,
   events: GameEvent[],
 ): void {
   const glacial = packMembers(g).find(({ m, b }) => m.state === 'follow' && typeOf(b) === 'glaciale');
-  if (!glacial) return;
+  const beluga = powerHolder(g, 'longEcho');
+  const from = beluga ?? (glacial ? { x: glacial.m.x, y: glacial.m.y } : null);
+  if (!from) return;
+  const long = longEcho(g);
   const t = (g.timers.packEcho ?? 0) - dt;
   if (t > 0) {
     g.timers.packEcho = t;
     return;
   }
-  g.timers.packEcho = PACK.echoSeconds;
+  g.timers.packEcho = long?.seconds ?? PACK.echoSeconds;
   const d = g.diver;
+  const reach = PACK.echoReach * (long?.reachMult ?? 1);
   const found = g.beasts.wilds
-    .filter((w) => isInWater(w) && Math.hypot(w.x - d.x, w.y - d.y) < PACK.echoReach)
+    .filter((w) => isInWater(w) && Math.hypot(w.x - d.x, w.y - d.y) < reach)
     .map((w) => ({ x: w.x, y: w.y, r: w.length / 2 }));
-  events.push({ type: 'packEcho', x: glacial.m.x, y: glacial.m.y, found });
-  events.push({ type: 'packPower', x: glacial.m.x, y: glacial.m.y, power: 'glaciale' });
+  events.push({ type: 'packEcho', x: from.x, y: from.y, found });
+  events.push({ type: 'packPower', x: from.x, y: from.y, power: 'glaciale' });
 }
 
 /**

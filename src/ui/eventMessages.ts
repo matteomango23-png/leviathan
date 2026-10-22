@@ -183,8 +183,18 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         e.teeth ? `${e.teeth} denti` : '',
         e.item ? itemName(e.item) : '',
       ].filter(Boolean);
-      return [`Tesoro! ${parts.join(', ')}.${e.weapon ? ' Mettila nello zaino al porto.' : ''}`, 4];
+      const otter = e.bonus ? ` (${e.bonus} grazie alla lontra)` : '';
+      return [`Tesoro! ${parts.join(', ')}${otter}.${e.weapon ? ' Mettila nello zaino al porto.' : ''}`, 4];
     }
+    case 'wreckLocked':
+      return ['È chiuso e incrostato: serve un polpo gigante nel branco.', 3.5];
+    case 'buriedFound':
+      return ['Lo squalo martello ha sentito un forziere sepolto!', 3.5];
+    case 'airGiven':
+      return [
+        `${SPECIES.find((s) => s.id === e.speciesId)?.name ?? 'Il compagno'} ti dà aria: resta fermo lì vicino.`,
+        3,
+      ];
     default:
       return null;
   }

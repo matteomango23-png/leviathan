@@ -158,7 +158,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - AG schede ✅ v0.95.0 (pallino di Folgore, evoluzioni sfocate e toccabili).
 - AH sub ✅ v0.96.0 (scatto graduale con resistenza, freccia verso la nave).
 - AI bagliori ✅ v0.97.0 (rune che pulsano, occhi e luci degli abissi fissi).
-- Poi AD-4 poteri speciali.
+- AD-4 poteri speciali ✅ v0.99.0.
 
 ## Note del 22 ottobre 2026
 

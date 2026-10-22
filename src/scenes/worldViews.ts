@@ -39,6 +39,7 @@ import { KelpView } from '../views/kelpView';
 import { LightView } from '../views/lightView';
 import { NightmareView } from '../views/nightmareView';
 import { PlacesView } from '../views/placesView';
+import { wreckShown } from '../systems/specialPowers';
 import { SceneryView } from '../views/sceneryView';
 import { SeaSurfaceView } from '../views/seaSurfaceView';
 import { ShipView } from '../views/shipView';
@@ -195,7 +196,7 @@ export class WorldViews {
     this.birdsView.update(this.birds, view);
     this.effects.update(g.time, dt);
     this.echo.update(dt);
-    this.places.update(g.gear, g.time);
+    this.places.update(g.gear, g.time, (w) => wreckShown(g, w)); // a buried chest only near a hammerhead
     this.story.update(g.story);
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
     this.gearFx.update(g, rider ?? d, g.time);
@@ -219,7 +220,7 @@ export class WorldViews {
       : this.murkShown + (murkNow - this.murkShown) * Math.min(1, dt * MURK_EASE);
     const murk = this.murkShown;
     const glows = [
-      ...this.places.glowSpots(g.gear),
+      ...this.places.glowSpots(g.gear, (w) => wreckShown(g, w)),
       ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),

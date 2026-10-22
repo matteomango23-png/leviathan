@@ -88,10 +88,38 @@ function drawWreck(g: Phaser.GameObjects.Graphics, w: Wreck): void {
   g.fillRect(x - 6.5, y - 10, 13, 3);
   g.fillStyle(0xc9a15a, 1);
   g.fillRect(x - 1, y - 7, 2, 2.5);
+  if (w.def.kind === 'locked') {
+    // shut and crusted over: lumps of coral and barnacles on the lid, a chain across it (an octopus opens it)
+    g.fillStyle(0x5d6b5a, 1);
+    for (const [cx, cy, r] of [
+      [-5, -10, 2.6],
+      [-1, -11, 2.2],
+      [4, -10, 2.8],
+      [6, -5, 2],
+      [-6, -3, 1.8],
+    ] as const)
+      g.fillCircle(x + cx, y + cy, r);
+    g.lineStyle(1.2, 0x8a8f8c, 1);
+    g.lineBetween(x - 7, y - 4, x + 7, y - 6);
+  }
+}
+
+/** A chest buried in the sand (a hammerhead finds it: systems/specialPowers.ts): only its lid shows out of a mound. */
+function drawBuried(g: Phaser.GameObjects.Graphics, w: Wreck): void {
+  const x = w.x;
+  const y = w.y + 4;
+  g.fillStyle(0x3b3428, 1);
+  g.fillEllipse(x, y - 1, 26, 7);
+  g.fillStyle(0x6b4a22, 1);
+  g.fillRect(x - 6.5, y - 6, 13, 3);
+  g.fillStyle(0xc9a15a, 1);
+  g.fillRect(x - 1, y - 5, 2, 1.5);
 }
 
 export class PlacesView {
   private readonly glows: Phaser.GameObjects.Image[];
+  /** The buried chests, drawn only while a hammerhead finds them. */
+  private readonly buried = new Map<string, Phaser.GameObjects.Graphics>();
 
   constructor(
     scene: Phaser.Scene,
@@ -130,27 +158,44 @@ export class PlacesView {
         im.y = WORLD.surfaceY - PIER_ART.deckAbove - PIER_ART.deckAt * im.displayHeight;
         layer.add(im);
       }
-    for (const w of wrecks) drawWreck(g, w);
+    for (const w of wrecks) {
+      if (w.def.kind !== 'buried') drawWreck(g, w);
+      else {
+        const b = scene.add.graphics().setVisible(false);
+        drawBuried(b, w);
+        this.buried.set(w.def.id, b);
+        layer.add(b);
+      }
+    }
     layer.add(g);
-    this.glows = wrecks.map(() =>
-      scene.add.image(0, 0, TEX.dot).setBlendMode(Phaser.BlendModes.ADD).setTint(0xffd278).setScale(1.3),
+    // gold; a crusted chest dimmer, a buried one the hammerhead's electric blue
+    this.glows = wrecks.map((w) =>
+      scene.add
+        .image(0, 0, TEX.dot)
+        .setBlendMode(Phaser.BlendModes.ADD)
+        .setTint(w.def.kind === 'buried' ? 0x8fe8ff : w.def.kind === 'locked' ? 0x9a8a6a : 0xffd278)
+        .setScale(w.def.kind === 'buried' ? 2 : 1.3),
     );
     layer.add(this.glows);
   }
 
-  update(gear: GearState, time: number): void {
+  /** @param shown whether a chest can be seen now (a buried one only near a hammerhead) */
+  update(gear: GearState, time: number, shown: (w: Wreck) => boolean): void {
     this.wrecks.forEach((w, i) => {
-      const open = gear.wrecks.includes(w.def.id);
-      this.glows[i]!.setVisible(!open)
+      const there = !gear.wrecks.includes(w.def.id) && shown(w);
+      this.buried.get(w.def.id)?.setVisible(there);
+      const pulse =
+        w.def.kind === 'buried' ? 0.6 + 0.35 * Math.sin(time * 6) : 0.45 + 0.2 * Math.sin(time * 4 + i);
+      this.glows[i]!.setVisible(there)
         .setPosition(w.x, w.y - 4)
-        .setAlpha(0.45 + 0.2 * Math.sin(time * 4 + i));
+        .setAlpha(pulse);
     });
   }
 
   /** Light spots for the darkness mask: unopened chests glow faintly. */
-  glowSpots(gear: GearState): { x: number; y: number; r: number }[] {
+  glowSpots(gear: GearState, shown: (w: Wreck) => boolean): { x: number; y: number; r: number }[] {
     return this.wrecks
-      .filter((w) => !gear.wrecks.includes(w.def.id))
+      .filter((w) => !gear.wrecks.includes(w.def.id) && shown(w))
       .map((w) => ({ x: w.x, y: w.y - 4, r: 16 }));
   }
 }
