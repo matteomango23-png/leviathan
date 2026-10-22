@@ -1124,3 +1124,19 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Alternative scartate:**
   - punti luce scritti a mano: troppe coordinate, da rifare a ogni immagine nuova;
   - un filtro di bagliore di Phaser su tutta la bestia: illumina anche il corpo, non solo le rune.
+
+## 22 ottobre 2026 — Chi ti porta si decide per misura (v0.98.0)
+
+- **Decisione (scelta del proprietario):** ti porta una bestia lunga almeno 4,5 m con un dorso (`MOUNT_RULE`). Le altre nuotano con te.
+- **Eccezioni:**
+  - calamari grandi e Kraken si cavalcano seduti sulla testa;
+  - medusa, granchio, isopode e polpo mai;
+  - le seconde forme degli starter restano cavalcabili.
+- **Motivo:** prima dipendeva dal campo `role` delle specie, scritto a mano e incoerente (squalo tigre di 5,5 m compagno, squalo leuca di 3,5 m cavalcatura).
+- **Il campo `role`** resta, perché dà forma alle statistiche di battaglia: cambiarlo avrebbe cambiato i numeri delle bestie.
+
+## 22 ottobre 2026 — A bordo i compagni seguono la nave, poi vanno (v0.98.0)
+
+- **Decisione (scelta del proprietario):**
+  - sotto circa 8 nodi i compagni nuotano accanto alla nave o alla barca;
+  - se vai più veloce, se l'U-boat si immerge o se sali sul sottomarino, nuotano via e tornano in squadra.

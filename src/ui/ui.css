@@ -344,6 +344,14 @@
   border-color: var(--glow);
   box-shadow: 0 0 8px var(--glow);
 }
+/* a companion (it swims at your side, it does not carry you): violet, the mounts keep their colour (22 ottobre) */
+.team-slot:not(.rideable) {
+  border-color: #9d7bea;
+}
+.team-slot.out:not(.rideable) {
+  border-color: #b99cff;
+  box-shadow: 0 0 8px #9d7bea;
+}
 .team-slot.ko img {
   filter: grayscale(1) brightness(0.45);
 }

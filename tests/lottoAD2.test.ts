@@ -43,11 +43,12 @@ describe('four bars on the sheet (owner: "velocità, endurance, quante sardine m
     expect(whale.bite).toBe(5);
   });
 
-  it('the sperm whale takes you deepest, and every bar of every mount is 1 … 5', () => {
+  it('a deep diver takes you deepest, and every bar of every mount is 1 … 5', () => {
     const deepest = SPECIES.filter((s) => ridesForm(F(s.id)) && s.type !== 'variabile').sort(
       (a, b) => mountDepthM(F(b.id), 40) - mountDepthM(F(a.id), 40),
     )[0]!;
-    expect(['capodoglio', 'plesiosauro', 'livyatan']).toContain(deepest.id);
+    // the deep divers (lot AJ, 22 ottobre: the great squids and the Kraken carry you too)
+    expect(['capodoglio', 'plesiosauro', 'livyatan', 'calamaro_colossale', 'kraken']).toContain(deepest.id);
     for (const s of SPECIES.filter((x) => ridesForm(F(x.id))))
       for (const v of Object.values(mountBars(F(s.id), 40))) {
         expect(v).toBeGreaterThanOrEqual(1);

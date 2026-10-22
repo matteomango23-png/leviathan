@@ -1,7 +1,7 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING } from '../data/beasts';
-import { huntWithPack, shellDepthM, stepPackEcho } from './pack';
+import { huntWithPack, packAboard, shellDepthM, stepPackEcho } from './pack';
 import { rideDepthM, rideNow, stepRideStamina } from './rideStamina';
 import { diverCanDash, stepDiverStamina } from './diverStamina';
 import { stepRideTalents } from './rideTalents';
@@ -52,7 +52,7 @@ import { stepEndlessSchools, stepVents } from './endlessLife';
 import { ramSub, subModel } from './submarine';
 import { rescue } from './fuel';
 import { stepHunts } from './hunts';
-import { inVehicle, pushOutOfVehicles, shipPort, stepVehicles, wakeOnShip } from './vehicles';
+import { inVehicle, pushOutOfVehicles, shipPort, stepVehicles, vesselOf, wakeOnShip } from './vehicles';
 import { hitLever, stepTemples } from './temple';
 
 export { toSave } from './save/convert';
@@ -164,6 +164,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
+  packAboard(g, vesselOf(g)); // aboard, your pack follows the ship slowly, else swims off (pack.ts)
   // …and the beasts slide along the submarine too (the ship passes them by): wild ones, and yours with you
   for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w), true);
   for (const m of g.beasts.pack) pushOutOfVehicles(g, m, bodyCircles(m), true); // your companions too

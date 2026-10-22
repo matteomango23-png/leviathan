@@ -4,6 +4,7 @@
 import {
   FEEDING,
   FILTER_FEEDERS,
+  MOUNT_RULE,
   RIDE_KMH,
   RIDE_REF_KMH,
   RIDE_TALENTS,
@@ -77,13 +78,23 @@ export function mountBars(form: BeastForm, level: number): MountBars {
   };
 }
 
-/** Can this form carry you (a mount, a rideable second stage or final form)? */
+/** Can this form carry you? Big enough with a back to hold on to (MOUNT_RULE), a starter's rideable second stage,
+ *  or a form grown big enough (RIDEABLE_FORMS). Not its battle role (species.ts role sets its battle stats). */
 export function ridesForm(form: BeastForm): boolean {
   const sp = speciesOf(form);
-  return (
-    sp.role === 'cavalcatura' || sp.rideSpeedMult !== undefined || RIDEABLE_FORMS.includes(formKey(form))
-  );
+  if (sp.rideSpeedMult !== undefined || RIDEABLE_FORMS.includes(formKey(form))) return true;
+  return sp.lengthM >= MOUNT_RULE.minLengthM && !MOUNT_RULE.noBack.includes(sp.id);
 }
+
+/** Where you sit along it (× its length from the middle, + towards the head): the species' own, on the head of a
+ *  great squid, or the usual seat. */
+export const riderForwardOf = (form: BeastForm): number => {
+  const sp = speciesOf(form);
+  return (
+    sp.riderForward ??
+    (MOUNT_RULE.onHead.includes(sp.id) ? MOUNT_RULE.headForward : TEAM_RULES.riderOffset[0])
+  );
+};
 
 /** Its talent in the sea: its type's (RIDE_TALENT_TEXT). The Leviatano takes none. */
 export const talentOf = (form: BeastForm): TypeId | null => {

@@ -2,6 +2,22 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.98.0 — Salire in groppa senza salti, cavalcature per misura (22 ottobre 2026)
+
+- **Salire e scendere:**
+  - la cavalcatura rallenta arrivando e si mette con il dorso sotto di te;
+  - tu scivoli in sella in un terzo di secondo, senza salti;
+  - scendendo parti dalla sella con una piccola spinta, e lei prosegue per la sua strada.
+- **Arrivano e se ne vanno nuotando:** cavalcature e compagni entrano veloci dal bordo dello schermo e se ne vanno nuotando fuori, invece di comparire o sparire nel nulla.
+- **Chi ti porta, per misura:** ti porta una bestia lunga almeno 4,5 m (più del doppio del sub) che abbia un dorso.
+  - Diventano cavalcature: squalo tigre, squalo volpe, squalo goblin, beluga, elefante marino, coccodrillo del Nilo, pesce sega, dunkleosteus e serpente di mare.
+  - Calamaro gigante, calamaro colossale e Kraken si cavalcano seduti sulla testa.
+  - Lo squalo leuca diventa compagno.
+  - Medusa, granchio, isopode e polpo gigante restano compagni.
+  - Le seconde forme degli starter restano cavalcabili.
+- **A bordo:** i compagni nuotano accanto alla nave o alla barca finché vai piano. Se acceleri oltre "Avanti adagio", se l'U-boat si immerge o se sali sul sottomarino, se ne vanno nuotando. Li richiami quando torni in acqua.
+- **Barra della squadra:** i compagni hanno il bordo violetto, le cavalcature restano dorate.
+
 ## v0.97.0 — Rune e occhi che brillano (21 ottobre 2026)
 
 - **Scintilla, Saetta e Folgore:** le rune e le strisce gialle si accendono in mare e in battaglia. Una fascia di luce corre dalla testa alla coda e torna indietro, come una scossa; il resto resta acceso piano.

@@ -6,7 +6,7 @@
 import { PACK } from '../data/beasts';
 import type { TypeId } from '../data/rules';
 import { onScreen, packMembers, type BeastWorld } from './beastState';
-import { callMount, sendAway, stepMount, type Mount } from './beasts/mount';
+import { callMount, leftView, sendAway, stepMount, type Mount } from './beasts/mount';
 import { formLengthUnits, speciesOf } from './beasts/forms';
 import { isInWater, type WildBeast } from './beasts/wildState';
 import type { TeamBeast } from './beasts/team';
@@ -25,7 +25,7 @@ export function joinPack(g: BeastWorld, b: TeamBeast): void {
   const staying = g.beasts.pack.filter((m) => m.state !== 'leaving');
   if (staying.length >= PACK.size) sendAway(staying[0]!, g.diver.x);
   const taken = new Set(g.beasts.pack.filter((m) => m.state !== 'leaving').map((m) => m.slot ?? 0));
-  const m = callMount(b, g.diver, g.map, false);
+  const m = callMount(b, g.diver, g.map, false, g.beasts.view);
   m.slot = taken.has(0) ? 1 : 0;
   m.feed = 0;
   g.beasts.pack.push(m);
@@ -35,12 +35,15 @@ export function joinPack(g: BeastWorld, b: TeamBeast): void {
 export function stepPackSwim(g: BeastWorld, dt: number): void {
   // riding, they keep clear of the beast that carries you, one on each side
   const around = g.beasts.riding && g.beasts.mount ? g.beasts.mount.length * 0.5 : 0;
+  const d = g.diver;
   for (const m of g.beasts.pack) {
     const b = g.beasts.team.find((x) => x.uid === m.uid);
     if (b && m.state !== 'leaving') m.length = formLengthUnits(b.form, b.level); // it grows while it is out
-    if (stepMount(m, g.diver, dt, g.map, around) && m.state === 'in') m.state = 'follow';
+    // never out of the water after you (floating, or up on your ship's deck): just under the surface
+    const under = { ...d, y: Math.max(d.y, g.map.surfaceY + m.length * 0.5) };
+    if (stepMount(m, under, dt, g.map, around) && m.state === 'in') m.state = 'follow';
   }
-  g.beasts.pack = g.beasts.pack.filter((m) => !(m.state === 'leaving' && m.t <= 0) && teamHas(g, m.uid));
+  g.beasts.pack = g.beasts.pack.filter((m) => !leftView(m, g.beasts.view) && teamHas(g, m.uid));
 }
 
 const teamHas = (g: BeastWorld, uid: string): boolean => g.beasts.team.some((b) => b.uid === uid && !b.ko);
@@ -127,4 +130,14 @@ export function stepPackEcho(
     .map((w) => ({ x: w.x, y: w.y, r: w.length / 2 }));
   events.push({ type: 'packEcho', x: glacial.m.x, y: glacial.m.y, found });
   events.push({ type: 'packPower', x: glacial.m.x, y: glacial.m.y, power: 'glaciale' });
+}
+
+/**
+ * Aboard (owner, 22 ottobre: "quando salgo in nave… il compagno rimane in acqua e mi segue?" — his choice: it follows,
+ * then goes): on a ship or a boat going slower than PACK.followShipBelow the pack swims alongside it; faster, in a
+ * diving U-boat or in the submarine, it swims off the screen and back to the team.
+ */
+export function packAboard(g: BeastWorld, vessel: { speed: number; under: boolean } | null): void {
+  if (!vessel || (!vessel.under && vessel.speed < PACK.followShipBelow)) return;
+  for (const m of g.beasts.pack) if (m.state !== 'leaving') sendAway(m, g.diver.x);
 }

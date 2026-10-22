@@ -55,6 +55,14 @@ export const inVehicle = (g: VehicleWorld): boolean =>
   g.ship.bay === 'docking' ||
   boatOnRamp(g);
 
+/** What carries you now, for your pack (pack.ts packAboard): its speed and whether it is under the water. */
+export function vesselOf(g: VehicleWorld): { speed: number; under: boolean } | null {
+  if (g.sub.aboard || onRamp(g)) return { speed: Infinity, under: true };
+  if (g.ship.aboard) return { speed: Math.abs(g.ship.speed), under: submerged(g.ship) };
+  if (g.boat.aboard) return { speed: Math.abs(g.boat.speed), under: false };
+  return null;
+}
+
 /** The submarine is on the ramp: nothing to press until it gets there. */
 export const onRamp = (g: VehicleWorld): boolean =>
   g.ship.bay === 'launching' || g.ship.bay === 'docking' || boatOnRamp(g);

@@ -1,5 +1,6 @@
 // Shared state of everything about beasts in the open sea, and the small actions used by several systems.
-import { WILD_SPAWNS } from '../data/beasts';
+import { TEAM_RULES, WILD_SPAWNS } from '../data/beasts';
+import { seatPoint } from './beasts/seat';
 import type { Stamina } from './stamina';
 import type { DiverState } from './diver';
 import type { GameEvent } from './events';
@@ -149,11 +150,16 @@ export const isOut = (g: BeastWorld, uid: string): boolean =>
 /** You climb down: the mount swims back into the dark. */
 export function dismount(g: BeastWorld, events: GameEvent[]): void {
   const m = g.beasts.mount;
-  if (g.beasts.riding) {
+  const d = g.diver;
+  const wasRiding = g.beasts.riding;
+  if (wasRiding) {
     g.beasts.riding = false;
-    g.diver.y -= 6;
-    g.diver.vy = -30;
+    // you leave from your seat with a little push up, at its pace: no jump (owner, 22 ottobre)
+    const b = activeBeast(g);
+    if (m && b) Object.assign(d, seatPoint(m, b.form));
+    d.vx = (m?.vx ?? d.vx) * 0.6;
+    d.vy = (m?.vy ?? 0) * 0.6 - TEAM_RULES.dismountPush;
     events.push({ type: 'dismounted' });
   }
-  if (m && m.state !== 'leaving') sendAway(m, g.diver.x);
+  if (m && m.state !== 'leaving') sendAway(m, d.x, wasRiding);
 }
