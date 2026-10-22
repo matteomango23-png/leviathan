@@ -23,6 +23,9 @@ import { damageNumber } from './battle/damageNumber';
 import { newPose, type Pose } from './battle/pose';
 import { drawBeast } from './battle/drawBeast';
 import { BattleGlow } from './battle/battleGlow';
+import { MoveFx } from './battle/moveFx';
+import { playMove } from './battle/moveAnims';
+import type { MoveAnim } from '../data/moveAnims';
 import { BattleBackdrop, DEPTH, type PaintedLayers } from './battle/backdrop';
 import { TameShell } from './battle/tameShell';
 import { TypeFx } from './battle/typeFx';
@@ -33,6 +36,7 @@ const wait = (ms: number): Promise<void> => new Promise((r) => window.setTimeout
 export class BattleView {
   private readonly backdrop: BattleBackdrop;
   private readonly fx: TypeFx;
+  private readonly mfx: MoveFx; // the look of each kind of move (battle/moveFx.ts)
   private readonly shell: TameShell;
   private readonly images: Record<Side, Phaser.GameObjects.Image>;
   private readonly glows: Record<Side, BattleGlow>; // runes and eyes that shine (data/glow.ts)
@@ -67,6 +71,7 @@ export class BattleView {
     };
     this.glows = { foe: new BattleGlow(scene, 10.5), you: new BattleGlow(scene, 12.5) };
     this.fx = new TypeFx(scene);
+    this.mfx = new MoveFx(scene);
     this.shell = new TameShell(scene);
   }
 
@@ -167,6 +172,7 @@ export class BattleView {
     }
     this.backdrop.update(dt, time, grounds);
     this.fx.update(dt);
+    this.mfx.update(dt);
     this.shell.update();
   }
 
@@ -180,32 +186,22 @@ export class BattleView {
     return tweenTo(this.scene, target, props, ms, yoyo, ease);
   }
 
-  /** Wind-up (pulls back, coils), then the attacker shoots at the other one leaving bubbles, and comes back. */
-  async lunge(side: Side): Promise<void> {
-    const p = this.poses[side];
-    const dir = side === 'you' ? 1 : -1;
-    await this.tween(
-      p,
-      { dx: -dir * this.w * 0.035, dy: dir * this.h * 0.02, scale: 0.94, rot: -dir * 0.06 },
-      220,
-    );
-    const from = this.centre(side);
-    this.fx.trail(from.x, from.y, from.size);
-    await this.tween(
-      p,
+  /** The move's own motion and look (views/battle/moveAnims.ts): resolves when the blow lands. */
+  attack(side: Side, anim: MoveAnim, type: MoveTypeId): Promise<void> {
+    return playMove(
       {
-        dx: dir * this.w * 0.26,
-        dy: -dir * this.h * 0.24,
-        scale: side === 'you' ? 0.9 : 1.12,
-        rot: dir * 0.08,
+        pose: (s) => this.poses[s],
+        centre: (s) => this.centre(s),
+        tween: (t, props, ms, yoyo, ease) => this.tween(t, props, ms, yoyo, ease),
+        fx: this.fx,
+        mfx: this.mfx,
+        w: this.w,
+        h: this.h,
       },
-      150,
-      false,
-      'Quad.easeIn',
+      side,
+      anim,
+      type,
     );
-    const mid = this.centre(side);
-    this.fx.trail(mid.x, mid.y, mid.size);
-    void this.tween(p, { dx: 0, dy: 0, scale: 1, rot: 0 }, 380, false, 'Back.easeOut');
   }
 
   /** A hit: the type's effect, a white flash and a recoil, a shake, the number floating up. */

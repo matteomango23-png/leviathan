@@ -221,6 +221,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `data/bestiaryOrder.ts` | L'ordine del bestiario: famiglie, e in ognuna dal più piccolo e comune al più raro. |
 | `data/assets.ts` | Indirizzi delle immagini con la loro impronta, così il telefono non mostra copie vecchie. |
 | `data/glow.ts`, `systems/glowPulse.ts`, `views/battle/battleGlow.ts`, `scripts/art/glow.ts` | Cosa brilla su una bestia (rune che pulsano, occhi fissi): le immagini di bagliore in `public/glow/`, la loro luce nel tempo, il disegno in battaglia (in mare lo fa `BeastSprite`). |
+| `data/moveAnims.ts`, `systems/battle/moveAnim.ts`, `views/battle/moveAnims.ts`, `views/battle/moveFx.ts` | Il movimento e l'effetto di ogni mossa in battaglia (morso, carica, coda, colpo a distanza, anelli, alone, onde). |
 | `systems/swimFight.ts` | Prima della battaglia: le armi sfiancano la bestia (fino a metà vita), a nuoto il predatore morde, e "Affronta". |
 | `data/powers.ts`, `systems/specialPowers.ts` | I poteri speciali di alcune specie: forzieri chiusi (polpo) e sepolti (squalo martello), portata e denti in più (lontra), eco lungo (beluga), aria da fermi (pesce luna, foche, tricheco). |
 | `systems/beasts/seat.ts` | Dove sei seduto sulla bestia che cavalchi, e la salita morbida in sella. |

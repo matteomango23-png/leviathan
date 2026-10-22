@@ -3,6 +3,8 @@
 // accuracy and effects (data/battleMoves.ts), conditions and stages work as in Pokémon (status.ts). Pure logic: the
 // battle scene animates the steps it returns.
 import { BATTLE } from '../../data/battle';
+import { moveAnimOf } from './moveAnim';
+import type { MoveAnim } from '../../data/moveAnims';
 import { BATTLE_TEXT } from '../../data/battleText';
 import type { TypeId } from '../../data/rules';
 import type { Rng } from '../math';
@@ -45,6 +47,8 @@ export type Step =
       kind: 'attack';
       side: Side;
       move: string;
+      /** How it looks (systems/battle/moveAnim.ts). */
+      anim: MoveAnim;
       /** The type it hit with (the colour of its effect). */
       type: TypeId;
       hits: number[];
@@ -187,6 +191,7 @@ export function useMove(s: BattleState, side: Side, index: number, rng: Rng, mov
     kind: 'attack',
     side,
     move: move.name,
+    anim: moveAnimOf(move),
     type: moveTypeAgainst(move, def),
     hits,
     crit,

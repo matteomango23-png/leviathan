@@ -237,7 +237,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 
 ## Blocco 6 — Cattura e combattimento (in corso dal 22 ottobre)
 
-- **Scelte del 22 ottobre:** arpione che sfianca prima della battaglia ✅ v0.100.0; battaglie a nuoto come da proposta ✅ v0.100.0; nessun freno ai megapredatori; vasca della nave ✅ v0.101.0; costa fino a livello 30 ✅ v0.101.0; da fare: animazioni per mossa (BC).
+- **Scelte del 22 ottobre:** arpione che sfianca prima della battaglia ✅ v0.100.0; battaglie a nuoto come da proposta ✅ v0.100.0; nessun freno ai megapredatori; vasca della nave ✅ v0.101.0; costa fino a livello 30 ✅ v0.101.0; animazioni per mossa ✅ v0.102.0. Restano del blocco: pastura e pesca dalla nave (in parte già nel gioco), Nutri come vantaggio in battaglia (non scelto ora).
 
 - **Deciso l'8 ottobre:** arpione in mare che indebolisce fino a metà vita (la bestia si arrabbia o scappa); conchiglie di qualità diverse; pastura sì, pesca con la canna rimandata; Nutri dà un piccolo vantaggio per un po'; squadra cambiabile al porto e nella vasca della nave.
 - Pastura; pesca dalla nave (tieni premuto e rilascia); arpioni; arpionare e sfiancare le bestie per combatterle con meno vita e favorire la cattura (o rende il ciclo troppo macchinoso? da provare prima).

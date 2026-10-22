@@ -221,7 +221,7 @@ export class BattleScene extends Phaser.Scene {
           0.7,
         );
         const target: Side = st.side === 'you' ? 'foe' : 'you';
-        await this.view!.lunge(st.side);
+        await this.view!.attack(st.side, st.anim, st.type);
         for (const dmg of st.hits) {
           await this.view!.hit(target, dmg, st.crit, st.type, st.effect === 'super');
           this.ui.setHp(this.s);
