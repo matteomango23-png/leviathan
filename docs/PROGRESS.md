@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.100.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.101.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,29 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, poi BB vasca e costa fino a livello 30, BC mosse animate. Poi la pulizia. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, poi BC mosse animate. Poi la pulizia. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto BB, vasca e costa (22 ottobre 2026, Blocco 6) → v0.101.0
+
+- **Vasca:**
+  - in `ship/shipPool.ts`: `poolPicks` e `poolOut` su `ShipState` (non salvati), `poolNow`, `goesInPool`, `togglePool`;
+  - nel pannello della squadra a bordo (`teamPanel.ts`, modo `ship`) c'è il pulsante "Metti in vasca / In vasca".
+- **Costa:**
+  - `COAST_LEVELS` in `data/beasts.ts`;
+  - `rollWildLevel` senza fascia (le acque fatte a mano) tira tra `byDanger` con `t^1,6`;
+  - il mare aperto, che ha sempre una fascia, non cambia.
+- **Cambiato rispetto al piano:** nessun aumento con la profondità della baia (non serviva).
+- **Test:** `tests/lottoBB.test.ts`.
+- **Nel browser:** non provato. Il pulsante è un elemento semplice del pannello già esistente: va guardato sull'iPhone.
+
+**Da provare sull'iPhone:**
+- a bordo, aprire il Cockpit e la squadra, mettere e togliere una bestia dalla vasca;
+- in baia, guardare i livelli delle bestie.
 
 ## Lotto BA, l'arpione e i morsi (22 ottobre 2026, Blocco 6) → v0.100.0
 
