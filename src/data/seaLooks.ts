@@ -110,6 +110,16 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
 
 /** Two looks blend over this many units across a border (about 400 m), never a change at a stroke. */
 export const SEA_LOOK_BLEND = 2400;
+/**
+ * The ridges stand on the seabed of the place, not at one height (owner, 22 ottobre: the deep regions' panoramas
+ * were never seen near their floor): they go down by how much deeper than `ref` the floor is, averaged over
+ * `span` units each side, easing there by `ease` a frame. Tuning.
+ */
+export const SEA_RIDGE_FLOOR = { ref: 390, span: 1800, samples: 9, ease: 0.04 };
+
+/** Within the Foresta e Banchisa the kind changes every 300 m (ENDLESS.stretch): the forest and the ice blend over
+ *  about 100 m, or they would never be seen apart. */
+export const SEA_LOOK_BLEND_STRETCH = 600;
 
 /**
  * The marine snow grows with depth: × (1 + `perDepth` × metres / 100), up to `max` times the specks of the

@@ -3,6 +3,7 @@
 // where you fight; the sea's painted panoramas recognised by the art script.
 import { describe, expect, it } from 'vitest';
 import { parseExtraName } from '../scripts/art/cutout';
+import { fadeBottom, seamless } from '../scripts/art/extras';
 import { BATTLE_PALETTES, BATTLE_STAGE } from '../src/data/battle';
 import { ENDLESS } from '../src/data/endless';
 import { SEA_REGIONS } from '../src/data/regions';
@@ -53,6 +54,15 @@ describe('ogni regione ha il suo aspetto', () => {
     const tintA = waterTint(lookAt(border - 25));
     const tintB = waterTint(lookAt(border + 25));
     for (let i = 0; i < 3; i++) expect(Math.abs(tintA[i]! - tintB[i]!)).toBeLessThan(0.05);
+  });
+
+  it('nella Foresta e Banchisa alghe e ghiaccio si vedono anche puri', () => {
+    let pure = 0;
+    for (let km = 12.2; km < 18; km += 0.05) {
+      const m = lookAt(atKm(km));
+      if (m.a === m.b) pure++;
+    }
+    expect(pure).toBeGreaterThan(80);
   });
 
   it('ogni aspetto ha acqua, creste, luce, neve e suono validi', () => {
@@ -122,5 +132,32 @@ describe('le immagini del lotto 9', () => {
     expect(parseExtraName('mare_fosse_medio.png')).toEqual({ kind: 'panorama', id: 'mare_fosse_medio' });
     expect(parseExtraName('bg_fosse_far.jpg')).toEqual({ kind: 'bg', place: 'fosse', layer: 'far' });
     expect(parseExtraName('mare_fosse_vicino.jpg')).toBeNull();
+  });
+});
+
+describe('i panorami si ripetono senza giunture e senza riga sotto', () => {
+  // a 10×4 picture: left half red, right half blue, solid
+  const pic = (): Uint8ClampedArray => {
+    const px = new Uint8ClampedArray(10 * 4 * 4);
+    for (let y = 0; y < 4; y++)
+      for (let x = 0; x < 10; x++) px.set(x < 5 ? [200, 0, 0, 255] : [0, 0, 200, 255], (y * 10 + x) * 4);
+    return px;
+  };
+
+  it('il bordo destro continua nel sinistro', () => {
+    const t = seamless(pic(), 10, 4, 2);
+    expect(t.w).toBe(8);
+    // the first column is the old ninth (blue, past the new right edge), so it runs on from the last one (blue)
+    expect(Array.from(t.px.subarray(0, 4))).toEqual([0, 0, 200, 255]);
+    expect(Array.from(t.px.subarray(7 * 4, 7 * 4 + 4))).toEqual([0, 0, 200, 255]);
+  });
+
+  it('in basso tutto sfuma nel colore medio del bordo, anche i varchi', () => {
+    const px = pic();
+    px[(3 * 10 + 0) * 4 + 3] = 0; // a gap in the bottom row
+    fadeBottom(px, 10, 4, 0.5);
+    const last = (x: number): number[] => Array.from(px.subarray((3 * 10 + x) * 4, (3 * 10 + x) * 4 + 4));
+    expect(last(0)[3]).toBe(255);
+    expect(last(0)).toEqual(last(9));
   });
 });

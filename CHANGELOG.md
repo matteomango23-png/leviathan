@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.105.1 — I panorami dipinti del mare (22 ottobre 2026)
+
+- **Dietro di te mentre nuoti** ora ci sono paesaggi dipinti, uno lontano e uno più vicino per regione:
+  - la barriera con gli archi di corallo;
+  - il Ciglio del Mare blu;
+  - la foresta di alghe color oro;
+  - la Banchisa con i blocchi di ghiaccio e uno scheletro di balena;
+  - le guglie e i camini fumanti delle Grandi fosse.
+- **Il panorama sta sempre dietro il fondale** della zona, anche nelle regioni profonde: prima nelle fosse non si vedeva mai.
+- **Nessuno stacco:** il dipinto sfuma in alto e in basso, si ripete senza giunture e il buio sotto continua il suo colore.
+- **Nella Foresta e Banchisa** alghe e ghiaccio ora si vedono anche separati, non sempre mescolati.
+- I salvataggi non cambiano.
+
 ## v0.105.0 — Ogni regione del mare ha il suo aspetto (22 ottobre 2026)
 
 - **Il mare cambia aspetto regione per regione,** e si riconosce subito dove sei:
