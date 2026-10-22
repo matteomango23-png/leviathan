@@ -19,6 +19,8 @@ import { openBeastSheet } from './beastSheet';
 import { el } from './dom';
 import { growthBars } from './growthBars';
 import { itemsForBeast } from '../systems/economy/items';
+import { goesInPool, togglePool } from '../systems/ship/shipPool';
+import { shipModel } from '../systems/ship/model';
 
 /** Where the panel is open: in the water (pause), at the helm, at a harbour's pen. */
 type TeamPanelMode = 'dive' | 'ship' | 'port';
@@ -112,6 +114,21 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, mode: TeamPan
       down.title = 'Più indietro nella squadra';
       down.disabled = i >= members.length - 1;
       down.addEventListener('click', () => moveInTeam(g.beasts.team, b.uid, 1) && draw());
+    }
+    // aboard: in the ship's pool or not, your choice (ship/shipPool.ts; owner, 22 ottobre)
+    if (mode === 'ship' && b.inTeam && shipModel(g.ship).pool > 0) {
+      const inside = goesInPool(g, b.uid);
+      const pool = el(
+        'button',
+        `menu-btn small${inside ? ' on' : ''}`,
+        r,
+        inside ? 'In vasca' : 'Metti in vasca',
+      );
+      pool.title = inside ? 'Tocca per toglierla dalla vasca' : 'Guarisce piano nella vasca di bordo';
+      pool.addEventListener('click', () => {
+        togglePool(g, b.uid);
+        draw();
+      });
     }
     // an item for it (a cure, a tonic…): the bag opens over the window you are in, the cockpit too (owner, 20
     // ottobre: it opened under the cockpit and showed only once it was closed)

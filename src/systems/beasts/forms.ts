@@ -6,6 +6,7 @@ import {
   BEAST_TEMPER,
   CEPHALOPODS,
   CETACEANS,
+  COAST_LEVELS,
   DANGER_LEVELS,
   DANGER_RULES,
   SIDE_TAIL_UNIQUES,
@@ -203,10 +204,19 @@ export function dangerOf(speciesId: string): Danger {
  * the band (`band`: 0 = coast … DANGER_RULES), albino and alfa add more. Legends keep their own range, the story's
  * unique beasts their level.
  */
-export function rollWildLevel(form: BeastForm, rng: Rng, band = 0): number {
+export function rollWildLevel(form: BeastForm, rng: Rng, band?: number): number {
   const u = uniqueOf(form);
   if (u?.wildLevel) return u.wildLevel[0] + Math.floor(rng() * (u.wildLevel[1] - u.wildLevel[0] + 1));
   if (u) return u.level;
+  // the hand-made waters (no band): a wider spread, low levels more often (COAST_LEVELS; owner, 22 ottobre)
+  const coast = band === undefined ? COAST_LEVELS.byDanger[dangerOf(form.speciesId)] : undefined;
+  if (coast) {
+    const t = rng() ** COAST_LEVELS.lowBias;
+    const lv =
+      Math.round(coast[0] + (coast[1] - coast[0]) * t) + (DANGER_RULES.variantExtra[form.variant] ?? 0);
+    return Math.min(PROGRESSION.maxLevel, lv);
+  }
+  band ??= 0;
   const [lo, hi] = DANGER_LEVELS[dangerOf(form.speciesId)];
   const t = Math.min(1, Math.max(0, band) + rng() * DANGER_RULES.spread);
   const lv = Math.round(lo + (hi - lo) * t) + (DANGER_RULES.variantExtra[form.variant] ?? 0);

@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.101.0 — Vasca a scelta, costa fino a livello 30 (22 ottobre 2026)
+
+- **Vasca della nave:**
+  - nel Cockpit, scheda della squadra, ogni bestia ha il pulsante **Metti in vasca / In vasca**;
+  - scegli tu chi guarisce; i posti liberi vanno alle più ferite, mai a quelle che hai tolto;
+  - da lì cambi anche la squadra con la stiva, come prima.
+- **Costa più varia:** dal porto fino al mare aperto ora incontri bestie fino a circa livello 30 (innocue fino a 20, piccoli predatori fino a 30). Più spesso restano basse, così le tue bestie giovani hanno avversari giusti per crescere.
+
 ## v0.100.0 — L'arpione sfianca, a nuoto ti mordono (22 ottobre 2026)
 
 - **Arpione e armi:**

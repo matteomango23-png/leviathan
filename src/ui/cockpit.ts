@@ -168,8 +168,8 @@ export class Cockpit {
         !places
           ? 'Questa nave non ha una vasca: la squadra guarisce solo al porto.'
           : now.length
-            ? `In vasca (${places} posti): ${now.join(', ')}. Le bestie ferite guariscono piano qui a bordo (circa due minuti), le più ferite per prime; al porto guarisce tutta la squadra subito.`
-            : `Vasca (${places} posti): la squadra sta bene. Le bestie ferite guariscono piano qui a bordo; al porto subito.`,
+            ? `In vasca (${places} posti): ${now.join(', ')}. Guariscono piano qui a bordo (circa due minuti): scegli tu chi con "Metti in vasca", i posti liberi vanno alle più ferite. Al porto guarisce tutta la squadra subito.`
+            : `Vasca (${places} posti): la squadra sta bene. Le bestie ferite guariscono piano qui a bordo (scegli tu chi con "Metti in vasca"); al porto subito.`,
       );
       renderTeamPanel(this.body, this.g, 'ship');
     }

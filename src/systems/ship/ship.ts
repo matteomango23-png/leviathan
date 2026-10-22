@@ -72,6 +72,9 @@ export interface ShipState {
   lightT: number;
   /** Seconds towards the next healing tick of the pool (ship/shipPool.ts; not saved). */
   poolT: number;
+  /** Who you put in the pool, and who you took out (ship/shipPool.ts; not saved: after loading it chooses again). */
+  poolPicks?: string[];
+  poolOut?: string[];
   /** Seconds before the shallow-water message may show again. */
   shallowWarn: number;
   /** Ice broken by the bow, freezing again later (not saved). */

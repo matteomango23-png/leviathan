@@ -239,6 +239,16 @@ export const SPECIES_DANGER: Record<string, Danger> = {
   calamaro_colossale: 5, serpente_di_mare: 5, mosasauro: 5, plesiosauro: 5, megalodonte: 5, kraken: 5, dunkleosteus: 5,
   livyatan: 5, leviatano: 5,
 };
+/**
+ * The hand-made waters, from Portofosco to the open sea (owner, 22 ottobre 2026: "bestie fino a circa livello 30 per
+ * imparare e far crescere le bestie basse"): levels from `byDanger` (by danger; the others keep their band), the
+ * low ones more often (t^`lowBias`). Tuning.
+ */
+export const COAST_LEVELS = {
+  byDanger: { 1: [2, 20], 2: [8, 30] } as Partial<Record<Danger, [number, number]>>,
+  lowBias: 1.6,
+};
+
 export const DANGER_RULES = {
   /** Where in its band a beast falls: 0 = the bottom (the coast) … this share is added by the region's bandAt and
    *  the depth, then a random spread on top. */
