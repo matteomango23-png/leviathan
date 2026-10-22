@@ -138,14 +138,22 @@ I testi per Gemini li scrivo dopo che hai approvato questa proposta, in un `docs
    - la tana del Leviatano (senza il Leviatano finché non arrivano le sue immagini e la storia).
 6. **Dopo:** la storia e i personaggi.
 
-**Una nota tecnica sulla Fossa:** il mondo di oggi non può andare molto più giù senza diventare pesante sul telefono. La Fossa la farei come un **posto a parte**: entri dall'Ultimo Avamposto e si carica una mappa verticale tutta sua, come un dungeon. Così può essere profonda quanto vogliamo e ricchissima, senza rallentare il resto.
+**Una nota tecnica sulla Fossa (decisa il 22 ottobre):** resta nel mare, senza caricamenti. Il mondo diventa più profondo solo nella striscia della Fossa (circa 1,5 km di larghezza). Il resto del mare non cambia, quindi il gioco non si appesantisce: si disegna sempre solo quello che c'è vicino alla telecamera.
 
 ---
 
-## Da decidere insieme
-1. **La Fossa Nera:** un posto a parte, una mappa verticale (consigliato), o un pezzo del mare normale?
-2. **Profondità:** vuoi numeri "veri" (migliaia di metri) o ci basta la sensazione? Oggi i metri sono compressi: un sottomarino da 500 m arriva quasi al fondo di tutto.
-3. **Labirinti:** ci si può perdere davvero (serve il sonar, la freccia della nave aiuta solo in parte) o sono semplici?
-4. **Bestie grandi nelle Gallerie:** le lasci fuori (le aspetti all'uscita) o non entrano proprio, punto?
-5. **Il sottomarino della Fossa:** un premio (da trovare o costruire con pezzi rari) o si compra al cantiere carissimo?
-6. **L'ordine dei lotti:** va bene M1 → M5?
+## Deciso con il proprietario (22 ottobre)
+1. **La Fossa Nera sta nel mare,** senza caricamenti. Il mondo è più profondo solo lì.
+2. **Profondità vera nella Fossa: fino a 11.000 m.**
+   - Con un sottomarino veloce sono 7-8 minuti di discesa, "a patto che sia interessante e non tutto nero".
+   - Ogni 500-1000 m c'è una tappa: una sporgenza con vita bioluminescente, una grotta laterale, una presa d'aria per ricaricare, un relitto, una bestia degli abissi. Le pareti sono sempre visibili (luci, bagliori, camini).
+   - Il resto del mare resta com'è.
+3. **Mezzi e tempo:** servono mezzi che arrivino in fondo e restino giù più di 10 minuti. Il sottomarino della Fossa ha 20-30 minuti d'aria, e si ricarica anche alle bolle d'aria lungo la discesa.
+4. **Le Gallerie:**
+   - larghe abbastanza per un sottomarino, ma non per un U-boat;
+   - ogni tanto bolle d'aria, che ricaricano anche l'aria del sottomarino;
+   - a nuoto si può, solo con le mute migliori, ed è difficilissimo;
+   - se muori torni alla nave, come sempre.
+5. **Bestie:** le piccole e le medie entrano con te; le grandi restano fuori.
+6. **Il sottomarino della Fossa** è un mezzo nuovo, il più forte del gioco. Proposta: si costruisce al cantiere con pezzi rari trovati nei relitti e nelle Gallerie. Da confermare.
+7. **L'ordine dei lotti:** da confermare (M1 → M5).
