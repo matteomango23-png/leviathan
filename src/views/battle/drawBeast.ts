@@ -6,6 +6,7 @@ import { BATTLE_STAGE } from '../../data/battle';
 import type { Side } from '../../systems/battle/battle';
 import { poseTint, type Pose } from './pose';
 import type { TypeFx } from './typeFx';
+import type { BattleGlow } from './battleGlow';
 
 /** Battle pictures are 800×800 with the beast's longest side 760 px, its lowest point at y = 780. */
 const PIC = { box: BATTLE_STAGE.picture.box, foot: BATTLE_STAGE.picture.foot / BATTLE_STAGE.picture.square };
@@ -14,6 +15,8 @@ interface BeastParts {
   image: Phaser.GameObjects.Image;
   shadow: Phaser.GameObjects.Image;
   backlight: Phaser.GameObjects.Image;
+  /** Its runes and eyes that shine (data/glow.ts). */
+  glow?: BattleGlow;
 }
 
 /**
@@ -61,6 +64,13 @@ export function drawBeast(
     .setScale((px * 1.5) / 256, (px * 1.2) / 256)
     .setTint(p.aura === 2 ? p.auraColor : o.rayColor)
     .setAlpha((p.aura === 2 ? 0.22 : 0.13) * (1 + 0.25 * Math.sin(p.t * 0.8)) * p.alpha * (1 - p.dark));
+  // its own picture's glow, off while it flashes or turns white
+  parts.glow?.update(
+    im,
+    p.own && p.key ? p.key.replace(/^battle-/, '') : '',
+    p.t,
+    p.white <= 0 && p.flash <= 0,
+  );
   if (p.aura && p.alpha > 0.6 && p.dark < 0.3 && Math.random() < o.dt * (p.aura === 2 ? 14 : 5))
     o.fx.sparkle(
       g.x + p.dx + (Math.random() - 0.5) * px * 0.9,

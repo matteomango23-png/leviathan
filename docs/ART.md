@@ -165,6 +165,10 @@ Un luogo senza i suoi dipinti usa quelli della Baia con la sua tinta. Finché un
 
 I ritratti per i dialoghi (`ritratto_aurelio.jpg`, `ritratto_vedova.jpg`, `ritratto_mercante.jpg`) non sono ancora collegati.
 
+## Bagliori (21 ottobre 2026)
+
+Le parti che brillano (rune, occhi, esche luminose) **non vanno disegnate a parte**: `npm run art` le prende dall'immagine stessa in base al colore indicato in `src/data/glow.ts` e le mette in `public/glow/`. Per una bestia nuova che brilla basta aggiungerla a `GLOW` e rilanciare `npm run art`.
+
 ## Forma del corpo per le collisioni (4 ottobre 2026)
 
 Dopo `npm run art` lancia anche **`npm run shapes`**: legge i profili in `public/sprites/` e scrive in `src/data/bodyShapes.generated.ts` quanto il corpo di ogni bestia sale e scende rispetto alla spina, in 9 punti dalla testa alla coda. Il gioco lo usa per gli urti con roccia, sottomarino e altre bestie, e per far sedere il sub sulla schiena. Un test controlla che ogni profilo abbia la sua forma.

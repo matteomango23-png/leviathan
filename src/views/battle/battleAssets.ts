@@ -7,6 +7,7 @@ import { BG_KEYS, ITEM_ART_KEYS } from '../../data/sprites.generated';
 import type { BattleState } from '../../systems/battle/battle';
 import type { PaintedLayers } from './backdrop';
 import { battleArt } from './beastArt';
+import { battleGlowArt } from './battleGlow';
 import { SHELL_KEY } from './tameShell';
 
 const LAYERS = ['far', 'mid', 'front', 'ground'] as const;
@@ -31,6 +32,11 @@ export function paintedLayers(place: BattlePlace): PaintedLayers {
 
 export function loadBattleArt(scene: Phaser.Scene, s: BattleState, place: BattlePlace): Promise<void> {
   const wanted = [battleArt(s.foe.form, 'foe'), ...s.team.map((f) => battleArt(f.form, 'you'))];
+  // their glows (runes, eyes: data/glow.ts)
+  for (const a of [...wanted]) {
+    const glow = a.own ? battleGlowArt(a.textureKey.replace(/^battle-/, '')) : null;
+    if (glow) wanted.push({ ...glow, own: true });
+  }
   const painted = paintedLayers(place);
   for (const layer of LAYERS) {
     const key = painted[layer]; // bgp-<place>-<layer>

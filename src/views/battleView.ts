@@ -22,6 +22,7 @@ import { battleArt, beastAura, fadedCard } from './battle/beastArt';
 import { damageNumber } from './battle/damageNumber';
 import { newPose, type Pose } from './battle/pose';
 import { drawBeast } from './battle/drawBeast';
+import { BattleGlow } from './battle/battleGlow';
 import { BattleBackdrop, DEPTH, type PaintedLayers } from './battle/backdrop';
 import { TameShell } from './battle/tameShell';
 import { TypeFx } from './battle/typeFx';
@@ -34,6 +35,7 @@ export class BattleView {
   private readonly fx: TypeFx;
   private readonly shell: TameShell;
   private readonly images: Record<Side, Phaser.GameObjects.Image>;
+  private readonly glows: Record<Side, BattleGlow>; // runes and eyes that shine (data/glow.ts)
   private readonly shadows: Record<Side, Phaser.GameObjects.Image>;
   /** A soft light behind each beast, so dark bodies stand out from the dark water. */
   private readonly backlights: Record<Side, Phaser.GameObjects.Image>;
@@ -63,6 +65,7 @@ export class BattleView {
       foe: scene.add.image(0, 0, '__WHITE').setVisible(false).setDepth(10),
       you: scene.add.image(0, 0, '__WHITE').setVisible(false).setDepth(12),
     };
+    this.glows = { foe: new BattleGlow(scene, 10.5), you: new BattleGlow(scene, 12.5) };
     this.fx = new TypeFx(scene);
     this.shell = new TameShell(scene);
   }
@@ -146,22 +149,21 @@ export class BattleView {
       this.groundK[side] = Math.min(1, this.groundK[side] + dt / BATTLE_STAGE.groundFade);
       this.backdrop.setGroundAlpha(side, this.groundK[side]);
       const im = this.images[side];
-      const sh = this.shadows[side];
-      const bl = this.backlights[side];
+      const parts = {
+        image: im,
+        shadow: this.shadows[side],
+        backlight: this.backlights[side],
+        glow: this.glows[side],
+      };
       if (!p.key || !this.scene.textures.exists(p.key)) {
-        im.setVisible(false);
-        sh.setVisible(false);
-        bl.setVisible(false);
+        for (const o of [im, parts.shadow, parts.backlight]) o.setVisible(false);
+        parts.glow.update(im, '', 0, false);
         continue;
       }
       const key = p.own ? p.key : fadedCard(this.scene, p.key);
       if (im.texture.key !== key) im.setTexture(key);
       p.t += dt;
-      drawBeast({ image: im, shadow: sh, backlight: bl }, p, side, grounds[side], px, this.h, {
-        dt,
-        rayColor: this.rayColor,
-        fx: this.fx,
-      });
+      drawBeast(parts, p, side, grounds[side], px, this.h, { dt, rayColor: this.rayColor, fx: this.fx });
     }
     this.backdrop.update(dt, time, grounds);
     this.fx.update(dt);

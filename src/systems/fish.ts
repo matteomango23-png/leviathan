@@ -167,14 +167,13 @@ export function stepFish(
     }
     let tx = f.school.x + f.ox + Math.sin(time * 1.3 + f.phase) * 6;
     let ty = f.school.y + f.oy + Math.cos(time * 1.1 + f.phase) * 4;
-    // far from you (out of sight): it just keeps its place in the school, never into rock; caught in it, it swims
-    // out the near way (tileMap.moveBody)
+    // far from you (out of sight): it just keeps its place in the school, no rock to work out (its school keeps out
+    // of the ice; one left in rock swims out once near you: tileMap.moveBody)
     if (Math.abs(f.x - threat.x) > SARDINE.simRange || Math.abs(f.y - threat.y) > SARDINE.simRange) {
-      const [nx, ny] = [f.x + (tx - f.x) * 0.1, f.y + (ty - f.y) * 0.1];
-      f.vx = (nx - f.x) / Math.max(dt, 1e-3);
-      f.vy = (ny - f.y) / Math.max(dt, 1e-3);
-      if (map.hitCircle(f.x, f.y, SARDINE.radius)) map.moveBody(f, SARDINE.radius, dt);
-      else if (!map.hitCircle(nx, ny, SARDINE.radius)) [f.x, f.y] = [nx, ny];
+      f.vx = ((tx - f.x) / Math.max(dt, 1e-3)) * 0.1;
+      f.vy = ((ty - f.y) / Math.max(dt, 1e-3)) * 0.1;
+      f.x += (tx - f.x) * 0.1;
+      f.y += (ty - f.y) * 0.1;
       continue;
     }
     const mult = FISH_LOOK[f.kind]?.speedMult ?? 1;

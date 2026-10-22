@@ -130,10 +130,10 @@ describe('le sardine non entrano negli iceberg', () => {
     const fish: FishState = { schools: [sc], fish: Array.from({ length: 10 }, (_, k) => one(k)) };
     const rng = makeRng(4);
     for (let t = 0; t < 20; t += DT) {
-      // far away (out of sight) and close by
+      // far away (out of sight: only its school is worked out) and close by (one left in the ice swims out)
       stepFish(fish, m, { x: t < 10 ? 5000 : sc.x, y: 200, alive: true }, t, DT, rng);
-      for (const f of fish.fish) expect(m.solidAt(f.x, f.y)).toBe(false);
       expect(m.solidAt(sc.x, sc.y)).toBe(false);
+      if (t > 12) for (const f of fish.fish) expect(m.solidAt(f.x, f.y)).toBe(false);
     }
   });
 });

@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.96.0)
+## Dove siamo (aggiornato il 21 ottobre 2026, v0.97.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,27 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅; poi AI bagliori, AD-4 poteri speciali.
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; poi AD-4 poteri speciali (da proporre in Plan mode).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅; **prossimo AD-4 poteri speciali** (polpo, lontra, beluga, squalo martello, ossigeno).
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AI, bagliori (21 ottobre 2026) → v0.97.0
+
+- **Dati:** `data/glow.ts` (`GLOW` per chiave d'immagine: tinta, saturazione, luminosità, modo `pulse`/`steady`, forza; `GLOW_PULSE`, `GLOW_ART`). Il file non importa niente perché lo legge anche lo script.
+- **Immagini:** `scripts/art/glow.ts`, chiamato da `npm run art` a ogni giro. Da `public/sprites` prende solo i pixel di quel colore e li salva sfumati in `public/glow/` (stesso nome e stessa cornice). Elenco `GLOW_KEYS` e impronte in `sprites.generated.ts`.
+- **In mare:** `BeastSprite` ha una seconda fila di strisce in modo additivo, che copiano posizione e piega di quelle del corpo. La luce viene da `systems/glowPulse.ts` (`glowAt`): una fascia che va dalla testa alla coda e torna in 1,6 s; il resto al 35 %, con un tremolio.
+- **In battaglia:** `views/battle/battleGlow.ts`, 8 fette verticali dell'immagine di bagliore sopra quella di tre quarti, caricate con le immagini della battaglia. Spente quando la bestia lampeggia o diventa bianca.
+- **Test:** `tests/lottoAI.test.ts`.
+- **Nel browser:**
+  - in mare, in groppa a Folgore: le rune brillano gialle e la luce scorre;
+  - in battaglia: le strisce di Saetta brillano.
+- **Velocità:** i controlli contro la roccia delle sardine lontane (v0.94.0) rallentavano il gioco di 2-3 volte in mare aperto. Tolti: basta che il banco eviti la roccia, e una sardina rimasta nel ghiaccio ne esce da sola appena è vicina (`moveBody`).
+- **Da aggiungere una bestia che brilla:** una riga in `GLOW`, poi `npm run art`.
+
+**Da provare sull'iPhone:** Folgore e Saetta in mare e in battaglia; una rana pescatrice o un dunkleosteus nel buio.
 
 ## Lotto AH, il sub (21 ottobre 2026) → v0.96.0
 
