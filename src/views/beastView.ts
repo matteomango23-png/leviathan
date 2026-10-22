@@ -5,7 +5,8 @@ import Phaser from 'phaser';
 import { assetUrl } from '../data/assets';
 import { BEAST_SPRITE, WING_FRAME_FORMS } from '../data/beasts';
 import { spineOf } from './swimPose';
-import { BATTLE_ART_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
+import { BATTLE_ART_KEYS, GLOW_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
+import { glowAt, glowOf } from '../systems/glowPulse';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -15,6 +16,9 @@ const ALBINO_SCREEN = 150; // 0..255: how much an albino stand-in is lightened /
 const spriteUrl = (key: string, open: boolean): string =>
   assetUrl(`sprites/${key}${open ? '_open' : ''}.webp`);
 export const textureKey = (key: string, open: boolean): string => `beast-${key}${open ? '-open' : ''}`;
+/** Its glow (data/glow.ts, public/glow), laid over it like light. */
+const glowKey = (key: string, open: boolean): string => `glow-${key}${open ? '-open' : ''}`;
+const hasGlow = (key: string, open: boolean): boolean => GLOW_KEYS.includes(`${key}${open ? '_open' : ''}`);
 
 /** Queues the closed (and, if it exists, open) profile of a sprite key for loading. */
 export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
@@ -22,6 +26,9 @@ export function loadBeastSprites(scene: Phaser.Scene, key: string): void {
   for (const open of OPEN_SPRITE_KEYS.includes(key) ? [false, true] : [false]) {
     const tk = textureKey(key, open);
     if (!scene.textures.exists(tk)) scene.load.image(tk, spriteUrl(key, open));
+    const gk = glowKey(key, open);
+    if (hasGlow(key, open) && !scene.textures.exists(gk))
+      scene.load.image(gk, assetUrl(`glow/${key}${open ? '_open' : ''}.webp`));
   }
 }
 
@@ -47,12 +54,16 @@ export function addStripFrames(scene: Phaser.Scene, key: string): boolean {
       ok = false;
       continue;
     }
-    const tex = scene.textures.get(tk);
-    if (tex.has('s0')) continue;
-    for (let i = 0; i < N; i++) {
-      const x1 = Math.round(IW * (1 - i / N));
-      const x0 = Math.round(IW * (1 - (i + 1) / N));
-      tex.add(`s${i}`, 0, x0, 0, x1 - x0, IH);
+    // its glow is cut the same way (same frame)
+    for (const k of [tk, glowKey(key, open)]) {
+      if (!scene.textures.exists(k)) continue;
+      const tex = scene.textures.get(k);
+      if (tex.has('s0')) continue;
+      for (let i = 0; i < N; i++) {
+        const x1 = Math.round(IW * (1 - i / N));
+        const x0 = Math.round(IW * (1 - (i + 1) / N));
+        tex.add(`s${i}`, 0, x0, 0, x1 - x0, IH);
+      }
     }
   }
   return ok;
@@ -91,6 +102,9 @@ interface BeastPoseView {
 export class BeastSprite {
   readonly root: Phaser.GameObjects.Container;
   private readonly strips: Phaser.GameObjects.Image[] = [];
+  /** Its glow over the strips, piece by piece (runes that pulse along it, eyes that shine). */
+  private readonly glows: Phaser.GameObjects.Image[] = [];
+  private glowOn = false;
   private key = '';
   private open = false;
   private readonly front: Phaser.GameObjects.Image;
@@ -103,6 +117,15 @@ export class BeastSprite {
     for (let i = 0; i < N; i++) this.strips.push(scene.add.image(0, 0, '__WHITE').setOrigin(1, CY / IH));
     // tail first so the head is drawn on top
     this.root.add([...this.strips].reverse());
+    for (let i = 0; i < N; i++)
+      this.glows.push(
+        scene.add
+          .image(0, 0, '__WHITE')
+          .setOrigin(1, CY / IH)
+          .setBlendMode(Phaser.BlendModes.ADD)
+          .setVisible(false),
+      );
+    this.root.add(this.glows);
     this.front = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.root.add(this.front);
     layer.add(this.root);
@@ -115,6 +138,9 @@ export class BeastSprite {
     const tk = textureKey(key, open);
     if (!this.scene.textures.exists(tk)) return false;
     this.strips.forEach((s, i) => s.setTexture(tk, `s${i}`));
+    const gk = glowKey(key, open);
+    this.glowOn = this.scene.textures.exists(gk) && this.scene.textures.get(gk).has('s0');
+    if (this.glowOn) this.glows.forEach((g, i) => g.setTexture(gk, `s${i}`));
     this.key = key;
     this.open = open;
     return true;
@@ -122,6 +148,25 @@ export class BeastSprite {
 
   hide(): void {
     this.root.setVisible(false);
+  }
+
+  /** Its glow follows each strip; a pulse runs along it (systems/glowPulse.ts). Off while it flashes red. */
+  private updateGlow(p: BeastPoseView): void {
+    const def = this.glowOn && p.flash <= 0 ? glowOf(p.key) : undefined;
+    const t = this.scene.time.now / 1000;
+    for (let i = 0; i < N; i++) {
+      const g = this.glows[i]!;
+      if (!def) {
+        g.setVisible(false);
+        continue;
+      }
+      const s = this.strips[i]!;
+      g.setVisible(true)
+        .setPosition(s.x, s.y)
+        .setRotation(s.rotation)
+        .setScale(s.scaleX, s.scaleY)
+        .setAlpha(glowAt(def, t, i / (N - 1)));
+    }
   }
 
   update(p: BeastPoseView): void {
@@ -162,6 +207,7 @@ export class BeastSprite {
       if (p.flash > 0 || p.rage) s.setTint((base[0]! << 16) | (base[1]! << 8) | base[2]!);
       else s.clearTint();
     }
+    this.updateGlow(p);
     const sc = p.length / IW;
     const shake = p.rage ? (Math.random() - 0.5) * p.length * 0.02 : 0;
     this.root
@@ -179,6 +225,7 @@ export class BeastSprite {
       return;
     }
     for (const s of this.strips) s.setVisible(false);
+    for (const g of this.glows) g.setVisible(false);
     this.key = '';
     const im = this.front.setVisible(true);
     if (im.texture.key !== tk) im.setTexture(tk);

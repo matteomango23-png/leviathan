@@ -31,6 +31,7 @@ import {
 } from './art/cutout.ts';
 import { extraDest, makeExtra } from './art/extras.ts';
 import { keepLargest } from './art/layers.ts';
+import { makeGlows } from './art/glow.ts';
 
 const INBOX = 'art-inbox';
 const FRAME = { w: 1000, h: 460, lineY: 250 };
@@ -338,7 +339,7 @@ async function icebergShapes(): Promise<string> {
 
 async function hashes(): Promise<string> {
   const lines: string[] = [];
-  for (const dir of ['sprites', 'art', 'bg', 'items', 'ui', 'world']) {
+  for (const dir of ['sprites', 'glow', 'art', 'bg', 'items', 'ui', 'world']) {
     if (!existsSync(join('public', dir))) continue;
     for (const f of (await readdir(join('public', dir))).filter((x) => x.endsWith('.webp')).sort()) {
       const h = createHash('md5')
@@ -396,6 +397,8 @@ async function writeSpriteList(): Promise<void> {
     `// Painted battle backgrounds (public/bg/<place>_<layer>), the taming shell (public/items), icons (public/ui).\n` +
     `export const BG_KEYS: readonly string[] = [\n${list(await names('public/bg'))}\n];\n\n` +
     `export const ITEM_ART_KEYS: readonly string[] = [\n${list(await names('public/items'))}\n];\n\n` +
+    `// What glows on a beast, laid over its pictures (public/glow, data/glow.ts).\n` +
+    `export const GLOW_KEYS: readonly string[] = [\n${list(await names('public/glow'))}\n];\n\n` +
     `export const UI_ICON_KEYS: readonly string[] = [\n${list(await names('public/ui'))}\n];\n\n` +
     `// Painted walls and icebergs of the world (public/world); icebergs with their waterline and solid mask.\n` +
     `export const WORLD_ART_KEYS: readonly string[] = [\n${list(await names('public/world'))}\n];\n\n` +
@@ -478,7 +481,11 @@ async function main(): Promise<void> {
       errors++;
     }
   }
-  if (outRoot === 'public') await writeSpriteList();
+  if (outRoot === 'public') {
+    // the glows always follow the pictures they light (data/glow.ts)
+    for (const line of await makeGlows()) console.log(line);
+    await writeSpriteList();
+  }
   console.log(
     `\nFatto: ${made} create, ${skipped} già presenti (non toccate${force ? '' : ': usa --force per rifarle'}), ${errors} errori.`,
   );

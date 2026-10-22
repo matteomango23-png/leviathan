@@ -1113,3 +1113,14 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - lasciar salire e restare sopra la nave o il ghiaccio (non ha senso per un animale marino);
   - ignorare le collisioni in volo (era la causa del problema).
 - **Bestiario:** l'ordine sta in un dato (`data/bestiaryOrder.ts`) e non nella lista delle specie, che resta com'è perché da quell'ordine dipendono altri sistemi.
+
+## 21 ottobre 2026 — I bagliori ricavati dalle immagini (v0.97.0)
+
+- **Decisione:** le rune e gli occhi luminosi diventano immagini di bagliore estratte dai quadri stessi per colore (`npm run art`), disegnate sopra la bestia in modo additivo, con le stesse strisce lungo la spina in mare e fette verticali in battaglia.
+- **Motivo:**
+  - la luce resta esattamente dove il pittore ha messo le rune, anche quando il corpo si piega;
+  - non servono immagini nuove al proprietario;
+  - una bestia nuova si aggiunge con una riga di dati.
+- **Alternative scartate:**
+  - punti luce scritti a mano: troppe coordinate, da rifare a ogni immagine nuova;
+  - un filtro di bagliore di Phaser su tutta la bestia: illumina anche il corpo, non solo le rune.

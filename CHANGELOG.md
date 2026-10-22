@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.97.0 — Rune e occhi che brillano (21 ottobre 2026)
+
+- **Scintilla, Saetta e Folgore:** le rune e le strisce gialle si accendono in mare e in battaglia. Una fascia di luce corre dalla testa alla coda e torna indietro, come una scossa; il resto resta acceso piano.
+- **Più fluido:** le sardine lontane dallo schermo non fanno più i calcoli contro la roccia a ogni fotogramma (la v0.94.0 li aveva aggiunti e rallentava il mare aperto). Il banco resta comunque fuori dagli iceberg.
+- **Occhi e luci delle creature degli abissi:** brillano di una luce fissa e leggera gli occhi e le luci azzurre di dunkleosteus, polpo gigante, squalo goblin, rana pescatrice (anche l'alfa), dragone nero, chimera e l'alfa dello squalo capopiatto.
+
 ## v0.96.0 — Scatto del sub con resistenza, freccia verso la nave (21 ottobre 2026)
 
 - **Scatto a nuoto:**

@@ -157,7 +157,7 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - AF salti e incastri ✅ v0.94.0 (più bestiario per famiglie e 13 immagini del lotto 8).
 - AG schede ✅ v0.95.0 (pallino di Folgore, evoluzioni sfocate e toccabili).
 - AH sub ✅ v0.96.0 (scatto graduale con resistenza, freccia verso la nave).
-- **Bagliori:** rune di Folgore e Saetta che pulsano come una scossa; occhi gialli o verdi che brillano fissi.
+- AI bagliori ✅ v0.97.0 (rune che pulsano, occhi e luci degli abissi fissi).
 - Poi AD-4 poteri speciali.
 
 ## Blocco 1 — Nuovo inizio senza storia
