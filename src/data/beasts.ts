@@ -483,6 +483,11 @@ export const PACK = {
   /** Aboard a ship or a boat (owner, 22 ottobre: "segue la nave, poi va"): the pack swims alongside it below this
    *  speed (units/s, about 8 knots: "Avanti adagio"); faster, diving or in the submarine, it swims off. */
   followShipBelow: 75,
+  /** You out of the water (aboard, floating): it swims alongside at `alongsideDepth` × its length under the surface
+   *  (at least `alongsideMin` units), getting there at `alongsideSpeed` diver lengths/s at most (22 ottobre). */
+  alongsideDepth: 0.9,
+  alongsideMin: 14,
+  alongsideSpeed: 3,
 };
 
 /** Each type's power in the pack, as the sheet tells it (PACK). */

@@ -160,6 +160,12 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - AI bagliori ✅ v0.97.0 (rune che pulsano, occhi e luci degli abissi fissi).
 - AD-4 poteri speciali ✅ v0.99.0.
 
+## Note del 22 ottobre 2026 (sera)
+
+- BD ✅ v0.103.0: arpione per livello con reazioni, "gira il telefono", barra di stato opaca, audio, colore dei compagni, compagni a bordo.
+- **Il mare** (prossimo, prima della storia): fondali, porti, avamposti, abissi a labirinto con passaggi stretti che si aprono in grandi fosse, la Fossa più profonda (solo con il miglior sottomarino, una vera spedizione, magari il Leviatano), asset nuovi da Gemini. Prima una proposta (`docs/PROPOSTA-MARE.md`).
+- **La storia:** personaggi, cattivi, asset.
+
 ## Note del 22 ottobre 2026
 
 - AJ ✅ v0.98.0: salire e scendere fluidi, arrivi e partenze nuotando, cavalcature per misura, compagni a bordo, colore violetto dei compagni.

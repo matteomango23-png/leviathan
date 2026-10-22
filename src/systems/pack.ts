@@ -4,6 +4,7 @@
 // Scarica (it scares bigger beasts and nobody takes you by surprise), Eco (it shows the beasts hidden in the dark),
 // Lanterna (a light round you). Numbers in data/beasts.ts PACK. Pure logic.
 import { PACK } from '../data/beasts';
+import { DIVER } from '../data/diver';
 import type { TypeId } from '../data/rules';
 import { onScreen, packMembers, type BeastWorld } from './beastState';
 import { callMount, leftView, sendAway, stepMount, type Mount } from './beasts/mount';
@@ -15,6 +16,7 @@ import { beastEats } from './feeding';
 import { longEcho, powerHolder } from './specialPowers';
 import type { Fish, FishState } from './fish';
 
+const U = DIVER.lengthUnits;
 const typeOf = (b: TeamBeast): TypeId | 'variabile' => speciesOf(b.form).type;
 const has = (g: BeastWorld, t: TypeId): TeamBeast[] =>
   packMembers(g)
@@ -40,9 +42,13 @@ export function stepPackSwim(g: BeastWorld, dt: number): void {
   for (const m of g.beasts.pack) {
     const b = g.beasts.team.find((x) => x.uid === m.uid);
     if (b && m.state !== 'leaving') m.length = formLengthUnits(b.form, b.level); // it grows while it is out
-    // never out of the water after you (floating, or up on your ship's deck): just under the surface
-    const under = { ...d, y: Math.max(d.y, g.map.surfaceY + m.length * 0.5) };
-    if (stepMount(m, under, dt, g.map, around) && m.state === 'in') m.state = 'follow';
+    // you out of the water (up on your ship's deck) or floating: it swims alongside at a cruising depth, and gets
+    // there at a calm pace, never hitting the surface like a wall (owner, 22 ottobre)
+    const depth = g.map.surfaceY + Math.max(m.length * PACK.alongsideDepth, PACK.alongsideMin);
+    const high = d.y < depth;
+    const under = high ? { ...d, y: depth } : d;
+    const cap = high ? Math.max(U * PACK.alongsideSpeed, Math.abs(d.vx) + U * 2) : undefined;
+    if (stepMount(m, under, dt, g.map, around, cap) && m.state === 'in') m.state = 'follow';
   }
   g.beasts.pack = g.beasts.pack.filter((m) => !leftView(m, g.beasts.view) && teamHas(g, m.uid));
 }

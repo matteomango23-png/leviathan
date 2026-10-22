@@ -11,7 +11,8 @@ import { UIScene } from './scenes/UIScene';
 import { WorldScene } from './scenes/WorldScene';
 import { registerOffline } from './pwa';
 import { loadGameFont } from './ui/fonts';
-import { gameSize, isTurned, safeSides } from './ui/orientation';
+import { gameSize, isUpright } from './ui/orientation';
+import { showRotateHint } from './ui/rotateHint';
 import { initSplash } from './ui/splash';
 
 const dpr = (): number => Math.min(CAMERA.maxDpr, window.devicePixelRatio || 1);
@@ -28,9 +29,10 @@ const standalone = (): boolean =>
 
 /**
  * The game's size in CSS pixels (ui/orientation.ts): the largest the phone reports, the whole screen from the Home
- * screen, turned a quarter round when the phone is held upright. The page, the game and the controls take it
- * (style.css: --app-w, --app-h, html.turned), and each side's safe area follows the turn.
+ * screen. The page, the game and the controls take it (style.css: --app-w, --app-h). Held upright the game sleeps
+ * under a "gira il telefono" screen (ui/rotateHint.ts).
  */
+let upright = false;
 function screenCss(): { w: number; h: number } {
   const v = window.visualViewport;
   const d = document.documentElement;
@@ -42,14 +44,10 @@ function screenCss(): { w: number; h: number } {
     standalone: standalone(),
     touch: window.matchMedia?.('(pointer: coarse)').matches === true,
   };
-  const turned = isTurned(m);
   const { w, h } = gameSize(m);
-  d.classList.toggle('turned', turned);
+  upright = isUpright(m);
   d.style.setProperty('--app-w', `${w}px`);
   d.style.setProperty('--app-h', `${h}px`);
-  const sides = safeSides(turned);
-  for (const [k, side] of Object.entries(sides))
-    d.style.setProperty(`--safe-${k}`, `env(safe-area-inset-${side}, 0px)`);
   window.scrollTo(0, 0); // iOS can leave the page moved by a few pixels
   return { w, h };
 }
@@ -73,6 +71,12 @@ const onResize = (): void => {
   window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     const s = size();
+    // held upright: the game sleeps under the "gira il telefono" screen, and wakes as it was
+    if (showRotateHint(upright)) {
+      if (upright) game.loop.sleep();
+      else game.loop.wake();
+    }
+    if (upright) return;
     game.scale.resize(s.w, s.h);
     game.scale.setZoom(1 / dpr());
   }, 60);

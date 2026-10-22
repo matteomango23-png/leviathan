@@ -226,7 +226,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `data/powers.ts`, `systems/specialPowers.ts` | I poteri speciali di alcune specie: forzieri chiusi (polpo) e sepolti (squalo martello), portata e denti in più (lontra), eco lungo (beluga), aria da fermi (pesce luna, foche, tricheco). |
 | `systems/beasts/seat.ts` | Dove sei seduto sulla bestia che cavalchi, e la salita morbida in sella. |
 | `systems/diverStamina.ts`, `systems/shipPointer.ts` | La resistenza dello scatto del sub a nuoto; la freccia sul bordo dello schermo verso la nave (o il porto). |
-| `ui/orientation.ts`, `ui/splash.ts` | La misura del gioco (la più grande che il telefono riporta) e la pagina girata quando il telefono è in verticale; la schermata iniziale "Tocca per entrare", che accende i suoni. |
+| `ui/orientation.ts`, `ui/rotateHint.ts`, `ui/splash.ts` | La misura del gioco (la più grande che il telefono riporta); "Gira il telefono" quando è in verticale (il gioco dorme sotto); la schermata iniziale "Tocca per entrare", che accende i suoni. |
 | `ui/typeWheel.ts` | La ruota dei tipi nel bestiario: chi batte chi, con una frase per ogni vittoria. |
 | `ui/battleUi.ts`, `ui/battleInfoBox.ts`, `ui/battleResultText.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri delle bestie (`battleInfoBox.ts`), messaggi, comandi e mosse nello stile dei Pokémon recenti, i testi di fine battaglia; icone dei comandi e dei tipi; il carattere Baloo 2. |
 

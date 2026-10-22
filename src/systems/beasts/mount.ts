@@ -155,6 +155,8 @@ export function stepMount(
   map?: TileMap,
   /** Following you: this much farther out (units), clear of the beast you ride (systems/pack.ts). */
   around = 0,
+  /** Following you: never faster than this (units/s; alongside your ship, pack.ts). */
+  cap?: number,
 ): boolean {
   m.flash = Math.max(0, m.flash - dt);
   m.jaw = Math.max(0, m.jaw - dt);
@@ -201,6 +203,8 @@ export function stepMount(
     const k = Math.min(1, dt * f.speed);
     m.vx += ((tx - m.x) * f.speed - m.vx) * k;
     m.vy += ((ty - m.y) * f.speed - m.vy) * k;
+    const sp = Math.hypot(m.vx, m.vy);
+    if (cap !== undefined && sp > cap) [m.vx, m.vy] = [(m.vx * cap) / sp, (m.vy * cap) / sp];
     // it swims around rock with its whole body; left far behind, it catches up the straight way
     if (map && Math.hypot(tx - m.x, ty - m.y) < m.length * TEAM_RULES.followFreeAfter)
       map.moveBody(m, bodyCircles(m), dt);
