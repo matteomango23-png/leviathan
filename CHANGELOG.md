@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.105.3 — Passaggi tra regioni senza scatti (23 ottobre 2026)
+
+- **Cambiando regione** i paesaggi dipinti sullo sfondo non spariscono più per ricomparire: il nuovo entra piano mentre il vecchio esce piano, e la fascia scura sotto resta ferma.
+- **I paesaggi sono caricati subito**, non quando la regione arriva in vista: niente più scatto dal disegno al dipinto.
+- **Tolto il canto di balena** nel Mare blu.
+- I salvataggi non cambiano.
+
 ## v0.105.2 — Battaglie dipinte in ogni regione (23 ottobre 2026)
 
 - **Le battaglie in mare aperto hanno sfondi dipinti:**

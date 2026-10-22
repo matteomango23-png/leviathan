@@ -67,6 +67,10 @@ export class SeaRidges {
       layer.add(fill);
       return { kind, a, b, fill };
     });
+    // every painted panorama loads now, not when its region comes into sight: it would show the drawing for an
+    // instant and then jump to the painting (owner, 23 ottobre)
+    for (const look of Object.keys(SEA_LOOKS) as SeaLookId[])
+      for (const kind of ['far', 'mid'] as RidgeKind[]) this.panorama(look, kind);
   }
 
   private strip(): Strip {
@@ -143,10 +147,18 @@ export class SeaRidges {
     for (const im of s.images) im.setTexture(t.key).setDisplaySize(t.w, t.h);
   }
 
-  private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number): number {
+  /** Where a row's strips end at the bottom: the same for every look (a taller strip rises higher), so the dark
+   *  under them never jumps when two looks blend. */
+  private rowBottom(v: ViewInfo, kind: RidgeKind): number {
     const def = SEA[kind];
     const parV = def.parallax * 0.9 + 0.1;
-    const top = v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV - s.height * 0.45;
+    const ref = this.screenH * stripShare(kind, 'hills');
+    return v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV + ref * 0.55;
+  }
+
+  private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number, bottom: number): void {
+    const def = SEA[kind];
+    const top = bottom - s.height;
     const off = (((v.cx * v.zoom * def.parallax) % s.width) + s.width) % s.width;
     // as many copies as the screen needs (a painted panorama may be narrower than two screens)
     s.images.forEach((im, i) =>
@@ -155,7 +167,6 @@ export class SeaRidges {
         .setAlpha(alpha)
         .setVisible(alpha > 0.01 && i * s.width - off < v.w),
     );
-    return top + s.height;
   }
 
   /** The seabed's depth around the view, past the reference one, averaged and eased. */
@@ -183,9 +194,13 @@ export class SeaRidges {
       const wantB = this.texture(mix.b, r.kind).key;
       if (r.a.look !== mix.a || r.a.images[0]!.texture.key !== wantA) this.show(r.a, mix.a, r.kind);
       if (r.b.look !== mix.b || r.b.images[0]!.texture.key !== wantB) this.show(r.b, mix.b, r.kind);
-      const bottomA = this.place(r.a, v, r.kind, 1);
-      const bottomB = this.place(r.b, v, r.kind, mix.a === mix.b ? 0 : mix.t);
-      const fillTop = Math.max(0, Math.min(bottomA, mix.t > 0.5 ? bottomB : bottomA) - 1);
+      // the next look comes in over the first half of the blend, the old one goes out over the second: never a
+      // shape vanishing at once
+      const bottom = this.rowBottom(v, r.kind);
+      const blending = mix.a !== mix.b;
+      this.place(r.a, v, r.kind, blending ? Math.min(1, 2 * (1 - mix.t)) : 1, bottom);
+      this.place(r.b, v, r.kind, blending ? Math.min(1, 2 * mix.t) : 0, bottom);
+      const fillTop = Math.max(0, bottom - 1);
       const ca = this.bottomColor(mix.a, r.kind);
       const cb = this.bottomColor(mix.b, r.kind);
       const m = (p: number, q: number): number => Math.round(p + (q - p) * mix.t);

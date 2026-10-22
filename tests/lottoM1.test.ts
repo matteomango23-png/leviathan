@@ -103,7 +103,6 @@ describe('ogni regione ha il suo aspetto', () => {
     expect(soundShares({ a: 'barriera', b: 'barriera', t: 0 }).reef).toBe(1);
     const half = soundShares({ a: 'barriera', b: 'mareblu', t: 0.5 });
     expect(half.reef).toBeCloseTo(0.5);
-    expect(half.whale).toBeCloseTo(0.5);
     expect(soundShares({ a: 'fosse', b: 'abisso', t: 0.3 }).deep).toBeCloseTo(1);
   });
 });
