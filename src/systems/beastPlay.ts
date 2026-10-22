@@ -11,12 +11,12 @@ import { callMount, leftView, sendAway, stepMount } from './beasts/mount';
 import { seatPoint } from './beasts/seat';
 import { joinPack, stepPackSwim } from './pack';
 import { maxHpOf, teamMembers, type TeamBeast } from './beasts/team';
-import { stepSenses, stepWildSpawns } from './encounters';
+import { faceHunter, stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
 
 export { activeBeast, createBeasts } from './beastState';
 export type { BeastState, BeastWorld } from './beastState';
-export { weaponHitsBeast } from './encounters';
+export { weaponHitsBeast } from './swimFight';
 
 type ContextAction = 'sfonda' | 'scendi' | null;
 
@@ -58,6 +58,8 @@ function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
     events.push({ type: 'cannotRide', uid: b.uid, ko: true });
     return;
   }
+  // a hunter after you while you swim on your own: the beast you tap faces it (swimFight.ts; owner, 22 ottobre)
+  if (faceHunter(g, events, b.uid)) return;
   // a beast that carries you is the mount; any other joins the pack (owner, 21 ottobre: the mount and two companions)
   if (!canRide(b)) {
     joinPack(g, b);

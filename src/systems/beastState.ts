@@ -23,6 +23,8 @@ export interface BattleRequest {
   first: 'you' | 'foe' | 'normal';
   /** The fear of the superpredator you ride (beasts/mountTraits.ts): its tries to flee, frozen its first turn. */
   fear?: { fleeTries: number; frozen: boolean };
+  /** The beast of yours that goes first (you tapped it to face the hunter after you). */
+  lead?: string;
 }
 
 /**

@@ -186,6 +186,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       const otter = e.bonus ? ` (${e.bonus} grazie alla lontra)` : '';
       return [`Tesoro! ${parts.join(', ')}${otter}.${e.weapon ? ' Mettila nello zaino al porto.' : ''}`, 4];
     }
+    case 'bitten':
+      return ['Ti ha morso! Affrontalo o allontanati.', 1.8];
+    case 'beastWounded':
+      return e.worn ? ['È sfiancata: ora domarla è più facile.', 2.4] : null;
     case 'wreckLocked':
       return ['È chiuso e incrostato: serve un polpo gigante nel branco.', 3.5];
     case 'buriedFound':

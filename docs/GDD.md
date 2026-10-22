@@ -108,6 +108,7 @@ Due binari: le bestie salgono di livello combattendo; il sub cresce con mute, ar
 - Tempo reale. Doppio joystick: sinistra per nuotare, il pulsante dell'arma si trascina per mirare e sparare a raffica.
 - Armi: arpione, fiocine, rete, lancia folgore (Tempesta), arpione runico. Le armi servono a sopravvivere e sfiancare; si potenziano coi denti.
 - Feedback: barre vita sopra nemici e bestie, numeri di danno, tacca di sfinimento.
+- **In mare, prima della battaglia (22 ottobre 2026):** le armi sfiancano una bestia fino a metà vita (le timide scappano, le aggressive si arrabbiano); entra in battaglia con la vita tolta. A nuoto da solo un predatore prima morde (un cuore, una spinta, una tregua), poi lo affronti (pulsante Affronta o tocco su una tua bestia) o scappi; con la squadra KO solo morsi. In groppa la battaglia parte al contatto. Nessun freno ai megapredatori domabili.
 
 ## Piattaforma tecnica
 

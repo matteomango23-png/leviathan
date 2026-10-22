@@ -508,6 +508,14 @@ export const BEAST_BODY = {
   hitFlashSeconds: 0.15,
 };
 
+/**
+ * Swimming on your own (owner, 22 ottobre 2026, the "battaglie a nuoto" proposal): a hunter that reaches you bites
+ * (a heart, a `push` in units/s away), then leaves you `truce` seconds before it comes again (× `gentleTruce` while
+ * your strongest beast is below `gentleUntilLevel`: the start of the game is easy). While one is after you within
+ * `engageRadius` units you can face it (the context button, or a tap on one of your beasts). Tuning.
+ */
+export const SWIM_BITE = { push: 90, truce: 2.5, gentleTruce: 2, gentleUntilLevel: 12, engageRadius: 160 };
+
 /** Riding: call a mount from your team, it swims to you and you climb on (tuning). */
 export const TEAM_RULES = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty (taming difficulty)

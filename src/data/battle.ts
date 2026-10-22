@@ -2,6 +2,13 @@
 // 3 ottobre: "facciamo uguale a Pokémon").
 // Values marked "tuning" are a first pass: change them here, never in systems.
 
+/**
+ * Wearing a beast down in the sea before the battle (owner, 8 and 22 ottobre 2026: "arpione in mare che indebolisce
+ * fino a metà vita… la bestia si arrabbia o scappa"): each hit takes `perDamage` × the weapon's damage of its health,
+ * up to `max`; it starts the battle with that much less. Tuning.
+ */
+export const HARPOON_WEAKEN = { perDamage: 0.1, max: 0.5 };
+
 export const BATTLE = {
   // the Pokémon damage modifiers (Gen VI+): the levels count through the formula and the statistics (data/stats.ts)
   randomRange: [0.85, 1] as [number, number], // damage varies a little, like Pokémon

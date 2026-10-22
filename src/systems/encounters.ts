@@ -1,7 +1,7 @@
 // Meeting wild beasts in the open sea: they appear in the dark of their waters, swim around (roam.ts), and a
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
-import { BEAST_BODY, ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
+import { ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { noSurprise, scaredOfPack } from './pack';
 import { fearOf, openingFor, type Fear } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
@@ -13,6 +13,7 @@ import { range } from './math';
 import { distanceToBody } from './beasts/combat';
 import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
+import { hunterAfterYou, swimBite } from './swimFight';
 import { SUBMARINE } from '../data/submarine';
 import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
@@ -63,19 +64,13 @@ export function ambush(
   return Math.sign(w.x - d.x) === face ? 'normal' : 'foe';
 }
 
-/** A weapon tip on a wild beast: the battle starts. Returns true if it hit one (the shot stops). */
-export function weaponHitsBeast(g: BeastWorld, x: number, y: number, events: GameEvent[]): boolean {
-  const d = g.diver;
-  for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || w.calm > 0) continue;
-    if (distanceToBody(w, x, y) > BEAST_BODY.weaponHitMargin) continue;
-    w.flash = BEAST_BODY.hitFlashSeconds;
-    // facing away from you, or not after you: a surprise attack
-    const behind = (d.x - w.x) * w.face < 0 || w.mood !== 'chase';
-    requestBattle(g, w, behind ? 'you' : 'normal', events);
-    return true;
-  }
-  return false;
+/** You face the hunter after you (the context button, or a tap on one of your beasts: `lead` goes first). */
+export function faceHunter(g: BeastWorld, events: GameEvent[], lead?: string): boolean {
+  const w = hunterAfterYou(g);
+  if (!w) return false;
+  requestBattle(g, w, 'normal', events);
+  if (g.beasts.battle && lead) g.beasts.battle.lead = lead;
+  return true;
 }
 
 function inArea(w: WildBeast, x: number, y: number, margin: number): boolean {
@@ -229,6 +224,9 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
+    } else if (touched && !aboard && !g.beasts.riding) {
+      // on your own it bites, and you choose: face it or swim away (swimFight.ts; owner, 22 ottobre)
+      swimBite(g, w, events);
     } else if (touched && !aboard) {
       // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts)
       const first = openingFor(
