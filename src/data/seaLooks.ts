@@ -9,7 +9,7 @@ export type SeaLookId = 'costa' | 'barriera' | 'mareblu' | 'foresta' | 'banchisa
  *  ice slabs and spikes, basalt spires, steep trench walls. */
 export type RidgeStyle = 'hills' | 'reef' | 'plateau' | 'kelp' | 'ice' | 'spires' | 'trench';
 
-export type SeaSound = 'none' | 'reef' | 'whale' | 'ice' | 'deep';
+export type SeaSound = 'none' | 'reef' | 'ice' | 'deep';
 
 export interface SeaLookDef {
   /** × the water's colour by depth (red, green, blue). */
@@ -60,7 +60,7 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
     snow: 1.1,
     glow: 0,
     glowColors: [],
-    sound: 'whale',
+    sound: 'none', // the whale call was taken out (owner, 23 ottobre: "fastidiosissimo")
   },
   foresta: {
     water: [0.95, 1.15, 0.85],
@@ -136,23 +136,11 @@ export const SEA_SNOW = {
 };
 
 /**
- * The region sounds (audio/regionSound.ts), synthesized: the reef's crackle (clicks per second, volume), a whale far
- * off now and then (seconds between calls, its notes in Hz, volume), the ice creaking (seconds between, volume), the
- * deep's low grumble (seconds between, Hz, volume). Tuning.
+ * The region sounds (audio/regionSound.ts), synthesized: the reef's crackle (clicks per second, volume), the ice
+ * creaking (seconds between, volume), the deep's low grumble (seconds between, Hz, volume). Tuning.
  */
 export const REGION_SOUND = {
   reef: { clicksPerSecond: 14, volume: 0.035 },
-  // a soft far moan, rising then falling, with a slow wobble (owner, 23 ottobre: the first one "gracchia")
-  whale: {
-    every: [35, 70] as [number, number],
-    from: 150,
-    peak: 210,
-    to: 120,
-    seconds: 4.5,
-    wobbleHz: 4,
-    wobble: 4,
-    volume: 0.035,
-  },
   ice: { every: [6, 14] as [number, number], volume: 0.05 },
   deep: { every: [5, 11] as [number, number], hz: 38, volume: 0.07 },
 };

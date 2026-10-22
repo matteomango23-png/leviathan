@@ -1,12 +1,12 @@
 // The sound of each region, over the sea's rumble (data/seaLooks.ts REGION_SOUND; docs/PROPOSTA-MARE.md): the reef's
-// crackle of shrimps, a whale far off now and then in the blue, the ice creaking under the shelf, a low grumble in
+// crackle of shrimps, the ice creaking under the shelf, a low grumble in
 // the deep. Synthesized like the rest (no sound files); each fades with the region's share where two blend.
 import { REGION_SOUND, SEA_LOOKS, type SeaSound } from '../data/seaLooks';
 import type { LookMix } from '../systems/seaLook';
 
 /** How much of each region sound plays at a mix of looks, 0…1. */
 export function soundShares(m: LookMix): Record<SeaSound, number> {
-  const out: Record<SeaSound, number> = { none: 0, reef: 0, whale: 0, ice: 0, deep: 0 };
+  const out: Record<SeaSound, number> = { none: 0, reef: 0, ice: 0, deep: 0 };
   out[SEA_LOOKS[m.a].sound] += 1 - m.t;
   out[SEA_LOOKS[m.b].sound] += m.t;
   return out;
@@ -17,7 +17,7 @@ const between = ([lo, hi]: [number, number]): number => lo + Math.random() * (hi
 export class RegionSound {
   private readonly out: GainNode;
   private readonly reefGain: GainNode;
-  private readonly next = { whale: between(REGION_SOUND.whale.every), ice: 2, deep: 2 };
+  private readonly next = { ice: 2, deep: 2 };
 
   constructor(
     private readonly ctx: AudioContext,
@@ -42,36 +42,12 @@ export class RegionSound {
     const s = soundShares(look);
     const t = this.ctx.currentTime;
     this.reefGain.gain.setTargetAtTime(REGION_SOUND.reef.volume * s.reef, t, 0.8);
-    for (const k of ['whale', 'ice', 'deep'] as const) {
+    for (const k of ['ice', 'deep'] as const) {
       this.next[k] -= dt;
       if (this.next[k] > 0) continue;
       this.next[k] = between(REGION_SOUND[k].every);
       if (s[k] > 0.05) this[k](t, s[k]);
     }
-  }
-
-  /** A soft far moan: a pure tone rising and falling with a slow wobble, swelling in and fading out. */
-  private whale(at: number, share: number): void {
-    const w = REGION_SOUND.whale;
-    const osc = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    const lfo = this.ctx.createOscillator();
-    const depth = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(w.from, at);
-    osc.frequency.exponentialRampToValueAtTime(w.peak, at + w.seconds * 0.4);
-    osc.frequency.exponentialRampToValueAtTime(w.to, at + w.seconds);
-    lfo.frequency.value = w.wobbleHz;
-    depth.gain.value = w.wobble;
-    lfo.connect(depth).connect(osc.frequency);
-    g.gain.setValueAtTime(0.0001, at);
-    g.gain.exponentialRampToValueAtTime(w.volume * share, at + w.seconds * 0.4);
-    g.gain.exponentialRampToValueAtTime(0.0001, at + w.seconds);
-    osc.connect(g).connect(this.out);
-    osc.start(at);
-    lfo.start(at);
-    osc.stop(at + w.seconds + 0.05);
-    lfo.stop(at + w.seconds + 0.05);
   }
 
   /** A creak: a few quick rough ticks of a low tone. */

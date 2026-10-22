@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 23 ottobre 2026, v0.105.2)
+## Dove siamo (aggiornato il 23 ottobre 2026, v0.105.3)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -16,6 +16,12 @@
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Passaggi tra regioni (23 ottobre 2026) → v0.105.3
+
+- `views/seaRidges.ts`: dissolvenza incrociata (il nuovo aspetto sale nella prima metà, il vecchio scende nella seconda), fondo delle strisce comune a tutti gli aspetti (`rowBottom`), panorami caricati tutti all'avvio.
+- Tolto il canto di balena (`whale` non c'è più in `SeaSound`). Il proprietario: "fastidiosissimo".
+- Nel browser: attraversamento barriera→mare blu e foresta/banchisa a passi di 15 unità; nessuna striscia sparisce, la copertura resta piena.
 
 ## Sfondi di battaglia del lotto 9 (23 ottobre 2026) → v0.105.2
 
