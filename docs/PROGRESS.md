@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.105.1)
+## Dove siamo (aggiornato il 23 ottobre 2026, v0.105.2)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,19 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Proposta del mare in corso** (`docs/PROPOSTA-MARE.md`): M1 aspetto delle regioni ✅ (v0.105.0), panorami dipinti di 5 regioni ✅ (v0.105.1; mancano sfondi di battaglia, pareti e Fossa del lotto 9); prossimi M2 punti di riferimento e porti, M3 Gallerie, M4 fondale vivo, M5 la Fossa Nera. Immagini attese: `docs/GEMINI-LOTTO-9.md` (il proprietario le sta generando). Poi: la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Proposta del mare in corso** (`docs/PROPOSTA-MARE.md`): M1 aspetto delle regioni ✅ (v0.105.0), panorami dipinti di 5 regioni ✅ (v0.105.1), sfondi di battaglia di 5 regioni ✅ (v0.105.2; manca `bg_foresta_front`, chiesto al proprietario; mancano pareti e Fossa del lotto 9); prossimi M2 punti di riferimento e porti, M3 Gallerie, M4 fondale vivo, M5 la Fossa Nera. Immagini attese: `docs/GEMINI-LOTTO-9.md` (il proprietario le sta generando). Poi: la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Sfondi di battaglia del lotto 9 (23 ottobre 2026) → v0.105.2
+
+- 19 strati `bg_<mareblu|foresta|banchisa|fosse|abisso>_<far|mid|front|ground>` (manca `bg_foresta_front`: in battaglia nella foresta il primo piano è ancora quello disegnato dal codice).
+- **Lezione su Gemini:** una correzione chiesta nella stessa chat mostra un'anteprima pulita, ma il file scaricato contiene pezzi della scena precedente (sfondi dietro le pedane, aloni verdi). Ogni correzione va fatta in una **chat nuova**, con un testo che si regge da solo.
+- Il canto di balena (`audio/regionSound.ts`, `REGION_SOUND.whale`) è un'onda sinusoidale con vibrato, ogni 35-70 s; prima era a dente di sega e gracchiava.
+- Nel browser: battaglia di prova (`?battaglia&luogo=<regione>`) in tutte e 5 le regioni, nessuna bestia coperta.
 
 ## Panorami del lotto 9 (22 ottobre 2026) → v0.105.1
 

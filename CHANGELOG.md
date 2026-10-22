@@ -2,6 +2,18 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.105.2 — Battaglie dipinte in ogni regione (23 ottobre 2026)
+
+- **Le battaglie in mare aperto hanno sfondi dipinti:**
+  - il Ciglio del Mare blu con le colonne di luce;
+  - la cattedrale di alghe dorate della Foresta;
+  - la grotta di ghiaccio della Banchisa;
+  - i camini fumanti delle Grandi fosse;
+  - ossa giganti e pietre scolpite nell'Abisso.
+  Ognuno ha la sua pedana sotto le bestie.
+- **Il canto di balena del Mare blu** ora è un lamento morbido e lontano, più raro e più basso. Prima gracchiava.
+- I salvataggi non cambiano.
+
 ## v0.105.1 — I panorami dipinti del mare (22 ottobre 2026)
 
 - **Dietro di te mentre nuoti** ora ci sono paesaggi dipinti, uno lontano e uno più vicino per regione:

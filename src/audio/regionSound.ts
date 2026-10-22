@@ -50,23 +50,28 @@ export class RegionSound {
     }
   }
 
-  /** A long low call sliding down, swelling and fading. */
+  /** A soft far moan: a pure tone rising and falling with a slow wobble, swelling in and fading out. */
   private whale(at: number, share: number): void {
     const w = REGION_SOUND.whale;
     const osc = this.ctx.createOscillator();
     const g = this.ctx.createGain();
-    const lp = this.ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 600;
-    osc.type = 'sawtooth';
+    const lfo = this.ctx.createOscillator();
+    const depth = this.ctx.createGain();
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(w.from, at);
+    osc.frequency.exponentialRampToValueAtTime(w.peak, at + w.seconds * 0.4);
     osc.frequency.exponentialRampToValueAtTime(w.to, at + w.seconds);
-    g.gain.setValueAtTime(0, at);
-    g.gain.linearRampToValueAtTime(w.volume * share, at + w.seconds * 0.35);
-    g.gain.linearRampToValueAtTime(0, at + w.seconds);
-    osc.connect(lp).connect(g).connect(this.out);
+    lfo.frequency.value = w.wobbleHz;
+    depth.gain.value = w.wobble;
+    lfo.connect(depth).connect(osc.frequency);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(w.volume * share, at + w.seconds * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + w.seconds);
+    osc.connect(g).connect(this.out);
     osc.start(at);
+    lfo.start(at);
     osc.stop(at + w.seconds + 0.05);
+    lfo.stop(at + w.seconds + 0.05);
   }
 
   /** A creak: a few quick rough ticks of a low tone. */

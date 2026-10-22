@@ -142,7 +142,17 @@ export const SEA_SNOW = {
  */
 export const REGION_SOUND = {
   reef: { clicksPerSecond: 14, volume: 0.035 },
-  whale: { every: [14, 30] as [number, number], from: 180, to: 110, seconds: 3.5, volume: 0.06 },
+  // a soft far moan, rising then falling, with a slow wobble (owner, 23 ottobre: the first one "gracchia")
+  whale: {
+    every: [35, 70] as [number, number],
+    from: 150,
+    peak: 210,
+    to: 120,
+    seconds: 4.5,
+    wobbleHz: 4,
+    wobble: 4,
+    volume: 0.035,
+  },
   ice: { every: [6, 14] as [number, number], volume: 0.05 },
   deep: { every: [5, 11] as [number, number], hz: 38, volume: 0.07 },
 };
