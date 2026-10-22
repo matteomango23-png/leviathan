@@ -203,7 +203,10 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
       ? { bars: mountBars(form, lv), talent: RIDE_TALENT_TEXT[talentOf(form) ?? ''] ?? null }
       : null,
     packPower: ridesForm(form) ? null : (PACK_POWER_TEXT[talentOf(form) ?? ''] ?? null),
-    roleName: ROLE_NAMES[s.role],
+    // the sheet says whether it carries you (mountTraits.ts ridesForm), its battle role otherwise
+    roleName: ridesForm(form)
+      ? ROLE_NAMES.cavalcatura
+      : ROLE_NAMES[s.role === 'cavalcatura' ? 'compagno' : s.role],
     level: lv,
     levelLabel: level === undefined ? `Liv. ${range[0]}–${range[1]} in natura` : `Livello ${lv}`,
     stats,

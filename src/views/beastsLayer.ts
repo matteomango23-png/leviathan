@@ -11,6 +11,8 @@ import { BEAST_TEMPER, TEAM_RULES } from '../data/beasts';
 import { activeBeast } from '../systems/beastPlay';
 import { artKeysOf, backOfForm, formKey, speciesOf, swimLook, type BeastForm } from '../systems/beasts/forms';
 import { riderSeat } from '../systems/beasts/combat';
+import { riderForwardOf } from '../systems/beasts/mountTraits';
+import { seatLag } from '../systems/beasts/seat';
 import { SPRITE_KEYS } from '../data/sprites.generated';
 import { isInWater } from '../systems/beasts/wildState';
 import type { GameState } from '../systems/game';
@@ -67,7 +69,7 @@ export class BeastsLayer {
     const sp = b ? speciesOf(b.form) : undefined;
     const [fwd, up] = riderSeat(
       c,
-      sp?.riderForward ?? TEAM_RULES.riderOffset[0],
+      b ? riderForwardOf(b.form) : TEAM_RULES.riderOffset[0],
       TEAM_RULES.riderOffset[1],
       b ? backOfForm(b.form) : undefined,
     );
@@ -75,7 +77,13 @@ export class BeastsLayer {
     const sin = Math.sin(c.pitch);
     const lx = fwd * c.length;
     const ly = up * c.length * (sp?.girth ?? 1);
-    return { x: c.x + (lx * cos - ly * sin) * c.face, y: c.y + lx * sin + ly * cos, pitch: c.pitch };
+    // climbing on: from where you were into the seat (systems/beasts/seat.ts)
+    const lag = c.seatFrom ? seatLag(c.seatT ?? 0) : 0;
+    return {
+      x: c.x + (lx * cos - ly * sin) * c.face + (c.seatFrom?.x ?? 0) * lag,
+      y: c.y + lx * sin + ly * cos + (c.seatFrom?.y ?? 0) * lag,
+      pitch: c.pitch * (1 - lag),
+    };
   }
 
   /** @param shapes murky water (clarity.ts): how murky, and where your light is (the beasts far from it are dark

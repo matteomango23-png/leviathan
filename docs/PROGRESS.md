@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 21 ottobre 2026, v0.97.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.98.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -16,6 +16,37 @@
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto AJ, salire in groppa e ruoli (22 ottobre 2026) → v0.98.0
+
+- **Ruoli:**
+  - `MOUNT_RULE` in `data/beasts.ts`: almeno 4,5 m, `noBack` (mai cavalcate), `onHead` (seduti sulla testa, `headForward`);
+  - `ridesForm` non guarda più `role`, che resta per le statistiche di battaglia;
+  - `riderForwardOf` in `mountTraits.ts` dice dove sei seduto;
+  - la scheda scrive "Cavalcatura" secondo `ridesForm`.
+- **Salire:**
+  - in `mount.ts` la bestia punta alla sella sotto di te e rallenta (`TEAM_RULES.arrive`); arrivata, il sub prende il suo centro;
+  - il disegno parte da dove eri (`seatFrom`, `seatT`, `seat.ts` `seatPoint`/`seatLag`, `mountSeconds` 0,35 s);
+  - `riderPose` in `beastsLayer.ts` fa la miscela.
+- **Scendere:** `dismount` mette il sub sulla sella con una spinta (`dismountPush`); la bestia va via nella sua direzione (`sendAway(..., keepFace)`).
+- **Arrivi e partenze:**
+  - `callMount(..., view)` fa nascere la bestia appena fuori dall'inquadratura;
+  - andando via accelera (`leaveSpeed`) e viene tolta fuori dallo schermo (`leftView`); sfuma solo se resta in vista oltre `leaveSeconds × leaveFallback`.
+- **A bordo:**
+  - `packAboard` in `pack.ts` e `vesselOf` in `vehicles.ts`: sotto `PACK.followShipBelow` (75 u/s) i compagni restano, altrimenti se ne vanno;
+  - i compagni non salgono mai sopra la superficie inseguendo il sub.
+- **Barra della squadra:** `.team-slot:not(.rideable)` violetto.
+- **Test:** `tests/lottoAJ.test.ts`; in `lottoAD2` ora il più profondo può essere anche un calamaro colossale o il Kraken.
+- **Nel browser:**
+  - chiamata dello squalo bianco: nasce fuori dallo schermo, sale in sella dopo 1,3 s;
+  - il punto in cui è disegnato il sub si sposta al massimo di 0,77 unità per fotogramma salendo e di 0,3 scendendo;
+  - andando via esce nuotando.
+
+**Da provare sull'iPhone:**
+- chiamare una cavalcatura e salirci;
+- scendere;
+- chiamare un compagno e mandarlo via;
+- salire sulla nave e partire piano, poi a tutta velocità.
 
 ## Lotto AI, bagliori (21 ottobre 2026) → v0.97.0
 

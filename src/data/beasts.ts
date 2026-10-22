@@ -470,6 +470,9 @@ export const PACK = {
   echoReach: 420,
   lanternRadius: 40,
   lanternPerLevel: 0.8,
+  /** Aboard a ship or a boat (owner, 22 ottobre: "segue la nave, poi va"): the pack swims alongside it below this
+   *  speed (units/s, about 8 knots: "Avanti adagio"); faster, diving or in the submarine, it swims off. */
+  followShipBelow: 75,
 };
 
 /** Each type's power in the pack, as the sheet tells it (PACK). */
@@ -508,8 +511,20 @@ export const BEAST_BODY = {
 /** Riding: call a mount from your team, it swims to you and you climb on (tuning). */
 export const TEAM_RULES = {
   levelWithoutTeam: 1, // your "strongest beast" level when the team is empty (taming difficulty)
-  summonDistance: 90, // the mount arrives from this far behind you
-  arriveSeconds: 1.2, // at most this long to reach you
+  summonDistance: 90, // it arrives from at least this far behind you (from just off the screen: mount.ts callMount)
+  arriveSeconds: 4, // at most this long to reach you
+  /**
+   * Swimming to you (owner, 22 ottobre 2026: climbing on must be smooth): at most `speed` diver lengths/s, slowing
+   * by `slowing` per second of distance, steering `steer` per second; it is there within `reach` × its length and
+   * at most `reachSpeed` diver lengths/s faster than you (a companion within `joinReach` × its length joins you).
+   * Climbing on then takes `mountSeconds`; climbing down you push off at `dismountPush` units/s. Going away it swims off at `leaveSpeed` diver lengths/s; still in sight
+   * after leaveSeconds × `leaveFallback` it fades.
+   */
+  arrive: { speed: 14, slowing: 2.5, steer: 4, reach: 0.15, reachSpeed: 1.5, joinReach: 1 },
+  mountSeconds: 0.35,
+  dismountPush: 22,
+  leaveSpeed: 12,
+  leaveFallback: 3,
   /**
    * A companion swims around you, inside the lamp halo: behind you (× its length + gap units) the way you travel,
    * your way of travel smoothed over travelSeconds (moving faster than travelMin diver lengths/s); it wanders a
@@ -690,6 +705,20 @@ export const GALLERY = {
   fighter: { speciesId: 'squalo_bianco', variant: 'comune' as const, final: true },
   calmSeconds: 600,
   respawnSeconds: 5,
+};
+
+/**
+ * Who carries you (owner, 22 ottobre 2026: "pensare che animali sono cavalcature e che animali sono compagni"; his
+ * choice: by size): a beast at least `minLengthM` long (more than twice the diver) with a back to hold on to; the
+ * ones with none (`noBack`) only ever swim at your side, the great squids and the Kraken carry you sitting on their
+ * head (`onHead`, as far forward as the Piovra). Smaller ones are companions. The starters' second stages
+ * (rideSpeedMult in species.ts) and RIDEABLE_FORMS carry you too. Tuning.
+ */
+export const MOUNT_RULE = {
+  minLengthM: 4.5,
+  noBack: ['medusa_gigante', 'granchio_ragno', 'isopode_gigante', 'polpo_gigante'] as readonly string[],
+  onHead: ['calamaro_gigante', 'calamaro_colossale', 'kraken'] as readonly string[],
+  headForward: 0.3,
 };
 
 /** Forms you can ride though their species only swims at your side: grown big enough (owner, 20 ottobre). Keys as

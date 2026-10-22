@@ -160,6 +160,10 @@ Tutte le note del 20 ottobre sono fatte (il dettaglio è in `docs/PROGRESS.md` e
 - AI bagliori ✅ v0.97.0 (rune che pulsano, occhi e luci degli abissi fissi).
 - Poi AD-4 poteri speciali.
 
+## Note del 22 ottobre 2026
+
+- AJ ✅ v0.98.0: salire e scendere fluidi, arrivi e partenze nuotando, cavalcature per misura, compagni a bordo, colore violetto dei compagni.
+
 ## Blocco 1 — Nuovo inizio senza storia
 - La storia attuale (Compagnia dell'Olio Nero, Vedova Nera, capitoli 1–4) va ripensata del tutto: **in pausa** fino al blocco 10.
 - Fuori dal gioco le bestie solo della storia: Sfregiato, Re Corallo, Piovra (tolte anche dalla partita del proprietario). Il Calamaro colossale diventa una bestia normale.

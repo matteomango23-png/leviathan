@@ -1,13 +1,14 @@
 // Everything about beasts during a game step in the open sea: wild beasts and encounters, calling a mount
 // from the team bar and riding it, its ability, the sardine swarm. Called by stepGame (game.ts).
 // Fights are turn-based battles (systems/battle), opened by the World scene when a battle is requested.
-import { RIDE_BREACH } from '../data/beasts';
+import { RIDE_BREACH, TEAM_RULES } from '../data/beasts';
 import { rideSpeedOf, ridesForm } from './beasts/mountTraits';
 import { canBreakBones, stepBoneHint, useBreakBones } from './abilities';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import { formLengthUnits } from './beasts/forms';
-import { callMount, sendAway, stepMount } from './beasts/mount';
+import { callMount, leftView, sendAway, stepMount } from './beasts/mount';
+import { seatPoint } from './beasts/seat';
 import { joinPack, stepPackSwim } from './pack';
 import { maxHpOf, teamMembers, type TeamBeast } from './beasts/team';
 import { stepSenses, stepWildSpawns } from './encounters';
@@ -67,7 +68,7 @@ function callFromTeam(g: BeastWorld, slot: number, events: GameEvent[]): void {
     dismount(g, events);
     g.beasts.mount = null;
   }
-  g.beasts.mount = callMount(b, g.diver, g.map, true);
+  g.beasts.mount = callMount(b, g.diver, g.map, true, g.beasts.view);
   events.push({ type: 'summoned', uid: b.uid });
 }
 
@@ -99,12 +100,18 @@ export function stepBeasts(g: BeastWorld, input: InputState, dt: number, events:
     const b = activeBeast(g);
     if (b && m.state !== 'leaving') m.length = formLengthUnits(b.form, b.level);
     const reached = stepMount(m, d, dt, g.map);
-    if (reached && m.state === 'in' && m.rider) {
+    if (reached && m.state === 'in' && m.rider && b) {
+      // you take its place, drawn from where you were into the seat (seat.ts): no jump (owner, 22 ottobre)
+      const was = { x: d.x, y: d.y };
+      Object.assign(d, { x: m.x, y: m.y, vx: m.vx, vy: m.vy });
+      const seat = seatPoint(m, b.form);
+      m.seatFrom = { x: was.x - seat.x, y: was.y - seat.y };
+      m.seatT = TEAM_RULES.mountSeconds;
       m.state = 'ride';
       bs.riding = true;
       events.push({ type: 'mounted' });
     } else if (reached && m.state === 'in') m.state = 'follow';
-    if (m.state === 'leaving' && m.t <= 0) bs.mount = null;
+    if (leftView(m, bs.view)) bs.mount = null;
   }
   stepPackSwim(g, dt);
 }
