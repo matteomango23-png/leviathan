@@ -399,7 +399,8 @@ export type ExtraName =
   | { kind: 'item'; id: string }
   | { kind: 'icon'; id: string }
   | { kind: 'screen'; id: string }
-  | { kind: 'world'; id: string };
+  | { kind: 'world'; id: string }
+  | { kind: 'panorama'; id: string };
 
 /** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
 export function parseExtraName(file: string): ExtraName | null {
@@ -407,6 +408,8 @@ export function parseExtraName(file: string): ExtraName | null {
   if (!base) return null;
   const bg = /^bg_([a-z]+)_(far|mid|front|ground)$/.exec(base);
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
+  // the sea's panoramas behind you as you swim (docs/GEMINI-LOTTO-9.md, views/seaRidges.ts)
+  if (/^mare_[a-z0-9]+_(lontano|medio)$/.test(base)) return { kind: 'panorama', id: base };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
   // the title menu's painting (19 ottobre) and the opening screen's (21 ottobre, ui/splash.ts)

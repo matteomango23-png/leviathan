@@ -92,7 +92,7 @@ function drawProp(c: Ctx, rng: Rng, pal: BattlePalette): void {
       );
       c.stroke();
     }
-  } else {
+  } else if (pal.prop === 'ribs') {
     // the ribs of a dead whale, arching out of the floor: tapering bones half lost in the dark
     for (let i = 0; i < 7; i++) {
       const x = 120 + i * 120 + (rng() - 0.5) * 30;

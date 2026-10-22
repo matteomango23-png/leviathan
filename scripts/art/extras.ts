@@ -1,6 +1,7 @@
 // `npm run art`, battle extras (docs/PROMPT-BATTAGLIA.md):
 //   bg_<place>_far.jpg                 → public/bg/<place>_far.webp     (whole picture, 1920 wide)
 //   bg_<place>_mid|front|ground.jpg    → public/bg/<place>_<layer>.webp (green background removed)
+//   mare_<look>_lontano|medio.jpg      → public/bg/<name>.webp          (the sea's panorama, green removed, 2400 wide)
 //   conchiglia.jpg, conchiglia_aperta  → public/items/<name>.webp       (black removed, 512×512)
 //   icona_<name>.jpg, tipo_<name>.jpg  → public/ui/<name>.webp          (white icon, 160×160, tinted in game)
 //   menu_sfondo.jpg                    → public/ui/menu_sfondo.webp     (the title menu's painting, whole, 1920 wide)
@@ -42,6 +43,7 @@ function stageMask(img: Raw): Float32Array | null {
 
 export function extraDest(outRoot: string, e: ExtraName): string {
   if (e.kind === 'bg') return join(outRoot, 'bg', `${e.place}_${e.layer}.webp`);
+  if (e.kind === 'panorama') return join(outRoot, 'bg', `${e.id}.webp`);
   if (e.kind === 'item') return join(outRoot, 'items', `${e.id}.webp`);
   if (e.kind === 'world') return join(outRoot, 'world', `${e.id}.webp`);
   return join(outRoot, 'ui', `${e.id}.webp`);
@@ -157,6 +159,14 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     return `strato ${img.width}×${img.height}, verde tolto`;
   }
   if (e.kind === 'world') return makeWorldPiece(src, dest, e.id);
+  if (e.kind === 'panorama') {
+    const img = await raw(src, 2400);
+    const cut = removeGreenBackground(img);
+    await sharp(Buffer.from(cut.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
+      .webp(webp)
+      .toFile(dest);
+    return `panorama ${img.width}×${img.height}, verde tolto`;
+  }
   if (e.kind === 'item') {
     const img = await raw(src, 1400, 0.02); // screenshots: trim the frame
     const cut = removeDarkBackground(img, borderColor(img), 4, { low: 4, high: 18, soft: 34 });

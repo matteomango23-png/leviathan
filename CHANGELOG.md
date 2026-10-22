@@ -2,6 +2,20 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.105.0 — Ogni regione del mare ha il suo aspetto (22 ottobre 2026)
+
+- **Il mare cambia aspetto regione per regione,** e si riconosce subito dove sei:
+  - **Barriera esterna:** acqua turchese, raggi di sole forti, gobbe di corallo rosso e ventagli sullo sfondo, crepitio di gamberi;
+  - **Mare blu:** blu profondo, colonne di luce, il Ciglio (la piattaforma che finisce in un salto nel vuoto), ogni tanto il canto lontano di una balena;
+  - **Foresta di alghe:** acqua verde oro, steli altissimi sullo sfondo;
+  - **Banchisa:** blu freddo, lastre di ghiaccio, scricchiolii;
+  - **Grandi fosse:** quasi nero, guglie di basalto con bagliori arancio, puntini luminosi azzurri e verdi che pulsano, un rombo sordo;
+  - **Abisso del Leviatano:** nero blu, pareti ripide, tante luci degli abissi.
+- **Più scendi, più "neve marina"** cade nell'acqua.
+- **Tra una regione e l'altra** l'aspetto cambia piano, in circa 400 m.
+- **Battaglie in mare aperto:** lo sfondo è quello del posto dove combatti (blu nel Mare blu, scuro nelle fosse), non più sempre quello della baia.
+- I salvataggi non cambiano.
+
 ## v0.104.0 — La caccia che fa paura (22 ottobre 2026)
 
 - **Lo squalo colpito ti dà la caccia:**

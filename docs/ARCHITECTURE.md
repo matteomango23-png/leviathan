@@ -189,7 +189,10 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `shipView.ts`, `shipWake.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, corsia lontana dietro le rocce; scia e bolle dell'elica in `shipWake.ts`. |
 | `sweepScope.ts`, `radarScreen.ts`, `subScope.ts` (ui) | Lo schermo rotondo col fascio che gira: radar nel cockpit, sonar sul vetro del sottomarino con la freccia verso la nave. |
 | `waterFilter.ts` (views), `systems/waterTint.ts` | L'acqua come filtro su tutto ciò che sta sotto le onde: leggermente azzurro in superficie, più blu e scuro in profondità, più marrone nell'acqua torbida. |
-| `seaLight.ts`, `seaRays.ts` (views) | I raggi di luce dalla superficie (dietro e, più deboli, davanti al mondo) e le microparticelle che si accendono quando un raggio le attraversa. |
+| `seaLight.ts`, `seaRays.ts` (views) | I raggi di luce dalla superficie (dietro e, più deboli, davanti al mondo) e le microparticelle che si accendono quando un raggio le attraversa; la neve marina più fitta in profondità e le bioluminescenze delle fosse (strato `glow`). |
+| `seaRidges.ts`, `seaRidgeArt.ts` (views) | Le creste lontane e medie con parallasse, nella forma e nei colori della regione (o il suo panorama dipinto `bg/mare_<aspetto>_*.webp`), mescolate al confine. |
+| `seaLook.ts` (systems), `seaLooks.ts` (data) | Quale aspetto del mare c'è in un punto (costa, barriera, mare blu, foresta, banchisa, fosse, abisso), con la mescolanza ai confini; il luogo delle battaglie in mare aperto. |
+| `regionSound.ts` (audio) | Il suono di ogni regione sopra il rombo del mare: crepitio, balena, ghiaccio, rombo profondo. |
 | `packFormation.ts` (views) | Il branco che nuota insieme: i compagni seguono la scia della guida, larghi, stretti o sparpagliati secondo l'umore. |
 | `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |
 | `shipFx.ts` (views) | Effetti intorno alla nave: fumo delle ciminiere (dietro la nave), schegge di ghiaccio. Solo aspetto. |
@@ -233,7 +236,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 
 ## Come si disegna il mare
 
-1. **Sfondo** (`backgroundView`): colore dell'acqua per profondità, cielo (più scuro sotto le nuvole), raggi di luce (più deboli col cielo coperto), creste lontane con parallasse, neve marina; le nuvole del meteo (`weatherView`).
+1. **Sfondo** (`backgroundView`, `seaRidges`): colore dell'acqua per profondità tinto dall'aspetto della regione, cielo (più scuro sotto le nuvole), raggi di luce (più deboli col cielo coperto), creste lontane con parallasse, neve marina; le nuvole del meteo (`weatherView`).
 2. **Rocce** (`terrainView` + `terrainPainter`): pezzi da 128×128 unità dipinti un po' alla volta (massimo 4 ms per fotogramma, prima i visibili) attorno alla telecamera (bordi morbidi, ombra all'interno, sedimento sui ripiani, coralli) e riciclati per risparmiare memoria.
 3. **Mondo**: la nave (`shipView`), molo e case di Portofosco, relitti e forzieri (`placesView`), alghe (`kelpView`), pesci (`fishView`), dardi, rete, sciame e scudo (`gearFxView`), bestie (`beastView` a strisce lungo la spina dorsale, `beastsLayer`), arpione e sub anche in groppa (`diverView`), gabbiani (`birdsView`), bolle e linea della superficie, più mossa col brutto tempo (`effectsView`); alcune alghe davanti al sub. Aurelio sul molo durante l'inizio è in `storyView`, coralli dell'anfiteatro e galeone in `sceneryView`; le mangrovie del Delta in `deltaView` (l'acqua torbida la fa `lightView` con `murkAt` di `world/zones.ts`). Le texture disegnate all'avvio sono in `textures.ts`, le tre telecamere in `cameraRig.ts`.
 4. **Buio** (`lightView`): maschera a metà risoluzione, più scura con la profondità; la lampada (cono), l'alone e i santuari la "bucano"; bagliore caldo e vignettatura sopra. Il cielo coperto scurisce un po' vicino alla superficie.

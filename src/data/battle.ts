@@ -225,7 +225,8 @@ export const BATTLE_STAGE = {
   /** A beast without battle pictures shows its card (2:3), standing on this share of its height. */
   card: { aspect: 2 / 3, foot: 0.9 },
   /** Places with their own background; any other region uses the bay. */
-  places: ['baia', 'delta', 'tana', 'barriera'] as const, // barriera: the coral amphitheatre (3 ottobre)
+  // barriera: the coral amphitheatre (3 ottobre); out in the sea, the look where you fight (data/seaLooks.ts, M1)
+  places: ['baia', 'delta', 'tana', 'barriera', 'mareblu', 'foresta', 'banchisa', 'fosse', 'abisso'] as const,
 };
 export type BattlePlace = (typeof BATTLE_STAGE.places)[number];
 
@@ -239,7 +240,9 @@ export interface BattlePalette {
   rim: string; // light on the rock edges
   ground: string; // the patch of seabed each beast stands on
   plant: string; // foreground plants or roots
-  prop: 'arches' | 'roots' | 'ribs'; // what the middle layer shows: stone arches, mangrove roots, whale ribs
+  /** What the middle layer shows: stone arches, mangrove roots (kelp in the forest), whale ribs, or nothing (the
+   *  open blue, the trenches' rim). */
+  prop: 'arches' | 'roots' | 'ribs' | 'none';
   /** A place without its own painted background borrows the bay's, tinted with this colour (and its props on top). */
   borrowTint: string;
 }
@@ -280,6 +283,66 @@ export const BATTLE_PALETTES: Record<BattlePlace, BattlePalette> = {
     plant: '#2a0e10',
     prop: 'arches',
     borrowTint: '#e0b0a8',
+  },
+  mareblu: {
+    top: '#14406a',
+    bottom: '#01050c',
+    ray: '#cfe8ff',
+    fog: '#3a6a9a',
+    rock: '#0a1a2a',
+    rim: '#5a8ab8',
+    ground: '#5a5a4a',
+    plant: '#06121e',
+    prop: 'none',
+    borrowTint: '#8fb4e8',
+  },
+  foresta: {
+    top: '#2a5a3a',
+    bottom: '#030a05',
+    ray: '#e8f0b8',
+    fog: '#4a7a4a',
+    rock: '#10200f',
+    rim: '#9aa860',
+    ground: '#3a3a2a',
+    plant: '#1a2a10',
+    prop: 'roots',
+    borrowTint: '#9ec48a',
+  },
+  banchisa: {
+    top: '#3a6680',
+    bottom: '#030a10',
+    ray: '#e8f8ff',
+    fog: '#7aa8c0',
+    rock: '#1a3040',
+    rim: '#c8ecf8',
+    ground: '#5a646a',
+    plant: '#0e1c26',
+    prop: 'ribs',
+    borrowTint: '#b4d8ec',
+  },
+  fosse: {
+    top: '#121c26',
+    bottom: '#010203',
+    ray: '#7aa0b8',
+    fog: '#3a2a26',
+    rock: '#08090c',
+    rim: '#e0703a',
+    ground: '#26221e',
+    plant: '#050608',
+    prop: 'none',
+    borrowTint: '#6a6470',
+  },
+  abisso: {
+    top: '#0a1220',
+    bottom: '#000102',
+    ray: '#5fb8d8',
+    fog: '#1a2a3a',
+    rock: '#04060a',
+    rim: '#4fb8d8',
+    ground: '#1e2228',
+    plant: '#030406',
+    prop: 'ribs',
+    borrowTint: '#4a5468',
   },
   tana: {
     top: '#10303a',

@@ -214,8 +214,8 @@ export const SEA = {
   ice: [168, 206, 226] as [number, number, number],
   // the sunken temples (tappa 14): carved blocks of green-grey stone, gates of darker stone with bronze bands
   temple: { stone: [92, 104, 96] as [number, number, number], gate: [70, 62, 50] as [number, number, number], block: [32, 16], mortar: 1.4 },
-  far: { baseY: 300, parallax: 0.3, top: '#0b2531', bottom: '#04111a' },
-  mid: { baseY: 330, parallax: 0.6, top: '#0f2a33', bottom: '#050e13' },
+  far: { baseY: 300, parallax: 0.3 }, // their colours and shapes: data/seaLooks.ts
+  mid: { baseY: 330, parallax: 0.6 },
   kelpBack: '#16473a',
   kelpFront: '#0a1a14',
 };

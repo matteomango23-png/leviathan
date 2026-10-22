@@ -1187,3 +1187,14 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - la battaglia la fai partire tu (contatto senza scatto, Affronta, o tocco su una tua bestia).
 - **Motivo:** il proprietario: "non fa paura… a cosa serve la cavalcatura… come faccio a schivarlo… la mia creatura deve essere morsa anche lei".
 - **Alfa:** i residenti del mare aperto hanno versione fissa; nei primi 2 km solo comuni, per non incontrare sempre lo stesso alfa uscendo dal porto.
+
+## 22 ottobre 2026 — Ogni regione del mare ha il suo aspetto (v0.105.0)
+
+- **Decisione:**
+  - sette "aspetti" del mare in `data/seaLooks.ts`, scelti dalla posizione (regione, e nella Foresta e Banchisa il tipo di tratto);
+  - al confine due aspetti si mescolano in circa 400 m;
+  - le creste sono disegnate dal codice per ogni aspetto, finché i panorami di Gemini (`docs/GEMINI-LOTTO-9.md`) non le sostituiscono da soli;
+  - i suoni sono sintetizzati, senza file audio.
+- **Motivo:** il proprietario: "migliorare in modo considerevole il feeling dell'oceano"; prima regola della proposta: ogni regione si riconosce in un secondo.
+- **Memoria:** ogni striscia di creste è larga due schermi; ne restano in memoria solo quelle in vista (al massimo due per fila).
+- **Battaglie:** in mare aperto lo sfondo viene dal posto in cui combatti, non più dalla regione della specie.
