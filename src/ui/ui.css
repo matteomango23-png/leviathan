@@ -344,13 +344,14 @@
   border-color: var(--glow);
   box-shadow: 0 0 8px var(--glow);
 }
-/* a companion (it swims at your side, it does not carry you): violet, the mounts keep their colour (22 ottobre) */
+/* a companion (it swims at your side, it does not carry you): a cold abyss blue, like the glows of the deep, beside
+   the mounts' gold (owner, 22 ottobre: "un colore che sta bene") */
 .team-slot:not(.rideable) {
-  border-color: #9d7bea;
+  border-color: rgba(127, 196, 224, 0.7);
 }
 .team-slot.out:not(.rideable) {
-  border-color: #b99cff;
-  box-shadow: 0 0 8px #9d7bea;
+  border-color: #9fd8ee;
+  box-shadow: 0 0 8px rgba(127, 196, 224, 0.75);
 }
 .team-slot.ko img {
   filter: grayscale(1) brightness(0.45);

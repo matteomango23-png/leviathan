@@ -1,9 +1,8 @@
 // Lot AE (21 ottobre 2026): the screen and the music of the menu. The game takes the largest size the phone reports
-// (the black band opening in landscape), turns a quarter round when the phone is held upright (with the safe areas
-// following), and the menu's music is a slow dirge whose every bar fits its beats.
+// (the black band opening in landscape), asks to turn the phone when held upright (lot BD), and the menu's music is a slow dirge whose every bar fits its beats.
 import { describe, expect, it } from 'vitest';
 import { TITLE_MUSIC } from '../src/data/music';
-import { gameSize, isTurned, safeSides, type Measures } from '../src/ui/orientation';
+import { gameSize, isUpright, type Measures } from '../src/ui/orientation';
 
 const phone = (w: number, h: number, extra: Partial<Measures> = {}): Measures => ({
   inner: { w, h },
@@ -26,20 +25,15 @@ describe('the size of the game (owner: "una barra nera sotto… non deve mai suc
   });
 });
 
-describe('held upright the game turns (owner: "rimane in orizzontale fisso")', () => {
-  it('a phone held upright is turned, and the game is laid out sideways', () => {
+describe('held upright the game asks to turn the phone (lot BD, 22 ottobre: no fake rotation)', () => {
+  it('a phone held upright is upright; its size is not swapped', () => {
     const m = phone(390, 844);
-    expect(isTurned(m)).toBe(true);
-    expect(gameSize(m)).toEqual({ w: 844, h: 390 });
+    expect(isUpright(m)).toBe(true);
+    expect(gameSize(m)).toEqual({ w: 390, h: 844 });
   });
 
-  it('a computer with a tall window is not turned', () => {
-    expect(isTurned({ ...phone(600, 900), touch: false })).toBe(false);
-  });
-
-  it("turned, each side of the game takes the phone's matching safe area", () => {
-    expect(safeSides(true)).toEqual({ t: 'right', r: 'bottom', b: 'left', l: 'top' });
-    expect(safeSides(false)).toEqual({ t: 'top', r: 'right', b: 'bottom', l: 'left' });
+  it('a computer with a tall window is not upright', () => {
+    expect(isUpright({ ...phone(600, 900), touch: false })).toBe(false);
   });
 });
 

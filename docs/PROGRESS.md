@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.102.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.103.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,44 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅. **Prossimo: la pulizia** (rimandata dal proprietario a dopo il Blocco 6). **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅. **Prossimi** (scelta del proprietario): la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto BD, correzioni (22 ottobre 2026, sera) → v0.103.0
+
+- **Arpione:**
+  - `HARPOON_WEAKEN` (`base`, `perLevel`, `provokedSeconds`, `rageMult`, `fleeMult`, `fleeOver`); `woundPerHit(level)` in `swimFight.ts`;
+  - `w.provoked` (non salvato); `provokePatrol` in `patrol.ts` (passaggio forzato in fuga, poi carica);
+  - in `roam.ts` velocità moltiplicate mentre è provocata, e di nuovo alla carica dopo la tregua.
+- **Schermo:**
+  - via la rotazione con il CSS: `orientation.ts` ora ha `isUpright` e `gameSize` senza scambio;
+  - `ui/rotateHint.ts` (nuovo) e `main.ts` fanno dormire e risvegliare il ciclo di Phaser;
+  - `--safe-*` fissi in `:root`;
+  - barra di stato `black`; `min-height: 100lvh` in `display-mode: standalone`.
+- **Audio:** sblocco solo su `pointerup`, `touchend`, `click`, `keydown`; `audioSession` prima del contesto; volume generale da 0 in `AUDIO.unlockFade` alla partenza e al ritorno nell'app.
+- **Compagni:**
+  - colore `.team-slot:not(.rideable)` azzurro abisso;
+  - `PACK.alongsideDepth`, `alongsideMin`, `alongsideSpeed` e il `cap` di `stepMount` per il compagno a bordo.
+- **Test:** `tests/lottoBD.test.ts`; `lottoAE` e `lottoBA` aggiornati.
+- **Nel browser:**
+  - in emulazione verticale compare "Gira il telefono"; girando, il gioco riprende a 1624×750;
+  - colori della barra: oro per la cavalcatura, azzurro per i compagni.
+- **Ricerca (fonti in `DECISIONS.md`):**
+  - iOS non permette di bloccare l'orientamento a una web app;
+  - la barra nera viene da black-translucent insieme a viewport-fit=cover;
+  - l'audio va sbloccato alla fine del tocco.
+- **Limiti:** barra nera e audio vanno verificati sull'iPhone. Per l'audio dalla Home c'è una segnalazione aperta ad Apple (iOS 26.0.1).
+
+**Da provare sull'iPhone:**
+- aprire dalla Home in orizzontale (barra nera?);
+- girare il telefono;
+- il primo tocco e la musica del menu;
+- arpionare una bestia bassa e una alta;
+- salire a bordo con un compagno.
 
 ## Lotto BC, mosse animate (22 ottobre 2026, Blocco 6) → v0.102.0
 

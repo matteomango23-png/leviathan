@@ -27,14 +27,15 @@ export class SoundEngine {
   private on = readEnabled();
 
   constructor() {
-    // any first touch, click or key starts the sound (owner, 15 ottobre: it began only after touching the settings).
-    // iPhone wants a sound actually played inside the touch: a silent instant does it. Every later touch wakes it
-    // again if the phone stopped it (coming back to the app, a call…).
+    // the first touch, click or key starts the sound (owner, 15 ottobre: it began only after touching the settings).
+    // iPhone counts only the end of a touch or a click as a gesture (its start may be a scroll; owner, 22 ottobre:
+    // "finché non clicco spesso l'audio non parte") and wants a sound played inside it: a silent instant does it.
+    // Every later touch wakes it again if the phone stopped it (coming back to the app, a call…).
     const unlock = (): void => {
       this.start();
       this.wake();
     };
-    for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'])
+    for (const ev of ['pointerup', 'touchend', 'click', 'keydown'])
       window.addEventListener(ev, unlock, { capture: true, passive: true });
     // leaving the app: silent at once, no sound or music behind your back (owner, 20 ottobre); back to it: try at
     // once (if iOS keeps it "interrupted", the next touch wakes it), the game waiting in its pause menu
@@ -42,7 +43,7 @@ export class SoundEngine {
       if (document.visibilityState === 'hidden') this.hush();
       else {
         this.wake();
-        this.applyMaster();
+        this.applyMaster(AUDIO.unlockFade);
       }
     };
     document.addEventListener('visibilitychange', back);
@@ -55,7 +56,11 @@ export class SoundEngine {
   private wake(): void {
     const c = this.ctx;
     if (!c || c.state === 'running') return;
-    void c.resume().catch(() => undefined);
+    // when it comes alive the sound rises gently, never at a stroke (owner, 22 ottobre: "parte proprio di botto")
+    void c
+      .resume()
+      .then(() => this.applyMaster(AUDIO.unlockFade))
+      .catch(() => undefined);
     try {
       const src = c.createBufferSource();
       src.buffer = c.createBuffer(1, 1, c.sampleRate);
@@ -183,14 +188,16 @@ export class SoundEngine {
       window.AudioContext ??
       (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctx) return;
-    // a larger buffer: fewer crackles when the phone is busy (owner, 15 ottobre: "l'audio gracchia")
-    this.ctx = new Ctx({ latencyHint: 'playback' });
-    // iPhone: play like a music app, not like a ringtone (so the silent switch does not mute the game)
+    // iPhone: play like a music app, not like a ringtone (so the silent switch does not mute the game); set before
+    // the sound is made, as Apple asks
     const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
     if (session) session.type = 'playback';
+    // a larger buffer: fewer crackles when the phone is busy (owner, 15 ottobre: "l'audio gracchia")
+    this.ctx = new Ctx({ latencyHint: 'playback' });
     this.master = this.ctx.createGain();
+    this.master.gain.value = 0; // it rises once the sound is alive (wake)
     this.master.connect(this.ctx.destination);
-    this.applyMaster();
+    if (this.ctx.state === 'running') this.applyMaster(AUDIO.unlockFade);
     this.sea = new SeaAmbience(this.ctx, this.master);
     this.music = new BattleMusic(this.ctx, this.master);
     this.engines = new EngineSound(this.ctx, this.master);
@@ -208,10 +215,11 @@ export class SoundEngine {
     }
   }
 
-  private applyMaster(): void {
+  /** The master volume, reached over about `seconds` (a quick change unless the sound has just come alive). */
+  private applyMaster(seconds = 0.15): void {
     if (!this.ctx || !this.master) return;
     if (document.visibilityState === 'hidden') return; // away from the app it stays silent
-    this.master.gain.setTargetAtTime(this.on ? AUDIO.master : 0, this.ctx.currentTime, 0.05);
+    this.master.gain.setTargetAtTime(this.on ? AUDIO.master : 0, this.ctx.currentTime, seconds / 3);
   }
 }
 

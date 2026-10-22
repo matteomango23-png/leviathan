@@ -2,6 +2,7 @@
 // your lamp reveals. They turn around only out of the light (or against a wall). By temperament they come at
 // you, ignore you, or slip away slowly — never vanishing at full speed. Touching one starts a battle.
 import { BEAST_TEMPER, PATROL, ROAM, type Temper } from '../../data/beasts';
+import { HARPOON_WEAKEN } from '../../data/battle';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
@@ -98,6 +99,8 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.flash = Math.max(0, b.flash - dt);
   b.jaw = Math.max(0, b.jaw - dt);
   b.calm = Math.max(0, b.calm - dt);
+  b.provoked = Math.max(0, (b.provoked ?? 0) - dt);
+  const roused = (b.provoked ?? 0) > 0;
   if (b.motion === 'gone') return false;
 
   const dist = Math.hypot(d.x - b.x, d.y - b.y);
@@ -113,7 +116,9 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   else if (b.mood === 'wander' && dist < sight) {
     b.mood = temper === 'aggressive' && !afraid ? 'chase' : temper === 'shy' || afraid ? 'flee' : 'wander';
     // a big hunter does not always charge at once: now and then a few passes first (beasts/patrol.ts)
-    if (b.mood === 'chase' && !b.charging && ctx.view) startPatrol(b, rng);
+    // still enraged by your weapon: straight at you again; else now and then a few passes first
+    if (b.mood === 'chase' && roused) b.charging = true;
+    else if (b.mood === 'chase' && !b.charging && ctx.view) startPatrol(b, rng);
   } else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
   if (ctx.scared && !b.boss && dist < sight) b.mood = 'flee';
@@ -122,7 +127,10 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   if (b.drawn && temper !== 'aggressive' && b.mood === 'flee') b.mood = 'wander';
 
   const spec = BEAST_TEMPER[b.form.speciesId];
-  const mult = spec?.speedMult ?? 1;
+  // roused by your weapon: an enraged hunter faster, a frightened one much faster (HARPOON_WEAKEN)
+  const mult =
+    (spec?.speedMult ?? 1) *
+    (roused ? (b.mood === 'flee' ? HARPOON_WEAKEN.fleeMult : HARPOON_WEAKEN.rageMult) : 1);
   const top = map.surfaceY + b.length * 0.12;
   let tx: number;
   let ty: number;
@@ -140,7 +148,11 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
     b.jaw = Math.max(b.jaw, dist < ROAM.sightRange * U * 0.4 ? 0.2 : 0);
   } else if (b.mood === 'flee') {
     const k = (ROAM.loseRange * U) / Math.max(1, dist);
-    [tx, ty, speed] = [b.x + (b.x - d.x) * k, b.y + (b.y - d.y) * k * 0.5, ROAM.shySpeed * U * mult];
+    // frightened by your weapon even a slow one gets away faster than you swim (HARPOON_WEAKEN.fleeOver)
+    const flee = roused
+      ? Math.max(ROAM.shySpeed * U * mult, DIVER.maxSpeed * HARPOON_WEAKEN.fleeOver)
+      : ROAM.shySpeed * U * mult;
+    [tx, ty, speed] = [b.x + (b.x - d.x) * k, b.y + (b.y - d.y) * k * 0.5, flee];
   } else if (b.fleeFrom) {
     // a hunter after it (beasts/packHunt.ts): away from it
     const fx = b.x - b.fleeFrom.x;

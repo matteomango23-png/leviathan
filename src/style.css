@@ -1,3 +1,10 @@
+:root {
+  /* the phone's safe areas (notch, home bar), one name for each side of the game */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+}
 html,
 body {
   height: 100%;
@@ -15,13 +22,56 @@ body {
   width: max(var(--app-w, 100%), 100lvw);
   height: max(var(--app-h, 100%), 100lvh);
 }
-/* Held upright the page is turned a quarter round clockwise and the game played sideways (ui/orientation.ts): the web
-   cannot lock the orientation on an iPhone. Every full-screen layer is fixed inside the turned body. */
-html.turned body {
-  width: var(--app-w);
-  height: var(--app-h);
-  transform-origin: top left;
-  transform: translateX(var(--app-h)) rotate(90deg);
+/* From the Home screen iOS can lay the page out shorter than the screen (owner, 21-22 ottobre: the black band):
+   the large viewport there, which has no bars to collapse. */
+@media (display-mode: standalone) {
+  html,
+  body {
+    min-height: 100lvh;
+  }
+}
+/* Held upright: turn the phone (ui/rotateHint.ts) */
+.rotate-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(ellipse at 50% 40%, #0c2430, #02070c 70%);
+  color: #e6ede8;
+  text-align: center;
+}
+.rotate-hint[hidden] {
+  display: none;
+}
+.rotate-phone {
+  width: 44px;
+  height: 76px;
+  border: 3px solid #ffd9a0;
+  border-radius: 9px;
+  animation: rotate-phone 2.4s ease-in-out infinite;
+}
+@keyframes rotate-phone {
+  0%,
+  25% {
+    transform: rotate(0deg);
+  }
+  60%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+.rotate-title {
+  font-size: 22px;
+  letter-spacing: 0.35em;
+  opacity: 0.85;
+}
+.rotate-text {
+  font-size: 15px;
+  opacity: 0.75;
 }
 body {
   font-family: -apple-system, 'Helvetica Neue', system-ui, sans-serif;

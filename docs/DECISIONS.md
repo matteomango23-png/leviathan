@@ -1164,3 +1164,17 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
   - lascia scegliere se combattere;
   - all'inizio del gioco i morsi sono più rari.
 - **Le ferite** stanno sulla bestia selvatica (`wounds`, non salvate) e spariscono quando se ne va.
+
+## 22 ottobre 2026 — Niente rotazione finta; barra di stato opaca; audio alla fine del tocco (v0.103.0)
+
+- **Orientamento:**
+  - iOS non permette a una web app, nemmeno dalla Home, di bloccare l'orientamento: `screen.orientation.lock` non è supportato fino a iOS 26 e l'orientamento del manifest è ignorato ([Can I Use](https://caniuse.com/wf-screen-orientation-lock));
+  - la rotazione fatta con il CSS dava uno scatto, perché iOS gira la pagina prima di noi;
+  - **scelta del proprietario:** la schermata "Gira il telefono".
+- **Barra nera in basso:**
+  - le segnalazioni la attribuiscono a `black-translucent` insieme a `viewport-fit=cover` (es. [Coffee-SNOB #7](https://github.com/ethan8damax/Coffee-SNOB/pull/7), [command-deck #30](https://github.com/mravalanche/command-deck/pull/30), [collie #355](https://github.com/AltanS/collie/pull/355), [Apple Forum](https://developer.apple.com/forums/thread/110854));
+  - si passa alla barra `black` (in orizzontale non si vede comunque) e a `100lvh` dalla Home.
+- **Audio:**
+  - va creato e ripreso alla fine di un tocco o con un click, suonando un istante muto nello stesso momento ([Matt Montag](https://www.mattmontag.com/web/unlock-web-audio-in-safari-for-ios-and-macos), [gist](https://gist.github.com/kus/3f01d60569eeadefe3a1));
+  - c'è un problema aperto di Apple sulle app dalla Home ([Apple Forum](https://developer.apple.com/forums/thread/805900)).
+- **Arpione:** la quota di vita tolta dipende dal livello (`base + perLevel × livello` colpi per arrivare a metà) e la bestia reagisce (carica o fuga): richiesta del proprietario.

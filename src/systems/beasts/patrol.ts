@@ -34,6 +34,13 @@ function newPass(b: WildBeast, rng: Rng): void {
   });
 }
 
+/** Hit by your weapon (systems/swimFight.ts): it bolts off the screen the way it faces, then comes back charging. */
+export function provokePatrol(b: WildBeast): void {
+  b.patrol = { passes: 1, st: 'bolt', t: 0, onT: 0, followT: 0, dy: 0, turnInView: false };
+  b.patrolled = true;
+  b.charging = false;
+}
+
 /** It has just spotted you: a few passes first (sometimes), or straight at you. */
 export function startPatrol(b: WildBeast, rng: Rng): boolean {
   if (!canPatrol(b) || rng() >= PATROL.chance) return false;

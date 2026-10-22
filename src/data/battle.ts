@@ -4,10 +4,20 @@
 
 /**
  * Wearing a beast down in the sea before the battle (owner, 8 and 22 ottobre 2026: "arpione in mare che indebolisce
- * fino a metà vita… la bestia si arrabbia o scappa"): each hit takes `perDamage` × the weapon's damage of its health,
- * up to `max`; it starts the battle with that much less. Tuning.
+ * fino a metà vita… deve variare in base al livello… la bestia deve reagire"): it takes `base` + `perLevel` × its
+ * level hits of 1 damage to bring it to `max` (half its health): about 7 at level 1, 10 at level 3, 85 at level 50.
+ * Hit, it is roused for `provokedSeconds`: an aggressive one bolts off the screen and comes back charging, `rageMult`
+ * faster; the others flee `fleeMult` × faster than their usual, and at least `fleeOver` × your swimming speed. Tuning.
  */
-export const HARPOON_WEAKEN = { perDamage: 0.1, max: 0.5 };
+export const HARPOON_WEAKEN = {
+  max: 0.5,
+  base: 5,
+  perLevel: 1.6,
+  provokedSeconds: 14,
+  rageMult: 1.35,
+  fleeMult: 2,
+  fleeOver: 1.15,
+};
 
 export const BATTLE = {
   // the Pokémon damage modifiers (Gen VI+): the levels count through the formula and the statistics (data/stats.ts)

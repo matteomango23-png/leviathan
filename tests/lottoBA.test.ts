@@ -10,7 +10,7 @@ import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
-import { hunterAfterYou, swimBite, weaponHitsBeast } from '../src/systems/swimFight';
+import { hunterAfterYou, swimBite, weaponHitsBeast, woundPerHit } from '../src/systems/swimFight';
 import { giveTestBeast } from '../src/systems/testTools';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -63,7 +63,7 @@ describe('l\'arpione sfianca (proprietario: "fino a metà vita… si arrabbia o 
     const g = game();
     const w = place(g, 'squalo_tigre', 300);
     weaponHitsBeast(g, w.x, w.y, [], 3);
-    expect(w.wounds).toBeCloseTo(HARPOON_WEAKEN.perDamage * 3);
+    expect(w.wounds).toBeCloseTo(woundPerHit(w.level) * 3);
     expect(w.mood).toBe('chase');
   });
 });

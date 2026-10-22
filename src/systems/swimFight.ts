@@ -8,10 +8,15 @@ import { HARPOON_WEAKEN } from '../data/battle';
 import type { BeastWorld } from './beastState';
 import { distanceToBody } from './beasts/combat';
 import { temperOf } from './beasts/roam';
+import { provokePatrol } from './beasts/patrol';
 import { teamMembers } from './beasts/team';
 import { isInWater, type WildBeast } from './beasts/wildState';
 import { hurtDiver } from './diver';
 import type { GameEvent } from './events';
+
+/** The share of its health one hit of 1 damage takes: the higher its level, the less (HARPOON_WEAKEN). */
+export const woundPerHit = (level: number): number =>
+  HARPOON_WEAKEN.max / (HARPOON_WEAKEN.base + HARPOON_WEAKEN.perLevel * Math.max(1, level));
 
 /** A weapon tip on a wild beast: it loses some health (up to half), and runs or turns on you. True if it hit one. */
 export function weaponHitsBeast(
@@ -25,9 +30,14 @@ export function weaponHitsBeast(
     if (!isInWater(w) || w.calm > 0) continue;
     if (distanceToBody(w, x, y) > BEAST_BODY.weaponHitMargin) continue;
     w.flash = BEAST_BODY.hitFlashSeconds;
-    w.wounds = Math.min(HARPOON_WEAKEN.max, (w.wounds ?? 0) + HARPOON_WEAKEN.perDamage * Math.max(1, damage));
-    if (temperOf(w) === 'aggressive') Object.assign(w, { mood: 'chase', charging: true, patrol: undefined });
-    else w.mood = 'flee';
+    w.wounds = Math.min(HARPOON_WEAKEN.max, (w.wounds ?? 0) + woundPerHit(w.level) * Math.max(1, damage));
+    // roused: an aggressive one bolts off the screen and comes back charging, the others flee fast (roam.ts)
+    w.provoked = HARPOON_WEAKEN.provokedSeconds;
+    w.calm = 0;
+    if (temperOf(w) === 'aggressive') {
+      w.mood = 'chase';
+      provokePatrol(w);
+    } else w.mood = 'flee';
     events.push({ type: 'beastWounded', x, y, left: 1 - w.wounds, worn: w.wounds >= HARPOON_WEAKEN.max });
     return true;
   }

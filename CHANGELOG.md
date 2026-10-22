@@ -2,6 +2,25 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.103.0 — Arpione rifatto, "gira il telefono", audio, compagni (22 ottobre 2026)
+
+- **Arpione, secondo il livello:**
+  - per portare una bestia a metà vita servono circa 7 colpi al livello 1, 10 al livello 3, 20 al livello 10 e oltre 80 al livello 50;
+  - le armi più forti fanno di più.
+- **Le bestie colpite reagiscono:**
+  - un predatore scappa veloce fuori dall'inquadratura, poi torna caricando e mordendo, più rapido del solito, e continua a caricarti per un po';
+  - le bestie calme e timide fuggono più veloci di quanto nuoti tu: per raggiungerle serve lo scatto.
+- **Telefono in verticale:**
+  - torna la schermata "Gira il telefono per giocare", con un telefono che ruota;
+  - il gioco si ferma sotto e riprende uguale;
+  - niente più rotazione finta, quindi niente più scatti girando il telefono.
+- **Barra nera:** la barra di stato dell'app dalla Home ora è opaca. Secondo le segnalazioni di altri sviluppatori, la barra trasparente è proprio la causa della striscia vuota in basso.
+- **Audio:**
+  - parte alla fine del primo tocco, che è quello che l'iPhone conta come gesto, invece che all'inizio del tocco;
+  - sale piano in un secondo e mezzo invece di partire di colpo.
+- **Barra della squadra:** i compagni ora hanno un azzurro abisso tenue, accanto all'oro delle cavalcature.
+- **Compagni e nave:** quando sali a bordo il compagno resta sotto la superficie e ci arriva con calma, senza più sbattere contro la superficie come contro un muro.
+
 ## v0.102.0 — Mosse animate (22 ottobre 2026)
 
 Ogni mossa in battaglia ha il suo movimento e il suo effetto, nel colore del suo tipo:

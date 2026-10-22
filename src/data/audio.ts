@@ -10,6 +10,8 @@ export const AUDIO = {
    *  everything stopped at once). */
   menuSea: 0.35,
   menuFade: 0.5,
+  /** The sound rises over this many seconds when it comes alive (the first touch, back to the app). */
+  unlockFade: 1.5,
 };
 
 export const SEA_SOUND = {
