@@ -2,6 +2,7 @@
 // learns), its moves in the open sea, size, habitat. Pure data, rendered by ui/beastSheet.ts.
 import { BIOMES } from '../../data/endless';
 import { PACK_POWER_TEXT, RIDE_TALENT_TEXT } from '../../data/beasts';
+import { SPECIAL_POWER_OF, SPECIAL_POWER_TEXT } from '../../data/powers';
 import { mountBars, ridesForm, talentOf, type MountBars } from './mountTraits';
 import { SEA_REGIONS } from '../../data/regions';
 import { RARITY, ROLE_NAMES, SPECIAL_FRAMES } from '../../data/cards';
@@ -71,6 +72,8 @@ export interface Sheet {
   ride: { bars: MountBars; talent: { name: string; text: string } | null } | null;
   /** A companion (it does not carry you): its power in your pack (systems/pack.ts). */
   packPower: { name: string; text: string } | null;
+  /** Its own special power (data/powers.ts), at your side or under you. */
+  specialPower: { name: string; text: string } | null;
   roleName: string;
   level: number;
   levelLabel: string;
@@ -203,6 +206,9 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
       ? { bars: mountBars(form, lv), talent: RIDE_TALENT_TEXT[talentOf(form) ?? ''] ?? null }
       : null,
     packPower: ridesForm(form) ? null : (PACK_POWER_TEXT[talentOf(form) ?? ''] ?? null),
+    specialPower: SPECIAL_POWER_OF[form.speciesId]
+      ? SPECIAL_POWER_TEXT[SPECIAL_POWER_OF[form.speciesId]!]
+      : null,
     // the sheet says whether it carries you (mountTraits.ts ridesForm), its battle role otherwise
     roleName: ridesForm(form)
       ? ROLE_NAMES.cavalcatura

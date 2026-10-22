@@ -126,6 +126,6 @@ Il potere si rinforza con il livello del compagno (raggio, quantità), così val
 1. **AD-1 Tipi chiari:** scritte superefficace e poco efficace sulle mosse, "Forte contro / Debole contro" nella scheda, pagina della ruota. Nessuna regola cambia.
 2. **AD-2 Cavalcature:** le quattro barre sulla scheda, il boccone, la profondità per cavalcatura, i talenti per tipo, l'iniziativa dei superpredatori, il terrore dei leggendari.
 3. **AD-3 Il branco in acqua:** cavalcatura e due compagni insieme, la caccia dei pesci in vista, i piccoli che girano al largo, i cinque poteri per tipo spiegati sulla scheda.
-4. **AD-4 Poteri speciali:** polpo, lontra, beluga, squalo martello, ossigeno.
+4. **AD-4 Poteri speciali:** polpo, lontra, beluga, squalo martello, ossigeno. ✅ v0.99.0 (squalo martello: forzieri sepolti; lontra: più denti e portata più lunga).
 
 Ogni lotto con il suo piano e i suoi test, come sempre.

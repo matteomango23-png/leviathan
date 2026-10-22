@@ -1140,3 +1140,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Decisione (scelta del proprietario):**
   - sotto circa 8 nodi i compagni nuotano accanto alla nave o alla barca;
   - se vai più veloce, se l'U-boat si immerge o se sali sul sottomarino, nuotano via e tornano in squadra.
+
+## 22 ottobre 2026 — Poteri speciali: forzieri sepolti e chiusi (v0.99.0)
+
+- **Decisione (scelte del proprietario):**
+  - lo squalo martello rivela forzieri sepolti, non veri passaggi nascosti;
+  - la lontra raccoglie più bottino dai relitti, non oggetti sparsi nuovi.
+- **Motivo:**
+  - nel mondo non c'erano né passaggi nascosti né oggetti sparsi;
+  - i forzieri esistevano già e si salvano già per nome, quindi bastava aggiungerne di nuovi senza toccare i salvataggi;
+  - i passaggi veri richiederebbero di cambiare il generatore del mondo: restano un'idea per più avanti.

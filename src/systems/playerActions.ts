@@ -6,6 +6,7 @@ import { diverModifiers } from './economy/gear';
 import { storyHoldsDiver } from './story';
 import { needsStarter } from './starter';
 import { atPort, nearWreck, openWreck, portStart } from './economy/places';
+import { canOpen, scavengerBonus, wreckReach, wreckShown } from './specialPowers';
 import { PORT, PORTS } from '../data/economy';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
@@ -42,7 +43,7 @@ export function currentAction(g: GameState): Action {
   if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
   if (g.boat.aboard) return vehicleAction(g) ?? (shipPort(g) ? 'porto' : null);
   // a chest first, even while riding
-  if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y)) return 'apri';
+  if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y, wreckReach(g), (w) => wreckShown(g, w))) return 'apri';
   const beast = contextAction(g);
   if (beast === 'sfonda') return beast;
   // next to your submarine you climb in, even at the pier (it was moored there and the port button hid it)
@@ -58,8 +59,10 @@ export function doAction(g: GameState, events: GameEvent[]): void {
   const act = currentAction(g);
   const d = g.diver;
   if (act === 'apri') {
-    const w = nearWreck(g.wrecks, g.gear, d.x, d.y);
-    const loot = w && openWreck(w, g.gear);
+    const w = nearWreck(g.wrecks, g.gear, d.x, d.y, wreckReach(g), (x) => wreckShown(g, x));
+    // a crusted chest needs an octopus at your side (systems/specialPowers.ts)
+    if (w && !canOpen(g, w)) events.push({ type: 'wreckLocked' });
+    const loot = w && canOpen(g, w) && openWreck(w, g.gear, scavengerBonus(g));
     if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
   } else if (act === 'porto') events.push({ type: 'portArrived' });
   else if (act === 'sali') {

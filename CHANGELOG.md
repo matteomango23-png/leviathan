@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.99.0 — Poteri speciali (22 ottobre 2026)
+
+- **Polpo gigante, "Mille braccia":** in ogni regione del mare aperto il forziere di mezzo è chiuso e incrostato. Lo apri solo con un polpo gigante nel branco, e contiene il 50 % di denti in più.
+- **Squalo martello, "Senso elettrico":** in ogni regione c'è un forziere sepolto nella sabbia, invisibile. Con lo squalo martello vicino (in groppa o nel branco) brilla di azzurro e si può aprire. Contiene il doppio dei denti e un oggetto.
+- **Lontra marina, "Raccoglitrice":** apri relitti e forzieri da due volte più lontano e ci trovi circa il 30 % di denti in più (di più se è di livello alto).
+- **Beluga, "Canto lungo":** il suo eco mostra le bestie nascoste due volte più lontano e più spesso, anche quando lo cavalchi.
+- **Pesce luna, foche e tricheco, "Bolla d'aria":** se stai fermo vicino a loro l'aria si ricarica piano, con le bollicine.
+- **Scheda:** ogni bestia con un potere speciale lo spiega sotto il potere del suo tipo.
+
 ## v0.98.0 — Salire in groppa senza salti, cavalcature per misura (22 ottobre 2026)
 
 - **Salire e scendere:**

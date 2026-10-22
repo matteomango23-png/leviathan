@@ -1,6 +1,7 @@
 // Leviatano — port, teeth economy, wrecks, missions, backpack and swarms (tappa 3).
 // Prices of suits, upgrades, weapons and items are in world.ts. Values marked "tuning" are a first pass.
 
+import { SPECIAL_POWERS } from './powers';
 import { kmToX, REGION_CHESTS, SEA_REGIONS } from './regions';
 import { BAIT_GROUPS } from './world';
 import { bay, delta, east, ISLAND_X, LAYOUT, WORLD } from './worldLayout';
@@ -68,6 +69,8 @@ export interface WreckDef {
   x: number;
   y: number; // a point above the sea floor it rests on (the floor is found at runtime)
   reward: { weapon?: string; teeth?: number; item?: string };
+  /** Shut and crusted (only an octopus opens it) or buried in the sand (only a hammerhead finds it): data/powers.ts. */
+  kind?: 'locked' | 'buried';
 }
 const COAST_WRECKS: WreckDef[] = [
   { id: 'relitto_baia', name: 'Relitto della Baia', x: bay(1250), y: 200, reward: { weapon: 'fiocine', teeth: 100 } },
@@ -78,19 +81,31 @@ const COAST_WRECKS: WreckDef[] = [
 ];
 
 /** The wrecks of the regions of the open sea (data/regions.ts: REGION_CHESTS): richer farther out. */
+// the middle chest of each region is crusted over (an octopus opens it), and a fourth is buried (a hammerhead finds
+// it): owner, 22 ottobre 2026 (data/powers.ts)
 const REGION_WRECKS: WreckDef[] = SEA_REGIONS.flatMap((r, i) =>
-  REGION_CHESTS.at.map((share, j) => {
+  [...REGION_CHESTS.at, SPECIAL_POWERS.revealsBuried.at].map((share, j) => {
     const from = Math.max(r.fromKm, 1.8); // past the hand-made coast
     const last = j === REGION_CHESTS.at.length - 1;
+    const kind = j === 1 ? 'locked' : j === REGION_CHESTS.at.length ? 'buried' : undefined;
+    const mult =
+      kind === 'locked'
+        ? SPECIAL_POWERS.locked.teethMult
+        : kind === 'buried'
+          ? SPECIAL_POWERS.revealsBuried.teethMult
+          : last
+            ? 2
+            : 1;
     return {
       id: `relitto_${r.id}_${j + 1}`,
-      name: `Relitto (${r.name})`,
+      name: kind === 'buried' ? `Forziere sepolto (${r.name})` : `Relitto (${r.name})`,
       x: Math.round(kmToX(from + (r.toKm - from) * share)),
       y: WORLD.surfaceY + 40,
       reward: {
-        teeth: REGION_CHESTS.teethBase * (1 + i) * (last ? 2 : 1),
-        item: last ? REGION_CHESTS.items[i] : undefined,
+        teeth: Math.round(REGION_CHESTS.teethBase * (1 + i) * mult),
+        item: last || kind === 'buried' ? REGION_CHESTS.items[i] : undefined,
       },
+      kind,
     };
   }),
 );

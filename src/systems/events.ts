@@ -173,7 +173,10 @@ export type GameEvent =
   | { type: 'swarmBound'; id: string }
   | { type: 'swarmSummoned'; id: string }
   | { type: 'itemUsed'; id: string }
-  | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string }
+  | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string; bonus?: number }
+  | { type: 'wreckLocked' }
+  | { type: 'buriedFound'; x: number; y: number }
+  | { type: 'airGiven'; x: number; y: number; speciesId: string }
   | { type: 'portArrived' }
   | { type: 'tooDeep' }
   /** The whale you ride has no air left: you breathe your own again, go up. */

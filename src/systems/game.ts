@@ -2,6 +2,7 @@
 // Pure logic: no Phaser here, so it can be tested and reused.
 import { FEEDING } from '../data/beasts';
 import { huntWithPack, packAboard, shellDepthM, stepPackEcho } from './pack';
+import { stepAirStation, stepBuried } from './specialPowers';
 import { rideDepthM, rideNow, stepRideStamina } from './rideStamina';
 import { diverCanDash, stepDiverStamina } from './diverStamina';
 import { stepRideTalents } from './rideTalents';
@@ -205,7 +206,10 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       events.push({ type: 'beastGulp', x: h.x, y: h.y, count: eaten.length });
     }
   }
-  stepPackEcho(g, dt, events); // a Glaciale's echo shows the beasts hidden near you
+  stepPackEcho(g, dt, events); // a Glaciale's echo shows the beasts hidden near you (farther with a beluga)
+  // special powers (systems/specialPowers.ts): air beside a sunfish, a seal or the walrus; the hammerhead's buried chests
+  stepAirStation(g, inVehicle(g), dt, events);
+  stepBuried(g, g.wrecks, g.gear.wrecks, events);
   // the packs hunt (beasts/packHunt.ts): the sardines flee from them too
   const hunters = stepPackHunt(g, dt);
   // the sardines dodge you as big as you are: in the submarine, the boat or on a beast (owner, 15 ottobre)
