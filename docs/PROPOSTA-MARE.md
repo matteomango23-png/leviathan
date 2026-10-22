@@ -155,5 +155,5 @@ I testi per Gemini li scrivo dopo che hai approvato questa proposta, in un `docs
    - a nuoto si può, solo con le mute migliori, ed è difficilissimo;
    - se muori torni alla nave, come sempre.
 5. **Bestie:** le piccole e le medie entrano con te; le grandi restano fuori.
-6. **Il sottomarino della Fossa** è un mezzo nuovo, il più forte del gioco. Proposta: si costruisce al cantiere con pezzi rari trovati nei relitti e nelle Gallerie. Da confermare.
-7. **L'ordine dei lotti:** da confermare (M1 → M5).
+6. **Il sottomarino della Fossa:** le immagini le crea il proprietario, più avanti.
+7. **L'ordine dei lotti:** M1 → M5. I testi per Gemini di M1 sono in `docs/GEMINI-LOTTO-9.md`.
