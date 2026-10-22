@@ -4,7 +4,7 @@ import { airShown, pressureShown } from '../systems/rideAir';
 import { activeBeast } from '../systems/beastPlay';
 import { staminaOf } from '../systems/stamina';
 import { diverStamina } from '../systems/diverStamina';
-import { shipArrow } from '../systems/shipPointer';
+import { arrowTo, shipArrow } from '../systems/shipPointer';
 import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/story';
@@ -28,6 +28,8 @@ export class Hud {
   private readonly toastEl: HTMLDivElement;
   /** The arrow to your ship on the edge of the screen (systems/shipPointer.ts). */
   private readonly arrow: HTMLDivElement;
+  /** A red arrow where a stalking hunter will come from (beasts/stalk.ts). */
+  private readonly danger: HTMLDivElement;
   private toastTimer = 0;
   private zoneTimer = 0;
   private cache = { hp: -1, max: -1, o2: -1, whale: false, press: -1, stamina: '', info: '', goal: '' };
@@ -55,6 +57,9 @@ export class Hud {
     this.arrow = el('div', 'ship-arrow', root);
     this.arrow.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12h13M11 5l8 7-8 7"/></svg>';
     this.arrow.hidden = true;
+    this.danger = el('div', 'ship-arrow danger-arrow', root);
+    this.danger.innerHTML = this.arrow.innerHTML;
+    this.danger.hidden = true;
   }
 
   toast(text: string, seconds = 2.6): void {
@@ -132,6 +137,18 @@ export class Hud {
       this.arrow.style.left = `${(a.x * 100).toFixed(2)}%`;
       this.arrow.style.top = `${(a.y * 100).toFixed(2)}%`;
       this.arrow.style.transform = `translate(-50%, -50%) rotate(${a.angle.toFixed(3)}rad)`;
+    }
+    // where the hunter stalking you will come from: waiting, warning, charging, off the screen
+    const hunter = g.beasts.wilds.find(
+      (w) => w.stalk && w.stalk.phase !== 'away' && w.stalk.phase !== 'pass',
+    );
+    const h = hunter && g.beasts.view ? arrowTo(hunter, g.beasts.view) : null;
+    this.danger.hidden = !h;
+    if (h) {
+      this.danger.style.left = `${(h.x * 100).toFixed(2)}%`;
+      this.danger.style.top = `${(h.y * 100).toFixed(2)}%`;
+      this.danger.style.transform = `translate(-50%, -50%) rotate(${h.angle.toFixed(3)}rad)`;
+      this.danger.classList.toggle('near', hunter!.stalk!.phase !== 'wait');
     }
     if (this.toastTimer > 0) {
       this.toastTimer -= dt;

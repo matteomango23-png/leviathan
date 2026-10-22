@@ -55,6 +55,9 @@ export const ENDLESS = {
     roamY: 45,
     lapSeconds: [50, 110] as [number, number], // one lap of its wandering
     returnSeconds: [240, 480] as [number, number], // caught or beaten: a new one lives there after this
+    /** The first stretches past the coast have only common beasts: an alpha or an albino lives farther out (owner, 22
+     *  ottobre: the same alpha white shark met every time out of the harbour). */
+    plainFirstStretches: 7,
     /** Each kind's weight in its sea, scaled by its stars: the rare ones are rare everywhere (owner, 15 ottobre: a
      *  4-star humpback was everywhere in the polar sea). Tuning. */
     rarityWeight: { 1: 1, 2: 1, 3: 0.8, 4: 0.35, 5: 0.15 } as Record<number, number>,

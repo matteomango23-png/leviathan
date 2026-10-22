@@ -1,7 +1,7 @@
 // The game's sound: one Web Audio context, a master volume with the on/off switch, the sea ambience (with the open
 // sea's music beyond a kilometre) and the battle music crossfading. Browsers (iPhone above all) only start sound after a touch: the context is
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
-import { AUDIO, STORM_SOUND } from '../data/audio';
+import { AUDIO, STALK_TOLL, STORM_SOUND } from '../data/audio';
 import { StormSound } from './stormSound';
 import { PORT_MUSIC, SEA_MUSIC, TITLE_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
@@ -24,6 +24,8 @@ export class SoundEngine {
   private storm: StormSound | null = null;
   private engines: EngineSound | null = null;
   private battle = false;
+  /** A hunter is stalking you: the battle music plays (stalkTension). */
+  private stalking = false;
   private on = readEnabled();
 
   constructor() {
@@ -164,6 +166,34 @@ export class SoundEngine {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.beep();
   }
 
+  /** A hunter's warning before its charge (beasts/stalk.ts): a low toll, twice. */
+  chargeWarn(): void {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || this.battle || !this.master) return;
+    for (const [at, hz] of STALK_TOLL.notes) {
+      const o = c.createOscillator();
+      const gain = c.createGain();
+      o.type = 'triangle';
+      o.frequency.value = hz;
+      const t = c.currentTime + at;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(STALK_TOLL.volume, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + STALK_TOLL.length);
+      o.connect(gain).connect(this.master);
+      o.start(t);
+      o.stop(t + STALK_TOLL.length + 0.05);
+    }
+  }
+
+  /** While a hunter stalks you, the battle music rises (the "Lo Squalo" pulse), and fades when it is over. */
+  stalkTension(on: boolean): void {
+    if (on === this.stalking || this.battle || !this.ctx) return;
+    this.stalking = on;
+    const t = this.ctx.currentTime;
+    if (on) this.music?.play(t);
+    else this.music?.stop(t, AUDIO.fade * 3);
+  }
+
   /** The sonar's ping. */
   sonarPing(): void {
     if (this.ctx?.state === 'running' && !this.battle) this.engines?.ping();
@@ -180,6 +210,7 @@ export class SoundEngine {
     if (on) this.openSea?.set(false, AUDIO.fade); // after the battle the sea brings it back
     if (on) this.music?.play(t);
     else this.music?.stop(t, AUDIO.fade);
+    this.stalking = false;
   }
 
   private start(): void {

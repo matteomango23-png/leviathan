@@ -6,18 +6,46 @@
  * Wearing a beast down in the sea before the battle (owner, 8 and 22 ottobre 2026: "arpione in mare che indebolisce
  * fino a metà vita… deve variare in base al livello… la bestia deve reagire"): it takes `base` + `perLevel` × its
  * level hits of 1 damage to bring it to `max` (half its health): about 7 at level 1, 10 at level 3, 85 at level 50.
- * Hit, it is roused for `provokedSeconds`: an aggressive one bolts off the screen and comes back charging, `rageMult`
- * faster; the others flee `fleeMult` × faster than their usual, and at least `fleeOver` × your swimming speed. Tuning.
+ * Hit, an aggressive one stalks you (STALK); the others are roused for `provokedSeconds` and flee `fleeMult` × faster
+ * than their usual, and at least `fleeOver` × your swimming speed. Tuning.
  */
 export const HARPOON_WEAKEN = {
   max: 0.5,
   base: 5,
   perLevel: 1.6,
   provokedSeconds: 14,
-  rageMult: 1.35,
   fleeMult: 2,
   fleeOver: 1.15,
 };
+
+/**
+ * A hunter stalking you after your weapon or your mount's bite (systems/beasts/stalk.ts; owner, 22 ottobre 2026: "deve
+ * fare paura"). It makes off at `awaySpeed` × your swimming speed, waits `waitSeconds` out of sight, warns you for
+ * `warnSeconds`, charges at `chargeSpeed` × your swimming (your dash is faster), steering `homing` per second after
+ * you, and goes on `passSeconds` past you. It gives up after `seconds` without a hit, or with you farther than
+ * `giveUpRange` units, and leaves you alone `afterSeconds`. Its bite on your mount takes `mountBite` of its health,
+ * × its level over your mount's (between `mountBiteRange`). Tuning.
+ */
+export const STALK = {
+  awaySpeed: 1.6,
+  waitSeconds: [1, 2] as [number, number],
+  warnSeconds: 0.8,
+  chargeSpeed: 1.55,
+  homing: 0.9,
+  passSeconds: 0.9,
+  seconds: 25,
+  giveUpRange: 900,
+  afterSeconds: 8,
+  mountBite: 0.14,
+  mountBiteRange: [0.5, 2] as [number, number],
+};
+
+/**
+ * Your mount's bite (owner, 22 ottobre: "la cavalcatura morde"): dashing into a wild beast, it takes `mult` × an
+ * harpoon hit's share of its health, × your mount's level over its (between `levelRange`), up to HARPOON_WEAKEN.max.
+ * The bitten beast is pushed off at `push` units/s. Tuning.
+ */
+export const MOUNT_BITE = { mult: 4, levelRange: [0.3, 2.5] as [number, number], push: 70 };
 
 export const BATTLE = {
   // the Pokémon damage modifiers (Gen VI+): the levels count through the formula and the statistics (data/stats.ts)

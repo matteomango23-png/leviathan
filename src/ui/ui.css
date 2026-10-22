@@ -90,6 +90,21 @@
 .ship-arrow[hidden] {
   display: none;
 }
+/* a hunter about to charge (beasts/stalk.ts): red, throbbing once it warns */
+.ship-arrow.danger-arrow svg {
+  stroke: #e0533c;
+}
+.danger-arrow.near {
+  animation: danger-throb 0.4s ease-in-out infinite alternate;
+}
+@keyframes danger-throb {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .ship-arrow svg {
   width: 100%;
   height: 100%;

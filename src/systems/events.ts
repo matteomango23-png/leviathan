@@ -7,6 +7,8 @@ export type GameEvent =
   | { type: 'hurt' }
   | { type: 'beastWounded'; x: number; y: number; left: number; worn: boolean }
   | { type: 'bitten'; x: number; y: number; name?: string }
+  | { type: 'mountBitten'; name: string; left: number; clash: boolean }
+  | { type: 'chargeWarn'; x: number; y: number }
   | { type: 'died' }
   | { type: 'respawned' }
   | { type: 'oxygenLow' }

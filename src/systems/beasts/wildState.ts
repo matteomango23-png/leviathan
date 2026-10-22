@@ -20,6 +20,24 @@ export interface Patrol {
   turnInView: boolean;
 }
 
+/** A hunter stalking you (beasts/stalk.ts). */
+export type StalkPhase = 'away' | 'wait' | 'warn' | 'charge' | 'pass';
+
+export interface Stalk {
+  phase: StalkPhase;
+  /** Seconds left in this phase (wait, warn, pass). */
+  t: number;
+  /** Seconds of rage left (renewed by each hit). */
+  rage: number;
+  /** Where its charge aims (where you were when it set off), moving a little after you. */
+  aimX: number;
+  aimY: number;
+  /** The way it heads (−1 left, 1 right). */
+  dir: 1 | -1;
+  /** Its warning has just started: the toll and the red arrow (encounters.ts sends the event). */
+  toll?: boolean;
+}
+
 export interface WildBeast extends BodyPose {
   id: number;
   spawn: WildSpawnDef;
@@ -67,8 +85,10 @@ export interface WildBeast extends BodyPose {
   lookT: number;
   /** Share of its health your weapons took in the sea (0 … HARPOON_WEAKEN.max): it starts the battle without it. */
   wounds?: number;
-  /** Seconds it stays roused by your weapons: enraged and faster, or fleeing fast (swimFight.ts, roam.ts). */
+  /** Seconds it stays roused by your weapons: fleeing fast (swimFight.ts, roam.ts). */
   provoked?: number;
+  /** A hunter roused by your weapon or your mount: stalking you, charging from the dark (beasts/stalk.ts). */
+  stalk?: Stalk;
 }
 
 export function createWild(id: number, spawn: WildSpawnDef): WildBeast {

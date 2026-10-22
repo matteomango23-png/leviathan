@@ -10,6 +10,7 @@ import { bodiesTouch, bodyCircles, distanceToBody, type BodyPose } from './comba
 import { uniqueOf } from './forms';
 import { bodyRadius, isRare, type WildBeast } from './wildState';
 import { startPatrol, stepPatrol } from './patrol';
+import { stepStalk } from './stalk';
 import type { ViewRect } from '../beastState';
 
 const U = DIVER.lengthUnits;
@@ -102,6 +103,9 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.provoked = Math.max(0, (b.provoked ?? 0) - dt);
   const roused = (b.provoked ?? 0) > 0;
   if (b.motion === 'gone') return false;
+  // roused by your weapon or your mount's bite: it stalks you, charging from the dark (beasts/stalk.ts)
+  const st = b.stalk ? stepStalk(b, ctx.diver, ctx.view, rng, dt) : null;
+  if (st) [b.patrol, b.mood] = [undefined, 'chase'];
 
   const dist = Math.hypot(d.x - b.x, d.y - b.y);
   const temper = temperOf(b);
@@ -112,13 +116,11 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   const lose = b.boss || b.patrol ? Infinity : ROAM.loseRange * U;
   // a small predator does not come at a diver riding something far bigger than itself: it keeps away
   const afraid = !b.boss && ((ctx.riderLength ?? 0) * ROAM.fearRatio > b.length || !!ctx.riderFear);
-  if (quiet) b.mood = 'wander';
+  if (quiet && !st) b.mood = 'wander';
   else if (b.mood === 'wander' && dist < sight) {
     b.mood = temper === 'aggressive' && !afraid ? 'chase' : temper === 'shy' || afraid ? 'flee' : 'wander';
     // a big hunter does not always charge at once: now and then a few passes first (beasts/patrol.ts)
-    // still enraged by your weapon: straight at you again; else now and then a few passes first
-    if (b.mood === 'chase' && roused) b.charging = true;
-    else if (b.mood === 'chase' && !b.charging && ctx.view) startPatrol(b, rng);
+    if (b.mood === 'chase' && !b.charging && ctx.view && !st) startPatrol(b, rng);
   } else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
   if (ctx.scared && !b.boss && dist < sight) b.mood = 'flee';
@@ -127,19 +129,22 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   if (b.drawn && temper !== 'aggressive' && b.mood === 'flee') b.mood = 'wander';
 
   const spec = BEAST_TEMPER[b.form.speciesId];
-  // roused by your weapon: an enraged hunter faster, a frightened one much faster (HARPOON_WEAKEN)
-  const mult =
-    (spec?.speedMult ?? 1) *
-    (roused ? (b.mood === 'flee' ? HARPOON_WEAKEN.fleeMult : HARPOON_WEAKEN.rageMult) : 1);
+  // frightened by your weapon, a calm or shy one much faster (HARPOON_WEAKEN)
+  const mult = (spec?.speedMult ?? 1) * (roused && b.mood === 'flee' ? HARPOON_WEAKEN.fleeMult : 1);
   const top = map.surfaceY + b.length * 0.12;
   let tx: number;
   let ty: number;
   let speed: number;
   const pass =
-    b.mood === 'chase' && ctx.view ? stepPatrol(b, { ...d, vx: d.vx ?? 0 }, ctx.view, rng, dt) : null;
+    b.mood === 'chase' && ctx.view && !st ? stepPatrol(b, { ...d, vx: d.vx ?? 0 }, ctx.view, rng, dt) : null;
   if (b.mood === 'chase' && b.patrol === undefined && pass === null && ctx.view && !b.charging && b.patrolled)
     b.charging = true;
-  if (pass) {
+  if (st) {
+    // its own speed (STALK), its jaws open on the charge; it turns whenever its way turns
+    [tx, ty, speed] = [st.tx, st.ty, st.speed];
+    if (st.charging) b.jaw = Math.max(b.jaw, 0.3);
+    if (Math.sign(tx - b.x) !== b.face && Math.abs(tx - b.x) > 2 && b.turn === 0) turnAround(b);
+  } else if (pass) {
     [tx, ty, speed] = [pass.tx, pass.ty, pass.speed * mult];
     if (pass.turn && b.turn === 0) turnAround(b); // off screen, or the turn in view it chose
   } else if (b.mood === 'chase') {
@@ -176,13 +181,13 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   const [x0, y0, x1, y1] = b.spawn.area;
   const leash = b.mood === 'chase' ? ROAM.chaseLeash : 0;
   const outside = Math.max(x0 - b.x, b.x - x1, y0 - b.y, b.y - y1, 0);
-  if (b.mood === 'chase' && outside > ROAM.chaseLeash * (pass ? 3 : 1)) {
+  if (b.mood === 'chase' && !st && outside > ROAM.chaseLeash * (pass ? 3 : 1)) {
     b.mood = 'wander'; // it gives up and swims home, leaving you alone meanwhile
     b.calm = ROAM.homeSeconds;
   }
   // the light calls it out of its own waters (block 5b)
-  if (pass)
-    ty = Math.max(ty, top); // its passes go out of the screen, past its waters for a while
+  if (pass || st)
+    ty = Math.max(ty, top); // its passes (and its stalking) go out of the screen, past its waters for a while
   else if (!(b.drawn && b.mood === 'wander')) {
     tx = clamp(tx, x0 - leash, x1 + leash);
     ty = clamp(ty, Math.max(y0 - leash, top), y1 + leash);
@@ -196,14 +201,15 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   // turn around only out of the light (a visible turn is allowed against a wall)
   const want = Math.sign(tx - b.x) || b.face;
   const lit = !d.dead && dist < ROAM.litRadius;
-  if (!pass && want !== b.face && b.turn === 0 && !lit && Math.abs(tx - b.x) > b.length * 0.3) turnAround(b);
+  if (!pass && !st && want !== b.face && b.turn === 0 && !lit && Math.abs(tx - b.x) > b.length * 0.3)
+    turnAround(b);
 
   const len = Math.hypot(tx - b.x, ty - b.y) || 1;
   const wantVx = b.face * Math.abs(((tx - b.x) / len) * speed) || b.face * speed * 0.3;
   const wantVy = walker
     ? clamp((ty - b.y) * ROAM.floorHug, -speed, Math.max(speed, ROAM.floorSink))
     : ((ty - b.y) / len) * speed;
-  const k = Math.min(1, dt * ROAM.steer);
+  const k = Math.min(1, dt * ROAM.steer * (st ? 2 : 1)); // stalking it answers faster
   b.vx += (wantVx - b.vx) * k;
   b.vy += (wantVy - b.vy) * k;
   const before = b.vx;
@@ -223,7 +229,10 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.pitch = np;
   b.phase += dt * (ROAM.swimPhaseBase + (Math.hypot(b.vx, b.vy) / U) * ROAM.swimPhasePerSpeed);
 
-  if (quiet || pass) return false; // a pass is not an attack: it goes by
+  if (st) {
+    // stalking, only its charge bites
+    if (!st.charging) return false;
+  } else if (quiet || pass) return false; // a pass is not an attack: it goes by
   // riding, the battle starts as soon as it touches your beast's body, not only when it reaches you
   if (ctx.rider && bodiesTouch(b, ctx.rider, ROAM.bodyContact)) return true;
   return distanceToBody(b, d.x, d.y) < b.length * ROAM.contactFrac + DIVER.radius;
