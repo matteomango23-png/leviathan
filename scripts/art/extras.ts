@@ -162,10 +162,20 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
   if (e.kind === 'panorama') {
     const img = await raw(src, 2400);
     const cut = removeGreenBackground(img);
-    await sharp(Buffer.from(cut.buffer), { raw: { width: img.width, height: img.height, channels: 4 } })
+    // Gemini often leaves a thin green band under the rocks: the strip ends at the last row with rock in it, so it
+    // sits on the dark below it in the game (views/seaRidges.ts) with no water showing through
+    const h = panoramaBottom(cut, img.width, img.height);
+    // kelp or spires reaching the picture's top would end on a straight line: they fade out there
+    fadeTop(cut, img.width, h, PANORAMA_FADE);
+    // its rocks darken towards their bottom edge's colour, which the game continues below it: no line there
+    fadeBottom(cut, img.width, h, PANORAMA_BOTTOM);
+    // Gemini's two edges never quite match: the last columns are blended over the first ones, so it repeats
+    // without a seam
+    const t = seamless(cut, img.width, h, Math.round(img.width * PANORAMA_SEAM));
+    await sharp(Buffer.from(t.px.buffer), { raw: { width: t.w, height: h, channels: 4 } })
       .webp(webp)
       .toFile(dest);
-    return `panorama ${img.width}×${img.height}, verde tolto`;
+    return `panorama ${t.w}×${h}, verde tolto, senza giunture`;
   }
   if (e.kind === 'item') {
     const img = await raw(src, 1400, 0.02); // screenshots: trim the frame
@@ -191,6 +201,86 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     .webp(webp)
     .toFile(dest);
   return 'icona 160×160';
+}
+
+/** Share of a panorama's height fading in from its top, and of its width blended across its two edges. */
+const PANORAMA_FADE = 0.12;
+const PANORAMA_SEAM = 0.08;
+const PANORAMA_BOTTOM = 0.2;
+
+/** The bottom `share` of a picture fades into the mean colour of its last row (where solid); the gaps between its
+ *  rocks fill in with it too, so the dark the game draws below starts with no edge anywhere. */
+export function fadeBottom(px: Uint8ClampedArray, w: number, h: number, share: number): void {
+  const mean = [0, 0, 0];
+  let n = 0;
+  for (let x = 0; x < w; x++) {
+    const o = ((h - 1) * w + x) * 4;
+    if (px[o + 3]! < 200) continue;
+    for (let c = 0; c < 3; c++) mean[c]! += px[o + c]!;
+    n++;
+  }
+  if (!n) return;
+  const rows = Math.max(1, Math.round(h * share));
+  for (let y = h - rows; y < h; y++) {
+    const k = Math.pow((y - (h - rows) + 1) / rows, 1.6);
+    for (let x = 0; x < w; x++) {
+      const o = (y * w + x) * 4;
+      const a = px[o + 3]! / 255;
+      const solid = Math.max(a, k); // a gap's share of the dark grows towards the bottom edge
+      for (let c = 0; c < 3; c++) {
+        const own = px[o + c]! * (1 - k) + (mean[c]! / n) * k;
+        px[o + c] = Math.round((own * a + (mean[c]! / n) * (solid - a)) / solid);
+      }
+      px[o + 3] = Math.round(solid * 255);
+    }
+  }
+}
+
+export function fadeTop(px: Uint8ClampedArray, w: number, h: number, share: number): void {
+  const rows = Math.max(1, Math.round(h * share));
+  for (let y = 0; y < rows; y++) {
+    const k = y / rows;
+    for (let x = 0; x < w; x++) {
+      const o = (y * w + x) * 4 + 3;
+      px[o] = Math.round(px[o]! * k);
+    }
+  }
+}
+
+/** The picture `seam` columns narrower, its last columns faded over its first: the right edge then runs on into the
+ *  left one. */
+export function seamless(
+  px: Uint8ClampedArray,
+  w: number,
+  h: number,
+  seam: number,
+): { px: Uint8ClampedArray; w: number } {
+  const nw = w - seam;
+  const out = new Uint8ClampedArray(nw * h * 4);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < nw; x++) {
+      const o = (y * nw + x) * 4;
+      const a = (y * w + x) * 4;
+      if (x >= seam) {
+        out.set(px.subarray(a, a + 4), o);
+        continue;
+      }
+      const b = (y * w + nw + x) * 4; // the same place past the right edge
+      const k = x / seam; // 0: all of the right edge's, 1: all of its own
+      for (let c = 0; c < 4; c++) out[o + c] = Math.round(px[b + c]! * (1 - k) + px[a + c]! * k);
+    }
+  return { px: out, w: nw };
+}
+
+/** Height of a panorama down to its last row where at least PANORAMA_ROW of the pixels are solid. */
+const PANORAMA_ROW = 0.15;
+export function panoramaBottom(px: Uint8ClampedArray, w: number, h: number): number {
+  for (let y = h - 1; y > 0; y--) {
+    let solid = 0;
+    for (let x = 0; x < w; x++) if (px[(y * w + x) * 4 + 3]! > 200) solid++;
+    if (solid >= w * PANORAMA_ROW) return y + 1;
+  }
+  return h;
 }
 
 /** Cells across an iceberg's solid mask (its rows follow the picture's shape). */

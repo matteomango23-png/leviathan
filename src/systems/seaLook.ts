@@ -2,7 +2,14 @@
 // the coast before the open sea, then the region's (in the Foresta e Banchisa, the kind of the stretch), two looks
 // blending across a border over SEA_LOOK_BLEND. Pure logic.
 import { ENDLESS } from '../data/endless';
-import { SEA_LOOK_BLEND, SEA_LOOKS, SEA_SNOW, type SeaLookDef, type SeaLookId } from '../data/seaLooks';
+import {
+  SEA_LOOK_BLEND,
+  SEA_LOOK_BLEND_STRETCH,
+  SEA_LOOKS,
+  SEA_SNOW,
+  type SeaLookDef,
+  type SeaLookId,
+} from '../data/seaLooks';
 import type { BattlePlace } from '../data/battle';
 import { biomeOf, regionAt, stretchAt } from './world/stretches';
 
@@ -24,9 +31,19 @@ export interface LookMix {
   t: number;
 }
 
+const STRETCH_LOOKS: SeaLookId[] = ['foresta', 'banchisa'];
+
 /** The look at x, two of them blending near a border. */
 export function lookAt(x: number): LookMix {
-  const h = SEA_LOOK_BLEND / 2;
+  const mix = blendAt(x, SEA_LOOK_BLEND);
+  // the forest and the ice of one region: a shorter blend
+  if (mix.a !== mix.b && STRETCH_LOOKS.includes(mix.a) && STRETCH_LOOKS.includes(mix.b))
+    return blendAt(x, SEA_LOOK_BLEND_STRETCH);
+  return mix;
+}
+
+function blendAt(x: number, blend: number): LookMix {
+  const h = blend / 2;
   const a = lookIdAt(x - h);
   const b = lookIdAt(x + h);
   if (a === b) return { a, b, t: 0 };
@@ -39,7 +56,7 @@ export function lookAt(x: number): LookMix {
     else hi = mid;
   }
   const border = (lo + hi) / 2;
-  const t = Math.min(1, Math.max(0, (x - (border - h)) / SEA_LOOK_BLEND));
+  const t = Math.min(1, Math.max(0, (x - (border - h)) / blend));
   return { a, b, t: t * t * (3 - 2 * t) };
 }
 

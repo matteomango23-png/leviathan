@@ -1198,3 +1198,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Motivo:** il proprietario: "migliorare in modo considerevole il feeling dell'oceano"; prima regola della proposta: ogni regione si riconosce in un secondo.
 - **Memoria:** ogni striscia di creste è larga due schermi; ne restano in memoria solo quelle in vista (al massimo due per fila).
 - **Battaglie:** in mare aperto lo sfondo viene dal posto in cui combatti, non più dalla regione della specie.
+
+## 22 ottobre 2026 — I panorami seguono il fondale (v0.105.1)
+
+- **Decisione:** le creste e i panorami stanno alla quota del fondale della zona (media su circa 600 m, che cambia piano), non più a una quota fissa; i dipinti sfumano in alto e in basso nel colore che il gioco disegna sotto.
+- **Motivo:** nelle regioni profonde non si vedevano mai; il proprietario: "che non si veda troppo lo stacco tra fondale generato da codice e l'immagine incollata".

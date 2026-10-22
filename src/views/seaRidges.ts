@@ -4,10 +4,11 @@
 // (public/bg/mare_<look>_lontano|medio.webp, docs/GEMINI-LOTTO-9.md), loaded the first time it is needed.
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
-import { SEA_LOOKS, type SeaLookId } from '../data/seaLooks';
+import { SEA_LOOKS, SEA_RIDGE_FLOOR, type SeaLookId } from '../data/seaLooks';
 import { BG_KEYS } from '../data/sprites.generated';
 import { assetUrl } from '../data/assets';
 import type { LookMix } from '../systems/seaLook';
+import { naturalFloor } from '../systems/world/stretches';
 import { paintRidgeStrip, stripShare, type RidgeKind } from './seaRidgeArt';
 
 /** The view (backgroundView.ts ViewInfo): its centre in the world, zoom and screen size. */
@@ -37,16 +38,23 @@ interface Row {
 const PAINTED_NAME = { far: 'lontano', mid: 'medio' } as const;
 const paintedName = (look: SeaLookId, kind: RidgeKind): string => `mare_${look}_${PAINTED_NAME[kind]}`;
 
+/** Points read along a panorama's bottom edge for its colour. */
+const EDGE_SAMPLES = 24;
+
 const color = (hex: string): Phaser.Display.Color => Phaser.Display.Color.HexStringToColor(hex);
 
 export class SeaRidges {
   private readonly rows: Row[];
   private size = '';
+  /** How much deeper than SEA_RIDGE_FLOOR.ref the seabed around the view is (eased). */
+  private sink = NaN;
   private screenW = 1;
   private screenH = 1;
   /** Strips painted for this screen size. */
   private readonly painted = new Set<string>();
   private readonly loading = new Set<string>();
+  /** The colour along each painted panorama's bottom edge: the dark under it continues it, with no seam. */
+  private readonly edgeColor = new Map<string, Phaser.Display.Color>();
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -105,6 +113,28 @@ export class SeaRidges {
     return { key, w, h };
   }
 
+  /** The colour under a look's ridge: its painted panorama's bottom edge, or the look's own. */
+  private bottomColor(look: SeaLookId, kind: RidgeKind): Phaser.Display.Color {
+    const key = `bgp-${paintedName(look, kind)}`;
+    if (!this.scene.textures.exists(key)) return color(SEA_LOOKS[look][kind].bottom);
+    let c = this.edgeColor.get(key);
+    if (!c) {
+      const src = this.scene.textures.get(key).getSourceImage();
+      let [r, g, b, n] = [0, 0, 0, 0];
+      for (let i = 0; i < EDGE_SAMPLES; i++) {
+        const p = this.scene.textures.getPixel(((i + 0.5) / EDGE_SAMPLES) * src.width, src.height - 2, key);
+        if (!p || p.alpha < 200) continue;
+        r += p.red;
+        g += p.green;
+        b += p.blue;
+        n++;
+      }
+      c = n ? new Phaser.Display.Color(r / n, g / n, b / n) : color(SEA_LOOKS[look][kind].bottom);
+      this.edgeColor.set(key, c);
+    }
+    return c;
+  }
+
   private show(s: Strip, look: SeaLookId, kind: RidgeKind): void {
     const t = this.texture(look, kind);
     s.look = look;
@@ -116,7 +146,7 @@ export class SeaRidges {
   private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number): number {
     const def = SEA[kind];
     const parV = def.parallax * 0.9 + 0.1;
-    const top = v.h / 2 + (def.baseY - v.cy) * v.zoom * parV - s.height * 0.45;
+    const top = v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV - s.height * 0.45;
     const off = (((v.cx * v.zoom * def.parallax) % s.width) + s.width) % s.width;
     // as many copies as the screen needs (a painted panorama may be narrower than two screens)
     s.images.forEach((im, i) =>
@@ -128,7 +158,17 @@ export class SeaRidges {
     return top + s.height;
   }
 
+  /** The seabed's depth around the view, past the reference one, averaged and eased. */
+  private followFloor(cx: number): void {
+    const F = SEA_RIDGE_FLOOR;
+    let sum = 0;
+    for (let i = 0; i < F.samples; i++) sum += naturalFloor(cx + ((i / (F.samples - 1)) * 2 - 1) * F.span);
+    const want = Math.max(0, sum / F.samples - F.ref);
+    this.sink = Number.isNaN(this.sink) ? want : this.sink + (want - this.sink) * F.ease;
+  }
+
   update(v: ViewInfo, mix: LookMix): void {
+    this.followFloor(v.cx);
     const size = `${v.w}x${v.h}`;
     if (size !== this.size) {
       this.size = size;
@@ -146,8 +186,8 @@ export class SeaRidges {
       const bottomA = this.place(r.a, v, r.kind, 1);
       const bottomB = this.place(r.b, v, r.kind, mix.a === mix.b ? 0 : mix.t);
       const fillTop = Math.max(0, Math.min(bottomA, mix.t > 0.5 ? bottomB : bottomA) - 1);
-      const ca = color(SEA_LOOKS[mix.a][r.kind].bottom);
-      const cb = color(SEA_LOOKS[mix.b][r.kind].bottom);
+      const ca = this.bottomColor(mix.a, r.kind);
+      const cb = this.bottomColor(mix.b, r.kind);
       const m = (p: number, q: number): number => Math.round(p + (q - p) * mix.t);
       r.fill.fillColor = Phaser.Display.Color.GetColor(
         m(ca.red, cb.red),
