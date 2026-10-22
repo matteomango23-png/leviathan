@@ -1,6 +1,9 @@
 // The sound of the sea: a muffled low rumble (brown noise through a low-pass filter) that slowly breathes and
-// gets darker the deeper you go, and a few small rising bubbles when you dash (none while you swim: owner, 21 ottobre).
+// gets darker the deeper you go, and a few small rising bubbles when you dash (none while you swim: owner, 21 ottobre);
+// over it, the region's own sound (audio/regionSound.ts).
 import { SEA_SOUND } from '../data/audio';
+import type { LookMix } from '../systems/seaLook';
+import { RegionSound } from './regionSound';
 
 /** What the sea sounds depend on, each frame. */
 export interface SeaMoment {
@@ -11,6 +14,8 @@ export interface SeaMoment {
   dash: boolean;
   /** How far from the coast (the open sea's music beyond a kilometre). */
   km: number;
+  /** The region's look where you are (systems/seaLook.ts), for its sound. */
+  look?: LookMix;
 }
 
 /** How many bubbles to play this step: none while you swim, a few when you dash (SEA_SOUND.bubbles). */
@@ -23,6 +28,7 @@ export class SeaAmbience {
   private readonly out: GainNode;
   private readonly rumbleGain: GainNode;
   private readonly filter: BiquadFilterNode;
+  private readonly region: RegionSound;
   private bubbleDebt = 0;
   private time = 0;
 
@@ -42,6 +48,7 @@ export class SeaAmbience {
     noise.loop = true;
     noise.connect(this.filter).connect(this.rumbleGain).connect(this.out);
     noise.start();
+    this.region = new RegionSound(ctx, this.out);
   }
 
   fadeTo(level: number, at: number, seconds: number): void {
@@ -58,6 +65,7 @@ export class SeaAmbience {
     const swell =
       1 - SEA_SOUND.swell.depth * (0.5 + 0.5 * Math.sin((this.time * Math.PI * 2) / SEA_SOUND.swell.periodS));
     this.rumbleGain.gain.setTargetAtTime(r.volume * swell * (1 + 0.4 * m.speed), t, 0.3);
+    if (m.look) this.region.update(m.look, dt);
     this.bubbleDebt += bubblesFor(m.speed, m.dash, dt);
     let n = 0;
     while (this.bubbleDebt >= 1) {

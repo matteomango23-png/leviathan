@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 22 ottobre 2026, v0.104.0)
+## Dove siamo (aggiornato il 22 ottobre 2026, v0.105.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,32 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Prossimi** (scelta del proprietario): la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Proposta del mare in corso** (`docs/PROPOSTA-MARE.md`): M1 aspetto delle regioni ✅ (v0.105.0); prossimi M2 punti di riferimento e porti, M3 Gallerie, M4 fondale vivo, M5 la Fossa Nera. Immagini attese: `docs/GEMINI-LOTTO-9.md` (il proprietario le sta generando). Poi: la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto M1, ogni regione del mare ha il suo aspetto (22 ottobre 2026) → v0.105.0
+
+- **Dati:** `data/seaLooks.ts` (nuovo): 7 aspetti (costa, barriera, mareblu, foresta, banchisa, fosse, abisso) con tinta dell'acqua, colori e forma delle creste (`RidgeStyle`), raggi, neve, bioluminescenze, suono; `SEA_LOOK_BLEND`, `SEA_SNOW`, `REGION_SOUND`. `SEA.far`/`SEA.mid` tengono solo quota e parallasse.
+- **Logica:** `systems/seaLook.ts` (nuovo): `lookIdAt`, `lookAt` (mescolanza al confine), `waterTint`, `lookNumber`, `snowShare`, `battlePlaceAt`.
+- **Disegno:**
+  - `views/seaRidges.ts` (nuovo, le creste tolte da `backgroundView.ts`): due serie per fila che si mescolano, in memoria solo quelle in vista; usa `public/bg/mare_<aspetto>_lontano|medio.webp` quando esistono;
+  - `views/seaRidgeArt.ts` (nuovo): le forme hills, reef, plateau, kelp, ice, spires, trench;
+  - `backgroundView.ts`: l'acqua tinta dall'aspetto;
+  - `seaLight.ts`: raggi × aspetto, neve più fitta con la profondità, bioluminescenze nello strato `glow` (sopra il buio).
+- **Suono:** `audio/regionSound.ts` (nuovo), dentro `seaAmbience.ts` (`SeaMoment.look`).
+- **Battaglie:** luoghi `mareblu`, `foresta`, `banchisa`, `fosse`, `abisso` in `BATTLE_STAGE.places` e `BATTLE_PALETTES` (`prop: 'none'` per mare blu e fosse); `battleSetup` usa `battlePlaceAt(w.x, …)`.
+- **Immagini:** `npm run art` riconosce `mare_<aspetto>_lontano|medio.jpg` (verde tolto, 2400 px) → `public/bg/`. Le immagini di `art-inbox/lotto9/` vanno prima smistate nella cartella `art-inbox/`.
+- **Test:** `tests/lottoM1.test.ts`.
+- **Nel browser:** foto a costa, barriera, mare blu, foresta, banchisa, fosse, abisso e al confine; battaglie in mare blu e nelle fosse; `lookAt` costa 0,003 ms al confine; in memoria restano solo le creste dell'aspetto in vista.
+
+**Da provare sull'iPhone:**
+- nuotare (o andare in nave) dalla barriera al mare blu e oltre: colori, sfondo e suoni cambiano piano;
+- scendere nelle fosse: puntini luminosi e neve marina;
+- una battaglia in mare aperto: lo sfondo del posto.
 
 ## Lotto BE, la caccia che fa paura (22 ottobre 2026) → v0.104.0
 

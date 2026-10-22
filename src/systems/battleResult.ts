@@ -23,6 +23,7 @@ import type { BackpackWorld } from './economy/backpack';
 import { createBattle, type BattleState } from './battle/battle';
 import { fighterFromTeam, makeFighter, ppUsedOf } from './battle/fighter';
 import { battlePlace } from './battle/stage';
+import { battlePlaceAt } from './seaLook';
 import type { BattlePlace } from '../data/battle';
 
 interface BattleOutcome {
@@ -174,7 +175,8 @@ export function battleSetup(g: BackpackWorld): BattleSetup | null {
     frozen: !!req.fear?.frozen,
     noFlee: !!w.boss,
     title: w.boss,
-    place: battlePlace(speciesOf(w.form).region),
+    // out in the sea, the look where you fight; on the coast, the place of its species (M1)
+    place: battlePlaceAt(w.x, battlePlace(speciesOf(w.form).region)),
   };
 }
 

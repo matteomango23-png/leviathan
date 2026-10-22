@@ -40,6 +40,7 @@ import { LightView } from '../views/lightView';
 import { NightmareView } from '../views/nightmareView';
 import { PlacesView } from '../views/placesView';
 import { wreckShown } from '../systems/specialPowers';
+import { lookAt, lookNumber } from '../systems/seaLook';
 import { SceneryView } from '../views/sceneryView';
 import { SeaSurfaceView } from '../views/seaSurfaceView';
 import { ShipView } from '../views/shipView';
@@ -122,7 +123,7 @@ export class WorldViews {
     this.gearFx = new GearFxView(scene, L.world);
     this.waterFilter = new WaterFilter(scene, L.front); // last in the world's layers: over all of it
     this.echo = new EchoView(scene, L.glow);
-    this.seaLight = new SeaLight(scene, L.bg, L.overlay); // its front part before the darkness, so under it
+    this.seaLight = new SeaLight(scene, L.bg, L.overlay, L.glow); // its front part before the darkness, so under it
     this.light = new LightView(scene, L.overlay);
     this.weatherView = new WeatherView(scene, L.bg, L.overlay);
     this.lampAngle = d.aim;
@@ -165,14 +166,21 @@ export class WorldViews {
     for (const s of stepBirds(this.birds, dt, birdView, sky.birds, sky.wind, g.fish.schools))
       this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
     snapGulls(g, this.birds); // on a leap out of the water (worldEvents.ts)
-    this.bg.update(info, sky);
+    const look = lookAt(info.cx); // the region's look (systems/seaLook.ts)
+    this.bg.update(info, sky, look);
     // daylight in the water: less with depth, clouds and storms, and murky water
     const daylight =
       (1 - Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1)) **
         SEA.lightRays.fadePower *
       sky.rays *
       (1 - turbidityAt(info.cx, info.cy, g.time, sky) * SEA.lightRays.murkShare);
-    this.seaLight.update(info, g.time, daylight);
+    this.seaLight.update(
+      info,
+      g.time,
+      daylight * lookNumber(look, (l) => l.rays),
+      look,
+      depthMetres(info.cy),
+    );
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
     this.temple.update(view, g, g.time);

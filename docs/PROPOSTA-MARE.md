@@ -127,7 +127,7 @@ I testi per Gemini li scrivo dopo che hai approvato questa proposta, in un `docs
 ---
 
 ## Come lo farei: lotti in ordine
-1. **M1, i panorami:** sfondi dipinti per regione, nel mare e nelle battaglie, più luce, colore e suono per regione. Con le immagini di Gemini; finché non arrivano, una versione disegnata dal codice.
+1. ✅ **M1, i panorami** (v0.105.0, disegnati dal codice; le immagini di Gemini entrano appena arrivano): sfondi dipinti per regione, nel mare e nelle battaglie, più luce, colore e suono per regione. Con le immagini di Gemini; finché non arrivano, una versione disegnata dal codice.
 2. **M2, i punti di riferimento e gli oggetti:** Grande Arco, Cimitero dei velieri, Balena caduta, porti con il sotto dei moli. Segnati sulla mappa quando li scopri.
 3. **M3, le Gallerie:** grotte e labirinti generati nelle Grandi fosse, passaggi stretti (le bestie grandi restano fuori), sacche d'aria, correnti, la Cattedrale.
 4. **M4, il fondale vivo:** fumatori neri, laghi di salamoia, neve marina, bioluminescenze, banchi per regione.

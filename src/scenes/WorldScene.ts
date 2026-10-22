@@ -27,6 +27,7 @@ import { depthMetres } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/stretches';
 import { beepEvery, obstacleAhead } from '../systems/ship/radar';
 import { inVehicle } from '../systems/vehicles';
+import { lookAt } from '../systems/seaLook';
 import { showEvent } from './worldEvents';
 import { WorldViews } from './worldViews';
 import type { SceneData, Session } from './session';
@@ -209,6 +210,7 @@ export class WorldScene extends Phaser.Scene {
         depthM: depthMetres(d.y),
         dash: d.dashTime > 0 && dashBefore <= 0,
         km: kmFromCoast(d.x),
+        look: lookAt(d.x),
       },
       dt,
     );
