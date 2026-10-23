@@ -26,6 +26,8 @@ export interface SeaLookDef {
   glow: number;
   glowColors: string[];
   sound: SeaSound;
+  /** The ridges stand this many units higher (a shallow place: its seabed would hide them). */
+  ridgeLift?: number;
 }
 
 export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
@@ -51,6 +53,7 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
     glow: 0,
     glowColors: [],
     sound: 'swamp',
+    ridgeLift: 120, // its seabed is about 20 m shallower than the bay's
   },
   barriera: {
     water: [1.05, 1.18, 1.1],
