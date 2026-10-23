@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.108.0 — Paesi, avamposti, laguna e ghiaccio dipinti (23 ottobre 2026)
+
+- **Portofosco** ha il suo paese dipinto (case, chiesetta, faro, barche in secca) al posto delle casette nere; **Porto Fango** le sue palafitte dietro la casa e la pescheria.
+- **Avamposti tutti diversi:** del Corallo (tende su uno scoglio di corallo), del Gelo (relitto ghiacciato), dell'Orlo (forgia su colonne di basalto); la Corrente tiene la chiatta di prima, l'Ultimo quella grande. Pilastri e corallo sfumano nel buio sott'acqua.
+- **La laguna dei coccodrilli:** isolotti di mangrovie dipinti con le radici nell'acqua, acqua verde-marrone torbida, panorami di radici e tronchi sott'acqua, ogni tanto un leggero "blup" di bolle di fango.
+- **Il ghiaccio** (Mare di Ghiaccio e Banchisa) è dipinto: lastre con neve e ghiaccioli tra i buchi per respirare e colonne di ghiaccio sotto. Si sbatte esattamente dove si vede il ghiaccio, niente più quadratini. La nave lo rompe a colonne intere e il dipinto si apre lì.
+- I salvataggi non cambiano.
+
 ## v0.107.0 — I punti di riferimento del mare (23 ottobre 2026)
 
 - **Tre posti da ritrovare,** dipinti:

@@ -30,6 +30,34 @@ export const LANDMARK_CUTS: Record<string, (Cut | Door)[]> = {
   ],
 };
 
+/** Pictures whose bottom fades out (this share of their height): an outpost's pillars and coral, an islet's roots go on down into
+ *  the dark instead of ending at a line in the water (lot P1). */
+export const BOTTOM_FADES: Record<string, number> = {
+  avamposto_orlo: 0.4,
+  avamposto_corallo: 0.42,
+  delta_isola_1: 0.32,
+  delta_isola_2: 0.2,
+};
+
+/** Fades the bottom of a picture's visible box out, if it is listed. */
+export function applyBottomFade(
+  id: string,
+  px: Uint8ClampedArray,
+  img: Raw,
+  box: { x0: number; y0: number; x1: number; y1: number },
+): void {
+  const share = BOTTOM_FADES[id];
+  if (!share) return;
+  const rows = Math.round((box.y1 - box.y0 + 1) * share);
+  for (let y = box.y1 - rows + 1; y <= box.y1; y++) {
+    const k = 1 - Math.pow((y - (box.y1 - rows)) / rows, 0.8);
+    for (let x = box.x0; x <= box.x1; x++) {
+      const o = (y * img.width + x) * 4 + 3;
+      px[o] = Math.round(px[o]! * k);
+    }
+  }
+}
+
 const jag = (a: number): number =>
   Math.sin(a * 7) * 0.5 + Math.sin(a * 13 + 1.7) * 0.3 + Math.sin(a * 23 + 0.4) * 0.2;
 

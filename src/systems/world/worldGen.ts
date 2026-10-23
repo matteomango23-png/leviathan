@@ -21,6 +21,7 @@ import { inArena, inArenaShell } from './arena';
 import { TileMap } from './tileMap';
 import { generateChunk } from './endless';
 import { icebergBox, inIceberg, nearIceberg } from './icebergs';
+import { iceArtReady, iceArtSolidAt } from './iceSheet';
 import { ICEBERGS } from '../../data/worldArt';
 import { ENDLESS } from '../../data/endless';
 
@@ -101,12 +102,16 @@ const PAINTED = ICEBERGS.map(icebergBox).filter((b) => b !== null);
 function isIce(x: number, y: number): boolean {
   if (x < ICE.xMin || y < WORLD.surfaceY) return false;
   if (nearIceberg(PAINTED, x) && y < ICE.sheet.y0) return false; // only the painted iceberg shows there
-  const inHole = ICE.holes.some(([a, b]) => x > a && x < b);
-  if (y < ICE.ceilingY && !inHole) return true;
-  for (const [cx, cy, rx, ry] of ICE.pillars) {
-    const dx = (x - cx) / rx;
-    const dy = (y - cy) / ry;
-    if (dx * dx + dy * dy < 1) return true;
+  if (iceArtReady()) {
+    if (iceArtSolidAt(x, y)) return true; // the painted sheet (lot P1): its pictures' masks
+  } else {
+    const inHole = ICE.holes.some(([a, b]) => x > a && x < b);
+    if (y < ICE.ceilingY && !inHole) return true;
+    for (const [cx, cy, rx, ry] of ICE.pillars) {
+      const dx = (x - cx) / rx;
+      const dy = (y - cy) / ry;
+      if (dx * dx + dy * dy < 1) return true;
+    }
   }
   const s = ICE.sheet;
   return y > s.y0 && y < s.y1 && x > s.x0 && x < s.x1;

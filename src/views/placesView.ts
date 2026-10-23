@@ -3,7 +3,8 @@
 import Phaser from 'phaser';
 import { PIER_ART } from '../data/worldArt';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { HARBOUR_PIECES, OUTPOST_ART, OUTPOSTS, PORT, PORTO_FANGO, type PortDef } from '../data/economy';
+import { HARBOUR_PIECES, OUTPOSTS, PORT, PORTO_FANGO, type PortDef } from '../data/economy';
+import { OUTPOST_ART, OUTPOST_FALLBACK, VILLAGES, type VillageArt } from '../data/placeArt';
 import { COAST, WORLD } from '../data/worldLayout';
 import { landHeight } from '../systems/world/worldGen';
 import type { Wreck } from '../systems/economy/places';
@@ -42,13 +43,24 @@ function drawHouses(g: Phaser.GameObjects.Graphics, houses: [number, number, num
   }
 }
 
+const hasArt = (key: string): boolean => WORLD_ART_KEYS.includes(key);
+
+/** A harbour's painted village on its land (lot P1), its streets on the ground under its middle. */
+function addVillage(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, v: VillageArt): void {
+  const im = scene.add.image(v.x, 0, `world-${v.art}`);
+  im.setScale(v.width / im.width);
+  im.y = WORLD.surfaceY - landHeight(v.x) + 1 - (v.share - 0.5) * im.displayHeight;
+  layer.add(im);
+}
+
 function drawPort(g: Phaser.GameObjects.Graphics, port: PortDef, painted: boolean): void {
   const s = WORLD.surfaceY;
   const x = port.x;
   const shore = port.shoreX;
   if (painted) {
-    // the owner's painted pier is laid by PlacesView: only the houses here
-    drawHouses(g, port.id === 'portofosco' ? PORT_HOUSES : FANGO_HUTS);
+    // the owner's painted pier is laid by PlacesView: only the houses here (or the painted village instead)
+    if (port.id !== 'portofosco' || !hasArt(VILLAGES.portofosco.art))
+      drawHouses(g, port.id === 'portofosco' ? PORT_HOUSES : FANGO_HUTS);
     return;
   }
   // the pier: from the shore out over the water, on stilts
@@ -132,6 +144,9 @@ export class PlacesView {
     if (map) drawPierUnder(scene, layer, map); // behind the pier and the chests
     const g = scene.add.graphics();
     const painted = WORLD_ART_KEYS.includes(PIER_ART.key);
+    // the villages (lot P1): behind the piers and the trading house
+    if (hasArt(VILLAGES.portofosco.art)) addVillage(scene, layer, VILLAGES.portofosco);
+    if (hasArt(VILLAGES.fango.art)) addVillage(scene, layer, VILLAGES.fango);
     drawPort(g, PORT, painted);
     // the trading harbour of Porto Fango and the outposts: the owner's paintings (owner, 5 ottobre); without them,
     // the old drawn pier
@@ -146,11 +161,13 @@ export class PlacesView {
       }
     else drawPort(g, PORTO_FANGO, false);
     for (const o of OUTPOSTS) {
-      const key = o === OUTPOSTS[OUTPOSTS.length - 1] ? OUTPOST_ART.last : OUTPOST_ART.art;
-      if (!WORLD_ART_KEYS.includes(key)) continue;
-      const im = scene.add.image(o.x, 0, `world-${key}`);
-      im.setScale(OUTPOST_ART.width / im.width);
-      im.y = WORLD.surfaceY - (OUTPOST_ART.waterline - 0.5) * im.displayHeight;
+      // each region's own (lot P1), or the plain barge
+      const own = OUTPOST_ART[o.id];
+      const a = own && hasArt(own.art) ? own : OUTPOST_FALLBACK;
+      if (!hasArt(a.art)) continue;
+      const im = scene.add.image(o.x, 0, `world-${a.art}`);
+      im.setScale(a.width / im.width);
+      im.y = WORLD.surfaceY - (a.waterline - 0.5) * im.displayHeight;
       layer.add(im);
     }
     if (painted)

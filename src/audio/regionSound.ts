@@ -1,12 +1,12 @@
 // The sound of each region, over the sea's rumble (data/seaLooks.ts REGION_SOUND; docs/PROPOSTA-MARE.md): the reef's
 // crackle of shrimps, the ice creaking under the shelf, a low grumble in
-// the deep. Synthesized like the rest (no sound files); each fades with the region's share where two blend.
+// the deep, the Delta's mud bubbling. Synthesized like the rest (no sound files); each fades with the region's share where two blend.
 import { REGION_SOUND, SEA_LOOKS, type SeaSound } from '../data/seaLooks';
 import type { LookMix } from '../systems/seaLook';
 
 /** How much of each region sound plays at a mix of looks, 0…1. */
 export function soundShares(m: LookMix): Record<SeaSound, number> {
-  const out: Record<SeaSound, number> = { none: 0, reef: 0, ice: 0, deep: 0 };
+  const out: Record<SeaSound, number> = { none: 0, reef: 0, ice: 0, deep: 0, swamp: 0 };
   out[SEA_LOOKS[m.a].sound] += 1 - m.t;
   out[SEA_LOOKS[m.b].sound] += m.t;
   return out;
@@ -17,7 +17,7 @@ const between = ([lo, hi]: [number, number]): number => lo + Math.random() * (hi
 export class RegionSound {
   private readonly out: GainNode;
   private readonly reefGain: GainNode;
-  private readonly next = { ice: 2, deep: 2 };
+  private readonly next = { ice: 2, deep: 2, swamp: 2 };
 
   constructor(
     private readonly ctx: AudioContext,
@@ -42,7 +42,7 @@ export class RegionSound {
     const s = soundShares(look);
     const t = this.ctx.currentTime;
     this.reefGain.gain.setTargetAtTime(REGION_SOUND.reef.volume * s.reef, t, 0.8);
-    for (const k of ['ice', 'deep'] as const) {
+    for (const k of ['ice', 'deep', 'swamp'] as const) {
       this.next[k] -= dt;
       if (this.next[k] > 0) continue;
       this.next[k] = between(REGION_SOUND[k].every);
@@ -86,6 +86,27 @@ export class RegionSound {
     osc.connect(g).connect(this.out);
     osc.start(at);
     osc.stop(at + 3.6);
+  }
+
+  /** Mud bubbling up: one to three soft blups, each a quick rising tone. */
+  private swamp(at: number, share: number): void {
+    const v = REGION_SOUND.swamp.volume * share;
+    const n = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < n; i++) {
+      const t = at + i * (0.12 + Math.random() * 0.1);
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = 'sine';
+      const f = 160 + Math.random() * 90;
+      osc.frequency.setValueAtTime(f, t);
+      osc.frequency.exponentialRampToValueAtTime(f * 2.4, t + 0.07);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(v, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      osc.connect(g).connect(this.out);
+      osc.start(t);
+      osc.stop(t + 0.1);
+    }
   }
 }
 

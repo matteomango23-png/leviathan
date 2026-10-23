@@ -100,7 +100,9 @@ describe('the submarine', () => {
     const x0 = 8540;
     expect(map.solidAt(8700, WORLD.surfaceY + 10)).toBe(true); // the ice
     let y = WORLD.surfaceY + 4;
-    while (y < 600 && [x0, 8700, 8800].some((x) => map.solidAt(x, y) || map.solidAt(x, y + 30))) y += 4;
+    // the painted sheet's icicles hang unevenly (lot P1): clear of all of them along the way
+    const along = Array.from({ length: 70 }, (_, i) => x0 + i * 4);
+    while (y < 600 && along.some((x) => map.solidAt(x, y) || map.solidAt(x, y + 30))) y += 4;
     const g = inside(x0, y + 15);
     run(g, 10, levers(1));
     expect(g.sub.x).toBeGreaterThan(8640); // under it

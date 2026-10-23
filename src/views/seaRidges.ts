@@ -7,7 +7,7 @@ import { SEA } from '../data/diver';
 import { SEA_LOOKS, SEA_RIDGE_FLOOR, type SeaLookId } from '../data/seaLooks';
 import { BG_KEYS } from '../data/sprites.generated';
 import { assetUrl } from '../data/assets';
-import type { LookMix } from '../systems/seaLook';
+import { lookNumber, type LookMix } from '../systems/seaLook';
 import { naturalFloor } from '../systems/world/stretches';
 import { paintRidgeStrip, stripShare, type RidgeKind } from './seaRidgeArt';
 
@@ -46,6 +46,8 @@ const color = (hex: string): Phaser.Display.Color => Phaser.Display.Color.HexStr
 export class SeaRidges {
   private readonly rows: Row[];
   private size = '';
+  /** How much higher the look wants its ridges (SeaLookDef.ridgeLift, blended like the rest). */
+  private lift = 0;
   /** How much deeper than SEA_RIDGE_FLOOR.ref the seabed around the view is (eased). */
   private sink = NaN;
   private screenW = 1;
@@ -153,7 +155,7 @@ export class SeaRidges {
     const def = SEA[kind];
     const parV = def.parallax * 0.9 + 0.1;
     const ref = this.screenH * stripShare(kind, 'hills');
-    return v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV + ref * 0.55;
+    return v.h / 2 + (def.baseY + this.sink - this.lift - v.cy) * v.zoom * parV + ref * 0.55;
   }
 
   private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number, bottom: number): void {
@@ -180,6 +182,7 @@ export class SeaRidges {
 
   update(v: ViewInfo, mix: LookMix): void {
     this.followFloor(v.cx);
+    this.lift = lookNumber(mix, (l) => l.ridgeLift ?? 0);
     const size = `${v.w}x${v.h}`;
     if (size !== this.size) {
       this.size = size;

@@ -11,6 +11,7 @@ import { talentOf } from './beasts/mountTraits';
 import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import type { TileMap } from './world/tileMap';
+import { widenIceBreak } from './world/iceSheet';
 
 type Breakable = typeof TILE.bone | typeof TILE.ice;
 
@@ -69,6 +70,7 @@ export function useBreakBones(g: BeastWorld, events: GameEvent[]): void {
   const p = breakPoint(g);
   if (!p) return;
   const tiles = breakTiles(g.map, p.x, p.y, ABILITIES.sfondaOssa.reach + ABILITIES.sfondaOssa.radius, p.kind);
+  if (p.kind === TILE.ice) tiles.push(...widenIceBreak(g.map, tiles)); // whole columns of the painted sheet
   if (g.beasts.mount) g.beasts.mount.jaw = 0.5;
   if (tiles.length) events.push({ type: 'bonesBroken', tiles, ice: p.kind === TILE.ice });
 }

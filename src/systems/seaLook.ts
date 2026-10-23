@@ -2,8 +2,10 @@
 // the coast before the open sea, then the region's (in the Foresta e Banchisa, the kind of the stretch), two looks
 // blending across a border over SEA_LOOK_BLEND. Pure logic.
 import { ENDLESS } from '../data/endless';
+import { DELTA } from '../data/worldLayout';
 import {
   SEA_LOOK_BLEND,
+  SEA_LOOK_BLEND_DELTA,
   SEA_LOOK_BLEND_STRETCH,
   SEA_LOOKS,
   SEA_SNOW,
@@ -15,6 +17,7 @@ import { biomeOf, regionAt, stretchAt } from './world/stretches';
 
 /** The look at one point, without blending. */
 export function lookIdAt(x: number): SeaLookId {
+  if (x >= DELTA.x0 && x < DELTA.x1) return 'delta';
   if (x < ENDLESS.startX) return 'costa';
   const r = regionAt(x).id;
   if (r === 'barriera_esterna') return 'barriera';
@@ -35,6 +38,9 @@ const STRETCH_LOOKS: SeaLookId[] = ['foresta', 'banchisa'];
 
 /** The look at x, two of them blending near a border. */
 export function lookAt(x: number): LookMix {
+  // the short Delta: a short blend at its edges
+  const delta = blendAt(x, SEA_LOOK_BLEND_DELTA);
+  if (delta.a === 'delta' || delta.b === 'delta') return delta;
   const mix = blendAt(x, SEA_LOOK_BLEND);
   // the forest and the ice of one region: a shorter blend
   if (mix.a !== mix.b && STRETCH_LOOKS.includes(mix.a) && STRETCH_LOOKS.includes(mix.b))
@@ -82,5 +88,5 @@ export function snowShare(look: LookMix, depthM: number): number {
 /** The battle's background at a point: the place's own on the coast, the look where you are out in the sea. */
 export function battlePlaceAt(x: number, coastPlace: BattlePlace): BattlePlace {
   const id = lookIdAt(x);
-  return id === 'costa' ? coastPlace : id;
+  return id === 'costa' || id === 'delta' ? coastPlace : id;
 }

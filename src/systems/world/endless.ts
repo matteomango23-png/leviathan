@@ -6,6 +6,7 @@ import { ENDLESS, type BiomeDef } from '../../data/endless';
 import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
 import { fbm, hash2 } from '../math';
 import { icebergsOfStretch, inIceberg, nearIceberg } from './icebergs';
+import { iceArtReady, iceArtSolidAt } from './iceSheet';
 import { biomeOf, naturalFloor, stretchAt } from './stretches';
 import { floorNearLandmark, landmarkAtX, landmarkSolidAt } from './landmarks';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
@@ -46,6 +47,7 @@ function moundsOf(k: number): Mound[] {
 function isIce(b: BiomeDef, k: number, x: number, y: number): boolean {
   const ice = b.ice;
   if (!ice || y < WORLD.surfaceY) return false;
+  if (iceArtReady()) return iceArtSolidAt(x, y); // the painted sheet (lot P1): its pictures' masks
   const u = x - (ENDLESS.startX + k * ENDLESS.stretch);
   if (u < ENDLESS.blend / 2 || u > ENDLESS.stretch - ENDLESS.blend / 2) return false; // open water at its ends
   const inHole = ((u % ice.holeEvery) + ice.holeEvery) % ice.holeEvery < ice.holeWidth;

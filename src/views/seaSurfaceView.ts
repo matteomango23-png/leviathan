@@ -8,6 +8,7 @@ import { SEA } from '../data/diver';
 import { TILE, WORLD } from '../data/worldLayout';
 import type { TileMap } from '../systems/world/tileMap';
 import { icebergsNear } from '../systems/world/icebergs';
+import { iceArtReady } from '../systems/world/iceSheet';
 import { rampColor } from '../systems/math';
 import { seaHeight, troughDepth, waveHeight, type SeaNow } from '../systems/sea';
 
@@ -81,7 +82,7 @@ export class SeaSurfaceView {
     }
 
     // the ice sheet at the surface, over the sea (owner, 10 ottobre: the waves hid it), riding the waves a little
-    this.drawIce(x0, x1, y0, deep, time, sea);
+    if (!iceArtReady()) this.drawIce(x0, x1, y0, deep, time, sea); // else its painting (views/iceArtView.ts)
 
     // white foam where a steep crest breaks (rough weather)
     if (rough > 0.05)
