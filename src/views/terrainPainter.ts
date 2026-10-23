@@ -8,6 +8,7 @@ const WORLD_SURFACE = WORLD.surfaceY;
 import { ENDLESS } from '../data/endless';
 import { biomeAt } from '../systems/world/endless';
 import { icebergsNear } from '../systems/world/icebergs';
+import { landmarkSolidAt } from '../systems/world/landmarks';
 
 /** Inside the frame of a painted iceberg (a little wider): nothing of the tiles is painted there. */
 const inIcebergBoxAt = (x: number, y: number): boolean =>
@@ -209,6 +210,8 @@ export class ChunkPaintJob {
       const tile = map.tileAtPoint(wx, wy);
       // an iceberg's ice is its picture (views/worldArtView.ts): its solid tiles are not painted over it
       if (wx > ICE.xMin && wy < ICE_BOX_BOTTOM && inIcebergBoxAt(wx, wy)) continue;
+      // a landmark's solid parts are its picture too (views/landmarkView.ts)
+      if (wx > ENDLESS_START && landmarkSolidAt(wx, wy)) continue;
       let r: number;
       let gg: number;
       let b: number;

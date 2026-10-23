@@ -33,6 +33,7 @@ import { stepProgress } from './progress';
 import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
 import { discoverOutposts, portAt } from './economy/places';
+import { discoverLandmarks } from './world/landmarks';
 import { PORT, PORTS } from '../data/economy';
 import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
@@ -229,6 +230,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   g.port = g.ship.aboard || g.boat.aboard ? shipPort(g) : portAt(d, g.map);
   discoverOutposts(g, events);
+  discoverLandmarks(g, events);
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);

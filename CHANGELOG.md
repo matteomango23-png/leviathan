@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.107.0 — I punti di riferimento del mare (23 ottobre 2026)
+
+- **Tre posti da ritrovare,** dipinti:
+  - il **Grande Arco** sulla Barriera esterna (circa 3 km): un arco di corallo con il canale sotto, dove vivono sempre una tartaruga e una manta;
+  - il **Cimitero dei velieri** nel Mare blu (circa 8 km): tre galeoni affondati; in uno si entra da una falla nello scafo, si passa per tre stanze strette e in fondo c'è un forziere;
+  - la **Balena caduta** nella Banchisa (circa 13 km): lo scheletro di una balena enorme, con granchi e anguille intorno.
+- **L'arco e i galeoni sono solidi:** ci sbatti contro come contro la roccia, e si passa solo dove il dipinto è aperto.
+- **Scoperta:** quando ti avvicini compare "Hai scoperto…" e il posto finisce sulla mappa del menu, nella sua regione. Quelli non ancora trovati sono "???".
+- **Sotto i moli** di Portofosco e Porto Fango: pali coperti di cozze, reti strappate, catene, e sul fondo un'ancora e una barchetta affondata. Un banco di sardine vive sotto ogni molo.
+- I salvataggi non cambiano.
+
 ## v0.106.0 — Menu iniziale e cantiere (23 ottobre 2026)
 
 - **All'apertura** il tocco sulla schermata iniziale non preme più il pulsante del menu che c'è sotto: prima apriva da solo "Nuova partita" (o, con una partita salvata, ti faceva entrare senza volerlo).

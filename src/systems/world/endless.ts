@@ -7,12 +7,13 @@ import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
 import { fbm, hash2 } from '../math';
 import { icebergsOfStretch, inIceberg, nearIceberg } from './icebergs';
 import { biomeOf, naturalFloor, stretchAt } from './stretches';
+import { floorNearLandmark, landmarkAtX, landmarkSolidAt } from './landmarks';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
 
 export { biomeAt, biomeOf, kmFromCoast, regionAt, regionIndexAt, stretchAt } from './stretches';
 
-/** The sea floor (world y) at x: the natural one, bent to meet a sunken temple near one. */
-export const endlessFloor = (x: number): number => floorNearTemple(x, naturalFloor(x));
+/** The sea floor (world y) at x: the natural one, bent to meet a sunken temple or a landmark near one. */
+export const endlessFloor = (x: number): number => floorNearLandmark(x, floorNearTemple(x, naturalFloor(x)));
 
 interface Mound {
   x: number;
@@ -34,7 +35,8 @@ function moundsOf(k: number): Mound[] {
     const x = x0 + ENDLESS.blend / 2 + h(1) * (ENDLESS.stretch - ENDLESS.blend);
     const rx = b.mounds.rx[0] + h(2) * (b.mounds.rx[1] - b.mounds.rx[0]);
     const ry = b.mounds.ry[0] + h(3) * (b.mounds.ry[1] - b.mounds.ry[0]);
-    if (!templeAtX(x, rx + 40)) out.push({ x, y: endlessFloor(x) - ry * 0.3, rx, ry }); // not on a temple
+    if (!templeAtX(x, rx + 40) && !landmarkAtX(x, rx + 40))
+      out.push({ x, y: endlessFloor(x) - ry * 0.3, rx, ry }); // not on a temple
   }
   moundCache.set(k, out);
   return out;
@@ -67,6 +69,7 @@ export function endlessTile(x: number, y: number): TileValue {
   if (x > ENDLESS.maxX - ENDLESS.endWall) return TILE.rock; // the end of the known sea: a cliff
   const temple = templeTileAt(x, y);
   if (temple !== null) return temple;
+  if (landmarkSolidAt(x, y)) return TILE.rock; // the arch, the galleons (their pictures' masks)
   const k = stretchAt(x);
   const b = biomeOf(k);
   if (b.ice && inIceberg(icebergsOfStretch(k), x, y)) return TILE.ice;

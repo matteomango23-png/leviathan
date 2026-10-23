@@ -52,6 +52,7 @@ export const ENDLESS = {
     perStretch: 9, // beasts living in each 300 m of sea
     wakeRadius: 320, // units: nearer than this to you, one comes out for real
     roamX: 170, // units: how far it wanders each side of its home
+    landmarkRoam: 24, // units: a beast living at a landmark (data/landmarks.ts) stays this close to it
     roamY: 45,
     lapSeconds: [50, 110] as [number, number], // one lap of its wandering
     returnSeconds: [240, 480] as [number, number], // caught or beaten: a new one lives there after this

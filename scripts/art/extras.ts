@@ -35,6 +35,7 @@ import {
   greenShare,
   keepLargest,
 } from './layers.ts';
+import { applyCuts } from './landmarkCuts.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -285,6 +286,7 @@ export function panoramaBottom(px: Uint8ClampedArray, w: number, h: number): num
 
 /** Cells across an iceberg's solid mask (its rows follow the picture's shape). */
 const MASK_COLS = 40;
+const LANDMARK_MASK_COLS = 120;
 
 /**
  * A rock or ice wall, or an iceberg, cut out of its black background. The opening (radius) also wipes the thin
@@ -294,6 +296,8 @@ const MASK_COLS = 40;
 async function makeWorldPiece(src: string, dest: string, id: string): Promise<string> {
   const img = await raw(src, 1400, 0, mirrored(id));
   const iceberg = id.startsWith('iceberg');
+  // the landmarks of the sea (lot M2): a finer solid mask, so the arch's opening and the galleon's rooms are open
+  const landmark = id.startsWith('luogo_');
   // the waterline: the brightest row in the side margins (only the line reaches them, not the ice or its snow)
   let line = -1;
   if (iceberg) {
@@ -334,6 +338,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   }
   const box = opaqueBox(cut, img.width, img.height);
   if (!box) throw new Error('immagine vuota dopo lo scontorno');
+  if (landmark) applyCuts(id, cut, img, box);
   if (shipLike(id)) {
     // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
     await mkdir(dirname(dest), { recursive: true });
@@ -342,22 +347,31 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
       .toFile(dest);
     return `nave ${img.width}×${img.height}, senza ritaglio`;
   }
-  const c = await cropped(cut, img, id.startsWith('sottomarino') ? await pairBox(src, id, img) : null);
+  const c = await cropped(
+    cut,
+    img,
+    id.startsWith('sottomarino') ? await pairBox(src, id, img) : landmark ? box : null,
+  );
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);
   await glowIfListed(dest);
-  if (!iceberg) return `parete ${c.w}×${c.h}`;
-  const rows = Math.max(4, Math.round((MASK_COLS * c.h) / c.w));
+  if (!iceberg && !landmark) return `parete ${c.w}×${c.h}`;
+  const cols = landmark ? LANDMARK_MASK_COLS : MASK_COLS;
+  const rows = Math.max(4, Math.round((cols * c.h) / c.w));
   const mask: string[] = [];
   for (let r = 0; r < rows; r++) {
     let row = '';
-    for (let q = 0; q < MASK_COLS; q++) {
+    for (let q = 0; q < cols; q++) {
       // the cell's centre in the cut picture: solid if most of the ice is there
-      const x = box.x0 + Math.floor(((q + 0.5) / MASK_COLS) * c.w);
+      const x = box.x0 + Math.floor(((q + 0.5) / cols) * c.w);
       const y = box.y0 + Math.floor(((r + 0.5) / rows) * c.h);
       row += (cut[(y * img.width + x) * 4 + 3] ?? 0) > 128 ? '1' : '0';
     }
     mask.push(row);
+  }
+  if (landmark) {
+    await writeFile(dest.replace(/.webp$/, '.json'), JSON.stringify({ w: c.w, h: c.h, waterline: 0, mask }));
+    return `luogo ${c.w}×${c.h}, maschera ${cols}×${rows}`;
   }
   const waterline = line >= 0 ? Math.max(0, Math.min(1, (line - box.y0) / c.h)) : 0.2;
   await writeFile(dest.replace(/\.webp$/, '.json'), JSON.stringify({ w: c.w, h: c.h, waterline, mask }));

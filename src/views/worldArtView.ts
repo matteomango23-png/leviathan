@@ -10,6 +10,7 @@ import { CORALS, ICE, WORLD, WORLD_SHAPE } from '../data/worldLayout';
 import { hash2 } from '../systems/math';
 import { biomeAt, biomeOf, endlessFloor, stretchAt } from '../systems/world/endless';
 import { icebergBox, icebergsOfStretch, type IcebergBox } from '../systems/world/icebergs';
+import { landmarkSites } from '../systems/world/landmarks';
 import type { TileMap } from '../systems/world/tileMap';
 
 interface Wall {
@@ -156,6 +157,17 @@ export class WorldArtView {
         .setFlipX(false)
         .setPosition(b.left, b.top);
     }
+    // the landmarks of the sea (lot M2): the arch, the galleons, the whale's bones
+    for (const s of landmarkSites())
+      for (const b of s.pieces) {
+        if (!near(b.left, b.left + b.w, b.top, b.top + b.h) || !has(b.piece.art)) continue;
+        this.image(n++)
+          .setTexture(`world-${b.piece.art}`)
+          .setOrigin(0, 0)
+          .setDisplaySize(b.w, b.h)
+          .setFlipX(false)
+          .setPosition(b.left, b.top);
+      }
     for (let i = n; i < this.pool.length; i++) this.pool[i]!.setVisible(false);
   }
 }

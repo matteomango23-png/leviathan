@@ -9,6 +9,8 @@ import { landHeight } from '../systems/world/worldGen';
 import type { Wreck } from '../systems/economy/places';
 import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
+import { drawPierUnder } from './pierUnder';
+import type { TileMap } from '../systems/world/tileMap';
 
 /** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
 const PORT_HOUSES: [number, number, number][] = [
@@ -125,7 +127,9 @@ export class PlacesView {
     scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer,
     private readonly wrecks: Wreck[],
+    map?: TileMap,
   ) {
+    if (map) drawPierUnder(scene, layer, map); // behind the pier and the chests
     const g = scene.add.graphics();
     const painted = WORLD_ART_KEYS.includes(PIER_ART.key);
     drawPort(g, PORT, painted);

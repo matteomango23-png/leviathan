@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 23 ottobre 2026, v0.106.0)
+## Dove siamo (aggiornato il 23 ottobre 2026, v0.107.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -16,6 +16,16 @@
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto M2, i punti di riferimento (23 ottobre 2026) → v0.107.0
+
+- **Immagini** (lotto 10 di Gemini, `art-inbox/lotto10/`): `luogo_arco`, `luogo_galeone_1`, `luogo_galeone_2`, `luogo_galeone_dentro`, `luogo_balena`, `molo_pali`, `molo_fondo`. Lo script dà ai `luogo_*` una maschera solida 120 colonne (in `ICEBERG_SHAPES`) e taglia la falla e le porte del galeone (`scripts/art/landmarkCuts.ts`).
+- **Dati:** `data/landmarks.ts` (posti, pezzi, residenti fissi, forziere, `PIER_UNDER`).
+- **Logica:** `systems/world/landmarks.ts` (`landmarkSites`, `landmarkSolidAt` letto da `endlessTile`, `floorNearLandmark` in `endlessFloor`, `landmarkChests` in `placeWrecks`, `discoverLandmarks` con `seen` `luogo:<id>`); residenti `r<k>.L<n>` con giro stretto (`tight`, `ENDLESS.residents.landmarkRoam`); il forziere è nei relitti salvati (`gearSave.ts`).
+- **Disegno:** i pezzi in `views/worldArtView.ts`; `terrainPainter` non dipinge roccia sopra le parti solide; `views/pierUnder.ts` (nuovo) per i moli; sardine sotto i moli in `SARDINE_SCHOOLS`.
+- **Mappa:** `regionsMap` ha `landmarks`, `seaMapPanel` li elenca.
+- **Non fatto:** il cono di luce dei lampioni di notte (rimandato a M4 con le bioluminescenze).
+- Test: `tests/lottoM2.test.ts` (collisione vera del sub nel galeone fino al forziere).
 
 ## Resto del lotto 9 (23 ottobre 2026), immagini pronte, non ancora nel gioco
 

@@ -121,6 +121,8 @@ export type GameEvent =
   | { type: 'targetLost'; name: string }
   /** An outpost of the open sea found (economy/places.ts). */
   | { type: 'outpostFound'; name: string }
+  /** A landmark of the sea found (world/landmarks.ts). */
+  | { type: 'landmarkFound'; name: string }
   // the hunts (hunts.ts)
   | { type: 'rumourHeard'; name: string }
   | { type: 'echoFound'; name: string; depthM: number }
