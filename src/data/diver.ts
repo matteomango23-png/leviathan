@@ -250,6 +250,10 @@ export const SLOTS = {
   warnAt: 0.8,
 };
 
+/** After the opening screen's tap, the title menu ignores taps this long (owner, 23 ottobre 2026: the tap went
+ *  through and opened "Nuova partita"). Tuning. */
+export const SPLASH = { guardMs: 400 };
+
 /**
  * The arrow to your ship (owner, 21 ottobre 2026: "un indicatore senza metri o profondità… la direzione per ritrovare
  * la barca"): shown when the ship (or your harbour) is off the screen, on the screen's edge `edge` (share of its

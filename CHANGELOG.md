@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.106.0 — Menu iniziale e cantiere (23 ottobre 2026)
+
+- **All'apertura** il tocco sulla schermata iniziale non preme più il pulsante del menu che c'è sotto: prima apriva da solo "Nuova partita" (o, con una partita salvata, ti faceva entrare senza volerlo).
+- **Cantiere:**
+  - niente più categoria Yacht: il Poseidon Yacht è tra le Navi da spedizione;
+  - nuova categoria **Abissali**, per la nave abissale e il suo sottomarino (arrivano presto, si costruiscono con pezzi rari).
+- **Scheda di una nave:** scorrendo le foto (o toccando le linguette) vedi i dati di quello che stai guardando, la nave, il sottomarino o il motoscafo, confrontati con la tua nave o con il mezzo dello stesso tipo che hai ora.
+- I salvataggi non cambiano.
+
 ## v0.105.4 — Il primo piano della foresta (23 ottobre 2026)
 
 - Nelle battaglie della Foresta di alghe c'è il primo piano dipinto: massi muschiosi in basso e alghe dorate che pendono dagli angoli. Lo sfondo di battaglia di tutte le regioni del mare aperto ora è completo.

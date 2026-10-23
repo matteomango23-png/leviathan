@@ -1203,3 +1203,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** le creste e i panorami stanno alla quota del fondale della zona (media su circa 600 m, che cambia piano), non più a una quota fissa; i dipinti sfumano in alto e in basso nel colore che il gioco disegna sotto.
 - **Motivo:** nelle regioni profonde non si vedevano mai; il proprietario: "che non si veda troppo lo stacco tra fondale generato da codice e l'immagine incollata".
+
+## 23 ottobre 2026 — Cantiere: categoria Abissali, schede per mezzo (v0.106.0)
+
+- **Decisione:** tolta la categoria Yacht (il Poseidon tra le navi da spedizione); aggiunta Abissali per la nave abissale e il suo sottomarino; nella scheda di una nave i dati sono divisi per foto, confrontati col mezzo della stessa famiglia della nave in uso.
+- **Motivo:** richiesta del proprietario.

@@ -1,21 +1,17 @@
-// A ship's numbers on its page (owner, 8 ottobre 2026): each row with its real value, a bar against the best of the
-// fleet, and the difference from the ship in use, green when better and red when worse. Numbers from
-// systems/ship/stats.ts.
-import type { ShipModelDef } from '../data/fleet';
-import { shipStats, statDiff, statShare } from '../systems/ship/stats';
+// The numbers of one tab of a ship's page (owner, 8 ottobre 2026; tabs 23 ottobre): each row with its real value, a
+// bar against the best of the fleet, and the difference from what it is compared with (the ship in use, or the
+// vehicle of the same kind on it), green when better and red when worse. Numbers from systems/ship/stats.ts and
+// pageTabs.ts.
+import { statDiff, statShare } from '../systems/ship/stats';
+import type { PageTab } from '../systems/ship/pageTabs';
 import { el } from './dom';
 
-/** @param inUse the model of the ship in use (null: none yet, nothing to compare); the same ship shows no diffs */
-export function renderShipStats(parent: HTMLElement, m: ShipModelDef, inUse: ShipModelDef | null): void {
-  const rows = shipStats(m);
-  const theirs = inUse && inUse.id !== m.id ? shipStats(inUse) : [];
-  if (theirs.length) el('div', 'stat-compare', parent, `Confronto con la tua ${inUse!.name}`);
-  let group = '';
-  for (const r of rows) {
-    if (r.group !== group) {
-      group = r.group;
-      if (group !== 'Nave') el('div', 'stat-group', parent, group);
-    }
+export function renderShipStats(parent: HTMLElement, tab: PageTab): void {
+  parent.replaceChildren();
+  if (tab.compareName && tab.compare.length)
+    el('div', 'stat-compare', parent, `Confronto con: ${tab.compareName}`);
+  if (!tab.rows.length) el('div', 'stat-compare', parent, 'Nessun dato da confrontare.');
+  for (const r of tab.rows) {
     const row = el('div', 'stat-row', parent);
     el('span', 'stat-k', row, r.label);
     const v = el('div', 'stat-v', row);
@@ -25,7 +21,7 @@ export function renderShipStats(parent: HTMLElement, m: ShipModelDef, inUse: Shi
       el('div', 'stat-fill', bar).style.width =
         `${Math.round(Math.max(0.04, Math.min(1, statShare(r))) * 100)}%`;
     }
-    const d = statDiff(r, theirs);
+    const d = statDiff(r, tab.compare);
     if (d) el('span', `stat-diff${d.good === null ? '' : d.good ? ' good' : ' bad'}`, row, d.text);
   }
 }

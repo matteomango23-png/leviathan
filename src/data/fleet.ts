@@ -365,7 +365,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
   },
   {
     id: 'poseidon',
-    category: 'yacht',
+    category: 'spedizione', // the Yacht tab was taken out (owner, 23 ottobre 2026)
     tier: 4,
     name: 'Poseidon Yacht',
     ready: true,
@@ -621,10 +621,16 @@ export const SELL_SHARE = 0.5;
 /** Aurelio's gift: it is never sold, so you always have a ship (owner, 8 ottobre). */
 export const KEEP_FOREVER = 'aurelia';
 
-/** The kinds of ship, the shipyard's tabs (owner, 8 ottobre), after "Possedute". */
-export type ShipCategory = 'spedizione' | 'yacht' | 'uboat';
-export const SHIP_CATEGORIES: { id: ShipCategory; name: string }[] = [
+/** The kinds of ship, the shipyard's tabs (owner, 8 ottobre), after "Possedute"; the top one, the abyssal ship and
+ *  its submarine, comes with its own lot (owner, 23 ottobre 2026). `empty`: what the tab says while it has none. */
+export type ShipCategory = 'spedizione' | 'uboat' | 'abissale';
+export const SHIP_CATEGORIES: { id: ShipCategory; name: string; empty?: string }[] = [
   { id: 'spedizione', name: 'Navi da spedizione' },
-  { id: 'yacht', name: 'Yacht' },
   { id: 'uboat', name: 'U-Boat' },
+  {
+    id: 'abissale',
+    name: 'Abissali',
+    empty:
+      'Arrivano presto: la nave abissale e il suo sottomarino si costruiscono con pezzi rari trovati nei relitti e nelle Gallerie.',
+  },
 ];

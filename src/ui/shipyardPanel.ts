@@ -41,6 +41,8 @@ export function renderShipyard(b: HTMLElement, ctx: TabContext): void {
   const shown = SHIP_MODELS.filter((m) => (tab === 'owned' ? ownsShip(g, m.id) : m.category === tab));
   const grid = el('div', 'yard-grid', b);
   for (const m of shown) card(grid, m, ctx);
+  const empty = SHIP_CATEGORIES.find((c) => c.id === tab)?.empty;
+  if (!shown.length && empty) el('p', 'port-hint', b, empty);
 }
 
 function card(grid: HTMLElement, m: ShipModelDef, ctx: TabContext): void {
