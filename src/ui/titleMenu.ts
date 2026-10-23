@@ -18,6 +18,7 @@ import {
 } from '../systems/save/slots';
 import { testMode } from '../systems/testTools';
 import { el } from './dom';
+import { splashGuard } from './splash';
 import { exportText, pickSaveFile } from './saveTransfer';
 import { SaveError } from '../systems/save/saveData';
 import './title.css';
@@ -74,7 +75,9 @@ export class TitleMenu {
 
   private button(parent: HTMLElement, text: string, onTap: () => void, cls = ''): HTMLButtonElement {
     const b = el('button', `title-btn ${cls}`.trim(), parent, text);
-    b.addEventListener('click', onTap);
+    b.addEventListener('click', () => {
+      if (!splashGuard()) onTap();
+    });
     return b;
   }
 

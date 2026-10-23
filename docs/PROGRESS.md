@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 23 ottobre 2026, v0.105.4)
+## Dove siamo (aggiornato il 23 ottobre 2026, v0.106.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -16,6 +16,14 @@
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Fix menu iniziale e cantiere (23 ottobre 2026) → v0.106.0
+
+- **Apertura:** il click dopo il tocco sulla schermata iniziale passava al pulsante sotto (`#splash.gone` aveva `pointer-events: none`). Ora la schermata trattiene il click e il menu ignora i tocchi per `SPLASH.guardMs` (`ui/splash.ts` `splashGuard`).
+- **Cantiere:** `ShipCategory` = spedizione, uboat, abissale (vuota, con la scritta `empty`); il Poseidon è "spedizione".
+- **Scheda nave:** `systems/ship/pageTabs.ts` (nuovo) dà una linguetta per foto con righe e confronto (nave con nave in uso, mezzo con quello della stessa famiglia: sottomarino, barca e moto d'acqua insieme); `ui/shipStats.ts` disegna una linguetta.
+- **Immagini del proprietario** della nave abissale (chiusa, aperta) e del sottomarino abissale in `art-inbox/abissali/`: si usano nel loro lotto, dopo M2, quando il proprietario dice le sue idee (nave veloce, frenata pesante, plana a pelo d'acqua, scende a circa 300 m; sottomarino 30 min, profondità massima, sale e scende veloce, laterale medio; si costruiscono con pezzi trovati).
+- Test: `tests/fixMenuCantiere.test.ts`.
 
 ## Passaggi tra regioni (23 ottobre 2026) → v0.105.3
 

@@ -1,5 +1,6 @@
 // A ship's page in the shipyard (owner, 8 ottobre 2026): a gallery to swipe through (the ship, then each vehicle in
-// its hatches) with dots under it, and all its numbers and those of its vehicles; buy it from here.
+// its hatches) with dots under it and tabs over the numbers; each picture shows only its own numbers, compared with
+// the ship in use or its vehicle of the same kind (owner, 23 ottobre: systems/ship/pageTabs.ts); buy it from here.
 import { RARITY } from '../data/cards';
 import { assetUrl } from '../data/assets';
 import type { ShipModelDef } from '../data/fleet';
@@ -7,16 +8,10 @@ import { ART_KEYS } from '../data/sprites.generated';
 import type { GameState } from '../systems/game';
 import { buyShip, ownsShip, sellPrice, sellShip, shipCost, switchShip } from '../systems/ship/shipyard';
 import { shipModel } from '../systems/ship/model';
+import { pageTabs } from '../systems/ship/pageTabs';
 import { renderShipStats } from './shipStats';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
-
-/** The pictures of the gallery: the ship first, then its vehicles. */
-function slides(m: ShipModelDef): { card: string; title: string }[] {
-  return [{ card: m.card, title: m.name }, ...m.bays.map((b) => ({ card: b.card, title: b.name }))].filter(
-    (s) => ART_KEYS.includes(s.card),
-  );
-}
 
 /** Opens the page; `changed` runs after a purchase (the shipyard redraws). */
 export function openShipPage(
@@ -35,20 +30,28 @@ export function openShipPage(
 
   // the gallery: swipe (or the arrows) between the pictures, dots under them
   const gallery = el('div', 'ship-gallery', card);
-  const list = slides(m);
+  const list = pageTabs(m, g.ship.owned ? shipModel(g.ship) : null);
   const view = el('div', 'ship-gallery-view', gallery);
   const img = el('img', 'ship-gallery-img', view);
   img.alt = '';
   const caption = el('div', 'ship-gallery-caption', gallery);
   const dots = el('div', 'ship-gallery-dots', gallery);
   let at = 0;
+  // filled once the numbers' box exists, below
+  let tabs: HTMLElement | null = null;
+  let table: HTMLElement | null = null;
   const show = (i: number): void => {
     at = (i + list.length) % list.length;
     const s = list[at];
     if (!s) return;
-    img.src = assetUrl(`art/${s.card}.webp`);
+    // a vehicle not painted yet: its name only
+    const painted = ART_KEYS.includes(s.card);
+    img.style.visibility = painted ? 'visible' : 'hidden';
+    if (painted) img.src = assetUrl(`art/${s.card}.webp`);
     caption.textContent = s.title;
     for (const [k, d] of [...dots.children].entries()) d.classList.toggle('on', k === at);
+    if (tabs) for (const [k, t] of [...tabs.children].entries()) t.classList.toggle('on', k === at);
+    if (table) renderShipStats(table, s);
   };
   list.forEach((_, i) => el('button', 'ship-dot', dots).addEventListener('click', () => show(i)));
   if (list.length > 1) {
@@ -63,7 +66,6 @@ export function openShipPage(
     downX = null;
     if (Math.abs(dx) > 30) show(at + (dx < 0 ? 1 : -1));
   });
-  show(0);
 
   // the numbers
   const info = el('div', 'ship-info', card);
@@ -78,8 +80,11 @@ export function openShipPage(
     `${RARITY[m.tier].name}${inUse ? ' · in uso' : owned ? ' · posseduta' : !m.ready ? ' · in cantiere' : ''}`,
   );
   el('p', 'ship-info-note', info, m.special ? `${m.note}. ${m.special}.` : m.note);
-  const table = el('div', 'ship-info-rows', info);
-  renderShipStats(table, m, g.ship.owned ? shipModel(g.ship) : null);
+  // a tab for each picture, over its numbers
+  tabs = el('div', 'yard-tabs ship-tabs', info);
+  list.forEach((t, i) => el('button', 'yard-tab', tabs!, t.title).addEventListener('click', () => show(i)));
+  table = el('div', 'ship-info-rows', info);
+  show(0);
 
   const foot = el('div', 'yard-foot', info);
   const act = (
