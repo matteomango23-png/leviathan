@@ -406,7 +406,7 @@ export type ExtraName =
 export function parseExtraName(file: string): ExtraName | null {
   const base = /^(.+)\.(jpe?g|png|webp)$/i.exec(file)?.[1]?.toLowerCase();
   if (!base) return null;
-  const bg = /^bg_([a-z]+)_(far|mid|front|ground)$/.exec(base);
+  const bg = /^bg_([a-z0-9]+)_(far|mid|front|ground)$/.exec(base);
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   // the sea's panoramas behind you as you swim (docs/GEMINI-LOTTO-9.md, views/seaRidges.ts)
   if (/^mare_[a-z0-9]+_(lontano|medio)$/.test(base)) return { kind: 'panorama', id: base };
