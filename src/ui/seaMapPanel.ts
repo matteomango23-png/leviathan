@@ -85,6 +85,8 @@ export function openSeaMap(parent: HTMLElement, g: GameState): () => void {
     }
     el('div', 'map-none', card, `${r.note} ${r.kinds.join(', ')}.`);
     el('div', 'map-none', card, r.outpost ? `Avamposto: ${r.outpost}.` : 'Avamposto: non ancora trovato.');
+    if (r.landmarks.length)
+      el('div', 'map-none', card, `Luoghi: ${r.landmarks.map((n) => n ?? '???').join(', ')}.`);
     beastRows(card, r.beasts);
   }
   show(Math.max(0, here));

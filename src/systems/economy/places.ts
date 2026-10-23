@@ -3,6 +3,7 @@ import { OUTPOSTS, PORTS, WRECKS, WRECK_REACH, type PortDef, type WreckDef } fro
 import { SHIP } from '../../data/ship';
 import type { GameEvent } from '../events';
 import type { TileMap } from '../world/tileMap';
+import { landmarkChests } from '../world/landmarks';
 import type { GearState } from './gear';
 
 export interface Wreck {
@@ -12,7 +13,11 @@ export interface Wreck {
 }
 
 export function placeWrecks(map: TileMap): Wreck[] {
-  return WRECKS.map((def) => ({ def, x: def.x, y: map.floorBelow(def.x, def.y) - 4 }));
+  return [...WRECKS, ...landmarkChests()].map((def) => ({
+    def,
+    x: def.x,
+    y: map.floorBelow(def.x, def.y) - 4,
+  }));
 }
 
 /** The harbour whose pier you float at, or null. */

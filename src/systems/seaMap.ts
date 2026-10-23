@@ -12,6 +12,8 @@ import { SPECIES } from '../data/species';
 import { WORLD, ZONES } from '../data/worldLayout';
 import { outpostKey } from './economy/places';
 import { zoneAt } from './world/zones';
+import { landmarkKey, landmarkSites } from './world/landmarks';
+import { regionAt } from './world/stretches';
 
 export const zoneKey = (name: string): string => `zona:${name}`;
 
@@ -41,6 +43,8 @@ interface MapRegion {
   kinds: string[];
   /** Its outpost, named once found. */
   outpost: string | null;
+  /** Its landmarks (data/landmarks.ts): named once found, null until then. */
+  landmarks: (string | null)[];
   beasts: MapBeast[];
 }
 
@@ -102,6 +106,9 @@ export function regionsMap(seen: Set<string>): MapRegion[] {
       note: r.note,
       kinds: BIOMES.filter((b) => r.biomes[b.id]).map((b) => b.name),
       outpost: seen.has(outpostKey(outpost.id)) ? outpost.name : null,
+      landmarks: landmarkSites()
+        .filter((s) => regionAt(s.x).id === r.id)
+        .map((s) => (seen.has(landmarkKey(s.def.id)) ? s.def.name : null)),
       beasts: beastsOf(weights, seen),
     };
   });

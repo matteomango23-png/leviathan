@@ -46,6 +46,8 @@ export function vehicleMessage(e: GameEvent, g: GameState): [string, number] | n
       return [`Tracce: ${e.text}`, 5];
     case 'outpostFound':
       return [`Hai trovato l’${e.name}: attracca qui per curarti, fare rifornimento e comprare.`, 5];
+    case 'landmarkFound':
+      return [`Hai scoperto: ${e.name}. Ora è segnato sulla mappa.`, 5];
     case 'reconStart':
       return ['Drone in ricognizione: va da tutti gli animali a portata del sonar.', 3.5];
     case 'reconEmpty':

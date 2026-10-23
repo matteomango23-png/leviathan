@@ -101,7 +101,7 @@ export class WorldViews {
     const L = this.rig.layers;
     this.bg = new BackgroundView(scene, L.bg);
     this.terrain = new TerrainView(scene, L.world, map);
-    this.places = new PlacesView(scene, L.world, g.wrecks);
+    this.places = new PlacesView(scene, L.world, g.wrecks, map);
     this.story = new StoryView(scene, L.world);
     new SceneryView(scene, L.world);
     new DeltaView(scene, L.world, L.front);

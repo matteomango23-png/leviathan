@@ -1208,3 +1208,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** tolta la categoria Yacht (il Poseidon tra le navi da spedizione); aggiunta Abissali per la nave abissale e il suo sottomarino; nella scheda di una nave i dati sono divisi per foto, confrontati col mezzo della stessa famiglia della nave in uso.
 - **Motivo:** richiesta del proprietario.
+
+## 23 ottobre 2026 — Punti di riferimento solidi dai dipinti (v0.107.0)
+
+- **Decisione:** l'arco e i galeoni sono solidi secondo la maschera ricavata dal dipinto (come gli iceberg), letta dal generatore delle celle del mare aperto; la falla e le porte del galeone sono tagliate sia dal dipinto sia dalla maschera, così si passa solo dove si vede aperto. Le stanze hanno una zona sempre libera (`open`) perché i barili dipinti non le chiudano.
+- **Motivo:** il proprietario vuole posti riconoscibili e un galeone in cui entrare (M2).

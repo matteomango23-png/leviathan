@@ -268,6 +268,9 @@ const BAY_ROAM: [number, number, number, number] = [LAYOUT.shoreX + 60, 40, bay(
 const SEA_ROAM: [number, number, number, number] = [east(2480), 48, east(5120), 300];
 // tappa 10c: sardines everywhere, like the common Pokémon in the grass
 export const SARDINE_SCHOOLS: SchoolDef[] = [
+  // under the piers (lot M2: fish drawn by the harbour's lights)
+  { x: 330, y: 32, roam: [270, 22, 400, 52] },
+  { x: LAYOUT.island.x1 + 95, y: 34, roam: [LAYOUT.island.x1 - 20, 22, LAYOUT.island.x1 + 210, 56] },
   { x: 900, y: 70, roam: BAY_ROAM }, // over the beach
   { x: 1300, y: 90, roam: BAY_ROAM },
   { x: bay(200), y: 120, roam: BAY_ROAM },

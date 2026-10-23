@@ -9,6 +9,7 @@ import { speciesById } from '../../data/species';
 import { WORLD } from '../../data/worldLayout';
 import { makeRng, range } from '../math';
 import { biomeOf, endlessFloor, regionAt, stretchAt } from '../world/endless';
+import { landmarkSites } from '../world/landmarks';
 import { bandAt, rollWildForm, rollWildLevel, type BeastForm } from './forms';
 
 const R = ENDLESS.residents;
@@ -25,6 +26,8 @@ interface Resident {
   phase: number;
   /** Where in its danger band its level falls (forms.ts rollWildLevel). */
   band: number;
+  /** It lives at a landmark (data/landmarks.ts): a small lap, never far from it. */
+  tight?: boolean;
 }
 
 /** Which residents are out for real (id → wild slot id), which are gone and until when; and the sea's clock. */
@@ -80,15 +83,43 @@ export function residentsOf(k: number): Resident[] {
       });
     }
   }
+  out.push(...landmarkResidents(k));
   cache.set(k, out);
   return out;
+}
+
+/** The beasts always living at a landmark of stretch k (`r<k>.L<n>`): the turtle under the arch… */
+function landmarkResidents(k: number): Resident[] {
+  const m = WORLD.unitsPerMetre;
+  return landmarkSites()
+    .filter((s) => stretchAt(s.x) === k)
+    .flatMap((s) =>
+      s.def.residents.map((r, i) => {
+        const homeX = s.x + r.dxM * m;
+        const homeY = s.ground - r.upM * m;
+        const depthM = (homeY - WORLD.surfaceY) / m;
+        return {
+          id: `r${k}.L${i}`,
+          speciesId: r.speciesId,
+          homeX,
+          homeY,
+          top: homeY - R.landmarkRoam,
+          bottom: Math.min(s.ground - 4, homeY + R.landmarkRoam),
+          lap: R.lapSeconds[0],
+          phase: i * 2.1,
+          band: bandAt(regionAt(homeX).bandAt, depthM),
+          tight: true,
+        };
+      }),
+    );
 }
 
 /** Where a resident is at this time of the sea's clock: a slow lap round its home, inside its depth band. */
 export function residentAt(r: Resident, clock: number): { x: number; y: number } {
   const a = (clock / r.lap) * Math.PI * 2 + r.phase;
   const y = r.homeY + Math.sin(a * 1.7 + r.phase) * R.roamY;
-  return { x: r.homeX + Math.sin(a) * R.roamX, y: Math.max(r.top, Math.min(r.bottom, y)) };
+  const rx = r.tight ? R.landmarkRoam : R.roamX;
+  return { x: r.homeX + Math.sin(a) * rx, y: Math.max(r.top, Math.min(r.bottom, y)) };
 }
 
 /** The residents living (not gone) within `reach` units of x, with where they are now (`held`: the one the

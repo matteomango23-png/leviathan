@@ -2,6 +2,7 @@
 import { MISSIONS } from '../../data/economy';
 import { FISH, ITEMS, SUITS, SUIT_UPGRADES, SWARMS, WEAPONS, BACKPACK_SLOTS } from '../../data/world';
 import { WRECKS } from '../../data/economy';
+import { LANDMARKS } from '../../data/landmarks';
 import { RELICS } from '../../data/temples';
 
 export interface SavedGear {
@@ -87,10 +88,10 @@ export function validateGear(raw: unknown): SavedGear {
     inventory: harpoonToShell(raw.inventory, counts(raw.inventory, itemIds)),
     backpack,
     swarms: ids(raw.swarms, swarmIds),
-    wrecks: ids(
-      raw.wrecks,
-      WRECKS.map((w) => w.id),
-    ),
+    wrecks: ids(raw.wrecks, [
+      ...WRECKS.map((w) => w.id),
+      ...LANDMARKS.flatMap((l) => (l.chest ? [l.chest.def.id] : [])),
+    ]),
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     deepestM: num(raw.deepestM),
     relics: ids(
