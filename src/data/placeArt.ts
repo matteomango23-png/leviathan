@@ -28,13 +28,13 @@ export interface OutpostArt {
 }
 
 /**
- * Each outpost its own (by region, data/regions.ts): the Corallo's tents on a coral rock, the Corrente's barge with
- * its windmill, the Gelo's frozen hulk, the Orlo's forge on basalt pillars, the Ultimo's big barge. Without its
+ * Each outpost its own (by region, data/regions.ts): the Corallo's tents on a coral rock, the Corrente's old barge
+ * (Gemini could not give a clean windmill barge), the Gelo's frozen hulk, the Orlo's forge on basalt pillars, the Ultimo's big barge. Without its
  * picture, `fallback`. The width stays the old one: the ship docks by it (data/ship.ts). Tuning.
  */
 export const OUTPOST_ART: Record<string, OutpostArt> = {
   barriera_esterna: { art: 'avamposto_corallo', width: 240, waterline: 0.5 },
-  mare_blu: { art: 'avamposto_corrente', width: 240, waterline: 0.66 },
+  mare_blu: { art: 'avamposto_medio', width: 240, waterline: 0.66 }, // the old barge (owner, 23 ottobre)
   banchisa: { art: 'avamposto_gelo', width: 240, waterline: 0.66 },
   grandi_fosse: { art: 'avamposto_orlo', width: 240, waterline: 0.56 },
   abisso: { art: 'avamposto_grande', width: 240, waterline: 0.66 },

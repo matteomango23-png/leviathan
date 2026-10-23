@@ -191,7 +191,9 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `waterFilter.ts` (views), `systems/waterTint.ts` | L'acqua come filtro su tutto ciò che sta sotto le onde: leggermente azzurro in superficie, più blu e scuro in profondità, più marrone nell'acqua torbida. |
 | `seaLight.ts`, `seaRays.ts` (views) | I raggi di luce dalla superficie (dietro e, più deboli, davanti al mondo) e le microparticelle che si accendono quando un raggio le attraversa; la neve marina più fitta in profondità e le bioluminescenze delle fosse (strato `glow`). |
 | `seaRidges.ts`, `seaRidgeArt.ts` (views) | Le creste lontane e medie con parallasse, nella forma e nei colori della regione (o il suo panorama dipinto `bg/mare_<aspetto>_*.webp`), mescolate al confine. |
-| `seaLook.ts` (systems), `seaLooks.ts` (data) | Quale aspetto del mare c'è in un punto (costa, barriera, mare blu, foresta, banchisa, fosse, abisso), con la mescolanza ai confini; il luogo delle battaglie in mare aperto. |
+| `iceSheet.ts` (systems/world), `iceArtView.ts` (views) | Il ghiaccio dipinto: lastre tra i buchi e pilastri, solidi dove c'è l'immagine; rotture a colonne intere; disegno a strisce. |
+| `placeArt.ts` (data) | Paesi dei porti, avamposto di ogni regione, isolotti della laguna. |
+| `seaLook.ts` (systems), `seaLooks.ts` (data) | Quale aspetto del mare c'è in un punto (costa, laguna, barriera, mare blu, foresta, banchisa, fosse, abisso), con la mescolanza ai confini; il luogo delle battaglie in mare aperto. |
 | `regionSound.ts` (audio) | Il suono di ogni regione sopra il rombo del mare: crepitio, balena, ghiaccio, rombo profondo. |
 | `packFormation.ts` (views) | Il branco che nuota insieme: i compagni seguono la scia della guida, larghi, stretti o sparpagliati secondo l'umore. |
 | `shipPictures.ts` (views) | I dipinti della nave: portelloni che sfumano, elica, rune rosse; immergendosi, lo scafo sott'acqua tagliato a strisce lungo le onde. |

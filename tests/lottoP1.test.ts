@@ -21,6 +21,7 @@ describe('porti e avamposti', () => {
   it('ogni avamposto ha la sua immagine, e quella di riserva c’è', () => {
     const arts = OUTPOSTS.map((o) => OUTPOST_ART[o.id]!.art);
     expect(new Set(arts).size).toBe(OUTPOSTS.length);
+    for (const a of arts) expect(WORLD_ART_KEYS).toContain(a);
     expect(WORLD_ART_KEYS).toContain(OUTPOST_FALLBACK.art);
     for (const o of OUTPOSTS) expect(OUTPOST_ART[o.id]!.width).toBe(OUTPOST_FALLBACK.width); // the ship docks by it
   });

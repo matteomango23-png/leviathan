@@ -1213,3 +1213,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - **Decisione:** l'arco e i galeoni sono solidi secondo la maschera ricavata dal dipinto (come gli iceberg), letta dal generatore delle celle del mare aperto; la falla e le porte del galeone sono tagliate sia dal dipinto sia dalla maschera, così si passa solo dove si vede aperto. Le stanze hanno una zona sempre libera (`open`) perché i barili dipinti non le chiudano.
 - **Motivo:** il proprietario vuole posti riconoscibili e un galeone in cui entrare (M2).
+
+## 23 ottobre 2026 — Ghiaccio e avamposti dipinti (v0.108.0)
+
+- **Il ghiaccio prende la collisione dal dipinto** (`systems/world/iceSheet.ts`), come i punti di riferimento: con gli iceberg di ottobre il ghiaccio disegnato dal codice spuntava da sotto l'immagine e l'immagine non aveva collisioni. Ora le caselle di ghiaccio nascono dalla maschera delle immagini, e il vecchio ghiaccio non si disegna.
+- **Lastre in strisce:** ogni lastra è dipinta una volta in una texture sua (copie sfumate l'una nell'altra, bordi frastagliati con la stessa linea della collisione) e mostrata in strisce larghe una casella, così dove la nave rompe il ghiaccio si apre anche il dipinto. Una rottura prende colonne intere e pilastri interi (`widenIceBreak`), per non lasciare ghiaccio invisibile.
+- **Avamposti per regione** in `data/placeArt.ts`, larghezza invariata (la nave attracca in base a quella).

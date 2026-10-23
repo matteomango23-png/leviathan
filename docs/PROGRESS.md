@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 23 ottobre 2026, v0.107.0)
+## Dove siamo (aggiornato il 23 ottobre 2026, v0.108.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,12 +10,21 @@
   - sfondo del menu iniziale (`art-inbox/menu_sfondo.jpg`).
 - **Strumenti di prova da togliere più avanti** (il proprietario l'ha chiesto): 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** del lotto 8 (`docs/GEMINI-LOTTO-8.md`) mancano `squalo_balena_back` e i 6 dei coccodrilli; il Leviatano (le dà il proprietario: ricordarglielo); la grafica della schermata iniziale (`art-inbox/splash.jpg`).
-- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Proposta del mare in corso** (`docs/PROPOSTA-MARE.md`): M1 aspetto delle regioni ✅ (v0.105.0), panorami dipinti di 5 regioni ✅ (v0.105.1), sfondi di battaglia di 5 regioni ✅ (v0.105.2, completati con `bg_foresta_front` in v0.105.4; mancano pareti e Fossa del lotto 9); prossimi M2 punti di riferimento e porti, M3 Gallerie, M4 fondale vivo, M5 la Fossa Nera. Immagini attese: `docs/GEMINI-LOTTO-9.md` (il proprietario le sta generando). Poi: la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
+- **Note del 21 ottobre sera** (`docs/BACKLOG.md`, in alto): AE schermo e musica ✅, AF salti e incastri ✅, AG schede ✅, AH sub ✅, AI bagliori ✅; AD-4 poteri speciali ✅ (v0.99.0). Blocco 2 già fatto; **Blocco 6 in corso**: BA arpione e morsi ✅, BB vasca e costa ✅, BC mosse animate ✅, BD correzioni ✅, BE caccia ✅. **Proposta del mare in corso** (`docs/PROPOSTA-MARE.md`): M1 aspetto delle regioni ✅ (v0.105.0), panorami dipinti di 5 regioni ✅ (v0.105.1), sfondi di battaglia di 5 regioni ✅ (v0.105.2, completati con `bg_foresta_front` in v0.105.4; mancano pareti e Fossa del lotto 9); M2 punti di riferimento ✅ (v0.107.0), P1 porti, avamposti, laguna e ghiaccio dipinti ✅ (v0.108.0); prossimi M3 Gallerie, poi il lotto dei mezzi abissali (visione notturna), M4 fondale vivo, M5 la Fossa Nera. Immagini attese: `docs/GEMINI-LOTTO-9.md` (il proprietario le sta generando). Poi: la proposta del mare (`docs/PROPOSTA-MARE.md`: fondali, porti, avamposti, abissi a labirinto, la Fossa più profonda con il Leviatano, asset da Gemini), poi la storia e i personaggi. La pulizia quando c'è un momento. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice (ricordarglielo).
 - **Ruoli, tipi e compagni** (`docs/PROPOSTA-RUOLI.md`, confermata): AD-1 tipi chiari ✅, AD-2 cavalcature ✅, AD-3 il branco ✅, AD-4 poteri speciali ✅ (v0.99.0): proposta completata.
 - **Dopo AD-3 e AD-4:** correzioni del "Blocco 2" ancora aperte, Blocco 6 (cattura e combattimento, da progettare insieme), poi blocchi 7-10 (`docs/BACKLOG.md`).
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Lotto P1, porti, avamposti, laguna e ghiaccio (23 ottobre 2026) → v0.108.0
+
+- **Immagini** (Gemini, Pro, una chat per immagine): `paese_portofosco`, `paese_fango`, `avamposto_corallo|gelo|orlo`, `delta_isola_1|2`, `mare_delta_lontano|medio`, `ghiaccio_soffitto`, `ghiaccio_pilastro_1`. L'Avamposto della Corrente rifatto non si riusciva a scaricare pulito: tiene `avamposto_medio` (scartata in `art-inbox/_scartata_avamposto_corrente.jpg`).
+- **Script:** nomi `paese_`, `delta_isola_`, `ghiaccio_`; i `ghiaccio_*` hanno la maschera fine come i luoghi; `BOTTOM_FADES` in `scripts/art/landmarkCuts.ts` sfuma il fondo di Orlo, Corallo e isolotti.
+- **Dati:** `data/placeArt.ts` (nuovo: `VILLAGES`, `OUTPOST_ART` per regione con `OUTPOST_FALLBACK`, `DELTA_ISLETS`); `ICE_ART` in `data/worldArt.ts`; aspetto `delta` e suono `swamp` in `data/seaLooks.ts` (`ridgeLift` alza i panorami sopra il fondale basso).
+- **Ghiaccio:** `systems/world/iceSheet.ts` (lastre tra i buchi, copie sfumate e capovolte a caso, bordi frastagliati, pilastri; `iceArtSolidAt` usato da `endless.ts` e `worldGen.ts`; `widenIceBreak` rompe colonne intere e pilastri interi, usato dalla nave e dal Rompighiaccio); `views/iceArtView.ts` disegna le lastre in strisce larghe una casella (si nascondono dove il ghiaccio è rotto). `seaSurfaceView` e `terrainPainter` non disegnano più il ghiaccio vecchio quando ci sono le immagini.
+- Test: `tests/lottoP1.test.ts`; `tests/submarine.test.ts` controlla tutto il tratto sotto il ghiaccio (i ghiaccioli pendono in modo irregolare).
+- **Da provare sull'iPhone:** Portofosco e Porto Fango, gli avamposti del Corallo, del Gelo e dell'Orlo, la laguna sopra e sotto l'acqua, il ghiaccio con la nave (il canale si apre a colonne) e nuotando nei buchi.
 
 ## Lotto M2, i punti di riferimento (23 ottobre 2026) → v0.107.0
 
