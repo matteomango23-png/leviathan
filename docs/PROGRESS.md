@@ -17,6 +17,14 @@
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
 
+## Resto del lotto 9 (23 ottobre 2026), immagini pronte, non ancora nel gioco
+
+- **Pareti** (`public/world/`): `parete_corallo_2`, `parete_ciglio`, `parete_alghe`, `parete_basalto`, `parete_fossa`: da collegare in M3 (Gallerie) e M4/M5 (in `data/worldArt.ts` oggi ci sono solo roccia, corallo, ghiaccio).
+- **Fossa** (M5): panorami `mare_fossa1|2|3_lontano|medio`, battaglie `bg_fossa2_*` e `bg_fossa3_*` (luoghi da aggiungere a `BATTLE_STAGE.places` in M5).
+- **Card dei mezzi abissali** (generate con le foto del proprietario come riferimento): `art-inbox/abissali/nave_abissale_card.jpg`, `sottomarino_abissale_card.jpg`, per il loro lotto.
+- Script: `bg_<luogo>` ora accetta anche cifre (`fossa2`).
+- **Gemini:** per caricare un'immagine di riferimento, aprire il menu "+", rendere visibile l'`input[type=file]` con accept image/* via JavaScript e usare file_upload.
+
 ## Fix menu iniziale e cantiere (23 ottobre 2026) → v0.106.0
 
 - **Apertura:** il click dopo il tocco sulla schermata iniziale passava al pulsante sotto (`#splash.gone` aveva `pointer-events: none`). Ora la schermata trattiene il click e il menu ignora i tocchi per `SPLASH.guardMs` (`ui/splash.ts` `splashGuard`).
