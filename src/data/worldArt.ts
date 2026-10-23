@@ -52,3 +52,30 @@ export const WALLS = {
   coral: 'parete_corallo',
   ice: 'parete_ghiaccio',
 };
+
+/**
+ * The painted ice sheet (lot P1; owner, 23 ottobre: the blocky ice "fa un po' cagare", and the old icebergs showed
+ * drawn ice poking out of the picture with no collisions on it). The slab under the surface between the breathing
+ * holes is its picture (`slab`), copies one after the other fading into each other where they overlap, ragged where it
+ * ends at a hole; the pillars hang from it. Its ice is solid exactly where the picture is (its mask, from
+ * `npm run art`): what you see is what you bump into, and nothing else is drawn there. Units. Tuning.
+ */
+export const ICE_ART = {
+  slab: 'ghiaccio_soffitto',
+  /** The top of the picture (its snow) above the surface; the picture's height (its body reaches about the old
+   *  ceiling, its icicles hang lower). */
+  above: 4,
+  height: 40,
+  /** How far the ragged end bites into the slab at a hole: at the top, and more towards the bottom. */
+  ragged: 10,
+  /** The share of a copy's width laid over the next one (they fade into each other there). */
+  overlap: 0.22,
+  raggedBottom: 10,
+  pillar: 'ghiaccio_pilastro_1',
+  /** A pillar's width for each unit of its old ellipse's half-width; its top this far up inside the slab. */
+  pillarPerRx: 3,
+  pillarUp: 12,
+  /** Pixels of the slab's painting per unit (at most `maxPx` wide). */
+  pxPerUnit: 4,
+  maxPx: 4096,
+};

@@ -117,7 +117,7 @@ export const SHIP = {
   /** How near its berth (PortDef.shipDock) counts as alongside the pier. */
   dockReachPort: 90,
   /** An outpost is a barge in open water: alongside it on either side counts (owner, 8 ottobre: only its right side
-   *  did). Half the barge (OUTPOST_ART.width) + half the ship + a margin. */
+   *  did). Half the barge (data/placeArt.ts OUTPOST_ART width) + half the ship + a margin. */
   dockReachOutpost: 280,
   /** The view at the helm: wider (the ship is big) and higher (its masts). Tuning. */
   /** The view at the helm (getting on or off cuts to it behind a short fade: CAMERA.cutFadeMs). */

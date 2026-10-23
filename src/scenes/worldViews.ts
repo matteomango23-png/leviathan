@@ -35,6 +35,7 @@ import { EffectsView } from '../views/effectsView';
 import { FishView } from '../views/fishView';
 import { GearFxView } from '../views/gearFxView';
 import { HuntView } from '../views/huntView';
+import { IceArtView } from '../views/iceArtView';
 import { KelpView } from '../views/kelpView';
 import { LightView } from '../views/lightView';
 import { NightmareView } from '../views/nightmareView';
@@ -85,6 +86,8 @@ export class WorldViews {
   private readonly weatherView: WeatherView;
   private readonly nightmare: NightmareView;
   private readonly surface: SeaSurfaceView;
+  /** The painted ice sheet, over the sea's surface (lot P1). */
+  private readonly ice: IceArtView;
   private readonly birdsView: BirdsView;
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
@@ -110,6 +113,7 @@ export class WorldViews {
     this.temple = new TempleView(scene, L.world);
     this.worldArt = new WorldArtView(scene, L.world, map);
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
+    this.ice = new IceArtView(scene, L.world, map);
     this.ship = new ShipView(scene, L.world, L.glow);
     this.hunts = new HuntView(scene, L.world);
     this.boat = new BoatView(scene, L.world);
@@ -187,6 +191,7 @@ export class WorldViews {
     this.worldArt.update(view);
     const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
     this.surface.update(view, g.time, sea);
+    this.ice.update(view, g.time, sea);
     this.ship.update(g.ship, g.time, dt, sea);
     this.hunts.update(g, view, g.time);
     const boatHidden = g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6;

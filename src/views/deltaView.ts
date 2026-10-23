@@ -1,6 +1,9 @@
 // The Delta delle Mangrovie: muddy islands above the water with mangrove trees, and their roots arching
-// down into the murky water. Drawn once (it never changes).
+// down into the murky water. Drawn once (it never changes). The owner's painted islets (lot P1) take their place
+// when their pictures are there; the collisions stay each islet's mound (worldGen.ts landHeight).
 import Phaser from 'phaser';
+import { DELTA_ISLETS } from '../data/placeArt';
+import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { DELTA, WORLD } from '../data/worldLayout';
 import { makeRng } from '../systems/math';
 import { landHeight } from '../systems/world/worldGen';
@@ -53,7 +56,14 @@ export class DeltaView {
   constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, front: Phaser.GameObjects.Layer) {
     const back = scene.add.graphics();
     const roots = scene.add.graphics();
-    for (const [x0, x1] of DELTA.islands) drawIsland(back, roots, x0, x1);
+    DELTA.islands.forEach(([x0, x1], i) => {
+      const art = DELTA_ISLETS[i];
+      if (!art || !WORLD_ART_KEYS.includes(art.art)) return drawIsland(back, roots, x0, x1);
+      const im = scene.add.image((x0 + x1) / 2, 0, `world-${art.art}`).setFlipX(art.flip);
+      im.setScale(((x1 - x0) * art.widthMult) / im.width);
+      im.y = S - (art.waterline - 0.5) * im.displayHeight;
+      layer.add(im);
+    });
     layer.add(back);
     front.add(roots);
   }

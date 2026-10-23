@@ -3,13 +3,13 @@
 // colours and shapes (until the painted panoramas of docs/GEMINI-LOTTO-9.md arrive), the light shafts, the marine
 // snow and the bioluminescent specks, the sound, and the battle's background. Tuning.
 
-export type SeaLookId = 'costa' | 'barriera' | 'mareblu' | 'foresta' | 'banchisa' | 'fosse' | 'abisso';
+export type SeaLookId = 'costa' | 'delta' | 'barriera' | 'mareblu' | 'foresta' | 'banchisa' | 'fosse' | 'abisso';
 
 /** The shape of a ridge: rolling hills, coral humps with fans, a flat shelf ending in a drop, tall kelp stalks,
  *  ice slabs and spikes, basalt spires, steep trench walls. */
 export type RidgeStyle = 'hills' | 'reef' | 'plateau' | 'kelp' | 'ice' | 'spires' | 'trench';
 
-export type SeaSound = 'none' | 'reef' | 'ice' | 'deep';
+export type SeaSound = 'none' | 'reef' | 'ice' | 'deep' | 'swamp';
 
 export interface SeaLookDef {
   /** × the water's colour by depth (red, green, blue). */
@@ -39,6 +39,18 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
     glow: 0,
     glowColors: [],
     sound: 'none',
+  },
+  // the Delta delle Mangrovie (lot P1): murky green-brown water among the roots, the mud bubbling
+  delta: {
+    water: [1.08, 1.02, 0.62],
+    far: { top: '#2a2a16', bottom: '#0c0c06', style: 'kelp' },
+    mid: { top: '#26220f', bottom: '#0a0904', style: 'kelp' },
+    accent: null,
+    rays: 0.7,
+    snow: 1.6,
+    glow: 0,
+    glowColors: [],
+    sound: 'swamp',
   },
   barriera: {
     water: [1.05, 1.18, 1.1],
@@ -121,6 +133,9 @@ export const SEA_RIDGE_FLOOR = { ref: 390, span: 1800, samples: 9, ease: 0.04 };
  *  about 100 m, or they would never be seen apart. */
 export const SEA_LOOK_BLEND_STRETCH = 600;
 
+/** The Delta is short (about 140 m): its look comes and goes over this many units at its edges. */
+export const SEA_LOOK_BLEND_DELTA = 180;
+
 /**
  * The marine snow grows with depth: × (1 + `perDepth` × metres / 100), up to `max` times the specks of the
  * surface (SEA.particles). The glowing specks (up to `glowSpecks`, `size` px at a 400 px tall screen) show from
@@ -137,10 +152,12 @@ export const SEA_SNOW = {
 
 /**
  * The region sounds (audio/regionSound.ts), synthesized: the reef's crackle (clicks per second, volume), the ice
- * creaking (seconds between, volume), the deep's low grumble (seconds between, Hz, volume). Tuning.
+ * creaking (seconds between, volume), the deep's low grumble (seconds between, Hz, volume), the Delta's mud
+ * bubbling (seconds between, volume: soft and rare). Tuning.
  */
 export const REGION_SOUND = {
   reef: { clicksPerSecond: 14, volume: 0.035 },
   ice: { every: [6, 14] as [number, number], volume: 0.05 },
   deep: { every: [5, 11] as [number, number], hz: 38, volume: 0.07 },
+  swamp: { every: [3, 8] as [number, number], volume: 0.04 },
 };

@@ -51,9 +51,6 @@ export const HARBOUR_PIECES: { art: string; x: number; width: number; on: 'land'
   { art: 'porto_molo', x: LAYOUT.island.x1 + 95, width: 260, on: 'sea', share: 0.6 },
 ];
 
-/** The outposts' paintings: floating barges (the last, biggest one at the end of the sea). Tuning, by eye. */
-export const OUTPOST_ART = { art: 'avamposto_medio', last: 'avamposto_grande', width: 240, waterline: 0.66 };
-
 /** The outposts of the open sea (data/regions.ts): one per region, a platform with a harbour. */
 export const OUTPOSTS: PortDef[] = SEA_REGIONS.map((r) => {
   const x = Math.round(kmToX(r.outpost.km));

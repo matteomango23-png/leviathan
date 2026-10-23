@@ -6,6 +6,7 @@ import { ENDLESS } from '../../data/endless';
 import { PORTO_FANGO } from '../../data/economy';
 import { TILE, WORLD } from '../../data/worldLayout';
 import type { TileMap } from '../world/tileMap';
+import { widenIceBreak } from '../world/iceSheet';
 
 /** Where the sea ends: the ship stops here. */
 export const SEA_END_X = ENDLESS.maxX - ENDLESS.endWall - 40;
@@ -38,6 +39,11 @@ export function breakIce(map: TileMap, x0: number, x1: number, broken: BrokenIce
       broken.push({ i, t: SHIP.refreezeSeconds });
       out.push(i);
     }
+  // the painted sheet breaks in whole columns (and whole pillars): its picture opens where the ice is gone
+  for (const i of widenIceBreak(map, out)) {
+    broken.push({ i, t: SHIP.refreezeSeconds });
+    out.push(i);
+  }
   return out;
 }
 
