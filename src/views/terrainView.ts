@@ -71,7 +71,7 @@ export class TerrainView {
   }
 
   /** Chunk coordinates covering a world rectangle (plus a margin of `pad` chunks), nearest first. */
-  private chunksIn(view: Phaser.Geom.Rectangle, pad: number): [number, number][] {
+  private chunksIn(view: Phaser.Geom.Rectangle, pad: number, toward = { x: 0, y: 0 }): [number, number][] {
     const S = TERRAIN.chunkUnits;
     const maxX = Math.ceil(this.map.width / S) - 1;
     const maxY = Math.ceil(this.map.height / S) - 1;
@@ -81,8 +81,8 @@ export class TerrainView {
     const cx1 = Math.min(maxX, Math.floor((view.right - 1) / S) + pad);
     const cy1 = Math.min(maxY, Math.floor((view.bottom - 1) / S) + pad);
     for (let cy = cy0; cy <= cy1; cy++) for (let cx = cx0; cx <= cx1; cx++) out.push([cx, cy]);
-    const mx = view.centerX / S - 0.5;
-    const my = view.centerY / S - 0.5;
+    const mx = (view.centerX + toward.x) / S - 0.5;
+    const my = (view.centerY + toward.y) / S - 0.5;
     return out.sort((a, b) => Math.hypot(a[0] - mx, a[1] - my) - Math.hypot(b[0] - mx, b[1] - my));
   }
 
@@ -124,11 +124,29 @@ export class TerrainView {
    * Call every frame with the camera's world view. Chunks already on screen but missing are painted at
    * once (only after a jump, e.g. respawn); the ring around the screen is painted ahead within a budget.
    */
+  /** The view's centre the frame before (how fast the camera goes). */
+  private last: { x: number; y: number } | null = null;
+
   update(view: Phaser.Geom.Rectangle, blocking = false): void {
     this.frame++;
     const S = TERRAIN.chunkUnits;
     const visible = this.chunksIn(view, 0);
-    const near = this.chunksIn(view, TERRAIN.prefetchChunks);
+    // where the camera is heading: the view a little later, painted ahead first
+    const lead = this.last
+      ? {
+          x: (view.centerX - this.last.x) * TERRAIN.leadFrames,
+          y: (view.centerY - this.last.y) * TERRAIN.leadFrames,
+        }
+      : { x: 0, y: 0 };
+    this.last = { x: view.centerX, y: view.centerY };
+    if (Math.hypot(lead.x, lead.y) > view.width * 2) lead.x = lead.y = 0; // a jump (respawn), not a journey
+    const ahead = new Phaser.Geom.Rectangle(
+      Math.min(view.x, view.x + lead.x),
+      Math.min(view.y, view.y + lead.y),
+      view.width + Math.abs(lead.x),
+      view.height + Math.abs(lead.y),
+    );
+    const near = this.chunksIn(ahead, TERRAIN.prefetchChunks, lead);
     const keep = new Set(near.map(([x, y]) => id(x, y)));
     for (const [x, y] of near) {
       const s = this.byChunk.get(id(x, y));

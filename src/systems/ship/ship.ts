@@ -176,7 +176,17 @@ export interface ShipWorld {
   ship: ShipState;
   map: TileMap;
   sub: { owned: boolean; aboard: boolean };
-  diver: { x: number; y: number; vx: number; vy: number; face: 1 | -1 };
+  diver: {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    face: 1 | -1;
+    hp: number;
+    invulnerable: number;
+    dead: boolean;
+    deadTime: number;
+  };
 }
 
 /** Aurelio's gift at Porto Fango (story.ts): moored at the trading harbour, with the submarine in its hold. */

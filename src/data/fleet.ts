@@ -241,7 +241,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'Piccolo U-Boat a forma di balena: il tuttofare per cominciare',
     cockpit: ALL_TABS,
     card: 'nave_whale',
-    dive: { maxDepthM: 150, airSeconds: 300, sinkSpeed: 45, riseSpeed: 55 },
+    dive: { maxDepthM: 150, airSeconds: 600, sinkSpeed: 45, riseSpeed: 55 },
     floodlightM: 18,
     art: {
       closed: 'nave_whale',
@@ -345,7 +345,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     note: 'U-Boat grosso e lento, con un buon sonar',
     cockpit: ALL_TABS,
     card: 'nave_stormtrooper',
-    dive: { maxDepthM: 300, airSeconds: 480, sinkSpeed: 25, riseSpeed: 30 },
+    dive: { maxDepthM: 300, airSeconds: 900, sinkSpeed: 25, riseSpeed: 30 },
     floodlightM: 28,
     art: {
       closed: 'nave_stormtrooper',
@@ -589,7 +589,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     cockpit: [...ALL_TABS, 'drone'], // the drone's report (owner, 9 ottobre)
     cockpitTheme: 'nightmare',
     card: 'nave_nightmare',
-    dive: { maxDepthM: 500, airSeconds: 600, sinkSpeed: 20, riseSpeed: 25 },
+    dive: { maxDepthM: 500, airSeconds: 1200, sinkSpeed: 20, riseSpeed: 25 },
     floodlightM: 40,
     art: {
       closed: 'nave_nightmare',

@@ -33,6 +33,8 @@ export interface FuelWorld {
     o2: number;
     maxO2: number;
     dead: boolean;
+    invulnerable: number;
+    deadTime: number;
   };
   beasts: { team: TeamBeast[] };
   homePort: PortDef['id'];

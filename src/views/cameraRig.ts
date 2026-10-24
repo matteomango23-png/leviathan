@@ -88,7 +88,8 @@ export class CameraRig {
 
   /** Eases towards a target; `snap` jumps straight there (start, respawn, import). */
   follow(tx: number, ty: number, dt: number, snap = false): void {
-    const k = snap ? 1 : Math.min(1, dt * CAMERA.follow);
+    // the same easing at any frame rate: an uneven frame on the phone no longer jolts the view (24 ottobre)
+    const k = snap ? 1 : 1 - Math.exp(-dt * CAMERA.follow);
     this.cx += (tx - this.cx) * k;
     this.cy += (ty - this.cy) * k;
     this.clampAndApply();

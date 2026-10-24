@@ -12,6 +12,7 @@ import { breakIce, refreeze, SEA_END_X, SHIP_WEST_X } from './surface';
 import { shipLength, shipModel, shipPicture, shipRates, shipTopSpeed } from './model';
 import { icebergAcross } from '../world/icebergs';
 import { hullBlocked, stepDive, submerged } from './uboat';
+import { chokeAboard } from '../diver';
 import { bumpShip, stepShipHull } from './shipHull';
 import { hatchesShut, sonarActive, type ShipWorld } from './ship';
 
@@ -157,6 +158,9 @@ export function sailShip(
   else stepRide(s.ride, s.x, s.face, shipLength(s), sea, t, dt);
   changed.push(...refreeze(g.map, s.broken, dt, far));
 
+  // no air left under water: you lose hearts aboard; dead, you are out of it and the empty U-Boat comes up
+  if (s.aboard && submerged(s) && s.air <= 0 && chokeAboard(g.diver, SHIP.dive.hurtEvery, dt, events))
+    s.aboard = false;
   if (s.aboard) {
     const p = helmPoint(s);
     Object.assign(g.diver, { x: p.x, y: p.y, vx: s.face * s.speed, vy: 0, face: s.face });

@@ -35,7 +35,7 @@ import {
   greenShare,
   keepLargest,
 } from './layers.ts';
-import { applyBottomFade, applyCuts } from './landmarkCuts.ts';
+import { applyBottomFade, applyCuts, BOTTOM_FADES } from './landmarkCuts.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -351,7 +351,8 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   const c = await cropped(
     cut,
     img,
-    id.startsWith('sottomarino') ? await pairBox(src, id, img) : landmark ? box : null,
+    // a faded picture keeps its whole box: cropped at its faint last rows it would end on a straight line (24 ottobre)
+    id.startsWith('sottomarino') ? await pairBox(src, id, img) : landmark || BOTTOM_FADES[id] ? box : null,
   );
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);

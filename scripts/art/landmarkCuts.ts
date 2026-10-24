@@ -48,12 +48,20 @@ export function applyBottomFade(
 ): void {
   const share = BOTTOM_FADES[id];
   if (!share) return;
-  const rows = Math.round((box.y1 - box.y0 + 1) * share);
-  for (let y = box.y1 - rows + 1; y <= box.y1; y++) {
-    const k = 1 - Math.pow((y - (box.y1 - rows)) / rows, 0.8);
-    for (let x = box.x0; x <= box.x1; x++) {
+  const h = box.y1 - box.y0 + 1;
+  const rows = Math.round(h * share);
+  const w = box.x1 - box.x0 + 1;
+  for (let x = box.x0; x <= box.x1; x++) {
+    // each column fades out at its own height (a ragged edge, never one straight line: owner, 24 ottobre); the
+    // fade always ends before the last row
+    const u = (x - box.x0) / w;
+    const end =
+      box.y1 - h * share * 0.35 * (0.5 + 0.5 * Math.sin(u * 9.1 + 0.7) * 0.6 + 0.4 * Math.sin(u * 23.3));
+    const start = end - rows;
+    for (let y = Math.max(box.y0, Math.floor(start)); y <= box.y1; y++) {
+      const t = Math.min(1, Math.max(0, (y - start) / (end - start)));
       const o = (y * img.width + x) * 4 + 3;
-      px[o] = Math.round(px[o]! * k);
+      px[o] = Math.round(px[o]! * (1 - t) * (1 - t));
     }
   }
 }

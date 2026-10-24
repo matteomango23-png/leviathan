@@ -1,7 +1,8 @@
 // The U-Boats (block 4c, owner 9 ottobre 2026): the ship itself dives, with the helm's dive lever, down to its
 // model's depth (data/fleet.ts `dive`), its whole hull stopping against rock. Under water it slips beneath the ice
-// sheet; its air lasts its model's seconds (a warning 30 s before), then it rises by itself, breaking the ice if it
-// is under it, and refills its air afloat. Pure logic; ship.ts calls it every step.
+// sheet; its air lasts its model's seconds (a warning 30 s before); then whoever is aboard loses hearts (sail.ts;
+// owner, 24 ottobre: it no longer rises by itself), and only empty it rises, breaking the ice if it is under it. It
+// refills its air afloat. Pure logic; ship.ts calls it every step.
 import { SHIP } from '../../data/ship';
 import { WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
@@ -18,6 +19,7 @@ interface DiveShip {
   dive: number;
   air: number;
   speed: number;
+  aboard: boolean;
   broken: BrokenIce[];
   hatches: { open: boolean; t: number }[];
 }
@@ -79,7 +81,8 @@ export function stepDive(
   // up or down: the lever, or a rise with no air left; afloat it dives again only with some air (owner's rule: it
   // has to come up and breathe)
   let rate = 0;
-  if (s.air <= 0 && submerged(s)) rate = -D.emergencyRise;
+  if (s.air <= 0 && submerged(s) && !s.aboard)
+    rate = -D.emergencyRise; // left empty, it comes up
   // with a hatch open it stays where it is (owner, 9 ottobre: it went up and down with them open)
   else if (helm && s.hatches.every((h) => !h.open && h.t === 0))
     rate = helm.dive > 0 ? helm.dive * m.sinkSpeed : helm.dive * m.riseSpeed;

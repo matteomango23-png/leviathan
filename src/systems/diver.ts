@@ -71,7 +71,10 @@ export function createDiver(x = START.x, y = START.y): DiverState {
 }
 
 /** Loses one heart (with a short invulnerability). */
-export function hurtDiver(d: DiverState, amount: number, events: GameEvent[]): void {
+/** What a blow touches. */
+type Hurtable = Pick<DiverState, 'hp' | 'invulnerable' | 'dead' | 'deadTime'>;
+
+export function hurtDiver(d: Hurtable, amount: number, events: GameEvent[]): void {
   if (d.invulnerable > 0 || d.dead) return;
   d.hp = Math.max(0, d.hp - amount);
   d.invulnerable = DIVER.invulnerableAfterHit;
@@ -81,6 +84,21 @@ export function hurtDiver(d: DiverState, amount: number, events: GameEvent[]): v
     d.deadTime = DIVER.respawnDelay;
     events.push({ type: 'died' });
   }
+}
+
+/**
+ * Out of air, or the hull flooded, inside a vehicle (owner, 24 ottobre 2026: it no longer rises by itself, it could
+ * come up under something): a heart every `every` seconds (the diver's own blink timer counts them: it does not run
+ * aboard). True when it killed you: the caller lets you out.
+ */
+export function chokeAboard(d: Hurtable, every: number, dt: number, events: GameEvent[]): boolean {
+  if (d.dead) return true;
+  d.invulnerable -= dt;
+  if (d.invulnerable > 0) return false;
+  d.invulnerable = 0;
+  hurtDiver(d, 1, events);
+  d.invulnerable = every;
+  return d.dead;
 }
 
 function respawn(d: DiverState, at: { x: number; y: number }, events: GameEvent[]): void {

@@ -1219,3 +1219,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Il ghiaccio prende la collisione dal dipinto** (`systems/world/iceSheet.ts`), come i punti di riferimento: con gli iceberg di ottobre il ghiaccio disegnato dal codice spuntava da sotto l'immagine e l'immagine non aveva collisioni. Ora le caselle di ghiaccio nascono dalla maschera delle immagini, e il vecchio ghiaccio non si disegna.
 - **Lastre in strisce:** ogni lastra è dipinta una volta in una texture sua (copie sfumate l'una nell'altra, bordi frastagliati con la stessa linea della collisione) e mostrata in strisce larghe una casella, così dove la nave rompe il ghiaccio si apre anche il dipinto. Una rottura prende colonne intere e pilastri interi (`widenIceBreak`), per non lasciare ghiaccio invisibile.
 - **Avamposti per regione** in `data/placeArt.ts`, larghezza invariata (la nave attracca in base a quella).
+
+## 24 ottobre 2026 — Senz'aria si perdono cuori, non si risale (v0.108.1)
+
+- Il proprietario: risalire da soli poteva far finire il mezzo sotto qualcosa. Ora senz'aria (o con lo scafo rotto sott'acqua) si perde un cuore ogni 5 s finché non si risale; il conteggio usa il timer di invulnerabilità del sub, che a bordo non scorre da solo, così non serve un campo nuovo nei salvataggi.
+- Gli avamposti si disegnano davanti alla fascia d'acqua della superficie, come le navi: dietro, la fascia li tagliava a una profondità fissa con una riga dritta.

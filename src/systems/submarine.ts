@@ -4,13 +4,14 @@
 // cannot fight: ordinary beasts slip away (encounters.ts), big aggressive ones ram it. A broken submarine is towed
 // back to Portofosco; ports repair it for teeth. Pure logic; views/submarineView.ts draws it.
 import { SUBMARINE } from '../data/submarine';
-import { stepSubAir } from './subAir';
+import { stepSubAir, subUnder } from './subAir';
 import { WORLD } from '../data/worldLayout';
 import type { GameEvent } from './events';
 import type { InputState } from './input';
 import type { TileMap } from './world/tileMap';
 import { PRESSURE } from '../data/diver';
 import { stepPressure } from './breath';
+import { chokeAboard } from './diver';
 import { HELM, SHIP } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
@@ -170,6 +171,13 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   if (stepPressure(s, overM, dt)) damageHull(g, PRESSURE.hullDamage, 'pressure', events);
   d.face = s.face;
   Object.assign(d, { x: s.x, y: s.y, vx: s.vx, vy: s.vy, o2: d.maxO2 });
+  // no air left, or the broken hull letting the sea in: you lose hearts until you get up (or out); dead, the
+  // submarine is towed home broken and you wake up as after any blackout
+  if (subUnder(s) && (s.air <= 0 || s.hull <= 0) && chokeAboard(d, SUBMARINE.air.hurtEvery, dt, events)) {
+    s.aboard = false;
+    towSub(g, events, false);
+    return false;
+  }
   return true;
 }
 
@@ -191,7 +199,7 @@ export function ramSub(
   damageHull(g, Math.round(SUBMARINE.ram.damage * (lengthM / 6)), 'beast', events);
 }
 
-/** The hull takes a blow; at zero the submarine is towed back to Portofosco, you with it. */
+/** The hull takes a blow; at zero it floods (you lose hearts under water until you get out or up). */
 function damageHull(
   g: SubWorld,
   amount: number,
@@ -204,17 +212,16 @@ function damageHull(
   s.hull = Math.max(0, s.hull - amount);
   events.push({ type: 'subRammed', hull: s.hull, max, by, x: s.x, y: s.y });
   if (s.hull > 0) return;
-  // broken: it sinks where it is for a moment (you see it go), then it is towed (towSub)
-  s.sinkT = SHIP.wreckSinkSeconds;
-  events.push({ type: 'vehicleSinking', vehicle: 'sub' });
+  // broken (owner, 24 ottobre): the sea comes in; it only drifts, and under water you lose hearts (stepSub)
+  events.push({ type: 'subFlooded' });
 }
 
 /** The broken submarine towed home, you with it; it stays broken until a port mends it (owner, 15 ottobre: no teeth
  *  lost any more, but the repair costs). */
-function towSub(g: SubWorld, events: GameEvent[]): void {
+function towSub(g: SubWorld, events: GameEvent[], withYou = true): void {
   const s = g.sub;
   Object.assign(s, { x: SUBMARINE.mooredX, y: subTopY(s), vx: 0, vy: 0, sinkT: 0 });
-  Object.assign(g.diver, { x: s.x, y: s.y });
+  if (withYou) Object.assign(g.diver, { x: s.x, y: s.y });
   events.push({ type: 'subWrecked', teeth: 0 });
 }
 

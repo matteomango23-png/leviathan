@@ -30,7 +30,8 @@ export const SHIP = {
   /** The U-Boats' dive (block 4c): air refilled afloat (seconds of air per second), the warning before it runs out
    *  (seconds), shallower than this (units) it counts as afloat, how fast it surfaces when the air is gone, and the air it
    *  needs afloat to dive again (seconds). Tuning. */
-  dive: { refill: 4, warnAt: 30, afloatBelow: 3, emergencyRise: 60, minAir: 40 },
+  /** A U-Boat's dive; out of air with you aboard, a heart every `hurtEvery` seconds (owner, 24 ottobre). */
+  dive: { refill: 4, warnAt: 30, afloatBelow: 3, emergencyRise: 60, minAir: 40, hurtEvery: 5 },
   approach: { range: 1800, decel: 30 }, // from 1800 units the curve allows ~330 u/s: above the fastest ship
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },

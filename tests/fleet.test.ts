@@ -210,7 +210,7 @@ describe('after the first try (owner, 8 ottobre)', () => {
       }),
       map,
       sub: { owned: true, aboard: false },
-      diver: { x: 20000, y: 0, vx: 0, vy: 0, face: 1 },
+      diver: { x: 20000, y: 0, vx: 0, vy: 0, face: 1, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
     };
     const ev: GameEvent[] = [];
     for (let t = 0; t < 3; t += 0.1) sailShip(w, { throttle: 1, dir: 1, dive: 0 }, 0.1, ev, () => false);
@@ -245,7 +245,7 @@ describe('coming into Porto Fango (owner: at full speed you crashed into it ever
       }),
       map,
       sub: { owned: true, aboard: false },
-      diver: { x: 0, y: 0, vx: 0, vy: 0, face: -1 },
+      diver: { x: 0, y: 0, vx: 0, vy: 0, face: -1, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
     };
     w.ship.speed = shipTopSpeed(w.ship);
     const ev: GameEvent[] = [];

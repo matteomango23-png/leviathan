@@ -64,6 +64,7 @@ export type GameEvent =
   /** The submarine's air (subAir.ts): 30 seconds left; gone, it rises by itself. */
   | { type: 'subAir' }
   | { type: 'subSurfacing' }
+  | { type: 'subFlooded' }
   /** Your beast swallowed a mouthful of fish at once (a cloud of scales and bubbles). */
   | { type: 'beastGulp'; x: number; y: number; count: number }
   | { type: 'boarded' }

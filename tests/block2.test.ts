@@ -72,7 +72,7 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
     }),
     map,
     sub: { owned: true, aboard: false },
-    diver: { x: 20000, y: 0, vx: 0, vy: 0, face: 1 },
+    diver: { x: 20000, y: 0, vx: 0, vy: 0, face: 1, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
   });
   const helm = (throttle: number) => ({ throttle, dir: 1 as const, dive: 0 });
 

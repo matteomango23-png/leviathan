@@ -107,6 +107,8 @@ export interface SubWorld {
     hp: number;
     maxHp: number;
     dead: boolean;
+    invulnerable: number;
+    deadTime: number;
   };
   beasts: { team: TeamBeast[] };
   gear: { teeth: number };
