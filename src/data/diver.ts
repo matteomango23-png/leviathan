@@ -227,6 +227,8 @@ export const TERRAIN = {
   cacheSize: 44, // chunks kept in memory (~18 MB)
   paintBudgetMs: 4, // time per frame for painting chunks ahead of the camera
   prefetchChunks: 1, // ring of chunks painted ahead around the screen
+  leadFrames: 45, // and further where the camera is going: where it will be in this many frames (owner, 24 ottobre:
+  // at the motorboat's full speed the sea under it lagged, the chunks reached on screen painted all at once)
   edgeSoftness: 0.12, // anti-aliased rock edge width (field units)
   shadeRadius: 6, // units: how far rock darkens away from its edge
 };

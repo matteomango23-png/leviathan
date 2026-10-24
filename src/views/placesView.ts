@@ -140,6 +140,9 @@ export class PlacesView {
     layer: Phaser.GameObjects.Layer,
     private readonly wrecks: Wreck[],
     map?: TileMap,
+    /** Where the outposts go: in front of the sea's surface band, like the ships (it hid their underwater part
+     *  down to a straight line: owner, 24 ottobre). */
+    afloat: Phaser.GameObjects.Container | Phaser.GameObjects.Layer = layer,
   ) {
     if (map) drawPierUnder(scene, layer, map); // behind the pier and the chests
     const g = scene.add.graphics();
@@ -168,7 +171,7 @@ export class PlacesView {
       const im = scene.add.image(o.x, 0, `world-${a.art}`);
       im.setScale(a.width / im.width);
       im.y = WORLD.surfaceY - (a.waterline - 0.5) * im.displayHeight;
-      layer.add(im);
+      afloat.add(im);
     }
     if (painted)
       for (const port of [PORT]) {

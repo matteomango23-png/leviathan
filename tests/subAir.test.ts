@@ -1,6 +1,7 @@
 // Owner, 9 ottobre 2026: air on a timer in the submarines too (the bigger, the more), the U-Boats the most; the whales
 // no longer lend you theirs and the suits give only a little more. The submarine's air goes down under water, fills
-// again at the surface or in the hold, warns 30 seconds before the end and at zero rises by itself.
+// again at the surface or in the hold, warns 30 seconds before the end; at zero (owner, 24 ottobre) it no longer rises
+// by itself: you lose hearts (submarine.ts, tests/lottoC1.test.ts).
 import { describe, expect, it } from 'vitest';
 import { SHIP_MODELS } from '../src/data/fleet';
 import { SUB_MODELS, SUBMARINE } from '../src/data/submarine';
@@ -26,7 +27,7 @@ describe('the submarine’s air', () => {
     for (const m of SHIP_MODELS) if (m.dive) expect(m.dive.airSeconds).toBeGreaterThan(most);
   });
 
-  it('under water it goes down, warns at 30 s, at zero rises by itself; at the surface it fills again', () => {
+  it('under water it goes down, warns at 30 s, at zero stays where you drive it; at the surface it fills again', () => {
     const s = { y: WORLD.surfaceY + 300, vy: 0, air: SUBMARINE.air.warnAt + 1 };
     const ev: GameEvent[] = [];
     for (let t = 0; t < 2; t += DT) stepSubAir(s, 120, DT, ev);
@@ -35,7 +36,7 @@ describe('the submarine’s air', () => {
     s.vy = 50; // the lever down
     stepSubAir(s, 120, DT, ev);
     expect(ev.some((e) => e.type === 'subSurfacing')).toBe(true);
-    expect(s.vy).toBeLessThan(0);
+    expect(s.vy).toBe(50); // the lever still drives it
     const up = { y: SUBMARINE.restY, vy: 0, air: 0 };
     expect(subUnder(up)).toBe(false);
     for (let t = 0; t < 5; t += DT) stepSubAir(up, 120, DT, []);

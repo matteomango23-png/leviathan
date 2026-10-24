@@ -258,7 +258,7 @@ describe('la nave non si blocca mai', () => {
       },
       map,
       sub: { owned: true, aboard: false },
-      diver: { x, y: 0, vx: 0, vy: 0, face },
+      diver: { x, y: 0, vx: 0, vy: 0, face, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
     };
     const helm = { throttle: 1, dir: face, dive: 0 };
     const events: GameEvent[] = [];
@@ -313,7 +313,7 @@ describe('la nave non si blocca mai', () => {
       }),
       map,
       sub: { owned: true, aboard: false },
-      diver: { x: at - 700, y: 0, vx: 0, vy: 0, face: 1 },
+      diver: { x: at - 700, y: 0, vx: 0, vy: 0, face: 1, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
     };
     const events: GameEvent[] = [];
     for (let t = 0; t < 12 && !events.some((e) => e.type === 'iceCracked'); t += 1 / 30)

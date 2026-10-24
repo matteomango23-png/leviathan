@@ -33,10 +33,10 @@ export interface OutpostArt {
  * picture, `fallback`. The width stays the old one: the ship docks by it (data/ship.ts). Tuning.
  */
 export const OUTPOST_ART: Record<string, OutpostArt> = {
-  barriera_esterna: { art: 'avamposto_corallo', width: 240, waterline: 0.5 },
+  barriera_esterna: { art: 'avamposto_corallo', width: 240, waterline: 0.474 },
   mare_blu: { art: 'avamposto_medio', width: 240, waterline: 0.66 }, // the old barge (owner, 23 ottobre)
   banchisa: { art: 'avamposto_gelo', width: 240, waterline: 0.66 },
-  grandi_fosse: { art: 'avamposto_orlo', width: 240, waterline: 0.56 },
+  grandi_fosse: { art: 'avamposto_orlo', width: 240, waterline: 0.533 },
   abisso: { art: 'avamposto_grande', width: 240, waterline: 0.66 },
 };
 export const OUTPOST_FALLBACK: OutpostArt = { art: 'avamposto_medio', width: 240, waterline: 0.66 };
@@ -44,7 +44,7 @@ export const OUTPOST_FALLBACK: OutpostArt = { art: 'avamposto_medio', width: 240
 /** The painted mangrove islets of the Delta, one per islet of DELTA.islands (its collisions stay the islet's
  *  mound): which picture, its width × the islet's, mirrored or not, and the share of its height at the water. */
 export const DELTA_ISLETS: { art: string; widthMult: number; flip: boolean; waterline: number }[] = [
-  { art: 'delta_isola_2', widthMult: 1.5, flip: false, waterline: 0.66 },
-  { art: 'delta_isola_1', widthMult: 1.35, flip: false, waterline: 0.6 },
-  { art: 'delta_isola_2', widthMult: 1.7, flip: true, waterline: 0.66 },
+  { art: 'delta_isola_2', widthMult: 1.5, flip: false, waterline: 0.644 },
+  { art: 'delta_isola_1', widthMult: 1.35, flip: false, waterline: 0.577 },
+  { art: 'delta_isola_2', widthMult: 1.7, flip: true, waterline: 0.644 },
 ];

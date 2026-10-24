@@ -3,7 +3,6 @@
 // do not fight: ordinary beasts slip away, big hunters ram it; broken it is towed home; ports repair it; better
 // ones are bought; saved (v11, the old boat becomes the bathyscaphe).
 import { beforeAll, describe, expect, it } from 'vitest';
-import { SHIP } from '../src/data/ship';
 import { SUB_MODELS, SUBMARINE } from '../src/data/submarine';
 import { WORLD } from '../src/data/worldLayout';
 import { spawnWild } from '../src/systems/beasts/wildState';
@@ -125,7 +124,7 @@ describe('the submarine', () => {
     expect(Math.hypot(w.x - g.sub.x, w.y - g.sub.y)).toBeGreaterThan(before);
   });
 
-  it('a big hunter rams it; broken, it is towed back to Portofosco; the port repairs it for teeth', () => {
+  it('a big hunter rams it; broken, it floods: hearts go until you die, then it is towed home; the port repairs it', () => {
     const g = inside(SUBMARINE.mooredX + 600, 150);
     g.gear.teeth = 1000;
     const w = g.beasts.wilds[0]!;
@@ -140,10 +139,14 @@ describe('the submarine', () => {
     expect(ev.some((e) => e.type === 'subRammed')).toBe(true);
     expect(g.beasts.battle).toBeNull();
     expect(g.sub.hull).toBe(0);
-    // it sinks where it is for a moment, then it is towed (owner, 11 ottobre)
-    expect(ev).toContainEqual({ type: 'vehicleSinking', vehicle: 'sub' });
+    // the sea comes in (owner, 24 ottobre): a heart every few seconds under water, then it is towed
+    expect(ev).toContainEqual({ type: 'subFlooded' });
     expect(ev.some((e) => e.type === 'subWrecked')).toBe(false);
-    for (let t = 0; t < SHIP.wreckSinkSeconds + 0.2; t += DT) ev = ev.concat(run(g, DT));
+    const hp = g.diver.hp;
+    for (let t = 0; t < SUBMARINE.air.hurtEvery * (hp + 1) + 1 && g.sub.aboard; t += DT)
+      ev = ev.concat(run(g, DT));
+    expect(ev.filter((e) => e.type === 'hurt').length).toBeGreaterThanOrEqual(hp);
+    expect(g.sub.aboard).toBe(false);
     expect(ev).toContainEqual({ type: 'subWrecked', teeth: 0 }); // no teeth lost any more (owner, 15 ottobre)
     expect(g.sub.x).toBe(SUBMARINE.mooredX);
     // at the port it is mended

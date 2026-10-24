@@ -104,7 +104,8 @@ export class WorldViews {
     const L = this.rig.layers;
     this.bg = new BackgroundView(scene, L.bg);
     this.terrain = new TerrainView(scene, L.world, map);
-    this.places = new PlacesView(scene, L.world, g.wrecks, map);
+    const afloat = scene.add.container(); // the outposts, laid in front of the sea's surface (below)
+    this.places = new PlacesView(scene, L.world, g.wrecks, map, afloat);
     this.story = new StoryView(scene, L.world);
     new SceneryView(scene, L.world);
     new DeltaView(scene, L.world, L.front);
@@ -114,6 +115,7 @@ export class WorldViews {
     this.worldArt = new WorldArtView(scene, L.world, map);
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
     this.ice = new IceArtView(scene, L.world, map);
+    L.world.add(afloat);
     this.ship = new ShipView(scene, L.world, L.glow);
     this.hunts = new HuntView(scene, L.world);
     this.boat = new BoatView(scene, L.world);

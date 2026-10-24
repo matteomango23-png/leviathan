@@ -26,7 +26,12 @@ const DT = 1 / 30;
 
 function world(model: string, x: number, dive = 0): ShipWorld {
   const ship = newShip({ x, face: 1, hatches: [], bay: 'none', aboard: true, fuel: 1e9, model, dive });
-  return { ship, map, sub: { owned: false, aboard: false }, diver: { x, y: 0, vx: 0, vy: 0, face: 1 } };
+  return {
+    ship,
+    map,
+    sub: { owned: false, aboard: false },
+    diver: { x, y: 0, vx: 0, vy: 0, face: 1, hp: 5, invulnerable: 0, dead: false, deadTime: 0 },
+  };
 }
 const run = (
   w: ShipWorld,
@@ -79,14 +84,20 @@ describe('the U-Boats dive', () => {
     for (const p of shipHull(w.ship)) expect(map.hitCircle(p.x, p.y, p.r * 0.9)).toBe(false);
   });
 
-  it('its air runs out under water (a warning first), then it rises by itself and refills afloat', () => {
+  it('its air runs out under water (a warning first): it stays down and you lose hearts until you take it up', () => {
     const w = world('whale', deepWater(), 200);
+    w.ship.aboard = true;
     w.ship.air = SHIP.dive.warnAt + 1;
     const ev = run(w, 2, { throttle: 0, dir: 1, dive: 0 });
     expect(ev.some((e) => e.type === 'diveAir')).toBe(true);
-    const more = run(w, SHIP.dive.warnAt + 2, { throttle: 0, dir: 1, dive: 1 });
+    const more = run(w, SHIP.dive.warnAt + 2, { throttle: 0, dir: 1, dive: 0 });
     expect(more.some((e) => e.type === 'diveSurfacing')).toBe(true);
-    run(w, 20, { throttle: 0, dir: 1, dive: 1 }); // the lever cannot keep it down, nor take it back under at once
+    const hp = w.diver.hp;
+    const choke = run(w, SHIP.dive.hurtEvery * 2 + 0.5, { throttle: 0, dir: 1, dive: 0 });
+    expect(submerged(w.ship)).toBe(true); // no rising by itself any more (owner, 24 ottobre)
+    expect(choke.filter((e) => e.type === 'hurt').length).toBe(2);
+    expect(w.diver.hp).toBe(hp - 2);
+    run(w, 20, { throttle: 0, dir: 1, dive: -1 }); // the lever takes it up
     expect(submerged(w.ship)).toBe(false);
     run(w, 5, { throttle: 0, dir: 1, dive: 0 });
     expect(w.ship.air).toBeGreaterThan(5);
@@ -99,7 +110,9 @@ describe('the U-Boats dive', () => {
     expect(w.ship.x).toBeGreaterThan(at + 100);
     expect(ev.some((e) => e.type === 'iceCracked')).toBe(false);
     expect(iceIn(map, w.ship.x - 20, w.ship.x + 20)).toBe(true);
+    // out of air and left empty (you got out, or it took your last heart) it comes up, breaking through
     w.ship.air = 0.01;
+    w.ship.aboard = false;
     const up = run(w, 6, { throttle: 0, dir: 1, dive: 0 });
     expect(up.some((e) => e.type === 'diveSurfacing')).toBe(true);
     expect(submerged(w.ship)).toBe(false);

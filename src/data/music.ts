@@ -46,7 +46,11 @@ const SEA_BARS: { chord: ChordName; melody: Sung[] }[] = [
   { chord: 'Dm', melody: [[-7, 3]] },
 ];
 
-/** A sung voice: detuned sawtooths through the formant filters of a vowel ([Hz, gain]), with a slow vibrato. */
+/** The tone of every sung voice and of the drone (owner, 24 ottobre 2026: the sawtooth voices "gracchiano"): soft
+ *  triangle waves, the vowel's formants as gentle bands, all under a low-pass. */
+export const VOICE_TONE = { wave: 'triangle' as OscillatorType, formantQ: 2, formantGain: 1.6, cutoff: 1500 };
+
+/** A sung voice: two detuned soft waves through the formant filters of a vowel ([Hz, gain]), with a slow vibrato. */
 export interface VoiceSpec {
   volume: number;
   attack: number;

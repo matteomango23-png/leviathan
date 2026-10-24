@@ -44,8 +44,6 @@ export function currentAction(g: GameState): Action {
   if (onRamp(g)) return null;
   if (g.sub.aboard) return canDock(g) ? 'aggancia' : atPort(d, g.map) ? 'porto' : 'esci';
   if (g.boat.aboard) return vehicleAction(g) ?? (shipPort(g) ? 'porto' : null);
-  // a hunter after you while you swim on your own: face it (swimFight.ts)
-  if (hunterAfterYou(g)) return 'affronta';
   // a chest first, even while riding
   if (!d.dead && nearWreck(g.wrecks, g.gear, d.x, d.y, wreckReach(g), (w) => wreckShown(g, w))) return 'apri';
   const beast = contextAction(g);
@@ -55,6 +53,9 @@ export function currentAction(g: GameState): Action {
   const vehicle = vehicleAction(g); // by the ship's hull: A bordo
   if (vehicle) return vehicle;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
+  // a hunter after you while you swim on your own: face it (swimFight.ts) — after the ship, the vehicles and the
+  // harbour, so you can always get away into them (owner, 24 ottobre: it hid "A bordo")
+  if (hunterAfterYou(g)) return 'affronta';
   return beast;
 }
 

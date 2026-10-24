@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 23 ottobre 2026, v0.108.0)
+## Dove siamo (aggiornato il 24 ottobre 2026, v0.108.1)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -16,6 +16,21 @@
 - **Ultima pulizia:** v0.94.1 (21 ottobre), la prossima dopo altri 3 lotti. La galleria e gli strumenti di prova restano finché il proprietario prova.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al lotto AD-3 (v0.92.0); qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (dettagli nella sessione del lotto AA, nell'archivio).
+
+## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
+
+Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto C1 (24 ottobre 2026) → v0.108.1
+
+- **Musica:** `VOICE_TONE` in `data/music.ts` (onde triangolari, formanti larghe, passa-basso) per voci e bordone di mare, porto e menu.
+- **Pressione:** a bordo di un mezzo `stepPressure(d, 0)` la ricarica (`game.ts`).
+- **Pulsante:** "affronta" dopo mezzi e porto in `currentAction`.
+- **Aria:** sottomarini 300-480 s (in ordine di lunghezza), U-Boot 600/900/1200 s. `chokeAboard` (`diver.ts`): un cuore ogni `hurtEvery` s senz'aria o con lo scafo rotto sott'acqua; morto, il sub viene rimorchiato (`towSub` senza spostarti), l'U-Boot vuoto risale da solo. Nuovo evento `subFlooded` al posto dell'affondamento.
+- **Immagini:** `BOTTOM_FADES` ora sfuma ogni colonna a un'altezza diversa e il ritaglio tiene tutta la sfumatura; gli avamposti stanno in un contenitore davanti alla fascia della superficie (`afloat` in `worldViews.ts`).
+- **Lag:** `TERRAIN.leadFrames` dipinge i pezzi di fondale dove va la telecamera; la telecamera segue con `1 - exp(-dt·k)`.
+- Controllati anche: tutte le immagini del mondo con bordi tagliati (trovati `molo_fondo` e un lato di `luogo_galeone_dentro`, per C2), tutti gli avamposti sopra e sotto l'acqua, gli isolotti.
+- Test: `tests/lottoC1.test.ts`, aggiornati `uboat`, `submarine`, `subAir`.
 
 ## Lotto P1, porti, avamposti, laguna e ghiaccio (23 ottobre 2026) → v0.108.0
 

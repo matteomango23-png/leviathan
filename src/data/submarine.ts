@@ -38,7 +38,7 @@ export interface SubModel {
 export const SUB_MODELS: SubModel[] = [
   {
     id: 'batiscafo',
-    airSeconds: 120,
+    airSeconds: 300, // more time under water (owner, 24 ottobre); was 120
     name: 'Batiscafo di Aurelio',
     lengthM: 9,
     speed: 70, // tuning: less than twice your swimming
@@ -53,7 +53,7 @@ export const SUB_MODELS: SubModel[] = [
   {
     // the Expedition Hunter 1's (owner, 8 ottobre): the fastest of the sea, a small tank, no sonar
     id: 'squalo_acciaio',
-    airSeconds: 150,
+    airSeconds: 360, // more time under water (owner, 24 ottobre); was 150
     name: 'Squalo d’acciaio',
     lengthM: 12,
     speed: 190,
@@ -68,7 +68,7 @@ export const SUB_MODELS: SubModel[] = [
   {
     // the Expedition Hunter 2's (owner, 8 ottobre): a sonar, not the best, not the fastest
     id: 'eh2_sub',
-    airSeconds: 160,
+    airSeconds: 420, // more time under water (owner, 24 ottobre); was 160
     name: 'Sottomarino con sonar',
     lengthM: 13,
     speed: 120,
@@ -85,7 +85,7 @@ export const SUB_MODELS: SubModel[] = [
   {
     // the Imperium Explorer VI's (owner, 8 ottobre): an excellent sonar
     id: 'imperium_sub',
-    airSeconds: 125,
+    airSeconds: 330, // more time under water (owner, 24 ottobre); was 125
     name: 'Sottomarino imperiale',
     lengthM: 9.5,
     speed: 140,
@@ -103,7 +103,7 @@ export const SUB_MODELS: SubModel[] = [
   {
     // the Ocean's Nightmare's drone (owner, 9 ottobre): scouts by itself, or you drive it like a submarine
     id: 'drone_nightmare',
-    airSeconds: 170,
+    airSeconds: 480, // more time under water (owner, 24 ottobre); was 170
     name: 'Drone sottomarino',
     lengthM: 14, // owner, 9 ottobre: at 7 m it was "uno scricciolo"
     speed: 160,
@@ -122,7 +122,7 @@ export const SUB_MODELS: SubModel[] = [
     // the Krill Hunter's (owner, 10 ottobre): claws in front; slower than the Nightmare's, it plants a tracker on a
     // beast picked on the sonar and comes back, or you drive it by hand
     id: 'drone_krill',
-    airSeconds: 160,
+    airSeconds: 450, // more time under water (owner, 24 ottobre); was 160
     name: 'Drone Artiglio',
     lengthM: 13,
     speed: 110,
@@ -162,7 +162,8 @@ export const SUBMARINE = {
   reach: 26, // units: you climb in this close to it
   /** Its air (owner, 9 ottobre): refilled per second at the surface or in the hold, the warning, the rise once it is
    *  gone (units/s), and how deep under its resting line it counts as under water (units). */
-  air: { refill: 6, warnAt: 30, rise: 70, underBelow: 8 },
+  /** Out of air (or flooded) under water: a heart every `hurtEvery` seconds (no rising by itself any more). */
+  air: { refill: 6, warnAt: 30, hurtEvery: 5, underBelow: 8 },
   accel: 110, // units/s² speeding up (and braking, with the lever the other way)
   coast: 45, // units/s² it slows down by itself, throttle down
   drag: 1.5, // after a bump: how fast the bounce dies out…

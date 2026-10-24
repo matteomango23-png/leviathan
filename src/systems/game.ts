@@ -24,6 +24,7 @@ import { formName } from './beasts/forms';
 import { isInWater } from './beasts/wildState';
 import { activeBeast, mountSpeed, stepBeasts, weaponHitsBeast } from './beastPlay';
 import { stepDiver } from './diver';
+import { stepPressure } from './breath';
 import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers } from './economy/gear';
@@ -130,7 +131,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
     });
     const whale = activeBeast(g);
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
-  }
+  } else if (aboard) stepPressure(d, 0, dt); // inside a vehicle the suit is not pressed: its bar fills back (24 ottobre)
   stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
   stepDiverStamina(g, events, dt); // and your own dash tires you (diverStamina.ts)
   stepRideTalents(g, events); // a Tempesta's dash stuns the small beasts around it (rideTalents.ts)

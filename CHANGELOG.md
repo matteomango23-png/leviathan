@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.108.1 — Correzioni dalle tue prove (24 ottobre 2026)
+
+- **Musica:** le voci del coro e della melodia (e il bordone sotto) non gracchiano più: suoni morbidi e filtrati, anche nel porto e nel menu.
+- **Barra della pressione:** salendo sulla nave (o su un altro mezzo) si ricarica e sparisce, non resta più bloccata.
+- **"Affronta"** non copre più "A bordo", il porto o il sottomarino: prima vengono sempre i mezzi.
+- **Più aria:** sottomarini da 5 a 8 minuti sott'acqua (prima 2-3), U-Boot da 10 a 20 minuti.
+- **Aria finita o scafo rotto:** il mezzo non risale più da solo. Perdi un cuore ogni 5 secondi finché non risali o esci; se muori, il sottomarino viene rimorchiato a casa. La pressione troppo profonda rompe prima lo scafo, poi ti toglie i cuori.
+- **Avamposti:** il Corallo non finisce più con una riga dritta sott'acqua (il fondo sfuma irregolare, come l'Orlo e gli isolotti), e gli avamposti si vedono anche sotto il pelo dell'acqua.
+- **Velocità:** il fondale viene disegnato in anticipo nella direzione in cui vai, così a tutta velocità con il motoscafo non scatta più; la telecamera segue in modo regolare anche se il telefono rallenta un attimo.
+- I salvataggi non cambiano.
+
 ## v0.108.0 — Paesi, avamposti, laguna e ghiaccio dipinti (23 ottobre 2026)
 
 - **Portofosco** ha il suo paese dipinto (case, chiesetta, faro, barche in secca) al posto delle casette nere; **Porto Fango** le sue palafitte dietro la casa e la pescheria.

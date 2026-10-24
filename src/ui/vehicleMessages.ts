@@ -153,11 +153,13 @@ export function vehicleMessage(e: GameEvent, g: GameState): [string, number] | n
     case 'subAir':
       return ['Aria del sottomarino per 30 secondi: risali!', 4];
     case 'subSurfacing':
-      return ['Aria finita: il sottomarino risale da solo.', 4];
+      return ['Aria finita: risali subito o esci, stai soffocando!', 4];
+    case 'subFlooded':
+      return ['Lo scafo ha ceduto e l’acqua entra: risali o esci, o perderai i cuori!', 4];
     case 'diveAir':
       return ['Aria per 30 secondi: risali con la leva!', 4];
     case 'diveSurfacing':
-      return ['Aria finita: l’U-Boat risale da solo.', 4];
+      return ['Aria finita: risali con la leva, stai soffocando!', 4];
     case 'diveTooDeep':
       return ['Più giù lo scafo non regge.', 2.5];
     case 'rescued':

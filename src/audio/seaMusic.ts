@@ -2,7 +2,7 @@
 // the melody every other time round, a breathing drone and a far drum, all in a long echo. It fades in beyond a
 // kilometre from the coast and out back under it; scheduled a bar at a time ahead on the audio clock. The same engine
 // plays the harbour's calm piece (PORT_MUSIC) in the port's menu (owner, 19 ottobre).
-import { noteHz, SEA_MUSIC, type MusicSpec, type VoiceSpec } from '../data/music';
+import { noteHz, SEA_MUSIC, VOICE_TONE, type MusicSpec, type VoiceSpec } from '../data/music';
 
 export class SeaMusic {
   private readonly out: GainNode;
@@ -98,7 +98,7 @@ export class SeaMusic {
     if (this.m.drum.bars.includes(i)) this.drum(at);
   }
 
-  /** A sung note: two detuned sawtooths with a vibrato, through the vowel's formants. */
+  /** A sung note: two detuned soft waves with a vibrato, through the vowel's formants (VOICE_TONE). */
   private sing(hz: number, at: number, len: number, v: VoiceSpec): void {
     const c = this.ctx;
     const env = c.createGain();
@@ -106,15 +106,19 @@ export class SeaMusic {
     env.gain.linearRampToValueAtTime(v.volume, at + v.attack);
     env.gain.setValueAtTime(v.volume, at + Math.max(v.attack, len));
     env.gain.setTargetAtTime(0, at + Math.max(v.attack, len), v.release / 3);
-    env.connect(this.bus);
+    const soft = c.createBiquadFilter();
+    soft.type = 'lowpass';
+    soft.frequency.value = VOICE_TONE.cutoff;
+    soft.connect(this.bus);
+    env.connect(soft);
     const mix = c.createGain();
     for (const [f, g] of v.formants) {
       const bp = c.createBiquadFilter();
       bp.type = 'bandpass';
       bp.frequency.value = f;
-      bp.Q.value = 7;
+      bp.Q.value = VOICE_TONE.formantQ;
       const lvl = c.createGain();
-      lvl.gain.value = g * 4; // a narrow band passes little: bring it back up
+      lvl.gain.value = g * VOICE_TONE.formantGain;
       mix.connect(bp).connect(lvl).connect(env);
     }
     const end = at + Math.max(v.attack, len) + v.release * 1.5;
@@ -127,7 +131,7 @@ export class SeaMusic {
     lfo.stop(end);
     for (const side of [-1, 1]) {
       const o = c.createOscillator();
-      o.type = 'sawtooth';
+      o.type = VOICE_TONE.wave;
       o.frequency.value = hz;
       o.detune.value = side * v.detuneCents;
       depth.connect(o.detune);
@@ -153,7 +157,7 @@ export class SeaMusic {
     f.connect(g).connect(this.bus);
     const oscs = this.m.drone.notes.map((n) => {
       const o = c.createOscillator();
-      o.type = 'sawtooth';
+      o.type = VOICE_TONE.wave;
       o.frequency.value = noteHz(n);
       o.connect(f);
       return o;
