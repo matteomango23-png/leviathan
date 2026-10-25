@@ -138,6 +138,8 @@ export function vehicleMessage(e: GameEvent, g: GameState): [string, number] | n
         'La nave non va più a ovest del porto di Porto Fango: da qui prosegui col sottomarino o a nuoto.',
         4,
       ];
+    case 'shipAground':
+      return ['Fondale troppo basso: la nave qui non passa.', 3];
     case 'seaEnd':
       return ['Oltre l’Abisso del Leviatano c’è solo tempesta: il mare conosciuto finisce qui.', 4];
     case 'shipHint':

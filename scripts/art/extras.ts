@@ -35,7 +35,7 @@ import {
   greenShare,
   keepLargest,
 } from './layers.ts';
-import { applyBottomFade, applyCuts, BOTTOM_FADES } from './landmarkCuts.ts';
+import { applyBottomFade, applyCuts, applySideFade, BOTTOM_FADES } from './landmarkCuts.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -340,6 +340,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   if (!box) throw new Error('immagine vuota dopo lo scontorno');
   applyCuts(id, cut, img, box);
   applyBottomFade(id, cut, img, box);
+  applySideFade(id, cut, img, box);
   if (shipLike(id)) {
     // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
     await mkdir(dirname(dest), { recursive: true });

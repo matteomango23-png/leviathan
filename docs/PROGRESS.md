@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 24 ottobre 2026, v0.108.1)
+## Dove siamo (aggiornato il 25 ottobre 2026, v0.109.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -19,7 +19,17 @@
 
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
-Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto C2 (25 ottobre 2026) → v0.109.0
+
+- **Nave nella terra:** l'U-Boot passato sotto il molo di Porto Fango navigava a ovest senza limiti. Ora `hullAground` (`ship/uboat.ts`) ferma a galla ogni nave quando la chiglia tocca roccia (non il ghiaccio, che rompe), evento `shipAground`.
+- **Sagoma intera:** `SHIP_SHAPES` (maschera 64 colonne di ogni `nave_*.webp`, scritta da `npm run art`); `hullBlocked` sott'acqua controlla le celle del bordo della sagoma.
+- **Sotto i moli:** `views/pierUnder.ts` disegna pali e fondo in un contenitore dietro il terreno (`under` in `worldViews.ts`): i pali arrivano al fondo più profondo sotto il molo, la fascia bassa ripetuta capovolta a ogni copia in una texture sua (niente stiramento); `molo_fondo` sfumato ai lati e in basso (`SIDE_FADES`, `BOTTOM_FADES`), `floorSink` 0,5 m.
+- **Sfondi:** `lookAt` (`systems/seaLook.ts`) ora conta quanta parte della finestra intorno occupa ogni aspetto (regioni 2400, Foresta/Banchisa 600, Delta a parte con 420): continuo a ogni confine (test che scorre tutto il mare). I panorami poggiano sul fondale vero della costa (`floorAt` dalla mappa in `seaRidges`) e salgono sui fondali bassi (`SEA_RIDGE_FLOOR.maxRaise`); tolto `ridgeLift`.
+- **Sonar:** `systems/subSonar.ts` `sonarEdges` (bordi di roccia e ghiaccio su una griglia), disegnati in `ui/subScope.ts` su tutti i sottomarini.
+- Controllati anche: il molo di Porto Fango, tutti i confini del mare, il bordo del galeone (`SIDE_FADES` a destra).
+- Test: `tests/lottoC2.test.ts`; aggiornati `uboat` (sotto il ghiaccio più a fondo, a ovest si ferma sui bassi) e `lottoM1`.
 
 ## Lotto C1 (24 ottobre 2026) → v0.108.1
 

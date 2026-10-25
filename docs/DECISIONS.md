@@ -1224,3 +1224,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - Il proprietario: risalire da soli poteva far finire il mezzo sotto qualcosa. Ora senz'aria (o con lo scafo rotto sott'acqua) si perde un cuore ogni 5 s finché non si risale; il conteggio usa il timer di invulnerabilità del sub, che a bordo non scorre da solo, così non serve un campo nuovo nei salvataggi.
 - Gli avamposti si disegnano davanti alla fascia d'acqua della superficie, come le navi: dietro, la fascia li tagliava a una profondità fissa con una riga dritta.
+
+## 25 ottobre 2026 — Aspetto del mare come quota della finestra; sagome delle navi (v0.109.0)
+
+- L'aspetto in un punto è la quota di ogni aspetto nella finestra intorno (campioni), non più il confine trovato con una ricerca: con tratti corti (Foresta/Banchisa) e il Delta la ricerca saltava. Così è continuo per costruzione.
+- Le collisioni dell'U-Boot sott'acqua vengono dalla sagoma della sua immagine (maschera generata dallo script), come ghiaccio e luoghi; a galla la chiglia ferma la nave sui bassi fondali.
+- Pali e fondo dei moli stanno dietro il terreno: la roccia copre dove entrano nel fondale, senza calcolare il taglio.

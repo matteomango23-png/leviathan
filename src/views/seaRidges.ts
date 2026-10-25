@@ -3,11 +3,12 @@
 // painted once per screen size (views/seaRidgeArt.ts), or is its painted panorama when it exists
 // (public/bg/mare_<look>_lontano|medio.webp, docs/GEMINI-LOTTO-9.md), loaded the first time it is needed.
 import Phaser from 'phaser';
+import { ENDLESS } from '../data/endless';
 import { SEA } from '../data/diver';
 import { SEA_LOOKS, SEA_RIDGE_FLOOR, type SeaLookId } from '../data/seaLooks';
 import { BG_KEYS } from '../data/sprites.generated';
 import { assetUrl } from '../data/assets';
-import { lookNumber, type LookMix } from '../systems/seaLook';
+import type { LookMix } from '../systems/seaLook';
 import { naturalFloor } from '../systems/world/stretches';
 import { paintRidgeStrip, stripShare, type RidgeKind } from './seaRidgeArt';
 
@@ -46,8 +47,6 @@ const color = (hex: string): Phaser.Display.Color => Phaser.Display.Color.HexStr
 export class SeaRidges {
   private readonly rows: Row[];
   private size = '';
-  /** How much higher the look wants its ridges (SeaLookDef.ridgeLift, blended like the rest). */
-  private lift = 0;
   /** How much deeper than SEA_RIDGE_FLOOR.ref the seabed around the view is (eased). */
   private sink = NaN;
   private screenW = 1;
@@ -61,6 +60,7 @@ export class SeaRidges {
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly layer: Phaser.GameObjects.Layer,
+    private readonly coastFloor?: (x: number) => number,
   ) {
     this.rows = (['far', 'mid'] as RidgeKind[]).map((kind) => {
       const a = this.strip();
@@ -155,7 +155,7 @@ export class SeaRidges {
     const def = SEA[kind];
     const parV = def.parallax * 0.9 + 0.1;
     const ref = this.screenH * stripShare(kind, 'hills');
-    return v.h / 2 + (def.baseY + this.sink - this.lift - v.cy) * v.zoom * parV + ref * 0.55;
+    return v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV + ref * 0.55;
   }
 
   private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number, bottom: number): void {
@@ -171,18 +171,34 @@ export class SeaRidges {
     );
   }
 
+  /** The seabed under x: the hand-made coast's from the map (its columns remembered), the endless sea's from its
+   *  stretches. */
+  private floorAt(x: number): number {
+    if (x >= ENDLESS.startX || !this.coastFloor) return naturalFloor(x);
+    const k = Math.round(x / 64);
+    let y = this.floors.get(k);
+    if (y === undefined) {
+      y = this.coastFloor(k * 64);
+      this.floors.set(k, y);
+    }
+    return y;
+  }
+
+  private readonly floors = new Map<number, number>();
+
   /** The seabed's depth around the view, past the reference one, averaged and eased. */
   private followFloor(cx: number): void {
     const F = SEA_RIDGE_FLOOR;
     let sum = 0;
-    for (let i = 0; i < F.samples; i++) sum += naturalFloor(cx + ((i / (F.samples - 1)) * 2 - 1) * F.span);
-    const want = Math.max(0, sum / F.samples - F.ref);
+    for (let i = 0; i < F.samples; i++) sum += this.floorAt(cx + ((i / (F.samples - 1)) * 2 - 1) * F.span);
+    // deeper than the reference they go down; over a shallow seabed (the bay, the Delta) they come up, never over
+    // its ridge line (owner, 24 ottobre: in the Delta they stood behind the floor, then jumped up and down)
+    const want = Math.max(-F.maxRaise, sum / F.samples - F.ref);
     this.sink = Number.isNaN(this.sink) ? want : this.sink + (want - this.sink) * F.ease;
   }
 
   update(v: ViewInfo, mix: LookMix): void {
     this.followFloor(v.cx);
-    this.lift = lookNumber(mix, (l) => l.ridgeLift ?? 0);
     const size = `${v.w}x${v.h}`;
     if (size !== this.size) {
       this.size = size;

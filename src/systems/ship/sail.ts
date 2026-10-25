@@ -11,7 +11,7 @@ import { helmPoint, shipDraft, shipSpan } from './geometry';
 import { breakIce, refreeze, SEA_END_X, SHIP_WEST_X } from './surface';
 import { shipLength, shipModel, shipPicture, shipRates, shipTopSpeed } from './model';
 import { icebergAcross } from '../world/icebergs';
-import { hullBlocked, stepDive, submerged } from './uboat';
+import { hullAground, hullBlocked, stepDive, submerged } from './uboat';
 import { chokeAboard } from '../diver';
 import { bumpShip, stepShipHull } from './shipHull';
 import { hatchesShut, sonarActive, type ShipWorld } from './ship';
@@ -104,6 +104,14 @@ export function sailShip(
   if (hullBlocked(g.map, s, ahead2, s.dive)) {
     bumpShip(s, s.speed, events); // hard into rock, the hull suffers (block 5c)
     s.speed = 0;
+  } else if (afloat && ahead2 !== s.x && hullAground(g.map, s, ahead2) && !hullAground(g.map, s, s.x)) {
+    // afloat its keel stops at a shore or a shallow seabed (owner, 24 ottobre: a U-Boat come up west of Porto
+    // Fango sailed on into the land of Portofosco)
+    s.speed = 0;
+    if (s.shallowWarn <= 0) {
+      events.push({ type: 'shipAground' });
+      s.shallowWarn = 6;
+    }
   } else s.x = Math.max(west, Math.min(east, ahead2));
   const atEdge = s.x >= end ? 'seaEnd' : s.x <= west || (westSide && s.x >= east) ? 'shipWest' : null;
   const into = atEdge === 'seaEnd' || westSide ? 1 : -1; // the way that runs into it

@@ -102,10 +102,12 @@ export class WorldViews {
     const d = g.diver;
     this.rig = new CameraRig(scene, map.width, map.height, d.x, d.y);
     const L = this.rig.layers;
-    this.bg = new BackgroundView(scene, L.bg);
+    this.bg = new BackgroundView(scene, L.bg, (x) => map.floorBelow(x, WORLD.surfaceY + 8));
+    const under = scene.add.container(); // the piers' underside, behind the terrain (views/pierUnder.ts)
+    L.world.add(under);
     this.terrain = new TerrainView(scene, L.world, map);
     const afloat = scene.add.container(); // the outposts, laid in front of the sea's surface (below)
-    this.places = new PlacesView(scene, L.world, g.wrecks, map, afloat);
+    this.places = new PlacesView(scene, L.world, g.wrecks, map, afloat, under);
     this.story = new StoryView(scene, L.world);
     new SceneryView(scene, L.world);
     new DeltaView(scene, L.world, L.front);

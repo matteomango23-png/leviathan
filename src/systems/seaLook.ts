@@ -34,31 +34,69 @@ export interface LookMix {
   t: number;
 }
 
-const STRETCH_LOOKS: SeaLookId[] = ['foresta', 'banchisa'];
+const ORDER = Object.keys(SEA_LOOKS) as SeaLookId[];
 
-/** The look at x, two of them blending near a border. */
-export function lookAt(x: number): LookMix {
-  // the short Delta: a short blend at its edges
-  const delta = blendAt(x, SEA_LOOK_BLEND_DELTA);
-  if (delta.a === 'delta' || delta.b === 'delta') return delta;
-  const mix = blendAt(x, SEA_LOOK_BLEND);
-  // the forest and the ice of one region: a shorter blend
-  if (mix.a !== mix.b && STRETCH_LOOKS.includes(mix.a) && STRETCH_LOOKS.includes(mix.b))
-    return blendAt(x, SEA_LOOK_BLEND_STRETCH);
-  return mix;
+/** How much of the window around x each look holds (samples across it). */
+function shares(x: number, half: number, idAt: (x: number) => SeaLookId, n: number): Map<SeaLookId, number> {
+  const w = new Map<SeaLookId, number>();
+  for (let i = 0; i < n; i++) {
+    const id = idAt(x - half + ((i + 0.5) / n) * 2 * half);
+    w.set(id, (w.get(id) ?? 0) + 1 / n);
+  }
+  return w;
 }
 
-function blendAt(x: number, blend: number): LookMix {
+/** The region's look, the forest and the ice taken as one (their own shorter blend is inside it). */
+const regionLook = (x: number): SeaLookId => {
+  if (x < ENDLESS.startX) return 'costa'; // the Delta has its own short blend
+  const id = lookIdAt(x);
+  return id === 'foresta' ? 'banchisa' : id;
+};
+
+/**
+ * The look at x, two of them blending near a border (owner, 24 ottobre: panoramas came and went in jumps). Each
+ * look counts for the share of the window around x it holds, so the mix changes evenly however short a stretch is:
+ * the regions over SEA_LOOK_BLEND, the forest and the ice of one region over SEA_LOOK_BLEND_STRETCH, the short
+ * Delta over its own.
+ */
+export function lookAt(x: number): LookMix {
+  const delta = blendAt(x, SEA_LOOK_BLEND_DELTA);
+  if (delta.a === 'delta' || delta.b === 'delta') return delta;
+  const w = shares(x, SEA_LOOK_BLEND / 2, regionLook, 32);
+  const ice = w.get('banchisa') ?? 0;
+  if (ice > 0) {
+    w.delete('banchisa');
+    const st = shares(x, SEA_LOOK_BLEND_STRETCH / 2, lookIdAt, 16);
+    const f = st.get('foresta') ?? 0;
+    const b = st.get('banchisa') ?? 0;
+    const sum = f + b;
+    for (const [id, part] of [
+      ['foresta', sum > 0 ? f / sum : 0],
+      ['banchisa', sum > 0 ? b / sum : 1],
+    ] as const)
+      if (part > 0) w.set(id, (w.get(id) ?? 0) + ice * part);
+  }
+  // the two that hold the most, in a fixed order (the views never swap them)
+  const top = [...w.entries()].sort((p, q) => q[1] - p[1]).slice(0, 2);
+  if (top.length < 2) return { a: top[0]![0], b: top[0]![0], t: 0 };
+  const [p, q] =
+    ORDER.indexOf(top[0]![0]) < ORDER.indexOf(top[1]![0]) ? [top[0]!, top[1]!] : [top[1]!, top[0]!];
+  const t = q[1] / (p[1] + q[1]);
+  return { a: p[0], b: q[0], t: t * t * (3 - 2 * t) };
+}
+
+/** A blend across the one border near x (the Delta's). */
+function blendAt(x: number, blend: number, idAt: (x: number) => SeaLookId = lookIdAt): LookMix {
   const h = blend / 2;
-  const a = lookIdAt(x - h);
-  const b = lookIdAt(x + h);
+  const a = idAt(x - h);
+  const b = idAt(x + h);
   if (a === b) return { a, b, t: 0 };
   // where the border is between the two ends (it changes once there)
   let lo = x - h;
   let hi = x + h;
   for (let i = 0; i < 16; i++) {
     const mid = (lo + hi) / 2;
-    if (lookIdAt(mid) === a) lo = mid;
+    if (idAt(mid) === a) lo = mid;
     else hi = mid;
   }
   const border = (lo + hi) / 2;
