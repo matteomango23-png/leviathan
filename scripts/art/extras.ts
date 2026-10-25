@@ -508,11 +508,27 @@ function register(pix: Uint8ClampedArray, img: Raw, ref: Uint8ClampedArray, to: 
 }
 
 /** The ship's background keyed out (see makeShip). */
+/** Is the picture's border transparent (most of it)? */
+function transparentBorder(img: Raw): boolean {
+  const { data, width, height } = img;
+  let clear = 0;
+  let n = 0;
+  for (let x = 0; x < width; x += 4)
+    for (const y of [0, height - 1]) {
+      n++;
+      if (data[(y * width + x) * 4 + 3]! < 16) clear++;
+    }
+  return clear > n * 0.9;
+}
+
 function keyShip(img: Raw): Uint8ClampedArray {
-  const [br, bg, bb] = borderColor(img);
   const d = img.data;
   const out = new Uint8ClampedArray(d.length);
   out.set(d);
+  // already cut out (a transparent picture, the abyssal ship of 23 ottobre): kept as it is (its transparent border
+  // reads as black, and keying black would eat the dark hull)
+  if (transparentBorder(img)) return out;
+  const [br, bg, bb] = borderColor(img);
   const low = 40;
   const high = 95;
   // a green background is keyed by how much greener than red and blue a pixel is (the dark hull is close to a dark

@@ -1,6 +1,8 @@
 // Everything that draws the sea for the World scene (split from WorldScene in the cleanup of 19 ottobre 2026): the
 // camera, the painted layers, the vehicles, the beasts, the diver, the birds and the weather, and the light mask.
 // It only reads the game state (and steps the look-only weather and birds); the scene runs the game.
+import { NightVisionView } from '../views/nightVisionView';
+import { nightOn } from '../systems/nightVision';
 import Phaser from 'phaser';
 import { CAMERA, DIVER, SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
@@ -86,6 +88,7 @@ export class WorldViews {
   private readonly gearFx: GearFxView;
   private readonly diverView: DiverView;
   private readonly light: LightView;
+  private readonly nightVision: NightVisionView;
   private readonly weatherView: WeatherView;
   private readonly nightmare: NightmareView;
   private readonly surface: SeaSurfaceView;
@@ -137,6 +140,7 @@ export class WorldViews {
     this.echo = new EchoView(scene, L.glow);
     this.seaLight = new SeaLight(scene, L.bg, L.overlay, L.glow); // its front part before the darkness, so under it
     this.light = new LightView(scene, L.overlay);
+    this.nightVision = new NightVisionView(scene, L.overlay, map); // over the darkness
     this.weatherView = new WeatherView(scene, L.bg, L.overlay);
     this.lampAngle = d.aim;
     const aim0 = cameraAim(g, CAMERA.lookAhead);
@@ -252,6 +256,8 @@ export class WorldViews {
     // an Abissale in your pack: a light round you (systems/pack.ts Lanterna)
     const lantern = lanternRadius(g);
     if (lantern > 0) glows.push({ x: d.x, y: d.y, r: lantern });
+    // the abyssal submarine's night vision: green, the darkness opened, its sonar wave
+    this.nightVision.update(info, nightOn(g.sub) ? { x: g.sub.x, y: g.sub.y } : null, g.time, dt);
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },
@@ -260,6 +266,7 @@ export class WorldViews {
       glows,
       murk,
       sky.dim * weatherReach(info.cy),
+      this.nightVision.share,
     );
     this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea);
   }

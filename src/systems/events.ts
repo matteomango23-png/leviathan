@@ -181,8 +181,19 @@ export type GameEvent =
   | { type: 'swarmBound'; id: string }
   | { type: 'swarmSummoned'; id: string }
   | { type: 'itemUsed'; id: string }
-  | { type: 'wreckOpened'; id: string; weapon?: string; teeth: number; item?: string; bonus?: number }
+  | {
+      type: 'wreckOpened';
+      id: string;
+      weapon?: string;
+      teeth: number;
+      item?: string;
+      part?: string;
+      partsHave?: number;
+      bonus?: number;
+    }
   | { type: 'wreckLocked' }
+  /** The abyssal submarine's night vision switched on or off. */
+  | { type: 'nightVision'; on: boolean }
   | { type: 'buriedFound'; x: number; y: number }
   | { type: 'airGiven'; x: number; y: number; speciesId: string }
   | { type: 'portArrived' }

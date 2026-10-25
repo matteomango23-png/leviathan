@@ -22,6 +22,12 @@ import { renderReconTab } from './reconPanel';
 import { renderMissions } from './missionList';
 import { inPool } from '../systems/ship/shipPool';
 import { formName } from '../systems/beasts/forms';
+import { subModel } from '../systems/subState';
+import { renderSubSonar } from './subScope';
+
+/** The tabs of the submarine's own cockpit, if you are in one that has it (the abyssal one). */
+const subCockpit = (g: GameState): CockpitTab[] | null =>
+  g.sub.aboard ? (subModel(g.sub.model).cockpit ?? null) : null;
 
 type Tab = CockpitTab;
 const TABS: [Tab, string, IconName][] = [
@@ -49,6 +55,8 @@ export class Cockpit {
   private ticks = 0;
   private msgTimer = 0;
   private stopSonar: (() => void) | null = null;
+  /** Opened from the submarine (its own cockpit): its simple sonar, no engine of the ship. */
+  private readonly fromSub: boolean;
 
   constructor(
     parent: HTMLElement,
@@ -56,7 +64,8 @@ export class Cockpit {
     private readonly g: GameState,
     private readonly onClose: () => void,
   ) {
-    const theme = shipModel(g.ship).cockpitTheme; // its ship's colours (cockpitTheme.ts)
+    // its ship's colours (cockpitTheme.ts), or the abyssal submarine's
+    const theme = subCockpit(g) ? subModel(g.sub.model).cockpitTheme : shipModel(g.ship).cockpitTheme;
     this.root = el('div', `port cockpit${theme ? ` theme-${theme}` : ''}`, parent);
     parent.classList.add('in-port'); // the sea's controls hide while the cockpit is open
     const top = el('div', 'port-top', this.root);
@@ -75,7 +84,11 @@ export class Cockpit {
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
     back.addEventListener('click', () => onClose());
     const rail = el('div', 'port-rail', this.root);
-    const own = shipModel(g.ship).cockpit; // each ship its own instruments (owner, 8 ottobre)
+    // each ship its own instruments (owner, 8 ottobre); from the abyssal submarine, its own (owner, 25 ottobre)
+    const sub = subCockpit(g);
+    const own: CockpitTab[] = sub ?? shipModel(g.ship).cockpit;
+    this.fromSub = !!sub;
+    for (const b of [this.speed, this.engine, this.engineOff]) b.hidden = this.fromSub;
     for (const [id, label, ic] of TABS.filter(([t]) => own.includes(t))) {
       const b = el('button', 'port-tab', rail);
       b.append(icon(ic), el('span', '', undefined, label));
@@ -150,7 +163,10 @@ export class Cockpit {
           this.onClose();
         },
       });
-    else if (this.tab === 'sonar') this.stopSonar = renderSonar(this.body, this.g, redraw);
+    else if (this.tab === 'sonar')
+      this.stopSonar = this.fromSub
+        ? renderSubSonar(this.body, this.g)
+        : renderSonar(this.body, this.g, redraw);
     else if (this.tab === 'radar') this.stopSonar = renderRadar(this.body, this.g);
     else if (this.tab === 'diario') {
       renderMissions(this.body, this.g.gear); // the missions you accepted, at sea too (owner, 15 ottobre)

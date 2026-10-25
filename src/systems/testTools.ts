@@ -8,6 +8,8 @@ import { formLengthUnits, type BeastForm } from './beasts/forms';
 import { raiseLevel } from './beasts/growth';
 import { addTamed, makeTeamBeast, maxHpOf, teamMembers } from './beasts/team';
 import { spawnWild } from './beasts/wildState';
+import { giveTestShip } from './ship/shipyard';
+import { ABYSS_BUILD, ABYSS_PARTS } from '../data/abyss';
 
 /** Makes a wild beast of this form appear a little ahead of the diver, wherever the diver is. */
 export function spawnTestBeast(g: GameState, form: BeastForm, level = 5): void {
@@ -82,4 +84,17 @@ export function goToDelta(g: GameState): void {
 /** At the pier of Porto Fango, on the east shore of the Isola delle Mangrovie. */
 export function goToPortoFango(g: GameState): void {
   Object.assign(g.diver, { ...portStart(PORTO_FANGO), vx: 0, vy: 0 });
+}
+
+/** The secret test menu (owner, 23 ottobre): the abyssal ship with its submarine at once, at Porto Fango. */
+export function giveAbyssShip(g: GameState): string {
+  if (g.sub.aboard || g.boat.aboard) return 'Scendi dal sottomarino o dal motoscafo, prima.';
+  goToPortoFango(g);
+  const r = giveTestShip(g, ABYSS_BUILD.ship);
+  return r.ok ? 'La nave abissale ti aspetta al molo di Porto Fango, col suo sottomarino.' : (r.reason ?? '');
+}
+
+/** All six abyssal parts (to try building it at the shipyard). */
+export function giveAbyssParts(g: GameState): void {
+  g.gear.abyssParts = ABYSS_PARTS.map((p) => p.id);
 }

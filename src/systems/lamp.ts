@@ -12,6 +12,7 @@ import { shipPoint } from './ship/geometry';
 import { shipPicture } from './ship/model';
 import { diveShare } from './ship/uboat';
 import { storyHoldsDiver } from './story';
+import { subModel } from './subState';
 
 export function lampOf(
   g: GameState,
@@ -31,7 +32,9 @@ export function lampOf(
   // riding an Abissale, its eyes for the dark: your light reaches much farther (beasts/mountTraits.ts)
   const ridden = g.beasts.riding ? activeBeast(g) : undefined;
   const abyss = ridden && talentOf(ridden.form) === 'abissale' ? RIDE_TALENTS.abyssLampMult : 1;
+  // a submarine with a headlight (the abyssal one): its beam, far longer than your lamp
+  const beam = g.sub.aboard ? (subModel(g.sub.model).beam ?? 1) : 1;
   const length =
-    (g.ship.aboard ? 1.6 * dive : mods.coneMult * abyss) * (1 - (1 - DELTA.murk.lampMult) * murk);
+    (g.ship.aboard ? 1.6 * dive : mods.coneMult * abyss * beam) * (1 - (1 - DELTA.murk.lampMult) * murk);
   return { x: at.x, y: at.y, lengthMult: off ? 0 : length, widthMult: mods.coneWidthMult };
 }

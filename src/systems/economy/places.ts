@@ -4,6 +4,7 @@ import { SHIP } from '../../data/ship';
 import type { GameEvent } from '../events';
 import type { TileMap } from '../world/tileMap';
 import { landmarkChests } from '../world/landmarks';
+import { galleryChests } from '../world/galleryChests';
 import type { GearState } from './gear';
 
 export interface Wreck {
@@ -13,7 +14,7 @@ export interface Wreck {
 }
 
 export function placeWrecks(map: TileMap): Wreck[] {
-  return [...WRECKS, ...landmarkChests()].map((def) => ({
+  return [...WRECKS, ...landmarkChests(), ...galleryChests(map)].map((def) => ({
     def,
     x: def.x,
     y: map.floorBelow(def.x, def.y) - 4,
@@ -53,6 +54,8 @@ interface WreckLoot {
   weapon?: string;
   teeth: number;
   item?: string;
+  /** An abyssal part (data/abyss.ts). */
+  part?: string;
   /** Of those, the more the otter found. */
   bonus?: number;
 }
@@ -73,6 +76,10 @@ export function openWreck(w: Wreck, gear: GearState, more = 0): WreckLoot | null
   if (r.item) {
     gear.inventory[r.item] = (gear.inventory[r.item] ?? 0) + 1;
     loot.item = r.item;
+  }
+  if (r.part && !gear.abyssParts.includes(r.part)) {
+    gear.abyssParts.push(r.part);
+    loot.part = r.part;
   }
   return loot;
 }

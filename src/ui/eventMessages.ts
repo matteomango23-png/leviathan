@@ -1,4 +1,5 @@
 // The short message the HUD shows for a game event (Italian), and for how long.
+import { ABYSS_PARTS, ABYSS_TEXT } from '../data/abyss';
 import { FEMININE_SPECIES } from '../data/battleText';
 import { BATTLE_MOVE_BY_ID } from '../data/battleMoves';
 import { PROGRESSION } from '../data/rules';
@@ -178,6 +179,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
     case 'missionComplete':
       return [`Missione compiuta: ${missionById(e.id)?.title ?? ''}. Riscuoti i denti al porto.`, 3.5];
     case 'wreckOpened': {
+      const part = ABYSS_PARTS.find((p) => p.id === e.part);
+      if (part) return [ABYSS_TEXT.partFound(part.name, e.partsHave ?? 0, ABYSS_PARTS.length), 5];
       const parts = [
         e.weapon ? `hai trovato: ${weaponName(e.weapon)}` : '',
         e.teeth ? `${e.teeth} denti` : '',
@@ -202,6 +205,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
             3,
           ]
         : null;
+    case 'nightVision':
+      return [e.on ? ABYSS_TEXT.nightOn : ABYSS_TEXT.nightOff, 1.4];
     case 'wreckLocked':
       return ['È chiuso e incrostato: serve un polpo gigante nel branco.', 3.5];
     case 'buriedFound':

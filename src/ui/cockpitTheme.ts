@@ -1,5 +1,6 @@
 // The cockpit's colours by ship (owner, 9 ottobre 2026): the same layout, the colours of its ship. The Ocean's
-// Nightmare's is dark iron and pulsing red, its sonar red too (cockpit.css `.theme-nightmare`).
+// Nightmare's is dark iron and pulsing red, its sonar red too (cockpit.css `.theme-nightmare`); the abyssal ship's
+// and submarine's navy blue and gold (`.theme-abissale`).
 import type { ShipModelDef } from '../data/fleet';
 
 /** The sonar screen's colours: "r,g,b" for the ones drawn with transparency. */
@@ -39,5 +40,18 @@ const NIGHTMARE: SonarPalette = {
   limit: '255,140,90',
 };
 
+/** The abyssal ship and submarine (owner, 25 ottobre): navy blue and gold, like their hulls. */
+const ABYSS: SonarPalette = {
+  bg: '#020814',
+  main: '232,196,112',
+  mainHex: '#e8c470',
+  dot: '255,238,200',
+  text: '214,224,244',
+  ship: '#e8d6a8',
+  odd: '120,200,255',
+  oddHex: '#78c8ff',
+  limit: '255,150,90',
+};
+
 export const sonarPalette = (theme: ShipModelDef['cockpitTheme']): SonarPalette =>
-  theme === 'nightmare' ? NIGHTMARE : NAVY;
+  theme === 'nightmare' ? NIGHTMARE : theme === 'abissale' ? ABYSS : NAVY;

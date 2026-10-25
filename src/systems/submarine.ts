@@ -81,7 +81,8 @@ function bump(g: SubWorld, speed: number, events: GameEvent[]): void {
  * The levers move it (helm.ts): the throttle along where it points, the direction lever turns it round once slow,
  * the dive lever up or down. After a bump (moving backwards) the bounce dies out first.
  */
-function steer(s: SubState, helm: HelmState, top: number, dt: number): void {
+/** @param diveTop how fast it goes up and down (the abyssal one is quicker that way than across) */
+function steer(s: SubState, helm: HelmState, top: number, diveTop: number, dt: number): void {
   const along = s.vx * s.face;
   if (along < 0) {
     s.vx -= s.vx * SUBMARINE.drag * dt;
@@ -98,8 +99,9 @@ function steer(s: SubState, helm: HelmState, top: number, dt: number): void {
     s.face = h.face;
     s.vx = h.speed * h.face;
   }
-  const vyTarget = diveOf(helm.dive) * top * HELM.subDiveMult;
-  const step = SUBMARINE.accel * dt;
+  const vyTarget = diveOf(helm.dive) * diveTop;
+  const step =
+    SUBMARINE.accel * (diveTop > top * HELM.subDiveMult ? diveTop / (top * HELM.subDiveMult) : 1) * dt;
   s.vy += Math.max(-step, Math.min(step, vyTarget - s.vy));
 }
 
@@ -147,7 +149,7 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   }
   const d = g.diver;
   const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
-  steer(s, input.helm, top, dt);
+  steer(s, input.helm, top, top > 0 ? (m.diveSpeed ?? top * HELM.subDiveMult) : 0, dt);
   stepSubAir(s, m.airSeconds, dt, events);
   // an air pocket of the Gallerie fills its air too (lot M3), and their currents carry it
   if (subUnder(s) && ventAt(s.x, s.y)) s.air = Math.min(m.airSeconds, s.air + GALLERIES.subRefill * dt);

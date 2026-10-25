@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 25 ottobre 2026, v0.112.3)
+## Dove siamo (aggiornato il 25 ottobre 2026, v0.113.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -19,7 +19,16 @@
 
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
-Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Prossimo: il lotto dei mezzi abissali (memoria abyssal-vehicles), poi M4 e M5 Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Mezzi abissali ✅ (v0.113.0). Prossimo: M4, poi M5. (Vecchie note:) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto dei mezzi abissali (25 ottobre 2026) → v0.113.0
+
+- **Dati:** `data/abyss.ts` (`ABYSS_PARTS` dove stanno, `ABYSS_BUILD` 80.000 denti, `NIGHT_VISION`); nave `abissale` in `data/fleet.ts` (38 nodi, freno 24, planata propria `plane`, 300 m, tema `abissale`); `sottomarino_abissale` in `data/submarine.ts` (1000 m, 1800 s d'aria, `diveSpeed` 200, `beam` 2,2, `nightVision`, `cockpit`).
+- **Pezzi:** ricompensa `part` dei relitti `relitto_grandi_fosse_3`, `relitto_abisso_1`, `relitto_abisso_3`; forzieri delle Gallerie da `systems/world/galleryChests.ts` (piano, lontano da colonne e sacche, davanti al terreno in `placesView`). `gear.abyssParts` salvato; `systems/ship/abyssParts.ts`, `buyShip` li chiede e li consuma; la nave non si vende. Consiglio di Aurelio `tipAbyss` al primo pezzo.
+- **Sottomarino:** `systems/nightVision.ts` (comando `night`), `views/nightVisionView.ts`, `lightView` con `night`; cockpit dal sottomarino (`ui/cockpit.ts` `subCockpit`, `renderSubSonar`, carta centrata sul sottomarino in `chart.ts`); bussola in km in `subScope`.
+- **Immagini:** `nave_abissale(_aperta)` già scontornate (lo script ora tiene le immagini trasparenti così come sono, `transparentBorder`), `sottomarino_abissale` dal verde, card.
+- Test: `tests/lottoAbissali.test.ts`; aggiornati `fleet` (10 navi, la più veloce) e `subAir` (eccezione voluta).
+- **Da provare sull'iPhone:** menu segreto → "Nave abissale subito" (o "Tutti i pezzi abissali" e costruirla al cantiere); andare a tutta velocità (planata), immergersi, calare il sottomarino, scendere in una fossa, accendere la visione notturna, aprire il cockpit dal sottomarino.
 
 ## Occhi rossi (25 ottobre 2026) → v0.112.2
 

@@ -37,6 +37,8 @@ export interface SubState {
   air: number;
   /** Spare parts for the ship it carries (block 5c; saved), hull points. */
   parts: number;
+  /** Its night vision is on (the abyssal one, data/abyss.ts; not saved). */
+  night?: boolean;
 }
 
 export interface SavedSub {

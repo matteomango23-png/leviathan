@@ -125,6 +125,12 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Ogni porto ha le sue schede: guarda prima la Bacheca, coi Ricercati di questi mari e le taglie.' },
     { who: 'aurelio', text: 'Conchiglie, cure ed esche si comprano qui. Un’esca pregiata a volte porta un alfa, o un albino.' },
   ],
+  // the abyssal ship (owner, 25 ottobre 2026): told when the first rare part is found, and in the Guida
+  tipAbyss: [
+    { who: 'aurelio', text: 'Un pezzo abissale! Ce ne sono sei: nei relitti più lontani e nei forzieri delle caverne delle Gallerie, uno nella Cattedrale.' },
+    { who: 'aurelio', text: 'Portali tutti al cantiere di Porto Fango: con quelli, e un bel po’ di denti, costruiscono la nave abissale, la più veloce del mare, che scende a 300 m.' },
+    { who: 'aurelio', text: 'Il suo sottomarino arriva a 1000 m, sta mezz’ora sott’acqua e ha un cockpit tutto suo: puoi lasciare la nave e cacciare lontano. Con la visione notturna il buio diventa verde e il sonar ti mostra la roccia attorno.' },
+  ],
 } satisfies Record<string, DialogueLine[]>;
 export type DialogueId = keyof typeof DIALOGUES;
 
@@ -138,7 +144,8 @@ export type TipTrigger =
   | 'legendAppeared'
   | 'mounted'
   | 'tamedOutOfTeam'
-  | 'portArrived';
+  | 'portArrived'
+  | 'abyssPart';
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
@@ -149,6 +156,7 @@ export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
   { id: 'tipRide', title: 'In groppa', on: 'mounted' },
   { id: 'tipTeamFull', title: 'Squadra, stiva e Recinto', on: 'tamedOutOfTeam' },
   { id: 'tipPort', title: 'Il porto', on: 'portArrived' },
+  { id: 'tipAbyss', title: 'La nave abissale', on: 'abyssPart' },
 ];
 /** In story.seen: the tips are switched off (the Guida in the pause menu). */
 export const TIPS_OFF = 'tips-off';

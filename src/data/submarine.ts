@@ -31,6 +31,18 @@ export interface SubModel {
   moving?: string;
   /** A drone: it can also scout by itself from its ship (the Ocean's Nightmare's, systems/ship/recon.ts). */
   recon?: boolean;
+  /** How fast it goes up and down (units/s), when not the same as its speed (the abyssal one: quick up and down,
+   *  medium across; owner, 23 ottobre). */
+  diveSpeed?: number;
+  /** Its headlight ahead, × the reach of your lamp, besides its floodlights, on while it moves too (the abyssal one:
+   *  owner, 23 ottobre, "luci potentissime"). Tuning. */
+  beam?: number;
+  /** Night vision (data/abyss.ts NIGHT_VISION): a button at its helm. */
+  nightVision?: boolean;
+  /** Its own cockpit (ui/cockpit.ts), so it can hunt far from its ship (owner, 25 ottobre): the tabs it has. */
+  cockpit?: ('sonar' | 'plancia' | 'diario' | 'zaino')[];
+  /** Its cockpit's and sonar's colours (ui/cockpitTheme.ts). */
+  cockpitTheme?: 'abissale';
   /** A drone that plants a tracker from afar on a beast picked on the sonar (the Krill Hunter's, 10 ottobre). */
   remoteTracker?: boolean;
 }
@@ -137,6 +149,29 @@ export const SUB_MODELS: SubModel[] = [
     art: 'sottomarino_lanterna',
     moving: 'sottomarino_lanterna_moto',
     remoteTracker: true,
+  },
+  {
+    // the abyssal ship's (owner, 23 ottobre 2026): the deepest of all, half an hour under water, quick up and down;
+    // its own cockpit so you can leave the ship and hunt kilometres away on the floor (owner, 25 ottobre)
+    id: 'sottomarino_abissale',
+    airSeconds: 1800,
+    name: 'Sottomarino abissale',
+    lengthM: 15,
+    speed: 130,
+    diveSpeed: 200,
+    maxDepthM: 1000,
+    floodlightM: 45,
+    beam: 2.2,
+    hull: 260,
+    tank: 400,
+    perKm: 6,
+    sonar: true,
+    scope: { rangeM: 70, classes: 2 }, // simplified: dots, not sizes (the ship's is the real one)
+    nightVision: true,
+    cockpit: ['sonar', 'plancia', 'diario', 'zaino'],
+    cockpitTheme: 'abissale',
+    note: 'Fino a 1000 m e mezz’ora sott’acqua: visione notturna, fari fortissimi e un cockpit tutto suo',
+    art: 'sottomarino_abissale',
   },
 ];
 

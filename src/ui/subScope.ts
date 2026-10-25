@@ -29,8 +29,9 @@ export class SubScope {
   private t = 0;
   private shown = '';
 
-  constructor(parent: HTMLElement) {
-    this.root = el('div', 'sub-scope', parent);
+  /** @param big the abyssal submarine's cockpit (its sonar tab): large, in the page */
+  constructor(parent: HTMLElement, big = false) {
+    this.root = el('div', `sub-scope${big ? ' sub-scope-big' : ''}`, parent);
     this.arrowBox = el('div', 'sub-home', this.root);
     this.arrow = el('div', 'sub-home-arrow', this.arrowBox, '➤');
     this.arrowText = el('div', 'sub-home-text', this.arrowBox);
@@ -52,7 +53,10 @@ export class SubScope {
     this.arrowBox.hidden = !home || dist < NEAR_M;
     if (!this.arrowBox.hidden) {
       this.arrow.style.transform = `rotate(${Math.atan2(dyM, dxM)}rad)`;
-      const text = `Nave · ${Math.round(dist)} m`;
+      const text =
+        dist >= 1000
+          ? `Nave · ${(dist / 1000).toFixed(1).replace('.', ',')} km`
+          : `Nave · ${Math.round(dist)} m`;
       if (text !== this.shown) this.arrowText.textContent = this.shown = text;
     }
     // the sonar, if it has one
@@ -63,7 +67,9 @@ export class SubScope {
     const size = Math.round(this.canvas.clientWidth * dpr);
     if (this.canvas.width !== size) Object.assign(this.canvas, { width: size, height: size });
     const range = (scope?.rangeM ?? SUBMARINE.edgeScope.rangeM) * WORLD.unitsPerMetre;
-    const P = sonarPalette(ship.owned ? shipModel(ship).cockpitTheme : undefined);
+    const P = sonarPalette(
+      subModel(s.model).cockpitTheme ?? (ship.owned ? shipModel(ship).cockpitTheme : undefined),
+    );
     const dots: ScopeDot[] = sonarEdges(g.map, s.x, s.y, range, SUBMARINE.edgeScope.cells).map((e) => ({
       x: e.x,
       y: e.y,
@@ -84,4 +90,24 @@ export class SubScope {
     }
     drawScope(ctx, size, dpr, this.t, SHIP.radar.sweepSeconds, dots, P, { halfW: 0, face: s.face });
   }
+}
+
+/** The submarine's simple sonar, large, in its cockpit (the abyssal one, owner 25 ottobre); returns its stop. */
+export function renderSubSonar(b: HTMLElement, g: GameState): () => void {
+  el(
+    'p',
+    'port-hint',
+    b,
+    'Il sonar del sottomarino: le bestie vicine come punti, tutte uguali, e la roccia attorno. Per riconoscerle e seguirle serve quello della nave.',
+  );
+  const scope = new SubScope(b, true);
+  let last = performance.now();
+  let raf = 0;
+  const frame = (now: number): void => {
+    scope.update(g, Math.min(0.1, (now - last) / 1000));
+    last = now;
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+  return () => cancelAnimationFrame(raf);
 }

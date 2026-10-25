@@ -1,4 +1,5 @@
 // What the levers drive now and what the instruments show, read from the game (ui/helmControls.ts draws them).
+import { hasNightVision, nightOn } from '../systems/nightVision';
 import { shipModel, sonarMaxKnots } from '../systems/ship/model';
 import { canDiveFromBoat } from '../systems/boatCrew';
 import { WORLD } from '../data/worldLayout';
@@ -165,6 +166,8 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
       air: g.sub.air,
       airMax: subModel(g.sub.model).airSeconds,
       canTrack: !!trackerTarget(g),
+      night: hasNightVision(g.sub) ? nightOn(g.sub) : undefined,
+      subCockpit: !!subModel(g.sub.model).cockpit,
     };
   return null;
 }

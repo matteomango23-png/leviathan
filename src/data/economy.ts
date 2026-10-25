@@ -3,6 +3,7 @@
 
 import { SPECIAL_POWERS } from './powers';
 import { kmToX, REGION_CHESTS, SEA_REGIONS } from './regions';
+import { ABYSS_PARTS } from './abyss';
 import { BAIT_GROUPS } from './world';
 import { bay, delta, east, ISLAND_X, LAYOUT, WORLD } from './worldLayout';
 
@@ -65,7 +66,8 @@ export interface WreckDef {
   name: string;
   x: number;
   y: number; // a point above the sea floor it rests on (the floor is found at runtime)
-  reward: { weapon?: string; teeth?: number; item?: string };
+  /** `part`: one of the abyssal ship's rare parts (data/abyss.ts). */
+  reward: { weapon?: string; teeth?: number; item?: string; part?: string };
   /** Shut and crusted (only an octopus opens it) or buried in the sand (only a hammerhead finds it): data/powers.ts. */
   kind?: 'locked' | 'buried';
 }
@@ -107,7 +109,13 @@ const REGION_WRECKS: WreckDef[] = SEA_REGIONS.flatMap((r, i) =>
   }),
 );
 
-export const WRECKS: WreckDef[] = [...COAST_WRECKS, ...REGION_WRECKS];
+/** The abyssal parts lying in wrecks (data/abyss.ts) go into their rewards. */
+const withParts = (w: WreckDef): WreckDef => {
+  const part = ABYSS_PARTS.find((p) => 'wreck' in p.where && p.where.wreck === w.id);
+  return part ? { ...w, reward: { ...w.reward, part: part.id } } : w;
+};
+
+export const WRECKS: WreckDef[] = [...COAST_WRECKS, ...REGION_WRECKS].map(withParts);
 export const WRECK_REACH = 26; // how close you must be to open one
 
 /** The bounties on the board (owner, 15 ottobre): a big beast of the open sea, beaten (or tamed: it counts as beaten

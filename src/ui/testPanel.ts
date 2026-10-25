@@ -3,6 +3,8 @@ import { WHITE_SHARK_FORMS, formName, type BeastForm } from '../systems/beasts/f
 import type { GameState } from '../systems/game';
 import {
   giveTestBeast,
+  giveAbyssParts,
+  giveAbyssShip,
   goToDelta,
   goToPortoFango,
   healAll,
@@ -81,6 +83,14 @@ export function renderTestPanel(
       done('Il meteo è cambiato: sali in superficie per vederlo.');
     });
   }
+  // the abyssal ship (owner, 23 ottobre: to try it without finding the parts)
+  el('button', 'menu-btn small', grid, 'Nave abissale subito').addEventListener('click', () =>
+    done(giveAbyssShip(g)),
+  );
+  el('button', 'menu-btn small', grid, 'Tutti i pezzi abissali').addEventListener('click', () => {
+    giveAbyssParts(g);
+    done('Hai i sei pezzi abissali: costruisci la nave al cantiere di Porto Fango.');
+  });
   const heal = el('button', 'menu-btn small', grid, 'Cura tutto');
   heal.addEventListener('click', () => {
     healAll(g);

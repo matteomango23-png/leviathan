@@ -9,7 +9,7 @@ import { WORLD } from '../data/worldLayout';
 import { outpostKey } from './economy/places';
 import type { GameState } from './game';
 
-export type ChartKind = 'harbour' | 'border' | 'sub' | 'boat' | 'end';
+export type ChartKind = 'harbour' | 'border' | 'sub' | 'boat' | 'ship' | 'end';
 
 interface ChartMark {
   kind: ChartKind;
@@ -28,7 +28,8 @@ type ChartWorld = Pick<GameState, 'ship' | 'sub' | 'boat' | 'seen'>;
 
 export function chartAround(g: ChartWorld): Chart {
   const halfM = SHIP.chart.halfKm * 1000;
-  const x = g.ship.x;
+  // from the abyssal submarine's own cockpit, the chart is round the submarine, the ship a mark on it
+  const x = g.sub.aboard ? g.sub.x : g.ship.x;
   const marks: ChartMark[] = [];
   const add = (kind: ChartKind, wx: number, label: string): void => {
     const dx = Math.round((wx - x) / WORLD.unitsPerMetre);
@@ -40,6 +41,7 @@ export function chartAround(g: ChartWorld): Chart {
   add('end', ENDLESS.maxX - ENDLESS.endWall, 'Fine del mare conosciuto');
   if (g.sub.owned && g.ship.bay === 'out' && !g.sub.aboard) add('sub', g.sub.x, 'Sottomarino');
   if (g.boat.owned && g.boat.bay === 'out' && !g.boat.aboard) add('boat', g.boat.x, 'Motoscafo');
+  if (g.sub.aboard && g.ship.owned) add('ship', g.ship.x, 'Nave');
   // (no legends' dens: owner, 20 ottobre; the hunt is followed with the sonar and the diary)
   marks.sort((a, b) => a.dx - b.dx);
   return { halfM, marks };

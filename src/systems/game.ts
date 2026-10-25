@@ -1,5 +1,6 @@
 // One step of the whole game: diver, weapons, fish, beasts, backpack, wrecks, port and missions.
 // Pure logic: no Phaser here, so it can be tested and reused.
+import { toggleNight } from './nightVision';
 import { FEEDING } from '../data/beasts';
 import { huntWithPack, packAboard, shellDepthM, stepPackEcho } from './pack';
 import { stepAirStation, stepBuried } from './specialPowers';
@@ -91,6 +92,9 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (input.clearTarget) clearTarget(g);
   if (input.helmCmd === 'tracker') shootTracker(g, events);
   // the light under the hull, or the Krill Hunter's mouth (ship/krillMouth.ts)
+  // the abyssal submarine's night vision (data/abyss.ts)
+  if (input.helmCmd === 'night') toggleNight(g, events);
+  if (!g.sub.aboard) g.sub.night = false;
   if (input.helmCmd === 'light') {
     if (hasMouth(g.ship)) toggleMouth(g, events);
     else toggleLight(g, events);

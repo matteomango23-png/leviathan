@@ -228,6 +228,20 @@
   font-size: 13px;
   opacity: 0.85;
 }
+/* the abyssal ship's six parts (ui/shipPage.ts): found ones lit, the others a shadow */
+.abyss-parts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 10px;
+  font-size: 12px;
+}
+.abyss-part {
+  opacity: 0.45;
+}
+.abyss-part.on {
+  opacity: 1;
+  color: #8fe3b0;
+}
 .ship-info-rows {
   display: grid;
   gap: 3px;

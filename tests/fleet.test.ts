@@ -26,7 +26,7 @@ const map = generateWorld();
 
 describe('the ships of the fleet', () => {
   it('each has its numbers and its card; the ready ones their paintings and submarines', () => {
-    expect(SHIP_MODELS).toHaveLength(9);
+    expect(SHIP_MODELS).toHaveLength(10); // with the abyssal ship (25 ottobre)
     for (const m of SHIP_MODELS) {
       expect(m.knots, m.id).toBeGreaterThan(0);
       expect(m.tank, m.id).toBeGreaterThan(0);
@@ -38,7 +38,8 @@ describe('the ships of the fleet', () => {
       for (const b of m.bays.filter((x) => x.kind === 'sub'))
         expect(SUB_MODELS.map((s) => s.id)).toContain(b.model);
     }
-    expect(Math.max(...SHIP_MODELS.map((m) => m.price))).toBe(50000); // owner: the dearest at 50.000
+    // owner: the dearest on sale at 50.000 (the abyssal ship is built from its parts)
+    expect(Math.max(...SHIP_MODELS.filter((m) => m.category !== 'abissale').map((m) => m.price))).toBe(50000);
   });
 
   it('their length is the real one; the first ship cannot go there and back across the 30 km sea', () => {
@@ -285,7 +286,7 @@ describe('the numbers of the ships, comparable (owner, 8 ottobre)', () => {
   });
 
   it('the bars: the best ship of each row fills it', () => {
-    expect(statShare(row('poseidon', 'knots'))).toBe(1);
+    expect(statShare(row('abissale', 'knots'))).toBe(1); // the abyssal ship (25 ottobre), then the Poseidon
     expect(statShare(row('nightmare', 'sonar'))).toBe(1);
     expect(statShare(row('whale', 'accel'))).toBe(1); // the small U-Boat is the quickest to get going
   });

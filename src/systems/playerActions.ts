@@ -63,7 +63,8 @@ export function doAction(g: GameState, events: GameEvent[]): void {
     // a crusted chest needs an octopus at your side (systems/specialPowers.ts)
     if (w && !canOpen(g, w)) events.push({ type: 'wreckLocked' });
     const loot = w && canOpen(g, w) && openWreck(w, g.gear, scavengerBonus(g));
-    if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
+    if (w && loot)
+      events.push({ type: 'wreckOpened', id: w.def.id, ...loot, partsHave: g.gear.abyssParts.length });
   } else if (act === 'porto') events.push({ type: 'portArrived' });
   else if (act === 'sali') {
     dismount(g, events); // your beast swims off, you climb in

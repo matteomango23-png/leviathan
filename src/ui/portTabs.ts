@@ -1,5 +1,6 @@
 // Port tab "Zaino": choose the 3 backpack slots by tapping (also in the cockpit). The board is portBoard.ts.
 import { ITEMS, SWARMS, WEAPONS } from '../data/world';
+import { ABYSS_PARTS } from '../data/abyss';
 import { canEquip, setSlot, slotKind } from '../systems/economy/gear';
 import type { GameState } from '../systems/game';
 import { el } from './dom';
@@ -44,6 +45,21 @@ export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
     });
     c.classList.add('slot-card');
   });
+  // the abyssal ship's parts found so far (data/abyss.ts): the others a shadow, until the shipyard builds it
+  if (gear.abyssParts.length) {
+    el('h3', '', b, 'Pezzi abissali');
+    const parts = el('div', 'pcard-grid', b);
+    for (const p of ABYSS_PARTS) {
+      const has = gear.abyssParts.includes(p.id);
+      portCard(parts, {
+        icon: has ? 'star' : 'lock',
+        title: has ? p.name : '???',
+        text: has ? p.text : 'Ancora da trovare, in un relitto lontano o in una caverna delle Gallerie.',
+        state: has ? 'owned' : '',
+      });
+    }
+    el('p', 'port-hint', b, 'Con tutti e sei, il cantiere di Porto Fango costruisce la nave abissale.');
+  }
   const options = [
     ...gear.weapons.filter((w) => w !== 'arpione'),
     ...gear.swarms,

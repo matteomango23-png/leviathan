@@ -36,6 +36,7 @@ export class HelmControls {
   private readonly sphereBtn: HTMLButtonElement;
   private readonly trackerBtn: HTMLButtonElement;
   private readonly lightBtn: HTMLButtonElement;
+  private readonly nightBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly bars: HelmBars;
@@ -101,6 +102,7 @@ export class HelmControls {
     this.lightBtn = el('button', 'helm-btn helm-light', still, 'Luce');
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.trackerBtn = el('button', 'helm-btn helm-tracker', this.buttons, 'Tracker');
+    this.nightBtn = el('button', 'helm-btn helm-night', this.buttons, 'Visione notturna');
     this.objective = el('div', 'helm-objective', this.root);
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
@@ -120,6 +122,7 @@ export class HelmControls {
     this.tap(this.sphereBtn, () => (this.session.input.helmCmd = 'sphere'));
     this.tap(this.trackerBtn, () => (this.session.input.helmCmd = 'tracker'));
     this.tap(this.lightBtn, () => (this.session.input.helmCmd = 'light'));
+    this.tap(this.nightBtn, () => (this.session.input.helmCmd = 'night'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
@@ -247,7 +250,10 @@ export class HelmControls {
     // all together, as soon as the throttle moves (owner, 9 ottobre: they went one by one, seconds later, while a
     // heavy ship slowly got going); back once it is still with the throttle at zero
     this.buttons.classList.toggle('under-way', ship && (!still || helm.throttle > 0.01));
-    this.cockpitBtn.hidden = info.mode !== 'ship';
+    // the abyssal submarine has a cockpit of its own (owner, 25 ottobre: hunting far from the ship)
+    this.cockpitBtn.hidden = info.mode !== 'ship' && !info.subCockpit;
+    this.nightBtn.hidden = info.night === undefined;
+    this.nightBtn.classList.toggle('on', !!info.night);
     this.engineBtn.hidden = info.mode === 'sub';
     this.bars.update(
       info.fuel,
