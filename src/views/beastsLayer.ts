@@ -52,13 +52,18 @@ export class BeastsLayer {
   /** The health a wild beast has left after your weapons wore it down (systems/swimFight.ts), over it. */
   private readonly bars: Phaser.GameObjects.Graphics;
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
-    this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
+  constructor(
+    scene: Phaser.Scene,
+    layer: Phaser.GameObjects.Layer,
+    g: GameState,
+    glow: Phaser.GameObjects.Layer,
+  ) {
+    this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer, glow));
     this.school = g.beasts.wilds.map((w) =>
       Array.from(
         // an endless slot can be any species: room for the biggest school
         { length: w.spawn.endless ? MAX_SCHOOL : (BEAST_TEMPER[w.spawn.speciesId]?.school ?? 0) },
-        () => new BeastSprite(scene, layer),
+        () => new BeastSprite(scene, layer, glow),
       ),
     );
     this.mount = new BeastSprite(scene, layer);
@@ -102,19 +107,9 @@ export class BeastsLayer {
     this.bars.fillStyle(left <= 0.5 ? 0xe0533c : 0xe6c45a, 0.95).fillRect(x - w / 2, y, w * left, 2);
   }
 
-  /**
-   * Its mood over it (owner, 24 ottobre: the fight before the battle must read at a glance): a pulsing red mark when
-   * it hunts you (it will bite: it goes first), a yellow one when it is wary or limping away worn down; none calm.
-   */
-  private moodMark(w: WildBeast, time: number): void {
-    const hunting = temperOf(w) === 'aggressive' && !isWorn(w) && (w.mood === 'chase' || !!w.stalk);
-    const wary = !hunting && ((w.provoked ?? 0) > 0 || isWorn(w) || w.mood === 'flee');
-    if (!hunting && !wary) return;
-    const y = w.y - w.length * 0.32 - (w.wounds ? 6 : 3);
-    const pulse = hunting ? 0.6 + 0.4 * Math.sin(time * 8) : 0.85;
-    const r = hunting ? 2.2 : 1.8;
-    this.bars.fillStyle(0x02070c, 0.6 * pulse).fillCircle(w.x, y, r + 0.8);
-    this.bars.fillStyle(hunting ? 0xe0533c : 0xe6c45a, pulse).fillCircle(w.x, y, r);
+  /** It hunts you (it will bite: it goes first): its eyes glow red (owner, 25 ottobre: no dots over the beasts). */
+  private hunting(w: WildBeast): boolean {
+    return temperOf(w) === 'aggressive' && !isWorn(w) && (w.mood === 'chase' || !!w.stalk);
   }
 
   update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
@@ -158,10 +153,10 @@ export class BeastsLayer {
           flash: w.flash,
           alpha: 1,
           shade,
+          hunt: this.hunting(w),
         });
       if (w.wounds && !unseen(w.x, w.y, w.length))
         this.woundBar(w.x, w.y - w.length * 0.32, w.length, w.wounds);
-      if (!unseen(w.x, w.y, w.length)) this.moodMark(w, time);
       // its pack: as many as are left (block 5b), each following the leader's wake a moment behind
       const schoolSize = Math.min(BEAST_TEMPER[w.form.speciesId]?.school ?? 0, w.pack);
       const trail = (this.trails[i] ??= new PackTrail());
@@ -191,6 +186,7 @@ export class BeastsLayer {
           flash: w.flash,
           alpha: 1,
           shade,
+          hunt: this.hunting(w),
         });
       });
     });
