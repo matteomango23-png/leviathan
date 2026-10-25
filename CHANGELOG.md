@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.112.2 — Occhi rossi (25 ottobre 2026)
+
+- **Niente più pallini sopra le bestie.** Quando una bestia ti caccia (sta per morderti e nella battaglia comincia lei), i suoi occhi si accendono di rosso e pulsano piano. Si vedono anche nel buio, fuori dalla lampada.
+- Le bestie all'erta, ferite o in fuga non hanno più nessun segno: si capisce da come nuotano (e dalla barra della vita, se le hai colpite).
+- I salvataggi non cambiano.
+
 ## v0.112.1 — Gallerie senza stacchi (25 ottobre 2026)
 
 - **L'arco dell'entrata è piantato nella parete,** non più a metà nell'acqua; il suo lato verso la fossa sfuma nell'acqua.

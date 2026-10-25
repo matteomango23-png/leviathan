@@ -128,7 +128,7 @@ export class WorldViews {
     this.sub = new SubmarineView(scene, L.world, L.glow);
     this.nightmare = new NightmareView(scene, L.world, L.glow);
     this.fishView = new FishView(scene, L.world, g.fish);
-    this.beasts = new BeastsLayer(scene, L.world, g);
+    this.beasts = new BeastsLayer(scene, L.world, g, L.glow);
     this.birdsView = new BirdsView(scene, L.world);
     this.diverView = new DiverView(scene, L.world);
     this.effects = new EffectsView(scene, L.world);
