@@ -1235,3 +1235,7 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - Ogni pezzo dipinto sul fondale (sfiati, forzieri, relitti, coralli, alghe) si appoggia al punto più basso sotto la sua base e sta dietro il terreno: la roccia copre il piede, così nessun bordo resta sospeso su un pendio (richiesta del proprietario). Su pendii troppo ripidi il pezzo si rimpicciolisce invece di sprofondare.
 - I muri d'ossa restano caselle (collisioni invariate), con la trama dipinta ripetuta a specchio.
+
+## 25 ottobre 2026 — Lo scontro in acqua è solo l'inizio della battaglia (v0.111.0)
+
+- Proposta approvata dal proprietario: il contatto avvia la battaglia a turni e conta chi ha colpito per primo; la bestia sfiancata non attacca più; niente pulsante "Affronta" (copriva "A bordo"). Una breve pausa tra il morso e la battaglia, perché il morso si veda.

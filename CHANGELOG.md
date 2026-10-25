@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.111.0 — Lo scontro in acqua rifatto (25 ottobre 2026)
+
+- **Niente più pulsante "Affronta":** la battaglia a turni parte da sola quando tu e la bestia vi toccate (se hai almeno una bestia pronta).
+- **Chi colpisce per primo comincia:** se l'hai colpita con l'arma o la tua cavalcatura l'ha morsa, nella battaglia cominci tu; se ti morde lei per prima, comincia lei.
+- **Bestia sfiancata al rosso** (metà vita tolta con le armi): non ti carica più, scappa piano (più piano di te). Raggiungila: cominci tu e domarla è più facile.
+- **Il morso si vede:** la cavalcatura morde sempre quello che tocca, a bocca aperta, e la bestia entra in battaglia ferita; c'è mezzo secondo per vedere i morsi prima che parta la battaglia.
+- **L'umore delle bestie:** un segno rosso che pulsa sopra chi ti sta cacciando, giallo sopra chi è all'erta o scappa ferita.
+- Senza bestie pronte: ti morde e ti spinge via, e puoi solo scappare.
+- I salvataggi non cambiano.
+
 ## v0.110.0 — Pezzi dipinti al posto del codice (25 ottobre 2026)
 
 - **Dipinti nuovi:** gli sfiati d'aria (uno sfiato di roccia con le bollicine tonde e lucide che escono dal cratere, al posto dei cerchietti), i forzieri (normale, incrostato, sepolto), la barca affondata con le armi, i coralli (ventaglio, cervello, corna viola, spugne, corallo molle), le alghe giganti che ondeggiano, i muri d'ossa che chiudono le gallerie e il pozzo della tana. Il veliero della Foresta è il galeone del Cimitero dei velieri.

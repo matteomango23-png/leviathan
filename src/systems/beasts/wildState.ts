@@ -1,7 +1,9 @@
 // Wild beasts in the open sea: their state, how they (re)appear, and simple queries. Movement is in roam.ts.
 // They do not fight in the water: touching them, or hitting them with a weapon, starts a turn-based battle.
+import { HARPOON_WEAKEN } from '../../data/battle';
 import { BEAST_BODY, BEAST_TEMPER, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
+import type { Fear } from './mountTraits';
 import { formLengthUnits, type BeastForm, shapeOfForm } from './forms';
 
 /** A big hunter's passes before it charges (beasts/patrol.ts). */
@@ -85,11 +87,18 @@ export interface WildBeast extends BodyPose {
   lookT: number;
   /** Share of its health your weapons took in the sea (0 … HARPOON_WEAKEN.max): it starts the battle without it. */
   wounds?: number;
+  /** A touch happened: the battle starts in `t` seconds (encounters.ts), the bites seen meanwhile. */
+  battleIn?: { t: number; first: 'you' | 'foe' | 'normal'; fear?: Fear };
+  /** You hit it first (your weapon, your mount's bite): in the battle you go first (swimFight.ts touchOutcome). */
+  struckFirst?: boolean;
   /** Seconds it stays roused by your weapons: fleeing fast (swimFight.ts, roam.ts). */
   provoked?: number;
   /** A hunter roused by your weapon or your mount: stalking you, charging from the dark (beasts/stalk.ts). */
   stalk?: Stalk;
 }
+
+/** Worn down to half its health by your weapons or your mount: it no longer attacks, it limps away (swimFight.ts). */
+export const isWorn = (w: { wounds?: number }): boolean => (w.wounds ?? 0) >= HARPOON_WEAKEN.max - 1e-6;
 
 export function createWild(id: number, spawn: WildSpawnDef): WildBeast {
   const form: BeastForm = { speciesId: spawn.speciesId, variant: 'comune' };
@@ -155,6 +164,8 @@ export function spawnWild(
     target: null,
     calm: 0,
     wounds: 0,
+    struckFirst: false,
+    battleIn: undefined,
     provoked: 0,
     turn: 0,
     jaw: 0,

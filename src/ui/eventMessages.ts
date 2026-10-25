@@ -190,13 +190,18 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
       return [
         e.clash
           ? `Vi siete morsi a vicenda: ${e.name} ha ancora ${Math.round(e.left * 100)}% di vita.`
-          : `Ha morso ${e.name}! Le resta ${Math.round(e.left * 100)}% di vita. Schiva con lo scatto o affrontalo.`,
+          : `Ha morso ${e.name}! Le resta ${Math.round(e.left * 100)}% di vita. Scatta contro di lei per mordere per primo.`,
         2.6,
       ];
     case 'bitten':
-      return ['Ti ha morso! Affrontalo o allontanati.', 1.8];
+      return ['Ti ha morso!', 1.6];
     case 'beastWounded':
-      return e.worn ? ['È sfiancata: ora domarla è più facile.', 2.4] : null;
+      return e.worn
+        ? [
+            'È sfiancata: non attacca più e scappa piano. Raggiungila: comincerai tu, e domarla sarà più facile.',
+            3,
+          ]
+        : null;
     case 'wreckLocked':
       return ['È chiuso e incrostato: serve un polpo gigante nel branco.', 3.5];
     case 'buriedFound':

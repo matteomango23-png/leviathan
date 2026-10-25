@@ -7,8 +7,6 @@ import { storyHoldsDiver } from './story';
 import { needsStarter } from './starter';
 import { atPort, nearWreck, openWreck, portStart } from './economy/places';
 import { canOpen, scavengerBonus, wreckReach, wreckShown } from './specialPowers';
-import { hunterAfterYou } from './swimFight';
-import { faceHunter } from './encounters';
 import { PORT, PORTS } from '../data/economy';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
@@ -36,7 +34,7 @@ export function canDashNow(g: GameState): boolean {
 
 /** What the context button does right now. */
 export type Action =
-  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo' | 'affronta';
+  ReturnType<typeof contextAction> | 'porto' | 'apri' | 'sali' | 'esci' | 'aggancia' | 'abordo';
 export function currentAction(g: GameState): Action {
   if (storyHoldsDiver(g) || g.story.dialogue || g.beasts.battle || needsStarter(g)) return null;
   const d = g.diver;
@@ -53,9 +51,6 @@ export function currentAction(g: GameState): Action {
   const vehicle = vehicleAction(g); // by the ship's hull: A bordo
   if (vehicle) return vehicle;
   if (!g.beasts.riding && atPort(d, g.map)) return 'porto';
-  // a hunter after you while you swim on your own: face it (swimFight.ts) — after the ship, the vehicles and the
-  // harbour, so you can always get away into them (owner, 24 ottobre: it hid "A bordo")
-  if (hunterAfterYou(g)) return 'affronta';
   return beast;
 }
 
@@ -69,8 +64,7 @@ export function doAction(g: GameState, events: GameEvent[]): void {
     if (w && !canOpen(g, w)) events.push({ type: 'wreckLocked' });
     const loot = w && canOpen(g, w) && openWreck(w, g.gear, scavengerBonus(g));
     if (w && loot) events.push({ type: 'wreckOpened', id: w.def.id, ...loot });
-  } else if (act === 'affronta') faceHunter(g, events);
-  else if (act === 'porto') events.push({ type: 'portArrived' });
+  } else if (act === 'porto') events.push({ type: 'portArrived' });
   else if (act === 'sali') {
     dismount(g, events); // your beast swims off, you climb in
     board(g, events);

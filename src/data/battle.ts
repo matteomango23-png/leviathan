@@ -16,6 +16,8 @@ export const HARPOON_WEAKEN = {
   provokedSeconds: 14,
   fleeMult: 2,
   fleeOver: 1.15,
+  /** Worn down to `max` it no longer attacks and limps away at this share of your speed (owner, 24 ottobre). */
+  wornSpeed: 0.6,
 };
 
 /**

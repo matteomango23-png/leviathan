@@ -8,7 +8,7 @@ import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
 import { bodiesTouch, bodyCircles, distanceToBody, type BodyPose } from './combat';
 import { uniqueOf } from './forms';
-import { bodyRadius, isRare, type WildBeast } from './wildState';
+import { bodyRadius, isRare, isWorn, type WildBeast } from './wildState';
 import { startPatrol, stepPatrol } from './patrol';
 import { stepStalk } from './stalk';
 import type { ViewRect } from '../beastState';
@@ -104,6 +104,9 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   const roused = (b.provoked ?? 0) > 0;
   if (b.motion === 'gone') return false;
   // roused by your weapon or your mount's bite: it stalks you, charging from the dark (beasts/stalk.ts)
+  // worn down to half its health it only limps away from you (owner, 24 ottobre: "non dovrebbe continuare a caricarti")
+  const worn = isWorn(b);
+  if (worn) b.stalk = undefined;
   const st = b.stalk ? stepStalk(b, ctx.diver, ctx.view, rng, dt) : null;
   if (st) [b.patrol, b.mood] = [undefined, 'chase'];
 
@@ -124,6 +127,7 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   } else if (b.mood === 'chase' && afraid) b.mood = 'flee';
   else if (b.mood !== 'wander' && dist > lose) b.mood = 'wander';
   if (ctx.scared && !b.boss && dist < sight) b.mood = 'flee';
+  if (worn && !b.boss && !quiet) b.mood = dist < sight ? 'flee' : 'wander';
   if (b.mood !== 'chase') [b.patrol, b.charging, b.patrolled] = [undefined, undefined, undefined];
   // called by the light under the ship, a curious beast comes on and does not slip away from you (block 5b)
   if (b.drawn && temper !== 'aggressive' && b.mood === 'flee') b.mood = 'wander';
@@ -154,9 +158,11 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   } else if (b.mood === 'flee') {
     const k = (ROAM.loseRange * U) / Math.max(1, dist);
     // frightened by your weapon even a slow one gets away faster than you swim (HARPOON_WEAKEN.fleeOver)
-    const flee = roused
-      ? Math.max(ROAM.shySpeed * U * mult, DIVER.maxSpeed * HARPOON_WEAKEN.fleeOver)
-      : ROAM.shySpeed * U * mult;
+    const flee = worn
+      ? Math.min(ROAM.shySpeed * U * mult, DIVER.maxSpeed * HARPOON_WEAKEN.wornSpeed)
+      : roused
+        ? Math.max(ROAM.shySpeed * U * mult, DIVER.maxSpeed * HARPOON_WEAKEN.fleeOver)
+        : ROAM.shySpeed * U * mult;
     [tx, ty, speed] = [b.x + (b.x - d.x) * k, b.y + (b.y - d.y) * k * 0.5, flee];
   } else if (b.fleeFrom) {
     // a hunter after it (beasts/packHunt.ts): away from it

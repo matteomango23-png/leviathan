@@ -10,7 +10,7 @@ import { stepRoam } from '../src/systems/beasts/roam';
 import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
 import { ambush } from '../src/systems/encounters';
 import { weaponHitsBeast } from '../src/systems/swimFight';
-import { currentAction, doAction } from '../src/systems/playerActions';
+import { currentAction } from '../src/systems/playerActions';
 import type { GameEvent } from '../src/systems/events';
 import { createGame, stepGame, toSave, type GameState } from '../src/systems/game';
 import { consumePresses, emptyInput, type InputState } from '../src/systems/input';
@@ -85,18 +85,14 @@ describe('wild beasts in the open sea', () => {
     expect(turnedInLight).toBe(false);
   });
 
-  it('an aggressive one comes at you: swimming on your own it bites, then you face it (lot BA, 22 ottobre)', () => {
+  it('an aggressive one comes at you: it bites and the battle starts, it goes first (24 ottobre: no Affronta)', () => {
     const g = bay();
     const w = place(g, 'squalo_tigre', X + 70, 200, -1);
     const ev = run(g, 6);
     expect(ev.some((e) => e.type === 'bitten')).toBe(true);
     expect(ev.some((e) => e.type === 'hurt')).toBe(true);
-    expect(g.beasts.battle).toBeNull(); // no battle at its touch
-    // the context button: Affronta, an even battle
-    expect(currentAction(g)).toBe('affronta');
-    const face: GameEvent[] = [];
-    doAction(g, face);
-    expect(g.beasts.battle).toEqual({ wildId: w.id, first: 'normal' });
+    expect(g.beasts.battle).toMatchObject({ wildId: w.id, first: 'foe' });
+    expect(currentAction(g)).not.toBe('affronta');
     expect(ambush).toBeDefined();
   });
 

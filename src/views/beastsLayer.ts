@@ -2,6 +2,8 @@
 // pictures and size: no glow around them any more (owner, 16 ottobre 2026: "fa schifo"). Health is shown in
 // battle, not in the open sea.
 import Phaser from 'phaser';
+import { temperOf } from '../systems/beasts/roam';
+import { isWorn, type WildBeast } from '../systems/beasts/wildState';
 import { PACK } from '../data/beasts';
 import type { Mount } from '../systems/beasts/mount';
 import type { TeamBeast } from '../systems/beasts/team';
@@ -100,6 +102,21 @@ export class BeastsLayer {
     this.bars.fillStyle(left <= 0.5 ? 0xe0533c : 0xe6c45a, 0.95).fillRect(x - w / 2, y, w * left, 2);
   }
 
+  /**
+   * Its mood over it (owner, 24 ottobre: the fight before the battle must read at a glance): a pulsing red mark when
+   * it hunts you (it will bite: it goes first), a yellow one when it is wary or limping away worn down; none calm.
+   */
+  private moodMark(w: WildBeast, time: number): void {
+    const hunting = temperOf(w) === 'aggressive' && !isWorn(w) && (w.mood === 'chase' || !!w.stalk);
+    const wary = !hunting && ((w.provoked ?? 0) > 0 || isWorn(w) || w.mood === 'flee');
+    if (!hunting && !wary) return;
+    const y = w.y - w.length * 0.32 - (w.wounds ? 6 : 3);
+    const pulse = hunting ? 0.6 + 0.4 * Math.sin(time * 8) : 0.85;
+    const r = hunting ? 2.2 : 1.8;
+    this.bars.fillStyle(0x02070c, 0.6 * pulse).fillCircle(w.x, y, r + 0.8);
+    this.bars.fillStyle(hunting ? 0xe0533c : 0xe6c45a, pulse).fillCircle(w.x, y, r);
+  }
+
   update(g: GameState, time: number, shapes: { murk: number; x: number; y: number } | null = null): void {
     const dt = Number.isNaN(this.lastTime) ? 1 : Math.max(0, Math.min(1, time - this.lastTime));
     this.lastTime = time;
@@ -144,6 +161,7 @@ export class BeastsLayer {
         });
       if (w.wounds && !unseen(w.x, w.y, w.length))
         this.woundBar(w.x, w.y - w.length * 0.32, w.length, w.wounds);
+      if (!unseen(w.x, w.y, w.length)) this.moodMark(w, time);
       // its pack: as many as are left (block 5b), each following the leader's wake a moment behind
       const schoolSize = Math.min(BEAST_TEMPER[w.form.speciesId]?.school ?? 0, w.pack);
       const trail = (this.trails[i] ??= new PackTrail());

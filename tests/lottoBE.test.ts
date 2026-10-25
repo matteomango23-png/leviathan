@@ -93,16 +93,15 @@ describe('lo squalo colpito ti dà la caccia (proprietario: "deve fare paura")',
     expect(bitten).toBe(false);
   });
 
-  it('dopo il morso va oltre e torna a caricare', () => {
+  it('la sua carica ti morde e parte la battaglia: cominci tu, perché l’hai colpito per primo (24 ottobre)', () => {
     const g = game();
     const w = place(g, 'squalo_tigre', 60);
     weaponHitsBeast(g, w.x, w.y, [], 1);
     let bites = 0;
-    for (let i = 0; i < 30 * 30 && bites < 2; i++) {
-      const ev = step(g);
-      bites += ev.filter((e) => e.type === 'bitten').length;
-    }
-    expect(bites).toBe(2);
+    for (let i = 0; i < 30 * 30 && !g.beasts.battle; i++)
+      bites += step(g).filter((e) => e.type === 'bitten').length;
+    expect(bites).toBe(1);
+    expect(g.beasts.battle).toMatchObject({ wildId: w.id, first: 'you' });
   });
 
   it("dopo un po' senza essere colpito si stanca e ti lascia", () => {
