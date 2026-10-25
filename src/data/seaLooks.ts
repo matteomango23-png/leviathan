@@ -26,8 +26,6 @@ export interface SeaLookDef {
   glow: number;
   glowColors: string[];
   sound: SeaSound;
-  /** The ridges stand this many units higher (a shallow place: its seabed would hide them). */
-  ridgeLift?: number;
 }
 
 export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
@@ -53,7 +51,6 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
     glow: 0,
     glowColors: [],
     sound: 'swamp',
-    ridgeLift: 120, // its seabed is about 20 m shallower than the bay's
   },
   barriera: {
     water: [1.05, 1.18, 1.1],
@@ -128,16 +125,17 @@ export const SEA_LOOK_BLEND = 2400;
 /**
  * The ridges stand on the seabed of the place, not at one height (owner, 22 ottobre: the deep regions' panoramas
  * were never seen near their floor): they go down by how much deeper than `ref` the floor is, averaged over
- * `span` units each side, easing there by `ease` a frame. Tuning.
+ * `span` units each side, easing there by `ease` a frame; over a shallower seabed they come up, at most `maxRaise`
+ * (the bay, the Delta: owner, 24 ottobre). Tuning.
  */
-export const SEA_RIDGE_FLOOR = { ref: 390, span: 1800, samples: 9, ease: 0.04 };
+export const SEA_RIDGE_FLOOR = { ref: 390, span: 1800, samples: 9, ease: 0.04, maxRaise: 200 };
 
 /** Within the Foresta e Banchisa the kind changes every 300 m (ENDLESS.stretch): the forest and the ice blend over
  *  about 100 m, or they would never be seen apart. */
 export const SEA_LOOK_BLEND_STRETCH = 600;
 
 /** The Delta is short (about 140 m): its look comes and goes over this many units at its edges. */
-export const SEA_LOOK_BLEND_DELTA = 180;
+export const SEA_LOOK_BLEND_DELTA = 420;
 
 /**
  * The marine snow grows with depth: × (1 + `perDepth` × metres / 100), up to `max` times the specks of the

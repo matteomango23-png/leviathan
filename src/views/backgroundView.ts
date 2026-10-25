@@ -33,13 +33,14 @@ export class BackgroundView {
   private lastWaves = NaN;
   private lastSize = '';
 
-  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer) {
+  /** @param floorAt the seabed's y under x near the coast (the map's), for the panoramas to stand on */
+  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, floorAt?: (x: number) => number) {
     this.waterTex = scene.textures.exists(WATER_KEY)
       ? (scene.textures.get(WATER_KEY) as Phaser.Textures.CanvasTexture)
       : scene.textures.createCanvas(WATER_KEY, 2, WATER_ROWS)!;
     this.water = scene.add.image(0, 0, WATER_KEY).setOrigin(0, 0);
     layer.add(this.water);
-    this.ridges = new SeaRidges(scene, layer);
+    this.ridges = new SeaRidges(scene, layer, floorAt);
   }
 
   /** Water by depth and the sky above it, greyer and darker under clouds (0..1). */

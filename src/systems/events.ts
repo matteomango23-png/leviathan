@@ -86,6 +86,7 @@ export type GameEvent =
   | { type: 'seaEnd' }
   /** The ship reached Porto Fango going west: its waters end there. */
   | { type: 'shipWest' }
+  | { type: 'shipAground' }
   /** The sonar pings (a sound). */
   | { type: 'sonarPing' }
   // the Ocean's Nightmare's drone and sphere (part 4d)

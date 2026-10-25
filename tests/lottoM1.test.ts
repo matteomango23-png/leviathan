@@ -45,10 +45,12 @@ describe('ogni regione ha il suo aspetto', () => {
     let last = -1;
     for (let x = border - SEA_LOOK_BLEND / 2 + 1; x < border + SEA_LOOK_BLEND / 2; x += 50) {
       const m = lookAt(x);
-      expect([m.a, m.b]).toEqual(['barriera', 'mareblu']);
-      expect(m.t).toBeGreaterThanOrEqual(last);
-      if (last >= 0) expect(m.t - last).toBeLessThan(0.1);
-      last = m.t;
+      // at the window's very ends it may still be pure (24 ottobre: the mix is the share of the window)
+      const t = m.a === m.b ? (m.a === 'barriera' ? 0 : 1) : m.t;
+      if (m.a !== m.b) expect([m.a, m.b]).toEqual(['barriera', 'mareblu']);
+      expect(t).toBeGreaterThanOrEqual(last);
+      if (last >= 0) expect(t - last).toBeLessThan(0.1);
+      last = t;
     }
     // the water's tint changes little at a time
     const tintA = waterTint(lookAt(border - 25));

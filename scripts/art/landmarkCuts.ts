@@ -33,11 +33,46 @@ export const LANDMARK_CUTS: Record<string, (Cut | Door)[]> = {
 /** Pictures whose bottom fades out (this share of their height): an outpost's pillars and coral, an islet's roots go on down into
  *  the dark instead of ending at a line in the water (lot P1). */
 export const BOTTOM_FADES: Record<string, number> = {
+  molo_fondo: 0.35,
   avamposto_orlo: 0.4,
   avamposto_corallo: 0.42,
   delta_isola_1: 0.32,
   delta_isola_2: 0.2,
 };
+
+/** Pictures whose left and right ends fade out (this share of their width): the floor piece under the piers had
+ *  its sand bed cut straight at both ends (24 ottobre). */
+export const SIDE_FADES: Record<string, { left: number; right: number }> = {
+  molo_fondo: { left: 0.14, right: 0.14 },
+  luogo_galeone_dentro: { left: 0, right: 0.06 }, // its stern was cut by the picture's frame
+};
+
+/** Fades the two ends of a picture's visible box out, if it is listed (ragged, like the bottom). */
+export function applySideFade(
+  id: string,
+  px: Uint8ClampedArray,
+  img: Raw,
+  box: { x0: number; y0: number; x1: number; y1: number },
+): void {
+  const share = SIDE_FADES[id];
+  if (!share) return;
+  const w = box.x1 - box.x0 + 1;
+  const h = box.y1 - box.y0 + 1;
+  for (let y = box.y0; y <= box.y1; y++) {
+    const v = (y - box.y0) / h;
+    const ragged = 0.75 + 0.25 * Math.sin(v * 11.3 + 0.4);
+    for (let x = box.x0; x <= box.x1; x++) {
+      const fromLeft = x - box.x0;
+      const fromRight = box.x1 - x;
+      const left = w * share.left * ragged;
+      const right = w * share.right * ragged;
+      const t = Math.min(left > 0 ? fromLeft / left : 1, right > 0 ? fromRight / right : 1);
+      if (t >= 1) continue;
+      const o = (y * img.width + x) * 4 + 3;
+      px[o] = Math.round(px[o]! * t * t);
+    }
+  }
+}
 
 /** Fades the bottom of a picture's visible box out, if it is listed. */
 export function applyBottomFade(

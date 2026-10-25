@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.109.0 — Portofosco, U-Boot, sfondi e sonar (25 ottobre 2026)
+
+- **Le navi non entrano più nella terra:** un U-Boot risalito a ovest di Porto Fango si ferma sui bassi fondali ("Fondale troppo basso") invece di arrivare a Portofosco.
+- **U-Boot sott'acqua:** sbatte con tutta la sua sagoma (torri, vele, chiglia), non solo con il centro dello scafo.
+- **Sotto i moli:** i pali di Portofosco arrivano fino al fondale e ci entrano dentro; la barchetta, l'ancora e le cose sul fondo sono mezze sepolte, senza bordi dritti. Sotto Porto Fango i pali scendono fino in fondo senza lo stacco di prima.
+- **Gli sfondi non saltano più:** dalla baia alla laguna e all'isola i panorami sfumano piano e poggiano sul fondale; corretti anche i salti tra Foresta e Banchisa (controllato tutto il mare, metro per metro).
+- **Sonar del sottomarino:** mostra pareti, fondale e ghiaccio intorno come una linea di puntini; anche il batiscafo ora ha questo sonar semplice.
+- Il galeone del Cimitero dei velieri non è più tagliato dritto sulla poppa.
+- I salvataggi non cambiano.
+
 ## v0.108.1 — Correzioni dalle tue prove (24 ottobre 2026)
 
 - **Musica:** le voci del coro e della melodia (e il bordone sotto) non gracchiano più: suoni morbidi e filtrati, anche nel porto e nel menu.

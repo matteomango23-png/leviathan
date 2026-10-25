@@ -163,6 +163,9 @@ export const SUBMARINE = {
   /** Its air (owner, 9 ottobre): refilled per second at the surface or in the hold, the warning, the rise once it is
    *  gone (units/s), and how deep under its resting line it counts as under water (units). */
   /** Out of air (or flooded) under water: a heart every `hurtEvery` seconds (no rising by itself any more). */
+  /** The sonar's picture of the sea (rock and ice edges, systems/subSonar.ts): cells across it; the range of the
+   *  submarines with no beast sonar (m). Tuning. */
+  edgeScope: { cells: 28, rangeM: 50 },
   air: { refill: 6, warnAt: 30, hurtEvery: 5, underBelow: 8 },
   accel: 110, // units/s² speeding up (and braking, with the lever the other way)
   coast: 45, // units/s² it slows down by itself, throttle down

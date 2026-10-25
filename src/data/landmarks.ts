@@ -104,10 +104,10 @@ export const PIER_UNDER = {
   /** The piles' picture: its width, and how far above the surface its top starts. */
   pilesWidthM: 34,
   /** In a deep harbour the poles go on down to the floor: the picture's lowest band (from this share of its height,
-   *  under the net) stretched. */
+   *  under the net) repeated, every other copy upside down. */
   pilesRepeatFrom: 0.86,
   /** The things on the floor: width, metres right of the pier's middle, how far sunk into the sand. */
   floorWidthM: 18,
   floorDxM: 14,
-  floorSink: 1,
+  floorSink: 0.5, // a little buried: the terrain in front hides the bottom of its sand bed (24 ottobre)
 };

@@ -143,8 +143,10 @@ export class PlacesView {
     /** Where the outposts go: in front of the sea's surface band, like the ships (it hid their underwater part
      *  down to a straight line: owner, 24 ottobre). */
     afloat: Phaser.GameObjects.Container | Phaser.GameObjects.Layer = layer,
+    /** Behind the terrain: the piers' piles and the things on the floor under them (pierUnder.ts). */
+    under?: Phaser.GameObjects.Container,
   ) {
-    if (map) drawPierUnder(scene, layer, map); // behind the pier and the chests
+    if (map) drawPierUnder(scene, under ?? layer, map); // behind the terrain, the pier and the chests
     const g = scene.add.graphics();
     const painted = WORLD_ART_KEYS.includes(PIER_ART.key);
     // the villages (lot P1): behind the piers and the trading house

@@ -337,6 +337,44 @@ async function icebergShapes(): Promise<string> {
   return JSON.stringify(out, null, 1);
 }
 
+/** The outline of each ship's picture (its whole frame, not cropped): a coarse solid mask, so a diving U-Boat bumps
+ *  with all of its shape, towers and keel (owner, 24 ottobre: only the middle of the hull did). */
+const SHIP_MASK_COLS = 64;
+async function shipShapes(): Promise<string> {
+  const dir = join('public', 'world');
+  const out: Record<string, string[]> = {};
+  if (!existsSync(dir)) return '{}';
+  for (const f of (await readdir(dir)).filter((x) => /^nave_[a-z0-9]+.webp$/.test(x)).sort()) {
+    const { data, info } = await sharp(join(dir, f))
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const rows = Math.max(4, Math.round((SHIP_MASK_COLS * info.height) / info.width));
+    const mask: string[] = [];
+    for (let r = 0; r < rows; r++) {
+      let row = '';
+      for (let q = 0; q < SHIP_MASK_COLS; q++) {
+        // solid if most of the cell is painted
+        let n = 0;
+        let solid = 0;
+        const x0 = Math.floor((q / SHIP_MASK_COLS) * info.width);
+        const x1 = Math.floor(((q + 1) / SHIP_MASK_COLS) * info.width);
+        const y0 = Math.floor((r / rows) * info.height);
+        const y1 = Math.floor(((r + 1) / rows) * info.height);
+        for (let y = y0; y < y1; y += 2)
+          for (let x = x0; x < x1; x += 2) {
+            n++;
+            if (data[(y * info.width + x) * 4 + 3]! > 128) solid++;
+          }
+        row += solid > n * 0.4 ? '1' : '0';
+      }
+      mask.push(row);
+    }
+    out[f.replace(/.webp$/, '')] = mask;
+  }
+  return JSON.stringify(out, null, 1);
+}
+
 async function hashes(): Promise<string> {
   const lines: string[] = [];
   for (const dir of ['sprites', 'glow', 'art', 'bg', 'items', 'ui', 'world']) {
@@ -403,6 +441,11 @@ async function writeSpriteList(): Promise<void> {
     `// Painted walls and icebergs of the world (public/world); icebergs with their waterline and solid mask.\n` +
     `export const WORLD_ART_KEYS: readonly string[] = [\n${list(await names('public/world'))}\n];\n\n` +
     `export const ICEBERG_SHAPES: Readonly<Record<string, { w: number; h: number; waterline: number; mask: string[] }>> = ${await icebergShapes()};\n\n` +
+    `// The ships' outlines (their whole frame), for the U-Boats' collisions under water (ship/uboat.ts).
+` +
+    `export const SHIP_SHAPES: Readonly<Record<string, string[]>> = ${await shipShapes()};
+
+` +
     `// A fingerprint of each picture: added to its address, so a phone never shows an old copy (data/assets.ts).\n` +
     `export const ASSET_HASHES: Readonly<Record<string, string>> = {\n${await hashes()}\n};\n`;
   await writeFile('src/data/sprites.generated.ts', text, 'utf8');

@@ -4,12 +4,13 @@
 // owner, 24 ottobre: it no longer rises by itself), and only empty it rises, breaking the ice if it is under it. It
 // refills its air afloat. Pure logic; ship.ts calls it every step.
 import { SHIP } from '../../data/ship';
-import { WORLD } from '../../data/worldLayout';
+import { SHIP_SHAPES } from '../../data/sprites.generated';
+import { TILE, WORLD } from '../../data/worldLayout';
 import type { GameEvent } from '../events';
 import type { HelmState } from '../helm';
 import type { TileMap } from '../world/tileMap';
-import { shipDraft, shipHeight, shipHull, shipSpan } from './geometry';
-import { shipModel, shipPicture } from './model';
+import { shipDraft, shipHeight, shipHull, shipPoint, shipSpan } from './geometry';
+import { shipArt, shipModel, shipPicture } from './model';
 import { breakIce, type BrokenIce } from './surface';
 
 interface DiveShip {
@@ -44,10 +45,52 @@ export function maxDive(s: { model: string }): number {
 export const keelDepthM = (s: { model: string; dive?: number }): number =>
   ((s.dive ?? 0) + shipDraft(s)) / WORLD.unitsPerMetre;
 
-/** Would its hull, at this x and dive, run into rock (or the ice sheet)? Afloat it never does (its own lanes). */
+const outlines = new Map<string, [number, number][]>();
+
+/** The edge cells of a ship picture's outline (shares of its frame): the solid cells next to an empty one. */
+function outline(key: string): [number, number][] | null {
+  const hit = outlines.get(key);
+  if (hit) return hit;
+  const mask = SHIP_SHAPES[key];
+  if (!mask) return null;
+  const rows = mask.length;
+  const cols = mask[0]!.length;
+  const at = (q: number, r: number): boolean => mask[r]?.[q] === '1';
+  const out: [number, number][] = [];
+  for (let r = 0; r < rows; r++)
+    for (let q = 0; q < cols; q++)
+      if (at(q, r) && !(at(q - 1, r) && at(q + 1, r) && at(q, r - 1) && at(q, r + 1)))
+        out.push([(q + 0.5) / cols, (r + 0.5) / rows]);
+  outlines.set(key, out);
+  return out;
+}
+
+/** Would it, at this x and dive, run into rock (or the ice sheet)? Under water with the whole outline of its picture,
+ *  towers and keel (owner, 24 ottobre: only the middle of the hull bumped); afloat never (its lanes: hullAground). */
 export function hullBlocked(map: TileMap, s: DiveShip, x: number, dive: number): boolean {
   if (dive <= SHIP.dive.afloatBelow) return false;
-  return shipHull({ ...s, x, dive }).some((p) => map.hitCircle(p.x, p.y, p.r * 0.9));
+  const pose = { ...s, x, dive };
+  const edge = outline(shipArt(s).closed);
+  if (!edge) return shipHull(pose).some((p) => map.hitCircle(p.x, p.y, p.r * 0.9));
+  return edge.some(([u, v]) => {
+    const p = shipPoint(pose, u, v);
+    return map.solidAt(p.x, p.y);
+  });
+}
+
+/** Afloat, would its keel at this x run onto the seabed or a coast? (The ice it breaks: not that.) */
+export function hullAground(map: TileMap, s: DiveShip, x: number): boolean {
+  return shipHull({ ...s, x, dive: 0 }).some((p) =>
+    [
+      [0, 0],
+      [0, 0.9],
+      [0.9, 0],
+      [-0.9, 0],
+    ].some(([dx, dy]) => {
+      const t = map.tileAtPoint(p.x + dx! * p.r, p.y + dy! * p.r);
+      return t !== TILE.water && t !== TILE.ice;
+    }),
+  );
 }
 
 /** The air it starts with. */
