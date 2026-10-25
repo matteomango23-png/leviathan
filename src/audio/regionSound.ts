@@ -18,6 +18,7 @@ export class RegionSound {
   private readonly out: GainNode;
   private readonly reefGain: GainNode;
   private readonly next = { ice: 2, deep: 2, swamp: 2 };
+  private dripT = 1;
 
   constructor(
     private readonly ctx: AudioContext,
@@ -38,7 +39,13 @@ export class RegionSound {
     src.start();
   }
 
-  update(look: LookMix, dt: number): void {
+  update(look: LookMix, dt: number, cave = false): void {
+    // inside the Gallerie: now and then a drop, echoing (lot M3)
+    this.dripT -= dt;
+    if (cave && this.dripT <= 0) {
+      this.dripT = between(REGION_SOUND.cave.every);
+      this.drip(this.ctx.currentTime);
+    }
     const s = soundShares(look);
     const t = this.ctx.currentTime;
     this.reefGain.gain.setTargetAtTime(REGION_SOUND.reef.volume * s.reef, t, 0.8);
@@ -86,6 +93,30 @@ export class RegionSound {
     osc.connect(g).connect(this.out);
     osc.start(at);
     osc.stop(at + 3.6);
+  }
+
+  /** A drop in a cave: a short high tone falling, and two fainter echoes. */
+  private drip(at: number): void {
+    const v = REGION_SOUND.cave.volume;
+    for (const [delay, k] of [
+      [0, 1],
+      [0.18, 0.4],
+      [0.38, 0.18],
+    ] as const) {
+      const t = at + delay;
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = 'sine';
+      const f = 900 + Math.random() * 500;
+      osc.frequency.setValueAtTime(f, t);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.55, t + 0.06);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(v * k, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      osc.connect(g).connect(this.out);
+      osc.start(t);
+      osc.stop(t + 0.13);
+    }
   }
 
   /** Mud bubbling up: one to three soft blups, each a quick rising tone. */

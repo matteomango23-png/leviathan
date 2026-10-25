@@ -129,3 +129,47 @@ export function applyCuts(
       if (open) px[(y * img.width + x) * 4 + 3] = 0;
     }
 }
+
+/** Pictures whose dark middle is a hole (a tunnel's mouth, lot M3): the near-black pixels joined to the picture's
+ *  middle are cleared, so the gallery shows through the arch. */
+export const DARK_HOLES: Record<string, { x: number; y: number; rx: number; ry: number }> = {
+  // the hole of the arch only (shares of its box): the ink outlines of its rock are dark too
+  ingresso_galleria: { x: 0.52, y: 0.6, rx: 0.2, ry: 0.29 },
+};
+
+export function clearDarkMiddle(
+  id: string,
+  px: Uint8ClampedArray,
+  img: Raw,
+  box: { x0: number; y0: number; x1: number; y1: number },
+): void {
+  const hole = DARK_HOLES[id];
+  if (!hole) return;
+  const W = img.width;
+  const bw = box.x1 - box.x0 + 1;
+  const bh = box.y1 - box.y0 + 1;
+  const inHole = (x: number, y: number): boolean =>
+    ((x - box.x0) / bw - hole.x) ** 2 / hole.rx ** 2 + ((y - box.y0) / bh - hole.y) ** 2 / hole.ry ** 2 < 1;
+  const dark = (x: number, y: number): boolean => {
+    const o = (y * W + x) * 4;
+    return px[o + 3]! > 0 && px[o]! + px[o + 1]! + px[o + 2]! < 75;
+  };
+  const sx = Math.round(box.x0 + bw * hole.x);
+  const sy = Math.round(box.y0 + bh * hole.y);
+  if (!dark(sx, sy)) return;
+  const seen = new Uint8Array(W * img.height);
+  const stack = [sy * W + sx];
+  while (stack.length) {
+    const i = stack.pop()!;
+    if (seen[i]) continue;
+    seen[i] = 1;
+    const x = i % W;
+    const y = (i - x) / W;
+    if (!dark(x, y) || !inHole(x, y)) continue;
+    px[i * 4 + 3] = 0;
+    if (x > box.x0) stack.push(i - 1);
+    if (x < box.x1) stack.push(i + 1);
+    if (y > box.y0) stack.push(i - W);
+    if (y < box.y1) stack.push(i + W);
+  }
+}

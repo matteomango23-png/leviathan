@@ -35,6 +35,7 @@ import { EffectsView } from '../views/effectsView';
 import { FishView } from '../views/fishView';
 import { GearFxView } from '../views/gearFxView';
 import { HuntView } from '../views/huntView';
+import { GalleryView } from '../views/galleryView';
 import { IceArtView } from '../views/iceArtView';
 import { KelpView } from '../views/kelpView';
 import { LightView } from '../views/lightView';
@@ -67,6 +68,8 @@ export class WorldViews {
   private readonly bg: BackgroundView;
   private readonly kelp: KelpView;
   private readonly vents: VentView;
+  /** The Gallerie's arches, columns, mushrooms and currents (lot M3). */
+  private readonly galleries: GalleryView;
   private readonly temple: TempleView;
   private readonly worldArt: WorldArtView;
   private readonly sub: SubmarineView;
@@ -113,6 +116,7 @@ export class WorldViews {
     new DeltaView(scene, L.world, L.front);
     this.kelp = new KelpView(scene, L.world, L.front, map, under);
     this.vents = new VentView(scene, L.world, map, under);
+    this.galleries = new GalleryView(scene, L.world, map);
     this.temple = new TempleView(scene, L.world);
     this.worldArt = new WorldArtView(scene, L.world, map);
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
@@ -191,6 +195,7 @@ export class WorldViews {
     );
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
+    this.galleries.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
     const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
@@ -238,6 +243,7 @@ export class WorldViews {
     const murk = this.murkShown;
     const glows = [
       ...this.places.glowSpots(g.gear, (w) => wreckShown(g, w)),
+      ...this.galleries.glowSpots(view),
       ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),

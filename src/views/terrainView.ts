@@ -7,6 +7,7 @@ import { ChunkPaintJob, chunkHasRock } from './terrainPainter';
 import type { PaintProps } from './coralPainter';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { PROP_ART } from '../data/worldArt';
+import { GALLERY_ART } from '../data/galleries';
 
 interface Slot {
   tex: Phaser.Textures.CanvasTexture;
@@ -35,16 +36,18 @@ export class TerrainView {
     const src = (k: string): HTMLImageElement =>
       scene.textures.get(`world-${k}`).getSourceImage() as HTMLImageElement;
     if (PROP_ART.corals.every(has)) this.props.corals = PROP_ART.corals.map(src);
-    if (has(PROP_ART.bones)) {
-      const img = src(PROP_ART.bones);
+    const pixels = (key: string): ImageData | undefined => {
+      if (!has(key)) return undefined;
+      const img = src(key);
       const c = document.createElement('canvas');
       Object.assign(c, { width: img.width, height: img.height });
       const g = c.getContext('2d');
-      if (g) {
-        g.drawImage(img, 0, 0);
-        this.props.bones = g.getImageData(0, 0, img.width, img.height);
-      }
-    }
+      if (!g) return undefined;
+      g.drawImage(img, 0, 0);
+      return g.getImageData(0, 0, img.width, img.height);
+    };
+    this.props.bones = pixels(PROP_ART.bones);
+    this.props.caveWall = pixels(GALLERY_ART.wall); // the Gallerie's dark wall (lot M3)
     const px = Math.round(TERRAIN.chunkUnits * TERRAIN.texelsPerUnit);
     for (let i = 0; i < TERRAIN.cacheSize; i++) {
       const key = `terrain-chunk-${i}`;

@@ -11,6 +11,15 @@ import { icebergsNear } from '../systems/world/icebergs';
 import { landmarkSolidAt } from '../systems/world/landmarks';
 import { PROP_ART } from '../data/worldArt';
 import { drawCorals, type PaintProps } from './coralPainter';
+import { GALLERY_ART } from '../data/galleries';
+import { galleriesAtX, type Gallery } from '../systems/world/galleries';
+import { inGallery } from '../systems/world/galleryShape';
+
+/** A texture repeated mirrored (its edges always meet): the texel for a coordinate. */
+const mirrorTile = (v: number, n: number): number => {
+  const m = ((Math.floor(v) % (2 * n)) + 2 * n) % (2 * n);
+  return m < n ? m : 2 * n - 1 - m;
+};
 import { inIceArtBox } from '../systems/world/iceSheet';
 
 /** Inside the frame of a painted iceberg (a little wider): nothing of the tiles is painted there. */
@@ -28,7 +37,7 @@ const smooth01 = (v: number): number => {
   return t * t * (3 - 2 * t);
 };
 
-/** True if a chunk has any rock in it (open-water chunks are not painted at all). */
+/** True if a chunk has any rock in it, or a gallery's cave wall (open-water chunks are not painted at all). */
 export function chunkHasRock(map: TileMap, x0: number, y0: number, size: number): boolean {
   const T = map.tileSize;
   const tx0 = Math.floor(x0 / T) - 1;
@@ -36,7 +45,7 @@ export function chunkHasRock(map: TileMap, x0: number, y0: number, size: number)
   const n = Math.ceil(size / T) + 2;
   for (let ty = ty0; ty < ty0 + n; ty++)
     for (let tx = tx0; tx < tx0 + n; tx++) if (map.get(tx, ty) !== TILE.water) return true;
-  return false;
+  return galleriesAtX(x0 + size / 2, size / 2).some((g) => y0 + size > g.y0 && y0 < g.y1);
 }
 
 /** Box blur of a square grid (radius r), used as "how deep inside the rock" a point is. */
@@ -79,6 +88,8 @@ export class ChunkPaintJob {
   private readonly rowRock: [number, number, number][] = [];
   private readonly rowSed: [number, number, number][] = [];
   private row = 0;
+  /** The Gallerie this chunk may hold (lot M3). */
+  private readonly caves: Gallery[];
 
   constructor(
     private readonly map: TileMap,
@@ -104,6 +115,7 @@ export class ChunkPaintJob {
       }
     }
     this.depth = boxBlur(this.field, W, TERRAIN.shadeRadius);
+    this.caves = props.caveWall ? galleriesAtX(x0 + size / 2, size) : [];
     this.data = new Uint8ClampedArray(this.px * this.px * 4);
     for (let py = 0; py < this.px; py++) {
       const wy = y0 + (py + 0.5) / tpu;
@@ -123,6 +135,22 @@ export class ChunkPaintJob {
       if ((this.row & 7) === 0 && performance.now() > deadline) break;
     }
     return this.done;
+  }
+
+  /** The dark cave wall at a point inside a gallery (its picture repeated mirrored, shaded), or null. */
+  private caveWall(wx: number, wy: number): [number, number, number] | null {
+    const t = this.props.caveWall;
+    if (!t || !this.caves.some((g) => inGallery(g, wx, wy))) return null;
+    const k = GALLERY_ART.wallTexelsPerUnit;
+    const mx = mirrorTile(wx * k, t.width);
+    const my = mirrorTile(wy * k, t.height);
+    const o = (my * t.width + mx) * 4;
+    const s = GALLERY_ART.wallShade;
+    return [
+      (t.data[o]! * ((s >> 16) & 255)) / 255,
+      (t.data[o + 1]! * ((s >> 8) & 255)) / 255,
+      (t.data[o + 2]! * (s & 255)) / 255,
+    ];
   }
 
   private paintRow(py: number): void {
@@ -147,7 +175,12 @@ export class ChunkPaintJob {
       const w11 = fx * fy;
       const f = field[k00]! * w00 + field[k00 + 1]! * w10 + field[k00 + W]! * w01 + field[k00 + W + 1]! * w11;
       const alpha = smooth01((f - 0.5) / soft + 0.5);
-      if (alpha <= 0) continue;
+      // inside the Gallerie the dark cave wall shows behind you (lot M3), the rock's edge laid over it
+      const cave = this.caves.length ? this.caveWall(x0 + (pxx + 0.5) / tpu, wy) : null;
+      if (alpha <= 0) {
+        if (cave) d.set([cave[0], cave[1], cave[2], 255], (py * px + pxx) * 4);
+        continue;
+      }
       const dep =
         depth[k00]! * w00 + depth[k00 + 1]! * w10 + depth[k00 + W]! * w01 + depth[k00 + W + 1]! * w11;
       const up = depth[k00 + W]! - depth[k00 - W]!; // > 0 where rock lies below: an up-facing surface
@@ -180,12 +213,8 @@ export class ChunkPaintJob {
       } else if (tile === TILE.bone && this.props.bones) {
         // the painted wall of fused bones (lot C3), the picture repeated mirrored so its edges always meet
         const t = this.props.bones;
-        const mirror = (v: number, n: number): number => {
-          const m = ((Math.floor(v) % (2 * n)) + 2 * n) % (2 * n);
-          return m < n ? m : 2 * n - 1 - m;
-        };
         const k = PROP_ART.bonesTexelsPerUnit;
-        const o = (mirror(wy * k, t.height) * t.width + mirror(wx * k, t.width)) * 4;
+        const o = (mirrorTile(wy * k, t.height) * t.width + mirrorTile(wx * k, t.width)) * 4;
         const shade = 1 - 0.35 * smooth01((dep - 0.6) * 2);
         r = t.data[o]! * shade;
         gg = t.data[o + 1]! * shade;
@@ -217,6 +246,14 @@ export class ChunkPaintJob {
       }
       const grain = (hash2(Math.floor(wx * tpu), Math.floor(wy * tpu)) - 0.5) * 14;
       const o = (py * px + pxx) * 4;
+      if (cave) {
+        // over the cave wall: the rock blends into it, solid
+        d[o] = (r + grain) * alpha + cave[0] * (1 - alpha);
+        d[o + 1] = (gg + grain) * alpha + cave[1] * (1 - alpha);
+        d[o + 2] = (b + grain) * alpha + cave[2] * (1 - alpha);
+        d[o + 3] = 255;
+        continue;
+      }
       d[o] = r + grain;
       d[o + 1] = gg + grain;
       d[o + 2] = b + grain;

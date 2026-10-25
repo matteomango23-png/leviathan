@@ -16,6 +16,8 @@ export interface SeaMoment {
   km: number;
   /** The region's look where you are (systems/seaLook.ts), for its sound. */
   look?: LookMix;
+  /** Inside the Gallerie (lot M3): slow drops echoing. */
+  cave?: boolean;
 }
 
 /** How many bubbles to play this step: none while you swim, a few when you dash (SEA_SOUND.bubbles). */
@@ -65,7 +67,7 @@ export class SeaAmbience {
     const swell =
       1 - SEA_SOUND.swell.depth * (0.5 + 0.5 * Math.sin((this.time * Math.PI * 2) / SEA_SOUND.swell.periodS));
     this.rumbleGain.gain.setTargetAtTime(r.volume * swell * (1 + 0.4 * m.speed), t, 0.3);
-    if (m.look) this.region.update(m.look, dt);
+    if (m.look) this.region.update(m.look, dt, !!m.cave);
     this.bubbleDebt += bubblesFor(m.speed, m.dash, dt);
     let n = 0;
     while (this.bubbleDebt >= 1) {

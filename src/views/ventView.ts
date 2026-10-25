@@ -6,6 +6,7 @@ import { ENDLESS } from '../data/endless';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { PROP_ART } from '../data/worldArt';
 import { stretchAt, ventsOf } from '../systems/world/endless';
+import { galleriesAtX } from '../systems/world/galleries';
 import { drawBubbles } from './bubbles';
 import { plant } from './plant';
 import type { TileMap } from '../systems/world/tileMap';
@@ -36,12 +37,18 @@ export class VentView {
     let used = 0;
     if (view.right >= ENDLESS.startX) {
       const V = ENDLESS.vents;
-      for (let k = stretchAt(view.x) - 1; k <= stretchAt(view.right) + 1; k++) {
-        for (const v of ventsOf(k)) {
-          if (v.x < view.x - 40 || v.x > view.right + 40 || v.y - V.height > view.bottom || v.y < view.y)
-            continue;
+      // the vents of the stretches, and the air pockets of the Gallerie (lot M3: bubbles up to their ceiling)
+      const all: { x: number; y: number; h: number; k: number; rock: boolean }[] = [];
+      for (let k = stretchAt(view.x) - 1; k <= stretchAt(view.right) + 1; k++)
+        for (const v of ventsOf(k)) all.push({ ...v, h: V.height, k, rock: true });
+      for (const gal of galleriesAtX(view.centerX, view.width))
+        for (const a of gal.airs) all.push({ x: a.x, y: a.y, h: a.h, k: gal.k, rock: false }); // just bubbles: the cave wall is behind
+      {
+        for (const v of all) {
+          const k = v.k;
+          if (v.x < view.x - 40 || v.x > view.right + 40 || v.y - v.h > view.bottom || v.y < view.y) continue;
           let mouth = v.y;
-          if (this.painted) {
+          if (this.painted && v.rock) {
             let im = this.rocks[used];
             if (!im) {
               im = this.scene.add.image(0, 0, `world-${PROP_ART.vent}`).setOrigin(0.5, 1);
@@ -62,7 +69,7 @@ export class VentView {
             im.setScale(k0 * at.scale).setVisible(true);
             im.setPosition(v.x, at.bottom);
             mouth = im.y - im.displayHeight * 0.92; // the bubbles come out of its crater
-          } else {
+          } else if (v.rock) {
             g.fillStyle(0x9fe8ff, 0.12);
             g.fillEllipse(v.x, v.y, V.radius * 2.2, 10);
           }
@@ -70,7 +77,7 @@ export class VentView {
             g,
             v.x,
             mouth,
-            V.height - (v.y - mouth),
+            v.h - (v.y - mouth),
             V.radius * 0.6,
             BUBBLES,
             time,

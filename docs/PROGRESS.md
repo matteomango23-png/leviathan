@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 25 ottobre 2026, v0.111.0)
+## Dove siamo (aggiornato il 25 ottobre 2026, v0.112.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -19,7 +19,16 @@
 
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
-Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0): i lotti delle note del 24 ottobre sono finiti, prossimo M3 Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Prossimo: il lotto dei mezzi abissali (memoria abyssal-vehicles), poi M4 e M5 Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto M3, le Gallerie (25 ottobre 2026) → v0.112.0
+
+- **Immagini** (Gemini Pro, stile della pescheria): `ingresso_galleria` (il buco nero tolto da `clearDarkMiddle` in `scripts/art/landmarkCuts.ts`, solo dentro l'ellisse del buco), `colonna_cattedrale_1|2` (maschera solida come i luoghi, prefisso `colonna_`), `funghi_luminosi_1…3` (gruppi divisi, originali in `art-inbox/gruppi/`), `trama_basalto` (trama).
+- **Dati:** `data/galleries.ts` (`GALLERIES`, `CATHEDRAL`, `GALLERY_ART`).
+- **Logica:** `systems/world/galleries.ts` (una galleria per fossa delle Grandi fosse: imbocco a metà parete, tunnel a pendenza dolce sotto il fondale con un tetto di roccia, si accorcia finché la caverna sta nella roccia; un ramo ogni tre; sacche d'aria; correnti; la Cattedrale nella fossa più vicina ai 24 km); `galleryShape.ts` (`galleryOpenAt` scavato da `endlessTile`, `galleryBottomAt` in `generateChunk`, `galleryVentAt` in `ventAt`, `galleryCurrentAt`, colonne solide dalla maschera); `currents.ts` (sub e sottomarino); sottomarino ricarica l'aria alle sacche (`GALLERIES.subRefill`); bestie oltre `maxBeastM` respinte all'imbocco (`roam.ts`); `cathedral.ts` (scoperta, mappa in `seaMap.ts`).
+- **Disegno:** `views/galleryView.ts` (arco, colonne, funghi con luce, scie delle correnti); parete delle grotte dipinta dal `terrainPainter` (`caveWall`, a specchio, ombreggiata); bolle delle sacche in `ventView` senza roccia né disco; gocce in `regionSound`.
+- Test: `tests/lottoM3.test.ts` (percorso libero per sub e sottomarino più grande in tutte le gallerie, nessuna che sbuca, U-Boot bloccato, squalo bianco fuori, aria del sottomarino, Cattedrale e mappa).
+- **Da provare sull'iPhone:** serve una muta o un sottomarino da 350-400 m. Entrare in una galleria dall'arco, nuotare contro una corrente, respirare a una sacca, arrivare alla Cattedrale.
 
 ## Lotto C4 (25 ottobre 2026) → v0.111.0
 

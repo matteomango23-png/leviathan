@@ -161,4 +161,6 @@ export const REGION_SOUND = {
   ice: { every: [6, 14] as [number, number], volume: 0.05 },
   deep: { every: [5, 11] as [number, number], hz: 38, volume: 0.07 },
   swamp: { every: [3, 8] as [number, number], volume: 0.04 },
+  /** Inside the Gallerie (lot M3): a drop and its echo, now and then. */
+  cave: { every: [2.5, 6] as [number, number], volume: 0.035 },
 };
