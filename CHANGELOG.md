@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.112.0 — Le Gallerie (25 ottobre 2026)
+
+- **Le Gallerie delle Grandi fosse (18-26 km):** in ogni fossa abissale, a metà parete, un arco di roccia con un teschio segna l'entrata di una galleria che si infila nella roccia per 100-150 m, serpeggiando e stringendosi, fino a una caverna. Dentro, dietro di te, la parete di basalto; buio vero, solo la lampada e i funghi luminosi.
+- **Sottomarini sì, U-Boot no:** ci passa anche il sottomarino più grande; l'U-Boot sbatte sull'entrata. Le bestie grandi (oltre 5 m) restano fuori; le piccole e le medie entrano.
+- **Sacche d'aria:** colonne di bolle in ogni caverna e lungo i tunnel: ci respiri, e ricaricano anche l'aria del sottomarino.
+- **Correnti:** in alcuni tratti l'acqua spinge verso dentro o verso fuori (scie chiare che scorrono): bisogna nuotare contro.
+- **La Cattedrale** (verso i 24 km): la caverna più grande, con colonne di roccia contorte e funghi luminosi. Quando ci entri la scopri e va sulla mappa delle Grandi fosse.
+- **Suono:** dentro le gallerie ogni tanto una goccia con la sua eco, piano.
+- I salvataggi non cambiano.
+
 ## v0.111.0 — Lo scontro in acqua rifatto (25 ottobre 2026)
 
 - **Niente più pulsante "Affronta":** la battaglia a turni parte da sola quando tu e la bestia vi toccate (se hai almeno una bestia pronta).

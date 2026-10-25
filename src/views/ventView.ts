@@ -69,7 +69,7 @@ export class VentView {
             im.setScale(k0 * at.scale).setVisible(true);
             im.setPosition(v.x, at.bottom);
             mouth = im.y - im.displayHeight * 0.92; // the bubbles come out of its crater
-          } else {
+          } else if (v.rock) {
             g.fillStyle(0x9fe8ff, 0.12);
             g.fillEllipse(v.x, v.y, V.radius * 2.2, 10);
           }

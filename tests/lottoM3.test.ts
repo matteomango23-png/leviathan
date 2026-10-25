@@ -2,7 +2,8 @@
 // trench's wall into the rock, a cave at its end, the Cattedrale at the end of the longest; air pockets, currents;
 // a submarine goes in, a U-Boat does not, big beasts stay out.
 import { beforeAll, describe, expect, it } from 'vitest';
-import { CATHEDRAL } from '../src/data/galleries';
+import { CATHEDRAL, GALLERY_ART } from '../src/data/galleries';
+import { WORLD_ART_KEYS } from '../src/data/sprites.generated';
 import type { GameEvent } from '../src/systems/events';
 import { newShip } from '../src/systems/ship/ship';
 import { hullBlocked } from '../src/systems/ship/uboat';
@@ -51,8 +52,9 @@ function route(g: Gallery): { x: number; y: number }[] {
         x: pts[i]!.x + (pts[i + 1]!.x - pts[i]!.x) * t,
         y: pts[i]!.y + (pts[i + 1]!.y - pts[i]!.y) * t,
       });
-  const c = g.caves[0]!;
-  out.push({ x: c.x, y: c.y });
+  // into the cave a little way (in the Cattedrale, columns stand further in: you swim round them)
+  const end = pts[pts.length - 1]!;
+  out.push({ x: end.x + g.mouth.dir * 60, y: end.y });
   return out;
 }
 
@@ -167,5 +169,10 @@ describe('le Gallerie', () => {
     expect(g.seen.has(landmarkKey(CATHEDRAL.id))).toBe(true);
     const fosse = regionsMap(g.seen).find((r) => r.landmarks.includes(CATHEDRAL.name));
     expect(fosse).toBeDefined();
+  });
+
+  it('ci sono tutte le immagini delle Gallerie', () => {
+    for (const k of [GALLERY_ART.mouth, GALLERY_ART.wall, ...CATHEDRAL.columns, ...CATHEDRAL.mushrooms])
+      expect(WORLD_ART_KEYS, k).toContain(k);
   });
 });

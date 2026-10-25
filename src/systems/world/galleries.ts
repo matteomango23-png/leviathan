@@ -188,13 +188,21 @@ export function gallerySites(): Gallery[] {
   for (let k = 0; mid(k) < ENDLESS.maxX; k++) if (isTrench(k)) trenches.push(k);
   const near = (k: number): number => Math.abs(kmFromCoast(mid(k)) - CATHEDRAL.km);
   const cath = trenches.reduce((a, b) => (near(b) < near(a) ? b : a), trenches[0] ?? -1);
-  sites = trenches
+  // the Cattedrale's first: no other gallery may cross it (two never overlap), nor a temple or a landmark
+  const made = trenches
     .map((k) => makeGallery(k, k === cath))
-    .filter((g): g is Gallery => {
-      if (!g) return false;
-      for (let x = g.x0; x <= g.x1; x += 100) if (templeAtX(x, 40) || landmarkAtX(x, 40)) return false;
-      return true;
-    });
+    .filter((g): g is Gallery => !!g)
+    .sort((a, b) => Number(b.cathedral) - Number(a.cathedral));
+  const kept: Gallery[] = [];
+  for (const g of made) {
+    let clear = !kept.some(
+      (o) => g.x0 < o.x1 + 40 && g.x1 > o.x0 - 40 && g.y0 < o.y1 + 40 && g.y1 > o.y0 - 40,
+    );
+    for (let x = g.x0; clear && x <= g.x1; x += 100)
+      if (templeAtX(x, 40) || landmarkAtX(x, 40)) clear = false;
+    if (clear) kept.push(g);
+  }
+  sites = kept.sort((a, b) => a.k - b.k);
   return sites;
 }
 

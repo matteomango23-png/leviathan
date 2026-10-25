@@ -52,7 +52,11 @@ export const CATHEDRAL = {
   rx: 300,
   ry: 150,
   columns: ['colonna_cattedrale_1', 'colonna_cattedrale_2'],
-  columnCount: 5,
+  columnCount: 4,
+  /** At most this wide (units): taller ones are drawn slimmer, not thicker. */
+  columnMaxWidth: 64,
+  /** No column this close (units) to where the tunnel comes in. */
+  entryClear: 140,
   mushrooms: ['funghi_luminosi_1', 'funghi_luminosi_2', 'funghi_luminosi_3'],
   mushroomCount: 14,
   mushroomWidth: 14,
@@ -68,5 +72,5 @@ export const GALLERY_ART = {
   wallShade: 0x6a7480,
   /** Glowing mushrooms in the smaller caves too, and their light in the dark (units). */
   caveMushrooms: 4,
-  mushroomLight: 26,
+  mushroomLight: 40,
 };

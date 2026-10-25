@@ -1239,3 +1239,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 ## 25 ottobre 2026 — Lo scontro in acqua è solo l'inizio della battaglia (v0.111.0)
 
 - Proposta approvata dal proprietario: il contatto avvia la battaglia a turni e conta chi ha colpito per primo; la bestia sfiancata non attacca più; niente pulsante "Affronta" (copriva "A bordo"). Una breve pausa tra il morso e la battaglia, perché il morso si veda.
+
+## 25 ottobre 2026 — Le Gallerie scavate nelle caselle (v0.112.0)
+
+- Le Gallerie sono linee spezzate con un raggio (più le caverne) che `endlessTile` scava prima della roccia: collisioni uguali a tutto il resto, niente maschere. Pendenza massima 0,22 perché il sottomarino resta orizzontale; il tunnel si ferma se la roccia sopra finisce e si accorcia finché la caverna sta nella roccia (test che le percorre tutte).
+- La parete della grotta dietro di te la dipinge il pittore del fondale (pixel d'acqua dentro una galleria), così pezzi di scena, bestie e sub restano davanti.

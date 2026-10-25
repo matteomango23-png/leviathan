@@ -78,10 +78,13 @@ export function cathedralColumns(g: Gallery): ColumnBox[] {
     const shape = ICEBERG_SHAPES[art];
     if (!shape) continue;
     const x = c.x - c.rx * 0.72 + (i / (n - 1)) * c.rx * 1.44 + (hash2(g.k, i) - 0.5) * 30;
+    // none in front of where the tunnel comes in: the way in stays free (for the biggest submarine too)
+    const entry = g.paths[0]![g.paths[0]!.length - 1]!;
+    if (Math.abs(x - entry.x) < CATHEDRAL.entryClear) continue;
     const half = c.ry * Math.sqrt(Math.max(0, 1 - ((x - c.x) / c.rx) ** 2));
     const top = c.y - half - 20;
     const h = half * 2 + 40;
-    const w = (h * shape.w) / shape.h;
+    const w = Math.min((h * shape.w) / shape.h, CATHEDRAL.columnMaxWidth);
     out.push({ art, left: x - w / 2, top, w, h, flip: hash2(i, g.k) > 0.5 });
   }
   columnCache.set(g.k, out);
