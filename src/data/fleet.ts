@@ -92,6 +92,9 @@ export interface ShipModelDef {
   /** Under water its floodlights light the sea round the hull this far (m), less in murky water (owner, 15 ottobre:
    *  diving the Nightmare showed only what was ahead). Tuning. */
   floodlightM?: number;
+  /** Its own planing at speed instead of every ship's (data/ship.ts SHIP.plane): the abyssal ship rises clearly out
+   *  of the water at full speed (owner, 23 ottobre). Tuning. */
+  plane?: { from: number; pitch: number; lift: number };
   /** Places in its tank for beasts of the team (owner, 8 ottobre; it works from block 6). */
   pool: number;
   /** Beasts it carries besides the team (owner, 16 ottobre 2026: "dipende dalla nave"); the others wait at a harbour's
@@ -102,7 +105,7 @@ export interface ShipModelDef {
   note: string;
   cockpit: CockpitTab[];
   /** Its cockpit's colours, same layout (ui/cockpitTheme.ts; owner, 9 ottobre: the Nightmare's red). */
-  cockpitTheme?: 'nightmare';
+  cockpitTheme?: 'nightmare' | 'abissale';
   card: string; // public/art/<card>.webp
   /** Its painting in public/world (hatches closed and all open, and the propeller turning if painted: same frame)
    *  and where things are on it. */
@@ -610,6 +613,61 @@ export const SHIP_MODELS: ShipModelDef[] = [
       },
     },
   },
+  {
+    // the abyssal ship (owner, 23 ottobre 2026): the fastest of the sea, heavy to stop, it planes a little at full
+    // speed; it dives to 300 m and from there its abyssal submarine goes on down. Built from six rare parts
+    // (data/abyss.ts), not bought.
+    id: 'abissale',
+    category: 'abissale',
+    tier: 5,
+    name: 'Nave abissale',
+    ready: true,
+    price: 80000, // the teeth it costs besides its parts (data/abyss.ts ABYSS_BUILD)
+    lengthM: 80,
+    knots: 38,
+    accel: 55,
+    coast: 18, // heavy: once going it runs on…
+    brake: 24, // …and stops slowly (owner: "pesante quando frena")
+    tank: 3000,
+    hull: 340,
+    perKm: 22,
+    sonar: { range: 1.8, maxKnots: 20, name: 'abissale, a 360°', classes: 5 },
+    pool: 4,
+    hold: 8,
+    bays: [
+      {
+        kind: 'sub',
+        model: 'sottomarino_abissale',
+        name: 'Sottomarino abissale',
+        card: 'sottomarino_abissale',
+        hatch: { x: 0.47, y: 0.66, rampEnd: 0.8 },
+      },
+    ],
+    special: 'Si immerge fino a 300 m; il suo sottomarino scende a 1000 m. Plana a tutta velocità',
+    note: 'La più veloce del mare, costruita con i pezzi abissali',
+    cockpit: ALL_TABS,
+    cockpitTheme: 'abissale', // navy blue and gold, like the ship (owner, 25 ottobre)
+    card: 'nave_abissale',
+    dive: { maxDepthM: 300, airSeconds: 1500, sinkSpeed: 40, riseSpeed: 45 },
+    floodlightM: 50,
+    plane: { from: 0.6, pitch: 0.07, lift: 8 },
+    art: {
+      closed: 'nave_abissale',
+      open: 'nave_abissale_aperta',
+      stacks: [],
+      picture: {
+        aspect: 560 / 1400,
+        waterline: 0.56,
+        keel: 0.72,
+        helmX: 0.25,
+        deckY: 0.3,
+        propX: 0.03,
+        propY: 0.52,
+        bowU: 0.98,
+        lampU: 0.95,
+      },
+    },
+  },
 ];
 
 /** The ship you get from Aurelio. */
@@ -631,6 +689,6 @@ export const SHIP_CATEGORIES: { id: ShipCategory; name: string; empty?: string }
     id: 'abissale',
     name: 'Abissali',
     empty:
-      'Arrivano presto: la nave abissale e il suo sottomarino si costruiscono con pezzi rari trovati nei relitti e nelle Gallerie.',
+      'La nave abissale e il suo sottomarino si costruiscono con sei pezzi rari trovati nei relitti e nelle Gallerie.',
   },
 ];

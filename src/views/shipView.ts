@@ -13,7 +13,7 @@ import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { SHIP_MODELS } from '../data/fleet';
 import { shipDraft, shipHeight } from '../systems/ship/geometry';
-import { shipArt, shipLength, shipPicture, shipTopSpeed } from '../systems/ship/model';
+import { shipArt, shipLength, shipModel, shipPicture, shipTopSpeed } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
 import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
@@ -100,9 +100,10 @@ export class ShipView {
     // floating on the waves (systems/ride.ts): lifted and dropped, its bow buried in the crests; planing at speed
     const heave = -s.ride.h;
     const roll = s.ride.p;
-    const planing = Math.max(0, (k - SHIP.plane.from) / (1 - SHIP.plane.from));
-    const pitch = roll + planing * SHIP.plane.pitch;
-    const lift = planing * SHIP.plane.lift;
+    const P = shipModel(s).plane ?? SHIP.plane;
+    const planing = Math.max(0, (k - P.from) / (1 - P.from));
+    const pitch = roll + planing * P.pitch;
+    const lift = planing * P.lift;
     // a U-Boat diving: deeper, the swell fading little by little, the sea line climbing its picture, no wake
     const sunk = submerged(s);
     const calm = 1 - diveShare(s);

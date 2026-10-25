@@ -9,6 +9,8 @@ import { ART_KEYS } from '../data/sprites.generated';
 import { autonomyKm } from '../systems/fuelBurn';
 import { ownsShip, shipCost } from '../systems/ship/shipyard';
 import { sonarMetres } from '../systems/ship/stats';
+import { isAbyssShip, partsHave } from '../systems/ship/abyssParts';
+import { ABYSS_PARTS } from '../data/abyss';
 import { el } from './dom';
 import { icon } from './icons';
 import type { TabContext } from './portTabs';
@@ -69,6 +71,10 @@ function card(grid: HTMLElement, m: ShipModelDef, ctx: TabContext): void {
   if (inUse) sub.textContent = 'in uso';
   else if (owned) sub.textContent = 'posseduta';
   else if (!m.ready) sub.textContent = 'in cantiere';
-  else if (g.ship.owned) sub.append(icon('tooth'), document.createTextNode(` ${shipCost(g, m.id)}`));
+  else if (isAbyssShip(m.id)) {
+    // built from the rare parts: how many you have, and the teeth
+    sub.append(document.createTextNode(`pezzi ${partsHave(g.gear)}/${ABYSS_PARTS.length} · `), icon('tooth'));
+    sub.append(document.createTextNode(` ${shipCost(g, m.id)}`));
+  } else if (g.ship.owned) sub.append(icon('tooth'), document.createTextNode(` ${shipCost(g, m.id)}`));
   c.addEventListener('click', () => openShipPage(document.body, g, m, ctx.say, ctx.redraw));
 }

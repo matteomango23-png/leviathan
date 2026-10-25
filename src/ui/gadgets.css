@@ -135,6 +135,16 @@
   color: #8fe3ff;
   font-size: 14px;
 }
+/* the abyssal submarine's cockpit: its sonar large in the page (ui/subScope.ts renderSubSonar) */
+.sub-scope.sub-scope-big {
+  position: static;
+  align-items: center;
+  margin: 8px auto;
+}
+.sub-scope-big .sub-scope-canvas {
+  width: min(62vh, 70vw);
+  height: min(62vh, 70vw);
+}
 .sub-scope[hidden],
 .sub-home[hidden],
 .sub-scope-canvas[hidden] {

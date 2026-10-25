@@ -9,6 +9,8 @@ import type { GameState } from '../systems/game';
 import { buyShip, ownsShip, sellPrice, sellShip, shipCost, switchShip } from '../systems/ship/shipyard';
 import { shipModel } from '../systems/ship/model';
 import { pageTabs } from '../systems/ship/pageTabs';
+import { isAbyssShip, partsReady } from '../systems/ship/abyssParts';
+import { ABYSS_PARTS, ABYSS_TEXT } from '../data/abyss';
 import { renderShipStats } from './shipStats';
 import { el } from './dom';
 import { ICONS, icon } from './icons';
@@ -80,6 +82,14 @@ export function openShipPage(
     `${RARITY[m.tier].name}${inUse ? ' · in uso' : owned ? ' · posseduta' : !m.ready ? ' · in cantiere' : ''}`,
   );
   el('p', 'ship-info-note', info, m.special ? `${m.note}. ${m.special}.` : m.note);
+  // the abyssal ship: its six parts, found or not yet (data/abyss.ts)
+  if (isAbyssShip(m.id) && !owned) {
+    const parts = el('div', 'abyss-parts', info);
+    for (const p of ABYSS_PARTS) {
+      const has = g.gear.abyssParts.includes(p.id);
+      el('span', `abyss-part${has ? ' on' : ''}`, parts, has ? `✓ ${p.name}` : '? Pezzo da trovare');
+    }
+  }
   // a tab for each picture, over its numbers
   tabs = el('div', 'yard-tabs ship-tabs', info);
   list.forEach((t, i) => el('button', 'yard-tab', tabs!, t.title).addEventListener('click', () => show(i)));
@@ -119,12 +129,15 @@ export function openShipPage(
     const cost = shipCost(g, m.id);
     if (m.ready && g.ship.owned)
       el('span', 'price', foot).append(icon('tooth'), document.createTextNode(` ${cost}`));
+    const abyss = isAbyssShip(m.id);
     act(
-      m.ready ? 'Compra' : 'In cantiere',
+      !m.ready ? 'In cantiere' : abyss ? 'Costruisci' : 'Compra',
       true,
-      !m.ready || !g.ship.owned || g.gear.teeth < cost,
+      !m.ready || !g.ship.owned || g.gear.teeth < cost || (abyss && !partsReady(g.gear)),
       () => buyShip(g, m.id),
-      `${m.name}: è tua, col pieno. Ti aspetta al molo; la vecchia resta ormeggiata qui.`,
+      abyss
+        ? ABYSS_TEXT.built
+        : `${m.name}: è tua, col pieno. Ti aspetta al molo; la vecchia resta ormeggiata qui.`,
     );
   }
 }

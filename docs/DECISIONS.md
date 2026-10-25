@@ -1244,3 +1244,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - Le Gallerie sono linee spezzate con un raggio (più le caverne) che `endlessTile` scava prima della roccia: collisioni uguali a tutto il resto, niente maschere. Pendenza massima 0,22 perché il sottomarino resta orizzontale; il tunnel si ferma se la roccia sopra finisce e si accorcia finché la caverna sta nella roccia (test che le percorre tutte).
 - La parete della grotta dietro di te la dipinge il pittore del fondale (pixel d'acqua dentro una galleria), così pezzi di scena, bestie e sub restano davanti.
+
+## 25 ottobre 2026 — I mezzi abissali (v0.113.0)
+
+- I sei pezzi sono ricompense dei relitti (campo `part`) e forzieri generati nelle caverne delle Gallerie (`forziere_galleria_<k>`, riconosciuti nel salvataggio dal nome): nessuna nuova struttura per i luoghi. I forzieri delle Gallerie stanno davanti al terreno (la parete dipinta della grotta li coprirebbe) e solo su un tratto di pavimento piano.
+- La nave abissale si "compra" con pezzi più denti dallo stesso cantiere; non si vende (i pezzi non si ritrovano).
+- Il sottomarino abissale apre lo stesso cockpit della nave con meno schede, invece di una schermata nuova: Plancia, Diario e Zaino sono gli stessi; il sonar è quello semplice del vetro, grande. Colori blu e oro chiesti dal proprietario.
+- Visione notturna: un filtro verde sopra il buio (moltiplica + leggero velo), il buio aperto del tutto, e un'onda che illumina gli orli della roccia con macchie morbide sovrapposte (linea continua, niente puntini). La regola "gli U-Boot hanno più aria dei sottomarini" ha un'eccezione voluta: il sottomarino abissale ha 30 minuti.

@@ -19,11 +19,14 @@ import { giveSub } from './helpers/vessels';
 const DT = 1 / 30;
 
 describe('the submarine’s air', () => {
-  it('the bigger the vehicle, the more air; the U-Boats more than any submarine', () => {
+  it('the bigger the vehicle, the more air; the U-Boats more than any submarine but the abyssal one', () => {
     const subs = [...SUB_MODELS].sort((a, b) => a.lengthM - b.lengthM);
     for (let i = 1; i < subs.length; i++)
       expect(subs[i]!.airSeconds).toBeGreaterThanOrEqual(subs[i - 1]!.airSeconds);
-    const most = Math.max(...SUB_MODELS.map((m) => m.airSeconds));
+    // the abyssal submarine has half an hour (owner, 23 ottobre): more than any U-Boat, on purpose
+    const most = Math.max(
+      ...SUB_MODELS.filter((m) => m.id !== 'sottomarino_abissale').map((m) => m.airSeconds),
+    );
     for (const m of SHIP_MODELS) if (m.dive) expect(m.dive.airSeconds).toBeGreaterThan(most);
   });
 

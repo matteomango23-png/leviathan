@@ -12,6 +12,8 @@ function triggers(events: readonly GameEvent[]): Set<TipTrigger> {
   for (const e of events) {
     if (e.type === 'wildAppeared') {
       if (e.legend) out.add('legendAppeared');
+    } else if (e.type === 'wreckOpened') {
+      if (e.part) out.add('abyssPart');
     } else if (e.type === 'tamed') {
       if (!e.toTeam) out.add('tamedOutOfTeam');
     } else if (

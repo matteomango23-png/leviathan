@@ -57,4 +57,7 @@ export interface HelmInfo {
   canTrack?: boolean;
   /** Ship only: it is still (owner, 9 ottobre: the hatch and dive buttons show only then). */
   still?: boolean;
+  /** The abyssal submarine: its night vision (on or off; undefined: it has none) and its own cockpit. */
+  night?: boolean;
+  subCockpit?: boolean;
 }

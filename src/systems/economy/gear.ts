@@ -33,6 +33,8 @@ export interface GearState {
   backpack: (string | null)[];
   swarms: string[]; // bound swarms
   wrecks: string[]; // opened wrecks and chests
+  /** The abyssal ship's rare parts found and not yet built into it (data/abyss.ts). */
+  abyssParts: string[];
   missions: MissionState;
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   deepestM: number;
@@ -54,6 +56,7 @@ export function newGear(): GearState {
     backpack: Array.from({ length: BACKPACK_SLOTS }, () => null),
     swarms: [],
     wrecks: [],
+    abyssParts: [],
     missions: { active: [], done: [], progress: {} },
     shopBought: {},
     deepestM: 0,

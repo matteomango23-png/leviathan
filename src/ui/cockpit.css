@@ -758,3 +758,116 @@
 .chart-mark.boat {
   fill: #cfe8d8;
 }
+
+/* the abyssal ship and its submarine (owner, 25 ottobre 2026): navy blue and gold, like their hulls */
+.cockpit.theme-abissale {
+  --steel: #0b1426;
+  --steel-2: #122038;
+  --bezel: #8a6a2e;
+  --amber: #e8c470;
+  --phosphor: #e8c470;
+  --lamp: #ffe2a0;
+  --line: rgba(232, 196, 112, 0.45);
+  --glow: #e8c470;
+  --muted: #9aa8c4;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(40, 80, 160, 0.3), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 4px), #050b18;
+}
+.theme-abissale .port-top {
+  border-bottom-color: rgba(232, 196, 112, 0.45);
+}
+.theme-abissale .port-title {
+  color: #f3dca0;
+  text-shadow: 0 0 12px rgba(232, 196, 112, 0.45);
+}
+.theme-abissale .port-teeth {
+  color: #fff3d6;
+  background: rgba(232, 196, 112, 0.14);
+}
+.theme-abissale .port-tab {
+  border-color: rgba(232, 196, 112, 0.28);
+}
+.theme-abissale .port-tab.on,
+.theme-abissale .pbtn.primary {
+  color: #1a1204;
+  background: linear-gradient(180deg, #f0d48a, #a8802e);
+  border-color: #f3dca0;
+}
+.theme-abissale .pbtn {
+  background: rgba(18, 32, 56, 0.85);
+}
+.theme-abissale .sonar-switch.on {
+  background: #1c2a48;
+}
+.theme-abissale .sonar-frame {
+  border-color: #8a6a2e;
+  box-shadow:
+    inset 0 0 30px rgba(232, 196, 112, 0.12),
+    0 0 0 4px #0b1426;
+}
+.theme-abissale .lg.floor {
+  background: #e8c470;
+}
+.theme-abissale .lg.big,
+.theme-abissale .lg.small {
+  background: #ffeec8;
+}
+.theme-abissale .lg.odd {
+  background: #78c8ff;
+}
+.theme-abissale .console-btn {
+  border-color: #8a6a2e;
+  background: linear-gradient(180deg, #1c2c4a, #0d1628);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 230, 170, 0.12),
+    0 2px 0 #040810;
+}
+.theme-abissale .bridge-panel::before,
+.theme-abissale .bridge-panel::after {
+  background: #a8802e;
+}
+.theme-abissale .bridge-step,
+.theme-abissale .diary-light {
+  border-color: #5a4a2a;
+}
+.theme-abissale .bridge-step.done,
+.theme-abissale .diary-light.done,
+.theme-abissale .diary-track-step.done .diary-dot {
+  color: #1a1204;
+  background: #e8c470;
+  border-color: #e8c470;
+}
+.theme-abissale .dial-bezel,
+.theme-abissale .dial.weather {
+  fill: #08101e;
+  stroke: #8a6a2e;
+  background: #08101e;
+  border-color: #8a6a2e;
+}
+.theme-abissale .dial-track {
+  stroke: #1a2640;
+}
+.theme-abissale .chart-svg {
+  background: radial-gradient(100% 140% at 50% 100%, #0d1c3a, #050b18);
+  border-color: #5a4a2a;
+}
+.theme-abissale .chart-grid {
+  stroke: rgba(232, 196, 112, 0.08);
+}
+.theme-abissale .chart-sea {
+  stroke: rgba(232, 196, 112, 0.5);
+}
+.theme-abissale .diary-card,
+.theme-abissale .diary-sheet-card {
+  background: linear-gradient(180deg, rgba(22, 34, 60, 0.92), rgba(8, 14, 28, 0.92));
+}
+.theme-abissale .diary-badge {
+  background: #3a3018;
+}
+.theme-abissale .diary-dot {
+  border-color: #8a6a2e;
+}
+.theme-abissale .diary-rows dt {
+  color: #f0d48a;
+}

@@ -1,5 +1,6 @@
 // True darkness: a half-resolution mask filled with black by depth, with the lamp cone and a halo erased,
 // then a warm glow added on top and a vignette (prototype/prova-realistica.html, "darkness + lamp").
+import { NIGHT_VISION } from '../data/abyss';
 import Phaser from 'phaser';
 import { DIVER, LIGHT } from '../data/diver';
 import { rampNumber } from '../systems/math';
@@ -73,6 +74,8 @@ export class LightView {
     glows: { x: number; y: number; r: number }[] = [],
     murk = 0,
     weatherDim = 0,
+    /** The abyssal submarine's night vision (0 … 1): the darkness opens (views/nightVisionView.ts). */
+    night = 0,
   ): void {
     const s = LIGHT.maskScale;
     const mw = Math.ceil(v.w * s);
@@ -93,7 +96,9 @@ export class LightView {
     const coneLen = v.w * LIGHT.coneLengthView * (lamp.lengthMult ?? 1);
     const coneScale = (coneLen * s) / CONE_TEX.length;
 
-    const dark = Math.min(1, LightView.darknessAt(v.cy) + DELTA.murk.darkness * murk + weatherDim);
+    const dark =
+      Math.min(1, LightView.darknessAt(v.cy) + DELTA.murk.darkness * murk + weatherDim) *
+      (1 - NIGHT_VISION.clear * night);
     const color = murk > 0 ? mixColor(LIGHT.darkColor, DELTA.murk.tint, murk) : LIGHT.darkColor;
     const rt = this.mask;
     rt.clear();

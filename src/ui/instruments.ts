@@ -80,6 +80,7 @@ const MARK_GLYPH: Record<ChartKind, string> = {
   border: '',
   sub: '●',
   boat: '▲',
+  ship: '⚓',
   end: '▌',
 };
 

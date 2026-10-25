@@ -4,6 +4,10 @@ import { FISH, ITEMS, SUITS, SUIT_UPGRADES, SWARMS, WEAPONS, BACKPACK_SLOTS } fr
 import { WRECKS } from '../../data/economy';
 import { LANDMARKS } from '../../data/landmarks';
 import { RELICS } from '../../data/temples';
+import { ABYSS_PARTS } from '../../data/abyss';
+
+/** The chests of the Gallerie (systems/world/galleryChests.ts) are made from the sea, not listed: known by their name. */
+const GALLERY_CHEST = /^forziere_galleria_\d+$/;
 
 export interface SavedGear {
   teeth: number;
@@ -17,6 +21,8 @@ export interface SavedGear {
   backpack: (string | null)[];
   swarms: string[];
   wrecks: string[];
+  /** The abyssal ship's parts found (25 ottobre; missing in older saves). */
+  abyssParts?: string[];
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
@@ -91,7 +97,14 @@ export function validateGear(raw: unknown): SavedGear {
     wrecks: ids(raw.wrecks, [
       ...WRECKS.map((w) => w.id),
       ...LANDMARKS.flatMap((l) => (l.chest ? [l.chest.def.id] : [])),
+      ...(Array.isArray(raw.wrecks)
+        ? raw.wrecks.filter((x): x is string => GALLERY_CHEST.test(String(x)))
+        : []),
     ]),
+    abyssParts: ids(
+      raw.abyssParts,
+      ABYSS_PARTS.map((x) => x.id),
+    ),
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     deepestM: num(raw.deepestM),
     relics: ids(

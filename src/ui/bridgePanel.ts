@@ -77,10 +77,10 @@ export function renderBridge(b: HTMLElement, ctx: BridgeContext): void {
   const wrap = el('div', 'bridge', b);
   objectivePanel(wrap, g);
 
+  // from the submarine's own cockpit, where the submarine is
+  const at = sub.aboard ? sub.x : ship.x;
   const where =
-    ship.x > OPEN_SEA_X
-      ? `${km(kmFromCoast(ship.x))} km dalla costa · ${regionAt(ship.x).name}`
-      : 'lungo la costa';
+    at > OPEN_SEA_X ? `${km(kmFromCoast(at))} km dalla costa · ${regionAt(at).name}` : 'lungo la costa';
   chartStrip(
     panel(wrap, `Carta nautica · ±${SHIP.chart.halfKm} km · ${where}`, 'wide'),
     chartAround(g),

@@ -87,6 +87,7 @@ function saveGear(g: GearState): SavedGear {
     missions: structuredClone(g.missions),
     deepestM: Math.floor(g.deepestM),
     relics: [...g.relics],
+    abyssParts: [...g.abyssParts],
     market: structuredClone(g.market),
   };
 }

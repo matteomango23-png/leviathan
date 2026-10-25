@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.113.0 — I mezzi abissali (25 ottobre 2026)
+
+- **Sei pezzi abissali** da trovare: tre nei relitti più lontani (Grandi fosse e Abisso), tre in forzieri nelle caverne delle Gallerie, uno nella Cattedrale. Quelli trovati si vedono nello zaino.
+- **La nave abissale** (cantiere di Porto Fango, categoria Abissali): con tutti e sei i pezzi e 80.000 denti la costruisci. È la più veloce del mare (38 nodi), frena pesante, a tutta velocità plana alzandosi dall'acqua, si immerge fino a 300 m e ha fari potenti. Non si vende.
+- **Il sottomarino abissale** esce dal suo portellone, anche sott'acqua: scende fino a 1000 m, ha mezz'ora d'aria, sale e scende veloce, fari fortissimi con un fascio lungo davanti.
+- **Il suo cockpit**, blu e oro: sonar semplice, Plancia con la mappa attorno al sottomarino, Diario delle cacce, Zaino. Sul vetro la bussola verso la nave con la distanza in km. Puoi lasciare la nave e cacciare lontano.
+- **Visione notturna** (pulsante mentre guidi il sottomarino abissale): lo schermo diventa verde come un visore militare, il buio si apre, e ogni pochi secondi un'onda del sonar fa brillare la roccia attorno.
+- Nel menu di prova segreto: "Nave abissale subito" e "Tutti i pezzi abissali".
+- I salvataggi restano compatibili: le partite vecchie partono con zero pezzi.
+
 ## v0.112.3 — Occhi rossi coperti dai corpi (25 ottobre 2026)
 
 - Se un'altra bestia passa davanti a una che caccia, il suo corpo copre l'occhio rosso (prima il bagliore si vedeva attraverso). Nel buio l'occhio resta visibile e illumina appena il muso.

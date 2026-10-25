@@ -10,6 +10,7 @@ import { subModel, type SubState } from '../submarine';
 import { shipModel, shipTank } from './model';
 import { freshHatches, type ShipState } from './ship';
 import { fullAir, submerged } from './uboat';
+import { isAbyssShip, partsMissing, useParts } from './abyssParts';
 
 /** A ship you own and do not use: moored at Porto Fango with its fuel and its vehicles' state. */
 export interface MooredShip {
@@ -27,7 +28,7 @@ interface ShipyardWorld {
   boat: BoatState;
   /** Your other ships (saved). */
   fleet: MooredShip[];
-  gear: { teeth: number };
+  gear: { teeth: number; abyssParts: string[] };
   port: { id: string } | null;
 }
 
@@ -43,7 +44,9 @@ export const shipCost = (_g: ShipyardWorld, id: string): number =>
 
 /** What the yard pays for it (0: it is not for sale, like Aurelio's gift). */
 export const sellPrice = (id: string): number =>
-  id === KEEP_FOREVER ? 0 : Math.round((SHIP_MODELS.find((x) => x.id === id)?.price ?? 0) * SELL_SHARE);
+  id === KEEP_FOREVER || isAbyssShip(id)
+    ? 0
+    : Math.round((SHIP_MODELS.find((x) => x.id === id)?.price ?? 0) * SELL_SHARE);
 
 /** Can the ship in use change now? At Porto Fango, you on board, its vehicles in their holds. */
 function yardReady(g: ShipyardWorld): Result {
@@ -125,11 +128,27 @@ export function buyShip(g: ShipyardWorld, id: string): Result {
   const ready = yardReady(g);
   if (!ready.ok) return ready;
   if (ownsShip(g, id)) return { ok: false, reason: 'Questa nave è già tua.' };
+  // the abyssal ship is built from its rare parts (data/abyss.ts), and the teeth besides
+  const missing = isAbyssShip(id) ? partsMissing(g.gear) : null;
+  if (missing) return { ok: false, reason: missing };
   const cost = shipCost(g, id);
   if (g.gear.teeth < cost) return { ok: false, reason: `Servono ${cost} denti (ne hai ${g.gear.teeth}).` };
   g.gear.teeth -= cost;
+  if (isAbyssShip(id)) useParts(g.gear);
   g.fleet.push(moor(g)); // the old one stays yours, moored here
   bringIn(g, m, null); // the new one: full tank, new vehicles
+  return { ok: true };
+}
+
+/** The secret test menu (owner, 23 ottobre): this ship is yours at once, in use, at Porto Fango. */
+export function giveTestShip(g: ShipyardWorld, id: string): Result {
+  const m = SHIP_MODELS.find((x) => x.id === id);
+  if (!m) return { ok: false, reason: 'Questa nave non esiste.' };
+  if (ownsShip(g, id)) return { ok: false, reason: 'Questa nave è già tua.' };
+  if (g.sub.aboard || g.boat.aboard) return { ok: false, reason: 'Torna a bordo della nave, prima.' };
+  if (g.ship.owned) g.fleet.push(moor(g));
+  g.ship.owned = true; // even before Aurelio's gift
+  bringIn(g, m, null);
   return { ok: true };
 }
 
@@ -151,6 +170,7 @@ export function sellShip(g: ShipyardWorld, id: string): Result & { teeth?: numbe
   if (g.port?.id !== PORTO_FANGO.id)
     return { ok: false, reason: 'Le navi si vendono al cantiere di Porto Fango.' };
   if (id === KEEP_FOREVER) return { ok: false, reason: 'L’Aurelia è il regalo del nonno: non si vende.' };
+  if (isAbyssShip(id)) return { ok: false, reason: 'È fatta con i pezzi abissali: non si vende.' };
   if (g.ship.model === id) return { ok: false, reason: 'È la nave in uso: prima passa a un’altra.' };
   const i = g.fleet.findIndex((x) => x.model === id);
   if (i < 0) return { ok: false, reason: 'Questa nave non è tua.' };

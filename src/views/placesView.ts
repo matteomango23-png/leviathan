@@ -12,6 +12,7 @@ import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
 import { drawPierUnder } from './pierUnder';
 import { plant } from './plant';
+import { galleryAt } from '../systems/world/galleryShape';
 import type { TileMap } from '../systems/world/tileMap';
 
 /** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
@@ -205,7 +206,9 @@ export class PlacesView {
         : { bottom: ground + im.height * k * sink, scale: 1 };
       im.setScale(k * at.scale);
       im.y = at.bottom;
-      (under ?? layer).add(im);
+      // in a cave of the Gallerie the painted cave wall would hide it behind the terrain: there it stands in front,
+      // on a flat stretch of floor (systems/world/galleryChests.ts)
+      (galleryAt(x, ground - 6) ? layer : (under ?? layer)).add(im);
       return im;
     };
     for (const w of wrecks) {
