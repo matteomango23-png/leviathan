@@ -1230,3 +1230,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - L'aspetto in un punto è la quota di ogni aspetto nella finestra intorno (campioni), non più il confine trovato con una ricerca: con tratti corti (Foresta/Banchisa) e il Delta la ricerca saltava. Così è continuo per costruzione.
 - Le collisioni dell'U-Boot sott'acqua vengono dalla sagoma della sua immagine (maschera generata dallo script), come ghiaccio e luoghi; a galla la chiglia ferma la nave sui bassi fondali.
 - Pali e fondo dei moli stanno dietro il terreno: la roccia copre dove entrano nel fondale, senza calcolare il taglio.
+
+## 25 ottobre 2026 — Pezzi dipinti piantati dietro il terreno (v0.110.0)
+
+- Ogni pezzo dipinto sul fondale (sfiati, forzieri, relitti, coralli, alghe) si appoggia al punto più basso sotto la sua base e sta dietro il terreno: la roccia copre il piede, così nessun bordo resta sospeso su un pendio (richiesta del proprietario). Su pendii troppo ripidi il pezzo si rimpicciolisce invece di sprofondare.
+- I muri d'ossa restano caselle (collisioni invariate), con la trama dipinta ripetuta a specchio.

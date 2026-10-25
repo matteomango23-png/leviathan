@@ -1,7 +1,7 @@
 // The harbours at the surface (Portofosco's pier and houses on the mainland, Porto Fango's pier and huts on the
 // Isola delle Mangrovie) and the wrecks/chests on the sea floor.
 import Phaser from 'phaser';
-import { PIER_ART } from '../data/worldArt';
+import { PIER_ART, PROP_ART } from '../data/worldArt';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { HARBOUR_PIECES, OUTPOSTS, PORT, PORTO_FANGO, type PortDef } from '../data/economy';
 import { OUTPOST_ART, OUTPOST_FALLBACK, VILLAGES, type VillageArt } from '../data/placeArt';
@@ -11,6 +11,7 @@ import type { Wreck } from '../systems/economy/places';
 import type { GearState } from '../systems/economy/gear';
 import { TEX } from './textures';
 import { drawPierUnder } from './pierUnder';
+import { plant } from './plant';
 import type { TileMap } from '../systems/world/tileMap';
 
 /** Houses of Portofosco on the land, back from the shore: x, width, height (world units). The story burns them. */
@@ -133,7 +134,9 @@ function drawBuried(g: Phaser.GameObjects.Graphics, w: Wreck): void {
 export class PlacesView {
   private readonly glows: Phaser.GameObjects.Image[];
   /** The buried chests, drawn only while a hammerhead finds them. */
-  private readonly buried = new Map<string, Phaser.GameObjects.Graphics>();
+  private readonly buried = new Map<string, Phaser.GameObjects.Graphics | Phaser.GameObjects.Image>();
+  /** The painted chests (lot C3): an opened one goes away. */
+  private readonly chests = new Map<string, Phaser.GameObjects.Image>();
 
   constructor(
     scene: Phaser.Scene,
@@ -184,7 +187,42 @@ export class PlacesView {
         im.y = WORLD.surfaceY - PIER_ART.deckAbove - PIER_ART.deckAt * im.displayHeight;
         layer.add(im);
       }
+    // the chests and the weapon wrecks: the owner's pictures (lot C3), else drawn
+    const C = PROP_ART.chest;
+    const paintedChests = [C.plain, C.locked, C.buried, PROP_ART.weaponWreck.art].every(hasArt);
+    const prop = (
+      key: string,
+      x: number,
+      ground: number,
+      width: number,
+      sink: number,
+    ): Phaser.GameObjects.Image => {
+      // planted on the floor under its whole width, behind the terrain (plant.ts; owner, 25 ottobre)
+      const im = scene.add.image(x, 0, `world-${key}`).setOrigin(0.5, 1);
+      const k = width / im.width;
+      const at = map
+        ? plant(map, x, ground, width, im.height * k)
+        : { bottom: ground + im.height * k * sink, scale: 1 };
+      im.setScale(k * at.scale);
+      im.y = at.bottom;
+      (under ?? layer).add(im);
+      return im;
+    };
     for (const w of wrecks) {
+      const ground = w.y + 4;
+      if (paintedChests) {
+        if (w.def.kind === 'buried') {
+          this.buried.set(w.def.id, prop(C.buried, w.x, ground, C.buriedWidth, 0.15).setVisible(false));
+          continue;
+        }
+        if (w.def.reward.weapon)
+          prop(PROP_ART.weaponWreck.art, w.x - 14, ground, PROP_ART.weaponWreck.width, 0.08);
+        this.chests.set(
+          w.def.id,
+          prop(w.def.kind === 'locked' ? C.locked : C.plain, w.x, ground, C.width, 0.05),
+        );
+        continue;
+      }
       if (w.def.kind !== 'buried') drawWreck(g, w);
       else {
         const b = scene.add.graphics().setVisible(false);
@@ -210,6 +248,7 @@ export class PlacesView {
     this.wrecks.forEach((w, i) => {
       const there = !gear.wrecks.includes(w.def.id) && shown(w);
       this.buried.get(w.def.id)?.setVisible(there);
+      this.chests.get(w.def.id)?.setVisible(!gear.wrecks.includes(w.def.id));
       const pulse =
         w.def.kind === 'buried' ? 0.6 + 0.35 * Math.sin(time * 6) : 0.45 + 0.2 * Math.sin(time * 4 + i);
       this.glows[i]!.setVisible(there)

@@ -4,6 +4,9 @@ import Phaser from 'phaser';
 import { TERRAIN } from '../data/diver';
 import type { TileMap } from '../systems/world/tileMap';
 import { ChunkPaintJob, chunkHasRock } from './terrainPainter';
+import type { PaintProps } from './coralPainter';
+import { WORLD_ART_KEYS } from '../data/sprites.generated';
+import { PROP_ART } from '../data/worldArt';
 
 interface Slot {
   tex: Phaser.Textures.CanvasTexture;
@@ -20,12 +23,28 @@ export class TerrainView {
   private readonly empty = new Set<string>(); // chunks known to hold only water
   private job: { id: string; cx: number; cy: number; job: ChunkPaintJob } | null = null;
   private frame = 0;
+  /** The painted corals and the bone walls' texture (lot C3), when their pictures are there. */
+  private readonly props: PaintProps = {};
 
   constructor(
     scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer,
     private readonly map: TileMap,
   ) {
+    const has = (k: string): boolean => WORLD_ART_KEYS.includes(k);
+    const src = (k: string): HTMLImageElement =>
+      scene.textures.get(`world-${k}`).getSourceImage() as HTMLImageElement;
+    if (PROP_ART.corals.every(has)) this.props.corals = PROP_ART.corals.map(src);
+    if (has(PROP_ART.bones)) {
+      const img = src(PROP_ART.bones);
+      const c = document.createElement('canvas');
+      Object.assign(c, { width: img.width, height: img.height });
+      const g = c.getContext('2d');
+      if (g) {
+        g.drawImage(img, 0, 0);
+        this.props.bones = g.getImageData(0, 0, img.width, img.height);
+      }
+    }
     const px = Math.round(TERRAIN.chunkUnits * TERRAIN.texelsPerUnit);
     for (let i = 0; i < TERRAIN.cacheSize; i++) {
       const key = `terrain-chunk-${i}`;
@@ -160,7 +179,7 @@ export class TerrainView {
         this.install(cx, cy, this.job.job, keep);
         this.job = null;
       } else {
-        const job = new ChunkPaintJob(this.map, cx * S, cy * S, S);
+        const job = new ChunkPaintJob(this.map, cx * S, cy * S, S, this.props);
         job.step(Infinity);
         this.install(cx, cy, job, keep);
       }
@@ -174,7 +193,12 @@ export class TerrainView {
         const next = near.find(([x, y]) => this.needsPaint(x, y));
         if (!next) return;
         const [cx, cy] = next;
-        this.job = { id: id(cx, cy), cx, cy, job: new ChunkPaintJob(this.map, cx * S, cy * S, S) };
+        this.job = {
+          id: id(cx, cy),
+          cx,
+          cy,
+          job: new ChunkPaintJob(this.map, cx * S, cy * S, S, this.props),
+        };
       }
       if (this.job.job.step(deadline)) {
         this.install(this.job.cx, this.job.cy, this.job.job, keep);

@@ -46,7 +46,7 @@ export function extraDest(outRoot: string, e: ExtraName): string {
   if (e.kind === 'bg') return join(outRoot, 'bg', `${e.place}_${e.layer}.webp`);
   if (e.kind === 'panorama') return join(outRoot, 'bg', `${e.id}.webp`);
   if (e.kind === 'item') return join(outRoot, 'items', `${e.id}.webp`);
-  if (e.kind === 'world') return join(outRoot, 'world', `${e.id}.webp`);
+  if (e.kind === 'world' || e.kind === 'texture') return join(outRoot, 'world', `${e.id}.webp`);
   return join(outRoot, 'ui', `${e.id}.webp`);
 }
 
@@ -160,6 +160,11 @@ export async function makeExtra(src: string, dest: string, e: ExtraName): Promis
     return `strato ${img.width}×${img.height}, verde tolto`;
   }
   if (e.kind === 'world') return makeWorldPiece(src, dest, e.id);
+  if (e.kind === 'texture') {
+    await mkdir(dirname(dest), { recursive: true });
+    await sharp(src).resize(1024, 1024, { fit: 'cover' }).webp({ quality: 88 }).toFile(dest);
+    return 'trama 1024×1024';
+  }
   if (e.kind === 'panorama') {
     const img = await raw(src, 2400);
     const cut = removeGreenBackground(img);

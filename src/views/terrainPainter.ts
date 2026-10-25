@@ -1,7 +1,7 @@
 // Paints one square chunk of rock as a soft, layered painting (not blocky tiles).
 // The outline follows TileMap.field exactly, so what you see is what you bump into.
 import { SEA, TERRAIN } from '../data/diver';
-import { CORALS, ICE, TILE, WORLD } from '../data/worldLayout';
+import { ICE, TILE, WORLD } from '../data/worldLayout';
 import { ICEBERG_MAX_DRAFT } from '../data/worldArt';
 
 const WORLD_SURFACE = WORLD.surfaceY;
@@ -9,6 +9,8 @@ import { ENDLESS } from '../data/endless';
 import { biomeAt } from '../systems/world/endless';
 import { icebergsNear } from '../systems/world/icebergs';
 import { landmarkSolidAt } from '../systems/world/landmarks';
+import { PROP_ART } from '../data/worldArt';
+import { drawCorals, type PaintProps } from './coralPainter';
 import { inIceArtBox } from '../systems/world/iceSheet';
 
 /** Inside the frame of a painted iceberg (a little wider): nothing of the tiles is painted there. */
@@ -61,62 +63,6 @@ function boxBlur(src: Float32Array, w: number, r: number): Float32Array {
   return out;
 }
 
-function drawCorals(g: CanvasRenderingContext2D, map: TileMap, x0: number, y0: number, size: number): void {
-  const T = map.tileSize;
-  const tpu = TERRAIN.texelsPerUnit;
-  const tx0 = Math.floor(x0 / T);
-  const ty0 = Math.floor(y0 / T);
-  const n = Math.ceil(size / T);
-  g.save();
-  g.scale(tpu, tpu);
-  g.translate(-x0, -y0);
-  g.lineCap = 'round';
-  for (let ty = ty0; ty < ty0 + n; ty++) {
-    for (let tx = tx0; tx < tx0 + n; tx++) {
-      if (!map.isTop(tx, ty)) continue;
-      const x = tx * T;
-      const y = ty * T;
-      const biome = biomeAt(x);
-      const far = biome && biome.corals.colors.length ? { ...biome.corals, maxY: Infinity } : null;
-      const patch = CORALS.patches.some((p) => x > p.x0 && x < p.x1 && y < p.maxY);
-      const reef = !!far || patch || (x > CORALS.reef.xMin && x < CORALS.reef.xMax && y < CORALS.reef.maxY);
-      const set = far
-        ? far
-        : reef
-          ? CORALS.reef
-          : y < CORALS.shallow.maxY
-            ? CORALS.shallow
-            : y < CORALS.deep.maxY
-              ? CORALS.deep
-              : null;
-      if (!set || hash2(tx, ty * 7) > set.chance) continue;
-      const count = 1 + Math.floor(hash2(tx * 3, ty) * (reef ? 3 : 2));
-      for (let i = 0; i < count; i++) {
-        const cx = x + hash2(tx, i) * T;
-        // root the coral on the smooth rock outline
-        let cy = y - T;
-        while (cy < y + T && !map.solidAt(cx, cy)) cy += 0.5;
-        g.strokeStyle = set.colors[(tx + i) % set.colors.length]!;
-        g.lineWidth = reef ? 0.9 : 0.6;
-        const len = (reef ? 3 : 2) + hash2(tx + i, ty * 3) * (reef ? 5 : 3);
-        const branch = (bx: number, by: number, a: number, l: number, depth: number): void => {
-          if (depth > 3 || l < 0.8) return;
-          const ex = bx + Math.cos(a) * l;
-          const ey = by + Math.sin(a) * l;
-          g.beginPath();
-          g.moveTo(bx, by);
-          g.lineTo(ex, ey);
-          g.stroke();
-          branch(ex, ey, a - 0.45, l * 0.72, depth + 1);
-          branch(ex, ey, a + 0.4, l * 0.7, depth + 1);
-        };
-        branch(cx, cy + 0.6, -Math.PI / 2 + (hash2(tx, ty + i) - 0.5) * 0.4, len, 0);
-      }
-    }
-  }
-  g.restore();
-}
-
 /**
  * Paints one chunk (top-left world corner x0, y0; size × texelsPerUnit pixels square) a few rows at a time,
  * so painting never freezes a frame: the view gives each job a small time budget per frame.
@@ -139,6 +85,7 @@ export class ChunkPaintJob {
     readonly x0: number,
     readonly y0: number,
     readonly size: number,
+    private readonly props: PaintProps = {},
   ) {
     const tpu = TERRAIN.texelsPerUnit;
     this.px = Math.round(size * tpu);
@@ -230,6 +177,19 @@ export class ChunkPaintJob {
         r = c[0] * shade;
         gg = c[1] * shade;
         b = c[2] * shade;
+      } else if (tile === TILE.bone && this.props.bones) {
+        // the painted wall of fused bones (lot C3), the picture repeated mirrored so its edges always meet
+        const t = this.props.bones;
+        const mirror = (v: number, n: number): number => {
+          const m = ((Math.floor(v) % (2 * n)) + 2 * n) % (2 * n);
+          return m < n ? m : 2 * n - 1 - m;
+        };
+        const k = PROP_ART.bonesTexelsPerUnit;
+        const o = (mirror(wy * k, t.height) * t.width + mirror(wx * k, t.width)) * 4;
+        const shade = 1 - 0.35 * smooth01((dep - 0.6) * 2);
+        r = t.data[o]! * shade;
+        gg = t.data[o + 1]! * shade;
+        b = t.data[o + 2]! * shade;
       } else if (tile === TILE.bone || tile === TILE.ice) {
         const c = tile === TILE.bone ? SEA.bone : SEA.ice;
         const stripe =
@@ -269,7 +229,16 @@ export class ChunkPaintJob {
     const img = g.createImageData(this.px, this.px);
     img.data.set(this.data);
     g.clearRect(0, 0, this.px, this.px);
-    g.putImageData(img, 0, 0);
-    drawCorals(g, this.map, this.x0, this.y0, this.size);
+    if (!this.props.corals) {
+      g.putImageData(img, 0, 0);
+      drawCorals(g, this.map, this.x0, this.y0, this.size);
+      return;
+    }
+    // the painted corals first, the rock laid over them: their feet go into it
+    drawCorals(g, this.map, this.x0, this.y0, this.size, this.props.corals);
+    const rock = document.createElement('canvas');
+    Object.assign(rock, { width: this.px, height: this.px });
+    rock.getContext('2d')?.putImageData(img, 0, 0);
+    g.drawImage(rock, 0, 0);
   }
 }

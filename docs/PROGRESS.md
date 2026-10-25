@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 25 ottobre 2026, v0.109.0)
+## Dove siamo (aggiornato il 25 ottobre 2026, v0.110.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -19,7 +19,16 @@
 
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
-Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto C3 (25 ottobre 2026) → v0.110.0
+
+- **Immagini** (Gemini Pro con la pescheria come riferimento di stile): `sfiato_aria`, `relitto_arma`, `forziere`, `forziere_incrostato`, `forziere_sepolto`, `corallo_1…5`, `alga_1…4` (i gruppi originali in `art-inbox/gruppi/`, divisi per forme collegate), `trama_ossa` (nuovo tipo `texture` dello script: solo ridimensionata).
+- **Dati:** `PROP_ART` e `SCENERY_ART` in `data/worldArt.ts`.
+- **Piantati:** `views/plant.ts` (fondo al punto più profondo sotto l'80% della larghezza, al massimo il 45% affondato, altrimenti più piccolo); sfiati, forzieri, relitti, veliero, coralli dell'anfiteatro e alghe dietro stanno nel contenitore `under` dietro il terreno. I coralli dei pezzi di fondale (`views/coralPainter.ts`, nuovo) sono disegnati sotto la roccia del pezzo e sul punto più basso sotto la base, mai su pendii troppo ripidi.
+- **Altro:** bolle morbide (`views/bubbles.ts`) per sfiati e templi; alghe dipinte a fette che ondeggiano (`kelpView`); muri d'ossa con la trama ripetuta a specchio (`terrainPainter`).
+- **Schede:** `bayStats.ts` ha le righe vere della Sfera blocca-bestie; test che nessuna card dei mezzi dica "in arrivo". Memoria aggiornata: ogni cambiamento aggiorna tutti i testi e le card.
+- Test: `tests/lottoC3.test.ts`.
 
 ## Lotto C2 (25 ottobre 2026) → v0.109.0
 

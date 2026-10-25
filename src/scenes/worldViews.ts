@@ -109,10 +109,10 @@ export class WorldViews {
     const afloat = scene.add.container(); // the outposts, laid in front of the sea's surface (below)
     this.places = new PlacesView(scene, L.world, g.wrecks, map, afloat, under);
     this.story = new StoryView(scene, L.world);
-    new SceneryView(scene, L.world);
+    new SceneryView(scene, L.world, map, under);
     new DeltaView(scene, L.world, L.front);
-    this.kelp = new KelpView(scene, L.world, L.front, map);
-    this.vents = new VentView(scene, L.world);
+    this.kelp = new KelpView(scene, L.world, L.front, map, under);
+    this.vents = new VentView(scene, L.world, map, under);
     this.temple = new TempleView(scene, L.world);
     this.worldArt = new WorldArtView(scene, L.world, map);
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
