@@ -400,7 +400,8 @@ export type ExtraName =
   | { kind: 'icon'; id: string }
   | { kind: 'screen'; id: string }
   | { kind: 'world'; id: string }
-  | { kind: 'panorama'; id: string };
+  | { kind: 'panorama'; id: string }
+  | { kind: 'texture'; id: string };
 
 /** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
 export function parseExtraName(file: string): ExtraName | null {
@@ -410,12 +411,14 @@ export function parseExtraName(file: string): ExtraName | null {
   if (bg) return { kind: 'bg', place: bg[1]!, layer: bg[2] as 'far' };
   // the sea's panoramas behind you as you swim (docs/GEMINI-LOTTO-9.md, views/seaRidges.ts)
   if (/^mare_[a-z0-9]+_(lontano|medio)$/.test(base)) return { kind: 'panorama', id: base };
+  // a texture that fills the picture, laid by the terrain painter (lot C3: the bone walls)
+  if (/^trama_[a-z]+$/.test(base)) return { kind: 'texture', id: base };
   if (base === 'conchiglia' || base === 'conchiglia_aperta') return { kind: 'item', id: base };
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
   // the title menu's painting (19 ottobre) and the opening screen's (21 ottobre, ui/splash.ts)
   if (base === 'menu_sfondo' || base === 'splash') return { kind: 'screen', id: base };
   if (
-    /^(parete_[a-z]+(_\d)?|iceberg_\d|luogo_[a-z0-9_]+|molo_[a-z]+|sottomarino_[a-z0-9]+(_moto)?|sfera_[a-z0-9]+|nave_[a-z0-9]+(_aperta(_\d)?|_moto|_bocca(_moto)?)?|(motoscafo|moto)_[a-z0-9]+(_moto)?|avamposto_[a-z]+|rimorchiatore|porto_[a-z]+|paese_[a-z]+|delta_isola_\d|ghiaccio_[a-z]+(_\d)?)$/.test(
+    /^(parete_[a-z]+(_\d)?|iceberg_\d|luogo_[a-z0-9_]+|molo_[a-z]+|sottomarino_[a-z0-9]+(_moto)?|sfera_[a-z0-9]+|nave_[a-z0-9]+(_aperta(_\d)?|_moto|_bocca(_moto)?)?|(motoscafo|moto)_[a-z0-9]+(_moto)?|avamposto_[a-z]+|rimorchiatore|porto_[a-z]+|paese_[a-z]+|delta_isola_\d|ghiaccio_[a-z]+(_\d)?|sfiato_[a-z]+|relitto_[a-z]+|forziere(_[a-z]+)?|corallo_\d|alga_\d)$/.test(
       base,
     )
   )

@@ -1,8 +1,12 @@
-// Kelp strands growing on rock tops, swaying. Some stand in front of the diver as dark silhouettes.
+// Kelp strands growing on rock tops, swaying. Some stand in front of the diver as dark silhouettes. With the owner's
+// painted kelp (lot C3, data/worldArt.ts PROP_ART) each strand is its picture cut in slices that sway, more towards
+// the top; without it, a drawn line.
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { KELP } from '../data/worldLayout';
 import { ENDLESS } from '../data/endless';
+import { PROP_ART } from '../data/worldArt';
+import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { biomeAt } from '../systems/world/endless';
 
 /** Kelp grows only this deep (world y): deeper it is dark and nobody sees it. */
@@ -70,7 +74,14 @@ export class KelpView {
   private readonly back: Strand[];
   private readonly front: Strand[];
   private readonly far = new Map<number, { back: Strand[]; front: Strand[] }>();
+  private readonly scene: Phaser.Scene;
   private readonly backColor = Phaser.Display.Color.HexStringToColor(SEA.kelpBack).color;
+  /** The painted slices in use (one pool behind the diver, one in front). */
+  private readonly pools: { back: Phaser.GameObjects.Image[]; front: Phaser.GameObjects.Image[] } = {
+    back: [],
+    front: [],
+  };
+  private readonly painted = PROP_ART.kelp.every((k) => WORLD_ART_KEYS.includes(k));
   private readonly frontColor = Phaser.Display.Color.HexStringToColor(SEA.kelpFront).color;
 
   constructor(
@@ -78,7 +89,10 @@ export class KelpView {
     backLayer: Phaser.GameObjects.Layer,
     frontLayer: Phaser.GameObjects.Layer,
     private readonly map: TileMap,
+    /** Behind the terrain: the painted strands behind you grow from inside the rock (plant.ts). */
+    private readonly under?: Phaser.GameObjects.Container,
   ) {
+    this.scene = scene;
     const k = growKelp(map);
     this.back = k.back;
     this.front = k.front;
@@ -86,6 +100,46 @@ export class KelpView {
     this.frontG = scene.add.graphics();
     backLayer.add(this.backG);
     frontLayer.add(this.frontG);
+    this.layers = { back: backLayer, front: frontLayer };
+  }
+
+  private readonly layers: { back: Phaser.GameObjects.Layer; front: Phaser.GameObjects.Layer };
+
+  /** The painted strands: each picture in slices, every slice shifted by the sway at its height. */
+  private drawPainted(list: Strand[], view: Phaser.Geom.Rectangle, time: number, front: boolean): void {
+    const pool = front ? this.pools.front : this.pools.back;
+    const n = PROP_ART.kelpSlices;
+    let used = 0;
+    for (const k of list) {
+      if (k.x < view.x - 20 || k.x > view.right + 20 || k.y - k.h > view.bottom || k.y < view.y) continue;
+      const key = `world-${PROP_ART.kelp[Math.floor(hash2(k.x * 0.37, k.y) * PROP_ART.kelp.length)]!}`;
+      const flip = hash2(k.x, k.y * 0.11) > 0.5;
+      const amp = Math.min(6, k.h * 0.12);
+      for (let i = 0; i < n; i++) {
+        let im = pool[used];
+        if (!im) {
+          im = this.scene.add.image(0, 0, key).setOrigin(0.5, 0);
+          (front ? this.layers.front : (this.under ?? this.layers.back)).add(im);
+          pool.push(im);
+        }
+        used++;
+        if (im.texture.key !== key) im.setTexture(key);
+        const H = im.frame.realHeight;
+        const scale = k.h / H;
+        const s0 = i / n;
+        const s1 = (i + 1) / n;
+        const s = (s0 + s1) / 2; // share of the height from the root
+        im.setVisible(true).setScale(scale).setFlipX(flip);
+        im.setCrop(0, (1 - s1) * H, im.frame.realWidth, (s1 - s0) * H + 1.5);
+        // the root a little into the rock (the terrain in front hides it)
+        im.setPosition(
+          k.x + Math.sin(time * 1.1 + k.phase + s * 2.5) * s * amp,
+          k.y + PROP_ART.kelpRootSink - k.h,
+        );
+        if (front) im.setTint(PROP_ART.kelpFrontTint);
+      }
+    }
+    for (let i = used; i < pool.length; i++) pool[i]!.setVisible(false);
   }
 
   private draw(
@@ -148,7 +202,14 @@ export class KelpView {
 
   update(view: Phaser.Geom.Rectangle, time: number): void {
     const far = this.farKelp(view);
-    this.draw(this.backG, far.back.length ? [...this.back, ...far.back] : this.back, view, time, false);
-    this.draw(this.frontG, far.front.length ? [...this.front, ...far.front] : this.front, view, time, true);
+    const back = far.back.length ? [...this.back, ...far.back] : this.back;
+    const front = far.front.length ? [...this.front, ...far.front] : this.front;
+    if (this.painted) {
+      this.drawPainted(back, view, time, false);
+      this.drawPainted(front, view, time, true);
+      return;
+    }
+    this.draw(this.backG, back, view, time, false);
+    this.draw(this.frontG, front, view, time, true);
   }
 }

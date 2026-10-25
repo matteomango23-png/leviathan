@@ -4,6 +4,7 @@ import { BOAT_MODELS } from '../../data/boats';
 import { type ShipModelDef } from '../../data/fleet';
 import { SHIP } from '../../data/ship';
 import { SUB_MODELS } from '../../data/submarine';
+import { SPHERE } from '../../data/nightmare';
 import { knots, type StatRow } from './statRow';
 
 /** Every comparable number of the vehicles in a ship's hatches. */
@@ -123,6 +124,38 @@ export function bayRows(m: ShipModelDef): StatRow[] {
           text: `porta ${SHIP.hull.partsBoat} punti di ricambi per la nave`,
           better: 'high',
           unit: 'punti',
+        },
+      );
+    } else if (b.kind === 'sphere') {
+      // the Ocean's Nightmare's sphere (in the game since 9 ottobre; owner, 25 ottobre: its card said "in arrivo")
+      const v = b.name;
+      rows.push(
+        {
+          key: 'sphere.use',
+          group: v,
+          label: 'Cosa fa',
+          value: 1,
+          text: 'raggiunge da sola la bestia scelta dal rapporto del drone e la blocca con una scarica rossa',
+          better: 'none',
+          unit: '',
+        },
+        {
+          key: 'sphere.hold',
+          group: v,
+          label: 'Blocco',
+          value: SPHERE.holdSeconds,
+          text: `la tiene ferma ${SPHERE.holdSeconds} secondi`,
+          better: 'high',
+          unit: 's',
+        },
+        {
+          key: 'sphere.cooldown',
+          group: v,
+          label: 'Ricarica',
+          value: SPHERE.cooldownSeconds,
+          text: `di nuovo pronta ${Math.round(SPHERE.cooldownSeconds / 60)} minuti dopo il rientro`,
+          better: 'low',
+          unit: 's',
         },
       );
     } else

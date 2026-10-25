@@ -79,3 +79,35 @@ export const ICE_ART = {
   pxPerUnit: 4,
   maxPx: 4096,
 };
+
+/**
+ * The painted props of the sea (lot C3; owner, 24 ottobre: what was still drawn with code "non è bello"): the corals
+ * on the rock tops (their height in units, a little sunk into the rock), the kelp strands (cut in slices that sway,
+ * the front ones dark), the bone walls' texture (texels of the picture per world unit), the air vents (their width,
+ * sunk into the floor) and the chests and weapon wrecks (their width). Tuning.
+ */
+export const PROP_ART = {
+  corals: ['corallo_1', 'corallo_2', 'corallo_3', 'corallo_4', 'corallo_5'],
+  coralHeight: [6, 13] as [number, number],
+  coralSink: 0.8,
+  kelp: ['alga_1', 'alga_2', 'alga_3', 'alga_4'],
+  kelpSlices: 8,
+  kelpFrontTint: 0x16211c,
+  kelpRootSink: 3,
+  bones: 'trama_ossa',
+  bonesTexelsPerUnit: 9,
+  vent: 'sfiato_aria',
+  ventWidth: 44,
+  ventSink: 0.12,
+  chest: { plain: 'forziere', locked: 'forziere_incrostato', buried: 'forziere_sepolto', width: 15, buriedWidth: 18 },
+  weaponWreck: { art: 'relitto_arma', width: 62 },
+};
+
+/** The old story's scenery painted (lot C3): the red corals of the amphitheatre, the galleon in the kelp (the
+ *  Cimitero dei velieri's picture, this many times the old drawing's length, sunk this share into the floor). */
+export const SCENERY_ART = {
+  arenaCorals: ['corallo_1', 'corallo_5'],
+  wreck: 'luogo_galeone_1',
+  wreckScale: 1.35,
+  wreckSink: 0.1,
+};

@@ -1,9 +1,9 @@
 // What lives inside the sunken temples, drawn over the carved stone: levers, runes (lit or dark), the mosaic with
 // the order of the runes, the broken chains, the air vents and the glowing relic.
 import Phaser from 'phaser';
+import { drawBubbles } from './bubbles';
 import { ENDLESS } from '../data/endless';
 import { RUNE_GLYPHS } from '../data/temples';
-import { hash2 } from '../systems/math';
 import { leverDown, runesLit, type TempleWorld } from '../systems/temple';
 import { templeCells, templeSites, templeVents, type TempleSite } from '../systems/world/templeSite';
 
@@ -94,17 +94,7 @@ export class TempleView {
     }
     // air vents: bubbles rising to the ceiling
     for (const v of templeVents(t)) {
-      this.glow.fillStyle(0x9fe8ff, 0.14).fillEllipse(v.x, v.y, ENDLESS.vents.radius * 2, 8);
-      for (let i = 0; i < 8; i++) {
-        const rise = (time * (24 + hash2(i, v.x) * 18) + hash2(i * 7, v.x) * v.height) % v.height;
-        this.glow
-          .lineStyle(0.5, 0xdff8ff, 0.55 * (1 - rise / v.height))
-          .strokeCircle(
-            v.x + (hash2(i, v.y) - 0.5) * ENDLESS.vents.radius + Math.sin(time * 2 + i) * 2,
-            v.y - rise,
-            1.2,
-          );
-      }
+      drawBubbles(this.glow, v.x, v.y, v.height, ENDLESS.vents.radius, 10, time, v.x * 0.01);
     }
   }
 

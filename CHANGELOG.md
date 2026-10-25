@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.110.0 — Pezzi dipinti al posto del codice (25 ottobre 2026)
+
+- **Dipinti nuovi:** gli sfiati d'aria (uno sfiato di roccia con le bollicine tonde e lucide che escono dal cratere, al posto dei cerchietti), i forzieri (normale, incrostato, sepolto), la barca affondata con le armi, i coralli (ventaglio, cervello, corna viola, spugne, corallo molle), le alghe giganti che ondeggiano, i muri d'ossa che chiudono le gallerie e il pozzo della tana. Il veliero della Foresta è il galeone del Cimitero dei velieri.
+- **Ben piantati:** ogni pezzo poggia sul punto più basso del fondale sotto di sé e il piede sparisce nella roccia; niente bordi sospesi sui pendii.
+- **Le bolle dei templi** sono come quelle degli sfiati.
+- **Scheda dell'Ocean's Nightmare:** la Sfera blocca-bestie non dice più "in arrivo": spiega cosa fa, quanto blocca (60 s) e quanto ricarica (3 minuti).
+- I salvataggi non cambiano.
+
 ## v0.109.0 — Portofosco, U-Boot, sfondi e sonar (25 ottobre 2026)
 
 - **Le navi non entrano più nella terra:** un U-Boot risalito a ovest di Porto Fango si ferma sui bassi fondali ("Fondale troppo basso") invece di arrivare a Portofosco.
