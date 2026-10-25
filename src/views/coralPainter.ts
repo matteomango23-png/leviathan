@@ -12,6 +12,8 @@ import type { TileMap } from '../systems/world/tileMap';
 export interface PaintProps {
   corals?: CanvasImageSource[];
   bones?: ImageData;
+  /** The Gallerie's dark cave wall (lot M3). */
+  caveWall?: ImageData;
 }
 
 export function drawCorals(

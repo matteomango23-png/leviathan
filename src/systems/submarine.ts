@@ -12,6 +12,9 @@ import type { TileMap } from './world/tileMap';
 import { PRESSURE } from '../data/diver';
 import { stepPressure } from './breath';
 import { chokeAboard } from './diver';
+import { GALLERIES } from '../data/galleries';
+import { ventAt } from './world/endless';
+import { stepCurrent } from './currents';
 import { HELM, SHIP } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
@@ -146,6 +149,9 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
   steer(s, input.helm, top, dt);
   stepSubAir(s, m.airSeconds, dt, events);
+  // an air pocket of the Gallerie fills its air too (lot M3), and their currents carry it
+  if (subUnder(s) && ventAt(s.x, s.y)) s.air = Math.min(m.airSeconds, s.air + GALLERIES.subRefill * dt);
+  stepCurrent(s, dt);
   burnFuel(s, input.helm, m.perKm, dt, events);
   const nx = s.x + s.vx * dt;
   if (hits(g.map, s, nx, s.y)) {

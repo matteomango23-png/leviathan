@@ -7,6 +7,7 @@ import { TILE, WORLD, type TileValue } from '../../data/worldLayout';
 import { fbm, hash2 } from '../math';
 import { icebergsOfStretch, inIceberg, nearIceberg } from './icebergs';
 import { iceArtReady, iceArtSolidAt } from './iceSheet';
+import { galleryBottomAt, galleryOpenAt, galleryVentAt } from './galleryShape';
 import { biomeOf, naturalFloor, stretchAt } from './stretches';
 import { floorNearLandmark, landmarkAtX, landmarkSolidAt } from './landmarks';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
@@ -72,6 +73,7 @@ export function endlessTile(x: number, y: number): TileValue {
   const temple = templeTileAt(x, y);
   if (temple !== null) return temple;
   if (landmarkSolidAt(x, y)) return TILE.rock; // the arch, the galleons (their pictures' masks)
+  if (galleryOpenAt(x, y)) return TILE.water; // the Gallerie carved in the rock (lot M3)
   const k = stretchAt(x);
   const b = biomeOf(k);
   if (b.ice && inIceberg(icebergsOfStretch(k), x, y)) return TILE.ice;
@@ -94,7 +96,11 @@ export function generateChunk(tx0: number, cols: number, rows: number, T: number
   for (let c = 0; c < cols; c++) {
     const x = (tx0 + c) * T + T / 2;
     const k = stretchAt(x);
-    const deepest = Math.max(endlessFloor(x) + biomeOf(k).noise * WORLD.noiseAmp + T, templeBottomAt(x) ?? 0);
+    const deepest = Math.max(
+      endlessFloor(x) + biomeOf(k).noise * WORLD.noiseAmp + T,
+      templeBottomAt(x) ?? 0,
+      galleryBottomAt(x) ?? 0,
+    );
     for (let ty = 0; ty < rows; ty++) {
       const y = ty * T + T / 2;
       out[ty * cols + c] = y > deepest ? TILE.rock : endlessTile(x, y);
@@ -139,7 +145,7 @@ export function ventsOf(k: number): { x: number; y: number }[] {
 /** The vent whose bubble column you are in, if any. */
 export function ventAt(x: number, y: number): { x: number; y: number } | null {
   if (x < ENDLESS.startX) return null;
-  const inTemple = templeVentAt(x, y);
+  const inTemple = templeVentAt(x, y) ?? galleryVentAt(x, y);
   if (inTemple) return inTemple;
   const V = ENDLESS.vents;
   const k = stretchAt(x);

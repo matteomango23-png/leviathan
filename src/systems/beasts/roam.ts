@@ -7,7 +7,12 @@ import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
 import { bodiesTouch, bodyCircles, distanceToBody, type BodyPose } from './combat';
-import { uniqueOf } from './forms';
+import { formLengthM, uniqueOf } from './forms';
+import { GALLERIES } from '../../data/galleries';
+import { galleryOpenAt } from '../world/galleryShape';
+
+/** Too big for the Gallerie. */
+const keptOut = (b: WildBeast): boolean => formLengthM(b.form) > GALLERIES.maxBeastM;
 import { bodyRadius, isRare, isWorn, type WildBeast } from './wildState';
 import { startPatrol, stepPatrol } from './patrol';
 import { stepStalk } from './stalk';
@@ -220,7 +225,13 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   b.vx += (wantVx - b.vx) * k;
   b.vy += (wantVy - b.vy) * k;
   const before = b.vx;
-  const blocked = map.moveBody(b, bodyCircles(b), dt); // the whole body against rock, not only its middle
+  const [px, py] = [b.x, b.y];
+  let blocked = map.moveBody(b, bodyCircles(b), dt); // the whole body against rock, not only its middle
+  // a big beast never goes into the Gallerie (lot M3; owner: "le grandi restano fuori"): it turns back at the mouth
+  if (keptOut(b) && galleryOpenAt(b.x, b.y)) {
+    Object.assign(b, { x: px, y: py, vx: -b.vx * 0.3, target: null });
+    blocked = true;
+  }
   if (blocked && b.turn === 0 && Math.sign(before) === b.face && Math.abs(b.vx) < Math.abs(before) * 0.5) {
     turnAround(b);
     b.target = null;

@@ -1,6 +1,7 @@
 // World: runs the game step, turns its events into saves, battles and sounds, and lets WorldViews draw the sea
 // (worldViews.ts) and show the events (worldEvents.ts). No rules live here, only wiring.
 import Phaser from 'phaser';
+import { galleryAt } from '../systems/world/galleryShape';
 import { DIVER, SAVE } from '../data/diver';
 import { ENGINE_SOUND } from '../data/audio';
 import { engineHeard } from '../systems/ship/ship';
@@ -211,6 +212,7 @@ export class WorldScene extends Phaser.Scene {
         dash: d.dashTime > 0 && dashBefore <= 0,
         km: kmFromCoast(d.x),
         look: lookAt(d.x),
+        cave: !!galleryAt(d.x, d.y),
       },
       dt,
     );

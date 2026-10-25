@@ -129,3 +129,39 @@ export function applyCuts(
       if (open) px[(y * img.width + x) * 4 + 3] = 0;
     }
 }
+
+/** Pictures whose dark middle is a hole (a tunnel's mouth, lot M3): the near-black pixels joined to the picture's
+ *  middle are cleared, so the gallery shows through the arch. */
+export const DARK_HOLES = ['ingresso_galleria'];
+
+export function clearDarkMiddle(
+  id: string,
+  px: Uint8ClampedArray,
+  img: Raw,
+  box: { x0: number; y0: number; x1: number; y1: number },
+): void {
+  if (!DARK_HOLES.includes(id)) return;
+  const W = img.width;
+  const dark = (x: number, y: number): boolean => {
+    const o = (y * W + x) * 4;
+    return px[o + 3]! > 0 && px[o]! + px[o + 1]! + px[o + 2]! < 75;
+  };
+  const sx = Math.round((box.x0 + box.x1) / 2);
+  const sy = Math.round(box.y0 + (box.y1 - box.y0) * 0.55);
+  if (!dark(sx, sy)) return;
+  const seen = new Uint8Array(W * img.height);
+  const stack = [sy * W + sx];
+  while (stack.length) {
+    const i = stack.pop()!;
+    if (seen[i]) continue;
+    seen[i] = 1;
+    const x = i % W;
+    const y = (i - x) / W;
+    if (!dark(x, y)) continue;
+    px[i * 4 + 3] = 0;
+    if (x > box.x0) stack.push(i - 1);
+    if (x < box.x1) stack.push(i + 1);
+    if (y > box.y0) stack.push(i - W);
+    if (y < box.y1) stack.push(i + W);
+  }
+}

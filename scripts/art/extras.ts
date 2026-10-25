@@ -35,7 +35,7 @@ import {
   greenShare,
   keepLargest,
 } from './layers.ts';
-import { applyBottomFade, applyCuts, applySideFade, BOTTOM_FADES } from './landmarkCuts.ts';
+import { applyBottomFade, applyCuts, applySideFade, BOTTOM_FADES, clearDarkMiddle } from './landmarkCuts.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -302,7 +302,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   const img = await raw(src, 1400, 0, mirrored(id));
   const iceberg = id.startsWith('iceberg');
   // the landmarks of the sea (lot M2): a finer solid mask, so the arch's opening and the galleon's rooms are open
-  const landmark = id.startsWith('luogo_') || id.startsWith('ghiaccio_');
+  const landmark = id.startsWith('luogo_') || id.startsWith('ghiaccio_') || id.startsWith('colonna_');
   // the waterline: the brightest row in the side margins (only the line reaches them, not the ice or its snow)
   let line = -1;
   if (iceberg) {
@@ -346,6 +346,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   applyCuts(id, cut, img, box);
   applyBottomFade(id, cut, img, box);
   applySideFade(id, cut, img, box);
+  clearDarkMiddle(id, cut, img, box);
   if (shipLike(id)) {
     // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
     await mkdir(dirname(dest), { recursive: true });

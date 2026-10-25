@@ -25,6 +25,7 @@ import { isInWater } from './beasts/wildState';
 import { activeBeast, mountSpeed, stepBeasts, weaponHitsBeast } from './beastPlay';
 import { stepDiver } from './diver';
 import { stepPressure } from './breath';
+import { stepCurrent } from './currents';
 import { catchFish, markSeen } from './catching';
 import { stepSwarmCooldowns, useSlot } from './economy/backpack';
 import { diverModifiers } from './economy/gear';
@@ -35,6 +36,7 @@ import { needsStarter } from './starter';
 import { BLACKOUT } from '../data/battle';
 import { discoverOutposts, portAt } from './economy/places';
 import { discoverLandmarks } from './world/landmarks';
+import { discoverCathedral } from './world/cathedral';
 import { PORT, PORTS } from '../data/economy';
 import type { GameEvent } from './events';
 import { stepFish, takeFish } from './fish';
@@ -129,6 +131,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
       // the surface over you with its waves, the same the views draw and the boats ride (floatSurface.ts)
       waterLine: g.map.surfaceY - seaHeight(d.x, g.time, weatherLook(g.weather), g.water),
     });
+    stepCurrent(d, dt); // the Gallerie's currents (lot M3)
     const whale = activeBeast(g);
     if (tankRanOut(tank) && whale) events.push({ type: 'rideAirOut', name: formName(whale.form) });
   } else if (aboard) stepPressure(d, 0, dt); // inside a vehicle the suit is not pressed: its bar fills back (24 ottobre)
@@ -232,6 +235,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   g.port = g.ship.aboard || g.boat.aboard ? shipPort(g) : portAt(d, g.map);
   discoverOutposts(g, events);
   discoverLandmarks(g, events);
+  discoverCathedral(g, events); // at the end of the Gallerie (lot M3)
   g.atPort = g.port !== null;
   stepProgress(g, events);
   stepStory(g, dt, events);
