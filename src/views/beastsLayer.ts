@@ -52,18 +52,13 @@ export class BeastsLayer {
   /** The health a wild beast has left after your weapons wore it down (systems/swimFight.ts), over it. */
   private readonly bars: Phaser.GameObjects.Graphics;
 
-  constructor(
-    scene: Phaser.Scene,
-    layer: Phaser.GameObjects.Layer,
-    g: GameState,
-    glow: Phaser.GameObjects.Layer,
-  ) {
-    this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer, glow));
+  constructor(scene: Phaser.Scene, layer: Phaser.GameObjects.Layer, g: GameState) {
+    this.wild = g.beasts.wilds.map(() => new BeastSprite(scene, layer));
     this.school = g.beasts.wilds.map((w) =>
       Array.from(
         // an endless slot can be any species: room for the biggest school
         { length: w.spawn.endless ? MAX_SCHOOL : (BEAST_TEMPER[w.spawn.speciesId]?.school ?? 0) },
-        () => new BeastSprite(scene, layer, glow),
+        () => new BeastSprite(scene, layer),
       ),
     );
     this.mount = new BeastSprite(scene, layer);
@@ -105,6 +100,13 @@ export class BeastsLayer {
     const left = 1 - wounds;
     this.bars.fillStyle(0x02070c, 0.7).fillRect(x - w / 2 - 0.6, y - 0.6, w + 1.2, 3.2);
     this.bars.fillStyle(left <= 0.5 ? 0xe0533c : 0xe6c45a, 0.95).fillRect(x - w / 2, y, w * left, 2);
+  }
+
+  /** Where hunters' eyes glow now (the light mask shows them in the dark). */
+  eyeSpots(): { x: number; y: number; r: number }[] {
+    const out: { x: number; y: number; r: number }[] = [];
+    for (const sp of [...this.wild, ...this.school.flat()]) if (sp.eyeSpot) out.push(sp.eyeSpot);
+    return out;
   }
 
   /** It hunts you (it will bite: it goes first): its eyes glow red (owner, 25 ottobre: no dots over the beasts). */

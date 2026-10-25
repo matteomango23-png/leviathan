@@ -113,8 +113,8 @@ function eyeGlowTexture(scene: Phaser.Scene): string {
   const rgb = `${(c >> 16) & 255},${(c >> 8) & 255},${c & 255}`;
   const grad = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2);
   grad.addColorStop(0, 'rgba(255,235,220,1)');
-  grad.addColorStop(0.12, `rgba(${rgb},1)`);
-  grad.addColorStop(0.4, `rgba(${rgb},0.35)`);
+  grad.addColorStop(0.2, `rgba(${rgb},1)`);
+  grad.addColorStop(0.45, `rgba(${rgb},0.5)`);
   grad.addColorStop(1, `rgba(${rgb},0)`);
   g.fillStyle = grad;
   g.fillRect(0, 0, n, n);
@@ -131,21 +131,15 @@ export class BeastSprite {
   private key = '';
   private open = false;
   private readonly front: Phaser.GameObjects.Image;
-  /** Its eye's red glow, over the darkness (only given a glow layer). */
-  private readonly eye: Phaser.GameObjects.Image | null = null;
+  /** Its eye's red glow: part of the beast, so whatever swims in front of it covers it (owner, 25 ottobre). */
+  private readonly eye: Phaser.GameObjects.Image;
+  /** Where its eye glows now (the light mask lets it show in the dark), or null. */
+  eyeSpot: { x: number; y: number; r: number } | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer,
-    glowLayer?: Phaser.GameObjects.Layer,
   ) {
-    if (glowLayer) {
-      this.eye = scene.add
-        .image(0, 0, eyeGlowTexture(scene))
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setVisible(false);
-      glowLayer.add(this.eye);
-    }
     this.root = scene.add.container(0, 0);
     for (let i = 0; i < N; i++) this.strips.push(scene.add.image(0, 0, '__WHITE').setOrigin(1, CY / IH));
     // tail first so the head is drawn on top
@@ -161,6 +155,11 @@ export class BeastSprite {
     this.root.add(this.glows);
     this.front = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.root.add(this.front);
+    this.eye = scene.add
+      .image(0, 0, eyeGlowTexture(scene))
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setVisible(false);
+    this.root.add(this.eye);
     layer.add(this.root);
     this.root.setVisible(false);
   }
@@ -181,13 +180,13 @@ export class BeastSprite {
 
   hide(): void {
     this.root.setVisible(false);
-    this.eye?.setVisible(false);
+    this.eyeSpot = null;
   }
 
   /** The red glow on its painted eye, following the head's piece of the picture. */
   private updateEye(p: BeastPoseView): void {
     const at = BEAST_EYES[p.key];
-    if (!this.eye) return;
+    this.eyeSpot = null;
     if (!p.hunt || !at || p.flash > 0) {
       this.eye.setVisible(false);
       return;
@@ -204,11 +203,15 @@ export class BeastSprite {
     const t = this.scene.time.now / 1000;
     const size = Math.max(EYE_GLOW.minSize, EYE_GLOW.size * Math.abs(r.scaleY));
     const throb = 1 - EYE_GLOW.pulseDepth * (0.5 + 0.5 * Math.sin(t * EYE_GLOW.pulse));
+    const lx = s.x + dx * cos - dy * sin;
+    const ly = s.y + dx * sin + dy * cos;
+    const k = size / Math.abs(r.scaleY) / this.eye.width; // in the beast's own (scaled) frame
     this.eye
       .setVisible(true)
-      .setPosition(r.x + (s.x + dx * cos - dy * sin) * r.scaleX, r.y + (s.y + dx * sin + dy * cos) * r.scaleY)
-      .setDisplaySize(size, size)
-      .setAlpha(EYE_GLOW.alpha * throb * p.alpha);
+      .setPosition(lx, ly)
+      .setScale(k)
+      .setAlpha(EYE_GLOW.alpha * throb);
+    this.eyeSpot = { x: r.x + lx * r.scaleX, y: r.y + ly * r.scaleY, r: size * EYE_GLOW.light };
   }
 
   /** Its glow follows each strip; a pulse runs along it (systems/glowPulse.ts). Off while it flashes red. */
@@ -288,7 +291,8 @@ export class BeastSprite {
     }
     for (const s of this.strips) s.setVisible(false);
     for (const g of this.glows) g.setVisible(false);
-    this.eye?.setVisible(false);
+    this.eye.setVisible(false);
+    this.eyeSpot = null;
     this.key = '';
     const im = this.front.setVisible(true);
     if (im.texture.key !== tk) im.setTexture(tk);
@@ -305,6 +309,5 @@ export class BeastSprite {
 
   destroy(): void {
     this.root.destroy();
-    this.eye?.destroy();
   }
 }

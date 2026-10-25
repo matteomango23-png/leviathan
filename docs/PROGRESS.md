@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 25 ottobre 2026, v0.112.2)
+## Dove siamo (aggiornato il 25 ottobre 2026, v0.112.3)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -24,6 +24,7 @@ Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa:
 ## Occhi rossi (25 ottobre 2026) → v0.112.2
 
 - Il proprietario ha chiesto di togliere i pallini dell'umore (cerchi di codice, contro la regola ferrea) e di mettere occhi rossi quando cacciano. Tolto `moodMark` da `views/beastsLayer.ts`; `BeastSprite` ha un bagliore rosso morbido (ADD, nello strato `glow` sopra il buio) sull'occhio dipinto, che segue il pezzo della testa (`updateEye` in `views/beastView.ts`). Posizioni degli occhi lette a mano da ogni profilo: `data/beastEyes.ts` (85 immagini; manca il calamaro, occhio non in vista). Test: `tests/beastEyes.test.ts`.
+- v0.112.3: il bagliore stava nello strato sopra il buio e si vedeva attraverso i corpi davanti (il proprietario l'ha visto nelle foto: "me ne devo accorgere io"). Ora è un pezzo della bestia (nel suo container) e il buio lo lascia vedere con un piccolo punto di luce (`eyeSpots` in `beastsLayer.ts`, `EYE_GLOW.light`).
 - Il proprietario deve ancora provare bene lo scontro in acqua (C4).
 
 ## Gallerie senza stacchi (25 ottobre 2026) → v0.112.1

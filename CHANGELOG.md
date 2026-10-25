@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.112.3 — Occhi rossi coperti dai corpi (25 ottobre 2026)
+
+- Se un'altra bestia passa davanti a una che caccia, il suo corpo copre l'occhio rosso (prima il bagliore si vedeva attraverso). Nel buio l'occhio resta visibile e illumina appena il muso.
+- I salvataggi non cambiano.
+
 ## v0.112.2 — Occhi rossi (25 ottobre 2026)
 
 - **Niente più pallini sopra le bestie.** Quando una bestia ti caccia (sta per morderti e nella battaglia comincia lei), i suoi occhi si accendono di rosso e pulsano piano. Si vedono anche nel buio, fuori dalla lampada.
