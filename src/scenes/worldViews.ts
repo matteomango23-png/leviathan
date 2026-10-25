@@ -128,7 +128,7 @@ export class WorldViews {
     this.sub = new SubmarineView(scene, L.world, L.glow);
     this.nightmare = new NightmareView(scene, L.world, L.glow);
     this.fishView = new FishView(scene, L.world, g.fish);
-    this.beasts = new BeastsLayer(scene, L.world, g, L.glow);
+    this.beasts = new BeastsLayer(scene, L.world, g);
     this.birdsView = new BirdsView(scene, L.world);
     this.diverView = new DiverView(scene, L.world);
     this.effects = new EffectsView(scene, L.world);
@@ -247,6 +247,7 @@ export class WorldViews {
       ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),
+      ...this.beasts.eyeSpots(), // hunters' red eyes show in the dark
     ];
     // an Abissale in your pack: a light round you (systems/pack.ts Lanterna)
     const lantern = lanternRadius(g);

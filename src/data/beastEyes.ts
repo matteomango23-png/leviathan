@@ -3,8 +3,8 @@
 // pictures by hand; a picture not listed shows no glow.
 
 /** The glow: its size in picture pixels (never under `minSize` units, so a small fish's still shows), how bright,
- *  how fast it throbs (per second), how deep the throb. Tuning. */
-export const EYE_GLOW = { size: 46, minSize: 2.2, alpha: 0.95, pulse: 5, pulseDepth: 0.25, color: 0xff2a14 };
+ *  how fast it throbs (per second), how deep the throb, the light it makes in the dark (share of its size). Tuning. */
+export const EYE_GLOW = { size: 46, minSize: 2.6, alpha: 1, pulse: 5, pulseDepth: 0.25, light: 0.9, color: 0xff2a14 };
 
 export const BEAST_EYES: Record<string, [number, number]> = {
   anguilla_elettrica: [960, 242],
