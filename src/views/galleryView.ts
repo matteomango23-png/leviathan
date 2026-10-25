@@ -43,8 +43,13 @@ export class GalleryView {
     const s: Shown = { images: [], lights: [] };
     if (has(GALLERY_ART.mouth)) {
       const m = g.mouth;
-      const im = this.image(GALLERY_ART.mouth, m.x, m.y).setFlipX(m.dir < 0);
-      im.setScale(GALLERY_ART.mouthWidth / im.width);
+      // set into the rock of the wall, its side towards the open trench fading into the water (never floating)
+      const im = this.image(
+        GALLERY_ART.mouth,
+        m.x + m.dir * GALLERY_ART.mouthWidth * GALLERY_ART.mouthInRock,
+        m.y,
+      );
+      im.setFlipX(m.dir < 0).setScale(GALLERY_ART.mouthWidth / im.width); // its left side fades (art script)
       s.images.push(im);
     }
     for (const b of cathedralColumns(g)) {

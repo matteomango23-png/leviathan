@@ -27,3 +27,4 @@ asset animali ai/
 
 # The videos of npm run art:video stay on the PC (too heavy for the repository; originals also on the Desktop)
 art-inbox/video/**/*.mp4
+scripts/_*.tmp.mjs

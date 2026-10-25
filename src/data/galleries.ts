@@ -70,6 +70,10 @@ export const GALLERY_ART = {
   wall: 'trama_basalto',
   wallTexelsPerUnit: 2.5,
   wallShade: 0x6a7480,
+  /** Units over which the cave wall fades in past the rock's face (at a mouth). */
+  wallFade: 24,
+  /** The arch sits this share of its width into the rock, and fades out on the trench's side. */
+  mouthInRock: 0.18,
   /** Glowing mushrooms in the smaller caves too, and their light in the dark (units). */
   caveMushrooms: 4,
   mushroomLight: 40,

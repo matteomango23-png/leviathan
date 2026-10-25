@@ -45,6 +45,7 @@ export const BOTTOM_FADES: Record<string, number> = {
 export const SIDE_FADES: Record<string, { left: number; right: number }> = {
   molo_fondo: { left: 0.14, right: 0.14 },
   luogo_galeone_dentro: { left: 0, right: 0.06 }, // its stern was cut by the picture's frame
+  ingresso_galleria: { left: 0.3, right: 0 }, // the side towards the open trench melts into the water (lot M3)
 };
 
 /** Fades the two ends of a picture's visible box out, if it is listed (ragged, like the bottom). */
@@ -171,5 +172,32 @@ export function clearDarkMiddle(
     if (x < box.x1) stack.push(i + 1);
     if (y > box.y0) stack.push(i - W);
     if (y < box.y1) stack.push(i + W);
+  }
+}
+
+/** Pictures whose two ends (top and bottom) fade out, raggedly (this share of their height): the Cattedrale's
+ *  columns, whose ends go into the cave's floor and ceiling (lot M3). */
+export const END_FADES: Record<string, number> = { colonna_cattedrale_1: 0.08, colonna_cattedrale_2: 0.08 };
+
+export function applyEndFades(
+  id: string,
+  px: Uint8ClampedArray,
+  img: Raw,
+  box: { x0: number; y0: number; x1: number; y1: number },
+): void {
+  const share = END_FADES[id];
+  if (!share) return;
+  const w = box.x1 - box.x0 + 1;
+  const h = box.y1 - box.y0 + 1;
+  for (let x = box.x0; x <= box.x1; x++) {
+    const u = (x - box.x0) / w;
+    const rows = h * share * (0.7 + 0.3 * Math.sin(u * 13.7 + 0.9));
+    for (let k = 0; k < rows; k++) {
+      const t = (k / rows) ** 2;
+      for (const y of [box.y0 + k, box.y1 - k]) {
+        const o = (y * img.width + x) * 4 + 3;
+        px[o] = Math.round(px[o]! * t);
+      }
+    }
   }
 }
