@@ -1,7 +1,7 @@
 // Meeting wild beasts in the open sea: they appear in the dark of their waters, swim around (roam.ts), and a
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
-import { ROAM, WILD_RULES, DANGER_RULES } from '../data/beasts';
+import { ROAM, SWIM_BITE, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { noSurprise, scaredOfPack } from './pack';
 import { fearOf, openingFor, type Fear } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
@@ -13,8 +13,7 @@ import { range } from './math';
 import { distanceToBody } from './beasts/combat';
 import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
-import { hunterAfterYou, mountBite, stalkBite, swimBite } from './swimFight';
-import { HARPOON_WEAKEN } from '../data/battle';
+import { hunterAfterYou, touchOutcome } from './swimFight';
 import { SUBMARINE } from '../data/submarine';
 import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
@@ -184,6 +183,17 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       removeWild(w, range(g.rng, w.spawn.respawnSeconds[0], w.spawn.respawnSeconds[1]) * 0.3);
       continue;
     }
+    // the bite just happened: a moment to see it, then the battle (owner, 24 ottobre: "il morso non si vede")
+    if (w.battleIn) {
+      w.battleIn.t -= dt;
+      Object.assign(w, { vx: w.vx * 0.9, vy: w.vy * 0.9 });
+      if (w.battleIn.t <= 0) {
+        const { first, fear } = w.battleIn;
+        w.battleIn = undefined;
+        requestBattle(g, w, first, events, fear);
+      }
+      continue;
+    }
     // in the bestiary only once you have really seen it: close, in your light (it used to count as seen the
     // moment it came out of the dark, far away; owner, 4 ottobre)
     if (!d.dead && distanceToBody(w, d.x, d.y) < WILD_RULES.seenRadius) {
@@ -231,29 +241,22 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     if (touched && rams) {
       events.push({ type: 'subRammedBy', lengthM: formLengthM(w.form), x: w.x, y: w.y });
       w.calm = SUBMARINE.ram.calm; // it backs off, then comes again
-    } else if (touched && !aboard && w.stalk) {
-      // its charge reached you (beasts/stalk.ts): it bites you, or your mount
-      stalkBite(g, w, events);
-    } else if (touched && !aboard && !g.beasts.riding) {
-      // on your own it bites, and you choose: face it or swim away (swimFight.ts; owner, 22 ottobre)
-      swimBite(g, w, events);
-    } else if (
-      touched &&
-      !aboard &&
-      d.rideDashT !== undefined &&
-      (w.wounds ?? 0) < HARPOON_WEAKEN.max - 1e-6
-    ) {
-      // riding, dashing into it: your mount bites it, no battle yet (swimFight.ts; owner, 22 ottobre)
-      mountBite(g, w, events);
     } else if (touched && !aboard) {
-      // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts)
-      const first = openingFor(
-        ridden,
-        d.rideDashT !== undefined,
-        // with a Tempesta in the pack nobody takes you by surprise
-        noSurprise(g) ? 'normal' : ambush(w, d, g.beasts.riding ? g.beasts.mount : null),
-      );
-      requestBattle(g, w, first, events, fearOf(ridden, w, g.rng()));
+      // the touch starts the battle, whoever struck first going first; the bites happen first (swimFight.ts
+      // touchOutcome; owner, 24 ottobre: no more "Affronta")
+      const out = touchOutcome(g, w, events);
+      if (!out) continue;
+      // with a Tempesta in the pack nobody takes you by surprise
+      const base =
+        out === 'ambush'
+          ? noSurprise(g)
+            ? 'normal'
+            : ambush(w, d, g.beasts.riding ? g.beasts.mount : null)
+          : out;
+      // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts); the battle a
+      // moment later, so the bite is seen
+      const first = openingFor(ridden, d.rideDashT !== undefined, base);
+      w.battleIn = { t: SWIM_BITE.battlePause, first, fear: fearOf(ridden, w, g.rng()) };
     }
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the

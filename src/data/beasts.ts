@@ -529,7 +529,15 @@ export const BEAST_BODY = {
  * your strongest beast is below `gentleUntilLevel`: the start of the game is easy). While one is after you within
  * `engageRadius` units you can face it (the context button, or a tap on one of your beasts). Tuning.
  */
-export const SWIM_BITE = { push: 90, truce: 2.5, gentleTruce: 2, gentleUntilLevel: 12, engageRadius: 160 };
+export const SWIM_BITE = {
+  push: 90,
+  truce: 2.5,
+  gentleTruce: 2,
+  gentleUntilLevel: 12,
+  engageRadius: 160,
+  /** Seconds between a touch's bites and the battle: they are seen (owner, 24 ottobre). */
+  battlePause: 0.45,
+};
 
 /** Riding: call a mount from your team, it swims to you and you climb on (tuning). */
 export const TEAM_RULES = {

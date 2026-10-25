@@ -11,7 +11,8 @@ import { distanceToBody } from './beasts/combat';
 import { temperOf } from './beasts/roam';
 import { startStalk, stalkPassed } from './beasts/stalk';
 import { maxHpOf, teamMembers } from './beasts/team';
-import { isInWater, type WildBeast } from './beasts/wildState';
+import { isInWater, isWorn, type WildBeast } from './beasts/wildState';
+import type { BattleRequest } from './beastState';
 import { hurtDiver } from './diver';
 import type { GameEvent } from './events';
 
@@ -35,7 +36,10 @@ export function weaponHitsBeast(
     // roused: an aggressive one bolts off the screen and comes back charging, the others flee fast (roam.ts)
     w.provoked = HARPOON_WEAKEN.provokedSeconds;
     w.calm = 0;
-    if (temperOf(w) === 'aggressive') startStalk(w, g.diver.x);
+    w.struckFirst = true; // in the battle you go first (touchOutcome)
+    // worn to half its health it no longer attacks: it limps away (roam.ts); else a hunter comes at you
+    if (isWorn(w)) Object.assign(w, { stalk: undefined, mood: 'flee' });
+    else if (temperOf(w) === 'aggressive') startStalk(w, g.diver.x);
     else w.mood = 'flee';
     events.push({ type: 'beastWounded', x, y, left: 1 - w.wounds, worn: w.wounds >= HARPOON_WEAKEN.max });
     return true;
@@ -144,4 +148,38 @@ export function stalkBite(g: BeastWorld, w: WildBeast, events: GameEvent[]): voi
     mount.ko = true;
     dismount(g, events);
   }
+}
+
+/** How a battle starts when a wild beast and you touch: who goes first, 'ambush' (by which way you face) or null (no
+ *  battle). */
+export type TouchOutcome = BattleRequest['first'] | 'ambush' | null;
+
+/**
+ * A wild beast and you touch (owner, 24 ottobre 2026: the fight before the battle "ha poco senso logico"): the touch is
+ * how the turn battle starts, and whoever struck first goes first. Riding, your mount always bites what it touches
+ * (its jaws, the wound); a hunter charging you bites it back unless you dashed into it. On your own a hunter bites you
+ * (a heart): it goes first, unless you hit it first. A calm, shy or worn-down one you reach: you go first. With no beast
+ * able to fight there is no battle: it bites and pushes you off, and you get away.
+ */
+export function touchOutcome(g: BeastWorld, w: WildBeast, events: GameEvent[]): TouchOutcome {
+  const team = teamMembers(g.beasts.team).some((b) => !b.ko && b.hp > 0);
+  const hunting = temperOf(w) === 'aggressive' && !isWorn(w);
+  const charged = !!w.stalk;
+  const dashing = g.diver.rideDashT !== undefined;
+  if (g.beasts.riding && activeBeast(g)) {
+    if (charged && !dashing) stalkBite(g, w, events); // its charge reaches your mount first
+    if (!g.beasts.riding) return team ? 'foe' : null; // it threw you off (your mount is out)
+    mountBite(g, w, events); // and your mount bites it, always (the jaws, the wound)
+    w.stalk = undefined;
+    if (dashing || w.struckFirst || !hunting) return 'you';
+    return charged ? 'foe' : 'ambush';
+  }
+  if (hunting) {
+    if (charged) stalkBite(g, w, events);
+    else swimBite(g, w, events);
+    w.stalk = undefined;
+    if (!team) return null;
+    return w.struckFirst ? 'you' : 'foe';
+  }
+  return team ? 'you' : null;
 }

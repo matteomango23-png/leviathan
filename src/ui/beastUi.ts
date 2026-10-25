@@ -19,7 +19,6 @@ const LABELS = {
   esci: 'Esci',
   aggancia: 'Aggancia',
   abordo: 'A bordo',
-  affronta: 'Affronta',
 } as const;
 
 function press(btn: HTMLElement, fn: () => void): void {
