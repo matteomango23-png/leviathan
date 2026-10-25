@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.112.1 — Gallerie senza stacchi (25 ottobre 2026)
+
+- **L'arco dell'entrata è piantato nella parete,** non più a metà nell'acqua; il suo lato verso la fossa sfuma nell'acqua.
+- **La parete delle grotte** comincia dentro l'imbocco e sfuma con un bordo irregolare: niente più "fondo di tubo" nell'acqua della fossa, e non si vede più ripetuta a specchio.
+- **Le colonne della Cattedrale** sfumano in alto e in basso nella roccia invece di finire con un taglio dritto.
+- **Niente pannelli di corallo tagliati** sopra o sotto gli imbocchi delle gallerie, e niente coralli dipinti a metà vicino ai tunnel.
+- I salvataggi non cambiano.
+
 ## v0.112.0 — Le Gallerie (25 ottobre 2026)
 
 - **Le Gallerie delle Grandi fosse (18-26 km):** in ogni fossa abissale, a metà parete, un arco di roccia con un teschio segna l'entrata di una galleria che si infila nella roccia per 100-150 m, serpeggiando e stringendosi, fino a una caverna. Dentro, dietro di te, la parete di basalto; buio vero, solo la lampada e i funghi luminosi.

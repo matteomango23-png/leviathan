@@ -35,7 +35,15 @@ import {
   greenShare,
   keepLargest,
 } from './layers.ts';
-import { applyBottomFade, applyCuts, applySideFade, BOTTOM_FADES, clearDarkMiddle } from './landmarkCuts.ts';
+import {
+  applyBottomFade,
+  applyCuts,
+  applyEndFades,
+  applySideFade,
+  BOTTOM_FADES,
+  clearDarkMiddle,
+  SIDE_FADES,
+} from './landmarkCuts.ts';
 
 function stageMask(img: Raw): Float32Array | null {
   const e = fitStage(img);
@@ -347,6 +355,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
   applyBottomFade(id, cut, img, box);
   applySideFade(id, cut, img, box);
   clearDarkMiddle(id, cut, img, box);
+  applyEndFades(id, cut, img, box);
   if (shipLike(id)) {
     // the two pictures of the ship (hatch closed / open) share one frame: no crop, or they would not line up
     await mkdir(dirname(dest), { recursive: true });
@@ -359,7 +368,11 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
     cut,
     img,
     // a faded picture keeps its whole box: cropped at its faint last rows it would end on a straight line (24 ottobre)
-    id.startsWith('sottomarino') ? await pairBox(src, id, img) : landmark || BOTTOM_FADES[id] ? box : null,
+    id.startsWith('sottomarino')
+      ? await pairBox(src, id, img)
+      : landmark || BOTTOM_FADES[id] || SIDE_FADES[id]
+        ? box
+        : null,
   );
   await mkdir(dirname(dest), { recursive: true });
   await sharp(c.png).webp({ quality: 88 }).toFile(dest);

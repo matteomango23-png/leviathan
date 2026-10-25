@@ -6,6 +6,7 @@ import { CORALS } from '../data/worldLayout';
 import { PROP_ART } from '../data/worldArt';
 import { hash2 } from '../systems/math';
 import { biomeAt } from '../systems/world/endless';
+import { galleriesAtX } from '../systems/world/galleries';
 import type { TileMap } from '../systems/world/tileMap';
 
 /** Pictures the terrain painter uses: the corals, and the bone walls' texture as pixels. */
@@ -54,6 +55,8 @@ export function drawCorals(
               ? CORALS.deep
               : null;
       if (!set || hash2(tx, ty * 7) > set.chance) continue;
+      // never in or by a gallery (its cave wall would cover half of one: a straight cut)
+      if (galleriesAtX(x, 40).some((g) => y > g.y0 - 40 && y < g.y1 + 40)) continue;
       const count = 1 + Math.floor(hash2(tx * 3, ty) * (reef ? 3 : 2));
       for (let i = 0; i < count; i++) {
         const cx = x + hash2(tx, i) * T;

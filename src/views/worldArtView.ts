@@ -10,6 +10,7 @@ import { CORALS, ICE, WORLD, WORLD_SHAPE } from '../data/worldLayout';
 import { hash2 } from '../systems/math';
 import { biomeAt, biomeOf, endlessFloor, stretchAt } from '../systems/world/endless';
 import { icebergBox, icebergsOfStretch, type IcebergBox } from '../systems/world/icebergs';
+import { galleryOpenAt } from '../systems/world/galleryShape';
 import { landmarkSites } from '../systems/world/landmarks';
 import type { TileMap } from '../systems/world/tileMap';
 
@@ -78,6 +79,7 @@ export class WorldArtView {
       for (let i = 0; i < n; i++) {
         const y = start + ((i + 0.5) / n) * (end - start);
         const cx = x + side * WALLS.width * (WALLS.inRock - 0.5);
+        if (this.overGallery(cx, y)) continue;
         out.push({ key: wallKey(x, i + Math.round(y)), x: cx, y, flip: side < 0 });
       }
     };
@@ -93,6 +95,15 @@ export class WorldArtView {
     }
     flush(y1);
     return out.filter((w) => w.key);
+  }
+
+  /** Whether a wall there would lie over a gallery's tunnel (owner, 25 ottobre: a cut picture across its mouth). */
+  private overGallery(cx: number, cy: number): boolean {
+    const hw = WALLS.width / 2 + WALLS.galleryMargin;
+    const hh = this.wallH / 2 + WALLS.galleryMargin;
+    for (let y = cy - hh; y <= cy + hh; y += 8)
+      for (let x = cx - hw; x <= cx + hw; x += 8) if (galleryOpenAt(x, y)) return true;
+    return false;
   }
 
   /** The walls of the trenches of the endless sea, a stretch at a time. */

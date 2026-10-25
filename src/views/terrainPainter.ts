@@ -138,18 +138,33 @@ export class ChunkPaintJob {
   }
 
   /** The dark cave wall at a point inside a gallery (its picture repeated mirrored, shaded), or null. */
-  private caveWall(wx: number, wy: number): [number, number, number] | null {
+  private caveWall(wx: number, wy: number): [number, number, number, number] | null {
     const t = this.props.caveWall;
-    if (!t || !this.caves.some((g) => inGallery(g, wx, wy))) return null;
+    const g = t && this.caves.find((c) => inGallery(c, wx, wy));
+    if (!t || !g) return null;
+    // only inside the rock mass: at the mouth, in the trench's open water, nothing (owner, 25 ottobre: it showed as
+    // a tube's end in the water); it fades in from the mouth inwards along a ragged line, never a cut
+    const ragged = (noise2(wy * 0.09, g.k * 3.7) - 0.5) * GALLERY_ART.wallFade;
+    const inRock = ((wx - g.mouth.x) * g.mouth.dir + ragged) / GALLERY_ART.wallFade;
+    if (inRock <= 0) return null;
+    // the picture repeated mirrored shows its mirror lines: a second copy shifted by half a picture covers them
     const k = GALLERY_ART.wallTexelsPerUnit;
-    const mx = mirrorTile(wx * k, t.width);
-    const my = mirrorTile(wy * k, t.height);
-    const o = (my * t.width + mx) * 4;
+    const u = wx * k;
+    const v = wy * k;
+    const axis = (p: number, n: number): number => {
+      const m = ((p % n) + n) % n;
+      return smooth01(Math.min(m, n - m) / (n * 0.2));
+    };
+    const a = Math.min(axis(u, t.width), axis(v, t.height));
+    const oa = (mirrorTile(v, t.height) * t.width + mirrorTile(u, t.width)) * 4;
+    const ob = (mirrorTile(v + t.height / 2, t.height) * t.width + mirrorTile(u + t.width / 2, t.width)) * 4;
+    const px = (i: number): number => t.data[oa + i]! * a + t.data[ob + i]! * (1 - a);
     const s = GALLERY_ART.wallShade;
     return [
-      (t.data[o]! * ((s >> 16) & 255)) / 255,
-      (t.data[o + 1]! * ((s >> 8) & 255)) / 255,
-      (t.data[o + 2]! * (s & 255)) / 255,
+      (px(0) * ((s >> 16) & 255)) / 255,
+      (px(1) * ((s >> 8) & 255)) / 255,
+      (px(2) * (s & 255)) / 255,
+      Math.min(1, inRock),
     ];
   }
 
@@ -178,7 +193,7 @@ export class ChunkPaintJob {
       // inside the Gallerie the dark cave wall shows behind you (lot M3), the rock's edge laid over it
       const cave = this.caves.length ? this.caveWall(x0 + (pxx + 0.5) / tpu, wy) : null;
       if (alpha <= 0) {
-        if (cave) d.set([cave[0], cave[1], cave[2], 255], (py * px + pxx) * 4);
+        if (cave) d.set([cave[0], cave[1], cave[2], cave[3] * 255], (py * px + pxx) * 4);
         continue;
       }
       const dep =
@@ -248,10 +263,12 @@ export class ChunkPaintJob {
       const o = (py * px + pxx) * 4;
       if (cave) {
         // over the cave wall: the rock blends into it, solid
-        d[o] = (r + grain) * alpha + cave[0] * (1 - alpha);
-        d[o + 1] = (gg + grain) * alpha + cave[1] * (1 - alpha);
-        d[o + 2] = (b + grain) * alpha + cave[2] * (1 - alpha);
-        d[o + 3] = 255;
+        const w = cave[3] * (1 - alpha);
+        const a = alpha + w;
+        d[o] = ((r + grain) * alpha + cave[0] * w) / a;
+        d[o + 1] = ((gg + grain) * alpha + cave[1] * w) / a;
+        d[o + 2] = ((b + grain) * alpha + cave[2] * w) / a;
+        d[o + 3] = a * 255;
         continue;
       }
       d[o] = r + grain;
