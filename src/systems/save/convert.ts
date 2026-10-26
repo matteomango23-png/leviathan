@@ -90,6 +90,7 @@ function saveGear(g: GearState): SavedGear {
     abyssParts: [...g.abyssParts],
     bounties: structuredClone(g.bounties),
     requestsMet: [...g.requestsMet],
+    barterDone: [...g.barterDone],
     market: structuredClone(g.market),
   };
 }

@@ -1,7 +1,7 @@
 // The market's requests for beasts, in the harbour's market (owner, 26 ottobre 2026: "una sezione più esplicita del
 // mercato, dove puoi vendere alcuni dei tuoi animali in base alla richiesta"): the beasts this harbour buys now, at
 // double price, and for each a button to sell one of yours waiting in the pen. Logic: economy/beastRequests.ts.
-import { BEAST_REQUESTS, BOUNTY_TEXT } from '../data/bounties';
+import { BOUNTY_TEXT } from '../data/bounties';
 import { formKey, formName } from '../systems/beasts/forms';
 import { cannotSell } from '../systems/economy/beastSale';
 import { priceAt, requestsAt, sellAtPort } from '../systems/economy/beastRequests';
@@ -25,7 +25,7 @@ export function renderBeastRequests(b: HTMLElement, ctx: TabContext): void {
     setArt(img, r.form);
     const body = el('div', 'bounty-body', c);
     el('div', 'bounty-title', body, `Il porto compra: ${r.name}`);
-    el('div', 'bounty-text', body, `Paga il doppio · ${r.where}`);
+    el('div', 'bounty-text', body, `Paga ×${String(r.mult).replace('.', ',')} · ${r.where}`);
     const foot = el('div', 'bounty-foot', body);
     // one of yours waiting in the pen, ready to sell
     const mine = g.beasts.team.find(
@@ -34,7 +34,7 @@ export function renderBeastRequests(b: HTMLElement, ctx: TabContext): void {
     const p = el('span', 'price bounty-reward', foot);
     p.append(
       icon('tooth'),
-      document.createTextNode(mine ? ` ${priceAt(g, mine)}` : ` ×${BEAST_REQUESTS.priceMult}`),
+      document.createTextNode(mine ? ` ${priceAt(g, mine)}` : ` ×${String(r.mult).replace('.', ',')}`),
     );
     const btn = el('button', `pbtn${mine ? ' primary' : ''}`, foot, mine ? 'Vendi' : 'Non ne hai');
     btn.disabled = !mine;

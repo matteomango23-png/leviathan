@@ -1254,6 +1254,17 @@
   object-fit: cover;
   border-radius: 6px;
 }
+/* a barter's trade: the beast you give and the one you get, side by side (ui/barter.ts) */
+.barter-card {
+  grid-template-columns: 110px 1fr;
+}
+.barter-arts {
+  display: flex;
+  gap: 4px;
+}
+.barter-arts .bounty-art {
+  width: 53px;
+}
 /* a beast never seen: its picture a dark shadow, like the bestiary (ui/bountyCards.ts) */
 .bounty-card.unseen .bounty-art {
   filter: brightness(0.08) contrast(1.4);

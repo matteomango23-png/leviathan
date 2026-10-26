@@ -15,9 +15,29 @@ export const BOUNTY_RULES = {
 
 export type BountyKind = 'comune' | 'rara' | 'leggendaria';
 
-/** The market's requests for beasts (systems/economy/beastRequests.ts): how many a harbour asks for, × the price it
- *  pays, every how many seconds of play they change, how far along your path they may reach. Tuning. */
-export const BEAST_REQUESTS = { count: 4, priceMult: 2, refreshSeconds: 1800, ahead: 12 };
+/** The market's requests for beasts (systems/economy/beastRequests.ts): how many a harbour asks for, how much more
+ *  than the plain price each pays (from … to, in steps; owner, 26 ottobre: "dal doppio al triplo"), how rarely one is
+ *  an alpha or an albino (owner: "al 99% pesci normali"), every how many seconds of play they change, how far along
+ *  your path they may reach. Tuning. */
+export const BEAST_REQUESTS = {
+  count: 4,
+  priceMult: [2, 3] as [number, number],
+  multStep: 0.25,
+  rareChance: 0.01,
+  refreshSeconds: 1800,
+  ahead: 12,
+};
+
+/** The barter (systems/economy/barter.ts; owner, 26 ottobre 2026: "scambia 5 squali bianchi normali e lui ti da 1
+ *  squalo bianco albino base"): how many trades a harbour offers, how many common beasts of the species each asks by
+ *  its stars, one more for an alpha. Tuning. */
+export const BARTER = {
+  count: 3,
+  giveByStars: { 1: 3, 2: 4, 3: 5, 4: 6, 5: 8 } as Record<number, number>,
+  alfaExtra: 1,
+  /** How far along your path its species may be (few of the first beasts have an albino or an alpha). */
+  ahead: 40,
+};
 
 export const BOUNTY_TEXT = {
   rows: { comune: 'Bestie comuni', rara: 'Alfa e albini', leggendaria: 'Leggendari' } as Record<BountyKind, string>,
@@ -31,5 +51,8 @@ export const BOUNTY_TEXT = {
         : 'Segui già un leggendario.',
   onlyAtPort: 'Le taglie si accettano solo al porto.',
   requests: 'Richieste del mercato',
-  requestsHint: 'Il porto compra queste bestie e paga il doppio. Mettile in riserva e vendile da qui.',
+  requestsHint: 'Il porto compra queste bestie e le paga da due a tre volte il prezzo. Mettile in riserva e vendile da qui.',
+  barter: 'Baratto',
+  barterHint: 'Dai più bestie comuni della stessa specie, in riserva, e ricevi la sua versione albina o alfa.',
+  barterDone: (name: string): string => `Scambio fatto: ${name} è tua.`,
 };

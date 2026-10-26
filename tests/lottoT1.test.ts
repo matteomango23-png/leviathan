@@ -111,7 +111,7 @@ describe('il percorso delle taglie', () => {
 });
 
 describe('le richieste del mercato', () => {
-  it('il porto chiede alcune bestie del percorso e le paga il doppio; soddisfatta, entra un’altra', () => {
+  it('il porto chiede alcune bestie del percorso e le paga di più; soddisfatta, entra un’altra', () => {
     const g = atPort();
     const reqs = requestsAt(g, PORTO_FANGO.id);
     expect(reqs).toHaveLength(BEAST_REQUESTS.count);
@@ -120,7 +120,7 @@ describe('le richieste del mercato', () => {
     addTamed(g.beasts.team, makeTeamBeast('b2', { speciesId: 'tonno', variant: 'comune' }, 10, true));
     const beast = g.beasts.team.find((x) => x.uid === 'b1')!;
     beast.inTeam = false;
-    expect(priceAt(g, beast)).toBe(Math.round(beastPrice(beast) * BEAST_REQUESTS.priceMult));
+    expect(priceAt(g, beast)).toBe(Math.round(beastPrice(beast) * want.mult));
     const teeth = g.gear.teeth;
     expect(sellAtPort(g, 'b1')).toBeGreaterThan(0);
     expect(g.gear.teeth).toBeGreaterThan(teeth);
