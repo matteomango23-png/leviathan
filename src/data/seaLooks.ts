@@ -123,12 +123,28 @@ export const SEA_LOOKS: Record<SeaLookId, SeaLookDef> = {
 /** Two looks blend over this many units across a border (about 400 m), never a change at a stroke. */
 export const SEA_LOOK_BLEND = 2400;
 /**
- * The ridges stand on the seabed of the place, not at one height (owner, 22 ottobre: the deep regions' panoramas
- * were never seen near their floor): they go down by how much deeper than `ref` the floor is, averaged over
- * `span` units each side, easing there by `ease` a frame; over a shallower seabed they come up, at most `maxRaise`
- * (the bay, the Delta: owner, 24 ottobre). Tuning.
+ * The ridges stand at the seabed of each region (owner, 22 ottobre: the deep regions' panoramas were never seen near
+ * their floor): this much lower than the reference (units, − higher: the bay, the Delta), a fixed height for each
+ * look, blended across borders like the pictures. Not the floor under you (owner, 25 ottobre: following it, the
+ * ridges rose and sank as you went along, more the faster). The typical seabed of each region, measured. Tuning.
  */
-export const SEA_RIDGE_FLOOR = { ref: 390, span: 1800, samples: 9, ease: 0.04, maxRaise: 200 };
+/**
+ * The far ridges darken by themselves with depth, this share of the darkness there (owner, 25 ottobre: the lamp lit
+ * the far mountains as if they were a metre away). The lamp opens the darkness over everything, so without this
+ * they showed bright in its cone; now in its cone they stay as dim as far things are. Tuning.
+ */
+export const SEA_RIDGE_SHADE = 0.75;
+
+export const SEA_RIDGE_SINK: Record<SeaLookId, number> = {
+  costa: 0,
+  delta: -30,
+  barriera: 260,
+  mareblu: 650,
+  foresta: 980,
+  banchisa: 980,
+  fosse: 1630,
+  abisso: 1980,
+};
 
 /** Within the Foresta e Banchisa the kind changes every 300 m (ENDLESS.stretch): the forest and the ice blend over
  *  about 100 m, or they would never be seen apart. */

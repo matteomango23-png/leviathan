@@ -18,7 +18,7 @@ import { stepCurrent } from './currents';
 import { HELM, SHIP } from '../data/ship';
 import { diveOf, stepHeading, type HelmState } from './helm';
 import { litresFor } from './fuelBurn';
-import { subBody, subModel, subTopY, type SubState, type SubWorld } from './subState';
+import { subBody, subLength, subModel, subTopY, type SubState, type SubWorld } from './subState';
 export * from './subState';
 
 /** Close enough to climb in (at any depth). */
@@ -149,6 +149,9 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   }
   const d = g.diver;
   const top = s.hull <= 0 || s.fuel <= 0 ? 0 : m.speed; // broken or dry, it only drifts
+  // out of the water after a fast rise (SUBMARINE.hop): no levers up there, its weight brings it down
+  const flying = !!s.leap;
+  const fallVy = s.vy + SUBMARINE.hop.gravity * dt;
   steer(s, input.helm, top, top > 0 ? (m.diveSpeed ?? top * HELM.subDiveMult) : 0, dt);
   stepSubAir(s, m.airSeconds, dt, events);
   // an air pocket of the Gallerie fills its air too (lot M3), and their currents carry it
@@ -162,11 +165,33 @@ export function stepSub(g: SubWorld, input: InputState, dt: number, events: Game
   } else s.x = nx;
   // no invisible floor any more (owner, 4 ottobre): deeper than its model, the pressure crushes the hull
   // near the surface and not driven down it floats up, deck and tower out of the water
-  if (s.y < SUBMARINE.restY + SUBMARINE.air.underBelow && diveOf(input.helm.dive) <= 0 && s.air > 0)
+  if (
+    !flying &&
+    s.y < SUBMARINE.restY + SUBMARINE.air.underBelow &&
+    diveOf(input.helm.dive) <= 0 &&
+    s.air > 0
+  )
     s.vy = Math.min(s.vy, -SUBMARINE.floatUp);
+  if (flying) s.vy = fallVy;
   const topY = subTopY(s);
-  const ny = Math.max(topY, s.y + s.vy * dt);
-  if (ny <= topY) s.vy = Math.max(0, s.vy);
+  let ny = s.y + s.vy * dt;
+  if (ny < topY && !flying) {
+    // reaching the surface: fast, it leaves the water a little; slowly it stops there as before
+    const H = SUBMARINE.hop;
+    const over = -s.vy - H.minSpeed;
+    if (over > 0) {
+      s.vy = -Math.min(over * H.keep, Math.sqrt(2 * H.gravity * H.maxShare * subLength(s)));
+      ny = Math.min(topY, s.y + s.vy * dt); // from the surface line, with its leap's speed
+      s.leap = true;
+      events.push({ type: 'breach', x: s.x, y: WORLD.surfaceY });
+    } else {
+      ny = topY;
+      s.vy = Math.max(0, s.vy);
+    }
+  } else if (flying && ny >= topY) {
+    s.leap = false;
+    events.push({ type: 'breachSplash', x: s.x, y: WORLD.surfaceY, speed: s.vy }); // back in, a splash
+  }
   if (hits(g.map, s, s.x, ny)) {
     bump(g, Math.abs(s.vy), events);
     s.vy = -s.vy * SUBMARINE.bump.bounce;

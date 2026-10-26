@@ -108,7 +108,7 @@ export class WorldViews {
     const d = g.diver;
     this.rig = new CameraRig(scene, map.width, map.height, d.x, d.y);
     const L = this.rig.layers;
-    this.bg = new BackgroundView(scene, L.bg, (x) => map.floorBelow(x, WORLD.surfaceY + 8));
+    this.bg = new BackgroundView(scene, L.bg);
     const under = scene.add.container(); // the piers' underside, behind the terrain (views/pierUnder.ts)
     L.world.add(under);
     this.terrain = new TerrainView(scene, L.world, map);

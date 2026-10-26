@@ -11,7 +11,7 @@ import { helmPoint, shipDraft, shipSpan } from './geometry';
 import { breakIce, refreeze, SEA_END_X, SHIP_WEST_X } from './surface';
 import { shipLength, shipModel, shipPicture, shipRates, shipTopSpeed } from './model';
 import { icebergAcross } from '../world/icebergs';
-import { hullAground, hullBlocked, stepDive, submerged } from './uboat';
+import { hullAground, hullBlocked, smashIce, stepDive, stepHop, submerged } from './uboat';
 import { chokeAboard } from '../diver';
 import { bumpShip, stepShipHull } from './shipHull';
 import { hatchesShut, sonarActive, type ShipWorld } from './ship';
@@ -101,6 +101,14 @@ export function sailShip(
   const east = westSide ? SHIP_WEST_X - 1 : end;
   // a U-Boat under water stops against rock with its whole hull (ship/uboat.ts)
   const ahead2 = s.x + s.face * s.speed * dt;
+  const changed: number[] = [];
+  // the ice it runs into under water breaks (owner, 25 ottobre): only rock stops it
+  const smashed = submerged(s) && ahead2 !== s.x ? smashIce(g.map, s, ahead2, s.dive) : [];
+  if (smashed.length) {
+    changed.push(...smashed);
+    if (s.iceT <= 0) events.push({ type: 'iceCracked', x: ahead2, speed: s.speed });
+    s.iceT = SHIP.iceCrackSeconds;
+  }
   if (hullBlocked(g.map, s, ahead2, s.dive)) {
     bumpShip(s, s.speed, events); // hard into rock, the hull suffers (block 5c)
     s.speed = 0;
@@ -132,7 +140,6 @@ export function sailShip(
   }
 
   s.iceT = Math.max(0, s.iceT - dt);
-  const changed: number[] = [];
   if (s.speed > 0.5 && !submerged(s)) {
     // under water a U-Boat slips beneath the ice sheet
     // the ice breaks under the hull, just behind the bow where the ship covers it (owner, 8 ottobre: it broke
@@ -154,6 +161,7 @@ export function sailShip(
   }
   const depth = s.dive;
   changed.push(...stepDive(g.map, s, helm, dt, events));
+  stepHop(s, dt, events);
   // sinking or rising into rock with the lever pushed (block 5c)
   if (helm && helm.dive !== 0 && s.dive === depth && submerged(s)) {
     const d = shipModel(s).dive;

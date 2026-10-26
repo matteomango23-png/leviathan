@@ -5,6 +5,7 @@
 // (owner, 5 ottobre). After the rescue flare a tug tows it.
 // Look only: systems/ship/ moves it.
 import Phaser from 'phaser';
+import { JetFlames } from './jetFlames';
 import { drawPropBubbles, drawWake } from './shipWake';
 import { seaHeight, type SeaNow } from '../systems/sea';
 import { SeaFx, waterOver } from './seaFx';
@@ -43,6 +44,9 @@ export class ShipView {
   private readonly tug: Phaser.GameObjects.Image | null;
   private tugLeft = 0;
   private tugFrom = 0;
+  private readonly jets: JetFlames;
+  /** How hard its reactors burn now (eases on and off). */
+  private jetPower = 0;
   /** How lit the light under the still ship is now (eases on and off). */
   private beamK = 0;
 
@@ -52,6 +56,7 @@ export class ShipView {
     glowLayer: Phaser.GameObjects.Layer = layer,
   ) {
     const smoke = scene.add.graphics(); // behind the ship
+    this.jets = new JetFlames(scene, layer); // behind the ship too
     this.fallback = scene.add.graphics();
     this.beam = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     layer.add([smoke, this.beam, this.fallback]);
@@ -94,6 +99,7 @@ export class ShipView {
     if (!s.owned) {
       for (const p of this.pics.values()) p?.hide();
       this.tug?.setVisible(false);
+      this.jets.update([], time);
       return;
     }
     const k = Math.min(1, s.speed / shipTopSpeed(s));
@@ -107,7 +113,13 @@ export class ShipView {
     // a U-Boat diving: deeper, the swell fading little by little, the sea line climbing its picture, no wake
     const sunk = submerged(s);
     const calm = 1 - diveShare(s);
-    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + (heave - lift) * calm;
+    // a fast rise carries it a little out of the water (ship/uboat.ts stepHop)
+    const top =
+      WORLD.surfaceY -
+      shipPicture(s).waterline * shipHeight(s) +
+      s.dive +
+      (heave - lift) * calm -
+      (s.hop ?? 0);
     const pics = this.picsOf(s);
     // afloat, the whole painting, and in front of it the sea cut by the wave itself (no straight line, owner 9
     // ottobre); diving, the hull under the waves darkens little by little (owner: it turned dark at once going
@@ -117,6 +129,7 @@ export class ShipView {
     const seaY = (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
     if (pics) pics.place(s, s.x, top, 1, pitch * calm, wet > 0 ? seaY : null, time, wet);
     else this.drawFallback(s, top);
+    this.drawJets(s, top, pitch * calm, time, dt);
     if (wet < 1) {
       const { x0, x1 } = { x0: s.x - shipLength(s) / 2, x1: s.x + shipLength(s) / 2 };
       waterOver(this.fx, x0, x1, top + shipHeight(s) * 1.05, time, sea, 1 - wet);
@@ -143,6 +156,33 @@ export class ShipView {
     this.lift = top - this.restTop(s);
     this.drawBeam(s, this.lift, time, dt);
     this.drawTug(s, top, dt);
+  }
+
+  /** Its reactors' flames (the abyssal ship): only while the engine runs, longer with the throttle. */
+  private drawJets(s: ShipState, top: number, pitch: number, time: number, dt: number): void {
+    const jets = shipArt(s).jets ?? [];
+    const want = s.engineOn && jets.length ? Math.max(0.15, s.prop) : 0;
+    this.jetPower += (want - this.jetPower) * Math.min(1, dt * 4);
+    const w = shipLength(s);
+    const h = shipHeight(s);
+    const cy = top + h / 2;
+    const rot = -s.face * pitch; // as the painting turns (shipPictures.ts place)
+    const cos = Math.cos(rot);
+    const sin = Math.sin(rot);
+    this.jets.update(
+      jets.map((j) => {
+        const dx = s.face * (j.u - 0.5) * w;
+        const dy = (j.v - 0.5) * h;
+        return {
+          x: s.x + dx * cos - dy * sin,
+          y: cy + dx * sin + dy * cos,
+          angle: rot + (s.face > 0 ? Math.PI : 0),
+          width: j.size * h,
+          power: this.jetPower,
+        };
+      }),
+      time,
+    );
   }
 
   /** A point of the picture (shares) in the world, at this top. */

@@ -3,13 +3,14 @@
 // painted once per screen size (views/seaRidgeArt.ts), or is its painted panorama when it exists
 // (public/bg/mare_<look>_lontano|medio.webp, docs/GEMINI-LOTTO-9.md), loaded the first time it is needed.
 import Phaser from 'phaser';
-import { ENDLESS } from '../data/endless';
 import { SEA } from '../data/diver';
-import { SEA_LOOKS, SEA_RIDGE_FLOOR, type SeaLookId } from '../data/seaLooks';
+import { SEA_LOOKS, SEA_RIDGE_SHADE, SEA_RIDGE_SINK, type SeaLookId } from '../data/seaLooks';
+import { LIGHT } from '../data/diver';
+import { rampNumber } from '../systems/math';
+import { depthMetres } from '../systems/world/zones';
 import { BG_KEYS } from '../data/sprites.generated';
 import { assetUrl } from '../data/assets';
 import type { LookMix } from '../systems/seaLook';
-import { naturalFloor } from '../systems/world/stretches';
 import { paintRidgeStrip, stripShare, type RidgeKind } from './seaRidgeArt';
 
 /** The view (backgroundView.ts ViewInfo): its centre in the world, zoom and screen size. */
@@ -47,8 +48,8 @@ const color = (hex: string): Phaser.Display.Color => Phaser.Display.Color.HexStr
 export class SeaRidges {
   private readonly rows: Row[];
   private size = '';
-  /** How much deeper than SEA_RIDGE_FLOOR.ref the seabed around the view is (eased). */
-  private sink = NaN;
+  /** How much lower the ridges stand here (SEA_RIDGE_SINK of the looks in view, blended). */
+  private sink = 0;
   private screenW = 1;
   private screenH = 1;
   /** Strips painted for this screen size. */
@@ -60,7 +61,6 @@ export class SeaRidges {
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly layer: Phaser.GameObjects.Layer,
-    private readonly coastFloor?: (x: number) => number,
   ) {
     this.rows = (['far', 'mid'] as RidgeKind[]).map((kind) => {
       const a = this.strip();
@@ -158,7 +158,7 @@ export class SeaRidges {
     return v.h / 2 + (def.baseY + this.sink - v.cy) * v.zoom * parV + ref * 0.55;
   }
 
-  private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number, bottom: number): void {
+  private place(s: Strip, v: ViewInfo, kind: RidgeKind, alpha: number, bottom: number, shade: number): void {
     const def = SEA[kind];
     const top = bottom - s.height;
     const off = (((v.cx * v.zoom * def.parallax) % s.width) + s.width) % s.width;
@@ -167,38 +167,13 @@ export class SeaRidges {
       im
         .setPosition(-off + i * s.width, top)
         .setAlpha(alpha)
+        .setTint(shade)
         .setVisible(alpha > 0.01 && i * s.width - off < v.w),
     );
   }
 
-  /** The seabed under x: the hand-made coast's from the map (its columns remembered), the endless sea's from its
-   *  stretches. */
-  private floorAt(x: number): number {
-    if (x >= ENDLESS.startX || !this.coastFloor) return naturalFloor(x);
-    const k = Math.round(x / 64);
-    let y = this.floors.get(k);
-    if (y === undefined) {
-      y = this.coastFloor(k * 64);
-      this.floors.set(k, y);
-    }
-    return y;
-  }
-
-  private readonly floors = new Map<number, number>();
-
-  /** The seabed's depth around the view, past the reference one, averaged and eased. */
-  private followFloor(cx: number): void {
-    const F = SEA_RIDGE_FLOOR;
-    let sum = 0;
-    for (let i = 0; i < F.samples; i++) sum += this.floorAt(cx + ((i / (F.samples - 1)) * 2 - 1) * F.span);
-    // deeper than the reference they go down; over a shallow seabed (the bay, the Delta) they come up, never over
-    // its ridge line (owner, 24 ottobre: in the Delta they stood behind the floor, then jumped up and down)
-    const want = Math.max(-F.maxRaise, sum / F.samples - F.ref);
-    this.sink = Number.isNaN(this.sink) ? want : this.sink + (want - this.sink) * F.ease;
-  }
-
   update(v: ViewInfo, mix: LookMix): void {
-    this.followFloor(v.cx);
+    this.sink = SEA_RIDGE_SINK[mix.a] + (SEA_RIDGE_SINK[mix.b] - SEA_RIDGE_SINK[mix.a]) * mix.t;
     const size = `${v.w}x${v.h}`;
     if (size !== this.size) {
       this.size = size;
@@ -207,6 +182,10 @@ export class SeaRidges {
       this.painted.clear(); // all repainted at the new size (texture() replaces each)
       for (const r of this.rows) r.a.look = r.b.look = null;
     }
+    // far things dim by themselves with depth: the lamp's cone does not light them up (SEA_RIDGE_SHADE)
+    const dim = 1 - SEA_RIDGE_SHADE * rampNumber(LIGHT.darknessByDepthM, depthMetres(v.cy));
+    const g = Math.round(255 * dim);
+    const shade = (g << 16) | (g << 8) | g;
     for (const r of this.rows) {
       // a panorama that finished loading takes the place of the drawing
       const wantA = this.texture(mix.a, r.kind).key;
@@ -217,12 +196,12 @@ export class SeaRidges {
       // shape vanishing at once
       const bottom = this.rowBottom(v, r.kind);
       const blending = mix.a !== mix.b;
-      this.place(r.a, v, r.kind, blending ? Math.min(1, 2 * (1 - mix.t)) : 1, bottom);
-      this.place(r.b, v, r.kind, blending ? Math.min(1, 2 * mix.t) : 0, bottom);
+      this.place(r.a, v, r.kind, blending ? Math.min(1, 2 * (1 - mix.t)) : 1, bottom, shade);
+      this.place(r.b, v, r.kind, blending ? Math.min(1, 2 * mix.t) : 0, bottom, shade);
       const fillTop = Math.max(0, bottom - 1);
       const ca = this.bottomColor(mix.a, r.kind);
       const cb = this.bottomColor(mix.b, r.kind);
-      const m = (p: number, q: number): number => Math.round(p + (q - p) * mix.t);
+      const m = (p: number, q: number): number => Math.round((p + (q - p) * mix.t) * dim);
       r.fill.fillColor = Phaser.Display.Color.GetColor(
         m(ca.red, cb.red),
         m(ca.green, cb.green),

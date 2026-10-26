@@ -115,6 +115,9 @@ export interface ShipModelDef {
     picture: ShipPicture;
     moving?: string;
     stacks?: ShipStack[];
+    /** Its reactors' nozzles (shares of the picture; `size` the nozzle's width, share of its height): blue-violet
+     *  flames while the engine runs (views/jetFlames.ts; owner, 25 ottobre). */
+    jets?: { u: number; v: number; size: number }[];
     /** Its lit red parts alone (made by `npm run art`), glowing and pulsing over it (the Nightmare's runes). */
     glow?: string;
     /** Its mouth open, still and running (the Krill Hunter): the light comes out of it and swallows sardines. */
@@ -655,6 +658,10 @@ export const SHIP_MODELS: ShipModelDef[] = [
       closed: 'nave_abissale',
       open: 'nave_abissale_aperta',
       stacks: [],
+      jets: [
+        { u: 0.015, v: 0.44, size: 0.1 },
+        { u: 0.015, v: 0.665, size: 0.1 },
+      ],
       picture: {
         aspect: 560 / 1400,
         waterline: 0.56,

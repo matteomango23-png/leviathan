@@ -6,6 +6,7 @@ import { WORLD } from '../data/worldLayout';
 import { shipHeight } from '../systems/ship/geometry';
 import { shipLength, shipPicture } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
+import { softBubble } from './bubbles';
 
 /** Foam at the stern, a wake behind, bubbles behind the propeller. */
 export function drawWake(
@@ -72,11 +73,12 @@ export function drawPropBubbles(g: Phaser.GameObjects.Graphics, s: ShipState, ti
   for (let i = 0; i < n; i++) {
     const t = (time * (1.2 + k * 2) + i / n) % 1;
     const spread = Math.sin(i * 2.7) * 3 * size + Math.cos(i * 1.3) * 2 * (size - 1);
-    g.lineStyle(0.5 + 0.2 * (size - 1), 0xdff8ff, 0.7 * k * (1 - t));
-    g.strokeCircle(
+    softBubble(
+      g,
       prop.x - s.face * t * (30 + 50 * k) * Math.sqrt(size),
       prop.y - t * 10 * Math.sqrt(size) + spread,
       (0.7 + t * 1.4) * (0.8 + 0.35 * size) * (0.6 + ((i * 0.37) % 1) * 0.8),
+      k * (1 - t),
     );
   }
 }

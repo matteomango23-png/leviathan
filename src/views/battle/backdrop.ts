@@ -4,6 +4,7 @@
 // rocks very close to the camera, and a vignette. Painted layers (`bg/<place>_<layer>.webp`) replace the
 // drawn ones as soon as they exist.
 import Phaser from 'phaser';
+import { softBubble } from '../bubbles';
 import { BATTLE_PALETTES, type BattlePlace } from '../../data/battle';
 import type { Side } from '../../systems/battle/battle';
 import {
@@ -230,10 +231,9 @@ export class BattleBackdrop {
       g.fillCircle(m.x * w + Math.sin(time * 0.5 + m.x * 9) * 8, y * h, m.s * Math.max(1, h * 0.003));
     }
     this.bubbles = this.bubbles.filter((b) => (b.t += dt) < 3 && b.y > -10);
-    g.lineStyle(1, 0xdff8ff, 0.5);
     for (const b of this.bubbles) {
       b.y -= dt * h * (0.08 + b.r * 0.02);
-      g.strokeCircle(b.x + Math.sin(b.t * 5 + b.r) * 3, b.y, b.r * Math.max(1, h * 0.003));
+      softBubble(g, b.x + Math.sin(b.t * 5 + b.r) * 3, b.y, b.r * Math.max(1, h * 0.003), 1);
     }
   }
 

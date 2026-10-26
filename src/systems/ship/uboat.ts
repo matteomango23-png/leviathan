@@ -12,8 +12,11 @@ import type { TileMap } from '../world/tileMap';
 import { shipDraft, shipHeight, shipHull, shipPoint, shipSpan } from './geometry';
 import { shipArt, shipModel, shipPicture } from './model';
 import { breakIce, type BrokenIce } from './surface';
+import { widenIceBreak } from '../world/iceSheet';
 
 interface DiveShip {
+  hop?: number;
+  hopV?: number;
   model: string;
   x: number;
   face: 1 | -1;
@@ -78,6 +81,36 @@ export function hullBlocked(map: TileMap, s: DiveShip, x: number, dive: number):
   });
 }
 
+/**
+ * Under water its hull breaks the ice it touches (owner, 25 ottobre: just under the surface it stuck on an iceberg
+ * and wore its hull): the ice tiles under its outline at (x, dive) go, the painted sheet in whole columns and
+ * pillars (as when a ship breaks it afloat). Returns the tiles broken (to redraw them).
+ */
+export function smashIce(map: TileMap, s: DiveShip, x: number, dive: number): number[] {
+  if (dive <= SHIP.dive.afloatBelow) return [];
+  const pose = { ...s, x, dive };
+  const edge = outline(shipArt(s).closed);
+  const pts = edge ? edge.map(([u, v]) => shipPoint(pose, u, v)) : shipHull(pose);
+  const hit: number[] = [];
+  // the tile under each point of its outline and those round it (the rock's soft outline reaches into the next
+  // tile: ice left beside it would still stop the hull)
+  for (const p of pts) {
+    if (!map.solidAt(p.x, p.y)) continue;
+    const tx = Math.floor(p.x / map.tileSize);
+    const ty = Math.floor(p.y / map.tileSize);
+    for (let dy = -1; dy <= 1; dy++)
+      for (let dx = -1; dx <= 1; dx++) {
+        if (map.get(tx + dx, ty + dy) !== TILE.ice) continue;
+        map.set(tx + dx, ty + dy, TILE.water);
+        hit.push(map.tileIndex(tx + dx, ty + dy));
+      }
+  }
+  if (!hit.length) return [];
+  const all = [...hit, ...widenIceBreak(map, hit)];
+  for (const i of all) s.broken.push({ i, t: SHIP.refreezeSeconds });
+  return all;
+}
+
 /** Afloat, would its keel at this x run onto the seabed or a coast? (The ice it breaks: not that.) */
 export function hullAground(map: TileMap, s: DiveShip, x: number): boolean {
   return shipHull({ ...s, x, dive: 0 }).some((p) =>
@@ -91,6 +124,17 @@ export function hullAground(map: TileMap, s: DiveShip, x: number): boolean {
       return t !== TILE.water && t !== TILE.ice;
     }),
   );
+}
+
+/** Out of the water after a fast rise: up, then its weight brings it back down, a splash. */
+export function stepHop(s: DiveShip, dt: number, events: GameEvent[]): void {
+  if (s.hopV === undefined || s.hop === undefined) return;
+  s.hopV -= SHIP.hop.gravity * dt;
+  s.hop += s.hopV * dt;
+  if (s.hop > 0) return;
+  events.push({ type: 'breachSplash', x: s.x, y: WORLD.surfaceY, speed: -s.hopV });
+  s.hop = undefined;
+  s.hopV = undefined;
 }
 
 /** The air it starts with. */
@@ -134,6 +178,22 @@ export function stepDive(
   const deepest = maxDive(s);
   let next = Math.max(0, Math.min(deepest, s.dive + rate * dt));
   if (rate > 0 && next >= deepest && s.dive < deepest) events.push({ type: 'diveTooDeep' });
+  // ice in the way breaks (only rock stops it)
+  const smashed = smashIce(map, s, s.x, next);
+  if (smashed.length) {
+    out.push(...smashed);
+    events.push({ type: 'iceCracked', x: s.x, speed: Math.abs(rate) });
+  }
+  // coming up fast it leaves the water a little (stepHop)
+  if (rate < 0 && next <= 0 && s.dive > 0) {
+    const H = SHIP.hop;
+    const over = -rate - H.minSpeed;
+    if (over > 0) {
+      s.hopV = Math.min(over * H.keep, Math.sqrt(2 * H.gravity * H.maxShare * shipHeight(s)));
+      s.hop = 0;
+      events.push({ type: 'breach', x: s.x, y: WORLD.surfaceY });
+    }
+  }
   if (hullBlocked(map, s, s.x, next)) {
     if (rate < 0 && s.air <= 0) {
       // out of air under the ice: it breaks through (the sheet and any ice its hull touches)

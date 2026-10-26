@@ -20,6 +20,10 @@ type Bay = 'none' | 'docked' | 'launching' | 'out' | 'docking';
 
 export interface ShipState {
   owned: boolean;
+  /** Out of the water after a fast rise (units above its waterline) and how fast it goes (units/s, + up): look only,
+   *  not saved (data/ship.ts SHIP.hop). */
+  hop?: number;
+  hopV?: number;
   /** Which ship it is (data/fleet.ts), bought at the shipyard of Porto Fango. */
   model: string;
   x: number;

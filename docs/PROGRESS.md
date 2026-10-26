@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 25 ottobre 2026, v0.113.0)
+## Dove siamo (aggiornato il 26 ottobre 2026, v0.113.1)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -20,6 +20,17 @@
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
 Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Mezzi abissali ✅ (v0.113.0). Prossimo: M4, poi M5. (Vecchie note:) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto C5 (26 ottobre 2026) → v0.113.1
+
+- **Sfondi:** misurato che `followFloor` (media del fondale vicino, dal lotto C2) faceva salire e scendere le montagne di ~100 unità ogni 2 km; ora `SEA_RIDGE_SINK` (altezza fissa per aspetto, mediana misurata del fondale di ogni regione) sfumata con il mix degli aspetti; `SEA_RIDGE_SHADE`: le montagne si scuriscono da sole con la profondità, così la lampada non le illumina come se fossero vicine.
+- **Fiamme:** `views/jetFlames.ts` (pool creato prima dello scafo, quindi dietro), `jets` in `data/fleet.ts` art e `data/submarine.ts`, numeri `JET_FLAME` in `data/ship.ts`.
+- **Leva bloccabile:** pulsante `.helm-lock` "B" in `ui/helmControls.ts` (non salvato).
+- **Ghiaccio:** `smashIce` in `systems/ship/uboat.ts` (rompe il ghiaccio sotto e attorno a ogni punto della sagoma), usato da `sail.ts` e `stepDive`.
+- **Uscita dall'acqua:** `SUBMARINE.hop` (`s.leap`) e `SHIP.hop` (`stepHop`, `s.hop` disegnato da `shipView`), con gli eventi `breach`/`breachSplash`.
+- Bolle a cerchio sostituite da `softBubble` (`views/bubbles.ts`) in shipWake, boatView, submarineView, battle/backdrop.
+- **Caso simile da sistemare dopo:** i bagliori dipinti del Nightmare e del suo drone stanno nello strato sopra il buio (come gli occhi rossi prima): se una bestia passa davanti, il bagliore si vede sopra di lei.
+- Test: `tests/lottoC5.test.ts`.
 
 ## Lotto dei mezzi abissali (25 ottobre 2026) → v0.113.0
 
