@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.115.0 — Richieste del mercato e Baratto (26 ottobre 2026)
+
+- **Richieste del mercato:** quasi sempre bestie comuni (un alfa o un albino solo una volta su cento), e ognuna paga da 2 a 3 volte il prezzo normale, scritto sulla card ("Paga ×2,5"). Vale anche vendendo dal Recinto.
+- **Baratto** nel Mercato: ogni porto offre 3 scambi, per esempio 5 Pesci vela comuni → 1 Pesce vela alfa. Si danno bestie comuni in riserva (mai quelle in squadra) e si riceve la versione albina o alfa della stessa specie, al livello base. Le specie più rare chiedono più bestie, un alfa una in più. Fatto uno scambio, ne arriva un altro; cambiano anche da soli ogni tanto.
+- La Guida di Aurelio spiega anche il Baratto.
+- I salvataggi restano compatibili.
+
 ## v0.114.1 — Schermata di caricamento e icona nuove (26 ottobre 2026)
 
 - **Schermata di caricamento:** la nave abissale nella tempesta e, sott'acqua, squalo bianco, orca, calamaro e un capodoglio bianco che sale ad azzannarla. Il titolo ha un alone scuro morbido per leggersi bene.

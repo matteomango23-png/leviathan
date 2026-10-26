@@ -40,6 +40,8 @@ export interface GearState {
   bounties: BountyState;
   /** The market's requests met (economy/beastRequests.ts): harbour, time, beast. */
   requestsMet: string[];
+  /** The barter's trades made (economy/barter.ts): harbour, time, species. */
+  barterDone: string[];
   missions: MissionState;
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   deepestM: number;
@@ -64,6 +66,7 @@ export function newGear(): GearState {
     abyssParts: [],
     bounties: newBounties(),
     requestsMet: [],
+    barterDone: [],
     missions: { active: [], done: [], progress: {} },
     shopBought: {},
     deepestM: 0,

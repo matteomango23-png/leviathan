@@ -26,6 +26,7 @@ export interface SavedGear {
   /** The bounties (26 ottobre; missing in older saves): followed, closed, beasts beaten or tamed. */
   bounties?: { followed: string[]; done: string[]; beaten: string[] };
   requestsMet?: string[];
+  barterDone?: string[];
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
@@ -117,6 +118,7 @@ export function validateGear(raw: unknown): SavedGear {
       beaten: words(isObj(raw.bounties) ? raw.bounties.beaten : undefined),
     },
     requestsMet: words(raw.requestsMet),
+    barterDone: words(raw.barterDone),
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     deepestM: num(raw.deepestM),
     relics: ids(

@@ -132,7 +132,8 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Batti o cattura una bestia che segui e i denti arrivano subito, ovunque tu sia. Più la bestia è forte, più paga: un leggendario vale diecimila denti.' },
   ],
   tipRequests: [
-    { who: 'aurelio', text: 'Al Mercato guarda le richieste: ogni porto compra alcune bestie e le paga il doppio.' },
+    { who: 'aurelio', text: 'Al Mercato guarda le richieste: ogni porto compra alcune bestie e le paga da due a tre volte il prezzo.' },
+    { who: 'aurelio', text: 'C’è anche il Baratto: dai più bestie comuni della stessa specie e ricevi la sua versione albina o alfa. Più è rara, più ne chiedono.' },
     { who: 'aurelio', text: 'Catturane una, lasciala in riserva e vendila lì. È un guadagno a parte: la taglia l’hai già incassata quando l’hai presa.' },
   ],
   tipPlaces: [
