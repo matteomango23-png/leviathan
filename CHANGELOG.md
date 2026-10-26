@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.114.0 — Taglie per tutte le bestie, Diario nuovo, richieste del mercato (26 ottobre 2026)
+
+- **Taglie come un percorso:** sulla bacheca di ogni porto ci sono tutte le bestie del mare, dalle più facili alle più difficili, in tre file: bestie comuni, alfa e albini, leggendari. Se ne vedono 10 per fila; chiusa una, entra la successiva. Ogni card dice livello, ricompensa e dove trovarla (zona o regione con i km, e a che profondità). Le bestie mai viste sono un'ombra.
+- **Si accettano solo al porto** e si seguono nel Diario: fino a 5 comuni, 2 alfa o albini e 1 leggendario. Batti o cattura una bestia seguita e i denti arrivano subito, ovunque tu sia, con un riquadro "Taglia chiusa". Si va da circa 80 denti per i pesci piccoli a migliaia per i grandi predatori; alfa e albini pagano di più, un leggendario 10.000. Una bestia che avevi già battuto o catturato non paga, e al suo posto entra la successiva.
+- **Diario nuovo** nel cockpit: solo le card delle bestie che segui, divise per tipo, e in fondo gli avvistamenti del sonar.
+- **Richieste del mercato** (nel Mercato del porto): ogni porto compra alcune bestie e le paga il doppio. È un guadagno a parte dalla taglia.
+- **Sonar della nave:** sotto il Grande Arco e sopra i galeoni le bestie non sembrano più dentro la roccia: il fondale disegnato è quello vero.
+- **Guida di Aurelio aggiornata:** taglie e Diario, richieste del mercato, luoghi e Gallerie, leva bloccabile e "Sono bloccato".
+- I salvataggi restano compatibili: le partite vecchie partono senza taglie. Le vecchie taglie della bacheca sono diventate parte del percorso.
+
 ## v0.113.4 — Niente più suono gracchiante (26 ottobre 2026)
 
 - **Il gracchiare era un suono voluto:** nella Barriera esterna (0-6 km) suonava sempre un "crepitio di gamberetti", 14 scatti di rumore al secondo. Tolto.

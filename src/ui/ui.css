@@ -1254,6 +1254,10 @@
   object-fit: cover;
   border-radius: 6px;
 }
+/* a beast never seen: its picture a dark shadow, like the bestiary (ui/bountyCards.ts) */
+.bounty-card.unseen .bounty-art {
+  filter: brightness(0.08) contrast(1.4);
+}
 .bounty-body {
   display: flex;
   flex-direction: column;

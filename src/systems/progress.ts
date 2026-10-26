@@ -4,13 +4,17 @@ import { speciesOf } from './beasts/forms';
 import type { BackpackWorld } from './economy/backpack';
 import type { GameEvent } from './events';
 import { signalMissions } from './economy/missions';
+import { bountyBeaten } from './economy/bounties';
 import { depthMetres } from './world/zones';
 import { kmFromCoast } from './world/stretches';
 
-function stepMissionsAndDepth(g: BackpackWorld, events: GameEvent[]): void {
+type ProgressWorld = BackpackWorld & { huntPinned: string | null };
+
+function stepMissionsAndDepth(g: ProgressWorld, events: GameEvent[]): void {
   const d = g.diver;
   const depth = depthMetres(d.y);
   const done: string[] = [];
+  const paid: GameEvent[] = []; // the bounties paid now (economy/bounties.ts)
   if (!d.dead && depth > g.gear.deepestM) {
     g.gear.deepestM = depth;
     done.push(...signalMissions(g.gear, { kind: 'depth', metres: depth }));
@@ -22,16 +26,19 @@ function stepMissionsAndDepth(g: BackpackWorld, events: GameEvent[]): void {
     else if (e.type === 'fishCaught') done.push(...signalMissions(g.gear, { kind: 'catch', fish: e.fishId }));
     else if (e.type === 'wreckOpened')
       done.push(...signalMissions(g.gear, { kind: 'openWreck', wreck: e.id }));
-    else if (e.type === 'battleWon')
+    else if (e.type === 'battleWon') {
       done.push(...signalMissions(g.gear, { kind: 'exhaust', species: e.speciesId }));
-    else if (e.type === 'tamed') {
+      bountyBeaten(g, e.form, false, paid);
+    } else if (e.type === 'tamed') {
       const b = g.beasts.team.find((x) => x.uid === e.uid);
       if (b) done.push(...signalMissions(g.gear, { kind: 'tame', region: speciesOf(b.form).region }));
+      if (b) bountyBeaten(g, b.form, true, paid);
     }
   }
   for (const id of done) events.push({ type: 'missionComplete', id });
+  events.push(...paid);
 }
 
-export function stepProgress(g: BackpackWorld, events: GameEvent[]): void {
+export function stepProgress(g: ProgressWorld, events: GameEvent[]): void {
   stepMissionsAndDepth(g, events);
 }

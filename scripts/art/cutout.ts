@@ -401,7 +401,9 @@ export type ExtraName =
   | { kind: 'screen'; id: string }
   | { kind: 'world'; id: string }
   | { kind: 'panorama'; id: string }
-  | { kind: 'texture'; id: string };
+  | { kind: 'texture'; id: string }
+  /** The app's icon on the phone's Home screen (owner, 26 ottobre 2026): every size made from one square picture. */
+  | { kind: 'appicon'; id: string };
 
 /** `bg_<place>_<layer>`, `conchiglia` / `conchiglia_aperta`, `icona_<name>` / `tipo_<name>`. */
 export function parseExtraName(file: string): ExtraName | null {
@@ -417,6 +419,7 @@ export function parseExtraName(file: string): ExtraName | null {
   if (/^(icona|tipo)_[a-z]+$/.test(base)) return { kind: 'icon', id: base };
   // the title menu's painting (19 ottobre) and the opening screen's (21 ottobre, ui/splash.ts)
   if (base === 'menu_sfondo' || base === 'splash') return { kind: 'screen', id: base };
+  if (base === 'app_icon') return { kind: 'appicon', id: base };
   if (
     /^(parete_[a-z]+(_\d)?|iceberg_\d|luogo_[a-z0-9_]+|molo_[a-z]+|sottomarino_[a-z0-9]+(_moto)?|sfera_[a-z0-9]+|nave_[a-z0-9]+(_aperta(_\d)?|_moto|_bocca(_moto)?)?|(motoscafo|moto)_[a-z0-9]+(_moto)?|avamposto_[a-z]+|rimorchiatore|porto_[a-z]+|paese_[a-z]+|delta_isola_\d|ghiaccio_[a-z]+(_\d)?|sfiato_[a-z]+|relitto_[a-z]+|forziere(_[a-z]+)?|corallo_\d|alga_\d|ingresso_[a-z]+|colonna_[a-z]+_\d|funghi_[a-z]+_\d)$/.test(
       base,

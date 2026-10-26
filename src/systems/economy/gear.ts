@@ -1,5 +1,6 @@
 // The diver's side of progress: teeth, the fish bag, suits and upgrades, weapons, items,
 // the backpack (base harpoon + BACKPACK_SLOTS chosen at the port) and bound swarms.
+import { newBounties, type BountyState } from './bounties';
 import { MARKET, UPGRADE_EFFECTS } from '../../data/economy';
 import { newMarket, sellAll, type MarketState } from './market';
 import { RELICS } from '../../data/temples';
@@ -35,6 +36,10 @@ export interface GearState {
   wrecks: string[]; // opened wrecks and chests
   /** The abyssal ship's rare parts found and not yet built into it (data/abyss.ts). */
   abyssParts: string[];
+  /** The bounties followed, closed, and every beast beaten or tamed (economy/bounties.ts). */
+  bounties: BountyState;
+  /** The market's requests met (economy/beastRequests.ts): harbour, time, beast. */
+  requestsMet: string[];
   missions: MissionState;
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   deepestM: number;
@@ -57,6 +62,8 @@ export function newGear(): GearState {
     swarms: [],
     wrecks: [],
     abyssParts: [],
+    bounties: newBounties(),
+    requestsMet: [],
     missions: { active: [], done: [], progress: {} },
     shopBought: {},
     deepestM: 0,

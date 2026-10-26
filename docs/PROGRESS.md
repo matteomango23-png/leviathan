@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 26 ottobre 2026, v0.113.4)
+## Dove siamo (aggiornato il 26 ottobre 2026, v0.114.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -20,6 +20,16 @@
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
 Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Mezzi abissali ✅ (v0.113.0). Prossimo: M4, poi M5. (Vecchie note:) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto T1, taglie e Diario (26 ottobre 2026) → v0.114.0
+
+- **Dati:** `data/bounties.ts` (`BOUNTY_RULES`: 10 visibili, seguite 5/2/1, prezzo da livello e stelle, rari ×2,5, leggendario 10.000; `BEAST_REQUESTS`; testi).
+- **Logica:** `systems/economy/bountyPath.ts` (percorso per difficoltà da `wildLevelRange`/pericolo, dove e profondità da `WILD_SPAWNS` o biomi delle regioni con `SPECIES_DEPTH`), `bounties.ts` (seguite, chiuse, battute; `bountyBeaten` da `progress.ts` su `battleWon` e `tamed`; il leggendario seguito è `huntPinned`), `beastRequests.ts` (richieste per porto ed epoca di gioco, prezzo ×2, `sellAtPort`). Stato in `gear.bounties` e `gear.requestsMet` (salvati). Tolte le vecchie taglie dalle missioni.
+- **Interfaccia:** `ui/bountyCards.ts`, `portBoard.ts` (tre file), `huntDiary.ts` (Diario solo card seguite), `ui/beastRequests.ts` nel Mercato, prezzo doppio anche nel Recinto.
+- **Sonar:** `sonarReadout` salta i pezzi dei luoghi, 96 campioni.
+- **Guida:** `tipBounties`, `tipRequests`, `tipPlaces`, `tipDiveLock` (un momento può aprire più consigli, uno per volta). Regola del proprietario: Guida aggiornata a ogni lotto (memoria tutorial-rule).
+- **Immagini in arrivo:** schermata di caricamento (Gemini, nave abissale nella tempesta e Moby Dick) → `art-inbox/splash.jpg`; icona dell'app → `art-inbox/app_icon.jpg` (lo script ora fa 180/192/512/maskable). Il proprietario sceglie l'icona tra due (testa del Leviatano / bocca con il sub).
+- Test: `tests/lottoT1.test.ts`.
 
 ## Suono gracchiante (26 ottobre 2026) → v0.113.4
 

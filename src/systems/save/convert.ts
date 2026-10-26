@@ -88,6 +88,8 @@ function saveGear(g: GearState): SavedGear {
     deepestM: Math.floor(g.deepestM),
     relics: [...g.relics],
     abyssParts: [...g.abyssParts],
+    bounties: structuredClone(g.bounties),
+    requestsMet: [...g.requestsMet],
     market: structuredClone(g.market),
   };
 }

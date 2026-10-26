@@ -9,6 +9,9 @@ import { kmFromCoast } from '../systems/world/endless';
 import { el } from './dom';
 import { ICONS } from './icons';
 import { renderSonarNotes } from './sonarNotes';
+import { BOUNTY_RULES, BOUNTY_TEXT } from '../data/bounties';
+import { followedBounties } from '../systems/economy/bounties';
+import { bountyCard } from './bountyCards';
 
 const STEPS = ['Voce', 'Eco', 'Tracce', 'Bestia'] as const;
 
@@ -82,35 +85,47 @@ export function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw:
   }
 }
 
-export function renderDiary(b: HTMLElement, g: GameState, redraw: () => void): void {
-  const heard = HUNTS.filter((h) => g.hunts[h.id]?.heard);
-  el(
-    'p',
-    'port-hint',
-    b,
-    heard.length
-      ? 'Tocca una caccia per vederla tutta e seguirla: l’obiettivo seguito appare in plancia e al timone.'
-      : 'Nessuna voce ancora. Ascoltale nei porti e negli avamposti: ognuno parla dei suoi mari.',
-  );
-  const grid = el('div', 'diary-grid', b);
-  for (const h of heard) {
-    const done = stepsDone(g, h);
-    const out = outcome(g, h);
-    const c = el(
-      'button',
-      `diary-card${out ? ' closed' : ''}${g.huntPinned === h.id ? ' pinned' : ''}`,
-      grid,
+/**
+ * The diary (owner, 26 ottobre 2026: "togliere tutto il rumore"): only the beasts you follow, as cards in three rows,
+ * the common ones (up to 5), the alpha and albino ones (up to 2) and the legend (1); the sonar's notes small at the
+ * bottom. The bounties are taken at the harbours' board.
+ */
+export function renderDiary(
+  b: HTMLElement,
+  g: GameState,
+  redraw: () => void,
+  say: (text: string, error?: boolean) => void = () => {},
+): void {
+  const ctx = { g, say, redraw };
+  const none = !g.gear.bounties.followed.length && !g.huntPinned;
+  if (none)
+    el(
+      'p',
+      'port-hint',
+      b,
+      'Non segui nessuna bestia. Accetta le taglie sulla bacheca di un porto: le ritrovi qui.',
     );
+  for (const kind of ['comune', 'rara'] as const) {
+    const cards = followedBounties(g, kind);
+    if (!cards.length) continue;
+    el('h3', '', b, `${BOUNTY_TEXT.rows[kind]} · ${cards.length} di ${BOUNTY_RULES.follow[kind]}`);
+    const row = el('div', 'bounty-row', b);
+    for (const c of cards) bountyCard(row, ctx, c, true);
+  }
+  // the legend you follow: its four steps, its sheet
+  const h = HUNTS.find((x) => x.id === g.huntPinned);
+  if (h) {
+    el('h3', '', b, `${BOUNTY_TEXT.rows.leggendaria} · 1 di ${BOUNTY_RULES.follow.leggendaria}`);
+    const grid = el('div', 'diary-grid', b);
+    const done = stepsDone(g, h);
+    const c = el('button', 'diary-card pinned', grid);
     const top = el('div', 'diary-card-top', c);
     el('span', 'diary-card-name', top, h.name);
-    if (g.huntPinned === h.id) el('span', 'diary-badge pin', top, '🎯 seguita');
-    else if (out) el('span', 'diary-badge', top, out);
+    el('span', 'diary-badge pin', top, `${BOUNTY_RULES.reward.legend} denti`);
     el('div', 'diary-card-where', c, `${huntRegionName(h)} · ${CONDITION_TEXT[h.condition]}`);
     const lights = el('div', 'diary-lights', c);
-    STEPS.forEach((s, k) => el('span', `diary-light${done[k] ? ' done' : ''}`, lights, s));
+    STEPS.forEach((st, k) => el('span', `diary-light${done[k] ? ' done' : ''}`, lights, st));
     c.addEventListener('click', () => openSheet(b, g, h, redraw));
   }
-  const left = HUNTS.length - heard.length;
-  if (left > 0) el('p', 'port-hint', b, `Altre ${left} voci da scoprire, più lontano.`);
   renderSonarNotes(b, g); // what the sonar taught you (block 5a)
 }

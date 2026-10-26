@@ -81,7 +81,7 @@ export function finishBattle(
     const m = g.beasts.mount;
     const rode = activeBeast(g);
     if (m && rode) m.length = formLengthUnits(rode.form, rode.level); // it may have grown
-    events.push({ type: 'battleWon', speciesId: o.foe.form.speciesId });
+    events.push({ type: 'battleWon', speciesId: o.foe.form.speciesId, form: { ...o.foe.form } });
   }
   // a legend defeated (not tamed) goes back to its den, wounded, and comes out again later (only taming it ends it)
   const legendBeaten = o.over === 'won' && isLegend(o.foe.form.unique);

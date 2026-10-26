@@ -14,19 +14,24 @@ import {
 import { huntRegionName, rumoursAt } from '../systems/hunts';
 import { setArt } from './art';
 import { el } from './dom';
-import { icon } from './icons';
 import { openSheet, outcome, stepsDone } from './huntDiary';
 import { portCard } from './portCard';
 import type { TabContext } from './portTabs';
 import { renderSonarNotes } from './sonarNotes';
+import { bountyRow } from './bountyCards';
+import { BOUNTY_RULES, BOUNTY_TEXT } from '../data/bounties';
+import { boardBounties, followedBounties } from '../systems/economy/bounties';
 
 /** Hunts heard elsewhere or not yet, shown as shadows: a taste of what waits further out. */
 const TEASERS = 2;
 const STEPS = ['Voce', 'Eco', 'Tracce', 'Bestia'];
 
 export function renderBoard(b: HTMLElement, ctx: TabContext): void {
+  // the bounties' path, from the easiest beasts to the legends (owner, 26 ottobre 2026), then the other jobs
+  el('p', 'port-hint', b, BOUNTY_TEXT.hint);
+  for (const kind of ['comune', 'rara'] as const)
+    bountyRow(b, ctx, kind, boardBounties(ctx.g, kind), followedBounties(ctx.g, kind).length);
   renderWanted(b, ctx);
-  renderBounties(b, ctx);
   renderJobs(b, ctx);
   renderSonarNotes(b, ctx.g);
 }
@@ -36,12 +41,17 @@ function renderWanted(b: HTMLElement, ctx: TabContext): void {
   const here = rumoursAt(g.port ?? PORT);
   const heard = (h: HuntDef): boolean => !!g.hunts[h.id]?.heard;
   const shadows = HUNTS.filter((h) => !here.includes(h) && !heard(h)).slice(0, TEASERS);
-  el('h3', '', b, 'Ricercati');
+  el(
+    'h3',
+    '',
+    b,
+    `${BOUNTY_TEXT.rows.leggendaria} · seguiti ${g.huntPinned ? 1 : 0} di ${BOUNTY_RULES.follow.leggendaria}`,
+  );
   el(
     'p',
     'port-hint',
     b,
-    'Leggende e giganti di questi mari. Tocca una card per sapere dove e quando cercarla, e seguila col sonar della nave.',
+    `Leggende e giganti di questi mari: ${BOUNTY_RULES.reward.legend} denti a chi ne batte o cattura una che segue. Tocca una card per sapere dove e quando cercarla, e seguila col sonar della nave.`,
   );
   const row = el('div', 'wanted-row', b);
   for (const h of here) wantedCard(row, ctx, h);
@@ -86,8 +96,6 @@ function shadowCard(row: HTMLElement, ctx: TabContext, h: HuntDef): void {
   );
 }
 
-const isBounty = (m: MissionDef): boolean => m.goal.kind === 'exhaust';
-
 function missionButton(
   ctx: TabContext,
   m: MissionDef,
@@ -116,37 +124,10 @@ function missionButton(
   };
 }
 
-function renderBounties(b: HTMLElement, ctx: TabContext): void {
-  const gear = ctx.g.gear;
-  const active = gear.missions.active.map((id) => missionById(id)!).filter(isBounty);
-  const open = boardMissions(gear).filter(isBounty);
-  if (!active.length && !open.length) return;
-  el('h3', '', b, 'Taglie');
-  const row = el('div', 'bounty-row', b);
-  for (const [m, on] of [...active.map((m) => [m, true] as const), ...open.map((m) => [m, false] as const)]) {
-    if (m.goal.kind !== 'exhaust') continue;
-    const c = el('div', `bounty-card${on ? ' on' : ''}`, row);
-    const img = el('img', 'bounty-art', c);
-    img.alt = '';
-    img.loading = 'lazy';
-    setArt(img, { speciesId: m.goal.species, variant: 'comune' });
-    const body = el('div', 'bounty-body', c);
-    el('div', 'bounty-title', body, m.title.replace(/^Taglia: /, ''));
-    el('div', 'bounty-text', body, m.text);
-    const foot = el('div', 'bounty-foot', body);
-    const p = el('span', 'price bounty-reward', foot);
-    p.append(icon('tooth'), document.createTextNode(` ${m.reward}`));
-    const bt = missionButton(ctx, m, on);
-    const btn = el('button', `pbtn${on && !bt.disabled ? ' primary' : ''}`, foot, bt.label);
-    btn.disabled = bt.disabled;
-    btn.addEventListener('click', bt.onClick);
-  }
-}
-
 function renderJobs(b: HTMLElement, ctx: TabContext): void {
   const gear = ctx.g.gear;
-  const active = gear.missions.active.map((id) => missionById(id)!).filter((m) => !isBounty(m));
-  const open = boardMissions(gear).filter((m) => !isBounty(m));
+  const active = gear.missions.active.map((id) => missionById(id)!).filter(Boolean);
+  const open = boardMissions(gear);
   el('h3', '', b, `Incarichi · in corso ${gear.missions.active.length} di ${MAX_ACTIVE_MISSIONS}`);
   const grid = el('div', 'pcard-grid', b);
   if (!active.length && !open.length) el('p', 'port-hint', grid, 'Per ora non ci sono altri incarichi.');

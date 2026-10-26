@@ -52,10 +52,7 @@ describe('selling a tamed beast', () => {
 });
 
 describe('missions', () => {
-  it('pay well, and the bounties on the big beasts come back', () => {
-    const bounties = MISSIONS.filter((m) => m.id.startsWith('taglia_'));
-    expect(bounties.length).toBeGreaterThanOrEqual(5);
-    expect(bounties.every((m) => m.repeat)).toBe(true);
-    expect(Math.max(...bounties.map((m) => m.reward))).toBeGreaterThanOrEqual(10000);
+  it('the bounties on beasts are their own path now (data/bounties.ts): none left among the missions', () => {
+    expect(MISSIONS.some((m) => m.id.startsWith('taglia_'))).toBe(false);
   });
 });

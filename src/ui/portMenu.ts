@@ -1,6 +1,7 @@
 // A harbour (full screen): tabs with icons on the left, cards on the right. One subject per tab (owner, 16 ottobre
 // 2026): the Board first (the Wanted, bounties, jobs), the fish market, then the shops (portShop.ts), the vehicles
 // (portVehicles.ts), the backpack and the pen.
+import { renderBeastRequests } from './beastRequests';
 import { FISH } from '../data/world';
 import { bagWorth, recover, unitPrice } from '../systems/economy/market';
 import { bagCount } from '../systems/economy/gear';
@@ -120,6 +121,9 @@ export class PortMenu {
   /** The fish market: sell the bag, and the price list (a kind sold in heaps is cheaper for a while, market.ts). */
   private renderMarket(b: HTMLElement): void {
     const gear = this.g.gear;
+    // the beasts this harbour buys at double price (owner, 26 ottobre 2026)
+    renderBeastRequests(b, { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() });
+    el('h3', '', b, 'Pesci');
     const n = bagCount(gear);
     const now = Date.now();
     const sell = el('div', 'pcard-grid', b);

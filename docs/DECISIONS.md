@@ -1256,3 +1256,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 
 - Seguire il fondale vicino (lotto C2) faceva muovere le montagne in verticale mentre si nuotava: ora la loro quota dipende solo dalla profondità della telecamera e dall'aspetto della regione (valore fisso, sfumato ai confini come le immagini). Si scuriscono con la profondità per non sembrare vicine nel cono della lampada.
 - Gli U-Boot rompono il ghiaccio che toccano anche sott'acqua (anche le caselle accanto ai punti della sagoma, perché il contorno morbido le raggiunge); i sottomarini no.
+
+## 26 ottobre 2026 — Taglie come percorso (v0.114.0)
+
+- Il percorso si calcola dai dati (specie che nascono davvero, livelli, profondità): nessuna lista scritta a mano, ogni bestia nuova ci entra da sola. Una taglia si chiude battendo o catturando quella specie in quella versione; "già fatta" vuol dire già battuta o catturata (registro `beaten` dal 26 ottobre, più le bestie che possiedi).
+- Il leggendario resta la caccia in quattro passi; seguirlo è il vecchio "Segui" (huntPinned), così sonar e plancia non cambiano.
+- Le richieste del mercato dipendono dal porto e dal tempo di gioco (nessuna lista salvata), solo quelle soddisfatte si salvano.
