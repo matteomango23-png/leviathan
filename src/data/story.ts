@@ -125,6 +125,24 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Ogni porto ha le sue schede: guarda prima la Bacheca, coi Ricercati di questi mari e le taglie.' },
     { who: 'aurelio', text: 'Conchiglie, cure ed esche si comprano qui. Un’esca pregiata a volte porta un alfa, o un albino.' },
   ],
+  // the bounties' path, the diary and the market's requests (owner, 26 ottobre 2026)
+  tipBounties: [
+    { who: 'aurelio', text: 'Sulla bacheca di ogni porto ci sono le taglie: tutte le bestie del mare, dalle più facili alle più difficili. Ogni card ti dice dove vive la bestia e a che profondità.' },
+    { who: 'aurelio', text: 'Accettale qui al porto: puoi seguirne 5 comuni, 2 alfa o albine e un leggendario. Le ritrovi nel Diario del cockpit.' },
+    { who: 'aurelio', text: 'Batti o cattura una bestia che segui e i denti arrivano subito, ovunque tu sia. Più la bestia è forte, più paga: un leggendario vale diecimila denti.' },
+  ],
+  tipRequests: [
+    { who: 'aurelio', text: 'Al Mercato guarda le richieste: ogni porto compra alcune bestie e le paga il doppio.' },
+    { who: 'aurelio', text: 'Catturane una, lasciala in riserva e vendila lì. È un guadagno a parte: la taglia l’hai già incassata quando l’hai presa.' },
+  ],
+  tipPlaces: [
+    { who: 'aurelio', text: 'Hai trovato un luogo che finisce sulla mappa. Più al largo ce ne sono altri: archi, relitti, ossa di giganti.' },
+    { who: 'aurelio', text: 'Nelle Grandi fosse, a metà parete, archi di roccia segnano le Gallerie: tunnel bui fino a una caverna. Ci passi a nuoto o in sottomarino, non con le bestie grandi né con l’U-Boot. La più grande è la Cattedrale.' },
+  ],
+  tipDiveLock: [
+    { who: 'aurelio', text: 'La leva Sali/Scendi torna al centro quando la lasci. Tocca il pulsante B sotto di lei: resta dove la metti, e scendi piano anche guardando il cockpit.' },
+    { who: 'aurelio', text: 'Se un mezzo resta incastrato da qualche parte, nel menu di pausa c’è "Sono bloccato": ti riporta al molo di Porto Fango con la nave.' },
+  ],
   // the abyssal ship (owner, 25 ottobre 2026): told when the first rare part is found, and in the Guida
   tipAbyss: [
     { who: 'aurelio', text: 'Un pezzo abissale! Ce ne sono sei: nei relitti più lontani e nei forzieri delle caverne delle Gallerie, uno nella Cattedrale.' },
@@ -145,7 +163,8 @@ export type TipTrigger =
   | 'mounted'
   | 'tamedOutOfTeam'
   | 'portArrived'
-  | 'abyssPart';
+  | 'abyssPart'
+  | 'landmarkFound';
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
@@ -157,6 +176,10 @@ export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
   { id: 'tipTeamFull', title: 'Squadra, stiva e Recinto', on: 'tamedOutOfTeam' },
   { id: 'tipPort', title: 'Il porto', on: 'portArrived' },
   { id: 'tipAbyss', title: 'La nave abissale', on: 'abyssPart' },
+  { id: 'tipBounties', title: 'Taglie e Diario', on: 'portArrived' },
+  { id: 'tipRequests', title: 'Le richieste del mercato', on: 'portArrived' },
+  { id: 'tipPlaces', title: 'Luoghi e Gallerie', on: 'landmarkFound' },
+  { id: 'tipDiveLock', title: 'La leva bloccabile e "Sono bloccato"', on: 'boarded' },
 ];
 /** In story.seen: the tips are switched off (the Guida in the pause menu). */
 export const TIPS_OFF = 'tips-off';

@@ -9,7 +9,8 @@ import { formName, formStars } from '../systems/beasts/forms';
 import { isHungry } from '../systems/beasts/growth';
 import { cannotMove, holdSize, inPlace, moveBeast, reachable, type Place } from '../systems/beasts/hold';
 import { maxHpOf, moveInTeam, teamMembers, type TeamBeast } from '../systems/beasts/team';
-import { beastPrice, cannotSell, sellBeast } from '../systems/economy/beastSale';
+import { cannotSell } from '../systems/economy/beastSale';
+import { priceAt, sellAtPort } from '../systems/economy/beastRequests';
 import { feedFromBag } from '../systems/feeding';
 import { canRefuel } from '../systems/fuel';
 import type { GameState } from '../systems/game';
@@ -166,14 +167,14 @@ export function renderTeamPanel(parent: HTMLElement, g: GameState, mode: TeamPan
     }
     // at the harbour a beast of the pen can be sold (owner, 15 ottobre: "vendere animali")
     if (mode === 'port' && !b.inTeam && !b.aboard && !b.form.unique) {
-      const price = beastPrice(b);
+      const price = priceAt(g, b); // double when the harbour asks for it (economy/beastRequests.ts)
       const sell = el('button', 'menu-btn small', r, `Vendi · ${price} denti`);
       const why = cannotSell(g.beasts.team, b);
       sell.disabled = !!why;
       if (why) sell.title = why;
       sell.addEventListener('click', () => {
         if (!window.confirm(`Vendere ${formName(b.form)} per ${price} denti? Non torna più.`)) return;
-        if (sellBeast(g, b.uid) > 0) draw();
+        if (sellAtPort(g, b.uid) > 0) draw();
       });
     }
   };

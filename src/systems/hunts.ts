@@ -2,6 +2,7 @@
 // dens and are found in four steps, kept in the hunting diary (saved): the rumour heard at a harbour or an outpost,
 // the anomalous echo on the ship's sonar (close enough, in its weather), the traces under water by the den, then
 // the beast itself, which comes out of its den only in its weather. Also the sonar's readout at the helm.
+import { landmarkSolidAt } from './world/landmarks';
 import type { Held } from './beastState';
 import { CONDITION_TEXT, HUNT_RULES, HUNTS, type HuntDef } from '../data/hunts';
 import { WILD_SPAWNS, type WildSpawnDef } from '../data/beasts';
@@ -192,12 +193,23 @@ export interface SonarReadout {
  * The ship's sonar: the floor under it, the echoes of big beasts near it (dots, no shapes), the anomalous echoes of
  * the dens it has heard. It hears only switched on and slow (owner, 5 ottobre).
  */
-export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 48): SonarReadout {
+export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 96): SonarReadout {
   const x = g.ship.x;
   const m = (u: number): number => Math.round(u / WORLD.unitsPerMetre);
   const range = HUNT_RULES.bigEchoRange * sonarRange(g.ship);
   const status = !g.ship.sonarOn ? 'off' : sonarActive(g.ship) ? 'on' : 'fast';
-  const floorAt = (fx: number): number => m(g.map.floorBelow(fx, WORLD.surfaceY + 30) - WORLD.surfaceY);
+  // the seabed, not the top of a landmark standing on it (owner, 26 ottobre: under the Grande Arco the beasts looked
+  // inside the rock): past a landmark's solid piece it goes on down to the floor under it
+  const floorAt = (fx: number): number => {
+    let y = g.map.floorBelow(fx, WORLD.surfaceY + 30);
+    // through the landmark's piece, a step at a time: where it ends on the rock, that is the floor; over water, the
+    // floor under that water
+    while (landmarkSolidAt(fx, y + 1)) {
+      while (landmarkSolidAt(fx, y + 1)) y += 2;
+      if (!g.map.solidAt(fx, y + 1)) y = g.map.floorBelow(fx, y + 1);
+    }
+    return m(y - WORLD.surfaceY);
+  };
   const out: SonarReadout = { status, rangeM: m(range), floorM: floorAt(x), profile: [], echoes: [] };
   if (status !== 'on') return out;
   for (let i = 0; i < samples; i++) out.profile.push(floorAt(x - range + (2 * range * i) / (samples - 1)));

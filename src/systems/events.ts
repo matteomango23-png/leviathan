@@ -1,5 +1,6 @@
 // Things that happened during a game step. Scenes turn them into sounds, toasts and effects.
 
+import type { BeastForm } from './beasts/forms';
 import type { DialogueId, StoryStep } from '../data/story';
 import type { TypeId } from '../data/rules';
 
@@ -28,7 +29,9 @@ export type GameEvent =
   /** A legend defeated: gone from the sea forever. */
   | { type: 'legendGone'; name: string }
   | { type: 'battleStart'; id: number; first: 'you' | 'foe' | 'normal' }
-  | { type: 'battleWon'; speciesId: string }
+  | { type: 'battleWon'; speciesId: string; form: BeastForm }
+  /** A followed bounty paid (systems/economy/bounties.ts): its banner. */
+  | { type: 'bountyClosed'; text: string; teeth: number }
   | { type: 'battleLost' }
   | { type: 'battleFled' }
   | { type: 'noTeam' } // a beast touched you with every beast of yours KO: you black out (blackout)

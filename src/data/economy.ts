@@ -118,16 +118,6 @@ const withParts = (w: WreckDef): WreckDef => {
 export const WRECKS: WreckDef[] = [...COAST_WRECKS, ...REGION_WRECKS].map(withParts);
 export const WRECK_REACH = 26; // how close you must be to open one
 
-/** The bounties on the board (owner, 15 ottobre): a big beast of the open sea, beaten (or tamed: it counts as beaten
- *  in battle). After the expedition that reaches its waters. Tuning. */
-const BOUNTIES: { species: string; name: string; why: string; count: number; reward: number; after?: string }[] = [
-  { species: 'squalo_tigre', name: 'squalo tigre', why: 'Gli squali tigre strappano le reti al largo.', count: 1, reward: 900, after: 'spedizione_barriera_esterna' },
-  { species: 'squalo_martello', name: 'squalo martello', why: 'Un branco di martelli assalta i pescherecci.', count: 2, reward: 1400, after: 'spedizione_barriera_esterna' },
-  { species: 'orca', name: 'orca', why: 'Le orche affondano le barche dei balenieri.', count: 1, reward: 2500, after: 'spedizione_banchisa' },
-  { species: 'capodoglio', name: 'capodoglio', why: 'Un capodoglio infuriato sperona le navi.', count: 1, reward: 4000, after: 'spedizione_grandi_fosse' },
-  { species: 'megalodonte', name: 'megalodonte', why: 'Il gigante delle fosse è tornato a cacciare.', count: 1, reward: 12000, after: 'spedizione_grandi_fosse' },
-];
-
 /** Simple missions on the harbour board (tuning). Progress counts only after you accept them. */
 export type MissionGoal =
   | { kind: 'catch'; fish: string; count: number }
@@ -149,6 +139,7 @@ export interface MissionDef {
   /** Back on the board once claimed (the everyday jobs and the bounties). */
   repeat?: boolean;
 }
+// (the bounties on beasts are their own path since 26 ottobre 2026: data/bounties.ts)
 export const MISSIONS: MissionDef[] = [
   {
     id: 'sardine_10',
@@ -180,22 +171,6 @@ export const MISSIONS: MissionDef[] = [
     reward: 150,
     repeat: true,
     requires: 'sardine_10',
-  },
-  {
-    id: 'taglia_barracuda',
-    title: 'Taglia: barracuda',
-    text: 'I barracuda rubano il pescato. Sfiancane 3.',
-    goal: { kind: 'exhaust', species: 'barracuda', count: 3 },
-    reward: 300,
-    repeat: true,
-  },
-  {
-    id: 'taglia_squalo',
-    title: 'Taglia: lo squalo della Baia',
-    text: 'Uno squalo bianco terrorizza i pescatori. Sfiancalo.',
-    goal: { kind: 'exhaust', species: 'squalo_bianco', count: 1 },
-    reward: 500,
-    repeat: true,
   },
   {
     id: 'doma_baia',
@@ -239,18 +214,6 @@ export const MISSIONS: MissionDef[] = [
     reward: 3000,
     requires: 'spedizione_grandi_fosse',
   },
-  // bounties on the big beasts of the open sea (owner, 15 ottobre: "taglie"): they come back once claimed
-  ...BOUNTIES.map(
-    (b): MissionDef => ({
-      id: `taglia_${b.species}`,
-      title: `Taglia: ${b.name}`,
-      text: `${b.why} Sconfiggine ${b.count === 1 ? 'uno' : b.count}.`,
-      goal: { kind: 'exhaust', species: b.species, count: b.count },
-      reward: b.reward,
-      requires: b.after,
-      repeat: true,
-    }),
-  ),
 ];
 export const MAX_ACTIVE_MISSIONS = 4;
 

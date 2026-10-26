@@ -58,7 +58,10 @@ describe('i consigli di Aurelio', () => {
 
   it('ogni consiglio della Guida ha il suo dialogo', () => {
     for (const t of TIPS) expect(DIALOGUES[t.id].length, t.id).toBeGreaterThan(0);
-    expect(new Set(TIPS.map((t) => t.on)).size).toBe(TIPS.length);
+    // a moment may open more than one tip: the first unseen now, the next one the following time (26 ottobre: the
+    // harbour tells of the port, then of the bounties, then of the market's requests)
+    for (const on of new Set(TIPS.map((t) => t.on)))
+      expect(TIPS.filter((t) => t.on === on).length).toBeLessThanOrEqual(3);
   });
 
   it('una partita nuova ha i consigli; una di prova no', () => {

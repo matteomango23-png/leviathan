@@ -56,6 +56,7 @@ export function extraDest(outRoot: string, e: ExtraName): string {
   if (e.kind === 'panorama') return join(outRoot, 'bg', `${e.id}.webp`);
   if (e.kind === 'item') return join(outRoot, 'items', `${e.id}.webp`);
   if (e.kind === 'world' || e.kind === 'texture') return join(outRoot, 'world', `${e.id}.webp`);
+  if (e.kind === 'appicon') return join(outRoot, 'icons', 'icon-512.png');
   return join(outRoot, 'ui', `${e.id}.webp`);
 }
 
@@ -133,6 +134,42 @@ async function cropped(
 export async function makeExtra(src: string, dest: string, e: ExtraName): Promise<string> {
   await mkdir(join(dest, '..'), { recursive: true });
   const webp = { quality: 84, alphaQuality: 90, effort: 5 };
+  if (e.kind === 'appicon') {
+    // the square middle of the picture, at every size the phone and the installed app ask for (vite.config.ts,
+    // index.html); the maskable one smaller on its own dark background, so the round crop never cuts the beast
+    const meta = await sharp(src).metadata();
+    const side = Math.min(meta.width!, meta.height!);
+    const square = await sharp(src)
+      .extract({
+        left: Math.floor((meta.width! - side) / 2),
+        top: Math.floor((meta.height! - side) / 2),
+        width: side,
+        height: side,
+      })
+      .png()
+      .toBuffer();
+    const dir = join(dest, '..');
+    for (const [name, size] of [
+      ['apple-touch-icon.png', 180],
+      ['icon-192.png', 192],
+      ['icon-512.png', 512],
+    ] as const)
+      await sharp(square).resize(size, size).png().toFile(join(dir, name));
+    const { dominant } = await sharp(square).stats();
+    const inner = await sharp(square).resize(410, 410).png().toBuffer();
+    await sharp({
+      create: {
+        width: 512,
+        height: 512,
+        channels: 3,
+        background: { r: dominant.r * 0.4, g: dominant.g * 0.4, b: dominant.b * 0.4 },
+      },
+    })
+      .composite([{ input: inner, left: 51, top: 51 }])
+      .png()
+      .toFile(join(dir, 'maskable-512.png'));
+    return 'icona 180, 192, 512 e maskable';
+  }
   if (e.kind === 'screen' || (e.kind === 'bg' && e.layer === 'far')) {
     await sharp(src).resize({ width: 1920, withoutEnlargement: true }).webp(webp).toFile(dest);
     return 'sfondo intero';

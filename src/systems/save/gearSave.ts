@@ -23,6 +23,9 @@ export interface SavedGear {
   wrecks: string[];
   /** The abyssal ship's parts found (25 ottobre; missing in older saves). */
   abyssParts?: string[];
+  /** The bounties (26 ottobre; missing in older saves): followed, closed, beasts beaten or tamed. */
+  bounties?: { followed: string[]; done: string[]; beaten: string[] };
+  requestsMet?: string[];
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
@@ -40,6 +43,9 @@ const ids = (v: unknown, known: string[]): string[] =>
   Array.isArray(v)
     ? [...new Set(v.filter((x): x is string => typeof x === 'string' && known.includes(x)))]
     : [];
+/** A list of short ids (the bounties' form keys): only strings, none twice. */
+const words = (v: unknown): string[] =>
+  Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === 'string' && x.length < 80))] : [];
 const counts = (v: unknown, known: string[]): Record<string, number> => {
   const out: Record<string, number> = {};
   if (!isObj(v)) return out;
@@ -105,6 +111,12 @@ export function validateGear(raw: unknown): SavedGear {
       raw.abyssParts,
       ABYSS_PARTS.map((x) => x.id),
     ),
+    bounties: {
+      followed: words(isObj(raw.bounties) ? raw.bounties.followed : undefined),
+      done: words(isObj(raw.bounties) ? raw.bounties.done : undefined),
+      beaten: words(isObj(raw.bounties) ? raw.bounties.beaten : undefined),
+    },
+    requestsMet: words(raw.requestsMet),
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     deepestM: num(raw.deepestM),
     relics: ids(

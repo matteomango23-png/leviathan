@@ -205,6 +205,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
             3,
           ]
         : null;
+    case 'bountyClosed':
+      return [e.text, 4];
     case 'nightVision':
       return [e.on ? ABYSS_TEXT.nightOn : ABYSS_TEXT.nightOff, 1.4];
     case 'wreckLocked':

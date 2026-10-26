@@ -19,7 +19,6 @@ import { renderTeamPanel } from './teamPanel';
 import { renderDiary } from './huntDiary';
 import './cockpit.css';
 import { renderReconTab } from './reconPanel';
-import { renderMissions } from './missionList';
 import { inPool } from '../systems/ship/shipPool';
 import { formName } from '../systems/beasts/forms';
 import { subModel } from '../systems/subState';
@@ -168,10 +167,8 @@ export class Cockpit {
         ? renderSubSonar(this.body, this.g)
         : renderSonar(this.body, this.g, redraw);
     else if (this.tab === 'radar') this.stopSonar = renderRadar(this.body, this.g);
-    else if (this.tab === 'diario') {
-      renderMissions(this.body, this.g.gear); // the missions you accepted, at sea too (owner, 15 ottobre)
-      renderDiary(this.body, this.g, redraw);
-    } else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
+    else if (this.tab === 'diario') renderDiary(this.body, this.g, redraw, (t, e) => this.say(t, e));
+    else if (this.tab === 'zaino') renderBackpack(this.body, ctx);
     else if (this.tab === 'drone') renderReconTab(this.body, this.g, this.session, (t) => this.say(t));
     else {
       // the pool aboard: who is resting in it now (ship/shipPool.ts)
