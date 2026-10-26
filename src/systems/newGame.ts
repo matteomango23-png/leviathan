@@ -28,6 +28,7 @@ import { newShip, type ShipState } from './ship/ship';
 import { newBoat, type BoatState } from './boat';
 import type { MooredShip } from './ship/shipyard';
 import { createTemples, type TempleState } from './temple';
+import { freeVehicles } from './ship/unstuck';
 
 export interface GameState extends StoryWorld {
   time: number;
@@ -143,6 +144,8 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     story: createStory(s.story, save !== null, !!s.ship),
   };
   matchSubToShip(g);
+  // a save with the ship or a submarine inside rock (owner, 26 ottobre): brought to the pier, never a lost game
+  if (save) freeVehicles(g);
   return g;
 }
 

@@ -38,6 +38,12 @@ export const BOTTOM_FADES: Record<string, number> = {
   avamposto_corallo: 0.42,
   delta_isola_1: 0.32,
   delta_isola_2: 0.2,
+  // the landmarks' painted sand beds, cut straight under them, went (owner, 26 ottobre: the arch's sand closed the
+  // way under it): the game's own seabed is their ground
+  luogo_arco: 0.22,
+  luogo_galeone_1: 0.14,
+  luogo_galeone_2: 0.18,
+  luogo_balena: 0.12,
 };
 
 /** Pictures whose left and right ends fade out (this share of their width): the floor piece under the piers had
@@ -177,7 +183,17 @@ export function clearDarkMiddle(
 
 /** Pictures whose two ends (top and bottom) fade out, raggedly (this share of their height): the Cattedrale's
  *  columns, whose ends go into the cave's floor and ceiling (lot M3). */
-export const END_FADES: Record<string, number> = { colonna_cattedrale_1: 0.08, colonna_cattedrale_2: 0.08 };
+export const END_FADES: Record<string, number> = {
+  colonna_cattedrale_1: 0.08,
+  colonna_cattedrale_2: 0.08,
+  // the painted walls laid along the cliffs (views/worldArtView.ts): the first and last of a face, and those either
+  // side of a gallery's mouth, ended on a straight line (owner, 26 ottobre)
+  parete_roccia_1: 0.12,
+  parete_roccia_2: 0.12,
+  parete_roccia_3: 0.12,
+  parete_corallo: 0.12,
+  parete_ghiaccio: 0.12,
+};
 
 export function applyEndFades(
   id: string,

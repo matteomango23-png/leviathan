@@ -14,6 +14,7 @@ import { openBag } from './bagScreen';
 import { formatTime, openHunterCard } from './hunterCardView';
 import { renderTestPanel } from './testPanel';
 import { openGuide } from './guide';
+import { freeVehicles } from '../systems/ship/unstuck';
 
 export class PauseMenu {
   private readonly root: HTMLDivElement;
@@ -55,6 +56,16 @@ export class PauseMenu {
     });
     // new games, loading, renaming, export and import: in the title menu, where every game stays (owner, 19 and
     // 20 ottobre)
+    // a safety net (owner, 26 ottobre: stuck in the rock with no way out): back to the pier, free
+    const stuck = el('button', 'menu-btn', panel, 'Sono bloccato');
+    stuck.addEventListener('click', () => {
+      freeVehicles(game, true);
+      this.session.emit('saveNow');
+      this.say(
+        game.ship.owned ? 'Sei al molo di Porto Fango, con la nave e i suoi mezzi.' : 'Sei a Portofosco.',
+      );
+      onResume();
+    });
     const title = el('button', 'menu-btn', panel, 'Menu iniziale');
     title.addEventListener('click', () => this.session.emit('toTitle'));
     this.msg = el('p', 'menu-msg', panel);

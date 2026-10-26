@@ -64,7 +64,7 @@ export function leaveSub(g: SubWorld, events: GameEvent[]): void {
 }
 
 /** Its body against rock. */
-function hits(map: TileMap, s: SubState, x: number, y: number): boolean {
+export function hits(map: TileMap, s: SubState, x: number, y: number): boolean {
   return subBody(s).some(([dx, r]) => map.hitCircle(x + dx, y, r));
 }
 

@@ -48,7 +48,8 @@ export const WALLS = {
   inRock: 0.92, // share of the width inside the rock (was 0.75: the part over the water looked solid and was not; owner)
   overlap: 0.18, // walls stacked on a long face overlap by this share of their height
   minFace: 60, // units: shorter straight faces are left as they are
-  galleryMargin: 40, // units: no wall this near a gallery's tunnel (its picture would end cut by the mouth)
+  galleryMargin: 4, // units: a wall's solid part stays this far from a gallery's tunnel…
+  endFade: 0.12, // …its ends fade out over this share of its height (scripts/art END_FADES) and may reach over it
   rock: ['parete_roccia_1', 'parete_roccia_2', 'parete_roccia_3'],
   coral: 'parete_corallo',
   ice: 'parete_ghiaccio',

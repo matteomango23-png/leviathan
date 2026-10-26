@@ -47,7 +47,8 @@ export const LANDMARKS: LandmarkDef[] = [
     name: 'Grande Arco',
     where: { biome: 'barriera', minKm: 2.4 },
     flatten: 220,
-    pieces: [{ art: 'luogo_arco', widthM: 46, dxM: 0, sink: 0.06, solid: true }],
+    // sunk into the seabed as deep as its faded foot (its painted sand bed is gone: owner, 26 ottobre)
+    pieces: [{ art: 'luogo_arco', widthM: 46, dxM: 0, sink: 0.15, solid: true }],
     // "under it there is always a turtle or a manta" (the proposal)
     residents: [
       { speciesId: 'tartaruga_marina', dxM: -4, upM: 5 },
@@ -60,7 +61,7 @@ export const LANDMARKS: LandmarkDef[] = [
     where: { biome: 'aperto', minKm: 7.5 },
     flatten: 320,
     pieces: [
-      { art: 'luogo_galeone_1', widthM: 34, dxM: -48, sink: 0.08, solid: true },
+      { art: 'luogo_galeone_1', widthM: 34, dxM: -48, sink: 0.11, solid: true },
       {
         art: 'luogo_galeone_dentro',
         widthM: 54,
@@ -69,7 +70,7 @@ export const LANDMARKS: LandmarkDef[] = [
         solid: true,
         open: [[0.22, 0.565, 0.84, 0.745]],
       },
-      { art: 'luogo_galeone_2', widthM: 32, dxM: 48, sink: 0.12, solid: true },
+      { art: 'luogo_galeone_2', widthM: 32, dxM: 48, sink: 0.15, solid: true },
     ],
     residents: [{ speciesId: 'murena', dxM: 10, upM: 4 }],
     chest: {

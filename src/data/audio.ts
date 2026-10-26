@@ -3,7 +3,10 @@
 // The music (open sea, battles) is in data/music.ts. Values are tuning: change them here.
 
 export const AUDIO = {
-  master: 0.7,
+  master: 0.55, // was 0.7: the sea, the music, the engines and the places together went over the top
+  /** A limiter at the output (owner, 26 ottobre: "il suono gracchia ancora", everywhere): all the sounds together
+   *  never go over the top, where they break and crackle. Its threshold (dB), knee, ratio, attack and release (s). */
+  limiter: { threshold: -8, knee: 4, ratio: 20, attack: 0.003, release: 0.2 },
   storageKey: 'leviatano-suono', // per device: '0' = muted
   fade: 0.6, // seconds to cross between the sea and a battle
   /** In the menus and at the port the sea goes on, far: × its volume, faded in `menuFade` seconds (owner, 19 ottobre:

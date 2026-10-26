@@ -5,7 +5,10 @@
 import { PORTO_FANGO, PORTS, type PortDef } from '../data/economy';
 import { FUEL, RESCUE } from '../data/ship';
 import { SUBMARINE } from '../data/submarine';
+import type { TileMap } from './world/tileMap';
 import type { GameEvent } from './events';
+import { harbourShip, vehiclesStuck } from './ship/unstuck';
+import { hullBlocked, submerged } from './ship/uboat';
 export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
 import { shipAlongside } from './economy/places';
@@ -160,7 +163,7 @@ export const canRescue = (g: FuelWorld): boolean =>
  * The rescue flare: at the helm, a tug tows the ship to the nearest harbour; in the submarine, it is towed to the
  * hold of your ship (you at the helm), or to Portofosco without one. It costs a share of your teeth.
  */
-export function rescue(g: FuelWorld, events: GameEvent[]): void {
+export function rescue(g: FuelWorld & { map: TileMap }, events: GameEvent[]): void {
   if (!canRescue(g)) return;
   const teeth = Math.min(
     g.gear.teeth,
@@ -179,9 +182,13 @@ export function rescue(g: FuelWorld, events: GameEvent[]): void {
           : PORTS.filter((p) => p.shipDock >= SHIP_WEST_X).reduce((a, b) =>
               Math.abs(b.shipDock - s.x) < Math.abs(a.shipDock - s.x) ? b : a,
             );
-      Object.assign(s, { x: port.shipDock, speed: 0 });
+      // at the pier afloat, its vehicles in the hold (owner, 26 ottobre: a dived U-Boat came in inside the rock)
+      harbourShip(g, port);
       g.homePort = port.id;
       where = `a ${port.name}`;
+    } else if (vehiclesStuck(g) || (submerged(s) && hullBlocked(g.map, s, s.x, s.dive))) {
+      harbourShip(g);
+      where = `a ${PORTO_FANGO.name}`;
     } else {
       g.sub.aboard = false;
       s.bay = 'docked';
