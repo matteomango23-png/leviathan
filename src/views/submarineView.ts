@@ -2,6 +2,7 @@
 // bubbles from the propeller when it moves. When the hull takes a blow a bar over it shows what is
 // left for a few seconds, then fades; badly damaged it trails dark smoke.
 import Phaser from 'phaser';
+import { JetFlames } from './jetFlames';
 import { SHIP } from '../data/ship';
 import { CALM_SEA, type SeaWeather } from '../systems/sea';
 import { newRide, settleRide, stepRide } from '../systems/ride';
@@ -9,6 +10,7 @@ import { subUnder } from '../systems/subAir';
 import { SUBMARINE } from '../data/submarine';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { subLength, subModel, type SubState } from '../systems/submarine';
+import { softBubble } from './bubbles';
 
 /** A painting's lit red details over it, added and pulsing (shared with the drone on its round, nightmareView). */
 export function placeGlow(
@@ -44,12 +46,16 @@ export class SubmarineView {
   /** How it floats on the waves at the surface (look only). */
   private readonly ride = newRide();
   private barLeft = 0;
+  private readonly jets: JetFlames;
+  /** How hard its reactors burn now (eases on and off). */
+  private jetPower = 0;
 
   constructor(
     scene: Phaser.Scene,
     layer: Phaser.GameObjects.Layer,
     glowLayer: Phaser.GameObjects.Layer = layer,
   ) {
+    this.jets = new JetFlames(scene, layer); // behind the hull
     this.img = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.turning = scene.add.image(0, 0, '__WHITE').setVisible(false);
     this.glow = scene.add.image(0, 0, '__WHITE').setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
@@ -68,6 +74,7 @@ export class SubmarineView {
     this.glow.setVisible(false);
     if (!s.owned || hidden) {
       this.img.setVisible(false);
+      this.jets.update([], time);
       return;
     }
     const L = subLength(s);
@@ -90,6 +97,7 @@ export class SubmarineView {
         .setRotation(rock)
         .setScale(sc * s.face, sc);
       placeGlow(this.glow, art, s.x, y, rock, L, s.face, time);
+      this.drawJets(s, y, rock, L * (this.img.height / this.img.width), speed, time, dt);
       if (moving && WORLD_ART_KEYS.includes(moving)) {
         const key2 = `world-${moving}`;
         if (this.turning.texture.key !== key2) this.turning.setTexture(key2);
@@ -113,10 +121,43 @@ export class SubmarineView {
     if (speed > 8)
       for (let i = 0; i < 6; i++) {
         const t = (time * 2 + i / 6) % 1;
-        g.lineStyle(0.5, 0xdff8ff, 0.6 * (1 - t));
-        g.strokeCircle(s.x - s.face * (L * 0.5 + t * 14), y - t * 6 + Math.sin(i * 2.1) * 2, 0.8 + t);
+        softBubble(g, s.x - s.face * (L * 0.5 + t * 14), y - t * 6 + Math.sin(i * 2.1) * 2, 0.9 + t, 1 - t);
       }
     this.drawDamage(s, y, time, dt);
+  }
+
+  /** Its reactors' flames (the abyssal one): while you drive it and it moves, longer the faster. */
+  private drawJets(
+    s: SubState,
+    y: number,
+    rock: number,
+    h: number,
+    speed: number,
+    time: number,
+    dt: number,
+  ): void {
+    const m = subModel(s.model);
+    const jets = m.jets ?? [];
+    const run = s.aboard && s.fuel > 0 && s.hull > 0 ? Math.min(1, speed / m.speed) : 0;
+    const want = jets.length && s.aboard && s.fuel > 0 && s.hull > 0 ? Math.max(0.12, run) : 0;
+    this.jetPower += (want - this.jetPower) * Math.min(1, dt * 4);
+    const L = subLength(s);
+    const cos = Math.cos(rock);
+    const sin = Math.sin(rock);
+    this.jets.update(
+      jets.map((j) => {
+        const dx = s.face * (j.u - 0.5) * L;
+        const dy = (j.v - 0.5) * h;
+        return {
+          x: s.x + dx * cos - dy * sin,
+          y: y + dx * sin + dy * cos,
+          angle: rock + (s.face > 0 ? Math.PI : 0),
+          width: j.size * h,
+          power: this.jetPower,
+        };
+      }),
+      time,
+    );
   }
 
   /** The hull bar after a blow (then it fades), and dark smoke when little is left. */

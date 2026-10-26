@@ -12,6 +12,7 @@ import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { WORLD } from '../data/worldLayout';
 import { boatLength, boatModel, boatTopSpeed, type BoatState } from '../systems/boat';
 import { ShipFx } from './shipFx';
+import { softBubble } from './bubbles';
 
 /** One boat's pictures, each cut at the waterline: closed above/below, then running above/below. */
 class BoatPictures {
@@ -131,8 +132,7 @@ export class BoatView {
     for (let i = 0; i < 10; i++) {
       const t = (time * (1.6 + b.prop * 2) + i / 10) % 1;
       const bx = stern - b.face * t * (16 + 30 * b.prop);
-      g.lineStyle(0.5, 0xdff8ff, 0.6 * b.prop * (1 - t));
-      g.strokeCircle(bx, Math.max(y, surface(bx) + 2) + t * 4, 0.5 + t);
+      softBubble(g, bx, Math.max(y, surface(bx) + 2) + t * 4, 0.6 + t, b.prop * (1 - t));
     }
   }
 }

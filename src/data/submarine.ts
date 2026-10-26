@@ -41,6 +41,8 @@ export interface SubModel {
   nightVision?: boolean;
   /** Its own cockpit (ui/cockpit.ts), so it can hunt far from its ship (owner, 25 ottobre): the tabs it has. */
   cockpit?: ('sonar' | 'plancia' | 'diario' | 'zaino')[];
+  /** Its reactors' nozzles on its picture (shares; `size` share of its height): flames while it runs. */
+  jets?: { u: number; v: number; size: number }[];
   /** Its cockpit's and sonar's colours (ui/cockpitTheme.ts). */
   cockpitTheme?: 'abissale';
   /** A drone that plants a tracker from afar on a beast picked on the sonar (the Krill Hunter's, 10 ottobre). */
@@ -170,6 +172,10 @@ export const SUB_MODELS: SubModel[] = [
     nightVision: true,
     cockpit: ['sonar', 'plancia', 'diario', 'zaino'],
     cockpitTheme: 'abissale',
+    jets: [
+      { u: 0.01, v: 0.42, size: 0.22 },
+      { u: 0.01, v: 0.75, size: 0.22 },
+    ],
     note: 'Fino a 1000 m e mezz’ora sott’acqua: visione notturna, fari fortissimi e un cockpit tutto suo',
     art: 'sottomarino_abissale',
   },
@@ -202,6 +208,10 @@ export const SUBMARINE = {
    *  submarines with no beast sonar (m). Tuning. */
   edgeScope: { cells: 28, rangeM: 50 },
   air: { refill: 6, warnAt: 30, hurtEvery: 5, underBelow: 8 },
+  /** Coming up fast it leaves the water a little and falls back (owner, 25 ottobre: no invisible wall at the
+   *  surface, but no fish's leap): faster than `minSpeed` (units/s) it keeps `keep` of the rest, never higher than
+   *  `maxShare` of its length; out of the water `gravity` (units/s²) pulls it down. Tuning. */
+  hop: { minSpeed: 45, keep: 0.6, maxShare: 0.12, gravity: 300 },
   accel: 110, // units/s² speeding up (and braking, with the lever the other way)
   coast: 45, // units/s² it slows down by itself, throttle down
   drag: 1.5, // after a bump: how fast the bounce dies out…

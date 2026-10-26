@@ -23,7 +23,18 @@ export function drawBubbles(
     const fade = (1 - rise / height) * Math.min(1, rise / 6); // they appear at the vent, not out of nothing
     const bx = x + (hash2(i, seed * 3) - 0.5) * spread + wobble;
     const by = y - rise;
-    g.fillStyle(0xbfeaff, 0.18 * fade).fillCircle(bx, by, r);
-    g.fillStyle(0xffffff, 0.75 * fade).fillCircle(bx - r * 0.35, by - r * 0.35, r * 0.32);
+    softBubble(g, bx, by, r, fade);
   }
+}
+
+/** One soft bubble: a faint body and a bright glint, no ring (owner, 25 ottobre: no code-drawn circles). */
+export function softBubble(
+  g: Phaser.GameObjects.Graphics,
+  x: number,
+  y: number,
+  r: number,
+  alpha: number,
+): void {
+  g.fillStyle(0xbfeaff, 0.18 * alpha).fillCircle(x, y, r);
+  g.fillStyle(0xffffff, 0.75 * alpha).fillCircle(x - r * 0.35, y - r * 0.35, r * 0.32);
 }

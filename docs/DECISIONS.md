@@ -1251,3 +1251,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - La nave abissale si "compra" con pezzi più denti dallo stesso cantiere; non si vende (i pezzi non si ritrovano).
 - Il sottomarino abissale apre lo stesso cockpit della nave con meno schede, invece di una schermata nuova: Plancia, Diario e Zaino sono gli stessi; il sonar è quello semplice del vetro, grande. Colori blu e oro chiesti dal proprietario.
 - Visione notturna: un filtro verde sopra il buio (moltiplica + leggero velo), il buio aperto del tutto, e un'onda che illumina gli orli della roccia con macchie morbide sovrapposte (linea continua, niente puntini). La regola "gli U-Boot hanno più aria dei sottomarini" ha un'eccezione voluta: il sottomarino abissale ha 30 minuti.
+
+## 26 ottobre 2026 — Montagne di sfondo a quota fissa per regione (v0.113.1)
+
+- Seguire il fondale vicino (lotto C2) faceva muovere le montagne in verticale mentre si nuotava: ora la loro quota dipende solo dalla profondità della telecamera e dall'aspetto della regione (valore fisso, sfumato ai confini come le immagini). Si scuriscono con la profondità per non sembrare vicine nel cono della lampada.
+- Gli U-Boot rompono il ghiaccio che toccano anche sott'acqua (anche le caselle accanto ai punti della sagoma, perché il contorno morbido le raggiunge); i sottomarini no.

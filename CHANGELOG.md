@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.113.1 — Sfondi fermi, reattori, leva bloccabile (26 ottobre 2026)
+
+- **Le montagne sullo sfondo non salgono e scendono più** mentre vai avanti: ogni regione ha la sua altezza, che cambia solo ai confini con una sfumatura. In profondità le montagne lontane restano scure anche nel cono della lampada, invece di illuminarsi come se fossero vicine.
+- **Fiamme dei reattori** azzurro-viola sulla nave abissale e sul suo sottomarino: solo con il motore acceso, più lunghe con più gas, anche sott'acqua.
+- **Pulsante B** sotto la leva Sali/Scendi di sottomarini e U-Boot: acceso, la leva resta dove la lasci (scendi piano e in continuo anche guardando il cockpit); spento, torna al centro.
+- **Gli U-Boot rompono il ghiaccio** che toccano sott'acqua, invece di bloccarsi e rovinarsi lo scafo.
+- **Salendo a tutto gas** sottomarini e U-Boot escono un poco dall'acqua e ricadono con uno spruzzo, invece di fermarsi di colpo alla superficie.
+- Le bolle delle eliche (navi, motoscafi, sottomarini) e delle battaglie sono bolle morbide, non più cerchietti disegnati.
+- I salvataggi non cambiano.
+
 ## v0.113.0 — I mezzi abissali (25 ottobre 2026)
 
 - **Sei pezzi abissali** da trovare: tre nei relitti più lontani (Grandi fosse e Abisso), tre in forzieri nelle caverne delle Gallerie, uno nella Cattedrale. Quelli trovati si vedono nello zaino.

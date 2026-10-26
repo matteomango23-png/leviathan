@@ -32,6 +32,10 @@ export const SHIP = {
    *  needs afloat to dive again (seconds). Tuning. */
   /** A U-Boat's dive; out of air with you aboard, a heart every `hurtEvery` seconds (owner, 24 ottobre). */
   dive: { refill: 4, warnAt: 30, afloatBelow: 3, emergencyRise: 60, minAir: 40, hurtEvery: 5 },
+  /** A U-Boat coming up fast leaves the water a little and falls back (owner, 25 ottobre: no invisible wall, no
+   *  leap): faster than `minSpeed` (units/s) it keeps `keep` of the rest, never higher than `maxShare` of its
+   *  height; `gravity` (units/s²) brings it down. Look only: afloat it is. Tuning. */
+  hop: { minSpeed: 15, keep: 0.7, maxShare: 0.1, gravity: 160 },
   approach: { range: 1800, decel: 30 }, // from 1800 units the curve allows ~330 u/s: above the fastest ship
   /** Planing at speed: the bow lifts (radians) and the hull rises a little (units). Look only. */
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
@@ -155,6 +159,10 @@ export const HELM = {
   subTurnBelow: 18, // units/s: the submarine turns round below this speed
   subDiveMult: 0.6, // the dive lever at full: this share of the submarine's top speed, up or down
 };
+
+/** The reactors' flames (views/jetFlames.ts; owner, 25 ottobre): their length in nozzle widths idling and at full
+ *  throttle, how much wider than the nozzle, how lit, how much they flicker, how many at most on one vehicle. Tuning. */
+export const JET_FLAME = { idleLength: 1.4, fullLength: 4.5, spread: 1.15, alpha: 0.85, flicker: 0.12, most: 4 };
 
 export const SHIP_TEXT = {
   given:
