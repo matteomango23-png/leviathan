@@ -173,7 +173,6 @@ export const SEA_SNOW = {
  * bubbling (seconds between, volume: soft and rare). Tuning.
  */
 export const REGION_SOUND = {
-  reef: { clicksPerSecond: 14, volume: 0.035 },
   ice: { every: [6, 14] as [number, number], volume: 0.05 },
   deep: { every: [5, 11] as [number, number], hz: 38, volume: 0.07 },
   swamp: { every: [3, 8] as [number, number], volume: 0.04 },
