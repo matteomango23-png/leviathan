@@ -7,6 +7,7 @@ import { createTextures } from '../views/textures';
 import { Session } from './session';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { assetUrl } from '../data/assets';
+import { WORLD_ART_SPARE } from '../data/worldArt';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -21,7 +22,8 @@ export class BootScene extends Phaser.Scene {
       SPECIES.map((s) => s.id),
     );
     // painted walls and icebergs (views/worldArtView.ts)
-    for (const key of WORLD_ART_KEYS) this.load.image(`world-${key}`, assetUrl(`world/${key}.webp`));
+    for (const key of WORLD_ART_KEYS)
+      if (!WORLD_ART_SPARE.includes(key)) this.load.image(`world-${key}`, assetUrl(`world/${key}.webp`));
     this.load.on('loaderror', (file: Phaser.Loader.File) => console.warn('Immagine mancante:', file.src));
   }
 

@@ -38,34 +38,38 @@ function drawPiles(
   if (end >= floor) return;
   // the picture's lowest band (plain poles) repeated down to the floor, every other copy upside down: each copy
   // starts with the row the one above ends with, so no seam shows (owner, 24 ottobre: the stretch showed one).
-  // Painted once into a texture of its own.
+  // Only the two copies are painted (a small texture, the same for every pier), then repeated: one tall picture
+  // of the whole depth was too big for the iPhone (owner, 26 ottobre: the game would not open).
   const src = scene.textures.get(`world-${U.piles}`).getSourceImage() as HTMLImageElement;
   const from = Math.round(src.height * U.pilesRepeatFrom);
   const bandPx = src.height - from;
-  const H = Math.ceil((floor - end) / k);
-  const key = `pier-poles-${Math.round(x)}`;
-  if (scene.textures.exists(key)) scene.textures.remove(key);
-  const tex = scene.textures.createCanvas(key, src.width, H)!;
-  const ctx = tex.getContext();
-  for (let y = 0, i = 0; y < H; y += bandPx, i++) {
+  const key = 'pier-poles';
+  if (!scene.textures.exists(key)) {
+    const tex = scene.textures.createCanvas(key, src.width, bandPx * 2)!;
+    const ctx = tex.getContext();
     ctx.save();
-    if (i % 2 === 0) {
-      ctx.translate(0, y + bandPx);
-      ctx.scale(1, -1);
-      ctx.drawImage(src, 0, from, src.width, bandPx, 0, 0, src.width, bandPx);
-    } else ctx.drawImage(src, 0, from, src.width, bandPx, 0, y, src.width, bandPx);
+    ctx.translate(0, bandPx);
+    ctx.scale(1, -1);
+    ctx.drawImage(src, 0, from, src.width, bandPx, 0, 0, src.width, bandPx);
     ctx.restore();
+    ctx.drawImage(src, 0, from, src.width, bandPx, 0, bandPx, src.width, bandPx);
+    tex.refresh();
   }
-  tex.refresh();
-  layer.add(scene.add.image(x, end, key).setOrigin(0.5, 0).setScale(k));
+  const H = Math.ceil((floor - end) / k);
+  layer.add(scene.add.tileSprite(x, end, src.width, H, key).setOrigin(0.5, 0).setScale(k));
 }
 
-/** The deepest floor under a pier's piles (their picture's width). */
+/** The deepest floor under a pier's piles (their picture's width): only where the water starts at the surface (a
+ *  point in the shore's rock would find some floor far below it), never deeper than PIER_UNDER.pilesMaxDepthM. */
 function deepestFloor(map: TileMap, x: number): number {
   const half = (PIER_UNDER.pilesWidthM * WORLD.unitsPerMetre) / 2;
-  let y = 0;
-  for (let k = -1; k <= 1.0001; k += 0.125) y = Math.max(y, map.floorBelow(x + k * half, WORLD.surfaceY + 6));
-  return y;
+  const start = WORLD.surfaceY + 6;
+  let y = start;
+  for (let k = -1; k <= 1.0001; k += 0.125) {
+    if (map.solidAt(x + k * half, start)) continue;
+    y = Math.max(y, map.floorBelow(x + k * half, start));
+  }
+  return Math.min(y, WORLD.surfaceY + PIER_UNDER.pilesMaxDepthM * WORLD.unitsPerMetre);
 }
 
 export function drawPierUnder(

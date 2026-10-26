@@ -107,6 +107,9 @@ export const PIER_UNDER = {
   /** In a deep harbour the poles go on down to the floor: the picture's lowest band (from this share of its height,
    *  under the net) repeated, every other copy upside down. */
   pilesRepeatFrom: 0.86,
+  /** The deepest the piles go (m under the surface): a floor farther down is not the harbour's (owner, 26 ottobre:
+   *  a point in the shore's rock found a floor far below and the piles became a picture too big for the iPhone). */
+  pilesMaxDepthM: 60,
   /** The things on the floor: width, metres right of the pier's middle, how far sunk into the sand. */
   floorWidthM: 18,
   floorDxM: 14,
