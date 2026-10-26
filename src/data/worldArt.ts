@@ -42,6 +42,20 @@ export const ICEBERG_MAX_DRAFT = 190;
 export const ICEBERG_CLEAR_MARGIN = 24;
 export const ICEBERGS_PER_STRETCH = 0; // tuning, Banchisa stretches of the endless sea (0: none for now, owner 5 ottobre)
 
+/** Pictures in public/world kept for later but not loaded (owner, 26 ottobre: every picture loaded at the start was
+ *  too much memory for the iPhone): the old walls and the icebergs no longer placed. */
+export const WORLD_ART_SPARE = [
+  'iceberg_1',
+  'iceberg_2',
+  'iceberg_3',
+  'iceberg_4',
+  'parete_alghe',
+  'parete_basalto',
+  'parete_ciglio',
+  'parete_corallo_2',
+  'parete_fossa',
+];
+
 /** Painted walls: their size, how much of them sits in the rock, and which picture goes where. */
 export const WALLS = {
   width: 74, // tuning

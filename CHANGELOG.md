@@ -2,6 +2,11 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.113.3 — Il gioco si riapre sull'iPhone (26 ottobre 2026)
+
+- **Il gioco non si apriva più sull'iPhone** ("A problem repeatedly occurred"): le immagini caricate all'avvio occupavano troppa memoria. I pali sotto il molo di Portofosco erano un'unica immagine alta quasi 30.000 pixel (167 MB): ora sono un pezzo piccolo ripetuto. Non si caricano più le vecchie pareti e gli iceberg che il gioco non usa. In tutto la memoria delle immagini scende da 1.114 a 867 MB.
+- I salvataggi non cambiano.
+
 ## v0.113.2 — Mai più bloccati, Grande Arco, suono (26 ottobre 2026)
 
 - **Razzo di soccorso con un U-Boot immerso:** la nave arriva al molo a galla, portelloni chiusi, sottomarino e motoscafo nella stiva, e si vede il rimorchiatore. Prima restava sott'acqua dentro la roccia di Porto Fango e non si poteva più riprendere.
