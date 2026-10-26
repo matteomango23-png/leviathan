@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.114.1 — Schermata di caricamento e icona nuove (26 ottobre 2026)
+
+- **Schermata di caricamento:** la nave abissale nella tempesta e, sott'acqua, squalo bianco, orca, calamaro e un capodoglio bianco che sale ad azzannarla. Il titolo ha un alone scuro morbido per leggersi bene.
+- **Icona nuova dell'app:** il sub con la lampada davanti al muso enorme del Leviatano bianco. Per vederla sull'iPhone bisogna rimettere il gioco sulla Home (prima esporta il salvataggio).
+- I salvataggi non cambiano.
+
 ## v0.114.0 — Taglie per tutte le bestie, Diario nuovo, richieste del mercato (26 ottobre 2026)
 
 - **Taglie come un percorso:** sulla bacheca di ogni porto ci sono tutte le bestie del mare, dalle più facili alle più difficili, in tre file: bestie comuni, alfa e albini, leggendari. Se ne vedono 10 per fila; chiusa una, entra la successiva. Ogni card dice livello, ricompensa e dove trovarla (zona o regione con i km, e a che profondità). Le bestie mai viste sono un'ombra.
