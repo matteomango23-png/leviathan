@@ -2,11 +2,15 @@
 // the melody every other time round, a breathing drone and a far drum, all in a long echo. It fades in beyond a
 // kilometre from the coast and out back under it; scheduled a bar at a time ahead on the audio clock. The same engine
 // plays the harbour's calm piece (PORT_MUSIC) in the port's menu (owner, 19 ottobre).
-import { noteHz, SEA_MUSIC, VOICE_TONE, type MusicSpec, type VoiceSpec } from '../data/music';
+import { MUSIC_ECHO_MAX, noteHz, SEA_MUSIC, VOICE_TONE, type MusicSpec, type VoiceSpec } from '../data/music';
 
 export class SeaMusic {
   private readonly out: GainNode;
   private readonly bus: GainNode;
+  /** Its echo: joined only while it plays (owner, 26 ottobre: three long echoes running always, even silent, were
+   *  too much for the iPhone's sound and it crackled). */
+  private readonly verb: ConvolverNode;
+  private verbOn = false;
   private timer: number | null = null;
   private drone: OscillatorNode[] = [];
   private on = false;
@@ -27,14 +31,22 @@ export class SeaMusic {
     const dry = ctx.createGain();
     dry.gain.value = this.m.reverb.dry;
     this.bus.connect(dry).connect(this.out);
-    const verb = ctx.createConvolver();
-    verb.buffer = echo(ctx, this.m.reverb.seconds);
+    this.verb = ctx.createConvolver();
+    this.verb.buffer = echo(ctx, Math.min(this.m.reverb.seconds, MUSIC_ECHO_MAX));
     const tone = ctx.createBiquadFilter();
     tone.type = 'lowpass';
     tone.frequency.value = this.m.reverb.cutoff;
     const wet = ctx.createGain();
     wet.gain.value = this.m.reverb.wet;
-    this.bus.connect(verb).connect(tone).connect(wet).connect(this.out);
+    this.verb.connect(tone).connect(wet).connect(this.out);
+  }
+
+  /** The echo joins while the piece plays, and leaves once it has died away. */
+  private echoOn(on: boolean): void {
+    if (on === this.verbOn) return;
+    this.verbOn = on;
+    if (on) this.bus.connect(this.verb);
+    else this.bus.disconnect(this.verb);
   }
 
   get playing(): boolean {
@@ -54,6 +66,7 @@ export class SeaMusic {
       window.setTimeout(() => this.halt(), fade * 1000 * 1.5);
       return;
     }
+    this.echoOn(true);
     if (this.timer !== null) return; // still fading out: it goes on
     this.bar = 0;
     this.pass = 0;
@@ -70,6 +83,7 @@ export class SeaMusic {
     this.timer = null;
     for (const o of this.drone) o.stop();
     this.drone = [];
+    this.echoOn(false);
   }
 
   private schedule(): void {

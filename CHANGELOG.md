@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.113.2 — Mai più bloccati, Grande Arco, suono (26 ottobre 2026)
+
+- **Razzo di soccorso con un U-Boot immerso:** la nave arriva al molo a galla, portelloni chiusi, sottomarino e motoscafo nella stiva, e si vede il rimorchiatore. Prima restava sott'acqua dentro la roccia di Porto Fango e non si poteva più riprendere.
+- **Partite bloccate riparate:** caricando una partita, se la nave o un mezzo sono dentro la roccia tornano al molo di Porto Fango.
+- **Nuovo pulsante "Sono bloccato"** nel menu di pausa: ti riporta al molo di Porto Fango con la nave e i suoi mezzi, gratis.
+- **Grande Arco:** niente più striscia di sabbia dipinta con il bordo dritto, l'arco poggia sul fondale vero e sotto si passa; la tartaruga e la manta non restano più chiuse dentro. Lo stesso per i galeoni del Cimitero dei velieri e la Balena caduta.
+- **Imbocchi delle Gallerie:** tornano i pannelli dipinti della parete, con le estremità sfumate (tutti i pannelli delle pareti ora finiscono sfumati, non più dritti).
+- **Suono:** le musiche usavano tre riverberi lunghissimi sempre accesi, anche in silenzio, troppo pesanti per l'iPhone; ora ne suona solo uno, più corto, quando c'è la musica, e c'è un limitatore all'uscita.
+- I salvataggi non cambiano.
+
 ## v0.113.1 — Sfondi fermi, reattori, leva bloccabile (26 ottobre 2026)
 
 - **Le montagne sullo sfondo non salgono e scendono più** mentre vai avanti: ogni regione ha la sua altezza, che cambia solo ai confini con una sfumatura. In profondità le montagne lontane restano scure anche nel cono della lampada, invece di illuminarsi come se fossero vicine.

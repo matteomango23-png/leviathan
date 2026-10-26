@@ -99,8 +99,10 @@ export class WorldArtView {
 
   /** Whether a wall there would lie over a gallery's tunnel (owner, 25 ottobre: a cut picture across its mouth). */
   private overGallery(cx: number, cy: number): boolean {
+    // its faded ends may reach over the mouth (owner, 26 ottobre: without walls by the mouth the cliff showed its
+    // straight edge), its solid middle not
     const hw = WALLS.width / 2 + WALLS.galleryMargin;
-    const hh = this.wallH / 2 + WALLS.galleryMargin;
+    const hh = this.wallH * (0.5 - WALLS.endFade) + WALLS.galleryMargin;
     for (let y = cy - hh; y <= cy + hh; y += 8)
       for (let x = cx - hw; x <= cx + hw; x += 8) if (galleryOpenAt(x, y)) return true;
     return false;

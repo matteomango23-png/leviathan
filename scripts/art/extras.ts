@@ -39,6 +39,7 @@ import {
   applyBottomFade,
   applyCuts,
   applyEndFades,
+  END_FADES,
   applySideFade,
   BOTTOM_FADES,
   clearDarkMiddle,
@@ -370,7 +371,7 @@ async function makeWorldPiece(src: string, dest: string, id: string): Promise<st
     // a faded picture keeps its whole box: cropped at its faint last rows it would end on a straight line (24 ottobre)
     id.startsWith('sottomarino')
       ? await pairBox(src, id, img)
-      : landmark || BOTTOM_FADES[id] || SIDE_FADES[id]
+      : landmark || BOTTOM_FADES[id] || SIDE_FADES[id] || END_FADES[id]
         ? box
         : null,
   );

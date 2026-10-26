@@ -227,7 +227,15 @@ export class SoundEngine {
     this.ctx = new Ctx({ latencyHint: 'playback' });
     this.master = this.ctx.createGain();
     this.master.gain.value = 0; // it rises once the sound is alive (wake)
-    this.master.connect(this.ctx.destination);
+    // everything through a limiter: the sum never reaches the top and crackles (owner, 26 ottobre)
+    const L = AUDIO.limiter;
+    const limiter = this.ctx.createDynamicsCompressor();
+    limiter.threshold.value = L.threshold;
+    limiter.knee.value = L.knee;
+    limiter.ratio.value = L.ratio;
+    limiter.attack.value = L.attack;
+    limiter.release.value = L.release;
+    this.master.connect(limiter).connect(this.ctx.destination);
     if (this.ctx.state === 'running') this.applyMaster(AUDIO.unlockFade);
     this.sea = new SeaAmbience(this.ctx, this.master);
     this.music = new BattleMusic(this.ctx, this.master);

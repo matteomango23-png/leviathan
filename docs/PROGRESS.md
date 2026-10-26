@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 26 ottobre 2026, v0.113.1)
+## Dove siamo (aggiornato il 26 ottobre 2026, v0.113.2)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -20,6 +20,14 @@
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
 Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Mezzi abissali ✅ (v0.113.0). Prossimo: M4, poi M5. (Vecchie note:) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto C6 (26 ottobre 2026) → v0.113.2
+
+- **Bloccante:** `rescue` (`systems/fuel.ts`) spostava la nave senza farla riemergere. Ora `systems/ship/unstuck.ts`: `harbourShip` (molo a galla, portelloni chiusi, mezzi in stiva, aria piena), `vehiclesStuck`/`freeVehicles` (anche al caricamento in `createGame` e dal pulsante "Sono bloccato" della pausa).
+- **Luoghi:** `BOTTOM_FADES` per `luogo_arco`, `luogo_galeone_1|2`, `luogo_balena` (via la sabbia dipinta) e `sink` più profondi in `data/landmarks.ts`; test che nessun luogo abbia sacche d'acqua dove entra un sub e che i residenti nascano in acqua libera.
+- **Pareti:** `END_FADES` per `parete_*`; vicino alle Gallerie le pareti tornano (solo la parte piena deve stare fuori dal tunnel: `WALLS.endFade`).
+- **Suono:** misurato nel browser (picco 0,18: non era la somma dei suoni); i riverberi delle musiche (`SeaMusic`, fino a 6 s, tre sempre attivi) ora si collegano solo mentre la musica suona e durano al massimo `MUSIC_ECHO_MAX` 2,5 s; limitatore `AUDIO.limiter`, `AUDIO.master` 0,55. Da confermare sull'iPhone.
+- Test: `tests/lottoC6.test.ts`.
 
 ## Lotto C5 (26 ottobre 2026) → v0.113.1
 

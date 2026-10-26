@@ -61,6 +61,10 @@ export interface VoiceSpec {
   vibratoCents: number;
 }
 
+/** The longest echo a piece may have (s): longer ones cost the iPhone too much and the sound crackled (owner, 26
+ *  ottobre). Tuning. */
+export const MUSIC_ECHO_MAX = 2.5;
+
 export const SEA_MUSIC = {
   /** It starts beyond this far from the coast (owner: "about a kilometre"; just past Porto Fango, 1 km out, so the
    *  harbour stays quiet) and stops back under `offKm` (no flicker at the line). */
