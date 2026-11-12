@@ -102,6 +102,9 @@ export const LANDMARK_SIGHT_M = 120;
 /** The underside of the harbours (lot M2): the pier's piles with mussels and nets, and the old things on the floor
  *  under it, in metres. Tuning. */
 export const PIER_UNDER = {
+  /** The lanterns of the piers and outposts shining into the water (lot M4): seen when the sea is dark (a storm, fog,
+   *  dusk). How many along each pier, how far apart and how deep (m), and how far they light (units). */
+  lights: { count: 3, spacingM: 9, depthM: 2.5, radius: 42 },
   piles: 'molo_pali',
   floor: 'molo_fondo',
   /** The piles' picture: its width, and how far above the surface its top starts. */

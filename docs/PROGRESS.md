@@ -1,15 +1,20 @@
 # Progressi
 
-## Dove siamo (aggiornato il 12 novembre 2026, v0.122.1)
+## Dove siamo (aggiornato il 12 novembre 2026, v0.123.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
 - **Ultima pulizia:** v0.122.1 (12 novembre 2026); la prossima dopo altri 3 lotti. Tutti i file di codice sotto le 300 righe (i dati restano lunghi).
-- **Prossimo (proposto al proprietario):** M4 fondale vivo (camini neri, laghi salati, luci sotto i moli), poi M5 la Fossa Nera. Idee horror rimandate in cima a `docs/BACKLOG.md`.
+- **Prossimo:** M5 la Fossa Nera (M4 fatto: v0.123.0; i laghi di salamoia scartati dal proprietario). Idee horror rimandate in cima a `docs/BACKLOG.md`.
 - **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
 - **Immagini attese:** il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Lotto M4, il fondale vivo (12 novembre 2026) → v0.123.0
+
+- Immagini generate da me nel Gemini del proprietario (modello Pro, riferimento `art-inbox/sfiato_aria.jpg`, fondo verde); il proprietario le scarica e me le manda. `fumatore_1` (fumo verdastro tolto a mano dalla copia in `public/`) e `fumatore_2`, ridotte a 520 e 760 px (3 MB di texture). Laghi di salamoia: scartati ("fa schifo").
+- `systems/world/smokers.ts` (`smokersOf`, `inPlume`, `stepSmokers`: un cuore ogni `burnEvery` a nuoto), `ENDLESS.smokers`, `PROP_ART.smokers` (bocche), `SMOKER_LOOK`; `views/smokerView.ts` (piantati con `plant`, pennacchio di puntini morbidi in ADD sul livello dei bagliori, funghi luminosi della Cattedrale attorno). Banchi: `ENDLESS.schoolKinds` per regione in `stepEndlessSchools`; pesci `aringa`, `pesce_lanterna` (luce: `FISH_GLOW`). Luci dei moli: `PIER_UNDER.lights`, `pierLightSpots` (il gioco non ha notte: si vedono quando l'acqua è scura). Consiglio `tipSmokers`. Test: `tests/lottoM4.test.ts`.
 
 ## Pulizia (12 novembre 2026) → v0.122.1
 

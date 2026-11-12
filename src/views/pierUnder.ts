@@ -6,7 +6,7 @@
 import Phaser from 'phaser';
 import { PIER_UNDER } from '../data/landmarks';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
-import { HARBOUR_PIECES, PORT } from '../data/economy';
+import { HARBOUR_PIECES, OUTPOSTS, PORT } from '../data/economy';
 import { PIER_ART } from '../data/worldArt';
 import { WORLD } from '../data/worldLayout';
 import type { TileMap } from '../systems/world/tileMap';
@@ -16,6 +16,23 @@ export function pierMiddles(): number[] {
   const out = [PORT.shoreX + PIER_ART.fromShore + PIER_ART.width / 2];
   const fango = HARBOUR_PIECES.find((p) => p.art === 'porto_molo');
   if (fango) out.push(fango.x);
+  return out;
+}
+
+/** The lanterns' light in the water under the piers and the outposts (lot M4), for the darkness mask. */
+export function pierLightSpots(view: { x: number; right: number }): { x: number; y: number; r: number }[] {
+  const L = PIER_UNDER.lights;
+  const m = WORLD.unitsPerMetre;
+  const out: { x: number; y: number; r: number }[] = [];
+  for (const x of [...pierMiddles(), ...OUTPOSTS.map((o) => o.x)]) {
+    if (x < view.x - 200 || x > view.right + 200) continue;
+    for (let i = 0; i < L.count; i++)
+      out.push({
+        x: x + (i - (L.count - 1) / 2) * L.spacingM * m,
+        y: WORLD.surfaceY + L.depthM * m,
+        r: L.radius,
+      });
+  }
   return out;
 }
 

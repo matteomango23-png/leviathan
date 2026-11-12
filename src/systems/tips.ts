@@ -30,7 +30,8 @@ function triggers(events: readonly GameEvent[]): Set<TipTrigger> {
       e.type === 'mounted' ||
       e.type === 'portArrived' ||
       e.type === 'landmarkFound' ||
-      e.type === 'gunEmpty'
+      e.type === 'gunEmpty' ||
+      e.type === 'smokerBurn'
     )
       out.add(e.type);
   }

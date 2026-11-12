@@ -4,6 +4,7 @@ import { SARDINE } from '../data/diver';
 import { FISH_LOOK } from '../data/economy';
 import type { FishState } from '../systems/fish';
 import { SARDINE_TEX, TEX } from './textures';
+import { FISH_GLOW } from '../data/economy';
 
 interface FishSprite {
   body: Phaser.GameObjects.Image;
@@ -71,5 +72,16 @@ export class FishView {
         .setRotation(s.angle + wag * (flip ? -1 : 1))
         .setScale(scale, flip ? -scale : scale);
     }
+  }
+
+  /** The lanternfish's light dots in the dark (lot M4): a small light on each one in view, a few at most. */
+  glowSpots(state: FishState, view: Phaser.Geom.Rectangle): { x: number; y: number; r: number }[] {
+    const out: { x: number; y: number; r: number }[] = [];
+    for (const f of state.fish) {
+      if (out.length >= FISH_GLOW.max) break;
+      if (f.kind !== FISH_GLOW.kind || !f.alive || !Phaser.Geom.Rectangle.Contains(view, f.x, f.y)) continue;
+      out.push({ x: f.x, y: f.y, r: FISH_GLOW.radius });
+    }
+    return out;
   }
 }

@@ -2,6 +2,15 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.123.0 — Il fondale vivo (12 novembre 2026)
+
+- **Fumatori neri** sul fondo delle Grandi fosse e dell'Abisso: camini di roccia nera dipinti, con vermi tubo e granchi bianchi, la bocca che brilla e un pennacchio di acqua calda che sale. A nuoto, dentro il pennacchio ti scotti; nel sottomarino no.
+- **Funghi luminosi** sul fondo attorno ai camini, che fanno luce nel buio.
+- **Banchi per regione** nel mare aperto: pesci pagliaccio, chirurgo e farfalla sulla Barriera esterna, aringhe nel Mare blu, merluzzi sulla Banchisa, pesci lanterna con la loro lucina nelle fosse e nell'Abisso. Aringhe e pesci lanterna si pescano e si vendono.
+- **Luci sotto i moli** e sotto gli avamposti: le lanterne illuminano l'acqua quando è scura.
+- Nuovo consiglio di Aurelio, "Il fondo delle fosse".
+- I salvataggi non cambiano.
+
 ## v0.122.1 — Pulizia (12 novembre 2026)
 
 - Nessun cambiamento nel gioco: codice riordinato (parti inutili tolte, file lunghi divisi) e documenti aggiornati. I salvataggi non cambiano.

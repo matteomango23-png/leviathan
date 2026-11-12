@@ -48,6 +48,7 @@ import { landOn } from './breach';
 import { stepPool } from './ship/shipPool';
 import { stepHarpoon } from './harpoon';
 import { stepGun } from './gun';
+import { stepSmokers } from './world/smokers';
 import type { InputState } from './input';
 import { stepProjectiles } from './weapons';
 import { zoneAt } from './world/zones';
@@ -160,6 +161,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   // after losing your senses you wake up on your boat
   if (events.some((e) => e.type === 'respawned')) wakeOnShip(g, events);
   stepVents(d, dt, g.timers, events);
+  stepSmokers(d, aboard || inVehicle(g), dt, g.timers, events); // the trenches' hot plumes (world/smokers.ts)
   // never stuck in rock (a dismount, a tail swipe or being thrown off can drop you there)
   if (!held && !aboard && !d.dead && !g.beasts.riding && g.map.hitCircle(d.x, d.y, DIVER.radius))
     Object.assign(d, g.map.nearestOpen(d.x, d.y, DIVER.radius + 1));
