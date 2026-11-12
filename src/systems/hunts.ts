@@ -12,14 +12,14 @@ import type { WeatherId } from '../data/weather';
 import type { PortDef } from '../data/economy';
 import type { GameEvent } from './events';
 import { createWild, isInWater, type WildBeast } from './beasts/wildState';
-import type { BeastForm } from './beasts/forms';
+import { wildLevelRange, type BeastForm } from './beasts/forms';
 import { heardClass, trueClass } from './echoClass';
 import { wildTarget, type Target } from './tracking';
 import type { EchoClass } from '../data/hunts';
 import { residentsNear, type ResidentsState } from './beasts/residents';
 import { sonarActive, type ShipState } from './ship/ship';
 import { shipModel, sonarRange } from './ship/model';
-import type { TeamBeast } from './beasts/team';
+import { strongestLevel, type TeamBeast } from './beasts/team';
 import type { TileMap } from './world/tileMap';
 
 /** Where a hunt has got to (saved). */
@@ -98,11 +98,20 @@ export function rumoursAt(port: PortDef): HuntDef[] {
   return HUNTS.filter((h) => regions.includes(h.region));
 }
 
-/** At a harbour you hear its rumours: they go in the diary. */
-export function hearRumours(hunts: HuntsState, port: PortDef, events: GameEvent[]): void {
+/** The level your strongest beast needs before a legend's rumour is heard and its den echoes (owner, 12 novembre 2026:
+ *  the albino crocodile, 50-65, found with a team at level 8). */
+export const huntReadyLevel = (h: HuntDef): number =>
+  Math.max(1, wildLevelRange({ variant: 'comune', ...h.form })[0] - HUNT_RULES.readyBelow);
+
+/** Is your team strong enough to go after this legend? */
+export const huntReady = (h: HuntDef, team: TeamBeast[]): boolean =>
+  strongestLevel(team) >= huntReadyLevel(h);
+
+/** At a harbour you hear its rumours (only of the legends your team is ready for): they go in the diary. */
+export function hearRumours(hunts: HuntsState, port: PortDef, team: TeamBeast[], events: GameEvent[]): void {
   for (const h of rumoursAt(port)) {
     const p = (hunts[h.id] ??= {});
-    if (p.heard) continue;
+    if (p.heard || !huntReady(h, team)) continue;
     p.heard = true;
     events.push({ type: 'rumourHeard', name: h.name });
   }
@@ -134,6 +143,7 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
     const p = (g.hunts[h.id] ??= {});
     const open = huntOpen(h, g.beasts.gone, g.beasts.team);
     const now = conditionMet(h, weather);
+    // within what the sonar's screen shows (it used to hear farther than it drew: an echo found off the screen)
     if (
       open &&
       p.heard &&
@@ -141,7 +151,8 @@ export function stepHunts(g: HuntWorld, events: GameEvent[]): void {
       now &&
       g.ship.aboard &&
       sonarActive(g.ship) &&
-      Math.abs(g.ship.x - den.x) < HUNT_RULES.sonarRange * sonarRange(g.ship)
+      Math.abs(g.ship.x - den.x) < HUNT_RULES.bigEchoRange * sonarRange(g.ship) &&
+      huntReady(h, g.beasts.team)
     ) {
       p.echo = true;
       events.push({
@@ -241,7 +252,7 @@ export function sonarReadout(g: HuntWorld & { map: TileMap }, samples = 96): Son
   HUNTS.forEach((h, i) => {
     const den = g.dens[i]!;
     if (!g.hunts[h.id]?.echo || Math.abs(den.x - x) > HUNT_RULES.sonarRange * 2 * sonarRange(g.ship)) return;
-    if (!huntOpen(h, g.beasts.gone, g.beasts.team)) return;
+    if (!huntOpen(h, g.beasts.gone, g.beasts.team) || !huntReady(h, g.beasts.team)) return;
     if (g.beasts.wilds.some((w) => w.spawn.hunt === h.id && w.resting)) return; // beaten, resting in its den
     out.echoes.push({ label: 'eco anomala', dx: m(den.x - x), depthM: m(den.y - WORLD.surfaceY) });
   });

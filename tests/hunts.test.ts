@@ -50,6 +50,7 @@ const martello = HUNTS.find((h) => h.id === 'caccia_martello')!;
 describe('cacce alle leggende', () => {
   it('le voci si sentono nei porti: ognuno parla dei suoi mari', () => {
     const g = game();
+    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 100); // ready for every legend (lottoU2)
     g.port = PORTO_FANGO;
     const ev: GameEvent[] = [];
     enterPort(g, ev);
@@ -64,9 +65,10 @@ describe('cacce alle leggende', () => {
 
   it('il sonar sente l’eco solo con la voce, vicino e col tempo giusto', () => {
     const g = game();
+    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 100); // ready for it (lottoU2)
     const i = HUNTS.indexOf(martello);
     const den = g.dens[i]!;
-    Object.assign(g.ship, { aboard: true, sonarOn: true, x: den.x + HUNT_RULES.sonarRange * 0.5 });
+    Object.assign(g.ship, { aboard: true, sonarOn: true, x: den.x + HUNT_RULES.bigEchoRange * 0.5 });
     setWeather(g, 'sereno');
     run(g, DT);
     expect(g.hunts[martello.id]?.echo).toBeFalsy(); // no rumour yet

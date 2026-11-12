@@ -1190,6 +1190,14 @@
   line-height: 1.25;
   color: #cfd8d6;
 }
+/* a legend your team is not ready for yet (ui/portBoard.ts) */
+.wanted-where.too-strong-text {
+  color: #ffb39a;
+  font-weight: 600;
+}
+.wanted-card.too-strong .wanted-art {
+  filter: saturate(0.6) brightness(0.8);
+}
 .wanted-info .diary-light {
   padding: 1px 5px;
   font-size: 9px;

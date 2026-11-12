@@ -11,7 +11,8 @@ import {
   isComplete,
   missionById,
 } from '../systems/economy/missions';
-import { huntRegionName, rumoursAt } from '../systems/hunts';
+import { huntReady, huntReadyLevel, huntRegionName, rumoursAt } from '../systems/hunts';
+import { wildLevelRange } from '../systems/beasts/forms';
 import { setArt } from './art';
 import { el } from './dom';
 import { openSheet, outcome, stepsDone } from './huntDiary';
@@ -75,6 +76,17 @@ function wantedCard(row: HTMLElement, ctx: TabContext, h: HuntDef, marks: () => 
   const info = el('div', 'wanted-info', c);
   el('div', 'wanted-name', info, h.name);
   el('div', 'wanted-where', info, `${huntRegionName(h)} · ${CONDITION_TEXT[h.condition]}`);
+  // too strong for your team yet (owner, 12 novembre 2026): said plainly, no rumour, no echo, nothing to follow
+  if (!out && !huntReady(h, g.beasts.team)) {
+    const [lo, hi] = wildLevelRange({ variant: 'comune', ...h.form });
+    c.classList.add('too-strong');
+    el(
+      'div',
+      'wanted-where too-strong-text',
+      info,
+      `Troppo forte per ora: livello ${lo}-${hi}. Torna con la squadra al ${huntReadyLevel(h)}.`,
+    );
+  }
   const lights = el('div', 'diary-lights', info);
   const done = stepsDone(g, h);
   STEPS.forEach((s, k) => el('span', `diary-light${done[k] ? ' done' : ''}`, lights, s));

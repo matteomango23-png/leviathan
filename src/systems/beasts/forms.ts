@@ -129,8 +129,11 @@ export function formStats(form: BeastForm, level: number): Stats {
 }
 
 export function formStars(form: BeastForm): number {
+  // a beast with a name (the legends, the Sfregiato…) is always Leggendaria (owner, 12 novembre 2026: the albino
+  // crocodile had 3 stars, its species' 2 plus one)
+  if (form.unique) return 5;
   const s = speciesOf(form);
-  const extra = form.unique || form.variant !== 'comune' ? VARIANT_RULES.alfa.extraStars : 0;
+  const extra = form.variant !== 'comune' ? VARIANT_RULES.alfa.extraStars : 0;
   return Math.min(5, s.rarity + extra);
 }
 
