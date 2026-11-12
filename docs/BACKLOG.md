@@ -1,3 +1,14 @@
+# Feedback del 12 novembre 2026 (dopo la v0.115.0): lotti U1-U6
+
+Proposta di ordine (da confermare col proprietario):
+
+- **U1 Inizio e tutorial:** bestie di livello 3-6 nella baia di Portofosco; Guida passo passo all'avvio (dove toccare, schede del porto e del cockpit, luce della barca, compagni e cavalcature, fino a 2 compagni in acqua, bestie grosse = livello alto); freccia gialla verso l'obiettivo delle prime missioni fino alla nave; nave di Aurelio già al molo; vendere le sardine subito chiaro; banner "Cattura riuscita" sulla taglia; nomi e immagini sempre visibili nelle taglie; niente ricarica della pagina quando accetti; popup del leggendario che si chiude; immagine dei leggendari nel Diario; "Tuffati" di Porto Fango che a volte non va; sardine che restano a girare quando sali in barca.
+- **U2 Leggendari e sonar:** il coccodrillo albino leggendario non deve comparire all'inizio (livello e zona); sul sonar le bestie col tipo e l'eco anomala; radar del sottomarino con le bestie nel raggio; stelle di rarità coerenti per i leggendari.
+- **U3 Freccia e mezzi:** freccia verso il sottomarino quando ne esci; sub che sale sopra le onde vicino al motore; collisioni mezzi-bestie tolte (sub, U-Boot, navi); salto con la cavalcatura vicino alla nave; blocco "B" anche per il gas; montagne nere che scattano vicino al fondale; luce della barca che non oscilla in tempesta.
+- **U4 Battaglia e cattura:** la battaglia parte nell'istante del contatto; arpione colpito → la bestia scappa o attacca (anche squalo toro e non predatori); murena senza collisione; "Metti in vasca" che passa alla bestia successiva; la cattura di bestie molto più forti spiegata (la penalità di livello).
+- **U5 Bestie:** branchi che si girano di continuo; occhio rosso nella posizione giusta a bocca aperta; la manta come avversaria ancora sbagliata.
+- **U6 Da decidere insieme:** nuove armi (mitra subacqueo di arpioni al posto dell'arpione con la linea); gli archi (senso, entrata, o solo decorativi senza collisione); i posti 1-2-3 del menu e le conchiglie (ripensare o togliere).
+
 # Backlog — i feedback dopo 6 ore di gioco (8 ottobre 2026)
 
 I feedback del proprietario, raccolti dopo più di 6 ore di gioco, divisi in blocchi. **Ordine concordato** (un blocco alla volta, ognuno pianificato in Plan mode prima di scrivere codice):
