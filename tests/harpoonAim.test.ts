@@ -34,8 +34,9 @@ describe('the harpoon', () => {
     const h = createHarpoon();
     const ev: GameEvent[] = [];
     expect(fireHarpoon(h, d, 0, ev)).toBe(true);
-    for (let i = 0; i < 4; i++) stepHarpoon(h, d, fish, map, 1 / 30, ev);
-    expect(f.hooked).toBe(true);
+    const got = [];
+    for (let i = 0; i < 4; i++) got.push(...stepHarpoon(h, fish, map, 1 / 30, ev));
+    expect(got).toContain(f); // a dart: straight into the bag (lottoU6)
   });
 
   it('bends a little onto a fish just off its line, not onto one far off', () => {

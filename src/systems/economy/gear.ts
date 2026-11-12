@@ -187,7 +187,8 @@ export function canEquip(g: GearState, id: string): boolean {
   const k = slotKind(id);
   if (k === 'weapon') return id !== 'arpione' && g.weapons.includes(id);
   if (k === 'swarm') return g.swarms.includes(id);
-  if (k === 'item') return (g.inventory[id] ?? 0) > 0;
+  // a battle-only one (the shells, the battle cures) is used from the battle's bag, never from a slot
+  if (k === 'item') return (g.inventory[id] ?? 0) > 0 && !ITEMS.find((i) => i.id === id)?.battleOnly;
   return false;
 }
 

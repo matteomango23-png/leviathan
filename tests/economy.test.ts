@@ -225,7 +225,7 @@ describe('missions', () => {
     g.fishCaught.sardina = 0;
     for (let i = 0; i < 10; i++) {
       g.diver.y = 150;
-      g.harpoon.shot = null; // start each throw with the harpoon in hand
+      g.harpoon.shots = []; // start each throw with no dart in the water
       g.harpoon.cooldown = 0;
       fishAhead(g, 'sardina', 30);
       run(g, 0.8, { ...emptyInput(), fireHeld: true, aim: 0 });

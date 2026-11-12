@@ -22,12 +22,13 @@ export const COACH_TITLES: Record<CoachRound, string> = {
 export const COACH: Record<CoachRound, CoachStep[]> = {
   acqua: [
     { target: 'stick', text: 'Tocca e trascina qui a sinistra per nuotare, dove vuoi sullo schermo.' },
-    { target: 'fire', text: 'Il Fucile: trascinalo verso un pesce per mirare, lascia per sparare. Le sardine finiscono nella sacca.' },
+    { target: 'fire', text: 'Il Fucile: trascinalo verso un pesce per mirare e tienilo premuto, spara una raffica di dardi. Le sardine colpite finiscono nella sacca.' },
     { target: 'dash', text: 'Scatto: un colpo di pinne veloce, per raggiungere o per scappare.' },
     {
       target: 'team',
       text: 'La tua squadra. Tocca la sfera di una bestia piccola e nuota con te come compagna (fino a due). Una bestia grande la cavalchi.',
     },
+    { target: 'pack', text: 'I tre posti dello Zaino: un’arma in più, un oggetto (bolla d’aria, alga, esca) o uno sciame. Li scegli al porto, nella scheda Zaino, e qui li usi con un tocco.' },
     { target: 'pause', text: 'Pausa: la squadra, il bestiario, lo zaino e la Guida con tutti i miei consigli.' },
     { target: 'goal', text: 'Qui c’è sempre cosa fare adesso. La freccia gialla sul bordo dello schermo ti indica dove andare.' },
   ],
@@ -40,7 +41,7 @@ export const COACH: Record<CoachRound, CoachStep[]> = {
     { target: 'port-esche', text: 'Esche: attirano le bestie. Quelle pregiate a volte portano un alfa o un albino.' },
     { target: 'port-sub', text: 'Sub: mute per scendere più in fondo, e armi nuove.' },
     { target: 'port-mezzi', text: 'Mezzi: il pieno, le riparazioni e, a Porto Fango, il cantiere con le navi nuove.' },
-    { target: 'port-zaino', text: 'Zaino: quello che porti con te.' },
+    { target: 'port-zaino', text: 'Zaino: scegli cosa mettere nei tre posti che usi in acqua (armi in più, oggetti, sciami). Le conchiglie no: servono in battaglia.' },
     { target: 'port-recinto', text: 'Recinto: le bestie che non stanno in squadra. Qui le scambi e le vendi.' },
     { target: 'port-rest', text: 'Riposa: cura te e la squadra, e ti risvegli qui se perdi i sensi.' },
     { target: 'port-aurelio', text: 'Se non sai cosa fare, chiedi a me.' },

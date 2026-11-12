@@ -34,7 +34,8 @@ export function weaponHitsBeast(
     if (!isInWater(w)) continue;
     if (distanceToBody(w, x, y) > BEAST_BODY.weaponHitMargin) continue;
     w.flash = BEAST_BODY.hitFlashSeconds;
-    w.wounds = Math.min(HARPOON_WEAKEN.max, (w.wounds ?? 0) + woundPerHit(w.level) * Math.max(1, damage));
+    // a dart of the burst wears it less than a whole harpoon did (its damage under 1: WEAPONS)
+    w.wounds = Math.min(HARPOON_WEAKEN.max, (w.wounds ?? 0) + woundPerHit(w.level) * Math.max(0.1, damage));
     // roused: an aggressive one bolts off the screen and comes back charging, the others flee fast (roam.ts)
     w.provoked = HARPOON_WEAKEN.provokedSeconds;
     w.calm = 0;

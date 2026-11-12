@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.121.0 — Fucile a raffica, archi e Zaino (12 novembre 2026)
+
+- Il fucile spara dardi corti a raffica tenendo premuto, senza la cima: i pesci colpiti vanno subito nella sacca, ogni dardo sfianca un po' le bestie.
+- Il Grande Arco è solo paesaggio: ci passi attraverso con tutto, nessuna bestia resta intrappolata.
+- Zaino: niente conchiglie nei tre posti (servono solo in battaglia); il tutorial spiega i tre pulsanti in acqua.
+- I salvataggi restano compatibili (una conchiglia messa in un posto viene tolta).
+
 ## v0.120.0 — Le bestie (12 novembre 2026)
 
 - L'occhio rosso dei predatori resta sull'occhio anche quando aprono la bocca (posizioni nuove per 70 immagini a bocca aperta).

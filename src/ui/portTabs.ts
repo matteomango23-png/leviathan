@@ -29,7 +29,12 @@ let selectedSlot = 0;
 
 export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
   const gear = ctx.g.gear;
-  el('p', 'port-hint', b, 'L’arpione è sempre con te. Tocca un posto, poi tocca cosa metterci.');
+  el(
+    'p',
+    'port-hint',
+    b,
+    'Tre posti per quello che vuoi a portata di mano in acqua: un’arma in più, un oggetto (bolla d’aria, alga, esca) o uno sciame. In acqua li usi coi tre pulsanti in alto a destra. Il fucile è sempre con te. Tocca un posto, poi tocca cosa metterci.',
+  );
   const slots = el('div', 'slot-row', b);
   gear.backpack.forEach((id, i) => {
     const c = portCard(slots, {
@@ -63,7 +68,7 @@ export function renderBackpack(b: HTMLElement, ctx: TabContext): void {
   const options = [
     ...gear.weapons.filter((w) => w !== 'arpione'),
     ...gear.swarms,
-    ...Object.keys(gear.inventory).filter((i) => (gear.inventory[i] ?? 0) > 0),
+    ...Object.keys(gear.inventory).filter((i) => canEquip(gear, i)),
   ];
   el('h3', '', b, 'Da mettere nello zaino');
   if (!options.length) {

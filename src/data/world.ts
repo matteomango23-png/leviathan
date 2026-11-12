@@ -73,7 +73,7 @@ export const SUIT_UPGRADES: SuitUpgradeDef[] = [
 /** Weapons: the base harpoon is always equipped; others go in backpack slots. */
 export interface WeaponDef { id: string; name: string; type?: TypeId; damage: number; cooldown: number; source: string; text: string; singleUse?: boolean; price?: number; }
 export const WEAPONS: WeaponDef[] = [
-  { id: 'arpione', name: 'Fucile subacqueo', damage: 1, cooldown: 0.4, source: 'Iniziale', text: 'Fucile ad arpione: cattura i pesci e sfianca le bestie' },
+  { id: 'arpione', name: 'Fucile subacqueo', damage: 0.4, cooldown: 0.15, source: 'Iniziale', text: 'Tieni premuto per una raffica di dardi: catturano i pesci e sfiancano le bestie' }, // a burst of darts (owner, 12 novembre 2026): each wears a beast less. Tuning
   { id: 'fiocine', name: 'Fiocine a ventaglio', damage: 1, cooldown: 0.9, source: 'Relitto, Baia di Portofosco', text: '3 dardi a corto raggio, 1 danno ciascuno; catturano i pesci' },
   { id: 'rete', name: 'Rete zavorrata', damage: 0, cooldown: 3, source: 'Relitto, Barriera Rossa', text: 'Si apre in acqua e raccoglie fino a 5 pesci in un colpo' },
   { id: 'folgore', name: 'Lancia folgore', type: 'tempesta', damage: 2, cooldown: 2.5, source: 'Relitto, Fossa del Capodoglio', text: 'Colpisce i 3 bersagli più vicini: 2 danni e stordimento' },

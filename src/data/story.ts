@@ -221,7 +221,7 @@ export const TUTORIAL = [
   {
     id: 'fish',
     count: 5, // tuning
-    text: 'Cattura le sardine: trascina il pulsante Fucile verso il pesce per mirare e sparare (sul computer clic o Spazio)',
+    text: 'Cattura le sardine: trascina il pulsante Fucile verso il pesce e tienilo premuto per la raffica (sul computer clic o Spazio)',
   },
   { id: 'dash', count: 1, text: 'Scatta: pulsante Scatto (sul computer Maiusc)' },
   {
