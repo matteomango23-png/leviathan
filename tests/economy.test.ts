@@ -226,6 +226,8 @@ describe('missions', () => {
     for (let i = 0; i < 10; i++) {
       g.diver.y = 150;
       g.harpoon.shots = []; // start each throw with no dart in the water
+      g.gear.gunMag = 10; // and a full magazine (ammunition: lottoU7)
+      g.harpoon.reload = 0;
       g.harpoon.cooldown = 0;
       fishAhead(g, 'sardina', 30);
       run(g, 0.8, { ...emptyInput(), fireHeld: true, aim: 0 });

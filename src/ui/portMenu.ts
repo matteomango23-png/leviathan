@@ -103,7 +103,8 @@ export class PortMenu {
     this.body = el('div', 'port-body', this.root);
     this.msg = el('div', 'port-msg', this.root);
     this.render();
-    runCoach(g.story, 'porto'); // the step-by-step tutorial, the first time (data/coach.ts)
+    // the step-by-step tutorial, the first time (data/coach.ts); its "seen" mark saved at once
+    runCoach(g.story, 'porto', () => this.session.emit('saveNow'));
   }
 
   private say(text: string, error = false): void {

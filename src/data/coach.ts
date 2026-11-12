@@ -22,7 +22,7 @@ export const COACH_TITLES: Record<CoachRound, string> = {
 export const COACH: Record<CoachRound, CoachStep[]> = {
   acqua: [
     { target: 'stick', text: 'Tocca e trascina qui a sinistra per nuotare, dove vuoi sullo schermo.' },
-    { target: 'fire', text: 'Il Fucile: trascinalo verso un pesce per mirare e tienilo premuto, spara una raffica di dardi. Le sardine colpite finiscono nella sacca.' },
+    { target: 'fire', text: 'Il Fucile: trascinalo verso un pesce per mirare e tienilo premuto per la raffica. Sotto vedi i dardi nel caricatore e la scorta; vuoto, toccalo per ricaricare.' },
     { target: 'dash', text: 'Scatto: un colpo di pinne veloce, per raggiungere o per scappare.' },
     {
       target: 'team',
@@ -39,7 +39,7 @@ export const COACH: Record<CoachRound, CoachStep[]> = {
     { target: 'port-conchiglie', text: 'Conchiglie: servono per domare. Le migliori catturano anche le bestie più forti.' },
     { target: 'port-cure', text: 'Cure: rimettono in forze le bestie durante la battaglia.' },
     { target: 'port-esche', text: 'Esche: attirano le bestie. Quelle pregiate a volte portano un alfa o un albino.' },
-    { target: 'port-sub', text: 'Sub: mute per scendere più in fondo, e armi nuove.' },
+    { target: 'port-sub', text: 'Sub: i dardi del fucile, l’ossigeno e le mute per scendere più in fondo.' },
     { target: 'port-mezzi', text: 'Mezzi: il pieno, le riparazioni e, a Porto Fango, il cantiere con le navi nuove.' },
     { target: 'port-zaino', text: 'Zaino: scegli cosa mettere nei tre posti che usi in acqua (armi in più, oggetti, sciami). Le conchiglie no: servono in battaglia.' },
     { target: 'port-recinto', text: 'Recinto: le bestie che non stanno in squadra. Qui le scambi e le vendi.' },

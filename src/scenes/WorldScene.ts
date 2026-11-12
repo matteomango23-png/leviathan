@@ -154,7 +154,8 @@ export class WorldScene extends Phaser.Scene {
         e.type === 'beastKo' ||
         e.type === 'wreckOpened' ||
         e.type === 'swarmBound' ||
-        e.type === 'missionComplete'
+        e.type === 'missionComplete' ||
+        e.type === 'dialogueClosed'
       )
         this.save();
       else if (e.type === 'respawned') v.rig.follow(g.diver.x, g.diver.y, 0, true);

@@ -45,7 +45,7 @@ export class BackpackBar {
       });
       this.slots.push(b);
     }
-    this.harpoonLabel = parent.querySelector('.act-harpoon');
+    this.harpoonLabel = parent.querySelector('.act-harpoon .act-name');
   }
 
   update(g: GameState): void {
@@ -71,7 +71,8 @@ export class BackpackBar {
     });
     if (this.harpoonLabel) {
       // in the submarine there is nothing to shoot (fishing from it was removed, 4 ottobre)
-      this.harpoonLabel.hidden = inVehicle(g);
+      const btn = this.harpoonLabel.parentElement;
+      if (btn) btn.hidden = inVehicle(g);
       const name = gear.activeWeapon === 'arpione' ? 'Fucile' : (SHORT[gear.activeWeapon] ?? 'Arma');
       if (this.harpoonLabel.textContent !== name) this.harpoonLabel.textContent = name;
     }

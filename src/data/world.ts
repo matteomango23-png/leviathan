@@ -99,6 +99,7 @@ export interface ItemDef { id: string; name: string; price: number; stockPerVisi
   rare?: number;           // a fine bait: a beast it draws is an alfa or an albino this often (systems/beasts/lure.ts)
   shell?: number;          // a taming shell: × the hold chance (Infinity: it always holds), BATTLE.catch
   maxOwned?: number;       // you can carry at most this many (the Conchiglia del Re: one)
+  ammo?: number;           // the speargun's darts: buying it adds this many (GUN in diver.ts)
   tint?: number;           // a shell drawn in this colour in battle, until it has its own picture
   battleOnly?: boolean;    // used in battle only: never in a backpack slot
   pocket?: Pocket;         // its pocket in the backpack (default: varie)
@@ -157,6 +158,7 @@ export const ITEMS: ItemDef[] = [
   { id: 'velocita_x', name: 'Velocità X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'spe', by: 2 } }, text: 'In battaglia: alza molto la Velocità' },
   { id: 'precisione_x', name: 'Precisione X', price: 300, pocket: 'battaglia', battleOnly: true, use: { stage: { stat: 'acc', by: 2 } }, text: 'In battaglia: alza molto la Precisione' },
   { id: 'bolla_aria', name: 'Bolla d\u2019aria', price: 40, text: 'Ricarica l\u2019ossigeno' },
+  { id: 'dardi', name: 'Dardi ×20', price: 12, ammo: 20, text: 'Venti dardi per il fucile: la scorta da cui ricarichi il caricatore' },
   { id: 'esca', name: 'Esca', price: 80, pocket: 'esche', text: 'Attira le creature di una zona' },
   // baits by group of beasts (owner, 16 ottobre: "diversi tipi di esche per diversi tipi di animali"), a plain one
   // and a fine one that may draw an alfa or an albino (tuning)
@@ -211,4 +213,4 @@ export const SWARMS: SwarmDef[] = [
 ];
 
 /** What a new game starts with in the backpack (and old games receive once, save v8). */
-export const START_INVENTORY: Record<string, number> = { conchiglia: 5 };
+export const START_INVENTORY: Record<string, number> = { conchiglia: 5, dardi: 40 }; // dardi: GUN.startSpare

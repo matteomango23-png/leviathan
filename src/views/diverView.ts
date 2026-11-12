@@ -13,7 +13,9 @@ export class DiverView {
   private readonly root: Phaser.GameObjects.Container;
   private readonly finA: Phaser.GameObjects.Image;
   private readonly finB: Phaser.GameObjects.Image;
-  private readonly line: Phaser.GameObjects.Graphics;
+  /** The speargun's shots as glowing dots, each with two fading ones behind (owner, 12 novembre 2026: "puntini, non
+   *  frecce"): a pool, three per shot. */
+  private readonly shotDots: Phaser.GameObjects.Image[] = [];
   private readonly aimDots: Phaser.GameObjects.Image[] = [];
   private kick = 0;
   private tilt = 0;
@@ -37,17 +39,18 @@ export class DiverView {
       .setOrigin(0, 0)
       .setScale(s);
     this.root = scene.add.container(0, 0, [this.finA, body, this.finB]);
-    this.line = scene.add.graphics();
+    for (let i = 0; i < HARPOON.shotPool * 3; i++)
+      this.shotDots.push(scene.add.image(0, 0, TEX.dot).setTint(0xe6f6ff).setVisible(false));
     for (let r = HARPOON.aimDotsFrom; r < HARPOON.aimDotsTo; r += 5) {
       this.aimDots.push(scene.add.image(0, 0, TEX.dot).setTint(0x5ff3d6).setScale(0.12).setVisible(false));
     }
-    layer.add([this.line, ...this.aimDots, this.root]);
+    layer.add([...this.shotDots, ...this.aimDots, this.root]);
   }
 
   /** Hidden while the diver sits on Aurelio's boat (the story view draws the scene). */
   setHidden(hidden: boolean): void {
     this.root.setVisible(!hidden);
-    this.line.setVisible(!hidden); // the darts, redrawn every frame by update()
+    if (hidden) for (const dot of this.shotDots) dot.setVisible(false); // shown again by update()
   }
 
   private easeFace(face: number, dt: number): number {
@@ -89,35 +92,19 @@ export class DiverView {
       .setRotation(this.tilt * d.face)
       .setAlpha(d.dead ? 0.5 : blink ? 0.55 : 1);
 
-    // the speargun's darts (owner, 12 novembre 2026: no rope): a short silver shaft with its barb, a faint streak of
-    // churned water behind it
-    this.line.clear();
-    for (const shot of h.shots) {
+    // the speargun's shots: a bright dot, two fainter ones trailing it
+    this.shotDots.forEach((dot, i) => {
+      const shot = h.shots[Math.floor(i / 3)];
+      const k = i % 3;
+      dot.setVisible(!!shot && shot.dist > k * HARPOON.trailStep);
+      if (!shot) return;
       const v = Math.hypot(shot.vx, shot.vy) || 1;
-      const [ux, uy] = [shot.vx / v, shot.vy / v];
-      const L = HARPOON.dartLength;
-      const tail = Math.min(shot.dist, L * 3);
-      this.line.lineStyle(0.6, 0xcfe6ee, 0.12);
-      this.line.lineBetween(
-        shot.x - ux * (L + tail),
-        shot.y - uy * (L + tail),
-        shot.x - ux * L,
-        shot.y - uy * L,
-      );
-      this.line.lineStyle(0.45, 0xd9e6e8, 0.95);
-      this.line.lineBetween(shot.x - ux * L, shot.y - uy * L, shot.x, shot.y);
-      const [px, py] = [-uy * 0.6, ux * 0.6];
-      this.line
-        .fillStyle(0xeef6f8, 1)
-        .fillTriangle(
-          shot.x + ux * 1.4,
-          shot.y + uy * 1.4,
-          shot.x + px,
-          shot.y + py,
-          shot.x - px,
-          shot.y - py,
-        );
-    }
+      const back = k * HARPOON.trailStep;
+      dot
+        .setPosition(shot.x - (shot.vx / v) * back, shot.y - (shot.vy / v) * back)
+        .setScale(HARPOON.dotScale * (1 - k * 0.3))
+        .setAlpha([1, 0.45, 0.2][k]!);
+    });
 
     // aim guide while dragging the weapon button
     let i = 0;

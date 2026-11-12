@@ -70,6 +70,14 @@ export const PRESSURE = {
   hullDamage: 6, // a submarine with its bar empty loses this much hull each time
 };
 
+/**
+ * The speargun's ammunition (owner, 12 novembre 2026: "le munizioni non devono essere infinite… si ricarica con lo
+ * stesso pulsante… le ricariche al porto"): a magazine of `magazine` darts, the spare ones in the backpack (the item
+ * 'dardi', bought at a harbour); empty, the gun button reloads it in `reloadSeconds`. Each shot pushes you back by
+ * `recoil` (units/s). Tuning.
+ */
+export const GUN = { magazine: 10, reloadSeconds: 1.4, recoil: 14, startSpare: 40, noAmmoSaySeconds: 3 };
+
 export const HARPOON = {
   speed: 540, // a speargun: fast and straight (tuning)
   range: 150,
@@ -77,7 +85,11 @@ export const HARPOON = {
   /** A fish or a beast this close to the line of the shot (degrees) pulls it gently onto itself. Tuning. */
   assistDeg: 6,
   muzzleOffset: 6,
-  dartLength: 5, // a dart of the burst as drawn (units)
+  // a shot as drawn (owner, 12 novembre 2026: dots, not arrows): its dot's scale, the trail's spacing (units), and
+  // how many shots are drawn at most at once
+  dotScale: 0.32,
+  trailStep: 3,
+  shotPool: 8,
   aimDotsFrom: 14,
   aimDotsTo: 70,
   // cooldown and damage come from WEAPONS ('arpione') in world.ts

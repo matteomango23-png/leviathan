@@ -91,6 +91,7 @@ function saveGear(g: GearState): SavedGear {
     bounties: structuredClone(g.bounties),
     requestsMet: [...g.requestsMet],
     barterDone: [...g.barterDone],
+    gunMag: g.gunMag,
     market: structuredClone(g.market),
   };
 }

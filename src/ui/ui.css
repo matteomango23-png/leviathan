@@ -256,6 +256,31 @@
 .act-harpoon {
   width: 80px;
   height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+/* the speargun's darts under its name (ui/controls.ts setGun): the reload fills the button from the bottom */
+.act-ammo {
+  font-size: 11px;
+  font-weight: 600;
+  color: #cfe3e8;
+}
+.act-harpoon.reloading {
+  background:
+    linear-gradient(0deg, rgba(95, 243, 214, 0.28) var(--load, 0%), transparent var(--load, 0%)),
+    radial-gradient(circle at 50% 38%, rgba(46, 66, 74, 0.6), rgba(3, 10, 16, 0.85));
+}
+.act-harpoon.empty .act-ammo {
+  color: #ffb39a;
+  animation: ammo-blink 0.9s steps(2, end) infinite;
+}
+@keyframes ammo-blink {
+  50% {
+    opacity: 0.25;
+  }
 }
 .act-dash.cooldown {
   opacity: 0.45;

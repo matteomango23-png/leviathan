@@ -24,9 +24,13 @@ export interface HarpoonShot {
 export interface HarpoonState {
   shots: HarpoonShot[];
   cooldown: number;
+  /** Seconds left loading the magazine (systems/gun.ts), 0 when not. */
+  reload: number;
+  /** Seconds before "no darts" is said again. */
+  noAmmoT: number;
 }
 
-export const createHarpoon = (): HarpoonState => ({ shots: [], cooldown: 0 });
+export const createHarpoon = (): HarpoonState => ({ shots: [], cooldown: 0, reload: 0, noAmmoT: 0 });
 
 /** The shot's angle, bent a little onto the nearest fish or beast just off its line (HARPOON.assistDeg). */
 export function assistAim(

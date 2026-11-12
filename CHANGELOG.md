@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.122.0 — Munizioni del fucile (12 novembre 2026)
+
+- Il fucile ha un caricatore da 10 dardi: sul pulsante vedi quanti ne restano e la scorta ("7 · 30").
+- Vuoto, tocca di nuovo Fucile per ricaricare (circa un secondo e mezzo, il pulsante si riempie); tenendolo premuto la raffica riprende da sola.
+- Ogni colpo ti spinge un poco indietro.
+- I colpi sono puntini luminosi, non più frecce.
+- I dardi si comprano in ogni porto, scheda Sub: 20 per 12 denti. Si parte con 40 di scorta.
+- Il tutorial e i consigli già visti non tornano più a ogni apertura del gioco: si salvano subito.
+- I salvataggi cambiano ma restano compatibili: una partita vecchia parte col caricatore pieno e 40 dardi in regalo.
+
 ## v0.121.0 — Fucile a raffica, archi e Zaino (12 novembre 2026)
 
 - Il fucile spara dardi corti a raffica tenendo premuto, senza la cima: i pesci colpiti vanno subito nella sacca, ogni dardo sfianca un po' le bestie.

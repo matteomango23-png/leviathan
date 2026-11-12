@@ -10,7 +10,7 @@ import { canOpen, scavengerBonus, wreckReach, wreckShown } from './specialPowers
 import { PORT, PORTS } from '../data/economy';
 import { DIVER } from '../data/diver';
 import type { GameEvent } from './events';
-import { fireHarpoon } from './harpoon';
+import { pullTrigger } from './gun';
 import type { InputState } from './input';
 import { fireProjectileWeapon } from './weapons';
 import { board, canBoard, leaveSub } from './submarine';
@@ -87,7 +87,7 @@ export function fire(g: GameState, input: InputState, events: GameEvent[]): void
   const weapon = g.gear.activeWeapon;
   const fired =
     weapon === 'arpione'
-      ? fireHarpoon(g.harpoon, d, angle, events, [
+      ? pullTrigger(g, angle, events, [
           ...g.fish.fish.filter((f) => f.alive && !f.hooked),
           ...g.beasts.wilds.filter((w) => w.motion === 'roam'),
         ])

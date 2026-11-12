@@ -14,7 +14,7 @@ import {
   type SuitDef,
   START_INVENTORY,
 } from '../../data/world';
-import { DIVER } from '../../data/diver';
+import { DIVER, GUN } from '../../data/diver';
 
 interface MissionState {
   active: string[];
@@ -42,6 +42,8 @@ export interface GearState {
   requestsMet: string[];
   /** The barter's trades made (economy/barter.ts): harbour, time, species. */
   barterDone: string[];
+  /** Darts in the speargun's magazine (the spare ones: inventory.dardi; GUN in data/diver.ts). */
+  gunMag: number;
   missions: MissionState;
   shopBought: Record<string, number>; // items bought during this port visit (stockPerVisit)
   deepestM: number;
@@ -67,6 +69,7 @@ export function newGear(): GearState {
     bounties: newBounties(),
     requestsMet: [],
     barterDone: [],
+    gunMag: GUN.magazine,
     missions: { active: [], done: [], progress: {} },
     shopBought: {},
     deepestM: 0,
@@ -167,7 +170,7 @@ export function buyItem(g: GearState, id: string): BuyResult {
   if (stockLeft(g, id) <= 0) return fail('Esaurito per ora.');
   const r = pay(g, it.price);
   if (!r.ok) return r;
-  g.inventory[id] = (g.inventory[id] ?? 0) + 1;
+  g.inventory[id] = (g.inventory[id] ?? 0) + (it.ammo ?? 1); // a box of darts: all of them
   g.shopBought[id] = (g.shopBought[id] ?? 0) + 1;
   return r;
 }
@@ -188,7 +191,9 @@ export function canEquip(g: GearState, id: string): boolean {
   if (k === 'weapon') return id !== 'arpione' && g.weapons.includes(id);
   if (k === 'swarm') return g.swarms.includes(id);
   // a battle-only one (the shells, the battle cures) is used from the battle's bag, never from a slot
-  if (k === 'item') return (g.inventory[id] ?? 0) > 0 && !ITEMS.find((i) => i.id === id)?.battleOnly;
+  // nor the speargun's darts: they load its magazine
+  const it = ITEMS.find((i) => i.id === id);
+  if (k === 'item') return (g.inventory[id] ?? 0) > 0 && !it?.battleOnly && !it?.ammo;
   return false;
 }
 

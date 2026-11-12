@@ -47,6 +47,7 @@ import { stepShipRams } from './ship/shipHull';
 import { landOn } from './breach';
 import { stepPool } from './ship/shipPool';
 import { stepHarpoon } from './harpoon';
+import { stepGun } from './gun';
 import type { InputState } from './input';
 import { stepProjectiles } from './weapons';
 import { zoneAt } from './world/zones';
@@ -166,6 +167,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const hitBeast = (x: number, y: number, damage = 1): boolean =>
     hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events, damage);
   for (const f of stepHarpoon(g.harpoon, g.fish, g.map, dt, events, hitBeast)) catchFish(g, f, events);
+  stepGun(g, dt, events); // the magazine's reload (gun.ts)
   stepProjectiles(g.weapons, g.fish, g.map, dt, {
     catchFish: (f) => catchFish(g, f, events),
     hitBeast,

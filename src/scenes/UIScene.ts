@@ -19,6 +19,8 @@ import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
 import { GalleryBar } from '../ui/galleryBar';
 import { coachDue, runCoach } from '../ui/coach';
+import { GUN } from '../data/diver';
+import { spareDarts } from '../systems/gun';
 import { COACH_QUIET_SECONDS, type CoachRound } from '../data/coach';
 
 export class UIScene extends Phaser.Scene {
@@ -135,6 +137,8 @@ export class UIScene extends Phaser.Scene {
     runCoach(g.story, round, () => {
       s.paused = false;
       this.scene.resume('World');
+      // its "seen" mark saved at once (owner, 12 novembre 2026: the tutorial came back at every opening)
+      s.emit('saveNow');
     });
   }
 
@@ -169,6 +173,8 @@ export class UIScene extends Phaser.Scene {
     const helm = helmInfo(g, this.session.input.helm.throttle);
     this.root.classList.toggle('driving', !!helm);
     this.controls.update(g.diver.dashCooldown <= 0, canDashNow(g), !!helm);
+    const reload = g.harpoon.reload > 0 ? 1 - g.harpoon.reload / GUN.reloadSeconds : null;
+    this.controls.setGun(g.gear.activeWeapon === 'arpione', g.gear.gunMag, spareDarts(g), reload);
     this.helm.update(helm, dt);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);

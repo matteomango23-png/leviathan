@@ -18,6 +18,9 @@ export class Controls {
   private readonly stick: HTMLDivElement;
   private readonly knob: HTMLDivElement;
   private readonly harpoonBtn: HTMLButtonElement;
+  /** Under "Fucile": the darts in the magazine · the spare ones, or the reload (systems/gun.ts). */
+  private readonly ammo: HTMLSpanElement;
+  private ammoShown = '';
   private readonly dashBtn: HTMLButtonElement;
   private dashHeld = false;
   private readonly cleanup: (() => void)[] = [];
@@ -36,10 +39,12 @@ export class Controls {
     this.stick.hidden = true;
     const row = el('div', 'act-row touch-only', root);
     this.dashBtn = el('button', 'act act-dash', row, 'Scatto');
-    this.harpoonBtn = el('button', 'act act-harpoon', row, 'Fucile');
+    this.harpoonBtn = el('button', 'act act-harpoon', row);
+    el('span', 'act-name', this.harpoonBtn, 'Fucile'); // the weapon in hand (ui/backpackBar.ts)
     const pause = el('button', 'pause-btn', root, 'II');
     this.dashBtn.dataset.coach = 'dash';
     this.harpoonBtn.dataset.coach = 'fire';
+    this.ammo = el('span', 'act-ammo', this.harpoonBtn);
     pause.dataset.coach = 'pause';
     pause.setAttribute('aria-label', 'Pausa');
 
@@ -169,6 +174,31 @@ export class Controls {
     this.aimAngle = null;
     this.harpoonBtn.classList.remove('on');
     this.harpoonBtn.style.transform = '';
+  }
+
+  /**
+   * The speargun's state on its button (owner, 12 novembre 2026): "7 · 30", "Ricarica" filling while it loads,
+   * "Ricarica" blinking when the magazine is empty, "Vuoto" with no darts at all. Hidden with another weapon in hand.
+   * @param loading 0 … 1 of the reload, or null
+   */
+  setGun(show: boolean, mag: number, spare: number, loading: number | null): void {
+    const text = !show
+      ? ''
+      : loading !== null
+        ? 'Ricarica'
+        : mag > 0
+          ? `${mag} · ${spare}`
+          : spare > 0
+            ? 'Ricarica'
+            : 'Vuoto';
+    const state = `${text}|${loading === null ? '' : Math.round(loading * 20)}`;
+    if (state === this.ammoShown) return;
+    this.ammoShown = state;
+    this.ammo.textContent = text;
+    this.ammo.hidden = !show;
+    this.harpoonBtn.classList.toggle('reloading', loading !== null);
+    this.harpoonBtn.classList.toggle('empty', show && loading === null && mag === 0);
+    this.harpoonBtn.style.setProperty('--load', `${Math.round((loading ?? 0) * 100)}%`);
   }
 
   releaseAll(): void {

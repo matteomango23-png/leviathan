@@ -203,6 +203,13 @@ export type GameEvent =
   | { type: 'buriedFound'; x: number; y: number }
   | { type: 'airGiven'; x: number; y: number; speciesId: string }
   | { type: 'portArrived' }
+  /** The speargun (systems/gun.ts): its magazine just emptied, its reload began or ended, no spare darts. */
+  | { type: 'gunEmpty' }
+  /** A story dialogue or one of Aurelio's tips was read to its end (the game saves its "seen" mark). */
+  | { type: 'dialogueClosed'; id: string }
+  | { type: 'gunReload' }
+  | { type: 'gunReloaded' }
+  | { type: 'ammoOut' }
   | { type: 'tooDeep' }
   /** The whale you ride has no air left: you breathe your own again, go up. */
   | { type: 'rideAirOut'; name: string }
