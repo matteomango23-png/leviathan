@@ -16,7 +16,7 @@ import { reconOut } from '../systems/ship/gadgets';
 import { boatBay, subBay } from '../systems/ship/model';
 import { hatchT } from '../systems/ship/ship';
 import { atHelmView, cameraAim } from '../systems/shipCamera';
-import { storyHoldsDiver } from '../systems/story';
+import { shipWaitsAtDock, storyHoldsDiver } from '../systems/story';
 import { lampAim } from '../systems/submarine';
 import { inVehicle } from '../systems/vehicles';
 import { coldAt, stepWeather, weatherLook } from '../systems/weather';
@@ -205,7 +205,7 @@ export class WorldViews {
     const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
     this.surface.update(view, g.time, sea);
     this.ice.update(view, g.time, sea);
-    this.ship.update(g.ship, g.time, dt, sea);
+    this.ship.update(g.ship, g.time, dt, sea, shipWaitsAtDock(g));
     this.hunts.update(g, view, g.time);
     const boatHidden = g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6;
     this.boat.update(g.boat, g.time, boatHidden, sea, dt);

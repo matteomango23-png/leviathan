@@ -261,4 +261,8 @@ export const SPLASH = { guardMs: 400 };
  * la barca"): shown when the ship (or your harbour) is off the screen, on the screen's edge `edge` (share of its
  * size) in from it. Tuning.
  */
-export const SHIP_POINTER = { edge: 0.08 };
+export const SHIP_POINTER = {
+  edge: 0.08,
+  /** The guided "tame" task: the arrow points to the nearest wild beast at most this many levels above your strongest. */
+  tameAbove: 2,
+};

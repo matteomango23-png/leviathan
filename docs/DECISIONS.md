@@ -1262,3 +1262,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - Il percorso si calcola dai dati (specie che nascono davvero, livelli, profondità): nessuna lista scritta a mano, ogni bestia nuova ci entra da sola. Una taglia si chiude battendo o catturando quella specie in quella versione; "già fatta" vuol dire già battuta o catturata (registro `beaten` dal 26 ottobre, più le bestie che possiedi).
 - Il leggendario resta la caccia in quattro passi; seguirlo è il vecchio "Segui" (huntPinned), così sonar e plancia non cambiano.
 - Le richieste del mercato dipendono dal porto e dal tempo di gioco (nessuna lista salvata), solo quelle soddisfatte si salvano.
+
+## 12 novembre 2026 — Tutorial passo passo (v0.116.0)
+
+- I pulsanti da indicare si trovano con l'attributo `data-coach` sull'elemento vero, non con coordinate: se la grafica cambia il tutorial segue, e un pulsante che non c'è (nave senza motoscafo, telefono senza tocco) si salta. Un test controlla che ogni nome dei dati esista nell'interfaccia.
+- I giri si segnano in `story.seen` (come i consigli), quindi nessun campo nuovo nei salvataggi; con i consigli spenti non compaiono.
+- I banner importanti (taglia, missione, cattura) aspettano in coda la fine della battaglia invece di sovrascriversi a vicenda.

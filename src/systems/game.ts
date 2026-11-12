@@ -85,7 +85,11 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (input.helmCmd === 'rescue') rescue(g, events); // the flare (fuel.ts)
   if (input.helmCmd === 'recon') startRecon(g, events, (t) => echoKnown(g.sonarScan, t));
   // no diving off while the drone is out: you would see it race through the rock (owner, 9 ottobre)
-  if (input.helmCmd === 'dive' && reconOut(g)) input.helmCmd = null;
+  // (it says so: the button seemed broken, owner 12 novembre 2026)
+  if (input.helmCmd === 'dive' && reconOut(g)) {
+    input.helmCmd = null;
+    events.push({ type: 'shipHint', text: 'reconOut' });
+  }
   if (input.helmCmd === 'sphere') sendSphere(g, events);
   const picked = g.gadgets.recon.report?.[input.pickTarget];
   if (picked) pickTarget(g, picked, events);

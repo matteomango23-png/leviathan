@@ -110,6 +110,20 @@ export class HelmControls {
     this.trackerBtn = el('button', 'helm-btn helm-tracker', this.buttons, 'Tracker');
     this.nightBtn = el('button', 'helm-btn helm-night', this.buttons, 'Visione notturna');
     this.objective = el('div', 'helm-objective', this.root);
+    // the step-by-step tutorial lights these (data/coach.ts)
+    const coach: [HTMLElement, string][] = [
+      [left, 'helm-throttle'],
+      [dir, 'helm-dir'],
+      [this.engineBtn, 'helm-engine'],
+      [this.sonar, 'helm-sonar'],
+      [this.diveWrap, 'helm-dive-lever'],
+      [this.launchBtn, 'helm-launch'],
+      [this.lightBtn, 'helm-light'],
+      [this.diveBtn, 'helm-swim'],
+      [this.rescueBtn, 'helm-rescue'],
+      [this.cockpitBtn, 'helm-cockpit'],
+    ];
+    for (const [e, name] of coach) e.dataset.coach = name;
 
     this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
     this.listen(this.diveTrack, 'pointerdown', (e) => this.grab(e, 'dive'));

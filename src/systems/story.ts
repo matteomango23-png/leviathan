@@ -85,6 +85,11 @@ export function startNewGame(g: StoryWorld): void {
   Object.assign(g.diver, { x: SCENES.boat.x, y: SCENES.boat.y, vx: 0, vy: 0, face: 1 });
 }
 
+/** Aurelio's ship moored at Porto Fango before he gives it to you (owner, 12 novembre 2026: "spawna dal nulla, falla
+ *  trovare già lì"): seen, not yet boarded. */
+export const shipWaitsAtDock = (g: { ship: { owned: boolean }; story: { step: StoryStep } }): boolean =>
+  !g.ship.owned && g.story.step !== 'off' && g.story.step !== 'free';
+
 /** On the boat the diver does not swim or shoot. */
 export const storyHoldsDiver = (g: StoryWorld): boolean => g.story.step === 'intro';
 

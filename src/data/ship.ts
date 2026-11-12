@@ -174,6 +174,7 @@ export const SHIP_TEXT = {
   hatchOpenStill: 'Col portellone aperto la nave non si muove.',
   // owner, 5 ottobre: diving off a moving ship (or out of a moving submarine) left you behind
   stopToDive: 'Ferma la nave prima di tuffarti.',
+  reconOut: 'Aspetta che il drone torni a bordo, poi tuffati.',
   stopToLeave: 'Fermati prima di uscire dal sottomarino.',
   subBroken: 'Il sottomarino è rotto: si ripara in un porto (costa denti). Nel frattempo resta nella stiva.',
   fuelOutShip: 'La nave è senza carburante: si ferma. Nel cockpit c’è il razzo di soccorso.',

@@ -35,7 +35,7 @@ describe('i consigli di Aurelio', () => {
     expect(t.dialogue).toBe('tipTeamFull');
     const u = story();
     stepTips(u, [{ type: 'tamed', uid: 'b9', toTeam: true }]);
-    expect(u.dialogue).toBeNull();
+    expect(u.dialogue).toBe('tipPack'); // into the team: companions and mounts (12 novembre 2026)
   });
 
   it('niente consigli nella prima immersione guidata, con un dialogo aperto, o se spenti', () => {

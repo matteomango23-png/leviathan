@@ -113,7 +113,14 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
     const form = !w.spawn.form && lured(w) ? luredForm(base, g.beasts.lure?.rare, g.rng) : base;
     const p = at ?? appearPoint(w, g.map, g.rng, d, seen);
     if (!p || seen(p.x, p.y)) return false;
-    spawnWild(w, form, own?.level ?? rollWildLevel(form, g.rng, w.spawn.band), p.x, p.y, p.x < d.x ? 1 : -1);
+    spawnWild(
+      w,
+      form,
+      own?.level ?? rollWildLevel(form, g.rng, w.spawn.band, w.spawn.levels),
+      p.x,
+      p.y,
+      p.x < d.x ? 1 : -1,
+    );
     rememberSpawn(g.beasts.recent, w.spawn.speciesId);
     // far stronger than your strongest beast: a warning (owner, 4 ottobre: fear of some creatures)
     const top = Math.max(0, ...g.beasts.team.filter((b) => b.inTeam).map((b) => b.level));

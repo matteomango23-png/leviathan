@@ -29,6 +29,7 @@ export class Controls {
   ) {
     if (!isTouchDevice()) root.classList.add('no-touch');
     const left = el('div', 'touch-zone touch-left', root);
+    left.dataset.coach = 'stick'; // the step-by-step tutorial lights these (data/coach.ts)
     const right = el('div', 'touch-zone touch-right', root);
     this.stick = el('div', 'stick touch-only', root);
     this.knob = el('div', 'stick-knob', this.stick);
@@ -37,6 +38,9 @@ export class Controls {
     this.dashBtn = el('button', 'act act-dash', row, 'Scatto');
     this.harpoonBtn = el('button', 'act act-harpoon', row, 'Fucile');
     const pause = el('button', 'pause-btn', root, 'II');
+    this.dashBtn.dataset.coach = 'dash';
+    this.harpoonBtn.dataset.coach = 'fire';
+    pause.dataset.coach = 'pause';
     pause.setAttribute('aria-label', 'Pausa');
 
     this.listen(left, 'pointerdown', (e) => this.joyStart(e));
