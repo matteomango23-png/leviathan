@@ -353,6 +353,9 @@ export const PACK_RULES = {
   preyRange: 320,
   /** Seconds between two looks for something to hunt. */
   lookSeconds: 1.5,
+  /** A hunter after a school (or a beast circling the ship's light) swims through it and on this many of its lengths
+   *  past it before turning back: passes, not a fish spinning round on the spot (owner, 12 novembre 2026). Tuning. */
+  passBy: 1.5,
 };
 
 /** Temperament: 'aggressive' swims at you, 'calm' ignores you, 'shy' slips away (rare ones are always shy). */
