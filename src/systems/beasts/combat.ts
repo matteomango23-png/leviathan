@@ -1,7 +1,7 @@
 // Damage and hit shapes for beasts.
 // Damage, like Pokémon (Gen V+): floor(floor(floor(2 × level / 5 + 2) × power × attack / defence) / 50) + 2,
 // then × the modifiers (fighter.ts): same type 1.5, type ×2 / ×½, critical 1.5, random 0.85–1.
-import { BEAST_BODY } from '../../data/beasts';
+import { BEAST_BODY, SERPENTS } from '../../data/beasts';
 import type { MoveDef } from '../../data/moves';
 import { counterTypeOf, typeMultiplier, type TypeId } from '../../data/rules';
 import type { BodyCircle } from '../world/tileMap';
@@ -30,6 +30,8 @@ export interface BodyPose {
   length: number;
   /** Its real outline (bodyShapes.generated.ts): how far it reaches above and below the spine, head to tail. */
   shape?: readonly (readonly [number, number])[];
+  /** Its form: an eel or a serpent swims in a wave, its body for hits a little thicker (BEAST_BODY.serpentThickness). */
+  form?: { speciesId: string };
 }
 
 /** Unit vector from tail to head. */
@@ -106,6 +108,7 @@ export function distanceToBody(p: BodyPose, x: number, y: number): number {
   const cy = p.y + a.dy * along;
   // the body is thicker in the middle and thin at the tail
   const t = along / half; // -1 tail … 1 head
-  const thickness = p.length * BEAST_BODY.bodyThicknessFrac * (t < 0 ? 1 + t * 0.7 : 1 - t * 0.3);
+  const wave = p.form && SERPENTS.includes(p.form.speciesId) ? BEAST_BODY.serpentThickness : 1;
+  const thickness = p.length * BEAST_BODY.bodyThicknessFrac * wave * (t < 0 ? 1 + t * 0.7 : 1 - t * 0.3);
   return Math.max(0, Math.hypot(x - cx, y - cy) - thickness);
 }

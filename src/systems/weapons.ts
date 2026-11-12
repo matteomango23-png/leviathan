@@ -3,6 +3,7 @@
 import { WEAPON_RULES } from '../data/economy';
 import { WEAPONS } from '../data/world';
 import type { GameEvent } from './events';
+import { hitAlong } from './shotPath';
 import type { Fish, FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 
@@ -109,17 +110,23 @@ export function stepProjectiles(
       else p.done = true;
       continue;
     }
+    const [ax, ay] = [p.x, p.y];
     p.x = nx;
     p.y = ny;
     if (p.kind === 'dart') {
-      const f = fish.fish.find(
-        (ff) =>
-          ff.alive && !ff.hooked && Math.hypot(ff.x - p.x, ff.y - p.y) < WEAPON_RULES.fiocine.catchRadius,
-      );
+      // the whole stretch it flew, not only its tip now (owner, 12 novembre 2026: misses)
+      let f: (typeof fish.fish)[number] | undefined;
+      hitAlong(ax, ay, nx, ny, (x, y) => {
+        f = fish.fish.find(
+          (ff) => ff.alive && !ff.hooked && Math.hypot(ff.x - x, ff.y - y) < WEAPON_RULES.fiocine.catchRadius,
+        );
+        return !!f;
+      });
       if (f) {
         hooks.catchFish(f);
         p.done = true;
-      } else if (hooks.hitBeast(p.x, p.y, weaponDamage('fiocine'))) p.done = true;
+      } else if (hitAlong(ax, ay, nx, ny, (x, y) => hooks.hitBeast(x, y, weaponDamage('fiocine'))))
+        p.done = true;
       else if (p.life <= 0) p.done = true;
     } else if (p.life <= 0) burstNet(s, p, fish, hooks);
   }

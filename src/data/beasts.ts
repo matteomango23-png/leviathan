@@ -534,7 +534,12 @@ export const BEAST_BODY = {
     [0.2, 0.85],
     [0.4, 0.55],
   ] as [number, number][],
-  weaponHitMargin: 1.5, // units: a weapon tip this close to the body hits
+  weaponHitMargin: 3, // units: a weapon tip this close to the body hits (was 1.5: owner, 12 novembre 2026, misses)
+  /** A shot is checked every this many units along the stretch it flew in a frame (a long frame on the phone jumped
+   *  over thin bodies). Tuning. */
+  hitStep: 3,
+  /** Eels and serpents swim in a wave (SERPENTS): their body for hits is this × thicker, to cover the wave drawn. */
+  serpentThickness: 1.8,
   hitFlashSeconds: 0.15,
 };
 
@@ -550,7 +555,8 @@ export const SWIM_BITE = {
   gentleTruce: 2,
   gentleUntilLevel: 12,
   engageRadius: 160,
-  /** Seconds between a touch's bites and the battle: they are seen (owner, 24 ottobre). */
+  /** Riding, seconds between the bites and the battle, so they are seen (owner, 24 ottobre); swimming on your own the
+   *  battle starts at the touch (12 novembre). */
   battlePause: 0.45,
 };
 

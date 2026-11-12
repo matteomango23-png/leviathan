@@ -4,6 +4,7 @@ import { HARPOON } from '../data/diver';
 import { WEAPONS } from '../data/world';
 import type { DiverState } from './diver';
 import type { GameEvent } from './events';
+import { hitAlong } from './shotPath';
 import type { Fish, FishState } from './fish';
 import type { TileMap } from './world/tileMap';
 
@@ -97,8 +98,8 @@ export function stepHarpoon(
       const [ax, ay] = [s.x, s.y];
       s.x = nx;
       s.y = ny;
-      // the whole stretch it flew this step, not only where it is now: fast, it used to jump over fish
-      if (hitBeast((ax + nx) / 2, (ay + ny) / 2) || hitBeast(s.x, s.y)) {
+      // the whole stretch it flew this step, not only where it is now: fast, it used to jump over fish and beasts
+      if (hitAlong(ax, ay, nx, ny, hitBeast)) {
         s.returning = true;
         return null;
       }

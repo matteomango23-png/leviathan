@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.119.0 — Battaglia e cattura (12 novembre 2026)
+
+- A nuoto la battaglia parte nell'istante in cui tocchi una bestia (o lei tocca te), senza ritardo e senza che il morso ti spinga via.
+- Le bestie sentono sempre l'arpione, anche subito dopo una battaglia o un morso: i predatori ti attaccano, le altre scappano, quelle sfinite si allontanano piano. Anche lo squalo toro.
+- L'arpione, le fiocine e la rete non "saltano" più le bestie e i pesci quando il telefono rallenta: il colpo vale lungo tutta la strada che fanno. Bersaglio un po' più largo.
+- La murena (e le altre anguille) si colpisce e si affronta: il suo corpo per i colpi copre l'onda con cui nuota.
+- "Metti in vasca": una bestia scelta che è guarita lascia la vasca da sola e il posto passa alla più ferita.
+- In battaglia il pulsante Doma mostra la probabilità di cattura (con la conchiglia migliore), e ogni conchiglia la sua. Nuovo consiglio di Aurelio "Domare": ogni livello sopra la tua bestia più forte rende la cattura più difficile.
+- I salvataggi non cambiano.
+
 ## v0.118.0 — Freccia e mezzi (12 novembre 2026)
 
 - Uscito dal sottomarino, la freccia gialla indica il sottomarino rimasto in acqua; quando torna nella stiva, di nuovo la nave.

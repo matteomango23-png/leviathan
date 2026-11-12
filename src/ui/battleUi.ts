@@ -11,6 +11,10 @@ import { battleIcon, typeIcon } from './battleIcons';
 import { el } from './dom';
 import { battleBag } from './battleBag';
 import { shellsOwned } from '../systems/economy/items';
+import { tameChance } from '../systems/battle/tameFlee';
+
+/** A chance as the menu shows it: never "0%" while there is one. */
+const pct = (c: number): string => (c >= 1 ? '100%' : c > 0 && c < 0.01 ? '<1%' : `${Math.round(c * 100)}%`);
 import { moveDetail, typeColor, typeName } from './movePanel';
 import { InfoBox } from './battleInfoBox';
 
@@ -86,9 +90,16 @@ export class BattleUi {
     return m;
   }
 
-  private command(m: HTMLElement, label: string, iconName: string, cls: string, onClick: () => void): void {
+  private command(
+    m: HTMLElement,
+    label: string,
+    iconName: string,
+    cls: string,
+    onClick: () => void,
+  ): HTMLButtonElement {
     const b = this.button(m, label, onClick, `bcmd ${cls}`);
     b.prepend(battleIcon(iconName));
+    return b;
   }
 
   back(m: HTMLElement, onClick: () => void): void {
@@ -99,23 +110,28 @@ export class BattleUi {
   chooseAction(s: BattleState, items: Record<string, number>): Promise<Action> {
     return new Promise((done) => {
       const me = s.team[s.active]!;
+      // the chance a shell holds now: the same reckoning as the throw (BattleScene: your strongest beast's level)
+      const chance = (bonus: number): number => tameChance(s, Math.max(...s.team.map((f) => f.level)), bonus);
       const main = (): void => {
         const m = this.page('main', BATTLE_TEXT.whatNext(named(me)));
         this.command(m, 'Lotta', 'icona_lotta', 'c-fight', moves);
         this.command(m, 'Zaino', 'icona_zaino', 'c-bag', bag);
         this.command(m, 'Squadra', 'icona_squadra', 'c-team', team);
         const owned = shellsOwned(items);
-        // more than one kind of shell: choose which (owner, 16 ottobre: like Pokémon's balls)
-        this.command(m, 'Doma', 'icona_doma', 'c-tame', () =>
+        // more than one kind of shell: choose which (owner, 16 ottobre: like Pokémon's balls); the chance with the
+        // best one you have, before you try (owner, 12 novembre 2026: 30 tries on a shark 9 levels above)
+        const tame = this.command(m, 'Doma', 'icona_doma', 'c-tame', () =>
           owned.length > 1 ? shellPick() : done({ kind: 'tame', shell: owned[0]?.id }),
         );
+        const best = Math.max(0, ...owned.map((it) => chance(it.shell ?? 1)));
+        if (owned.length) el('span', 'bcmd-chance', tame, pct(best));
         this.command(m, 'Fuggi', 'icona_fuggi', 'c-flee', () => done({ kind: 'flee' }));
       };
       const shellPick = (): void => {
         const m = this.page('list', 'Quale conchiglia?');
         for (const it of shellsOwned(items)) {
           const b = this.button(m, it.name, () => done({ kind: 'tame', shell: it.id }), 'brow bbag-item');
-          el('span', 'brow-side', b, `×${items[it.id]}`);
+          el('span', 'brow-side', b, `×${items[it.id]} · ${pct(chance(it.shell ?? 1))}`);
           el('span', 'bbag-text', b, it.text);
         }
         this.back(m, main);

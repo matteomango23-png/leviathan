@@ -138,6 +138,10 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Attento! Qui vicino nuota una bestia molto più forte della tua squadra.' },
     { who: 'aurelio', text: 'Le bestie grosse hanno un livello alto. All’inizio evitale: fai crescere la squadra con le bestie piccole della baia, poi torna da loro.' },
   ],
+  tipTaming: [
+    { who: 'aurelio', text: 'Per domare una bestia sfiniscila in battaglia: più la sua barra è vuota, più la conchiglia tiene. Sul pulsante Doma vedi la probabilità prima di lanciare.' },
+    { who: 'aurelio', text: 'Ogni livello che ha sopra la tua bestia più forte la rende più difficile: con nove livelli di differenza riesci di rado. Le conchiglie migliori aiutano, quella del Re non sbaglia mai.' },
+  ],
   tipSell: [
     { who: 'aurelio', text: 'Il pesce che prendi finisce nella sacca. Al porto tocca “Vendi” in alto: le sardine diventano denti.' },
     { who: 'aurelio', text: 'I denti sono il denaro del mare: conchiglie per domare, cure, esche, mute, armi e navi.' },
@@ -185,12 +189,14 @@ export type TipTrigger =
   | 'landmarkFound'
   | 'tamedToTeam'
   | 'dangerSeen'
-  | 'fishCaught';
+  | 'fishCaught'
+  | 'battleOver';
 /** `early`: it can open during the guided first dive too. */
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true }[] = [
   { id: 'tipPack', title: 'Compagni e cavalcature', on: 'tamedToTeam', early: true },
   { id: 'tipSell', title: 'Vendere il pescato', on: 'fishCaught', early: true },
   { id: 'tipBigBeasts', title: 'Le bestie grandi', on: 'dangerSeen', early: true },
+  { id: 'tipTaming', title: 'Domare', on: 'battleOver', early: true },
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
   { id: 'tipEcho', title: 'L’eco anomala', on: 'echoFound' },
