@@ -1,3 +1,11 @@
+# Idee horror da riprendere (12 novembre 2026, rimandate dal proprietario)
+
+- Musica che si abbassa scendendo e sparisce in profondità (solo questo, niente respiro né altri suoni).
+- Torcia con batteria: si ricarica a bordo, nel sottomarino e al porto; batterie di riserva al porto per lo Zaino; mai buio totale.
+- Bestie vere degli abissi che nuotano ai bordi della luce prima di attaccare (niente fantasmi).
+- Atmosfera: più neve marina e acqua torbida a strati in profondità; più avanti resti di sub e relitti cupi (immagini Gemini, Blocco 8).
+- Scartate: creatura imbattibile che caccia (snatura il gioco), battito e schermo che si scurisce. La Fossa Nera horror: forse in futuro.
+
 # Feedback del 12 novembre 2026 (dopo la v0.115.0): lotti U1-U6
 
 Proposta di ordine (da confermare col proprietario):
