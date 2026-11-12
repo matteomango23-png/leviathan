@@ -11,7 +11,8 @@ import { TIPS, TUTORIAL } from '../src/data/story';
 import { rollWildLevel } from '../src/systems/beasts/forms';
 import { makeRng } from '../src/systems/math';
 import { portStart } from '../src/systems/economy/places';
-import { createGame, type GameState } from '../src/systems/game';
+import { createGame, stepGame, type GameState } from '../src/systems/game';
+import { emptyInput } from '../src/systems/input';
 import { shipArrow, storyGoal } from '../src/systems/shipPointer';
 import { createStory, shipWaitsAtDock } from '../src/systems/story';
 import { stepTips } from '../src/systems/tips';
@@ -113,5 +114,16 @@ describe('il tutorial passo passo', () => {
     ]);
     for (const steps of Object.values(COACH))
       for (const st of steps) expect(names.has(st.target), st.target).toBe(true);
+  });
+});
+
+describe('lo sciame di sardine', () => {
+  it('non sale a bordo con te', () => {
+    const g = createGame(map, null, 7);
+    g.beasts.decoy = { id: 'sciame_sardine', t: 8 };
+    g.ship.owned = true;
+    g.ship.aboard = true;
+    stepGame(g, emptyInput(), 1 / 60);
+    expect(g.beasts.decoy).toBeNull();
   });
 });

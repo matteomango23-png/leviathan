@@ -118,6 +118,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
 
   const held = storyHoldsDiver(g); // on Aurelio's boat during the opening
   const aboard = !held && stepVehicles(g, input, dt, events); // your ship or your submarine moves you
+  if (aboard) g.beasts.decoy = null; // the sardines' swarm does not climb aboard with you (owner, 12 novembre 2026)
   g.beasts.aboard = aboard;
   const tank = rideTank(g, g.rideTanks, d.maxO2);
   refillTanks(g.rideTanks, tank, dt);

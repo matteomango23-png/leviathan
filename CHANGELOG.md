@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.116.1 — Lo sciame di sardine (12 novembre 2026)
+
+- Lo Sciame di sardine non è più un anello rigido: le sardine arrivano da intorno, ti avvolgono in una palla viva che ti segue (ognuna col suo giro, quelle dietro più scure), e alla fine si sparpagliano invece di sparire.
+- Sono le stesse sardine dei banchi, con la coda che si muove e i riflessi argentati.
+- Se sali su un mezzo lo sciame si scioglie: non resta più a girare attorno alla barca.
+- I salvataggi non cambiano.
+
 ## v0.116.0 — Un inizio spiegato (12 novembre 2026)
 
 - **Tutorial passo passo**, come nei giochi per telefono: la prima volta in acqua, al porto, al timone e nel cockpit lo schermo si scurisce e Aurelio ti indica ogni pulsante e cosa fa. Si può saltare, e rivedere dalla Guida.

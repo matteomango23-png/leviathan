@@ -291,8 +291,16 @@ export const WEAPON_RULES = {
 
 /** Swarm summons (SWARMS in world.ts). */
 export const SWARM_RULES = {
-  ringRadius: 16, // sardines circle the diver at this distance
-  ringFish: 24,
+  /** The sardines' ball round the diver (owner, 12 novembre 2026: the rigid ring was "bruttissimo"): each fish swims
+   *  its own circle, tilted like on a sphere, between these radii (units), at its own pace; the ones behind you darker. */
+  ballFish: 64,
+  ballRadius: [6, 24] as [number, number],
+  ballSpin: [1.4, 2.6] as [number, number], // radians/s
+  squash: 0.75, // the ball a little flatter than tall is wide
+  follow: 3, // how quickly the ball's centre catches up with you (1/s)
+  gatherSeconds: 0.7, // swimming in from around you when called
+  scatterSeconds: 1.1, // and away when it ends (or you climb aboard)
+  scatterReach: 70, // units they swim off
 };
 
 /** Suits: deeper than the suit allows, the pressure makes oxygen drain much faster. */

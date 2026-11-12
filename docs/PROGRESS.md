@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 12 novembre 2026, v0.116.0)
+## Dove siamo (aggiornato il 12 novembre 2026, v0.116.1)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -25,7 +25,7 @@ Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa:
 
 - Feedback del 12 novembre in `docs/BACKLOG.md` (lotti U1-U6, ordine confermato). **Prossimo: U2** (leggendari e sonar), poi U3 (freccia e mezzi: il blocco B deve fermare anche il Gas), U4, U5, U6 da decidere insieme.
 - `data/coach.ts` + `ui/coach.ts` (tutorial passo passo, `data-coach` sui pulsanti, giri in `story.seen`, "Rivedi" nella Guida); `COAST_LEVELS.firstBay` e `WildSpawnDef.levels`; `storyGoal` in `systems/shipPointer.ts`; `shipWaitsAtDock` (nave visibile prima del dono); consigli `tipPack`, `tipSell`, `tipBigBeasts` (`early`: anche nella prima immersione); banner in coda in `ui/hud.ts`; taglie aggiornate sul posto (`ui/bountyCards.ts`, `portBoard.ts`); `shipHint` `reconOut`. Test: `tests/lottoU1.test.ts`.
-- Non riprodotto: "sardine che restano a girare quando sali in barca" (chiesti dettagli al proprietario).
+- v0.116.1: le "sardine che girano" erano lo Sciame di sardine (pulsante abilità): `views/gearFxView.ts` ora disegna una palla di sardine (orbite inclinate e ruotate, arrivo e dispersione, `SWARM_RULES` in `data/economy.ts`); salendo su un mezzo `decoy` si azzera (`systems/game.ts`).
 
 ## Lotto T2, richieste e Baratto (26 ottobre 2026) → v0.115.0
 
