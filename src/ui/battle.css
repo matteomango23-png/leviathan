@@ -443,6 +443,15 @@
   grid-column: 1 / -1;
   justify-self: end;
 }
+/* the chance to tame it, on the Doma button (ui/battleUi.ts) */
+.bcmd-chance {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 12px;
+  font-weight: 700;
+}
 .bmenu.main .bcmd {
   width: auto;
 }

@@ -29,7 +29,9 @@ export function weaponHitsBeast(
   damage = 1,
 ): boolean {
   for (const w of g.beasts.wilds) {
-    if (!isInWater(w) || w.calm > 0) continue;
+    // a calm one too (after a battle, a bite, going home): calm only keeps it from coming at you (owner, 12
+    // novembre 2026: the harpoon went through beasts that did nothing)
+    if (!isInWater(w)) continue;
     if (distanceToBody(w, x, y) > BEAST_BODY.weaponHitMargin) continue;
     w.flash = BEAST_BODY.hitFlashSeconds;
     w.wounds = Math.min(HARPOON_WEAKEN.max, (w.wounds ?? 0) + woundPerHit(w.level) * Math.max(1, damage));

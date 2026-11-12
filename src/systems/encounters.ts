@@ -263,7 +263,13 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       // a Predatore you ride, dashing into it: its Assalto, it loses its first turn (mountTraits.ts); the battle a
       // moment later, so the bite is seen
       const first = openingFor(ridden, d.rideDashT !== undefined, base);
-      w.battleIn = { t: SWIM_BITE.battlePause, first, fear: fearOf(ridden, w, g.rng()) };
+      const fear = fearOf(ridden, w, g.rng());
+      // swimming on your own the battle starts the very moment you touch (owner, 12 novembre 2026: a moment later you
+      // had already dashed elsewhere), and the bite does not throw you away from where you were
+      if (!g.beasts.riding) {
+        Object.assign(d, { vx: 0, vy: 0 });
+        requestBattle(g, w, first, events, fear);
+      } else w.battleIn = { t: SWIM_BITE.battlePause, first, fear };
     }
   }
   // in the hand-made waters, while there is room: a fair draw among the beasts ready to come (it used to be the

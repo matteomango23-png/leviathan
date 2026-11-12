@@ -2,7 +2,8 @@
 // model's pool holds rest in it, the most hurt first, and they heal slowly (SHIP.poolHealSeconds from nothing to full,
 // their moves' PP back with it); a KO beast stands again at a quarter of its health. The port and waking up after a
 // blackout still heal everyone at once. You choose who goes in (owner, 22 ottobre 2026, block 6): your picks first,
-// the free places to the most hurt, never the ones you took out. Pure logic.
+// the free places to the most hurt, never the ones you took out. One of your picks healed leaves its place by itself,
+// so the next one goes in (owner, 12 novembre 2026: "quando finisci con un animale fai il prossimo"). Pure logic.
 import { SHIP } from '../../data/ship';
 import { maxHpOf, type TeamBeast } from '../beasts/team';
 import { shipModel } from './model';
@@ -69,5 +70,8 @@ export function stepPool(g: PoolWorld, dt: number): void {
     b.hp = Math.min(max, b.hp + Math.ceil(max / SHIP.poolHealSeconds));
     if (b.ko && b.hp >= max * SHIP.poolStandShare) b.ko = false;
     if (b.hp >= max) b.ppUsed = undefined; // healed: its moves rested too
+    // healed: out of the pool, its place to the next most hurt
+    if (b.hp >= max && !b.ko && s.poolPicks?.includes(b.uid))
+      s.poolPicks = s.poolPicks.filter((x) => x !== b.uid);
   }
 }

@@ -15,6 +15,8 @@ function triggers(events: readonly GameEvent[]): Set<TipTrigger> {
       if (e.danger) out.add('dangerSeen');
     } else if (e.type === 'fishCaught') {
       out.add('fishCaught');
+    } else if (e.type === 'battleWon' || e.type === 'battleLost' || e.type === 'battleFled') {
+      out.add('battleOver');
     } else if (e.type === 'wreckOpened') {
       if (e.part) out.add('abyssPart');
     } else if (e.type === 'tamed') {
