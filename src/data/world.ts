@@ -197,7 +197,7 @@ export interface SwarmDef {
 }
 export const SWARMS: SwarmDef[] = [
   { id: 'sciame_sardine', name: 'Sciame di sardine', region: 'baia', bindCount: 10, bindWith: ['arpione', 'fiocine', 'rete'], duration: 8, cooldown: 45,
-    fx: ['decoy', 'ring:diver'], text: 'Un muro di sardine ti nasconde: per 8 s nessuna bestia viene verso di te',
+    fx: ['decoy', 'ring:diver'], text: 'Una palla di sardine ti avvolge e ti nasconde: per 8 s nessuna bestia viene verso di te (si scioglie se sali su un mezzo)',
     artPrompt: 'a dense silver school of sardines swirling into a protective sphere around a small diver' },
   { id: 'sciame_meduse', name: 'Sciame di meduse spettrali', region: 'barriera', bindCount: 5, bindWith: ['rete'], duration: 6, cooldown: 50,
     fx: ['barrier:ring', 'stunOnContact:1.5'], text: 'Barriera urticante intorno a te: chi la attraversa resta stordito',
