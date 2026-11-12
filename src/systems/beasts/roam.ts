@@ -1,7 +1,7 @@
 // How wild beasts swim around you (owner's decision of 1 ottobre 2026): slowly, as shapes in the dark that
 // your lamp reveals. They turn around only out of the light (or against a wall). By temperament they come at
 // you, ignore you, or slip away slowly — never vanishing at full speed. Touching one starts a battle.
-import { BEAST_TEMPER, PATROL, ROAM, type Temper } from '../../data/beasts';
+import { BEAST_TEMPER, PACK_RULES, PATROL, ROAM, type Temper } from '../../data/beasts';
 import { HARPOON_WEAKEN, STALK } from '../../data/battle';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
@@ -92,6 +92,11 @@ export function appearPoint(
   return null;
 }
 
+/** A pass over a point: the way it swims, on past it by `reach`; once that far past, back the other way. */
+export function passOver(cx: number, x: number, face: 1 | -1, reach: number): number {
+  return (x - cx) * face < reach * 0.8 ? cx + face * reach : cx - face * reach;
+}
+
 function turnAround(b: WildBeast): void {
   b.turnFrom = b.face;
   b.turn = 0.001;
@@ -177,12 +182,14 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
     [tx, ty, speed] = [b.x + (fx / fd) * 200, b.y + (fy / fd) * 100, ROAM.shySpeed * U * mult * 1.3];
   } else if (b.drawn) {
     // the light under the ship: to its place there, then round it slowly
-    const near = Math.hypot(b.drawn.x - b.x, b.drawn.y - b.y) < b.length;
-    const round = near ? Math.sin(b.phase * 0.05) * b.length * 1.5 : 0;
-    [tx, ty, speed] = [b.drawn.x + round, b.drawn.y, ROAM.cruiseSpeed * U * mult * (near ? 0.5 : 1)];
+    const near = Math.hypot(b.drawn.x - b.x, b.drawn.y - b.y) < b.length * 2;
+    const px = near ? passOver(b.drawn.x, b.x, b.face, b.length * PACK_RULES.passBy) : b.drawn.x;
+    [tx, ty, speed] = [px, b.drawn.y, ROAM.cruiseSpeed * U * mult * (near ? 0.5 : 1)];
   } else if (b.hunt) {
-    // its pack hunts: after the sardines or a smaller beast
-    [tx, ty, speed] = [b.hunt.x, b.hunt.y, ROAM.chaseSpeed * U * mult];
+    // its pack hunts: after a smaller beast, or through the sardines in passes
+    const hx =
+      b.hunt.prey === undefined ? passOver(b.hunt.x, b.x, b.face, b.length * PACK_RULES.passBy) : b.hunt.x;
+    [tx, ty, speed] = [hx, b.hunt.y, ROAM.chaseSpeed * U * mult];
   } else {
     if (!b.target || Math.hypot(b.target.x - b.x, b.target.y - b.y) < ROAM.targetReach)
       b.target = wanderPoint(b, map, rng, b);

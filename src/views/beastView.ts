@@ -7,7 +7,7 @@ import { BEAST_SPRITE, WING_FRAME_FORMS } from '../data/beasts';
 import { spineOf } from './swimPose';
 import { BATTLE_ART_KEYS, GLOW_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 import { glowAt, glowOf } from '../systems/glowPulse';
-import { BEAST_EYES, EYE_GLOW } from '../data/beastEyes';
+import { BEAST_EYES, BEAST_EYES_OPEN, EYE_GLOW } from '../data/beastEyes';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -183,9 +183,10 @@ export class BeastSprite {
     this.eyeSpot = null;
   }
 
-  /** The red glow on its painted eye, following the head's piece of the picture. */
+  /** The red glow on its painted eye, following the head's piece of the picture; with the mouth open, where the eye
+   *  is in that picture (owner, 12 novembre 2026: it stayed where the shut picture has it). */
   private updateEye(p: BeastPoseView): void {
-    const at = BEAST_EYES[p.key];
+    const at = (this.open ? BEAST_EYES_OPEN : BEAST_EYES)[p.key];
     this.eyeSpot = null;
     if (!p.hunt || !at || p.flash > 0) {
       this.eye.setVisible(false);

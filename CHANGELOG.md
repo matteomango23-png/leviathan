@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.120.0 — Le bestie (12 novembre 2026)
+
+- L'occhio rosso dei predatori resta sull'occhio anche quando aprono la bocca (posizioni nuove per 70 immagini a bocca aperta).
+- I branchi che cacciano le sardine (barracuda, tonni, delfini, orche) fanno delle passate attraverso il banco invece di girarsi di continuo a destra e sinistra; lo stesso le bestie attorno alla luce della nave.
+- La manta in battaglia si vede intera: prima era ingrandita oltre lo schermo e un'ala restava tagliata.
+- I salvataggi non cambiano.
+
 ## v0.119.0 — Battaglia e cattura (12 novembre 2026)
 
 - A nuoto la battaglia parte nell'istante in cui tocchi una bestia (o lei tocca te), senza ritardo e senza che il morso ti spinga via.

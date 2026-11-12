@@ -211,10 +211,11 @@ export const BATTLE_STAGE = {
    */
   intro: { giantShake: 0.004 },
   /**
-   * Pictures whose longest side is not the body length: a coiled moray looks far bigger than 3 m, a manta seen
-   * flat (wide and thin) far smaller than 7 m. Their battle size × this (tuning, owner's feedback 2 ottobre).
+   * Pictures whose longest side is not the body length: a coiled moray looks far bigger than 3 m; the manta's
+   * pictures are as wide as its wings, and at its length one wing left the screen (owner, 12 novembre 2026: it was
+   * × 1.3 for an older, narrower picture). Their battle size × this (tuning).
    */
-  pictureMult: { murena: 0.62, manta: 1.3 } as Record<string, number>,
+  pictureMult: { murena: 0.62, manta: 0.78 } as Record<string, number>,
   /** The same for one battle picture only (its texture key without "battle-"): a close-up looks bigger than the
    *  beast is (owner, 20 ottobre: the tiger shark's front "sempre enorme"). */
   framePictureMult: { squalo_tigre_front: 0.8 } as Record<string, number>,
