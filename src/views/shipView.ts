@@ -90,13 +90,16 @@ export class ShipView {
     this.tugFrom = s.x;
   }
 
-  /** @param sea the weather's waves and wind: it rides them (systems/sea.ts) */
-  update(s: ShipState, time: number, dt: number, sea: SeaNow): void {
+  /**
+   * @param sea the weather's waves and wind: it rides them (systems/sea.ts)
+   * @param waiting Aurelio's gift moored at Porto Fango before it is yours (systems/story.ts shipWaitsAtDock)
+   */
+  update(s: ShipState, time: number, dt: number, sea: SeaNow, waiting = false): void {
     this.fx.clear();
     this.glow.clear();
     this.beam.clear();
     this.fallback.clear();
-    if (!s.owned) {
+    if (!s.owned && !waiting) {
       for (const p of this.pics.values()) p?.hide();
       this.tug?.setVisible(false);
       this.jets.update([], time);

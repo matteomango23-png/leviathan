@@ -11,6 +11,9 @@ import { currentObjective } from '../systems/story';
 import { el } from './dom';
 import { messageFor } from './eventMessages';
 
+/** The events whose banner waits its turn (see news). */
+const NEWS: ReadonlySet<GameEvent['type']> = new Set(['bountyClosed', 'missionComplete', 'tamed']);
+
 export class Hud {
   private readonly hearts: HTMLDivElement;
   private readonly o2: HTMLDivElement;
@@ -31,6 +34,10 @@ export class Hud {
   /** A red arrow where a stalking hunter will come from (beasts/stalk.ts). */
   private readonly danger: HTMLDivElement;
   private toastTimer = 0;
+  /** The news that must be read (a bounty paid, a mission done, a beast tamed): one after the other, never over each
+   *  other, and only once the battle has closed (owner, 12 novembre 2026: a bounty paid in battle showed no banner). */
+  private readonly news: [string, number][] = [];
+  private newsShowing = false;
   private zoneTimer = 0;
   private cache = { hp: -1, max: -1, o2: -1, whale: false, press: -1, stamina: '', info: '', goal: '' };
 
@@ -52,6 +59,7 @@ export class Hud {
     this.stamina.hidden = true;
     this.info = el('div', 'hud-info', hud);
     this.goal = el('div', 'hud-goal', hud);
+    this.goal.dataset.coach = 'goal';
     this.zone = el('div', 'zone-name', root);
     this.toastEl = el('div', 'toast', root);
     this.arrow = el('div', 'ship-arrow', root);
@@ -77,7 +85,9 @@ export class Hud {
         continue;
       }
       const m = messageFor(e, g);
-      if (m) this.toast(m[0], m[1]);
+      if (!m) continue;
+      if (NEWS.has(e.type)) this.news.push(m);
+      else if (!this.newsShowing && !g.beasts.battle) this.toast(m[0], m[1]);
     }
   }
 
@@ -152,7 +162,15 @@ export class Hud {
     }
     if (this.toastTimer > 0) {
       this.toastTimer -= dt;
-      if (this.toastTimer <= 0) this.toastEl.classList.remove('show');
+      if (this.toastTimer <= 0) {
+        this.toastEl.classList.remove('show');
+        this.newsShowing = false;
+      }
+    }
+    if (!g.beasts.battle && !this.newsShowing && this.news.length) {
+      const [text, seconds] = this.news.shift()!;
+      this.toast(text, seconds);
+      this.newsShowing = true;
     }
     if (this.zoneTimer > 0) {
       this.zoneTimer -= dt;

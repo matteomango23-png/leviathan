@@ -44,6 +44,7 @@ export class BeastUi {
     private readonly session: Session,
   ) {
     this.slotsEl = el('div', 'team-slots', root);
+    this.slotsEl.dataset.coach = 'team';
     for (let i = 0; i < PROGRESSION.teamSize; i++) {
       const b = el('button', 'team-slot', this.slotsEl);
       const img = el('img', '', b);

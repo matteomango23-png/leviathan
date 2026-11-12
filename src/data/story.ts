@@ -90,6 +90,7 @@ export const DIALOGUES = {
   tipShip: [
     { who: 'aurelio', text: 'Al timone: la leva a sinistra è il gas, a destra la direzione. Più vai forte, più carburante bruci.' },
     { who: 'aurelio', text: 'Il pulsante Sonar ascolta il mare intorno alla nave: le bestie grandi rispondono con un’eco.' },
+    { who: 'aurelio', text: 'Con la nave ferma, Luce accende un faro sotto lo scafo: le bestie curiose vengono a vedere, i predatori arrivano dopo un po’. Consuma un poco di carburante.' },
     { who: 'aurelio', text: 'Il pieno e le riparazioni si fanno in ogni porto e avamposto, nella scheda Mezzi.' },
   ],
   tipRumour: [
@@ -122,8 +123,23 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Quando la stiva è piena aspettano al Recinto del porto: lì le scambi, e puoi anche venderle.' },
   ],
   tipPort: [
-    { who: 'aurelio', text: 'Ogni porto ha le sue schede: guarda prima la Bacheca, coi Ricercati di questi mari e le taglie.' },
-    { who: 'aurelio', text: 'Conchiglie, cure ed esche si comprano qui. Un’esca pregiata a volte porta un alfa, o un albino.' },
+    { who: 'aurelio', text: 'Prima cosa, sempre: se hai pesci nella sacca, tocca “Vendi” in alto. Il pescato diventa denti, e coi denti compri tutto.' },
+    { who: 'aurelio', text: 'Le schede a sinistra: la Bacheca con le taglie, il Mercato col pescato e le bestie che il porto compra, Conchiglie, Cure ed Esche, il Sub (mute e armi), i Mezzi (pieno, riparazioni, nuove navi a Porto Fango), lo Zaino e il Recinto delle bestie.' },
+    { who: 'aurelio', text: 'Riposa cura te e la squadra e ti fa risvegliare qui; Tuffati ti rimette in acqua.' },
+  ],
+  // the first hours (owner, 12 novembre 2026: "non è spiegato nulla"): they come during the guided first dive too
+  tipPack: [
+    { who: 'aurelio', text: 'Le bestie piccole sono compagne: nuotano al tuo fianco, cacciano i pesci e ti aiutano coi loro poteri. In acqua ne porti fino a due.' },
+    { who: 'aurelio', text: 'Per chiamarne una, tocca la sua sfera nella barra della squadra in alto. Se ne chiami una terza, la prima se ne va.' },
+    { who: 'aurelio', text: 'Le bestie lunghe più di quattro metri e mezzo sono cavalcature: ti prendono in groppa e vanno veloci. Il tuo compagno lo diventerà crescendo.' },
+  ],
+  tipBigBeasts: [
+    { who: 'aurelio', text: 'Attento! Qui vicino nuota una bestia molto più forte della tua squadra.' },
+    { who: 'aurelio', text: 'Le bestie grosse hanno un livello alto. All’inizio evitale: fai crescere la squadra con le bestie piccole della baia, poi torna da loro.' },
+  ],
+  tipSell: [
+    { who: 'aurelio', text: 'Il pesce che prendi finisce nella sacca. Al porto tocca “Vendi” in alto: le sardine diventano denti.' },
+    { who: 'aurelio', text: 'I denti sono il denaro del mare: conchiglie per domare, cure, esche, mute, armi e navi.' },
   ],
   // the bounties' path, the diary and the market's requests (owner, 26 ottobre 2026)
   tipBounties: [
@@ -165,8 +181,15 @@ export type TipTrigger =
   | 'tamedOutOfTeam'
   | 'portArrived'
   | 'abyssPart'
-  | 'landmarkFound';
-export const TIPS: { id: DialogueId; title: string; on: TipTrigger }[] = [
+  | 'landmarkFound'
+  | 'tamedToTeam'
+  | 'dangerSeen'
+  | 'fishCaught';
+/** `early`: it can open during the guided first dive too. */
+export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true }[] = [
+  { id: 'tipPack', title: 'Compagni e cavalcature', on: 'tamedToTeam', early: true },
+  { id: 'tipSell', title: 'Vendere il pescato', on: 'fishCaught', early: true },
+  { id: 'tipBigBeasts', title: 'Le bestie grandi', on: 'dangerSeen', early: true },
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
   { id: 'tipEcho', title: 'L’eco anomala', on: 'echoFound' },

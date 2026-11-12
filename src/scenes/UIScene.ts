@@ -18,6 +18,8 @@ import { Compass } from '../ui/compass';
 import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
 import { GalleryBar } from '../ui/galleryBar';
+import { coachDue, runCoach } from '../ui/coach';
+import { COACH_QUIET_SECONDS, type CoachRound } from '../data/coach';
 
 export class UIScene extends Phaser.Scene {
   private session!: Session;
@@ -32,6 +34,8 @@ export class UIScene extends Phaser.Scene {
   private compass!: Compass;
   /** The submarine's 360° sonar and the arrow home (block 5c). */
   private subScope!: SubScope;
+  /** Seconds the sea has been quiet (no dialogue, no picker): a tutorial round waits for it, after Aurelio's tips. */
+  private quiet = 0;
 
   constructor() {
     super('UI');
@@ -116,6 +120,24 @@ export class UIScene extends Phaser.Scene {
     this.scene.launch('Menus', { session: s, mode });
   }
 
+  /**
+   * The step-by-step tutorial's rounds of the sea (data/coach.ts): in the water at the start of the guided dive, at
+   * the helm the first time. The sea waits while it is on screen.
+   */
+  private coach(round: CoachRound): void {
+    const s = this.session;
+    const g = s.game;
+    if (!g || s.paused || s.inCockpit || s.inBattle || !coachDue(g.story, round)) return;
+    this.controls.releaseAll();
+    this.helm.releaseAll();
+    s.paused = true;
+    this.scene.pause('World');
+    runCoach(g.story, round, () => {
+      s.paused = false;
+      this.scene.resume('World');
+    });
+  }
+
   private openPause(): void {
     this.openMenus('pause');
   }
@@ -157,5 +179,11 @@ export class UIScene extends Phaser.Scene {
     this.backpack.update(g);
     this.compass.update(g);
     this.subScope.update(g, dt);
+    this.quiet = g.story.dialogue || needsStarter(g) ? 0 : this.quiet + dt;
+    if (this.quiet > COACH_QUIET_SECONDS) {
+      const swimming = !helm && !g.ship.aboard && !g.sub.aboard && !g.boat.aboard && !storyHoldsDiver(g);
+      if (swimming && g.beasts.team.length) this.coach('acqua');
+      else if (helm && g.ship.aboard) this.coach('timone');
+    }
   }
 }

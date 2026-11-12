@@ -17,6 +17,7 @@ import { renderBackpack, type TabContext } from './portTabs';
 import { renderVehicles } from './portVehicles';
 import { renderTeamPanel } from './teamPanel';
 import { askAurelio } from '../systems/story';
+import { runCoach } from './coach';
 
 export { slotName } from './portTabs';
 
@@ -39,6 +40,8 @@ export class PortMenu {
   private readonly body: HTMLDivElement;
   private readonly msg: HTMLDivElement;
   private readonly tabs: HTMLButtonElement[] = [];
+  /** Sell the fish bag, always in sight while it has fish (owner, 12 novembre 2026: "vendi sardine ricevi soldi"). */
+  private readonly sellBtn: HTMLButtonElement;
   private tab: Tab = 'bacheca';
   private msgTimer = 0;
 
@@ -57,11 +60,13 @@ export class PortMenu {
     if (!g.port || g.port.id === 'portofosco' || g.port.id === 'fango') {
       // Aurelio is at Portofosco, and at Porto Fango with your ship
       const aurelio = el('button', 'pbtn', top);
+      aurelio.dataset.coach = 'port-aurelio';
       aurelio.append(icon('lamp'), document.createTextNode(' Aurelio'));
       aurelio.addEventListener('click', () => askAurelio(this.g, this.g.story.pending));
     }
     // resting is what entering the port already did: the button says it out loud and can be pressed again
     const rest = el('button', 'pbtn', top);
+    rest.dataset.coach = 'port-rest';
     rest.append(icon('heart'), document.createTextNode(' Riposa'));
     rest.addEventListener('click', () => {
       restAtPort(this.g);
@@ -70,10 +75,17 @@ export class PortMenu {
         `Tu e la squadra siete in forze. Se perdi i sensi ti risvegli qui, a ${this.g.port?.name ?? 'Portofosco'}.`,
       );
     });
+    this.sellBtn = el('button', 'pbtn sell', top);
+    this.sellBtn.dataset.coach = 'port-sell';
+    this.sellBtn.addEventListener('click', () => this.sellFish());
     const dive = el('button', 'pbtn primary', top);
+    dive.dataset.coach = 'port-dive';
     dive.append(icon('dive'), document.createTextNode(' Tuffati'));
     dive.addEventListener('click', () => {
       this.session.emit('saveNow');
+      // arrived on the ship or the boat: into the water from it (owner, 12 novembre 2026: at Porto Fango the button
+      // only closed the menu and left you at the helm, as if it did not work)
+      if (this.g.ship.aboard || this.g.boat.aboard) this.session.input.helmCmd = 'dive';
       onDive();
     });
     const rail = el('div', 'port-rail', this.root);
@@ -85,11 +97,13 @@ export class PortMenu {
         this.render(true);
       });
       b.dataset.tab = id;
+      b.dataset.coach = `port-${id}`;
       this.tabs.push(b);
     }
     this.body = el('div', 'port-body', this.root);
     this.msg = el('div', 'port-msg', this.root);
     this.render();
+    runCoach(g.story, 'porto'); // the step-by-step tutorial, the first time (data/coach.ts)
   }
 
   private say(text: string, error = false): void {
@@ -105,6 +119,13 @@ export class PortMenu {
     const gear = this.g.gear;
     const keep = newTab ? 0 : this.body.scrollTop;
     this.teeth.replaceChildren(icon('tooth'), document.createTextNode(` ${gear.teeth}`));
+    const n = bagCount(gear);
+    this.sellBtn.hidden = n === 0;
+    this.sellBtn.replaceChildren(
+      icon('fish'),
+      document.createTextNode(` Vendi ${n} pesci (+${bagWorth(gear.market, gear.bag, Date.now())}) `),
+      icon('tooth'),
+    );
     for (const t of this.tabs) t.classList.toggle('on', t.dataset.tab === this.tab);
     this.body.replaceChildren();
     const b = this.body;
@@ -119,13 +140,17 @@ export class PortMenu {
     this.body.scrollTop = keep;
   }
 
-  /** The fish market: sell the bag, and the price list (a kind sold in heaps is cheaper for a while, market.ts). */
+  private sellFish(): void {
+    const r = sellAtPort(this.g);
+    this.say(`Venduti ${r.count} pesci: +${r.teeth} denti.`);
+    this.render();
+  }
+
+  /** The fish market: sell the bag first (the first thing to learn), the beasts this harbour buys, the barter, the
+   *  price list (a kind sold in heaps is cheaper for a while, market.ts). */
   private renderMarket(b: HTMLElement): void {
     const gear = this.g.gear;
-    // the beasts this harbour buys at double price (owner, 26 ottobre 2026)
     const ctx: TabContext = { g: this.g, say: (t, e) => this.say(t, e), redraw: () => this.render() };
-    renderBeastRequests(b, ctx);
-    renderBarter(b, ctx); // several common ones for an albino or an alpha (owner, 26 ottobre)
     el('h3', '', b, 'Pesci');
     const n = bagCount(gear);
     const now = Date.now();
@@ -140,13 +165,13 @@ export class PortMenu {
       button: {
         label: 'Vendi tutto',
         disabled: n === 0,
-        onClick: () => {
-          const r = sellAtPort(this.g);
-          this.say(`Venduti ${r.count} pesci: +${r.teeth} denti.`);
-          this.render();
-        },
+        onClick: () => this.sellFish(),
       },
     });
+    // the beasts this harbour buys at double price (owner, 26 ottobre 2026), several common ones for an albino or
+    // an alpha
+    renderBeastRequests(b, ctx);
+    renderBarter(b, ctx);
     el('h3', '', b, 'Listino di oggi');
     const today = { sold: { ...gear.market.sold }, at: gear.market.at };
     recover(today, now);

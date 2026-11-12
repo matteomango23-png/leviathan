@@ -204,10 +204,17 @@ export function dangerOf(speciesId: string): Danger {
  * the band (`band`: 0 = coast … DANGER_RULES), albino and alfa add more. Legends keep their own range, the story's
  * unique beasts their level.
  */
-export function rollWildLevel(form: BeastForm, rng: Rng, band?: number): number {
+export function rollWildLevel(form: BeastForm, rng: Rng, band?: number, levels?: [number, number]): number {
   const u = uniqueOf(form);
   if (u?.wildLevel) return u.wildLevel[0] + Math.floor(rng() * (u.wildLevel[1] - u.wildLevel[0] + 1));
   if (u) return u.level;
+  // a spawn with its own levels (the first bay, COAST_LEVELS.firstBay)
+  if (levels)
+    return (
+      levels[0] +
+      Math.floor(rng() * (levels[1] - levels[0] + 1)) +
+      (DANGER_RULES.variantExtra[form.variant] ?? 0)
+    );
   // the hand-made waters (no band): a wider spread, low levels more often (COAST_LEVELS; owner, 22 ottobre)
   const coast = band === undefined ? COAST_LEVELS.byDanger[dangerOf(form.speciesId)] : undefined;
   if (coast) {

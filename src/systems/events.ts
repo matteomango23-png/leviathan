@@ -132,7 +132,10 @@ export type GameEvent =
   | { type: 'rumourHeard'; name: string }
   | { type: 'echoFound'; name: string; depthM: number }
   | { type: 'tracesFound'; id: string; text: string }
-  | { type: 'shipHint'; text: 'hatchMoving' | 'hatchOpenStill' | 'stopToDive' | 'stopToLeave' | 'subBroken' }
+  | {
+      type: 'shipHint';
+      text: 'hatchMoving' | 'hatchOpenStill' | 'stopToDive' | 'reconOut' | 'stopToLeave' | 'subBroken';
+    }
   | { type: 'hatchMoved'; open: boolean }
   | { type: 'subLaunching' }
   | { type: 'subLaunched' }

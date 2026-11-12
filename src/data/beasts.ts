@@ -68,6 +68,8 @@ export interface WildSpawnDef {
   /** A hunted beast's den (data/hunts.ts): it comes only when its hunt is ready (systems/hunts.ts), as itself. */
   hunt?: string;
   form?: { unique?: string };
+  /** Its own levels (the first bay's small beasts, COAST_LEVELS.firstBay), instead of its danger band. */
+  levels?: [number, number];
 }
 
 // Each entry is one beast that comes and goes; a species listed twice can be met two at a time.
@@ -247,7 +249,20 @@ export const SPECIES_DANGER: Record<string, Danger> = {
 export const COAST_LEVELS = {
   byDanger: { 1: [2, 20], 2: [8, 30] } as Partial<Record<Danger, [number, number]>>,
   lowBias: 1.6,
+  /** Portofosco's bay (owner, 12 novembre 2026: "dovrebbero esserci animali che uno può battere con un animale al
+   *  cinque"): its small beasts (danger up to `firstBayDanger`, spawning west of `firstBayToX` and above
+   *  `firstBayMaxY`) come at these levels; the visiting sharks keep theirs. */
+  firstBay: [3, 7] as [number, number],
+  firstBayDanger: 2,
+  firstBayToX: bay(1900),
+  firstBayMaxY: 600,
 };
+for (const s of WILD_SPAWNS) {
+  const [, y0, x1] = s.area;
+  const danger = SPECIES_DANGER[s.speciesId] ?? 1;
+  if (!s.endless && !s.hunt && x1 <= COAST_LEVELS.firstBayToX && y0 < COAST_LEVELS.firstBayMaxY && danger <= COAST_LEVELS.firstBayDanger)
+    s.levels = COAST_LEVELS.firstBay;
+}
 
 export const DANGER_RULES = {
   /** Where in its band a beast falls: 0 = the bottom (the coast) … this share is added by the region's bandAt and

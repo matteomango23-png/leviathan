@@ -2,6 +2,19 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.116.0 — Un inizio spiegato (12 novembre 2026)
+
+- **Tutorial passo passo**, come nei giochi per telefono: la prima volta in acqua, al porto, al timone e nel cockpit lo schermo si scurisce e Aurelio ti indica ogni pulsante e cosa fa. Si può saltare, e rivedere dalla Guida.
+- **Nuovi consigli di Aurelio:** compagni e cavalcature (fino a 2 compagni in acqua), vendere il pescato, le bestie grandi da evitare all'inizio, la luce della nave.
+- Nella baia di Portofosco le bestie piccole sono dal livello 3 al 7: si battono e si domano col primo compagno. Gli squali di passaggio restano forti.
+- La freccia gialla indica dove andare nelle prime missioni (sardine, una bestia da domare, il molo, Porto Fango) finché non hai la nave.
+- La nave di Aurelio è già ormeggiata a Porto Fango quando arrivi.
+- Al porto c'è il pulsante "Vendi N pesci" in alto; nel Mercato la sacca è la prima cosa.
+- Taglie: sempre con nome e immagine; accettarne una non fa più saltare la pagina; seguire un leggendario chiude la sua scheda; nel Diario il leggendario ha l'immagine.
+- Il banner "Taglia compiuta" (e quello delle missioni) arriva appena finisce la battaglia, non più nascosto.
+- "Tuffati" al porto ti mette in acqua anche se sei arrivato con la nave; se il drone è fuori, il gioco lo dice.
+- I salvataggi restano compatibili.
+
 ## v0.115.0 — Richieste del mercato e Baratto (26 ottobre 2026)
 
 - **Richieste del mercato:** quasi sempre bestie comuni (un alfa o un albino solo una volta su cento), e ognuna paga da 2 a 3 volte il prezzo normale, scritto sulla card ("Paga ×2,5"). Vale anche vendendo dal Recinto.

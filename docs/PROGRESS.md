@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 26 ottobre 2026, v0.115.0)
+## Dove siamo (aggiornato il 12 novembre 2026, v0.116.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, sottomarini, motoscafi), porti con bacheca, mercato, cantiere, riparazioni, sonar e cacce, meteo, suoni e musiche.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -20,6 +20,12 @@
 ## Note del 24 ottobre: lotti C1-C4 (piano in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`)
 
 Il proprietario ha mandato una lista lunga dopo la v0.108.0 e chiede iniziativa: per ogni problema controllare tutti i casi simili. Ordine: **C1** correzioni rapide ✅ (v0.108.1); **C2** ✅ (v0.109.0), **C3** ✅ (v0.110.0), **C4** ✅ (v0.111.0); **M3 Gallerie** ✅ (v0.112.0). Mezzi abissali ✅ (v0.113.0). Prossimo: M4, poi M5. (Vecchie note:) Portofosco (la nave entra nella terra, il molo non poggia, stacco di `molo_fondo` che ha i bordi tagliati dritti), la sagoma intera dell'U-Boot per le collisioni, il passaggio degli sfondi tra baia e mangrovie (e tutti gli altri confini), il radar del sottomarino con fondale e ostacoli; **C3** immagini Gemini per tutto ciò che è ancora disegnato col codice (veliero della Foresta e relitti con l'arma, barriere d'ossa, cerchi d'aria, forzieri); **C4** lo scontro in acqua riprogettato (niente "Affronta", chi colpisce per primo parte nella battaglia, bestia ferita al rosso che fugge, morso della cavalcatura sempre visibile). Poi M3.
+
+## Lotto U1, inizio e tutorial (12 novembre 2026) → v0.116.0
+
+- Feedback del 12 novembre in `docs/BACKLOG.md` (lotti U1-U6, ordine confermato). **Prossimo: U2** (leggendari e sonar), poi U3 (freccia e mezzi: il blocco B deve fermare anche il Gas), U4, U5, U6 da decidere insieme.
+- `data/coach.ts` + `ui/coach.ts` (tutorial passo passo, `data-coach` sui pulsanti, giri in `story.seen`, "Rivedi" nella Guida); `COAST_LEVELS.firstBay` e `WildSpawnDef.levels`; `storyGoal` in `systems/shipPointer.ts`; `shipWaitsAtDock` (nave visibile prima del dono); consigli `tipPack`, `tipSell`, `tipBigBeasts` (`early`: anche nella prima immersione); banner in coda in `ui/hud.ts`; taglie aggiornate sul posto (`ui/bountyCards.ts`, `portBoard.ts`); `shipHint` `reconOut`. Test: `tests/lottoU1.test.ts`.
+- Non riprodotto: "sardine che restano a girare quando sali in barca" (chiesti dettagli al proprietario).
 
 ## Lotto T2, richieste e Baratto (26 ottobre 2026) → v0.115.0
 

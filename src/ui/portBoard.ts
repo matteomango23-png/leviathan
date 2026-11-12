@@ -20,7 +20,7 @@ import type { TabContext } from './portTabs';
 import { renderSonarNotes } from './sonarNotes';
 import { bountyRow } from './bountyCards';
 import { BOUNTY_RULES, BOUNTY_TEXT } from '../data/bounties';
-import { boardBounties, followedBounties } from '../systems/economy/bounties';
+import { boardBounties } from '../systems/economy/bounties';
 
 /** Hunts heard elsewhere or not yet, shown as shadows: a taste of what waits further out. */
 const TEASERS = 2;
@@ -29,8 +29,7 @@ const STEPS = ['Voce', 'Eco', 'Tracce', 'Bestia'];
 export function renderBoard(b: HTMLElement, ctx: TabContext): void {
   // the bounties' path, from the easiest beasts to the legends (owner, 26 ottobre 2026), then the other jobs
   el('p', 'port-hint', b, BOUNTY_TEXT.hint);
-  for (const kind of ['comune', 'rara'] as const)
-    bountyRow(b, ctx, kind, boardBounties(ctx.g, kind), followedBounties(ctx.g, kind).length);
+  for (const kind of ['comune', 'rara'] as const) bountyRow(b, ctx, kind, boardBounties(ctx.g, kind));
   renderWanted(b, ctx);
   renderJobs(b, ctx);
   renderSonarNotes(b, ctx.g);
@@ -41,12 +40,7 @@ function renderWanted(b: HTMLElement, ctx: TabContext): void {
   const here = rumoursAt(g.port ?? PORT);
   const heard = (h: HuntDef): boolean => !!g.hunts[h.id]?.heard;
   const shadows = HUNTS.filter((h) => !here.includes(h) && !heard(h)).slice(0, TEASERS);
-  el(
-    'h3',
-    '',
-    b,
-    `${BOUNTY_TEXT.rows.leggendaria} · seguiti ${g.huntPinned ? 1 : 0} di ${BOUNTY_RULES.follow.leggendaria}`,
-  );
+  const head = el('h3', '', b);
   el(
     'p',
     'port-hint',
@@ -54,14 +48,26 @@ function renderWanted(b: HTMLElement, ctx: TabContext): void {
     `Leggende e giganti di questi mari: ${BOUNTY_RULES.reward.legend} denti a chi ne batte o cattura una che segue. Tocca una card per sapere dove e quando cercarla, e seguila col sonar della nave.`,
   );
   const row = el('div', 'wanted-row', b);
-  for (const h of here) wantedCard(row, ctx, h);
+  // following one changes only the cards' marks and the count (a redraw made the page jump)
+  const marks = (): void => {
+    head.textContent = `${BOUNTY_TEXT.rows.leggendaria} · seguiti ${g.huntPinned ? 1 : 0} di ${BOUNTY_RULES.follow.leggendaria}`;
+    for (const c of row.querySelectorAll<HTMLElement>('.wanted-card[data-hunt]')) {
+      const pinned = g.huntPinned === c.dataset.hunt;
+      c.classList.toggle('pinned', pinned);
+      c.querySelector('.wanted-pin')?.remove();
+      if (pinned && !c.classList.contains('closed')) el('div', 'wanted-pin', c, '🎯 seguita');
+    }
+  };
+  for (const h of here) wantedCard(row, ctx, h, marks);
   for (const h of shadows) shadowCard(row, ctx, h);
+  marks();
 }
 
-function wantedCard(row: HTMLElement, ctx: TabContext, h: HuntDef): void {
+function wantedCard(row: HTMLElement, ctx: TabContext, h: HuntDef, marks: () => void): void {
   const g = ctx.g;
   const out = outcome(g, h);
-  const c = el('button', `wanted-card${out ? ' closed' : ''}${g.huntPinned === h.id ? ' pinned' : ''}`, row);
+  const c = el('button', `wanted-card${out ? ' closed' : ''}`, row);
+  c.dataset.hunt = h.id;
   const img = el('img', 'wanted-art', c);
   img.alt = '';
   img.loading = 'lazy';
@@ -73,8 +79,7 @@ function wantedCard(row: HTMLElement, ctx: TabContext, h: HuntDef): void {
   const done = stepsDone(g, h);
   STEPS.forEach((s, k) => el('span', `diary-light${done[k] ? ' done' : ''}`, lights, s));
   if (out) el('div', 'wanted-stamp', c, out);
-  else if (g.huntPinned === h.id) el('div', 'wanted-pin', c, '🎯 seguita');
-  c.addEventListener('click', () => openSheet(row, g, h, ctx.redraw));
+  c.addEventListener('click', () => openSheet(row, g, h, marks, ctx.say));
 }
 
 function shadowCard(row: HTMLElement, ctx: TabContext, h: HuntDef): void {
@@ -84,7 +89,7 @@ function shadowCard(row: HTMLElement, ctx: TabContext, h: HuntDef): void {
   img.loading = 'lazy';
   setArt(img, { speciesId: h.form.speciesId, variant: 'comune', unique: h.form.unique });
   const info = el('div', 'wanted-info', c);
-  el('div', 'wanted-name', info, '???');
+  el('div', 'wanted-name', info, h.name); // its name too, so you know what you will look for (12 novembre)
   el(
     'div',
     'wanted-where',

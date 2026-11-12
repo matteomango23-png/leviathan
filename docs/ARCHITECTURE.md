@@ -175,7 +175,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `portVehicles.ts` | La scheda Mezzi: carburante e "pieno a tutti", riparazione di ogni mezzo, ricambi e cantiere a Porto Fango. |
 | `shipyardPanel.ts`, `shipPage.ts`, `shipStats.ts` | Il cantiere: card delle navi, pagina di una nave, numeri confrontati con la flotta. |
 | `missionList.ts`, `reconPopup.ts` | Le missioni accettate, nel diario della nave; il resoconto del drone appena torna. |
-| `guide.ts` | La Guida del menu di pausa: i consigli di Aurelio da rileggere e l'interruttore. |
+| `guide.ts` | La Guida del menu di pausa: i consigli di Aurelio da rileggere, l'interruttore, "Rivedi il tutorial passo passo". |
+| `coach.ts` (+ `data/coach.ts`) | Il tutorial passo passo: schermo scurito, il pulsante indicato (`data-coach`) e il fumetto di Aurelio; quattro giri (acqua, porto, timone, cockpit). |
 | `starterPicker.ts` | La scelta della prima bestia. |
 | `teamPanel.ts`, `pauseMenu.ts` | Squadra (con "Nutri" al porto) e menu di pausa. |
 | `dialogueBox.ts` | Dialoghi della storia in basso (tocca per andare avanti, Salta). |

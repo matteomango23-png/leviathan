@@ -23,6 +23,7 @@ import { inPool } from '../systems/ship/shipPool';
 import { formName } from '../systems/beasts/forms';
 import { subModel } from '../systems/subState';
 import { renderSubSonar } from './subScope';
+import { runCoach } from './coach';
 
 /** The tabs of the submarine's own cockpit, if you are in one that has it (the abyssal one). */
 const subCockpit = (g: GameState): CockpitTab[] | null =>
@@ -82,6 +83,7 @@ export class Cockpit {
     const back = el('button', 'pbtn primary', top);
     back.append(icon('lamp'), document.createTextNode(' Al timone'));
     back.addEventListener('click', () => onClose());
+    back.dataset.coach = 'cockpit-back';
     const rail = el('div', 'port-rail', this.root);
     // each ship its own instruments (owner, 8 ottobre); from the abyssal submarine, its own (owner, 25 ottobre)
     const sub = subCockpit(g);
@@ -96,6 +98,7 @@ export class Cockpit {
         this.render();
       });
       b.dataset.tab = id;
+      b.dataset.coach = `cockpit-${id}`;
       this.tabs.push(b);
     }
     this.body = el('div', 'port-body', this.root);
@@ -103,6 +106,7 @@ export class Cockpit {
     this.render();
     this.live();
     this.tick = window.setInterval(() => this.live(), 500);
+    runCoach(g.story, 'cockpit'); // the step-by-step tutorial, the first time (data/coach.ts)
   }
 
   /** The throttle that keeps the ship under the sonar's limit (SHIP.sonar.cruiseKnots). */

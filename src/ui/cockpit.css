@@ -365,6 +365,20 @@
   border-color: #ff785a;
   box-shadow: 0 0 10px rgba(255, 120, 90, 0.35);
 }
+/* the legend you follow, with its picture like the other cards (owner, 12 novembre 2026) */
+.diary-card.with-art {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  column-gap: 10px;
+  align-content: start;
+}
+.diary-card-art {
+  grid-row: 1 / span 3;
+  width: 72px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+}
 .diary-card.closed {
   opacity: 0.6;
 }

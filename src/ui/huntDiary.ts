@@ -6,6 +6,7 @@ import { WORLD } from '../data/worldLayout';
 import type { GameState } from '../systems/game';
 import { huntNextStep, huntOpen, huntRegionName } from '../systems/hunts';
 import { kmFromCoast } from '../systems/world/endless';
+import { setArt } from './art';
 import { el } from './dom';
 import { ICONS } from './icons';
 import { renderSonarNotes } from './sonarNotes';
@@ -27,8 +28,18 @@ export function outcome(g: GameState, h: HuntDef): string | null {
     : 'sconfitta';
 }
 
-/** The sheet of one hunt: every piece of it in rows, and the button to follow it. */
-export function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw: () => void): void {
+/**
+ * The sheet of one hunt: every piece of it in rows, and the button to follow it. Following or dropping it closes the
+ * sheet and says so (owner, 12 novembre 2026: the sheet stayed open, and only its X showed it was followed).
+ * @param changed after it is followed or dropped
+ */
+export function openSheet(
+  parent: HTMLElement,
+  g: GameState,
+  h: HuntDef,
+  changed: () => void,
+  say: (text: string) => void = () => {},
+): void {
   const i = HUNTS.indexOf(h);
   const p = g.hunts[h.id]!;
   // over everything, not inside the cockpit's scrolling body (owner, 15 ottobre: it overlapped and its X was out of sight)
@@ -80,7 +91,9 @@ export function openSheet(parent: HTMLElement, g: GameState, h: HuntDef, redraw:
     );
     follow.addEventListener('click', () => {
       g.huntPinned = pinned ? null : h.id;
-      redraw();
+      root.remove();
+      say(pinned ? `Non segui più ${h.name}.` : `Ora segui ${h.name}: la trovi nel Diario del cockpit.`);
+      changed();
     });
   }
 }
@@ -108,9 +121,13 @@ export function renderDiary(
   for (const kind of ['comune', 'rara'] as const) {
     const cards = followedBounties(g, kind);
     if (!cards.length) continue;
-    el('h3', '', b, `${BOUNTY_TEXT.rows[kind]} · ${cards.length} di ${BOUNTY_RULES.follow[kind]}`);
+    const head = el('h3', '', b);
+    const count = (): void => {
+      head.textContent = `${BOUNTY_TEXT.rows[kind]} · ${followedBounties(g, kind).length} di ${BOUNTY_RULES.follow[kind]}`;
+    };
+    count();
     const row = el('div', 'bounty-row', b);
-    for (const c of cards) bountyCard(row, ctx, c, true);
+    for (const c of cards) bountyCard(row, ctx, c, count, true);
   }
   // the legend you follow: its four steps, its sheet
   const h = HUNTS.find((x) => x.id === g.huntPinned);
@@ -118,14 +135,19 @@ export function renderDiary(
     el('h3', '', b, `${BOUNTY_TEXT.rows.leggendaria} · 1 di ${BOUNTY_RULES.follow.leggendaria}`);
     const grid = el('div', 'diary-grid', b);
     const done = stepsDone(g, h);
-    const c = el('button', 'diary-card pinned', grid);
+    const c = el('button', 'diary-card pinned with-art', grid);
+    // its picture, like every other card of the diary (owner, 12 novembre 2026)
+    const img = el('img', 'diary-card-art', c);
+    img.alt = '';
+    img.loading = 'lazy';
+    setArt(img, { speciesId: h.form.speciesId, variant: 'comune', unique: h.form.unique });
     const top = el('div', 'diary-card-top', c);
     el('span', 'diary-card-name', top, h.name);
     el('span', 'diary-badge pin', top, `${BOUNTY_RULES.reward.legend} denti`);
     el('div', 'diary-card-where', c, `${huntRegionName(h)} · ${CONDITION_TEXT[h.condition]}`);
     const lights = el('div', 'diary-lights', c);
     STEPS.forEach((st, k) => el('span', `diary-light${done[k] ? ' done' : ''}`, lights, st));
-    c.addEventListener('click', () => openSheet(b, g, h, redraw));
+    c.addEventListener('click', () => openSheet(b, g, h, redraw, say));
   }
   renderSonarNotes(b, g); // what the sonar taught you (block 5a)
 }
