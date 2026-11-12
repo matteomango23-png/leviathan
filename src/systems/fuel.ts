@@ -9,7 +9,7 @@ import type { TileMap } from './world/tileMap';
 import type { GameEvent } from './events';
 import { harbourShip, vehiclesStuck } from './ship/unstuck';
 import { hullBlocked, submerged } from './ship/uboat';
-export { autonomyKm, litresFor, perKmAt } from './fuelBurn';
+export { autonomyKm, litresFor } from './fuelBurn';
 import { helmPoint } from './ship/geometry';
 import { shipAlongside } from './economy/places';
 import { SHIP_WEST_X } from './ship/surface';

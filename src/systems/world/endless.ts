@@ -12,7 +12,7 @@ import { biomeOf, naturalFloor, stretchAt } from './stretches';
 import { floorNearLandmark, landmarkAtX, landmarkSolidAt } from './landmarks';
 import { floorNearTemple, templeAtX, templeBottomAt, templeTileAt, templeVentAt } from './templeSite';
 
-export { biomeAt, biomeOf, kmFromCoast, regionAt, regionIndexAt, stretchAt } from './stretches';
+export { biomeAt, biomeOf, kmFromCoast, regionAt, stretchAt } from './stretches';
 
 /** The sea floor (world y) at x: the natural one, bent to meet a sunken temple or a landmark near one. */
 export const endlessFloor = (x: number): number => floorNearLandmark(x, floorNearTemple(x, naturalFloor(x)));

@@ -1,4 +1,4 @@
-// Leviatano — the diver, the harpoon, camera, light and look of the sea (tappa 1).
+// Leviatano — the diver, the speargun, camera, light and look of the sea (tappa 1).
 // Speeds are in world units per second (u/s); 6 u = 1 m. Values marked "tuning" are a first pass.
 
 export const DIVER = {

@@ -12,13 +12,6 @@ export interface CoachStep {
   text: string;
 }
 
-export const COACH_TITLES: Record<CoachRound, string> = {
-  acqua: 'In acqua',
-  porto: 'Il porto',
-  timone: 'Al timone',
-  cockpit: 'Il cockpit',
-};
-
 export const COACH: Record<CoachRound, CoachStep[]> = {
   acqua: [
     { target: 'stick', text: 'Tocca e trascina qui a sinistra per nuotare, dove vuoi sullo schermo.' },

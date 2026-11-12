@@ -8,7 +8,7 @@ import { canBreakBones } from '../src/systems/abilities';
 import { contextAction, mountSpeed } from '../src/systems/beastPlay';
 import { stepRoam } from '../src/systems/beasts/roam';
 import { spawnWild, type WildBeast } from '../src/systems/beasts/wildState';
-import { ambush } from '../src/systems/encounters';
+import { ambush } from '../src/systems/battleRequest';
 import { weaponHitsBeast } from '../src/systems/swimFight';
 import { currentAction } from '../src/systems/playerActions';
 import type { GameEvent } from '../src/systems/events';

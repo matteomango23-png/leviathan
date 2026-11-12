@@ -1,4 +1,4 @@
-// Backpack weapons besides the base harpoon: fiocine (three short darts in a fan)
+// Backpack weapons besides the base speargun: fiocine (three short darts in a fan)
 // and the weighted net (catches up to 5 fish, slows beasts). Port of fireWeapon/updateProj.
 import { WEAPON_RULES } from '../data/economy';
 import { WEAPONS } from '../data/world';

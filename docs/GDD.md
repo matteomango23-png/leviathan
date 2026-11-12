@@ -91,7 +91,7 @@ Gioco di esplorazione e collezione di bestie marine, dark fantasy, 2D con grafic
 
 Come Pokémon (dal 3 ottobre 2026): la bestia si sfinisce nella **battaglia a turni** e si doma lanciando la **Conchiglia del domatore**; più è stanca, più è facile. Nessun limite artificiale, ma una bestia molto più forte della tua squadra è quasi impossibile da domare. Un doppione della versione comune, sfinito, fugge. Una leggenda sconfitta e non domata sparisce per sempre.
 
-Decisi l'8 ottobre 2026 (blocco 6): l'arpione in mare indebolisce prima della lotta (fino a metà vita) e ci saranno conchiglie di qualità diverse. Vedi "Decisioni di design".
+Le leggende si sentono (voce ed eco) solo quando la squadra arriva a 15 livelli da loro (12 novembre 2026). Decisi l'8 ottobre 2026 (blocco 6): il fucile in mare indebolisce prima della lotta (fino a metà vita) e ci saranno conchiglie di qualità diverse. Vedi "Decisioni di design".
 
 ## Progressione ed economia
 
@@ -100,13 +100,13 @@ Due binari: le bestie salgono di livello combattendo; il sub cresce con mute, ar
 - **Denti da:** missioni e taglie, vendita dei pesci, relitti e forzieri. Abbattere nemici dà esperienza, non denti.
 - **Denti per:** mute e potenziamenti (profondità, ossigeno, abilità del sub, lampada), armi, oggetti dello zaino, skin.
 - **Mute:** leggera, rinforzata, scafandro da palombaro, abissale; ognuna con pro e contro. Il sub non ha un livello proprio.
-- **Zaino:** arpione base sempre equipaggiato + 3 posti scelti prima di ogni immersione, tra armi, sciami e oggetti (Krill dorato, Alga curativa, Bolla d'aria, Esca, Arpione mitico).
+- **Zaino:** fucile subacqueo sempre equipaggiato + 3 posti scelti prima di ogni immersione, tra armi, sciami e oggetti (Krill dorato, Alga curativa, Bolla d'aria, Esca). Niente conchiglie nei posti: servono solo in battaglia.
 - **Skin:** per bestie già domate, con un piccolo bonus (+5% a una statistica), una attiva per bestia.
 
 ## Combattimento
 
 - Tempo reale. Doppio joystick: sinistra per nuotare, il pulsante dell'arma si trascina per mirare e sparare a raffica.
-- Armi: arpione, fiocine, rete, lancia folgore (Tempesta), arpione runico. Le armi servono a sopravvivere e sfiancare; si potenziano coi denti.
+- Armi: fucile subacqueo (raffica di dardi senza cima, caricatore da 10, ricarica col suo pulsante, dardi da comprare al porto; 12 novembre 2026), fiocine, rete, lancia folgore (Tempesta), arpione runico. Le armi servono a sopravvivere e sfiancare; si potenziano coi denti.
 - Feedback: barre vita sopra nemici e bestie, numeri di danno, tacca di sfinimento.
 - **In mare, prima della battaglia (22 ottobre 2026):** le armi sfiancano una bestia fino a metà vita (le timide scappano, le aggressive si arrabbiano); entra in battaglia con la vita tolta. A nuoto da solo un predatore prima morde (un cuore, una spinta, una tregua), poi lo affronti (pulsante Affronta o tocco su una tua bestia) o scappi; con la squadra KO solo morsi. In groppa la battaglia parte al contatto. Nessun freno ai megapredatori domabili.
 

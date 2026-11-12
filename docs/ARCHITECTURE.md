@@ -73,7 +73,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `diver.ts`, `floatSurface.ts` | Nuoto, scatto (costa aria), ossigeno, cuori, morte e rinascita in superficie; il galleggiamento sulle onde in superficie, senza uscire dall'acqua. |
 | `breath.ts` | Barra della pressione (sub e sottomarino) e serbatoi d'aria. |
 | `rideAir.ts` | L'aria del cetaceo che cavalchi e le barre mostrate nell'HUD. |
-| `harpoon.ts` | Arpione: va, aggancia un pesce o rimbalza sulla roccia, torna. |
+| `harpoon.ts`, `gun.ts`, `shotPath.ts` | Il fucile subacqueo: dardi a raffica che non tornano (`harpoon.ts`), il caricatore, la ricarica col pulsante, il rinculo e la scorta di dardi (`gun.ts`), il colpo controllato lungo tutto il tratto percorso (`shotPath.ts`, anche per le fiocine). |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
 | `birds.ts`, `birdsCatch.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. Una bestia che salta fuori dall'acqua li acchiappa (`birdsCatch.ts`). |
@@ -90,7 +90,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `save/migrations.ts`, `save/guards.ts` | Le migrazioni dei salvataggi vecchi (mai modificarne una: si aggiunge la successiva) e i piccoli controlli condivisi. |
 | `save/slots.ts` | Le partite del menu iniziale: elenco con nome, una chiave per partita, rinomina, elimina; sposta nell'elenco il vecchio salvataggio unico; non scrive mai sopra una partita illeggibile. |
 | `input.ts`, `events.ts`, `math.ts` | Tipi di input ed eventi, rumore e numeri casuali ripetibili. |
-| `beasts/forms.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle. |
+| `beasts/forms.ts`, `beasts/formShape.ts` | Versione di una bestia (comune, albino, alfa, variante unica, forma finale): nome, sprite, taglia, statistiche, stelle (le bestie uniche sempre 5), livelli delle selvatiche (la baia di Portofosco dal 3 al 7). Come è disegnata: contorno, dorso per chi la cavalca, modo di nuotare (`formShape.ts`). |
 | `beasts/rareVersions.ts` | Le versioni rare (alfa, albine, forme finali) e se le hai viste o domate, per il bestiario. |
 | `economy/repair.ts` | Riparare ogni mezzo in qualunque porto. |
 | `beasts/bestiaryEntries.ts` | Le voci del bestiario (specie, albini, forme finali) e la catena delle evoluzioni. |
@@ -103,7 +103,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/ownMarks.ts` | I tuoi mezzi in acqua (motoscafo, sottomarino, drone, sfera) per il sonar della nave. |
 | `beasts/patrol.ts` | La pattuglia dei predatori grandi: passaggi, uscita accelerata, rientro dallo stesso lato, scatto via, poi la carica. |
 | `beasts/roam.ts` | Bestie selvatiche in esplorazione: nuotano piano nel buio, si girano solo fuori dalla luce; ti puntano, ti ignorano o scivolano via secondo il carattere. |
-| `encounters.ts` | Comparse delle bestie selvatiche e inizio della battaglia (al tocco, o al colpo di fucile: alle spalle attacchi tu per primo). |
+| `encounters.ts`, `battleRequest.ts` | Comparse delle bestie selvatiche e inizio della battaglia: a nuoto nell'istante del tocco, in groppa dopo il morso. La richiesta di battaglia e chi colpisce per primo in `battleRequest.ts`. |
 | `beasts/spawnDraw.ts` | Chi compare quando c'è posto: estrazione pesata per rarità, meno per chi è già in acqua o appena visto; quote della mappa. |
 | `beasts/wildState.ts` | Stato delle bestie selvatiche, comparsa e uscita. |
 | `beastState.ts` | Stato condiviso delle bestie: selvatiche, squadra, cavalcatura, battaglia richiesta. |
@@ -113,7 +113,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `economy/backpack.ts` | Uso dello zaino in immersione: armi, oggetti, sciami; legame con lo sciame di sardine. |
 | `economy/missions.ts` | Bacheca: accettare, avanzare, riscuotere. |
 | `economy/places.ts` | Molo di Portofosco, relitti e forzieri. |
-| `weapons.ts` | Fiocine e rete. |
+| `weapons.ts` | Fiocine e rete (le armi dello Zaino). |
 | `save/convert.ts`, `save/gearSave.ts` | Da partita a salvataggio e ritorno; controllo dell'equipaggiamento. |
 | `beasts/combat.ts` | Danno delle mosse (tipi e moltiplicatori) e forma del corpo per i colpi. |
 | `beasts/team.ts` | Squadra e riserva, sblocco delle mosse, KO, ricarica del richiamo. |
@@ -159,7 +159,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `cockpit.ts`, `cockpit.css`, `cockpitTheme.ts` | Il cockpit della nave: Plancia, Sonar, Drone (Nightmare), Diario, Recinto e Zaino; colori per nave (tema rosso del Nightmare). |
 | `bridgePanel.ts`, `instruments.ts` | La plancia: obiettivo seguito, carta nautica ±2 km, quadranti (carburante, velocità), meteo, travaso, razzo. |
 | `sonarScreen.ts` | Lo schermo sonar del cockpit (canvas animato). |
-| `helmControls.ts`, `helmGauges.ts`, `helmDials.ts`, `helmInfo.ts`, `helmTypes.ts`, `helmBars.ts`, `helm.css` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), i quadranti in alto (velocità, autonomia, carburante, profondità; valori in `helmGauges.ts`, disegno in `helmDials.ts`) e i pulsanti della nave (portellone, cala, tuffati). |
+| `helmControls.ts`, `helmLevers.ts`, `helmGauges.ts`, `helmDials.ts`, `helmInfo.ts`, `helmTypes.ts`, `helmBars.ts`, `helm.css` | Le leve al timone della nave e nel sottomarino (gas, direzione, Sali/Scendi), i quadranti in alto (velocità, autonomia, carburante, profondità; valori in `helmGauges.ts`, disegno in `helmDials.ts`) e i pulsanti della nave (portellone, cala, tuffati). Dita, tastiera e blocco B delle leve in `helmLevers.ts`. |
 | `beastUi.ts` | Squadra in alto (chiama/richiama), pulsante contestuale, pulsanti mossa, minigioco della domatura. |
 | `backpackBar.ts` | I tre posti dello zaino durante l'immersione. |
 | `saveTransfer.ts` | Esporta e importa il salvataggio come file. |
@@ -187,7 +187,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `sheetPages.ts`, `evolutionScreen.ts` | Le 3 pagine della scheda di una bestia (Info, Statistiche, Mosse) e la schermata di evoluzione annullabile. |
 | `movePanel.ts`, `levelUpPanel.ts`, `afterBattle.ts`, `screens.css` | Schermate come Pokémon: dettagli di una mossa, "impara mossa" (le 4 conosciute e la nuova), Ricordamosse, pannello della salita di livello, e il loro ordine a fine battaglia. |
 | `huntView.ts` (views) | Le tracce vicino alle tane (carcassa, sangue nell'acqua) dopo l'eco anomala. |
-| `shipView.ts`, `shipWake.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, corsia lontana dietro le rocce; scia e bolle dell'elica in `shipWake.ts`. |
+| `shipView.ts`, `shipLights.ts`, `shipWake.ts` (views) | La nave dipinta: linea d'acqua, parte sommersa più blu, portellone che si apre, beccheggio, planata, corsia lontana dietro le rocce; scia e bolle dell'elica in `shipWake.ts`; le luci sotto lo scafo e il faro, che dondolano con la nave, in `shipLights.ts`. |
 | `sweepScope.ts`, `radarScreen.ts`, `subScope.ts` (ui) | Lo schermo rotondo col fascio che gira: radar nel cockpit, sonar sul vetro del sottomarino con la freccia verso la nave. |
 | `waterFilter.ts` (views), `systems/waterTint.ts` | L'acqua come filtro su tutto ciò che sta sotto le onde: leggermente azzurro in superficie, più blu e scuro in profondità, più marrone nell'acqua torbida. |
 | `seaLight.ts`, `seaRays.ts` (views) | I raggi di luce dalla superficie (dietro e, più deboli, davanti al mondo) e le microparticelle che si accendono quando un raggio le attraversa; la neve marina più fitta in profondità e le bioluminescenze delle fosse (strato `glow`). |
@@ -219,6 +219,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/battle/battle.ts`, `tameFlee.ts` | Le regole: ordine dei turni, mosse ed effetti, scelta del nemico, cambiare bestia, fine; domare (con la conchiglia scelta) e fuggire in `tameFlee.ts`. |
 | `scenes/BattleScene.ts` | Fa scorrere i turni: chiede l'azione, mostra i passi; a fine battaglia chiede quale mossa dimenticare. |
 | `systems/battle/stage.ts` | Quanto è grande ogni bestia (dalla lunghezza vera, tra un minimo e un massimo; il nemico mai sotto il menu, un gigante tagliato che si allontana piano e torna con `foeSway`), quanto è rara una bestia (luccichio) e quale sfondo usa la battaglia. |
+| `views/beastEye.ts` | L'occhio rosso di chi caccia, sulla striscia della testa; a bocca aperta dove lo ha l'immagine aperta (`data/beastEyes.ts`, `BEAST_EYES_OPEN`). |
 | `views/swimPose.ts` | La forma del corpo delle bestie grandi lungo la spina (squalo, cetaceo, serpente, polpo e calamaro, granchio che cammina, ali che battono), senza Phaser: `beastView.ts` la disegna a strisce. |
 | `views/battleView.ts`, `views/battle/drawBeast.ts` | Le due bestie: grandezza, rincorsa e affondo, colpi, svenimenti; il fondale che sfuma con una bestia nuova; mette insieme sfondo, effetti e conchiglia. `drawBeast.ts` disegna ogni bestia a ogni fotogramma (respiro, ondeggio, ombra, luce dietro, luccichio). |
 | `views/battle/backdrop.ts` | Lo sfondo a strati che si muove (acqua, rocce lontane, raggi, foschia, rocce medie, pedane con riflessi, neve marina e bolle, piante in primo piano, vignetta); usa gli strati dipinti quando ci sono. |
@@ -235,7 +236,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `systems/swimFight.ts` | Prima della battaglia: le armi sfiancano la bestia (fino a metà vita), a nuoto il predatore morde, e "Affronta". |
 | `data/powers.ts`, `systems/specialPowers.ts` | I poteri speciali di alcune specie: forzieri chiusi (polpo) e sepolti (squalo martello), portata e denti in più (lontra), eco lungo (beluga), aria da fermi (pesce luna, foche, tricheco). |
 | `systems/beasts/seat.ts` | Dove sei seduto sulla bestia che cavalchi, e la salita morbida in sella. |
-| `systems/diverStamina.ts`, `systems/shipPointer.ts` | La resistenza dello scatto del sub a nuoto; la freccia sul bordo dello schermo verso la nave (o il porto). |
+| `systems/diverStamina.ts`, `systems/shipPointer.ts` | La resistenza dello scatto del sub a nuoto; la freccia gialla sul bordo dello schermo: verso l'obiettivo delle prime missioni finché non hai la nave, verso il sottomarino lasciato in acqua, poi verso la nave (o il porto). |
 | `ui/orientation.ts`, `ui/rotateHint.ts`, `ui/splash.ts` | La misura del gioco (la più grande che il telefono riporta); "Gira il telefono" quando è in verticale (il gioco dorme sotto); la schermata iniziale "Tocca per entrare", che accende i suoni. |
 | `ui/typeWheel.ts` | La ruota dei tipi nel bestiario: chi batte chi, con una frase per ogni vittoria. |
 | `ui/battleUi.ts`, `ui/battleInfoBox.ts`, `ui/battleResultText.ts`, `ui/battle.css`, `ui/battleIcons.ts`, `ui/fonts.ts` | Riquadri delle bestie (`battleInfoBox.ts`), messaggi, comandi e mosse nello stile dei Pokémon recenti, i testi di fine battaglia; icone dei comandi e dei tipi; il carattere Baloo 2. |

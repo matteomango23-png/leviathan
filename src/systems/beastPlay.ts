@@ -15,7 +15,7 @@ import { faceHunter, stepSenses, stepWildSpawns } from './encounters';
 import { activeBeast, dismount, type BeastWorld } from './beastState';
 
 export { activeBeast, createBeasts } from './beastState';
-export type { BeastState, BeastWorld } from './beastState';
+export type { BeastWorld } from './beastState';
 export { weaponHitsBeast } from './swimFight';
 
 type ContextAction = 'sfonda' | 'scendi' | null;

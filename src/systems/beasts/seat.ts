@@ -3,7 +3,8 @@
 // 2026: "un salto non fluido nel momento in cui gli sali in groppa"). Pure logic.
 import { TEAM_RULES } from '../../data/beasts';
 import { riderSeat, type BodyPose } from './combat';
-import { backOfForm, speciesOf, type BeastForm } from './forms';
+import { speciesOf, type BeastForm } from './forms';
+import { backOfForm } from './formShape';
 import { riderForwardOf } from './mountTraits';
 
 export function seatPoint(m: BodyPose, form: BeastForm): { x: number; y: number } {

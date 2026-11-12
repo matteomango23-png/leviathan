@@ -7,7 +7,7 @@ import { BEAST_SPRITE, WING_FRAME_FORMS } from '../data/beasts';
 import { spineOf } from './swimPose';
 import { BATTLE_ART_KEYS, GLOW_KEYS, OPEN_SPRITE_KEYS, SPRITE_KEYS } from '../data/sprites.generated';
 import { glowAt, glowOf } from '../systems/glowPulse';
-import { BEAST_EYES, BEAST_EYES_OPEN, EYE_GLOW } from '../data/beastEyes';
+import { eyeGlowTexture, placeEye } from './beastEye';
 
 const { frameW: IW, frameH: IH, spineY: CY, segments: N } = BEAST_SPRITE;
 const SEG = IW / N;
@@ -102,26 +102,6 @@ interface BeastPoseView {
   hunt?: boolean;
 }
 
-/** A soft red light, made once: bright in the middle, fading out to nothing (no edge). */
-function eyeGlowTexture(scene: Phaser.Scene): string {
-  const key = 'beast-eye-glow';
-  if (scene.textures.exists(key)) return key;
-  const n = 64;
-  const tex = scene.textures.createCanvas(key, n, n)!;
-  const g = tex.getContext();
-  const c = EYE_GLOW.color;
-  const rgb = `${(c >> 16) & 255},${(c >> 8) & 255},${c & 255}`;
-  const grad = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2);
-  grad.addColorStop(0, 'rgba(255,235,220,1)');
-  grad.addColorStop(0.2, `rgba(${rgb},1)`);
-  grad.addColorStop(0.45, `rgba(${rgb},0.5)`);
-  grad.addColorStop(1, `rgba(${rgb},0)`);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, n, n);
-  tex.refresh();
-  return key;
-}
-
 export class BeastSprite {
   readonly root: Phaser.GameObjects.Container;
   private readonly strips: Phaser.GameObjects.Image[] = [];
@@ -183,36 +163,9 @@ export class BeastSprite {
     this.eyeSpot = null;
   }
 
-  /** The red glow on its painted eye, following the head's piece of the picture; with the mouth open, where the eye
-   *  is in that picture (owner, 12 novembre 2026: it stayed where the shut picture has it). */
+  /** The red glow on its painted eye (views/beastEye.ts). */
   private updateEye(p: BeastPoseView): void {
-    const at = (this.open ? BEAST_EYES_OPEN : BEAST_EYES)[p.key];
-    this.eyeSpot = null;
-    if (!p.hunt || !at || p.flash > 0) {
-      this.eye.setVisible(false);
-      return;
-    }
-    const [ex, ey] = at;
-    const i = Math.min(N - 1, Math.max(0, Math.floor((IW - ex) / SEG)));
-    const s = this.strips[i]!;
-    // the point in the piece (its origin: the piece's right edge on the spine), then in the beast
-    const dx = (ex - IW * (1 - i / N)) * s.scaleX;
-    const dy = (ey - CY) * s.scaleY;
-    const cos = Math.cos(s.rotation);
-    const sin = Math.sin(s.rotation);
-    const r = this.root;
-    const t = this.scene.time.now / 1000;
-    const size = Math.max(EYE_GLOW.minSize, EYE_GLOW.size * Math.abs(r.scaleY));
-    const throb = 1 - EYE_GLOW.pulseDepth * (0.5 + 0.5 * Math.sin(t * EYE_GLOW.pulse));
-    const lx = s.x + dx * cos - dy * sin;
-    const ly = s.y + dx * sin + dy * cos;
-    const k = size / Math.abs(r.scaleY) / this.eye.width; // in the beast's own (scaled) frame
-    this.eye
-      .setVisible(true)
-      .setPosition(lx, ly)
-      .setScale(k)
-      .setAlpha(EYE_GLOW.alpha * throb);
-    this.eyeSpot = { x: r.x + lx * r.scaleX, y: r.y + ly * r.scaleY, r: size * EYE_GLOW.light };
+    this.eyeSpot = placeEye(this.eye, this.strips, this.root, p, this.open, this.scene.time.now / 1000);
   }
 
   /** Its glow follows each strip; a pulse runs along it (systems/glowPulse.ts). Off while it flashes red. */

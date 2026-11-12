@@ -71,7 +71,7 @@ describe('forma vera delle bestie (4 ottobre: più sono grandi più entravano ne
     const { BODY_SHAPES } = await import('../src/data/bodyShapes.generated');
     const { SPRITE_KEYS } = await import('../src/data/sprites.generated');
     for (const k of SPRITE_KEYS) expect(BODY_SHAPES[k], k).toBeDefined();
-    const { shapeOfForm } = await import('../src/systems/beasts/forms');
+    const { shapeOfForm } = await import('../src/systems/beasts/formShape');
     const whale = { x: 0, y: 0, face: 1 as const, pitch: 0, length: 144 };
     const real = bodyCircles({ ...whale, shape: shapeOfForm({ speciesId: 'megattera', variant: 'comune' }) });
     const old = bodyCircles(whale);

@@ -9,7 +9,8 @@ import { DIVER } from '../../data/diver';
 import { clamp } from '../math';
 import type { TileMap } from '../world/tileMap';
 import { bodyCircles, type BodyPose } from './combat';
-import { formLengthUnits, shapeOfForm } from './forms';
+import { formLengthUnits } from './forms';
+import { shapeOfForm } from './formShape';
 import { riderForwardOf } from './mountTraits';
 import type { TeamBeast } from './team';
 

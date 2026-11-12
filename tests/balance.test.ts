@@ -56,7 +56,7 @@ describe('your beast against a wild one of the same species and level', () => {
 
 describe('who strikes first when a beast reaches you', () => {
   it('only from behind does it get a free attack', async () => {
-    const { ambush } = await import('../src/systems/encounters');
+    const { ambush } = await import('../src/systems/battleRequest');
     expect(ambush({ x: 100 }, { x: 0, face: 1 })).toBe('normal'); // you face it
     expect(ambush({ x: -100 }, { x: 0, face: 1 })).toBe('foe'); // behind you
     expect(ambush({ x: -100 }, { x: 0, face: 1 }, { face: -1 })).toBe('normal'); // your mount faces it

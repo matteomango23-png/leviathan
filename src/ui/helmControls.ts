@@ -3,12 +3,12 @@
 // direction (west / east) and, in the submarine, the dive lever (it springs back to the middle). At the bottom:
 // the instruments (knots, throttle, depth) and, at the helm of the ship, its buttons (hatch, lower the submarine, dive off). Keyboard: W/S throttle, A/D direction,
 // arrows up/down to rise and sink.
-import { HELM } from '../data/ship';
 import { HelmBars } from './helmBars';
 import type { HelmInfo } from './helmTypes';
 export type { HelmInfo } from './helmTypes';
 import type { Session } from '../scenes/session';
-import { diveOf, freshHelm } from '../systems/helm';
+import { freshHelm } from '../systems/helm';
+import { HelmLevers } from './helmLevers';
 import { el } from './dom';
 import { HelmDials } from './helmDials';
 import { lightLabel, travel } from './helmGauges';
@@ -23,7 +23,6 @@ export class HelmControls {
   /** The dive lever's lock (owner, 25 ottobre): on, the lever stays where you leave it (a slow steady dive while you
    *  look at the cockpit); off, it springs back to the middle. Kept until switched off, not saved. */
   private readonly lockBtn: HTMLButtonElement;
-  private leversLock = false;
   private readonly west: HTMLButtonElement;
   private readonly east: HTMLButtonElement;
   private readonly dials: HelmDials;
@@ -47,15 +46,10 @@ export class HelmControls {
   private readonly objective: HTMLDivElement;
   private readonly rescueBtn: HTMLButtonElement;
   private mode: HelmInfo['mode'] | null = null;
-  /** One finger per lever (owner, 5 ottobre: throttle and dive together): pointer id → its lever. */
-  private readonly dragging = new Map<number, 'throttle' | 'dive'>();
-  private readonly keys = new Set<string>();
+  /** The levers' fingers, keys and lock (ui/helmLevers.ts). */
+  private readonly levers: HelmLevers;
   private readonly cleanup: (() => void)[] = [];
   private readonly poolMark: HTMLSpanElement;
-  /** The arrow keys were held last frame (to let the dive lever go back to the middle when released). */
-  private keyDive = false;
-  /** The ship at the helm is a U-Boat: its dive lever works like the submarine's. */
-  private canDive = false;
 
   constructor(
     parent: HTMLElement,
@@ -125,11 +119,12 @@ export class HelmControls {
     ];
     for (const [e, name] of coach) e.dataset.coach = name;
 
-    this.listen(this.throttleTrack, 'pointerdown', (e) => this.grab(e, 'throttle'));
-    this.listen(this.diveTrack, 'pointerdown', (e) => this.grab(e, 'dive'));
-    this.listen(window, 'pointermove', (e) => this.drag(e));
+    this.levers = new HelmLevers(session, { throttle: this.throttleTrack, dive: this.diveTrack });
+    this.listen(this.throttleTrack, 'pointerdown', (e) => this.levers.grab(e, 'throttle'));
+    this.listen(this.diveTrack, 'pointerdown', (e) => this.levers.grab(e, 'dive'));
+    this.listen(window, 'pointermove', (e) => this.levers.drag(e));
     for (const t of ['pointerup', 'pointercancel'] as const)
-      this.listen(window, t, (e) => this.letGo(e.pointerId));
+      this.listen(window, t, (e) => this.levers.letGo(e.pointerId));
     this.tap(this.west, () => (this.session.input.helm.dir = -1));
     this.tap(this.east, () => (this.session.input.helm.dir = 1));
     this.tap(this.hatchBtn, () => (this.session.input.helmCmd = 'hatch'));
@@ -146,22 +141,15 @@ export class HelmControls {
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
     this.tap(this.rescueBtn, () => (this.session.input.helmCmd = 'rescue'));
-    this.tap(this.lockBtn, () => {
-      this.leversLock = !this.leversLock;
-      // let go: both levers back at rest (the submarine's gas to zero, the dive lever to the middle)
-      if (!this.leversLock) {
-        this.session.input.helm.dive = 0;
-        if (this.mode === 'sub') this.session.input.helm.throttle = 0;
-      }
-    });
+    this.tap(this.lockBtn, () => this.levers.toggleLock());
     this.listen<KeyboardEvent>(window, 'keydown', (e) => {
       const k = e.key.toLowerCase();
-      this.keys.add(k);
+      this.levers.keys.add(k);
       if (!this.mode || e.repeat) return;
       if (k === 'a' || k === 'arrowleft') this.session.input.helm.dir = -1;
       if (k === 'd' || k === 'arrowright') this.session.input.helm.dir = 1;
     });
-    this.listen<KeyboardEvent>(window, 'keyup', (e) => this.keys.delete(e.key.toLowerCase()));
+    this.listen<KeyboardEvent>(window, 'keyup', (e) => this.levers.keys.delete(e.key.toLowerCase()));
     this.listen(window, 'blur', () => this.releaseAll());
   }
 
@@ -183,44 +171,8 @@ export class HelmControls {
     });
   }
 
-  private grab(e: PointerEvent, lever: 'throttle' | 'dive'): void {
-    if (this.session.paused) return;
-    e.preventDefault();
-    e.stopPropagation();
-    this.dragging.set(e.pointerId, lever);
-    this.drag(e);
-  }
-
-  /** The finger sets the lever where it is along the track (top = full throttle / rise). */
-  private drag(e: PointerEvent): void {
-    const lever = this.dragging.get(e.pointerId);
-    if (!lever) return;
-    const track = lever === 'throttle' ? this.throttleTrack : this.diveTrack;
-    const r = track.getBoundingClientRect();
-    const share = Math.max(0, Math.min(1, (r.bottom - e.clientY) / r.height)); // 0 bottom … 1 top
-    const helm = this.session.input.helm;
-    if (lever === 'throttle') helm.throttle = share;
-    else helm.dive = diveOf(1 - share * 2); // top = rise (−1), bottom = sink (1)
-  }
-
-  /** A finger leaves its lever. In the submarine the levers spring back (owner, 8 ottobre): the gas to zero, the dive
-   *  lever to the middle; the ship's throttle stays where you leave it. */
-  private letGo(pointerId: number): void {
-    const lever = this.dragging.get(pointerId);
-    this.dragging.delete(pointerId);
-    if (!lever) return;
-    const helm = this.session.input.helm;
-    // the dive lever springs back in the submarine and in a U-Boat; only the submarine's gas does
-    if (lever === 'dive' && (this.mode === 'sub' || this.canDive)) {
-      if (!this.leversLock) helm.dive = 0;
-    } else if (lever === 'throttle' && this.mode === 'sub' && !this.leversLock) helm.throttle = 0;
-  }
-
   releaseAll(): void {
-    if (this.mode === 'sub' && !this.leversLock) this.session.input.helm.throttle = 0;
-    if (this.mode === 'sub' && !this.leversLock) this.session.input.helm.dive = 0;
-    this.dragging.clear();
-    this.keys.clear();
+    this.levers.releaseAll();
   }
 
   /** Called every frame with what the levers drive now (null: you swim, the levers hide). */
@@ -230,32 +182,14 @@ export class HelmControls {
       // climbing in: the levers start at rest, pointing where the vehicle points
       Object.assign(helm, freshHelm(info?.face ?? 1));
       this.mode = info?.mode ?? null;
-      this.dragging.clear();
+      this.levers.setMode(this.mode);
     }
     this.root.hidden = !info;
     // driving a vehicle: no hearts, air or team on screen (owner, 9 ottobre), only what the vehicle needs
     this.root.parentElement?.classList.toggle('at-helm', !!info);
     if (!info) return;
-    const k = this.keys;
-    if (k.has('w')) helm.throttle = Math.min(1, helm.throttle + HELM.keyThrottlePerSec * dt);
-    if (k.has('s')) helm.throttle = Math.max(0, helm.throttle - HELM.keyThrottlePerSec * dt);
-    // the submarine's gas springs back to zero when W is let go (and no finger holds it), unless B locks the levers
-    // (owner, 12 novembre 2026: "si devono bloccare entrambi i comandi")
-    const holdingGas = k.has('w') || [...this.dragging.values()].includes('throttle');
-    if (info.mode === 'sub' && !holdingGas && !this.leversLock) helm.throttle = 0;
-    // keyboard: the arrows hold the dive lever up or down; let go, it goes back to the middle
-    const held = k.has('arrowup') || k.has('arrowdown');
-    this.canDive = !!info.canDive;
-    if ((info.mode === 'sub' || this.canDive) && ![...this.dragging.values()].includes('dive')) {
-      // locked, the arrows move the lever little by little and it stays; else they hold it and it springs back
-      if (this.leversLock && held) {
-        const step = HELM.keyThrottlePerSec * dt * (k.has('arrowup') ? -1 : 1);
-        helm.dive = Math.max(-1, Math.min(1, helm.dive + step));
-      } else if (held) helm.dive = k.has('arrowup') ? -1 : 1;
-      else if (this.keyDive && !this.leversLock) helm.dive = 0;
-    }
-    this.lockBtn.classList.toggle('on', this.leversLock);
-    this.keyDive = held;
+    this.levers.step(info, dt);
+    this.lockBtn.classList.toggle('on', this.levers.lock);
 
     this.throttleKnob.style.transform = `translateY(${-helm.throttle * travel(this.throttleTrack)}px)`;
     this.diveWrap.hidden = info.mode !== 'sub' && !info.canDive;

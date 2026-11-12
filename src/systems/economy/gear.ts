@@ -1,5 +1,5 @@
 // The diver's side of progress: teeth, the fish bag, suits and upgrades, weapons, items,
-// the backpack (base harpoon + BACKPACK_SLOTS chosen at the port) and bound swarms.
+// the backpack (base speargun + BACKPACK_SLOTS chosen at the port) and bound swarms.
 import { newBounties, type BountyState } from './bounties';
 import { MARKET, UPGRADE_EFFECTS } from '../../data/economy';
 import { newMarket, sellAll, type MarketState } from './market';
@@ -28,7 +28,7 @@ export interface GearState {
   suit: string;
   suits: string[];
   upgrades: string[];
-  weapons: string[]; // owned (the base harpoon is always there)
+  weapons: string[]; // owned (the base speargun is always there)
   activeWeapon: string;
   inventory: Record<string, number>;
   backpack: (string | null)[];

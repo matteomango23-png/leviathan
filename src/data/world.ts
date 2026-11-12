@@ -70,7 +70,7 @@ export const SUIT_UPGRADES: SuitUpgradeDef[] = [
   { id: 'lampada_2', name: 'Lampada abissale', price: 1200, effect: 'Cono di luce più lungo del 60% e più largo' },
 ];
 
-/** Weapons: the base harpoon is always equipped; others go in backpack slots. */
+/** Weapons: the base speargun (id arpione) is always equipped; others go in backpack slots. */
 export interface WeaponDef { id: string; name: string; type?: TypeId; damage: number; cooldown: number; source: string; text: string; singleUse?: boolean; price?: number; }
 export const WEAPONS: WeaponDef[] = [
   { id: 'arpione', name: 'Fucile subacqueo', damage: 0.4, cooldown: 0.15, source: 'Iniziale', text: 'Tieni premuto per una raffica di dardi: catturano i pesci e sfiancano le bestie' }, // a burst of darts (owner, 12 novembre 2026): each wears a beast less. Tuning
@@ -80,7 +80,7 @@ export const WEAPONS: WeaponDef[] = [
   { id: 'runico', name: 'Arpione runico', damage: 3, cooldown: 0.7, source: 'Ricompensa del tempio', text: 'Dardo di luce che trapassa tutto' },
 ];
 
-/** Backpack: base harpoon always equipped + BACKPACK_SLOTS chosen before each dive (weapons or items). */
+/** Backpack: base speargun always equipped + BACKPACK_SLOTS chosen before each dive (weapons or items). */
 export const BACKPACK_SLOTS = 3;
 
 /** The pockets of the backpack, like Pokémon's bag. */

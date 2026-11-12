@@ -11,7 +11,6 @@ import type { Rng } from '../math';
 import type { ViewRect } from '../beastState';
 import { speciesOf } from './forms';
 import type { WildBeast } from './wildState';
-export type { Patrol } from './wildState';
 
 const U = DIVER.lengthUnits;
 
