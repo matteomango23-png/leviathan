@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.118.0 — Freccia e mezzi (12 novembre 2026)
+
+- Uscito dal sottomarino, la freccia gialla indica il sottomarino rimasto in acqua; quando torna nella stiva, di nuovo la nave.
+- Vicino allo scafo di una nave che dondola sulle onde il sub non viene più spinto fuori dall'acqua a "nuotare nell'aria".
+- Le bestie (selvatiche, compagni, cavalcatura) non urtano più navi, U-Boot, sottomarini e motoscafi: niente bestie spinte fuori dall'acqua o schiacciate sul fondale, niente rimbalzi saltando vicino alla nave. Gli attacchi delle bestie grandi al sottomarino restano.
+- Il pulsante B blocca entrambe le leve: anche il Gas del sottomarino resta dove lo lasci. Toccandolo di nuovo tornano a riposo.
+- In tempesta la luce sotto la nave dondola e si inclina con lo scafo.
+- Le montagne lontane: tolta una sottile linea che compariva e spariva tra le creste e il fondo scuro mentre la vista si muove.
+- Guida e tutorial del timone aggiornati. I salvataggi non cambiano.
+
 ## v0.117.0 — Leggendari al momento giusto, sonar e radar più chiari (12 novembre 2026)
 
 - **Leggendari:** la loro voce si sente al porto, e la loro eco nel sonar, solo quando la tua bestia più forte arriva a 15 livelli dal loro (il Coccodrillo albino leggendario, 50-65, dal livello 35). Sulla Bacheca un leggendario ancora troppo forte lo dice, con il livello da raggiungere.

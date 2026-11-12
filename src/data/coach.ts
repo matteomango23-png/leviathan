@@ -51,7 +51,7 @@ export const COACH: Record<CoachRound, CoachStep[]> = {
     { target: 'helm-dir', text: 'Le frecce girano la nave a sinistra o a destra.' },
     { target: 'helm-engine', text: 'Il motore: verde acceso, rosso spento. Spento non consuma.' },
     { target: 'helm-sonar', text: 'Il Sonar: a velocità bassa ascolta il mare. Le bestie grandi rispondono con un’eco.' },
-    { target: 'helm-dive-lever', text: 'Sali / Scendi: sulle navi che si immergono. Il pulsante B la blocca dove la lasci.' },
+    { target: 'helm-dive-lever', text: 'Sali / Scendi: sulle navi che si immergono. Il pulsante B blocca questa leva e il Gas dove li lasci.' },
     { target: 'helm-launch', text: 'Con la nave ferma: cala il sottomarino per esplorare il fondo.' },
     { target: 'helm-light', text: 'Luce: un faro sotto lo scafo, a nave ferma. Le bestie curiose vengono a vedere, i predatori arrivano dopo.' },
     { target: 'helm-swim', text: 'Tuffati: scendi in acqua a nuoto, con la squadra.' },

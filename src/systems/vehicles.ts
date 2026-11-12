@@ -167,27 +167,25 @@ function freeSubFromHull(g: VehicleWorld): void {
   sub.y = Math.max(sub.y, dockPoint(g.ship).y);
 }
 
-/**
- * The solid hulls in the sea now: the submarine (unless in the hold) and, with `ship`, the ship. The beasts only
- * feel the submarine (owner, 9 ottobre: ships and U-Boats pass them by as if overtaking; diving, a U-Boat pressed
- * them into the rock).
- */
-function vehicleHulls(g: VehicleWorld, ship = true): HullPart[] {
+/** The solid hulls in the sea now: the submarine (unless in the hold) and the ship. */
+function vehicleHulls(g: VehicleWorld): HullPart[] {
   const sub = g.ship.bay === 'docked' || onRamp(g) ? [] : subHull(g.sub);
-  return ship && g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
+  return g.ship.owned ? [...sub, ...shipHull(g.ship)] : sub;
 }
 
-/** Pushes a body (you, your beast, a wild one) out of the hulls; a `beast` goes through the ship's; `under`: out under
- *  the keel (the beast you ride, hull.ts). True if it touched one. */
+/**
+ * Pushes you, swimming, out of the hulls; in the water you stay in it (`surfaceY`, hull.ts). The beasts (wild, your
+ * pack, the one you ride) go through the vehicles (owner, 12 novembre 2026: submarines pushed them out of the water
+ * or into the floor, a leap by the ship bounced off the sea's line). True if it touched one.
+ */
 export function pushOutOfVehicles(
   g: VehicleWorld,
   b: { x: number; y: number; vx: number; vy: number },
   circles: readonly { dx: number; dy: number; r: number }[],
-  beast = false,
-  under = false,
+  surfaceY?: number,
 ): boolean {
-  const hulls = vehicleHulls(g, !beast);
-  return hulls.length > 0 && pushOutOfHull(hulls, b, circles, under);
+  const hulls = vehicleHulls(g);
+  return hulls.length > 0 && pushOutOfHull(hulls, b, circles, false, surfaceY);
 }
 
 /** At the helm, still, alongside a harbour's pier: the port is there. In the boat, the same at its pier. */
