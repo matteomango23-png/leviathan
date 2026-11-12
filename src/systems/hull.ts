@@ -33,14 +33,15 @@ function nearestOn(
 
 /**
  * Pushes a body out of a hull. `circles` are the body's own, as offsets from its middle. `under`: caught inside a
- * capsule it goes out under the keel (a beast you ride; you swimming by a boat are pushed aside as before). Returns
- * true if it touched.
+ * capsule it goes out under the keel. `surfaceY`: a body in the water is never pushed out over it (owner, 12 novembre 2026: by the stern of a ship rocking on the
+ * waves you "swam in the air"). Returns true if it touched.
  */
 export function pushOutOfHull(
   hull: readonly HullPart[],
   b: { x: number; y: number; vx: number; vy: number },
   circles: readonly { dx: number; dy: number; r: number }[],
   under = false,
+  surfaceY?: number,
 ): boolean {
   let touched = false;
   for (let pass = 0; pass < 2; pass++)
@@ -65,6 +66,11 @@ export function pushOutOfHull(
         }
         b.x += nx * overlap;
         b.y += ny * overlap;
+        // kept in the sea: a push up stops at the surface, it never lifts the body into the air
+        if (surfaceY !== undefined && b.y < surfaceY) {
+          b.y = surfaceY;
+          b.vy = Math.max(0, b.vy);
+        }
         const vn = b.vx * nx + b.vy * ny;
         if (vn < 0) {
           b.vx -= nx * vn;

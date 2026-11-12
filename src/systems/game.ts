@@ -22,7 +22,6 @@ import { refillTanks, tankRanOut } from './breath';
 import { rideTank } from './rideAir';
 import { bodyCircles, headOf } from './beasts/combat';
 import { formName } from './beasts/forms';
-import { isInWater } from './beasts/wildState';
 import { activeBeast, mountSpeed, stepBeasts, weaponHitsBeast } from './beastPlay';
 import { stepDiver } from './diver';
 import { stepPressure } from './breath';
@@ -147,18 +146,14 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   stepRideStamina(g, input, events, dt); // the dash tires the beast you ride, the others rest (stamina.ts)
   stepDiverStamina(g, events, dt); // and your own dash tires you (diverStamina.ts)
   stepRideTalents(g, events); // a Tempesta's dash stuns the small beasts around it (rideTalents.ts)
-  // the submarine and the ship are solid: you (or the beast you ride) slide along their hulls. On a leap it bumps
-  // off them, and landing on the ship slides back into the sea (21 ottobre: it went through, then snapped under the keel)
-  if (!inVehicle(g) && !held) {
+  // the submarine and the ship are solid to you swimming: you slide along their hulls, and in the water you stay in
+  // it (owner, 12 novembre 2026: by a rocking stern you were pushed up into the air). Riding, your beast goes through them like every beast (owner, 12 novembre 2026)
+  if (!inVehicle(g) && !held && !g.beasts.riding) {
     const falling = d.vy > 0;
-    const hit = pushOutOfVehicles(
-      g,
-      d,
-      g.beasts.riding && g.beasts.mount ? bodyCircles(g.beasts.mount) : [{ dx: 0, dy: 0, r: DIVER.radius }],
-      false,
-      // out under the keel only a beast already down in the water: one falling back from a leap is pushed aside
-      g.beasts.riding && !d.airborne && d.y > g.map.surfaceY + DIVER.lengthUnits * 0.5,
-    );
+    // the sea's line with its waves here (in a trough the flat line would be in the air)
+    const line = g.map.surfaceY - seaHeight(d.x, g.time, weatherLook(g.weather), g.water) + DIVER.radius;
+    const inSea = !d.airborne && d.y > g.map.surfaceY;
+    const hit = pushOutOfVehicles(g, d, [{ dx: 0, dy: 0, r: DIVER.radius }], inSea ? line : undefined);
     if (hit && d.airborne && falling && d.vy <= 0.5) landOn(d, -d.face);
   }
   // after losing your senses you wake up on your boat
@@ -180,9 +175,6 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   const beastEvents: GameEvent[] = [];
   stepBeasts(g, input, dt, beastEvents);
   packAboard(g, vesselOf(g)); // aboard, your pack follows the ship slowly, else swims off (pack.ts)
-  // …and the beasts slide along the submarine too (the ship passes them by): wild ones, and yours with you
-  for (const w of g.beasts.wilds) if (isInWater(w)) pushOutOfVehicles(g, w, bodyCircles(w), true);
-  for (const m of g.beasts.pack) pushOutOfVehicles(g, m, bodyCircles(m), true); // your companions too
   events.push(...beastEvents);
   for (const e of beastEvents) {
     if (e.type === 'bonesBroken') g.brokenTiles.push(...e.tiles);

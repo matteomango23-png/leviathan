@@ -187,9 +187,7 @@ describe('the U-Boats dive', () => {
     expect(buyShip(g, 'whale').ok).toBe(true);
     Object.assign(g.ship, { aboard: false, x: deepWater(), dive: 200 });
     const part = shipHull(g.ship)[0]!;
-    const beast = { x: part.x, y: part.y, vx: 0, vy: 0 };
-    pushOutOfVehicles(g, beast, [{ dx: 0, dy: 0, r: 8 }], true);
-    expect(beast).toMatchObject({ x: part.x, y: part.y });
+    // the beasts are never pushed by a vehicle any more (lottoU3, systems/game.ts)
     const you = { x: part.x, y: part.y, vx: 0, vy: 0 };
     pushOutOfVehicles(g, you, [{ dx: 0, dy: 0, r: 8 }]);
     expect(Math.hypot(you.x - part.x, you.y - part.y)).toBeGreaterThan(1);

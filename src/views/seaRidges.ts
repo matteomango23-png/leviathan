@@ -194,11 +194,13 @@ export class SeaRidges {
       if (r.b.look !== mix.b || r.b.images[0]!.texture.key !== wantB) this.show(r.b, mix.b, r.kind);
       // the next look comes in over the first half of the blend, the old one goes out over the second: never a
       // shape vanishing at once
-      const bottom = this.rowBottom(v, r.kind);
+      // on whole pixels, the dark under them overlapping by two: a fraction of a pixel left a thin line that came
+      // and went as the view moved (owner, 12 novembre 2026: "la linea delle montagne scatta")
+      const bottom = Math.round(this.rowBottom(v, r.kind));
       const blending = mix.a !== mix.b;
       this.place(r.a, v, r.kind, blending ? Math.min(1, 2 * (1 - mix.t)) : 1, bottom, shade);
       this.place(r.b, v, r.kind, blending ? Math.min(1, 2 * mix.t) : 0, bottom, shade);
-      const fillTop = Math.max(0, bottom - 1);
+      const fillTop = Math.max(0, bottom - 2);
       const ca = this.bottomColor(mix.a, r.kind);
       const cb = this.bottomColor(mix.b, r.kind);
       const m = (p: number, q: number): number => Math.round((p + (q - p) * mix.t) * dim);

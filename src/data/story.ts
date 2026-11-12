@@ -158,7 +158,7 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Nelle Grandi fosse, a metà parete, archi di roccia segnano le Gallerie: tunnel bui fino a una caverna. Ci passi a nuoto o in sottomarino, non con le bestie grandi né con l’U-Boot. La più grande è la Cattedrale.' },
   ],
   tipDiveLock: [
-    { who: 'aurelio', text: 'La leva Sali/Scendi torna al centro quando la lasci. Tocca il pulsante B sotto di lei: resta dove la metti, e scendi piano anche guardando il cockpit.' },
+    { who: 'aurelio', text: 'Nel sottomarino il Gas e la leva Sali/Scendi tornano a riposo quando li lasci. Tocca il pulsante B: restano tutti e due dove li metti, così vai avanti e scendi piano anche guardando il cockpit. Toccalo di nuovo e tornano a riposo.' },
     { who: 'aurelio', text: 'Se un mezzo resta incastrato da qualche parte, nel menu di pausa c’è "Sono bloccato": ti riporta al molo di Porto Fango con la nave.' },
   ],
   // the abyssal ship (owner, 25 ottobre 2026): told when the first rare part is found, and in the Guida
@@ -204,7 +204,7 @@ export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true
   { id: 'tipBounties', title: 'Taglie e Diario', on: 'portArrived' },
   { id: 'tipRequests', title: 'Le richieste del mercato', on: 'portArrived' },
   { id: 'tipPlaces', title: 'Luoghi e Gallerie', on: 'landmarkFound' },
-  { id: 'tipDiveLock', title: 'La leva bloccabile e "Sono bloccato"', on: 'boarded' },
+  { id: 'tipDiveLock', title: 'Le leve bloccabili e "Sono bloccato"', on: 'boarded' },
 ];
 /** In story.seen: the tips are switched off (the Guida in the pause menu). */
 export const TIPS_OFF = 'tips-off';

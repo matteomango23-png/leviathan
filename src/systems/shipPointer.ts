@@ -76,5 +76,7 @@ export function shipArrow(g: GameState): ShipArrow | null {
   const view = g.beasts.view;
   if (!view || g.diver.dead || inVehicle(g)) return null;
   const goal = g.ship.owned ? null : storyGoal(g);
-  return arrowTo(goal ?? respawnPoint(g), view);
+  // out of your submarine, left in the water: the arrow points to it, the nearest way back (owner, 12 novembre 2026)
+  const sub = g.sub.owned && !g.sub.aboard && g.ship.bay !== 'docked' ? { x: g.sub.x, y: g.sub.y } : null;
+  return arrowTo(goal ?? sub ?? respawnPoint(g), view);
 }
