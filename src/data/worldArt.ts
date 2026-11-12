@@ -117,6 +117,38 @@ export const PROP_ART = {
   ventSink: 0.12,
   chest: { plain: 'forziere', locked: 'forziere_incrostato', buried: 'forziere_sepolto', width: 15, buriedWidth: 18 },
   weaponWreck: { art: 'relitto_arma', width: 62 },
+  /** The black smokers (lot M4): each picture, its width (units), its height ÷ width, and its mouths (shares of the
+   *  picture, from the top left), where the hot water comes out. */
+  smokers: [
+    { art: 'fumatore_1', width: 70, aspect: 2031 / 1343, mouths: [[0.5, 0.14]] as [number, number][] },
+    {
+      art: 'fumatore_2',
+      width: 150,
+      aspect: 755 / 1219,
+      mouths: [
+        [0.41, 0.04],
+        [0.57, 0.19],
+        [0.7, 0.37],
+      ] as [number, number][],
+    },
+  ],
+};
+
+/** How a smoker's plume looks (views/smokerView.ts): puffs per mouth, how many plume heights they rise a second,
+ *  their glow's colour and strength (added over the darkness), their size against the plume's width, a slight lean, and the mouth's glow (units). */
+export const SMOKER_LOOK = {
+  puffs: 12,
+  rise: 0.22,
+  color: 0x7a3a16, // the heat of the water, glowing faintly (added over the darkness)
+  alpha: 0.22,
+  puffSize: 1.3,
+  drift: 0.05,
+  glow: 16,
+  /** Glowing mushrooms on the floor round each smoker (the Gallerie's pictures): where (units from its middle), how
+   *  wide, and their light. */
+  mushroomsAt: [-0.85, 0.75, 1.15] as number[],
+  mushroomWidth: 16,
+  mushroomGlow: 14,
 };
 
 /** The old story's scenery painted (lot C3): the red corals of the amphitheatre, the galleon in the kelp (the

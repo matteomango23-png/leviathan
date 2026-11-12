@@ -205,6 +205,8 @@ export type GameEvent =
   | { type: 'portArrived' }
   /** The speargun (systems/gun.ts): its magazine just emptied, its reload began or ended, no spare darts. */
   | { type: 'gunEmpty' }
+  /** Burnt by a black smoker's hot plume (world/smokers.ts). */
+  | { type: 'smokerBurn' }
   /** A story dialogue or one of Aurelio's tips was read to its end (the game saves its "seen" mark). */
   | { type: 'dialogueClosed'; id: string }
   | { type: 'gunReload' }

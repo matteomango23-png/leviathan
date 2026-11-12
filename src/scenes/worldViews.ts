@@ -53,6 +53,8 @@ import { SubmarineView } from '../views/submarineView';
 import { TempleView } from '../views/templeView';
 import { TerrainView } from '../views/terrainView';
 import { VentView } from '../views/ventView';
+import { SmokerView } from '../views/smokerView';
+import { pierLightSpots } from '../views/pierUnder';
 import { WeatherView, weatherReach } from '../views/weatherView';
 import { WorldArtView } from '../views/worldArtView';
 import { snapGulls } from './worldEvents';
@@ -70,6 +72,7 @@ export class WorldViews {
   private readonly bg: BackgroundView;
   private readonly kelp: KelpView;
   private readonly vents: VentView;
+  private readonly smokers: SmokerView;
   /** The Gallerie's arches, columns, mushrooms and currents (lot M3). */
   private readonly galleries: GalleryView;
   private readonly temple: TempleView;
@@ -119,6 +122,7 @@ export class WorldViews {
     new DeltaView(scene, L.world, L.front);
     this.kelp = new KelpView(scene, L.world, L.front, map, under);
     this.vents = new VentView(scene, L.world, map, under);
+    this.smokers = new SmokerView(scene, map, under, L.glow);
     this.galleries = new GalleryView(scene, L.world, map);
     this.temple = new TempleView(scene, L.world);
     this.worldArt = new WorldArtView(scene, L.world, map);
@@ -199,6 +203,7 @@ export class WorldViews {
     );
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
+    this.smokers.update(view, g.time);
     this.galleries.update(view, g.time);
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
@@ -248,6 +253,9 @@ export class WorldViews {
     const glows = [
       ...this.places.glowSpots(g.gear, (w) => wreckShown(g, w)),
       ...this.galleries.glowSpots(view),
+      ...this.smokers.glowSpots(), // the trenches' black smokers glow at the mouth (lot M4)
+      ...this.fishView.glowSpots(g.fish, view), // and the lanternfish carry their lights
+      ...pierLightSpots(view), // the lanterns of the piers and outposts in the water
       ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
       ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),

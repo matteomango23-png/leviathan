@@ -63,10 +63,33 @@ export const ENDLESS = {
      *  4-star humpback was everywhere in the polar sea). Tuning. */
     rarityWeight: { 1: 1, 2: 1, 3: 0.8, 4: 0.35, 5: 0.15 } as Record<number, number>,
   },
-  schools: 9, // sardine schools that follow you out there (moved ahead of you when left far behind)
+  schools: 9, // fish schools that follow you out there (moved ahead of you when left far behind)
+  /** Which fish a school of the open sea is, by the region it is moved into (lot M4, owner 12 novembre 2026): each
+   *  school takes the kind at its own place in its region's list (sardines are left here and there). Tuning. */
+  schoolKinds: {
+    barriera_esterna: ['pesce_pagliaccio', 'pesce_chirurgo', 'pesce_farfalla', 'sardina'],
+    mare_blu: ['aringa', 'aringa', 'sardina'],
+    banchisa: ['merluzzo_artico', 'merluzzo_artico', 'sardina'],
+    grandi_fosse: ['pesce_lanterna', 'pesce_lanterna', 'sardina'],
+    abisso: ['pesce_lanterna'],
+  } as Record<string, string[]>,
   schoolFar: 900, // units: a school this far from you is moved near you again
   /** Vents on the sea floor breathing out columns of air bubbles: swim into one to refill your air. */
   vents: { perStretch: 2, tries: 8, height: 240, radius: 22, refill: 25, messageBelow: 0.6 },
+  /** Black smokers on the floor of the trenches (lot M4, owner 12 novembre 2026): `perStretch` in a stretch of the
+   *  `biome`, at its deepest of `tries` places, never within `clearOfVent` units of an air vent. Their plume of hot
+   *  black water rises `plumeHeight` units from each mouth, `plumeRadius` wide there and growing by `plumeGrow` of its
+   *  height; in it, swimming, you lose a heart every `burnEvery` seconds. Tuning. */
+  smokers: {
+    biome: 'fossa',
+    perStretch: 2,
+    tries: 10,
+    clearOfVent: 120,
+    plumeHeight: 150,
+    plumeRadius: 8,
+    plumeGrow: 0.2,
+    burnEvery: 1.5,
+  },
 };
 
 export const BIOMES: BiomeDef[] = [

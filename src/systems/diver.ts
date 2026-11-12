@@ -72,7 +72,7 @@ export function createDiver(x = START.x, y = START.y): DiverState {
 
 /** Loses one heart (with a short invulnerability). */
 /** What a blow touches. */
-type Hurtable = Pick<DiverState, 'hp' | 'invulnerable' | 'dead' | 'deadTime'>;
+export type Hurtable = Pick<DiverState, 'hp' | 'invulnerable' | 'dead' | 'deadTime'>;
 
 export function hurtDiver(d: Hurtable, amount: number, events: GameEvent[]): void {
   if (d.invulnerable > 0 || d.dead) return;

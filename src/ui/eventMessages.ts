@@ -207,6 +207,8 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         : null;
     case 'bountyClosed':
       return [e.text, 4];
+    case 'smokerBurn':
+      return ['Acqua bollente! Allontanati dal camino.', 2];
     case 'gunEmpty':
       return ['Caricatore vuoto: tocca Fucile per ricaricare.', 2.2];
     case 'ammoOut':

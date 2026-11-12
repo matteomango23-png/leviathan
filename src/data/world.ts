@@ -42,6 +42,9 @@ export const FISH: FishDef[] = [
   { id: 'cavalluccio', name: 'Cavalluccio marino', sellPrice: 9 },
   { id: 'triglia', name: 'Triglia', sellPrice: 8 },
   { id: 'merluzzo_artico', name: 'Merluzzo artico', sellPrice: 12 },
+  // the open sea's own schools (lot M4, owner 12 novembre 2026): herring out in the blue, lanternfish in the trenches
+  { id: 'aringa', name: 'Aringa', sellPrice: 3 },
+  { id: 'pesce_lanterna', name: 'Pesce lanterna', sellPrice: 8 },
   { id: 'krill', name: 'Krill', sellPrice: 4 },
   { id: 'pesce_vipera', name: 'Pesce vipera', sellPrice: 20, effect: 'ossigeno' },
   { id: 'pesce_accetta', name: 'Pesce accetta', sellPrice: 25, effect: 'ossigeno' },

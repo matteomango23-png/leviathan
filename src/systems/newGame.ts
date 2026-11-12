@@ -59,6 +59,8 @@ export interface GameState extends StoryWorld {
   timers: {
     feed: number;
     vent: number;
+    /** Seconds before a smoker's plume burns you again (world/smokers.ts). */
+    burn?: number;
     fishXp: number;
     packEcho?: number;
     airTold?: number;

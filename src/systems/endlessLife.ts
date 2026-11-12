@@ -4,6 +4,7 @@ import { ENDLESS } from '../data/endless';
 import { SARDINE } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { endlessFloor, ventAt } from './world/endless';
+import { regionAt } from './world/stretches';
 import type { GameEvent } from './events';
 import type { FishState } from './fish';
 import type { TileMap } from './world/tileMap';
@@ -37,10 +38,14 @@ export function stepEndlessSchools(
     const dy = p.y - s.y;
     Object.assign(s, { x: p.x, y: p.y, tx: p.x, ty: p.y });
     s.roam = [p.x - 300, top, p.x + 300, Math.min(floor - 20, top + 300)];
+    // the fish of the region it now swims in (ENDLESS.schoolKinds)
+    const kinds = ENDLESS.schoolKinds[regionAt(x).id] ?? ['sardina'];
+    const kind = kinds[fish.schools.indexOf(s) % kinds.length]!;
     for (const f of fish.fish) {
       if (f.school !== s) continue;
       f.x += dx;
       f.y += dy;
+      f.kind = kind;
       if (!f.alive) f.respawn = Math.min(f.respawn, SARDINE.respawnSeconds);
     }
   }

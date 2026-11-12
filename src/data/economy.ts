@@ -361,4 +361,8 @@ export const FISH_LOOK: Record<string, { length: number; tint: number; perSchool
   pesce_pagliaccio: { length: 4, tint: 0xffa860, perSchool: 6, speedMult: 0.8 },
   pesce_chirurgo: { length: 5, tint: 0x7ab0ff, perSchool: 8, speedMult: 1 },
   merluzzo_artico: { length: 8, tint: 0xc8d4dc, perSchool: 8, speedMult: 0.9 },
+  aringa: { length: 6, tint: 0xb4d0e6, perSchool: 22, speedMult: 1.1 },
+  pesce_lanterna: { length: 4, tint: 0x3a4652, perSchool: 22, speedMult: 0.9 }, // dark, its light dot: views/fishView.ts
 };
+/** The fish that carry a light in the dark (lot M4): its light's radius (units), how many shown at most. */
+export const FISH_GLOW = { kind: 'pesce_lanterna', radius: 5, max: 30 };
