@@ -142,7 +142,11 @@ export const HUNT_RULES = {
   /** A legend beaten (not tamed) goes back to its den, wounded, and comes out again after this many seconds of play
    *  (owner, 15 ottobre: they were gone forever, "the prehistoric hammerhead killed itself"). Tuning. */
   legendReturnSeconds: 1200,
-  /** The ship's sonar hears an anomalous echo this close to the den (units, ~300 m). Tuning. */
+  /** A legend's rumour is heard, and its den echoes, only with your strongest beast at most this many levels under
+   *  the legend's lowest (owner, 12 novembre 2026). Tuning. */
+  readyBelow: 15,
+  /** The anomalous echo, once heard, stays on the sonar's screen this close (units × the sonar's range; it is heard
+   *  only within bigEchoRange, what the screen shows). Tuning. */
   sonarRange: 1800,
   /** Under water, the traces show this close to the den (units). */
   traceRadius: 280,

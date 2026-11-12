@@ -1,28 +1,35 @@
 // The surface radar of the big ships (block 5c, owner 10 ottobre 2026: "like the ones with the signal turning round
 // 360 degrees", only for the ships and U-Boats). What is close to the hull, within SHIP.radar.rangeM of its ends:
 // ice, rock and a floor too shallow for the keel, the piers of harbours and outposts, your speedboat and submarine
-// afloat, beasts near the surface. And the parking sensor: an obstacle ahead within that range while the ship goes
+// afloat, beasts near the surface (as big as the ship's sonar tells, the legends apart: owner, 12 novembre 2026), the
+// den of an anomalous echo already heard. And the parking sensor: an obstacle ahead within that range while the ship goes
 // faster than a crawl beeps, the closer the more often. Pure logic.
 import { PORTS } from '../../data/economy';
 import { SHIP } from '../../data/ship';
 import { TILE, WORLD } from '../../data/worldLayout';
+import type { EchoClass } from '../../data/hunts';
+import { HUNTS } from '../../data/hunts';
 import type { BeastState } from '../beastState';
+import { heardClass, trueClass } from '../echoClass';
+import { huntOpen, huntReady, type Den, type HuntsState } from '../hunts';
 import { isInWater } from '../beasts/wildState';
 import type { BoatState } from '../boat';
 import { knotsOf } from '../helm';
 import type { SubState } from '../subState';
 import type { TileMap } from '../world/tileMap';
 import { shipDraft } from './geometry';
-import { shipLength } from './model';
+import { shipLength, shipModel } from './model';
 import type { ShipState } from './ship';
 
 const R = SHIP.radar;
 const M = WORLD.unitsPerMetre;
 
-export type ContactKind = 'ice' | 'rock' | 'port' | 'boat' | 'sub' | 'beast';
+export type ContactKind = 'ice' | 'rock' | 'port' | 'boat' | 'sub' | 'beast' | 'den';
 
 interface RadarContact {
   kind: ContactKind;
+  /** A beast: its size as the ship's sonar names it ('leggendaria' for the legends and named beasts). */
+  cls?: EchoClass;
   /** Metres from the ship's middle (east > 0) and from the waterline (down > 0). */
   dxM: number;
   dyM: number;
@@ -33,7 +40,9 @@ interface RadarWorld {
   map: TileMap;
   boat: BoatState;
   sub: SubState;
-  beasts: Pick<BeastState, 'wilds'>;
+  beasts: Pick<BeastState, 'wilds' | 'gone' | 'team'>;
+  hunts: HuntsState;
+  dens: Den[];
 }
 
 /** How far it sees from the ship's middle (m): half the ship and the range beyond its ends. */
@@ -71,9 +80,21 @@ export function radarContacts(g: RadarWorld): RadarContact[] {
     out.push({ kind: 'boat', dxM: (g.boat.x - s.x) / M, dyM: (WORLD.surfaceY - y0) / M });
   if (g.sub.owned && !(s.bay === 'docked') && near(g.sub.x, g.sub.y))
     out.push({ kind: 'sub', dxM: (g.sub.x - s.x) / M, dyM: (g.sub.y - y0) / M });
+  const classes = shipModel(s).sonar.classes;
   for (const w of g.beasts.wilds)
     if (isInWater(w) && near(w.x, w.y))
-      out.push({ kind: 'beast', dxM: (w.x - s.x) / M, dyM: (w.y - y0) / M });
+      out.push({
+        kind: 'beast',
+        cls: heardClass(trueClass(w.form), classes),
+        dxM: (w.x - s.x) / M,
+        dyM: (w.y - y0) / M,
+      });
+  HUNTS.forEach((h, i) => {
+    const den = g.dens[i];
+    if (!den || !g.hunts[h.id]?.echo || !near(den.x, den.y)) return;
+    if (!huntOpen(h, g.beasts.gone, g.beasts.team) || !huntReady(h, g.beasts.team)) return;
+    out.push({ kind: 'den', dxM: (den.x - s.x) / M, dyM: (den.y - y0) / M });
+  });
   return out;
 }
 

@@ -12,10 +12,9 @@ import { type StatRow } from './statRow';
 export type { StatRow } from './statRow';
 
 const one = (v: number): string => (Math.round(v * 10) / 10).toString().replace('.', ',');
-/** How far the ship's sonar hears a big beast and a den, in metres. */
-export const sonarMetres = (m: ShipModelDef): { big: number; den: number } => ({
+/** How far the ship's sonar hears a big beast and a den (the same since 12 novembre 2026: what its screen shows). */
+export const sonarMetres = (m: ShipModelDef): { big: number } => ({
   big: Math.round((HUNT_RULES.bigEchoRange * m.sonar.range) / WORLD.unitsPerMetre),
-  den: Math.round((HUNT_RULES.sonarRange * m.sonar.range) / WORLD.unitsPerMetre),
 });
 
 /** Every comparable number of a ship, then those of the vehicles in its hatches. */
@@ -74,7 +73,7 @@ export function shipStats(m: ShipModelDef): StatRow[] {
       group: g,
       label: 'Sonar',
       value: s.big,
-      text: `sente le bestie fino a ${s.big} m e una tana fino a ${s.den} m; distingue ${m.sonar.classes} grandezze di eco`,
+      text: `sente le bestie e le tane fino a ${s.big} m; distingue ${m.sonar.classes} grandezze di eco`,
       better: 'high',
       unit: 'm',
     },

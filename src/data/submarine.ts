@@ -76,7 +76,7 @@ export const SUB_MODELS: SubModel[] = [
     tank: 90,
     perKm: 11,
     sonar: false,
-    note: 'Il sottomarino più veloce: consuma tanto e non ha sonar',
+    note: 'Il sottomarino più veloce: consuma tanto e non ha sonar (il radar vede solo roccia e bestie vicine)',
     art: 'sottomarino_eh1',
   },
   {

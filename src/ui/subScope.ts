@@ -1,7 +1,7 @@
 // On the submarine's glass (block 5c, owner 10 ottobre 2026): the round 360° sonar of the submarines that have one
 // (the beasts all round, above and below too, as big as they sound) and, on every submarine, an arrow towards the
 // mother ship with how far it is, so you do not get lost. On every submarine the rock and ice close around it
-// (owner, 24 ottobre), on the ones with a sonar the beasts too. Look only.
+// (owner, 24 ottobre) and the beasts near it (12 novembre), sized on the ones with a sonar. Look only.
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import type { EchoClass } from '../data/hunts';
@@ -17,6 +17,9 @@ import { el } from './dom';
 import { drawScope, type ScopeDot } from './sweepScope';
 
 const DOT: Record<EchoClass, number> = { piccola: 1.6, media: 2.3, grande: 3.1, enorme: 4, leggendaria: 4.4 };
+const SIMPLE_DOT = 2.2;
+const LEGEND_RGB = '255,206,110';
+const PACK_RGB = '140,220,255';
 /** Closer than this to the ship (m), no arrow. */
 const NEAR_M = 15;
 
@@ -76,17 +79,27 @@ export class SubScope {
       r: 1.1,
       rgb: e.ice ? '190,230,245' : P.main,
     }));
-    for (const w of scope ? g.beasts.wilds : []) {
+    // the beasts within its range: on every submarine (owner, 12 novembre 2026: "si dovrebbe vedere anche se hai un
+    // animale nel raggio"), all alike on the simple ones, as big as they sound with a sonar; the legends in gold
+    for (const w of g.beasts.wilds) {
       if (!isInWater(w)) continue;
       const dx = w.x - s.x;
       const dy = w.y - s.y;
       if (Math.hypot(dx, dy) > range) continue;
+      const cls = trueClass(w.form);
       dots.push({
         x: dx / range,
         y: dy / range,
-        r: DOT[heardClass(trueClass(w.form), scope!.classes)],
-        rgb: P.dot,
+        r: scope ? DOT[heardClass(cls, scope.classes)] : SIMPLE_DOT,
+        rgb: cls === 'leggendaria' ? LEGEND_RGB : P.dot,
       });
+    }
+    // your companions swimming with you, in their own colour
+    for (const m of g.beasts.pack) {
+      const dx = m.x - s.x;
+      const dy = m.y - s.y;
+      if (Math.hypot(dx, dy) <= range)
+        dots.push({ x: dx / range, y: dy / range, r: SIMPLE_DOT, rgb: PACK_RGB });
     }
     drawScope(ctx, size, dpr, this.t, SHIP.radar.sweepSeconds, dots, P, { halfW: 0, face: s.face });
   }
@@ -98,7 +111,7 @@ export function renderSubSonar(b: HTMLElement, g: GameState): () => void {
     'p',
     'port-hint',
     b,
-    'Il sonar del sottomarino: le bestie vicine come punti, tutte uguali, e la roccia attorno. Per riconoscerle e seguirle serve quello della nave.',
+    'Il sonar del sottomarino: la roccia attorno e le bestie vicine come punti (in oro le leggende, in azzurro i tuoi compagni). Per riconoscerle e seguirle serve quello della nave.',
   );
   const scope = new SubScope(b, true);
   let last = performance.now();

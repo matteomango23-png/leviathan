@@ -4,7 +4,7 @@
 import { CONDITION_TEXT, HUNTS, type HuntDef } from '../data/hunts';
 import { WORLD } from '../data/worldLayout';
 import type { GameState } from '../systems/game';
-import { huntNextStep, huntOpen, huntRegionName } from '../systems/hunts';
+import { huntNextStep, huntOpen, huntReady, huntReadyLevel, huntRegionName } from '../systems/hunts';
 import { kmFromCoast } from '../systems/world/endless';
 import { setArt } from './art';
 import { el } from './dom';
@@ -81,7 +81,14 @@ export function openSheet(
   const out = outcome(g, h);
   row(out ? 'Esito' : 'Prossimo passo', out ? `la bestia è stata ${out}` : huntNextStep(h, p));
 
-  if (!out) {
+  const ready = huntReady(h, g.beasts.team);
+  if (!out && !ready)
+    row(
+      'Per ora',
+      `è troppo forte: la sua voce si sente quando la tua bestia più forte arriva al livello ${huntReadyLevel(h)}`,
+    );
+  // too strong yet: nothing to follow, but one followed already (an older game) can be dropped
+  if (!out && (ready || g.huntPinned === h.id)) {
     const pinned = g.huntPinned === h.id;
     const follow = el(
       'button',

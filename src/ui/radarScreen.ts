@@ -1,6 +1,7 @@
 // The surface radar of the cockpit (block 5c, owner 10 ottobre 2026): a round screen with a beam sweeping round,
 // the ship in the middle, and what is close to its hull (systems/ship/radar.ts): ice, rock and shallow floor,
 // harbour piers, your speedboat and submarine, beasts. The beeps of its parking sensor play at the helm.
+import type { EchoClass } from '../data/hunts';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import type { GameState } from '../systems/game';
@@ -17,7 +18,17 @@ const LOOK: Record<ContactKind, { r: number; rgb?: string }> = {
   boat: { r: 3.2, rgb: '255,255,255' },
   sub: { r: 3.2, rgb: '255,255,255' },
   beast: { r: 2.6, rgb: '255,150,120' },
+  den: { r: 5 }, // in the sonar's colour for the anomalous echo
 };
+/** A beast's dot as big as it sounds (like the sonar), a legend in gold. */
+const BEAST_R: Record<EchoClass, number> = {
+  piccola: 1.8,
+  media: 2.6,
+  grande: 3.4,
+  enorme: 4.4,
+  leggendaria: 4.8,
+};
+const LEGEND_RGB = '255,206,110';
 
 /** Draws the radar into `b`; returns a function that stops it. */
 export function renderRadar(b: HTMLElement, g: GameState): () => void {
@@ -33,7 +44,7 @@ export function renderRadar(b: HTMLElement, g: GameState): () => void {
   const canvas = el('canvas', 'radar-canvas', frame);
   const legend = el('div', 'sonar-legend', b);
   legend.innerHTML =
-    '<span><i class="lg floor"></i>roccia e fondale</span><span><i class="lg rd-ice"></i>ghiaccio</span><span><i class="lg rd-port"></i>molo</span><span><i class="lg rd-you"></i>i tuoi mezzi</span><span><i class="lg rd-beast"></i>bestie</span>';
+    '<span><i class="lg floor"></i>roccia e fondale</span><span><i class="lg rd-ice"></i>ghiaccio</span><span><i class="lg rd-port"></i>molo</span><span><i class="lg rd-you"></i>i tuoi mezzi</span><span><i class="lg rd-beast"></i>bestie (più grande il punto, più grande la bestia)</span><span><i class="lg rd-legend"></i>leggenda</span><span><i class="lg odd"></i>eco anomala (tana)</span>';
   const ctx = canvas.getContext('2d');
   let dots: ScopeDot[] = [];
   const read = (): void => {
@@ -41,8 +52,8 @@ export function renderRadar(b: HTMLElement, g: GameState): () => void {
     dots = radarContacts(g).map((c) => ({
       x: c.dxM / R,
       y: c.dyM / R,
-      r: LOOK[c.kind].r,
-      rgb: LOOK[c.kind].rgb ?? P.main,
+      r: c.cls ? BEAST_R[c.cls] : LOOK[c.kind].r,
+      rgb: c.kind === 'den' ? P.odd : c.cls === 'leggendaria' ? LEGEND_RGB : (LOOK[c.kind].rgb ?? P.main),
     }));
   };
   read();

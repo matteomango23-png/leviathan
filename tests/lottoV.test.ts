@@ -13,6 +13,7 @@ import { startRecon } from '../src/systems/ship/gadgets';
 import { subBay } from '../src/systems/ship/model';
 import { stepScan, targetKey } from '../src/systems/sonarScan';
 import { beastsInRange } from '../src/systems/tracking';
+import { giveTestBeast } from '../src/systems/testTools';
 import { generateWorld } from '../src/systems/world/worldGen';
 import { giveVessels } from './helpers/vessels';
 
@@ -22,6 +23,7 @@ describe('a legend just beaten leaves the sonar (owner: "rimane sul sonar")', ()
   it('its anomalous echo is gone while it rests in its den, and back when it comes out', () => {
     const g = createGame(map, null, 4);
     giveVessels(g);
+    giveTestBeast(g, { speciesId: 'zanna', variant: 'comune' }, 100); // ready for the legend (lottoU2)
     const h = HUNTS.find((x) => x.form.unique)!;
     const den = g.dens[HUNTS.indexOf(h)]!;
     g.hunts[h.id] = { heard: true, echo: true };

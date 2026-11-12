@@ -3,7 +3,7 @@
 import { BOAT_MODELS } from '../../data/boats';
 import { type ShipModelDef } from '../../data/fleet';
 import { SHIP } from '../../data/ship';
-import { SUB_MODELS } from '../../data/submarine';
+import { SUB_MODELS, SUBMARINE } from '../../data/submarine';
 import { SPHERE } from '../../data/nightmare';
 import { knots, type StatRow } from './statRow';
 
@@ -59,7 +59,7 @@ export function bayRows(m: ShipModelDef): StatRow[] {
           value: sub.scope?.rangeM ?? 0,
           text: sub.scope
             ? `a 360° sul vetro, fino a ${sub.scope.rangeM} m, ${sub.scope.classes} grandezze`
-            : 'no',
+            : `no: solo il radar, roccia e bestie fino a ${SUBMARINE.edgeScope.rangeM} m`,
           better: 'high',
           unit: 'm',
         },

@@ -13,7 +13,7 @@ export function enterPort(g: GameState, events: GameEvent[] = []): void {
   restAtPort(g);
   repairSub(g, events);
   repairBoat(g, events);
-  if (g.port) hearRumours(g.hunts, g.port, events); // the people of the harbour talk
+  if (g.port) hearRumours(g.hunts, g.port, g.beasts.team, events); // the people of the harbour talk
   g.gear.shopBought = {};
 }
 

@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.117.0 — Leggendari al momento giusto, sonar e radar più chiari (12 novembre 2026)
+
+- **Leggendari:** la loro voce si sente al porto, e la loro eco nel sonar, solo quando la tua bestia più forte arriva a 15 livelli dal loro (il Coccodrillo albino leggendario, 50-65, dal livello 35). Sulla Bacheca un leggendario ancora troppo forte lo dice, con il livello da raggiungere.
+- **Sonar della nave:** ogni eco ha la sua scritta (piccola, media, grande, enorme, leggenda, eco anomala) con la profondità. L'eco anomala si trova solo dentro lo schermo; se poi la nave si allontana resta sul bordo con una freccia e la distanza.
+- **Radar della nave:** le bestie sono punti grandi quanto loro, le leggende in oro, e la tana di un'eco anomala compare quando è vicina.
+- **Radar del sottomarino:** ogni sottomarino vede le bestie vicine, in oro le leggende e in azzurro i tuoi compagni.
+- Le bestie con un nome (i leggendari, lo Sfregiato, la Regina bianca…) hanno sempre 5 stelle.
+- Aurelio, il tutorial del cockpit e le schede di navi e sottomarini lo spiegano.
+- I salvataggi restano compatibili.
+
 ## v0.116.1 — Lo sciame di sardine (12 novembre 2026)
 
 - Lo Sciame di sardine non è più un anello rigido: le sardine arrivano da intorno, ti avvolgono in una palla viva che ti segue (ognuna col suo giro, quelle dietro più scure), e alla fine si sparpagliano invece di sparire.

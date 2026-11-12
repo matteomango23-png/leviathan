@@ -680,6 +680,12 @@
 .lg.rd-beast {
   background: rgb(255, 150, 120);
 }
+.lg.rd-legend {
+  background: rgb(255, 206, 110);
+}
+.lg.rd-pack {
+  background: rgb(140, 220, 255);
+}
 
 /* a dial showing a word (wind, water: 10 ottobre) */
 .dial-value.word {

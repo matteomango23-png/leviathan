@@ -208,6 +208,17 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
     const scan = g.sonarScan;
     hits = [];
     r.echoes.forEach((e, i) => {
+      // a den farther than the screen: on its edge, with an arrow and how far (owner, 12 novembre 2026)
+      if (Math.abs(e.dx) > r.rangeM) {
+        const right = e.dx > 0;
+        const km = (Math.abs(e.dx) / 1000).toFixed(1).replace('.', ',');
+        const text = right ? `eco anomala ${km} km ▶` : `◀ eco anomala ${km} km`;
+        ctx.fillStyle = `rgba(${P.odd},0.95)`;
+        ctx.font = `bold ${10 * dpr}px system-ui, sans-serif`;
+        const tw = ctx.measureText(text).width;
+        ctx.fillText(text, right ? W - tw - 6 * dpr : 6 * dpr, py(e.depthM));
+        return;
+      }
       const ex = px(e.dx);
       if (Math.abs(ex - sxp) < 10 * dpr) seen.set(i, t);
       const age = t - (seen.get(i) ?? -99);
@@ -247,7 +258,10 @@ export function renderSonar(b: HTMLElement, g: GameState, redraw: () => void): (
       }
       const found = key ? scan.results[key] : undefined;
       ctx.fillStyle = found ? `rgba(${P.text},1)` : `rgba(${P.text},${a * 0.9})`;
-      ctx.fillText(found ? `${found} · ${e.depthM} m` : `${e.depthM} m`, ex + 14 * dpr, ey + 4 * dpr);
+      // what it is as far as this sonar can tell: its size, a legend, a den (owner, 12 novembre 2026: "non si vede che
+      // tipo di animale")
+      const what = found ?? (odd ? 'eco anomala' : legend ? 'leggenda' : (e.cls ?? 'eco'));
+      ctx.fillText(`${what} · ${e.depthM} m`, ex + 14 * dpr, ey + 4 * dpr);
     });
   };
   raf = requestAnimationFrame(draw);

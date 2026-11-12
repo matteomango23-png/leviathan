@@ -96,10 +96,11 @@ export const DIALOGUES = {
   tipRumour: [
     { who: 'aurelio', text: 'Hai sentito una voce: una leggenda vive in quei mari. La trovi in Bacheca, tra i Ricercati, e nel diario della nave.' },
     { who: 'aurelio', text: 'Ogni caccia ha quattro passi: la Voce, l’Eco col sonar della nave, le Tracce col sottomarino, poi la Bestia.' },
+    { who: 'aurelio', text: 'Le voci di una leggenda le senti solo quando la tua squadra è abbastanza forte per affrontarla. Sulla Bacheca vedi a che livello devi arrivare.' },
     { who: 'aurelio', text: 'Tocca la caccia e premi Segui: la vedrai in plancia e al timone, con la strada da fare.' },
   ],
   tipEcho: [
-    { who: 'aurelio', text: 'Un’eco anomala! Lì sotto c’è la sua tana. Ferma la nave vicino e cala il sottomarino.' },
+    { who: 'aurelio', text: 'Un’eco anomala! Lì sotto c’è la sua tana: sul sonar ha la sua scritta, e se è oltre il bordo una freccia ti dice da che parte e quanto è lontana. Ferma la nave vicino e cala il sottomarino.' },
     { who: 'aurelio', text: 'Vicino alla tana troverai le tracce. La bestia esce solo col suo tempo: pioggia, nebbia, tempesta… come dice la voce.' },
   ],
   tipSub: [

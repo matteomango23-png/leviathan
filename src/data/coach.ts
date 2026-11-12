@@ -59,8 +59,8 @@ export const COACH: Record<CoachRound, CoachStep[]> = {
     { target: 'helm-cockpit', text: 'Cockpit: sonar, radar, mappa e il Diario delle bestie che segui.' },
   ],
   cockpit: [
-    { target: 'cockpit-sonar', text: 'Sonar: le echi delle bestie attorno alla nave.' },
-    { target: 'cockpit-radar', text: 'Radar: il fondale e gli ostacoli vicini.' },
+    { target: 'cockpit-sonar', text: 'Sonar: le echi delle bestie sotto la nave, con la loro grandezza; in oro le leggende, in arancio l’eco anomala di una tana. Tocca un’eco per sapere che bestia è.' },
+    { target: 'cockpit-radar', text: 'Radar: roccia, ghiaccio e moli vicini, e le bestie come punti grandi quanto loro.' },
     { target: 'cockpit-plancia', text: 'Plancia: la mappa, la tua rotta, le bestie che segui.' },
     { target: 'cockpit-drone', text: 'Drone: manda il drone a esplorare e leggi cosa ha visto.' },
     { target: 'cockpit-diario', text: 'Diario: le taglie e il leggendario che segui, con dove trovarli.' },
