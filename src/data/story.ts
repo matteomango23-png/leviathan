@@ -138,6 +138,10 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Attento! Qui vicino nuota una bestia molto più forte della tua squadra.' },
     { who: 'aurelio', text: 'Le bestie grosse hanno un livello alto. All’inizio evitale: fai crescere la squadra con le bestie piccole della baia, poi torna da loro.' },
   ],
+  tipGun: [
+    { who: 'aurelio', text: 'Il caricatore del fucile tiene dieci dardi: sul pulsante vedi quanti ne restano, e quanti ne hai di scorta.' },
+    { who: 'aurelio', text: 'Quando è vuoto, tocca di nuovo Fucile: ricarichi in un attimo, e se lo tieni premuto la raffica riprende da sola. I dardi di scorta si comprano in ogni porto, scheda Sub.' },
+  ],
   tipTaming: [
     { who: 'aurelio', text: 'Per domare una bestia sfiniscila in battaglia: più la sua barra è vuota, più la conchiglia tiene. Sul pulsante Doma vedi la probabilità prima di lanciare.' },
     { who: 'aurelio', text: 'Ogni livello che ha sopra la tua bestia più forte la rende più difficile: con nove livelli di differenza riesci di rado. Le conchiglie migliori aiutano, quella del Re non sbaglia mai.' },
@@ -190,13 +194,15 @@ export type TipTrigger =
   | 'tamedToTeam'
   | 'dangerSeen'
   | 'fishCaught'
-  | 'battleOver';
+  | 'battleOver'
+  | 'gunEmpty';
 /** `early`: it can open during the guided first dive too. */
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true }[] = [
   { id: 'tipPack', title: 'Compagni e cavalcature', on: 'tamedToTeam', early: true },
   { id: 'tipSell', title: 'Vendere il pescato', on: 'fishCaught', early: true },
   { id: 'tipBigBeasts', title: 'Le bestie grandi', on: 'dangerSeen', early: true },
   { id: 'tipTaming', title: 'Domare', on: 'battleOver', early: true },
+  { id: 'tipGun', title: 'Il fucile e i dardi', on: 'gunEmpty', early: true },
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
   { id: 'tipEcho', title: 'L’eco anomala', on: 'echoFound' },

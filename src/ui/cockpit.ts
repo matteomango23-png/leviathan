@@ -106,7 +106,8 @@ export class Cockpit {
     this.render();
     this.live();
     this.tick = window.setInterval(() => this.live(), 500);
-    runCoach(g.story, 'cockpit'); // the step-by-step tutorial, the first time (data/coach.ts)
+    // the step-by-step tutorial, the first time (data/coach.ts); its "seen" mark saved at once
+    runCoach(g.story, 'cockpit', () => this.session.emit('saveNow'));
   }
 
   /** The throttle that keeps the ship under the sonar's limit (SHIP.sonar.cruiseKnots). */

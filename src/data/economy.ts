@@ -259,7 +259,10 @@ export const SHOP: Record<ShopTab, Shelf[]> = {
       items: [g.bait, `${g.bait}_pregiata`],
     })),
   ],
-  sub: [{ title: 'Ossigeno', items: ['bolla_aria'] }], // the suits and their upgrades: SUITS, SUIT_UPGRADES
+  sub: [
+    { title: 'Munizioni del fucile', items: ['dardi'] },
+    { title: 'Ossigeno', items: ['bolla_aria'] },
+  ], // the suits and their upgrades: SUITS, SUIT_UPGRADES
 };
 
 /** The market: what is on sale (weapons come from wrecks; suits, upgrades and items from world.ts). */

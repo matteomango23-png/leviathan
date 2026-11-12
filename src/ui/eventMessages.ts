@@ -207,6 +207,10 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         : null;
     case 'bountyClosed':
       return [e.text, 4];
+    case 'gunEmpty':
+      return ['Caricatore vuoto: tocca Fucile per ricaricare.', 2.2];
+    case 'ammoOut':
+      return ['Dardi finiti: comprali al porto, nella scheda Sub.', 3];
     case 'nightVision':
       return [e.on ? ABYSS_TEXT.nightOn : ABYSS_TEXT.nightOff, 1.4];
     case 'wreckLocked':

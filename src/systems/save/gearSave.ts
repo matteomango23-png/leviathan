@@ -5,6 +5,7 @@ import { WRECKS } from '../../data/economy';
 import { LANDMARKS } from '../../data/landmarks';
 import { RELICS } from '../../data/temples';
 import { ABYSS_PARTS } from '../../data/abyss';
+import { GUN } from '../../data/diver';
 
 /** The chests of the Gallerie (systems/world/galleryChests.ts) are made from the sea, not listed: known by their name. */
 const GALLERY_CHEST = /^forziere_galleria_\d+$/;
@@ -27,6 +28,8 @@ export interface SavedGear {
   bounties?: { followed: string[]; done: string[]; beaten: string[] };
   requestsMet?: string[];
   barterDone?: string[];
+  /** The speargun's magazine (12 novembre 2026; missing in older saves: full, and a spare supply given). */
+  gunMag?: number;
   missions: { active: string[]; done: string[]; progress: Record<string, number> };
   deepestM: number;
   /** Guardians already beaten (their reward is given once). */
@@ -57,6 +60,13 @@ const counts = (v: unknown, known: string[]): Record<string, number> => {
 /** The mythic harpoon is gone (owner, 16 ottobre 2026): whoever had one gets a Conchiglia del Re (one at most). */
 function harpoonToShell(raw: unknown, inv: Record<string, number>): Record<string, number> {
   if (isObj(raw) && num(raw.arpione_mitico) > 0) inv.conchiglia_re = 1;
+  return inv;
+}
+
+/** A game from before the speargun had ammunition (12 novembre 2026): it gets the starting spare darts, so nobody is
+ *  left out at sea without a shot. */
+function withDarts(raw: Record<string, unknown>, inv: Record<string, number>): Record<string, number> {
+  if (raw.gunMag === undefined) inv.dardi = (inv.dardi ?? 0) + GUN.startSpare;
   return inv;
 }
 
@@ -100,7 +110,7 @@ export function validateGear(raw: unknown): SavedGear {
     ),
     weapons,
     activeWeapon,
-    inventory: harpoonToShell(raw.inventory, counts(raw.inventory, itemIds)),
+    inventory: withDarts(raw, harpoonToShell(raw.inventory, counts(raw.inventory, itemIds))),
     backpack,
     swarms: ids(raw.swarms, swarmIds),
     wrecks: ids(raw.wrecks, [
@@ -121,6 +131,10 @@ export function validateGear(raw: unknown): SavedGear {
     },
     requestsMet: words(raw.requestsMet),
     barterDone: words(raw.barterDone),
+    gunMag:
+      typeof raw.gunMag === 'number'
+        ? Math.max(0, Math.min(GUN.magazine, Math.floor(raw.gunMag)))
+        : GUN.magazine,
     missions: { active: ids(m.active, missionIds), done: ids(m.done, missionIds), progress },
     deepestM: num(raw.deepestM),
     relics: ids(

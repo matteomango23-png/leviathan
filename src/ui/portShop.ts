@@ -14,7 +14,7 @@ const HINTS: Record<ShopTab, string> = {
   cure: 'Si usano dallo zaino o in battaglia, su una bestia della squadra.',
   esche:
     'Mettila nello zaino e usala in acqua: per un minuto e mezzo arrivano le bestie del suo gruppo. Le pregiate a volte portano un alfa o un albino.',
-  sub: 'Una muta migliore ti porta più in fondo; i potenziamenti restano tuoi per sempre.',
+  sub: 'I dardi del fucile (venti a scatola), l’ossigeno, e le mute: una migliore ti porta più in fondo; i potenziamenti restano tuoi per sempre.',
 };
 
 function done(ctx: TabContext, r: BuyResult, okText: string): void {

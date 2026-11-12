@@ -160,6 +160,7 @@ export function closeDialogue(g: StoryWorld, events: GameEvent[]): void {
   if (!id) return;
   s.dialogue = null;
   if (!s.seen.includes(id)) s.seen.push(id);
+  events.push({ type: 'dialogueClosed', id }); // saved at once: a tip read is never shown again (12 novembre 2026)
   if (id === 'intro') {
     // into the water with a splash
     Object.assign(g.diver, { ...SCENES.jumpIn, vx: 30, vy: 20 });
