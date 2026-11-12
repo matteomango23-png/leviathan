@@ -4,7 +4,8 @@ import { HARPOON_WEAKEN } from '../../data/battle';
 import { BEAST_BODY, BEAST_TEMPER, type WildSpawnDef } from '../../data/beasts';
 import type { BodyPose } from './combat';
 import type { Fear } from './mountTraits';
-import { formLengthUnits, type BeastForm, shapeOfForm } from './forms';
+import { formLengthUnits, type BeastForm } from './forms';
+import { shapeOfForm } from './formShape';
 
 /** A big hunter's passes before it charges (beasts/patrol.ts). */
 export interface Patrol {

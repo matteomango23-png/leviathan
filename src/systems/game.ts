@@ -64,7 +64,7 @@ import { hitLever, stepTemples } from './temple';
 export { toSave } from './save/convert';
 export { applySave, createGame, type GameState } from './newGame';
 export { enterPort, restAtPort, sellAtPort } from './port';
-export { canDashNow, currentAction, respawnPoint, type Action } from './playerActions';
+export { canDashNow, currentAction, respawnPoint } from './playerActions';
 import { doAction, fire, respawnPoint } from './playerActions';
 import type { GameState } from './newGame';
 

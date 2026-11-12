@@ -2,7 +2,7 @@
 // alpha or albino (the legend: the one hunt you follow, huntPinned); paid at once when a followed beast is beaten in
 // battle or tamed. A beast you have already beaten or tamed closes its bounty without pay, and the next one of the
 // path takes its place. Pure logic; the path is bountyPath.ts.
-import { BOUNTY_RULES, BOUNTY_TEXT, type BountyKind } from '../../data/bounties';
+import { BOUNTY_RULES, BOUNTY_TEXT } from '../../data/bounties';
 import { HUNTS } from '../../data/hunts';
 import { formKey, formName, type BeastForm } from '../beasts/forms';
 import type { TeamBeast } from '../beasts/team';
@@ -99,4 +99,3 @@ function pay(
 }
 
 /** The kind of a bounty id (a legend's hunt ids are not bounties of the path). */
-export const bountyKind = (id: string): BountyKind | null => bountyById(id)?.kind ?? null;

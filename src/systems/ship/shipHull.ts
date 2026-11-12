@@ -33,9 +33,6 @@ interface HullShip {
 
 export const hullMax = (s: { model: string }): number => shipModel(s).hull;
 
-/** Broken down: no engine until mended. */
-export const shipBroken = (s: { owned: boolean; hull: number }): boolean => s.owned && s.hull <= 0;
-
 /** Takes `amount` off the hull; `loud`: a blow (an event for the shake and the bar), not a slow wear. */
 export function damageShip(s: HullShip, amount: number, events: GameEvent[], loud = true): void {
   if (s.hull <= 0 || amount <= 0) return;

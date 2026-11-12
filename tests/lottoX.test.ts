@@ -6,7 +6,7 @@ import { BEAST_SPRITE, CEPHALOPODS } from '../src/data/beasts';
 import { DIVER } from '../src/data/diver';
 import { WORLD, bay } from '../src/data/worldLayout';
 import { floorNear, stepRoam } from '../src/systems/beasts/roam';
-import { swimLook } from '../src/systems/beasts/forms';
+import { swimLook } from '../src/systems/beasts/formShape';
 import { bodyRadius } from '../src/systems/beasts/wildState';
 import { createDiver, stepDiver } from '../src/systems/diver';
 import { createGame } from '../src/systems/game';

@@ -2,6 +2,10 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.122.1 — Pulizia (12 novembre 2026)
+
+- Nessun cambiamento nel gioco: codice riordinato (parti inutili tolte, file lunghi divisi) e documenti aggiornati. I salvataggi non cambiano.
+
 ## v0.122.0 — Munizioni del fucile (12 novembre 2026)
 
 - Il fucile ha un caricatore da 10 dardi: sul pulsante vedi quanti ne restano e la scorta ("7 · 30").

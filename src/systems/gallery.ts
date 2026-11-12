@@ -12,7 +12,7 @@ import { finalFormLevelOf, formKey, wildLevelRange, type BeastForm } from './bea
 import { addTamed, makeTeamBeast, teamMembers } from './beasts/team';
 import { callMount } from './beasts/mount';
 import { removeWild } from './beasts/wildState';
-import { requestBattle } from './encounters';
+import { requestBattle } from './battleRequest';
 import { dismount } from './beastState';
 import type { GameEvent } from './events';
 import type { GameState } from './game';

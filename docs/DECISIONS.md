@@ -1268,3 +1268,13 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - I pulsanti da indicare si trovano con l'attributo `data-coach` sull'elemento vero, non con coordinate: se la grafica cambia il tutorial segue, e un pulsante che non c'è (nave senza motoscafo, telefono senza tocco) si salta. Un test controlla che ogni nome dei dati esista nell'interfaccia.
 - I giri si segnano in `story.seen` (come i consigli), quindi nessun campo nuovo nei salvataggi; con i consigli spenti non compaiono.
 - I banner importanti (taglia, missione, cattura) aspettano in coda la fine della battaglia invece di sovrascriversi a vicenda.
+
+## 12 novembre 2026 — Feedback U1-U7 e pulizia (v0.116.0 - v0.122.1)
+
+- **Battaglia al tocco:** a nuoto la richiesta di battaglia parte nello stesso passo del contatto (senza la pausa per "vedere il morso", che resta solo in groppa). Il sub non viene spinto via dal morso.
+- **I colpi:** `calm` decide solo se una bestia viene verso di te, mai se la colpisci; i colpi si controllano lungo tutto il tratto percorso in un fotogramma (`shotPath.ts`), perché sul telefono un fotogramma lungo saltava i corpi sottili.
+- **Bestie e mezzi:** nessuna spinta tra bestie e mezzi (selvatiche, branco, cavalcatura). Solo il sub a nuoto urta gli scafi, e una spinta non lo porta mai sopra la linea delle onde.
+- **Fucile e munizioni:** l'arma di base `arpione` resta con lo stesso id (salvataggi compatibili) ma spara dardi a raffica senza cima. Il caricatore sta in `gear.gunMag` (salvato), la scorta è l'oggetto `dardi` dell'inventario: si compra e si salva come gli altri oggetti, e i salvataggi vecchi ricevono una scorta iniziale.
+- **Leggende:** voce ed eco solo con la squadra a `HUNT_RULES.readyBelow` livelli dalla leggenda. L'eco si sente solo entro la portata che lo schermo del sonar mostra.
+- **"Visto" salvato subito:** i segni del tutorial e dei consigli si salvano nel momento in cui si chiudono (`dialogueClosed`, `saveNow`): chi chiudeva l'app prima di un altro salvataggio rivedeva il tutorial.
+- **Pulizia:** tolte le esportazioni mai usate (cercate con `npx ts-prune`, senza aggiungerlo alle dipendenze). I file di codice oltre 300 righe sono divisi per responsabilità: `formShape`, `battleRequest`, `beastEye`, `shipLights`, `helmLevers`. I file di soli dati restano lunghi.

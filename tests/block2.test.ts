@@ -7,7 +7,7 @@ import { SHIP } from '../src/data/ship';
 import { FISH } from '../src/data/world';
 import { WORLD } from '../src/data/worldLayout';
 import { headOf } from '../src/systems/beasts/combat';
-import { tailUpDown } from '../src/systems/beasts/forms';
+import { tailUpDown } from '../src/systems/beasts/formShape';
 import { fishXp } from '../src/systems/beasts/growth';
 import { LEGEND_GIANTS } from '../src/systems/beasts/legends';
 import { callMount } from '../src/systems/beasts/mount';

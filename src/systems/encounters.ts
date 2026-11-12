@@ -3,66 +3,24 @@
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { ROAM, SWIM_BITE, WILD_RULES, DANGER_RULES } from '../data/beasts';
 import { noSurprise, scaredOfPack } from './pack';
-import { fearOf, openingFor, type Fear } from './beasts/mountTraits';
+import { fearOf, openingFor } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
 import { ENDLESS } from '../data/endless';
 import { residentArea, residentsNear, residentForm } from './beasts/residents';
-import { teamMembers } from './beasts/team';
 import type { GameEvent } from './events';
 import { range } from './math';
 import { distanceToBody } from './beasts/combat';
 import { formKey, formLengthM, rollWildForm, rollWildLevel, type BeastForm } from './beasts/forms';
 import { appearPoint, stepRoam, temperOf } from './beasts/roam';
 import { hunterAfterYou, touchOutcome } from './swimFight';
+import { ambush, requestBattle } from './battleRequest';
 import { SUBMARINE } from '../data/submarine';
 import { DIVER } from '../data/diver';
 import { isLegend } from './beasts/legends';
 import { drawSpawn, rememberSpawn } from './beasts/spawnDraw';
 import { luredForm } from './beasts/lure';
 import { isInWater, isRare, removeWild, spawnWild, type WildBeast } from './beasts/wildState';
-import {
-  activeBeast,
-  isHeld,
-  onScreen,
-  packMembers,
-  type BattleRequest,
-  type BeastWorld,
-} from './beastState';
-
-/**
- * Asks for a battle (the World scene opens it). Only one at a time. With no beast able to fight, there is no
- * battle: like Pokémon you black out (game.ts wakes you on your ship or at your harbour with the team healed).
- */
-export function requestBattle(
-  g: BeastWorld,
-  w: WildBeast,
-  first: BattleRequest['first'],
-  events: GameEvent[],
-  fear?: Fear,
-): void {
-  if (g.beasts.battle || g.diver.dead) return;
-  if (!teamMembers(g.beasts.team).some((b) => !b.ko && b.hp > 0)) {
-    w.calm = ROAM.calmAfterBattle;
-    events.push({ type: 'noTeam' });
-    return;
-  }
-  g.beasts.battle = { wildId: w.id, first, ...(fear && (fear.fleeTries || fear.frozen) ? { fear } : {}) };
-  events.push({ type: 'battleStart', id: w.id, first });
-}
-
-/**
- * A beast that reaches you gets a free attack only from behind (you were facing away from it); met face to face,
- * the battle starts even (owner, 15 ottobre: "i nemici a parità di livello sono sempre più forti": almost every battle
- * began with its free attack, though the two sides are otherwise even; tests/balance.test.ts).
- */
-export function ambush(
-  w: { x: number },
-  d: { x: number; face: 1 | -1 },
-  mount: { face: 1 | -1 } | null = null,
-): BattleRequest['first'] {
-  const face = mount?.face ?? d.face;
-  return Math.sign(w.x - d.x) === face ? 'normal' : 'foe';
-}
+import { activeBeast, isHeld, onScreen, packMembers, type BeastWorld } from './beastState';
 
 /** You face the hunter after you (the context button, or a tap on one of your beasts: `lead` goes first). */
 export function faceHunter(g: BeastWorld, events: GameEvent[], lead?: string): boolean {

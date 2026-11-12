@@ -9,7 +9,6 @@ import { DIVER } from '../../data/diver';
 import type { Rng } from '../math';
 import type { ViewRect } from '../beastState';
 import type { WildBeast } from './wildState';
-export type { Stalk } from './wildState';
 
 /** Roused: it starts stalking you, or its rage is renewed if it already does. */
 export function startStalk(b: WildBeast, diverX: number): void {
