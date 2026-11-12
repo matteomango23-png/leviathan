@@ -73,7 +73,9 @@ export function validateGear(raw: unknown): SavedGear {
   const suit = typeof raw.suit === 'string' && suits.includes(raw.suit) ? raw.suit : SUITS[0]!.id;
   const activeWeapon =
     typeof raw.activeWeapon === 'string' && weapons.includes(raw.activeWeapon) ? raw.activeWeapon : 'arpione';
-  const slotIds = [...weaponIds, ...itemIds, ...swarmIds];
+  // never a battle-only thing in a slot (a shell put there by an older game: owner, 12 novembre 2026)
+  const pocketItems = ITEMS.filter((i) => !i.battleOnly).map((i) => i.id);
+  const slotIds = [...weaponIds, ...pocketItems, ...swarmIds];
   const bp = Array.isArray(raw.backpack) ? raw.backpack : [];
   const backpack = Array.from({ length: BACKPACK_SLOTS }, (_, i) => {
     const v = bp[i];

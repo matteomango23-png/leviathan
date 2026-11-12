@@ -34,12 +34,12 @@ describe('i punti di riferimento', () => {
     }
   });
 
-  it('l’arco blocca, ma sotto il canale è libero', () => {
+  it('l’arco è solo paesaggio (lottoU6) e sotto il canale è libero', () => {
     const s = site('grande_arco');
     const b = s.pieces[0]!;
-    // the left pillar near its foot, the top of the span
-    expect(landmarkSolidAt(b.left + b.w * 0.15, b.top + b.h * 0.75)).toBe(true);
-    expect(landmarkSolidAt(b.left + b.w * 0.5, b.top + b.h * 0.12)).toBe(true);
+    // the pillar and the span: no longer solid (owner, 12 novembre 2026)
+    expect(landmarkSolidAt(b.left + b.w * 0.15, b.top + b.h * 0.75)).toBe(false);
+    expect(landmarkSolidAt(b.left + b.w * 0.5, b.top + b.h * 0.12)).toBe(false);
     // the opening under it, all the way through
     for (let x = b.left + b.w * 0.38; x < b.left + b.w * 0.62; x += 4)
       expect(open(x, b.top + b.h * 0.6)).toBe(true);

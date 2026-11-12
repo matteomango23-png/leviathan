@@ -48,7 +48,9 @@ export const LANDMARKS: LandmarkDef[] = [
     where: { biome: 'barriera', minKm: 2.4 },
     flatten: 220,
     // sunk into the seabed as deep as its faded foot (its painted sand bed is gone: owner, 26 ottobre)
-    pieces: [{ art: 'luogo_arco', widthM: 46, dxM: 0, sink: 0.15, solid: true }],
+    // only scenery: everything goes through it (owner, 12 novembre 2026: beasts trapped inside, a submarine wrecked
+    // looking for its way in)
+    pieces: [{ art: 'luogo_arco', widthM: 46, dxM: 0, sink: 0.15, solid: false }],
     // "under it there is always a turtle or a manta" (the proposal)
     residents: [
       { speciesId: 'tartaruga_marina', dxM: -4, upM: 5 },

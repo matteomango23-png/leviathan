@@ -35,6 +35,7 @@ export class BackpackBar {
 
   constructor(parent: HTMLElement, session: Session) {
     this.root = el('div', 'backpack', parent);
+    this.root.dataset.coach = 'pack'; // the step-by-step tutorial lights it (data/coach.ts)
     for (let i = 0; i < 3; i++) {
       const b = el('button', 'pack-slot', this.root);
       b.addEventListener('pointerdown', (e) => {

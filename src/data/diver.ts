@@ -72,13 +72,12 @@ export const PRESSURE = {
 
 export const HARPOON = {
   speed: 540, // a speargun: fast and straight (tuning)
-  returnSpeed: 800, // the line reels back quickly
   range: 150,
   catchRadius: 9, // along the whole stretch it flew this step (owner, 15 ottobre: it went through fish; was 6)
   /** A fish or a beast this close to the line of the shot (degrees) pulls it gently onto itself. Tuning. */
   assistDeg: 6,
-  backInHandRadius: 9, // the shot is back in the diver's hand within this distance
   muzzleOffset: 6,
+  dartLength: 5, // a dart of the burst as drawn (units)
   aimDotsFrom: 14,
   aimDotsTo: 70,
   // cooldown and damage come from WEAPONS ('arpione') in world.ts

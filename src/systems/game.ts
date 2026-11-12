@@ -165,8 +165,7 @@ export function stepGame(g: GameState, input: InputState, dt: number): GameEvent
   if (!held && !aboard) fire(g, input, events); // aboard, the weapon button fishes
   const hitBeast = (x: number, y: number, damage = 1): boolean =>
     hitLever(g, x, y, events) || weaponHitsBeast(g, x, y, events, damage);
-  const caught = stepHarpoon(g.harpoon, d, g.fish, g.map, dt, events, hitBeast);
-  if (caught) catchFish(g, caught, events);
+  for (const f of stepHarpoon(g.harpoon, g.fish, g.map, dt, events, hitBeast)) catchFish(g, f, events);
   stepProjectiles(g.weapons, g.fish, g.map, dt, {
     catchFish: (f) => catchFish(g, f, events),
     hitBeast,

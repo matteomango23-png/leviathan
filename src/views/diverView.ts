@@ -1,5 +1,5 @@
 // The diver placeholder (vector-style, as in prototype/prova-realistica.html), animated in pieces:
-// body plus two fins that kick. Also draws the harpoon line and the aim guide.
+// body plus two fins that kick. Also draws the speargun's darts in flight and the aim guide.
 import Phaser from 'phaser';
 import { DIVER, HARPOON } from '../data/diver';
 import type { DiverState } from '../systems/diver';
@@ -14,7 +14,6 @@ export class DiverView {
   private readonly finA: Phaser.GameObjects.Image;
   private readonly finB: Phaser.GameObjects.Image;
   private readonly line: Phaser.GameObjects.Graphics;
-  private readonly tip: Phaser.GameObjects.Image;
   private readonly aimDots: Phaser.GameObjects.Image[] = [];
   private kick = 0;
   private tilt = 0;
@@ -39,19 +38,16 @@ export class DiverView {
       .setScale(s);
     this.root = scene.add.container(0, 0, [this.finA, body, this.finB]);
     this.line = scene.add.graphics();
-    this.tip = scene.add.image(0, 0, TEX.dot).setTint(0xd9e6e8).setScale(0.35);
     for (let r = HARPOON.aimDotsFrom; r < HARPOON.aimDotsTo; r += 5) {
       this.aimDots.push(scene.add.image(0, 0, TEX.dot).setTint(0x5ff3d6).setScale(0.12).setVisible(false));
     }
-    layer.add([this.line, this.tip, ...this.aimDots, this.root]);
+    layer.add([this.line, ...this.aimDots, this.root]);
   }
 
   /** Hidden while the diver sits on Aurelio's boat (the story view draws the scene). */
   setHidden(hidden: boolean): void {
     this.root.setVisible(!hidden);
-    this.line.setVisible(!hidden); // redrawn every frame by update()
-    if (!hidden) return; // the tip is shown again by update() while a shot is out
-    this.tip.setVisible(false);
+    this.line.setVisible(!hidden); // the darts, redrawn every frame by update()
   }
 
   private easeFace(face: number, dt: number): number {
@@ -93,16 +89,34 @@ export class DiverView {
       .setRotation(this.tilt * d.face)
       .setAlpha(d.dead ? 0.5 : blink ? 0.55 : 1);
 
-    // harpoon rope and tip
+    // the speargun's darts (owner, 12 novembre 2026: no rope): a short silver shaft with its barb, a faint streak of
+    // churned water behind it
     this.line.clear();
-    const shot = h.shot;
-    this.tip.setVisible(!!shot);
-    if (shot) {
-      const hx = (rider ? rider.x : d.x) + d.face * DIVER.lengthUnits * 0.28;
-      const hy = (rider ? rider.y : d.y) + DIVER.lengthUnits * 0.05;
-      this.line.lineStyle(0.35, 0xb9c7c9, 0.8);
-      this.line.lineBetween(hx, hy, shot.x, shot.y);
-      this.tip.setPosition(shot.x, shot.y);
+    for (const shot of h.shots) {
+      const v = Math.hypot(shot.vx, shot.vy) || 1;
+      const [ux, uy] = [shot.vx / v, shot.vy / v];
+      const L = HARPOON.dartLength;
+      const tail = Math.min(shot.dist, L * 3);
+      this.line.lineStyle(0.6, 0xcfe6ee, 0.12);
+      this.line.lineBetween(
+        shot.x - ux * (L + tail),
+        shot.y - uy * (L + tail),
+        shot.x - ux * L,
+        shot.y - uy * L,
+      );
+      this.line.lineStyle(0.45, 0xd9e6e8, 0.95);
+      this.line.lineBetween(shot.x - ux * L, shot.y - uy * L, shot.x, shot.y);
+      const [px, py] = [-uy * 0.6, ux * 0.6];
+      this.line
+        .fillStyle(0xeef6f8, 1)
+        .fillTriangle(
+          shot.x + ux * 1.4,
+          shot.y + uy * 1.4,
+          shot.x + px,
+          shot.y + py,
+          shot.x - px,
+          shot.y - py,
+        );
     }
 
     // aim guide while dragging the weapon button
