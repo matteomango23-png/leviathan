@@ -11,7 +11,7 @@ import { floodBeams, type Beam } from '../systems/ship/floodlight';
 import { NIGHT } from '../data/daynight';
 import { shipDraft, shipHeight } from '../systems/ship/geometry';
 import { hasMouth, mouthPoint } from '../systems/ship/krillMouth';
-import { shipLength, shipPicture } from '../systems/ship/model';
+import { shipLength, shipModel, shipPicture } from '../systems/ship/model';
 import type { ShipState } from '../systems/ship/ship';
 
 /** A point of the picture (shares) in the world, at this top. */
@@ -25,6 +25,8 @@ export class ShipLights {
   private lift = 0;
   /** And how it leans with them: the light turns with the hull round its picture's middle. */
   private lean = { rot: 0, x: 0, y: 0 };
+  /** The top of its picture this frame (its lights ride with it). */
+  private top = 0;
   /** How lit the light under the still ship is now (eases on and off). */
   private beamK = 0;
 
@@ -44,6 +46,7 @@ export class ShipLights {
    */
   draw(s: ShipState, top: number, lift: number, rot: number, time: number, dt: number, night = 0): void {
     this.lift = lift;
+    this.top = top;
     this.lean = { rot, x: s.x, y: top + shipHeight(s) / 2 };
     this.drawDeckLights(s, top, time, night);
     this.drawBeam(s, lift, time, dt);
@@ -127,6 +130,22 @@ export class ShipLights {
         .fillTriangle(m.x, m.y - 4, far.x, far.y - spread, far.x, far.y + spread);
     }
     for (let r = 4; r >= 1; r--) this.beam.fillStyle(0xc8fbff, 0.1 * k).fillCircle(m.x, m.y, 5 * r);
+  }
+
+  /** The light of its hull's lamps round it (owner, 13 novembre 2026: the abyssal ship's yellow lights should light
+   *  a little round it): soft light along the whole hull, by night and under water, for the darkness mask. Many
+   *  small soft lights overlapping into one long glow the shape of the hull, never a round patch. */
+  hullGlow(s: ShipState, night: number): { x: number; y: number; r: number; a: number }[] {
+    const H = NIGHT.hullGlow;
+    const k = Math.max(night, diveShare(s));
+    if (!s.owned || k < 0.05) return [];
+    const n = Math.max(2, Math.round(shipLength(s) / H.spacing));
+    const r = H.radius * (shipModel(s).floodlightM ? H.floodMult : 1);
+    const v = H.v * shipPicture(s).waterline;
+    return Array.from({ length: n }, (_, i) => {
+      const p = at(s, this.top, 0.08 + (0.84 * i) / (n - 1), v);
+      return { ...this.turn(p.x, p.y), r, a: H.alpha * k };
+    });
   }
 
   /** The beams it opens in the darkness (views/lightView.ts): its floodlights under water, and the light under the

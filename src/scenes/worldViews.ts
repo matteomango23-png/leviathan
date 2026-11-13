@@ -268,6 +268,7 @@ export class WorldViews {
       ...this.smokers.glowSpots(), // the trenches' black smokers glow at the mouth (lot M4)
       ...this.fishView.glowSpots(g.fish, view), // and the lanternfish carry their lights
       ...pierLightSpots(view), // the lanterns of the piers and outposts in the water
+      ...this.ship.hullGlow(g.ship), // its hull's lamps light a little round it (lot N1b)
       ...this.nightmare.glowSpots(g),
       ...this.beasts.eyeSpots(), // hunters' red eyes show in the dark
     ];

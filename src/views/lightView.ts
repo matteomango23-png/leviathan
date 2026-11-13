@@ -102,7 +102,7 @@ export class LightView {
     lamp: LampInfo,
     flash: number,
     fade: number,
-    glows: { x: number; y: number; r: number }[] = [],
+    glows: { x: number; y: number; r: number; a?: number }[] = [],
     murk = 0,
     weatherDim = 0,
     /** The abyssal submarine's night vision (0 … 1): the darkness opens (views/nightVisionView.ts). */
@@ -159,7 +159,7 @@ export class LightView {
       if (gx < -r || gy < -r || gx > v.w + r || gy > v.h + r) continue;
       rt.stamp(TEX.halo, undefined, gx * s, gy * s, {
         scale: (r * s) / HALO_TEX.radius,
-        alpha: 0.8,
+        alpha: gl.a ?? 0.8,
         blendMode: Phaser.BlendModes.ERASE,
       });
     }
@@ -191,7 +191,10 @@ export class LightView {
     });
     rt.render();
 
+    // by night the lamps' light is warmer and shows more (owner, 13 novembre 2026: "un pochino sul giallo")
     this.warm
+      .setTint(mixColor(LIGHT.warmColor, NIGHT.lampWarm, this.night))
+      .setAlpha(LIGHT.warmAlpha + (NIGHT.lampWarmAlpha - LIGHT.warmAlpha) * this.night)
       .setPosition(lx, ly)
       .setRotation(lamp.angle)
       .setScale(

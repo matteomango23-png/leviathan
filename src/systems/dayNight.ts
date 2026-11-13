@@ -122,5 +122,5 @@ export function nightDarkAt(depthM: number): number {
     return N.horizonDark + (N.skyDark - N.horizonDark) * u;
   }
   const u = Math.min(1, depthM / N.blackByM);
-  return N.surfaceDark + (N.deepDark - N.surfaceDark) * (1 - (1 - u) * (1 - u));
+  return N.surfaceDark + (N.deepDark - N.surfaceDark) * u;
 }

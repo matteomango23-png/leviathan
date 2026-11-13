@@ -33,9 +33,10 @@ export const NIGHT = {
   horizonDark: 0.45,
   /** How far over the surface (m) the sky goes from horizonDark to skyDark. */
   skyFadeM: 25,
-  surfaceDark: 0.72,
-  deepDark: 0.95,
-  blackByM: 10,
+  surfaceDark: 0.55,
+  deepDark: 0.9,
+  /** (owner, 13 novembre 2026: one metre down it was already pitch black) the dark grows evenly over this. */
+  blackByM: 35,
   /** The water behind everything by night: near-black blue (no daytime blue where a light opens the dark). */
   water: [3, 7, 12] as [number, number, number],
   /** The water's blue filter over the world goes this share of the way to a plain grey by night: in a lamp's light
@@ -43,9 +44,17 @@ export const NIGHT = {
   filterShare: 0.75,
   filterNeutral: 215,
   /** The soft light round the diver shrinks by night to this share: enough to see him in the black. */
-  haloMult: 0.55,
+  haloMult: 0.85,
   /** Fog and rain darken by night towards this colour, by this much (no grey mist glowing in the dark). */
   fogNight: 0x0b1117,
+  /** The lights of the hull light the sea round it a little (owner, 13 novembre 2026: "almeno per vedere un po'
+   *  intorno"): soft light all along the hull, one every `spacing` units, `radius` each (the floodlit ships'
+   *  `floodMult` wider), opening the dark by `alpha`, by night and under water. */
+  hullGlow: { spacing: 26, radius: 30, alpha: 0.45, floodMult: 1.5, v: 0.75 },
+  /** By night the ship's headlight is on afloat too, this long (× the lamp's), and the lamps' light is warmer. */
+  shipLamp: 2.4,
+  lampWarm: 0xffd27a,
+  lampWarmAlpha: 0.34,
   /** The ship's lights by night (views/shipLights.ts): a row of warm portholes along the hull (shares of its
    *  picture; v of its waterline) and its red sidelight at the bow. Small and soft: they do not light the sea. */
   deckLights: {

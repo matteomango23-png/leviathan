@@ -199,6 +199,11 @@ export class ShipView {
     return WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
   }
 
+  /** The light its hull's lamps spread round it (views/lightView.ts), by night and under water. */
+  hullGlow(s: ShipState): { x: number; y: number; r: number; a: number }[] {
+    return this.lights.hullGlow(s, this.night);
+  }
+
   /** The beams it opens in the darkness (views/lightView.ts): floodlights, the light under it. */
   beams(s: ShipState, murk = 0): Beam[] {
     return this.lights.beams(s, murk);
