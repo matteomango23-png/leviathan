@@ -142,6 +142,12 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Quei camini neri sul fondo delle fosse sputano acqua bollente: dentro il pennacchio ti scotti, a nuoto. Nel sottomarino non ti fa niente.' },
     { who: 'aurelio', text: 'Attorno ai camini vive gente strana: vermi, granchi bianchi, funghi che fanno luce. E nel buio delle fosse nuotano i pesci lanterna, con la loro lucina: si pescano e si vendono bene.' },
   ],
+  tipNight: [
+    { who: 'aurelio', text: 'Cala la notte. Il giorno qui dura poco più di mezz’ora, e quasi metà è buio.' },
+    { who: 'aurelio', text: 'Di notte si vede poco: solo la luna, la tua lampada e le luci della nave. Le bestie lontane sono sagome. I predatori ti vedono da più lontano e nuotano più forte; quelle tranquille si nascondono.' },
+    { who: 'aurelio', text: 'Ma è anche l’ora buona: certe bestie escono quasi solo col buio, e gli albini si incontrano più spesso.' },
+    { who: 'aurelio', text: 'Riposa cura te e la squadra e non fa passare il tempo. Dormi, al porto o a nave ferma, fa correre le ore fino a sera o fino al mattino: ti svegli quando vuoi.' },
+  ],
   tipGun: [
     { who: 'aurelio', text: 'Il caricatore del fucile tiene dieci dardi: sul pulsante vedi quanti ne restano, e quanti ne hai di scorta.' },
     { who: 'aurelio', text: 'Quando è vuoto, tocca di nuovo Fucile: ricarichi in un attimo, e se lo tieni premuto la raffica riprende da sola. I dardi di scorta si comprano in ogni porto, scheda Sub.' },
@@ -200,7 +206,8 @@ export type TipTrigger =
   | 'fishCaught'
   | 'battleOver'
   | 'gunEmpty'
-  | 'smokerBurn';
+  | 'smokerBurn'
+  | 'nightFalls';
 /** `early`: it can open during the guided first dive too. */
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true }[] = [
   { id: 'tipPack', title: 'Compagni e cavalcature', on: 'tamedToTeam', early: true },
@@ -209,6 +216,7 @@ export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true
   { id: 'tipTaming', title: 'Domare', on: 'battleOver', early: true },
   { id: 'tipGun', title: 'Il fucile e i dardi', on: 'gunEmpty', early: true },
   { id: 'tipSmokers', title: 'Il fondo delle fosse', on: 'smokerBurn' },
+  { id: 'tipNight', title: 'Il giorno e la notte', on: 'nightFalls', early: true },
   { id: 'tipShip', title: 'La nave', on: 'shipBoarded' },
   { id: 'tipRumour', title: 'Le voci e le cacce', on: 'rumourHeard' },
   { id: 'tipEcho', title: 'L’eco anomala', on: 'echoFound' },

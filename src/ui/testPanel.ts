@@ -12,6 +12,7 @@ import {
   spawnTestBeast,
 } from '../systems/testTools';
 import { el } from './dom';
+import { skipPhase } from '../systems/dayNight';
 
 const OTHERS: BeastForm[] = [
   { speciesId: 'barracuda', variant: 'comune' },
@@ -83,6 +84,10 @@ export function renderTestPanel(
       done('Il meteo è cambiato: sali in superficie per vederlo.');
     });
   }
+  // the day and the night (lot N1): to try the night at once
+  el('button', 'menu-btn small', grid, "Salta all'ora dopo").addEventListener('click', () =>
+    done(`Ora: ${skipPhase(g.day)}.`),
+  );
   // the abyssal ship (owner, 23 ottobre: to try it without finding the parts)
   el('button', 'menu-btn small', grid, 'Nave abissale subito').addEventListener('click', () =>
     done(giveAbyssShip(g)),

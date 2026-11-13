@@ -3,6 +3,7 @@
 // you, ignore you, or slip away slowly — never vanishing at full speed. Touching one starts a battle.
 import { BEAST_TEMPER, PACK_RULES, PATROL, ROAM, type Temper } from '../../data/beasts';
 import { HARPOON_WEAKEN, STALK } from '../../data/battle';
+import { NIGHT_BEASTS } from '../../data/daynight';
 import { DIVER } from '../../data/diver';
 import { clamp, type Rng } from '../math';
 import type { TileMap } from '../world/tileMap';
@@ -37,6 +38,17 @@ interface RoamContext {
   scared?: boolean;
   /** The beast you ride: touching its body counts as touching you (owner, 4 ottobre). */
   rider?: BodyPose;
+  /** 0 by day … 1 at night (systems/dayNight.ts): the hunters see farther and chase faster, the calm keep away. */
+  night?: number;
+}
+
+/** By night (lot N1, data/daynight.ts NIGHT_BEASTS) an aggressive beast sees farther and swims faster, a calm one
+ *  keeps away from you as a shy one does. */
+export function nightTemper(temper: Temper, night: number): { temper: Temper; sight: number; speed: number } {
+  const N = NIGHT_BEASTS;
+  if (temper === 'aggressive')
+    return { temper, sight: 1 + (N.sightMult - 1) * night, speed: 1 + (N.speedMult - 1) * night };
+  return { temper: temper === 'calm' && N.calmShy && night > 0.5 ? 'shy' : temper, sight: 1, speed: 1 };
 }
 
 /** Rare beasts are always shy (you have to reach them); named ones always come at you. */
@@ -121,10 +133,11 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
   if (st) [b.patrol, b.mood] = [undefined, 'chase'];
 
   const dist = Math.hypot(d.x - b.x, d.y - b.y);
-  const temper = temperOf(b);
+  const night = nightTemper(temperOf(b), ctx.night ?? 0);
+  const temper = night.temper;
   const quiet = d.dead || b.calm > 0 || ctx.hidden;
   // named beasts (a Guardian in its lair, a commander's beast) always know where you are
-  const sight = b.boss ? Infinity : ROAM.sightRange * U;
+  const sight = b.boss ? Infinity : ROAM.sightRange * U * night.sight;
   // on its passes it goes far off the screen and comes back: it does not lose you meanwhile
   const lose = b.boss || b.patrol ? Infinity : ROAM.loseRange * U;
   // a small predator does not come at a diver riding something far bigger than itself: it keeps away
@@ -144,7 +157,8 @@ export function stepRoam(b: WildBeast, ctx: RoamContext): boolean {
 
   const spec = BEAST_TEMPER[b.form.speciesId];
   // frightened by your weapon, a calm or shy one much faster (HARPOON_WEAKEN)
-  const mult = (spec?.speedMult ?? 1) * (roused && b.mood === 'flee' ? HARPOON_WEAKEN.fleeMult : 1);
+  const mult =
+    (spec?.speedMult ?? 1) * (roused && b.mood === 'flee' ? HARPOON_WEAKEN.fleeMult : 1) * night.speed;
   const top = map.surfaceY + b.length * 0.12;
   let tx: number;
   let ty: number;

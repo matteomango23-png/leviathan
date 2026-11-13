@@ -76,6 +76,8 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `harpoon.ts`, `gun.ts`, `shotPath.ts` | Il fucile subacqueo: dardi a raffica che non tornano (`harpoon.ts`), il caricatore, la ricarica col pulsante, il rinculo e la scorta di dardi (`gun.ts`), il colpo controllato lungo tutto il tratto percorso (`shotPath.ts`, anche per le fiocine). |
 | `fish.ts` | Banchi di sardine che vagano e scappano dal sub. |
 | `weather.ts` | Il meteo (solo aspetto, non salvato): sereno, nuvoloso, pioggia, tempesta, nebbia; cambia da solo e sfuma piano; neve nei mari freddi (`coldAt`); lampi in tempesta. Numeri in `data/weather.ts`. |
+| `dayNight.ts` | L'ora del giorno (lotto N1): ciclo di 30 minuti (`data/daynight.ts`), `nightness` 0…1, orologio, il tempo veloce quando dormi; salvata (`day.t`). |
+| `sleep.ts` | Dormi: dove si può (nave ferma, porto), `stepClock` in `stepGame`, risveglio; separato da Riposa (`port.ts`). |
 | `birds.ts`, `birdsCatch.ts` | Stormi di gabbiani (solo aspetto, non salvati): ognuno vive sopra un banco di pesci vicino alla superficie, fa avanti e indietro e si tuffa; arrivano e se ne vanno solo fuori dallo schermo; col brutto tempo se ne vanno. Una bestia che salta fuori dall'acqua li acchiappa (`birdsCatch.ts`). |
 | `game.ts` | Un passo di gioco completo + conversione da/verso il salvataggio. |
 | `newGame.ts` | Lo stato di una partita (`GameState`) e come comincia: nuova o da un salvataggio (`createGame`, `applySave`). |

@@ -3,7 +3,7 @@
 // resumed on the first one. Owned by the Session (no globals); scenes tell it what is happening.
 import { AUDIO, STALK_TOLL, STORM_SOUND } from '../data/audio';
 import { StormSound } from './stormSound';
-import { PORT_MUSIC, SEA_MUSIC, TITLE_MUSIC } from '../data/music';
+import { NIGHT_MUSIC, PORT_MUSIC, SEA_MUSIC, TITLE_MUSIC } from '../data/music';
 import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
 import { EngineSound } from './engineSound';
@@ -104,7 +104,10 @@ export class SoundEngine {
     }
     this.sea?.update(m, dt);
     const o = this.openSea;
-    if (o) o.set(o.playing ? m.km > SEA_MUSIC.offKm : m.km > SEA_MUSIC.fromKm);
+    if (o) {
+      o.set(o.playing ? m.km > SEA_MUSIC.offKm : m.km > SEA_MUSIC.fromKm);
+      o.setLevel(1 - ((1 - NIGHT_MUSIC.level) * Math.round((m.night ?? 0) * 10)) / 10);
+    }
   }
 
   /**

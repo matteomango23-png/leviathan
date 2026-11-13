@@ -1,5 +1,6 @@
 // Everything shown on a beast's card sheet: rarity, type, role, stats, its battle moves (and the next ones it
 // learns), its moves in the open sea, size, habitat. Pure data, rendered by ui/beastSheet.ts.
+import { NIGHT_SPECIES } from '../../data/daynight';
 import { BIOMES } from '../../data/endless';
 import { PACK_POWER_TEXT, RIDE_TALENT_TEXT } from '../../data/beasts';
 import { SPECIAL_POWER_OF, SPECIAL_POWER_TEXT } from '../../data/powers';
@@ -217,7 +218,8 @@ export function buildSheet(form: BeastForm, level?: number, known?: string[], pp
     levelLabel: level === undefined ? `Liv. ${range[0]}–${range[1]} in natura` : `Livello ${lv}`,
     stats,
     lengthM: Math.round(formLengthM(form, lv) * 10) / 10,
-    habitat: REGIONS.find((r) => r.id === s.region)?.name ?? s.region,
+    // the night's species say so (lot N1)
+    habitat: `${REGIONS.find((r) => r.id === s.region)?.name ?? s.region}${NIGHT_SPECIES[s.id] ? ' · esce soprattutto di notte' : ''}`,
     ...whereItLives(s.id),
     danger: `${DANGER_NAMES[dangerOf(s.id)]} (${'▲'.repeat(dangerOf(s.id))})`,
     trait: s.trait,

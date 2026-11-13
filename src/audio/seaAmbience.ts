@@ -18,6 +18,8 @@ export interface SeaMoment {
   look?: LookMix;
   /** Inside the Gallerie (lot M3): slow drops echoing. */
   cave?: boolean;
+  /** 0 by day … 1 at night (lot N1): the open sea's music sinks low. */
+  night?: number;
 }
 
 /** How many bubbles to play this step: none while you swim, a few when you dash (SEA_SOUND.bubbles). */

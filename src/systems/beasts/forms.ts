@@ -177,13 +177,14 @@ export function withOwnArt(form: BeastForm): BeastForm {
  * A wild encounter: albino and alpha are rare (VARIANT_RULES.spawnChance). The legends never come by chance any
  * more: they are hunted (hunts.ts).
  */
-export function rollWildForm(speciesId: string, rng: Rng): BeastForm {
+export function rollWildForm(speciesId: string, rng: Rng, albinoMult = 1): BeastForm {
   const r = rng();
-  if (r < VARIANT_RULES.albino.spawnChance) {
+  const albino = VARIANT_RULES.albino.spawnChance * albinoMult; // likelier by night (lot N1)
+  if (r < albino) {
     if (hasAlbinoArt(speciesId)) return { speciesId, variant: 'albino' };
     return { speciesId, variant: 'comune' };
   }
-  if (r < VARIANT_RULES.albino.spawnChance + VARIANT_RULES.alfa.spawnChance && hasAlfaArt(speciesId))
+  if (r < albino + VARIANT_RULES.alfa.spawnChance && hasAlfaArt(speciesId))
     return { speciesId, variant: 'alfa' };
   return { speciesId, variant: 'comune' };
 }

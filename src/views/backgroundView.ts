@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { troughDepth } from '../systems/sea';
 import { SEA } from '../data/diver';
 import { WEATHER } from '../data/weather';
+import { NIGHT } from '../data/daynight';
 import { WORLD } from '../data/worldLayout';
 import { rampColor } from '../systems/math';
 import { waterTint, type LookMix } from '../systems/seaLook';
@@ -30,6 +31,7 @@ export class BackgroundView {
   private lastWaterY = NaN;
   private lastTint = '';
   private lastClouds = 0;
+  private lastNight = 0;
   private lastWaves = NaN;
   private lastSize = '';
 
@@ -45,7 +47,13 @@ export class BackgroundView {
   /** Water by depth and the sky above it, greyer and darker under clouds (0..1). */
   /** @param below how far under the resting line the sky goes on (the deepest trough: the waves' view draws the
    *  sea above it) */
-  private paintWater(v: ViewInfo, clouds: number, below: number, tint: [number, number, number]): void {
+  private paintWater(
+    v: ViewInfo,
+    clouds: number,
+    below: number,
+    tint: [number, number, number],
+    night: number,
+  ): void {
     const g = this.waterTex.context;
     const top = v.cy - v.h / 2 / v.zoom;
     const span = v.h / v.zoom;
@@ -56,8 +64,22 @@ export class BackgroundView {
       return { red: m(ca.red, cb.red), green: m(ca.green, cb.green), blue: m(ca.blue, cb.blue) };
     };
     const skySpan = Math.max(SEA.skyFade, WORLD.surfaceY - top);
-    const sky0 = mix(SEA.skyTop, WEATHER.skyStorm.top);
-    const sky1 = mix(SEA.skyBottom, WEATHER.skyStorm.bottom);
+    // by night the sky goes to the night's dark blue; at dusk and dawn a warm veil, most near the horizon
+    const dusk = 4 * night * (1 - night) * NIGHT.duskAlpha;
+    const toward = (c: { red: number; green: number; blue: number }, hex: number, t: number): typeof c => {
+      const o = Phaser.Display.Color.IntegerToColor(hex);
+      return {
+        red: c.red + (o.red - c.red) * t,
+        green: c.green + (o.green - c.green) * t,
+        blue: c.blue + (o.blue - c.blue) * t,
+      };
+    };
+    const sky0 = toward(mix(SEA.skyTop, WEATHER.skyStorm.top), NIGHT.skyTop, night);
+    const sky1 = toward(
+      toward(mix(SEA.skyBottom, WEATHER.skyStorm.bottom), NIGHT.skyBottom, night),
+      NIGHT.duskTint,
+      dusk,
+    );
     for (let i = 0; i < WATER_ROWS; i++) {
       const wy = top + ((i + 0.5) / WATER_ROWS) * span;
       let c: [number, number, number];
@@ -85,6 +107,7 @@ export class BackgroundView {
     v: ViewInfo,
     weather: { clouds: number; rays: number; waves?: number; wind?: number } = { clouds: 0, rays: 1 },
     look: LookMix = { a: 'costa', b: 'costa', t: 0 },
+    night = 0,
   ): void {
     const size = `${v.w}x${v.h}`;
     if (size !== this.lastSize) {
@@ -98,17 +121,20 @@ export class BackgroundView {
       !(Math.abs(v.cy - this.lastWaterY) < 0.5) ||
       Math.abs(weather.clouds - this.lastClouds) > 0.02 ||
       Math.abs(waves - this.lastWaves) > 0.02 ||
+      Math.abs(night - this.lastNight) > 0.01 ||
       tintKey !== this.lastTint
     ) {
       this.lastTint = tintKey;
       this.lastWaterY = v.cy;
       this.lastClouds = weather.clouds;
       this.lastWaves = waves;
+      this.lastNight = night;
       this.paintWater(
         v,
         weather.clouds,
         troughDepth({ waves: weather.waves ?? 1, wind: weather.wind ?? 0 }),
         tint,
+        night,
       );
     }
     this.water.setDisplaySize(v.w, v.h);

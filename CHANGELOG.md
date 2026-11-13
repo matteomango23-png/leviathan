@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.124.0 — Il giorno e la notte (13 novembre 2026)
+
+- **Giorno e notte:** un giorno dura circa mezz'ora, 18 minuti di luce (alba compresa) e 12 di buio (tramonto compreso). L'ora è in alto, col sole o la luna.
+- **Di giorno** il mare è come prima. **Al tramonto** il cielo si scalda d'arancio. **Di notte** il cielo è blu notte con le stelle, i raggi di luce spariscono e il mare è buio: si vede solo con la tua lampada, le luci della nave e dei moli e un poco di luna vicino alla superficie. Le bestie lontane sono sagome scure. La musica del mare si abbassa.
+- **Le bestie di notte:** i predatori ti vedono da più lontano e nuotano più forte (lo scatto li batte ancora); le bestie tranquille si tengono lontane. Murena, squalo tigre, chimera, torpedine, squalo capopiatto e granchio ragno escono soprattutto col buio, e gli albini sono più facili da incontrare. Sulla scheda c'è scritto "esce soprattutto di notte".
+- **Dormi:** al porto (accanto a Riposa) e al timone a nave ferma. Scegli "Fino a sera" o "Fino al mattino": ti sdrai e il tempo corre trenta volte più veloce (circa un minuto da mattina a sera), con l'orologio che gira. "Svegliati" ti ferma quando vuoi. In mare aperto qualcosa può svegliarti; al porto no.
+- **Riposa** resta com'era: cura te e la squadra e l'ora non cambia, così puoi curarti di notte e tornare a cacciare.
+- Nuovo consiglio di Aurelio, "Il giorno e la notte" (anche nella Guida), e nuovi passi del tutorial per Dormi.
+- I salvataggi cambiano ma restano compatibili: si salva l'ora del giorno; una partita vecchia riparte al mattino.
+
 ## v0.123.0 — Il fondale vivo (12 novembre 2026)
 
 - **Fumatori neri** sul fondo delle Grandi fosse e dell'Abisso: camini di roccia nera dipinti, con vermi tubo e granchi bianchi, la bocca che brilla e un pennacchio di acqua calda che sale. A nuoto, dentro il pennacchio ti scotti; nel sottomarino no.

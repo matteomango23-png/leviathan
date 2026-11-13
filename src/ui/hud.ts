@@ -9,6 +9,7 @@ import type { GameEvent } from '../systems/events';
 import type { GameState } from '../systems/game';
 import { currentObjective } from '../systems/story';
 import { el } from './dom';
+import { clockText, nightness } from '../systems/dayNight';
 import { messageFor } from './eventMessages';
 
 /** The events whose banner waits its turn (see news). */
@@ -130,7 +131,8 @@ export class Hud {
       }
     }
     // only your teeth here (owner, 5 ottobre: depth, distances and the bag are cockpit and map things)
-    const info = `🦷 ${g.gear.teeth}`;
+    // and the time of day (lot N1): the sun or the moon, the phase and the hour
+    const info = `🦷 ${g.gear.teeth}  ${nightness(g.day) > 0.5 ? '☾' : '☀'} ${clockText(g.day)}`;
     if (info !== this.cache.info) {
       this.cache.info = info;
       this.info.textContent = info;

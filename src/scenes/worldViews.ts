@@ -56,6 +56,9 @@ import { VentView } from '../views/ventView';
 import { SmokerView } from '../views/smokerView';
 import { pierLightSpots } from '../views/pierUnder';
 import { WeatherView, weatherReach } from '../views/weatherView';
+import { NightSky } from '../views/nightSky';
+import { nightDim, nightness, timeSpeed } from '../systems/dayNight';
+import { NIGHT } from '../data/daynight';
 import { WorldArtView } from '../views/worldArtView';
 import { snapGulls } from './worldEvents';
 
@@ -93,6 +96,7 @@ export class WorldViews {
   private readonly light: LightView;
   private readonly nightVision: NightVisionView;
   private readonly weatherView: WeatherView;
+  private readonly nightSky: NightSky;
   private readonly nightmare: NightmareView;
   private readonly surface: SeaSurfaceView;
   /** The painted ice sheet, over the sea's surface (lot P1). */
@@ -145,6 +149,7 @@ export class WorldViews {
     this.seaLight = new SeaLight(scene, L.bg, L.overlay, L.glow); // its front part before the darkness, so under it
     this.light = new LightView(scene, L.overlay);
     this.nightVision = new NightVisionView(scene, L.overlay, map); // over the darkness
+    this.nightSky = new NightSky(scene, L.glow); // over the darkness
     this.weatherView = new WeatherView(scene, L.bg, L.overlay);
     this.lampAngle = d.aim;
     const aim0 = cameraAim(g, CAMERA.lookAhead);
@@ -176,7 +181,9 @@ export class WorldViews {
     const info = this.rig.viewInfo();
     this.terrain.update(view);
     const under = Math.max(0, Math.min(1, depthMetres(d.y) / 20)); // under water the weather is muffled
-    if (stepWeather(g.weather, dt)) {
+    // the night (systems/dayNight.ts); asleep the clouds and the weather run as fast as the clock
+    const night = nightness(g.day);
+    if (stepWeather(g.weather, dt * timeSpeed(g.day))) {
       this.weatherView.lightning(info);
       onThunder(1 - under * 0.7);
     }
@@ -187,12 +194,14 @@ export class WorldViews {
       this.effects.puff(s.x, s.y, 5, 0xd8e6ee, 18);
     snapGulls(g, this.birds); // on a leap out of the water (worldEvents.ts)
     const look = lookAt(info.cx); // the region's look (systems/seaLook.ts)
-    this.bg.update(info, sky, look);
+    this.bg.update(info, sky, look, night);
+    this.nightSky.update(info, night, g.day.t, sky.clouds, g.time);
     // daylight in the water: less with depth, clouds and storms, and murky water
     const daylight =
       (1 - Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1)) **
         SEA.lightRays.fadePower *
       sky.rays *
+      (1 - night) *
       (1 - turbidityAt(info.cx, info.cy, g.time, sky) * SEA.lightRays.murkShare);
     this.seaLight.update(
       info,
@@ -200,6 +209,7 @@ export class WorldViews {
       daylight * lookNumber(look, (l) => l.rays),
       look,
       depthMetres(info.cy),
+      night,
     );
     this.kelp.update(view, g.time);
     this.vents.update(view, g.time);
@@ -219,8 +229,9 @@ export class WorldViews {
     this.sub.update(g.sub, g.time, dt, inHold, sky);
     this.nightmare.update(g, g.time);
     this.fishView.update(g.fish, view, g.time, dt);
-    // murky water (clarity.ts): the beasts far from you are dark shapes
-    this.beasts.update(g, g.time, { murk: turbidityAt(d.x, d.y, g.time, sky), x: d.x, y: d.y });
+    // murky water (clarity.ts), and the night: the beasts far from you are dark shapes
+    const shapes = Math.max(turbidityAt(d.x, d.y, g.time, sky), NIGHT.silhouette * night);
+    this.beasts.update(g, g.time, { murk: shapes, x: d.x, y: d.y });
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
     this.waterFilter.update(view, g.time, sea, turbidityAt(d.x, d.y, g.time, sky));
@@ -273,7 +284,7 @@ export class WorldViews {
       fade,
       glows,
       murk,
-      sky.dim * weatherReach(info.cy),
+      sky.dim * weatherReach(info.cy) + nightDim(night, depthMetres(info.cy)),
       this.nightVision.share,
     );
     this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea);

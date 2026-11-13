@@ -5,6 +5,7 @@
 // Each region's look (data/seaLooks.ts) sets the shafts' strength, how thick the marine snow falls (thicker deeper
 // down) and, in the deep, the bioluminescent specks pulsing over the darkness.
 import Phaser from 'phaser';
+import { NIGHT } from '../data/daynight';
 import { SEA } from '../data/diver';
 import { SEA_LOOKS, SEA_SNOW } from '../data/seaLooks';
 import { lookNumber, snowShare, type LookMix } from '../systems/seaLook';
@@ -120,13 +121,15 @@ export class SeaLight {
   }
 
   /** @param light 0 … 1: daylight reaching the shafts (depth, clouds and storms, murk); @param look the region's
-   *  look at the centre of the view; @param depthM its depth */
+   *  look at the centre of the view; @param depthM its depth; @param night 0 by day … 1 at night (data/daynight.ts):
+   *  the glowing specks come up shallower and shine more */
   update(
     v: ViewInfo,
     time: number,
     light: number,
     look: LookMix = { a: 'costa', b: 'costa', t: 0 },
     depthM = 0,
+    night = 0,
   ): void {
     const surfaceY = v.h / 2 + (WORLD.surfaceY - v.cy) * v.zoom;
     const rays: Ray[] = raysInView(v.w, v.h, surfaceY, v.cx * v.zoom, time, light);
@@ -161,14 +164,21 @@ export class SeaLight {
         .setDisplaySize(m.size * px * 2, m.size * px * 2)
         .setAlpha(Math.min(1, b.alpha + b.lit * lit));
     });
-    this.updateGlows(v, time, look, depthM, surfaceY);
+    this.updateGlows(v, time, look, depthM, surfaceY, night);
   }
 
   /** The bioluminescent specks of the deep: they drift like the snow and pulse, over the darkness. */
-  private updateGlows(v: ViewInfo, time: number, look: LookMix, depthM: number, surfaceY: number): void {
+  private updateGlows(
+    v: ViewInfo,
+    time: number,
+    look: LookMix,
+    depthM: number,
+    surfaceY: number,
+    night: number,
+  ): void {
     const S = SEA_SNOW;
-    const deep = Math.min(1, Math.max(0, (depthM - S.glowFromM) / S.glowFromM));
-    const share = lookNumber(look, (l) => l.glow) * deep;
+    const deep = Math.min(1, Math.max((depthM - S.glowFromM) / S.glowFromM, night * 0.5, 0));
+    const share = Math.min(1, lookNumber(look, (l) => l.glow) * deep * (1 + (NIGHT.glowMult - 1) * night));
     const px = v.h / 400;
     this.glows.forEach((im, i) => {
       if (i / this.glows.length >= share) return void im.setVisible(false);

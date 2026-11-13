@@ -3,12 +3,19 @@
 // The map's shares use the same weights (seaMap.ts). Numbers in WILD_RULES (data/beasts.ts).
 import { WILD_RULES, type WildSpawnDef } from '../../data/beasts';
 import { SPECIES } from '../../data/species';
+import { NIGHT_SPECIES } from '../../data/daynight';
 import { clamp, type Rng } from '../math';
 
 /** How often a species comes, by its stars (common ones much more often). */
 export function rarityWeight(speciesId: string): number {
   const stars = SPECIES.find((s) => s.id === speciesId)?.rarity ?? 1;
   return WILD_RULES.rarityWeight[stars] ?? 1;
+}
+
+/** The night's species (lot N1) come mostly by night: their weight between full day (0) and full night (1). */
+export function nightWeight(speciesId: string, night: number): number {
+  const n = NIGHT_SPECIES[speciesId];
+  return n ? n.day + (n.night - n.day) * night : 1;
 }
 
 /** A spawn's share on the map: its rarity, and less if it takes long to come back. */
@@ -19,7 +26,7 @@ export function mapWeight(s: WildSpawnDef): number {
 
 /**
  * Picks one of the beasts ready to come. `present`: species in the water now; `recent`: the last ones that came;
- * `lured`: species a bait calls (they come first).
+ * `lured`: species a bait calls (they come first); `night` (0 … 1): the night's species come more.
  */
 export function drawSpawn<T extends { spawn: { speciesId: string } }>(
   ready: readonly T[],
@@ -27,10 +34,11 @@ export function drawSpawn<T extends { spawn: { speciesId: string } }>(
   recent: readonly string[],
   lured: readonly string[],
   rng: Rng,
+  night = 0,
 ): T {
   const weight = (w: T): number => {
     const id = w.spawn.speciesId;
-    let k = rarityWeight(id);
+    let k = rarityWeight(id) * nightWeight(id, night);
     if (present.includes(id)) k *= WILD_RULES.presentMult;
     if (recent.includes(id)) k *= WILD_RULES.recentMult;
     if (lured.includes(id)) k *= 20;

@@ -65,6 +65,9 @@ export interface VoiceSpec {
  *  ottobre). Tuning. */
 export const MUSIC_ECHO_MAX = 2.5;
 
+/** By night (lot N1) the open sea's music sinks to this share of its volume, over `fade` seconds. Tuning. */
+export const NIGHT_MUSIC = { level: 0.35, fade: 8 };
+
 export const SEA_MUSIC = {
   /** It starts beyond this far from the coast (owner: "about a kilometre"; just past Porto Fango, 1 km out, so the
    *  harbour stays quiet) and stops back under `offKm` (no flicker at the line). */
