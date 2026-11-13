@@ -1,11 +1,14 @@
-// The lights under the ship (split from shipView.ts in the cleanup of 12 novembre 2026): the soft wash under the
-// keel, the still ship's beam (the Krill Hunter's from its mouth) and their spots in the darkness mask. They ride the
-// waves with the hull and lean with it (owner, 11 ottobre and 12 novembre 2026).
+// The ship's lights (split from shipView.ts in the cleanup of 12 novembre 2026): by night its deck lights and
+// portholes and its red sidelight, small warm points over the darkness (lot N1b, owner 13 novembre 2026: the round
+// patches of light under the hull lit the sea blue at night, against the rule of no circles); the still ship's beam
+// (the Krill Hunter's from its mouth) and the beams it opens in the darkness. They ride the waves and lean with the
+// hull (owner, 11 ottobre and 12 novembre 2026).
 import Phaser from 'phaser';
 import { SHIP } from '../data/ship';
 import { WORLD } from '../data/worldLayout';
 import { diveShare } from '../systems/ship/uboat';
-import { floodSpots } from '../systems/ship/floodlight';
+import { floodBeams, type Beam } from '../systems/ship/floodlight';
+import { NIGHT } from '../data/daynight';
 import { shipDraft, shipHeight } from '../systems/ship/geometry';
 import { hasMouth, mouthPoint } from '../systems/ship/krillMouth';
 import { shipLength, shipPicture } from '../systems/ship/model';
@@ -26,7 +29,7 @@ export class ShipLights {
   private beamK = 0;
 
   /**
-   * @param glow the soft wash, over the hull
+   * @param glow the deck lights by night, over the darkness
    * @param beam the still ship's beam, behind the hull
    */
   constructor(
@@ -39,33 +42,32 @@ export class ShipLights {
    * @param lift how far the waves move it from its resting place (down > 0)
    * @param rot how it leans (radians)
    */
-  draw(s: ShipState, top: number, lift: number, rot: number, time: number, dt: number): void {
+  draw(s: ShipState, top: number, lift: number, rot: number, time: number, dt: number, night = 0): void {
     this.lift = lift;
     this.lean = { rot, x: s.x, y: top + shipHeight(s) / 2 };
-    this.drawLights(s, top, time);
+    this.drawDeckLights(s, top, time, night);
     this.drawBeam(s, lift, time, dt);
   }
 
-  /** Points under the keel where the soft light sits. */
-  private underSpots(s: ShipState, top: number): { x: number; y: number }[] {
-    const L = SHIP.lights.under;
-    return Array.from({ length: L.spots }, (_, i) => {
-      const p = at(s, top, L.from + ((L.to - L.from) * i) / (L.spots - 1), L.v);
-      return this.turn(p.x, p.y + L.below);
-    });
-  }
-
-  /** A faint, soft wash of light under the hull (no hard shapes): many wide, nearly clear layers. */
-  private drawLights(s: ShipState, top: number, time: number): void {
-    const L = SHIP.lights.under;
-    // diving, it fades as the headlight's cone takes over (owner, 9 ottobre: the circles snapped off)
-    const pulse = (0.9 + 0.1 * Math.sin(time * 1.3)) * (1 - diveShare(s));
-    if (pulse <= 0.01) return;
-    for (const p of this.underSpots(s, top))
-      for (let k = 6; k >= 1; k--)
-        this.glow
-          .fillStyle(0x9fd8ff, L.wash * pulse)
-          .fillEllipse(p.x, p.y, L.radius * k * 0.45, L.radius * k * 0.3);
+  /** By night: a row of warm portholes along the hull and the red sidelight at the bow, soft small points (each a
+   *  few faint layers, never a drawn disc), over the darkness; a diving U-Boat puts them out. */
+  private drawDeckLights(s: ShipState, top: number, time: number, night: number): void {
+    const L = NIGHT.deckLights;
+    const k = night * (1 - diveShare(s));
+    if (k <= 0.01) return;
+    const wl = shipPicture(s).waterline;
+    const dot = (u: number, v: number, color: number, alpha: number, size: number): void => {
+      const p = at(s, top, u, v * wl);
+      const q = this.turn(p.x, p.y);
+      for (let r = 3; r >= 1; r--)
+        this.glow.fillStyle(color, (alpha * k) / (r * r)).fillEllipse(q.x, q.y, size * r, size * r * 0.8);
+    };
+    for (let i = 0; i < L.portholes; i++) {
+      const u = L.from + ((L.to - L.from) * i) / (L.portholes - 1);
+      const flicker = 0.85 + 0.15 * Math.sin(time * 0.7 + i * 2.1);
+      dot(u, L.v, L.warm, L.alpha * flicker, L.size);
+    }
+    dot(L.sideU, L.sideV, L.side, L.alpha, L.size * 1.3);
   }
 
   /** A point of the light turned with the leaning hull (this.lean). */
@@ -127,30 +129,32 @@ export class ShipLights {
     for (let r = 4; r >= 1; r--) this.beam.fillStyle(0xc8fbff, 0.1 * k).fillCircle(m.x, m.y, 5 * r);
   }
 
-  /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
-  spots(s: ShipState, murk = 0): { x: number; y: number; r: number }[] {
+  /** The beams it opens in the darkness (views/lightView.ts): its floodlights under water, and the light under the
+   *  still ship (down from the keel) or the Krill Hunter's (forward from its mouth). No round spots. */
+  beams(s: ShipState, murk = 0): Beam[] {
     if (!s.owned) return [];
-    const top = WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive + this.lift;
-    // its lights stay on under water (owner, 15 ottobre: they went out as it dived, all black at depth)
-    const spots = this.underSpots(s, top).map((p) => ({ ...p, r: SHIP.lights.under.radius }));
-    spots.push(...floodSpots(s, murk));
-    // the light under the still ship (block 5b): a wide glow below the keel
-    // riding the waves with the ship, and below its keel: the hull and its hatches are not lit by it (owner, 20
-    // ottobre)
-    if (s.lightOn && hasMouth(s)) {
+    const out = floodBeams(s, murk);
+    const B = SHIP.underLight;
+    const k = this.beamK;
+    if (k < 0.05) return out;
+    if (hasMouth(s)) {
       const m = mouthPoint(s);
-      spots.push({
-        x: m.x + s.face * SHIP.mouth.reach * 0.4,
-        y: m.y + this.lift + SHIP.mouth.reach * 0.2,
-        r: SHIP.underLight.glow,
+      out.push({
+        x: m.x,
+        y: m.y + this.lift,
+        angle: s.face > 0 ? 0.33 : Math.PI - 0.33,
+        len: SHIP.mouth.reach * 0.9 * k,
+        width: 0.7,
       });
-    } else if (s.lightOn) {
+    } else {
       const keel = WORLD.surfaceY + s.dive + shipDraft(s) + this.lift;
-      spots.push({
-        ...this.turn(s.x, keel + SHIP.underLight.glow * SHIP.underLight.spotBelow),
-        r: SHIP.underLight.glow,
+      out.push({
+        ...this.turn(s.x, keel),
+        angle: Math.PI / 2,
+        len: (B.below[1] * 1.6 + B.glow) * k,
+        width: 1.1,
       });
     }
-    return spots;
+    return out;
   }
 }

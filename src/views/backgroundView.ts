@@ -94,7 +94,12 @@ export class BackgroundView {
         ];
       } else {
         const w = rampColor(SEA.waterByY, wy);
-        c = [Math.min(255, w[0] * tint[0]), Math.min(255, w[1] * tint[1]), Math.min(255, w[2] * tint[2])];
+        // by night near-black (lot N1b): where a light opens the dark, no daytime blue
+        const n = NIGHT.water;
+        c = [0, 1, 2].map((k) => {
+          const day = Math.min(255, w[k]! * tint[k]!);
+          return day + (n[k]! - day) * night;
+        }) as [number, number, number];
       }
       g.fillStyle = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
       g.fillRect(0, i, 2, 1);

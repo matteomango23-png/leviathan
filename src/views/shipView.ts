@@ -20,6 +20,7 @@ import { diveShare, submerged } from '../systems/ship/uboat';
 import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
 import { ShipLights } from './shipLights';
+import type { Beam } from '../systems/ship/floodlight';
 
 /** A U-Boat's hull under the waves darkens fully once it has gone down this share of its floating line. */
 const UNDER_FADE = 0.5;
@@ -34,6 +35,8 @@ export class ShipView {
   /** Spray where its bow buries itself in the sea. */
   private readonly spray: SeaFx;
   private readonly glow: Phaser.GameObjects.Graphics;
+  /** 0 by day … 1 at night (systems/dayNight.ts): its deck lights. Set by the world's view each frame. */
+  night = 0;
   /** The light under the still ship: behind the hull and its hatches, as if it shone from beneath them (owner, 20
    *  ottobre: drawn over the ship, it lit part of the open hatch). */
   private readonly beam: Phaser.GameObjects.Graphics;
@@ -70,9 +73,11 @@ export class ShipView {
     this.fx = scene.add.graphics();
     this.effects = new ShipFx(smoke, this.fx);
     this.spray = new SeaFx(this.fx);
+    // its lights by night shine over the darkness (lot N1b)
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.lights = new ShipLights(this.glow, this.beam);
-    layer.add([this.fx, this.glow]);
+    layer.add(this.fx);
+    glowLayer.add(this.glow);
   }
 
   /** The paintings of this ship's model (null: not painted yet), the others hidden. */
@@ -153,7 +158,7 @@ export class ShipView {
     else drawWake(this.fx, s, k, time, sea);
     this.effects.iceShards(s, dt);
     // its lights ride the waves with it (owner, 11 ottobre: the hull rocked, the light stood still) and lean with it
-    this.lights.draw(s, top, top - this.restTop(s), -s.face * pitch * calm, time, dt);
+    this.lights.draw(s, top, top - this.restTop(s), -s.face * pitch * calm, time, dt, this.night);
     this.drawTug(s, top, dt);
   }
 
@@ -194,9 +199,9 @@ export class ShipView {
     return WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
   }
 
-  /** Light spots for the darkness mask (views/lightView.ts): the soft light under the hull. */
-  glowSpots(s: ShipState, murk = 0): { x: number; y: number; r: number }[] {
-    return this.lights.spots(s, murk);
+  /** The beams it opens in the darkness (views/lightView.ts): floodlights, the light under it. */
+  beams(s: ShipState, murk = 0): Beam[] {
+    return this.lights.beams(s, murk);
   }
 
   /** The tug after a rescue flare: ahead of the bow, a towline to it, then it sails away. */

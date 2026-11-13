@@ -7,6 +7,7 @@
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
+import { NIGHT } from '../data/daynight';
 import { filterColor } from '../systems/waterTint';
 import { seaHeight, troughDepth, type SeaNow } from '../systems/sea';
 
@@ -20,12 +21,14 @@ export class WaterFilter {
     layer.add(this.g);
   }
 
-  /** @param view the world in view; @param murk 0 … 1 murky water (clarity.ts) */
+  /** @param view the world in view; @param murk 0 … 1 murky water (clarity.ts); @param night 0 … 1 (lot N1b): by
+   *  night the sea's blue goes, what a lamp lights shows its own colours (the dark is the darkness mask's) */
   update(
     view: { x: number; y: number; width: number; height: number },
     time: number,
     sea: SeaNow,
     murk: number,
+    night = 0,
   ): void {
     const g = this.g;
     g.clear();
@@ -34,7 +37,12 @@ export class WaterFilter {
     const y1 = view.y + view.height + F.band;
     if (y1 < WORLD.surfaceY - troughDepth(sea)) return; // all sky
     const fill = (y: number): void => {
-      const [r, gg, b] = filterColor(y, murk);
+      const k = night * NIGHT.filterShare;
+      const [r, gg, b] = filterColor(y, murk).map((c) => c + (NIGHT.filterNeutral - c) * k) as [
+        number,
+        number,
+        number,
+      ];
       g.fillStyle(Phaser.Display.Color.GetColor(r, gg, b), 1);
     };
     // the band the waves move in: column by column, from the wave down to where the even bands start

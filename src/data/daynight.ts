@@ -23,11 +23,44 @@ export type DayPhase = (typeof DAY.phases)[number]['id'];
 
 /** How the night looks. */
 export const NIGHT = {
-  /** Extra darkness on the whole screen at full night, even at the surface (added to the depth's). */
-  darkness: 0.66,
-  /** The moon takes back this much of it near the surface (fading to nothing at `moonDepthM`). */
-  moonLight: 0.12,
-  moonDepthM: 40,
+  /**
+   * The night's darkness, row by row by its depth (lot N1b, owner 13 novembre 2026: "la notte deve essere veramente
+   * dark"; a moonlit night is about a millionth of the day's light): the sky high up and at the horizon (a little
+   * lighter there, so the ship stands out black against it), the sea at its surface (moonlit), and under it black
+   * within `blackByM` metres (pitch dark a few metres down: only the lamps light). Added over the day's darkness.
+   */
+  skyDark: 0.62,
+  horizonDark: 0.45,
+  /** How far over the surface (m) the sky goes from horizonDark to skyDark. */
+  skyFadeM: 25,
+  surfaceDark: 0.72,
+  deepDark: 0.95,
+  blackByM: 10,
+  /** The water behind everything by night: near-black blue (no daytime blue where a light opens the dark). */
+  water: [3, 7, 12] as [number, number, number],
+  /** The water's blue filter over the world goes this share of the way to a plain grey by night: in a lamp's light
+   *  things show their own colours. */
+  filterShare: 0.75,
+  filterNeutral: 215,
+  /** The soft light round the diver shrinks by night to this share: enough to see him in the black. */
+  haloMult: 0.55,
+  /** Fog and rain darken by night towards this colour, by this much (no grey mist glowing in the dark). */
+  fogNight: 0x0b1117,
+  /** The ship's lights by night (views/shipLights.ts): a row of warm portholes along the hull (shares of its
+   *  picture; v of its waterline) and its red sidelight at the bow. Small and soft: they do not light the sea. */
+  deckLights: {
+    portholes: 5,
+    from: 0.28,
+    to: 0.68,
+    v: 0.78,
+    warm: 0xffcf8a,
+    alpha: 0.45,
+    size: 1.6,
+    sideU: 0.86,
+    sideV: 0.62,
+    side: 0xff3b2e,
+  },
+  weatherDarken: 0.85,
   /** The sky at full night, and the warm veil of dusk and dawn over it. */
   skyTop: 0x05080f,
   skyBottom: 0x111a2b,

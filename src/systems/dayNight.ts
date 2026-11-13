@@ -114,6 +114,13 @@ export function skipPhase(d: DayState): string {
   return next.name;
 }
 
-/** The night's extra darkness over the screen at this depth: the moon takes a little of it back near the surface. */
-export const nightDim = (night: number, depthM: number): number =>
-  night * (NIGHT.darkness - NIGHT.moonLight * Math.max(0, 1 - depthM / NIGHT.moonDepthM));
+/** The night's darkness at a depth in metres (negative: over the surface), at full night (data/daynight.ts NIGHT). */
+export function nightDarkAt(depthM: number): number {
+  const N = NIGHT;
+  if (depthM < 0) {
+    const u = Math.min(1, -depthM / N.skyFadeM);
+    return N.horizonDark + (N.skyDark - N.horizonDark) * u;
+  }
+  const u = Math.min(1, depthM / N.blackByM);
+  return N.surfaceDark + (N.deepDark - N.surfaceDark) * (1 - (1 - u) * (1 - u));
+}
