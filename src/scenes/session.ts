@@ -28,6 +28,8 @@ interface SessionEvents {
   skipWeather: () => void;
   /** The diver reached the pier: open the port menu. */
   openPort: () => void;
+  /** The "Dormi" button (helm or port): the choice of until when (ui/sleepOverlay.ts). */
+  askSleep: () => void;
   /** The Cockpit button at the helm of the ship. */
   openCockpit: () => void;
 }

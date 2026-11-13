@@ -47,6 +47,8 @@ export interface InputState {
    *  put away. */
   pickTarget: number;
   clearTarget: boolean;
+  /** Sleeping (systems/sleep.ts): lie down until the evening or the morning, or wake up. */
+  sleepCmd: 'sera' | 'mattino' | 'wake' | null;
 }
 
 export const emptyInput = (): InputState => ({
@@ -66,6 +68,7 @@ export const emptyInput = (): InputState => ({
   helmCmd: null,
   pickTarget: -1,
   clearTarget: false,
+  sleepCmd: null,
 });
 
 /** Clears the one-frame presses after a game step. */
@@ -78,6 +81,7 @@ export function consumePresses(input: InputState): void {
   input.tameTap = false;
   input.slot = -1;
   input.helmCmd = null;
+  input.sleepCmd = null;
   input.pickTarget = -1;
   input.clearTarget = false;
 }

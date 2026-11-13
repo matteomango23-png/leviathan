@@ -1278,3 +1278,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Leggende:** voce ed eco solo con la squadra a `HUNT_RULES.readyBelow` livelli dalla leggenda. L'eco si sente solo entro la portata che lo schermo del sonar mostra.
 - **"Visto" salvato subito:** i segni del tutorial e dei consigli si salvano nel momento in cui si chiudono (`dialogueClosed`, `saveNow`): chi chiudeva l'app prima di un altro salvataggio rivedeva il tutorial.
 - **Pulizia:** tolte le esportazioni mai usate (cercate con `npx ts-prune`, senza aggiungerlo alle dipendenze). I file di codice oltre 300 righe sono divisi per responsabilità: `formShape`, `battleRequest`, `beastEye`, `shipLights`, `helmLevers`. I file di soli dati restano lunghi.
+
+## 13 novembre 2026 — Giorno e notte (v0.124.0)
+
+- **L'ora fa parte del gioco, non solo dell'aspetto:** a differenza del meteo, cambia le regole (bestie, specie, albini), quindi sta nello stato (`g.day`), avanza in `stepGame` e si salva (`day.t`, campo facoltativo: nessuna migrazione, una partita vecchia parte al mattino).
+- **Dormire accelera solo l'orologio e il meteo**, non la fisica né le bestie: trenta volte più passi di gioco a ogni fotogramma sarebbero troppi per l'iPhone, e mentre dormi sei fermo in un posto sicuro (nave ferma, porto). Riposa resta separato e non tocca l'ora (proprietario: chi caccia di notte deve potersi curare senza saltare la notte).
+- **Il buio della notte** si somma a quello del meteo nella maschera della luce già esistente, e le sagome riusano l'effetto dell'acqua torbida (`clarity.ts`): niente nuovi livelli né maschere. Stelle, luna e riflesso stanno sul livello dei bagliori, sopra il buio.

@@ -24,6 +24,7 @@ import { shipModel } from './ship/model';
 import { newSub, subModel, type SubState } from './submarine';
 import { addHuntSlots, placeDens, type Den, type HuntsState } from './hunts';
 import { createWeather, type WeatherState } from './weather';
+import { createDay, type DayState } from './dayNight';
 import { newShip, type ShipState } from './ship/ship';
 import { newBoat, type BoatState } from './boat';
 import type { MooredShip } from './ship/shipyard';
@@ -70,6 +71,8 @@ export interface GameState extends StoryWorld {
   rideTanks: RideTanks;
   /** The weather above the sea (weather.ts, not saved; the World scene steps it). */
   weather: WeatherState;
+  /** The time of day and sleeping (dayNight.ts; the hour is saved). */
+  day: DayState;
   /** The water answering the hulls around the camera (waterColumns.ts; not saved). */
   water: WaterColumns;
   /** The hunts in the diary (saved) and the dens in the world. */
@@ -135,6 +138,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     rideTanks: {},
     // a brand new game starts under a clear sky; a save goes on with its weather (an old one: a random start)
     weather: createWeather(undefined, s.weather, save === null),
+    day: createDay(s.day), // an old save (no clock): the morning
     water: newColumns(s.diver.x),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,

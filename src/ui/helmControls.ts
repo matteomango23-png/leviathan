@@ -40,6 +40,7 @@ export class HelmControls {
   private readonly trackerBtn: HTMLButtonElement;
   private readonly lightBtn: HTMLButtonElement;
   private readonly nightBtn: HTMLButtonElement;
+  private readonly sleepBtn: HTMLButtonElement;
   private readonly cockpitBtn: HTMLButtonElement;
   /** Top left, over your teeth (owner, 9 ottobre): the tank at a glance, green → orange → red. */
   private readonly bars: HelmBars;
@@ -100,6 +101,7 @@ export class HelmControls {
     this.sphereBtn = el('button', 'helm-btn', still, 'Invia sfera');
     this.diveBtn = el('button', 'helm-btn', still, 'Tuffati');
     this.lightBtn = el('button', 'helm-btn helm-light', still, 'Luce');
+    this.sleepBtn = el('button', 'helm-btn', still, 'Dormi'); // the time runs fast (lot N1, ui/sleepOverlay.ts)
     this.rescueBtn = el('button', 'helm-btn helm-rescue', this.buttons, 'Razzo di soccorso');
     this.trackerBtn = el('button', 'helm-btn helm-tracker', this.buttons, 'Tracker');
     this.nightBtn = el('button', 'helm-btn helm-night', this.buttons, 'Visione notturna');
@@ -113,6 +115,7 @@ export class HelmControls {
       [this.diveWrap, 'helm-dive-lever'],
       [this.launchBtn, 'helm-launch'],
       [this.lightBtn, 'helm-light'],
+      [this.sleepBtn, 'helm-sleep'],
       [this.diveBtn, 'helm-swim'],
       [this.rescueBtn, 'helm-rescue'],
       [this.cockpitBtn, 'helm-cockpit'],
@@ -137,6 +140,7 @@ export class HelmControls {
     this.tap(this.sphereBtn, () => (this.session.input.helmCmd = 'sphere'));
     this.tap(this.trackerBtn, () => (this.session.input.helmCmd = 'tracker'));
     this.tap(this.lightBtn, () => (this.session.input.helmCmd = 'light'));
+    this.tap(this.sleepBtn, () => this.session.emit('askSleep'));
     this.tap(this.nightBtn, () => (this.session.input.helmCmd = 'night'));
     this.tap(this.cockpitBtn, () => this.session.emit('openCockpit'));
     this.tap(this.sonar, () => (this.session.input.helmCmd = 'sonar'));
@@ -252,6 +256,7 @@ export class HelmControls {
     this.reconBtn.hidden = !info.canRecon;
     this.trackerBtn.hidden = !info.canTrack;
     this.lightBtn.hidden = !ship;
+    this.sleepBtn.hidden = !ship;
     const lightText = lightLabel(info);
     if (this.lightBtn.textContent !== lightText) this.lightBtn.textContent = lightText;
     this.lightBtn.classList.toggle('on', !!info.lightOn);

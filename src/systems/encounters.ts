@@ -2,6 +2,8 @@
 // battle starts when one touches you (it strikes first) or when your weapon hits one (from behind you strike
 // first). At most WILD_RULES.maxPresent are around you at once.
 import { ROAM, SWIM_BITE, WILD_RULES, DANGER_RULES } from '../data/beasts';
+import { NIGHT_BEASTS } from '../data/daynight';
+import { nightness } from './dayNight';
 import { noSurprise, scaredOfPack } from './pack';
 import { fearOf, openingFor } from './beasts/mountTraits';
 import { ITEM_RULES } from '../data/economy';
@@ -44,6 +46,7 @@ const ramsSubmarine = (w: WildBeast): boolean =>
 /** Wild beasts appear, swim, leave when you are far, and touch you. */
 export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): void {
   const d = g.diver;
+  const night = g.day ? nightness(g.day) : 0; // the night (lot N1): its species, its albinos, its hunters
   let present = g.beasts.wilds.filter((w) => isInWater(w)).length;
   const hidden = !!g.beasts.decoy;
   const aboard = g.beasts.aboard; // in the submarine: the big hunters ram it, the others slip away
@@ -66,7 +69,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       own?.form ??
       (w.spawn.form
         ? { speciesId: w.spawn.speciesId, variant: 'comune', ...w.spawn.form }
-        : rollWildForm(w.spawn.speciesId, g.rng));
+        : rollWildForm(w.spawn.speciesId, g.rng, 1 + (NIGHT_BEASTS.albinoMult - 1) * night));
     // drawn by a fine bait: now and then an alfa or an albino (beasts/lure.ts); never a hunted one
     const form = !w.spawn.form && lured(w) ? luredForm(base, g.beasts.lure?.rare, g.rng) : base;
     const p = at ?? appearPoint(w, g.map, g.rng, d, seen);
@@ -198,6 +201,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
       scared,
       rider,
       view,
+      night,
     });
     if (w.stalk?.toll) {
       w.stalk.toll = false;
@@ -236,7 +240,7 @@ export function stepWildSpawns(g: BeastWorld, dt: number, events: GameEvent[]): 
   while (ready.length) {
     const pool = present < WILD_RULES.maxPresent ? ready : ready.filter(lured);
     if (!pool.length) break;
-    const w = drawSpawn(pool, inWater, g.beasts.recent, g.beasts.lure?.species ?? [], g.rng);
+    const w = drawSpawn(pool, inWater, g.beasts.recent, g.beasts.lure?.species ?? [], g.rng, night);
     ready.splice(ready.indexOf(w), 1);
     if (appear(w)) {
       present++;

@@ -49,6 +49,7 @@ import { stepPool } from './ship/shipPool';
 import { stepHarpoon } from './harpoon';
 import { stepGun } from './gun';
 import { stepSmokers } from './world/smokers';
+import { goToSleep, lyingStill, stepClock, wakeUp } from './sleep';
 import type { InputState } from './input';
 import { stepProjectiles } from './weapons';
 import { zoneAt } from './world/zones';
@@ -69,10 +70,15 @@ export { canDashNow, currentAction, respawnPoint } from './playerActions';
 import { doAction, fire, respawnPoint } from './playerActions';
 import type { GameState } from './newGame';
 
-export function stepGame(g: GameState, input: InputState, dt: number): GameEvent[] {
+export function stepGame(g: GameState, pressed: InputState, dt: number): GameEvent[] {
   const events: GameEvent[] = g.story.pending.splice(0);
   // the sea waits while a dialogue is on screen, a battle is on or you are choosing your first beast
   if (g.story.dialogue || g.beasts.battle || needsStarter(g)) return events;
+  // the time of day, and sleeping (sleep.ts: the clock runs fast, you lie still)
+  if (pressed.sleepCmd === 'wake') wakeUp(g, events);
+  else if (pressed.sleepCmd) goToSleep(g, pressed.sleepCmd, events);
+  stepClock(g, dt, events);
+  const input = g.day.sleeping ? lyingStill(pressed) : pressed;
   g.time += dt;
   g.playTime += dt;
   const d = g.diver;

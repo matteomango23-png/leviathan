@@ -95,6 +95,8 @@ export interface BeastWorld {
   beasts: BeastState;
   seen: Set<string>;
   brokenTiles: number[];
+  /** The time of day (systems/dayNight.ts): missing in tests, as by day. */
+  day?: { t: number };
 }
 
 export function createBeasts(team: TeamBeast[], gone: string[] = []): BeastState {

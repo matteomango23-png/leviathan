@@ -75,6 +75,15 @@ export class PortMenu {
         `Tu e la squadra siete in forze. Se perdi i sensi ti risvegli qui, a ${this.g.port?.name ?? 'Portofosco'}.`,
       );
     });
+    // sleeping is something else: the time runs fast until evening or morning (lot N1, owner 13 novembre 2026: a
+    // hunter heals at night with Riposa and goes on hunting in the dark)
+    const sleep = el('button', 'pbtn', top);
+    sleep.dataset.coach = 'port-sleep';
+    sleep.append(icon('moon'), document.createTextNode(' Dormi'));
+    sleep.addEventListener('click', () => {
+      this.session.emit('resume');
+      this.session.emit('askSleep');
+    });
     this.sellBtn = el('button', 'pbtn sell', top);
     this.sellBtn.dataset.coach = 'port-sell';
     this.sellBtn.addEventListener('click', () => this.sellFish());

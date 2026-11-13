@@ -1,15 +1,25 @@
 # Progressi
 
-## Dove siamo (aggiornato il 12 novembre 2026, v0.123.0)
+## Dove siamo (aggiornato il 13 novembre 2026, v0.124.0)
 
-- **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni.
+- **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
 - **Ultima pulizia:** v0.122.1 (12 novembre 2026); la prossima dopo altri 3 lotti. Tutti i file di codice sotto le 300 righe (i dati restano lunghi).
-- **Prossimo:** M5 la Fossa Nera (M4 fatto: v0.123.0; i laghi di salamoia scartati dal proprietario). Idee horror rimandate in cima a `docs/BACKLOG.md`.
-- **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`).
-- **Immagini attese:** il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
+- **Prossimo:** N2 se il proprietario lo vuole (più sagome e bestie solo notturne), oppure M5 la Fossa Nera (M4 fatto: v0.123.0; i laghi di salamoia scartati dal proprietario). Idee horror rimandate in cima a `docs/BACKLOG.md`.
+- **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`), "Salta all'ora dopo" nel pannello ?prove.
+- **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Lotto N1, giorno e notte (13 novembre 2026) → v0.124.0
+
+- Proprietario: ciclo di circa 30 minuti, 60/40 (18 luce, 12 buio), notte paurosa; alcune specie notturne ("non tutte"); Riposa separato da Dormi, Dormi è un time lapse fermabile.
+- `data/daynight.ts` (`DAY`, `NIGHT`, `NIGHT_BEASTS`, `NIGHT_SPECIES`, `SLEEP`); `systems/dayNight.ts` (orologio puro: `nightness`, `clockText`, `stepDay`, `nightDim`, salvataggio `day.t`); `systems/sleep.ts` (`canSleep`: nave ferma al timone o porto; `stepClock` in `stepGame`; `lyingStill`; eventi `sleepStarted`, `wokeUp`, `cannotSleep`, `nightFalls`); `input.sleepCmd`. Il meteo corre alla velocità del sonno (`worldViews`).
+- Vista: cielo notte e velo del tramonto (`backgroundView`), `views/nightSky.ts` (stelle e riflesso sul livello dei bagliori; la luna dipinta appena arriva l'immagine), raggi spenti, buio in più (`nightDim` nel `weatherDim` della luce), sagome (`NIGHT.silhouette` nel murk delle bestie), puntini luminosi più vivi (`seaLight`), musica più bassa (`NIGHT_MUSIC`, `SeaMusic.setLevel`).
+- Bestie: `nightTemper` in `beasts/roam.ts` (aggressive: vista e velocità; calme: schive), `nightWeight` in `spawnDraw`, albini con `rollWildForm(id, rng, albinoMult)`; `BeastWorld.day`.
+- UI: `ui/sleepOverlay.ts` (scelta, velo, orologio, Svegliati; `#ui.sleeping` nasconde il resto), pulsante Dormi al timone (`helm-sleep`) e al porto (`port-sleep`, al risveglio il menu si riapre), orologio nell'HUD, consiglio `tipNight`, riga sulla scheda. Test: `tests/lottoN1.test.ts`.
+- Provato nel browser: giorno, tramonto, notte sott'acqua e in superficie (stelle), il sonno al porto (30 volte più veloce, sveglia alla sera, menu riaperto), la riga del porto a 844 px. Non provato: Dormi al timone (la Galleria di prova non ha la nave).
+- Da provare sull'iPhone: quanto è buia la notte (`NIGHT.darkness` 0,66), il menu del porto con un pulsante in più, Dormi al timone.
 
 ## Lotto M4, il fondale vivo (12 novembre 2026) → v0.123.0
 

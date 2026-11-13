@@ -2,7 +2,15 @@
 // the melody every other time round, a breathing drone and a far drum, all in a long echo. It fades in beyond a
 // kilometre from the coast and out back under it; scheduled a bar at a time ahead on the audio clock. The same engine
 // plays the harbour's calm piece (PORT_MUSIC) in the port's menu (owner, 19 ottobre).
-import { MUSIC_ECHO_MAX, noteHz, SEA_MUSIC, VOICE_TONE, type MusicSpec, type VoiceSpec } from '../data/music';
+import {
+  MUSIC_ECHO_MAX,
+  NIGHT_MUSIC,
+  noteHz,
+  SEA_MUSIC,
+  VOICE_TONE,
+  type MusicSpec,
+  type VoiceSpec,
+} from '../data/music';
 
 export class SeaMusic {
   private readonly out: GainNode;
@@ -14,6 +22,8 @@ export class SeaMusic {
   private timer: number | null = null;
   private drone: OscillatorNode[] = [];
   private on = false;
+  /** Its share of its volume (the night lowers it: lot N1). */
+  private level = 1;
   private bar = 0;
   private pass = 0;
   private nextAt = 0;
@@ -53,6 +63,17 @@ export class SeaMusic {
     return this.on;
   }
 
+  /** Lowers it (0 … 1 of its volume), slowly: by night the music almost goes (lot N1, data/music.ts NIGHT_MUSIC). */
+  setLevel(level: number): void {
+    if (Math.abs(level - this.level) < 0.01) return;
+    this.level = level;
+    if (!this.on) return;
+    const t = this.ctx.currentTime;
+    this.out.gain.cancelScheduledValues(t);
+    this.out.gain.setValueAtTime(this.out.gain.value, t);
+    this.out.gain.setTargetAtTime(this.m.volume * level, t, NIGHT_MUSIC.fade / 3);
+  }
+
   /** In the open sea (true) or not: fades in or out (in `fade` seconds, or the music's own); a fade back in goes on
    *  from where it was. */
   set(on: boolean, fade = on ? this.m.fadeIn : this.m.fadeOut): void {
@@ -61,7 +82,7 @@ export class SeaMusic {
     const t = this.ctx.currentTime;
     this.out.gain.cancelScheduledValues(t);
     this.out.gain.setValueAtTime(this.out.gain.value, t);
-    this.out.gain.setTargetAtTime(on ? this.m.volume : 0, t, fade / 3);
+    this.out.gain.setTargetAtTime(on ? this.m.volume * this.level : 0, t, fade / 3);
     if (!on) {
       window.setTimeout(() => this.halt(), fade * 1000 * 1.5);
       return;

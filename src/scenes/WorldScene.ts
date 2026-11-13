@@ -23,6 +23,7 @@ import {
 import { healAll } from '../systems/testTools';
 import { writeSlot } from '../systems/save/slots';
 import { skipWeather, weatherName } from '../systems/weather';
+import { nightness } from '../systems/dayNight';
 import { generateWorld } from '../systems/world/worldGen';
 import { depthMetres } from '../systems/world/zones';
 import { kmFromCoast } from '../systems/world/stretches';
@@ -155,10 +156,15 @@ export class WorldScene extends Phaser.Scene {
         e.type === 'wreckOpened' ||
         e.type === 'swarmBound' ||
         e.type === 'missionComplete' ||
-        e.type === 'dialogueClosed'
+        e.type === 'dialogueClosed' ||
+        e.type === 'sleepStarted'
       )
         this.save();
-      else if (e.type === 'respawned') v.rig.follow(g.diver.x, g.diver.y, 0, true);
+      else if (e.type === 'wokeUp') {
+        this.save();
+        // asleep at the port (not aboard): you wake in its menu again
+        if (g.port && !g.ship.aboard && !g.boat.aboard) this.session.emit('openPort');
+      } else if (e.type === 'respawned') v.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();
       else if (e.type === 'chargeWarn') this.session.sound.chargeWarn();
       else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
@@ -214,6 +220,7 @@ export class WorldScene extends Phaser.Scene {
         km: kmFromCoast(d.x),
         look: lookAt(d.x),
         cave: !!galleryAt(d.x, d.y),
+        night: nightness(g.day),
       },
       dt,
     );

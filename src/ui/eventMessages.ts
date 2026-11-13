@@ -207,6 +207,19 @@ export function messageFor(e: GameEvent, g: GameState): [string, number] | null 
         : null;
     case 'bountyClosed':
       return [e.text, 4];
+    case 'cannotSleep':
+      return ['Qui non puoi dormire: ferma la nave, oppure al porto.', 2.6];
+    case 'nightFalls':
+      return ['Cala la sera: tra poco il mare si fa buio.', 3];
+    case 'wokeUp':
+      return [
+        e.why === 'reached'
+          ? `Ti svegli: ${e.phase === 'Alba' ? "è l'alba" : 'è sera'}.`
+          : e.why === 'self'
+            ? `Ti svegli. ${e.phase}.`
+            : e.why,
+        2.6,
+      ];
     case 'smokerBurn':
       return ['Acqua bollente! Allontanati dal camino.', 2];
     case 'gunEmpty':

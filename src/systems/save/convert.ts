@@ -17,6 +17,7 @@ import type { BackpackWorld } from '../economy/backpack';
 import { newSave, type SaveData, type SavedGear } from './saveData';
 import { saveStory, type StoryState } from '../story';
 import { saveWeather, type WeatherState } from '../weather';
+import { saveDay, type DayState } from '../dayNight';
 import type { GadgetsState } from '../ship/gadgets';
 import type { SonarNotes } from '../sonarNotes';
 
@@ -29,6 +30,7 @@ interface SaveSource extends Pick<BackpackWorld, 'diver' | 'seen' | 'beasts' | '
   hunts: SaveData['hunts'];
   huntPinned: string | null;
   weather: WeatherState;
+  day: DayState;
   gadgets: GadgetsState;
   sonarNotes: SonarNotes;
   playTime: number;
@@ -112,6 +114,7 @@ export function toSave(g: SaveSource, now: Date): SaveData {
   s.hunts = structuredClone(g.hunts);
   s.huntPinned = g.huntPinned;
   s.weather = saveWeather(g.weather);
+  s.day = saveDay(g.day);
   const t = g.gadgets.target;
   if (t && 'resident' in t) {
     s.target = { target: { ...t }, name: g.gadgets.targetName };

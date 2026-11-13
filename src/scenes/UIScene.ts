@@ -22,6 +22,7 @@ import { coachDue, runCoach } from '../ui/coach';
 import { GUN } from '../data/diver';
 import { spareDarts } from '../systems/gun';
 import { COACH_QUIET_SECONDS, type CoachRound } from '../data/coach';
+import { SleepOverlay } from '../ui/sleepOverlay';
 
 export class UIScene extends Phaser.Scene {
   private session!: Session;
@@ -36,6 +37,7 @@ export class UIScene extends Phaser.Scene {
   private compass!: Compass;
   /** The submarine's 360° sonar and the arrow home (block 5c). */
   private subScope!: SubScope;
+  private sleep!: SleepOverlay;
   /** Seconds the sea has been quiet (no dialogue, no picker): a tutorial round waits for it, after Aurelio's tips. */
   private quiet = 0;
 
@@ -59,6 +61,7 @@ export class UIScene extends Phaser.Scene {
     this.starter = new StarterPicker(this.root, () => this.session.game);
     this.compass = new Compass(this.root, this.session);
     this.subScope = new SubScope(this.root);
+    this.sleep = new SleepOverlay(this.root, this.session);
     if (this.session.gallery) new GalleryBar(this.root, this.session);
 
     this.session.on('gameEvents', this.onGameEvents, this);
@@ -67,6 +70,7 @@ export class UIScene extends Phaser.Scene {
     this.session.on('openPort', this.openPort, this);
     this.session.on('openCockpit', this.openCockpit, this);
     this.session.on('battle', this.onBattle, this);
+    this.session.on('askSleep', this.askSleep, this);
     this.events.once('shutdown', () => {
       this.session.off('gameEvents', this.onGameEvents, this);
       this.session.off('toast', this.onToast, this);
@@ -74,6 +78,7 @@ export class UIScene extends Phaser.Scene {
       this.session.off('openPort', this.openPort, this);
       this.session.off('openCockpit', this.openCockpit, this);
       this.session.off('battle', this.onBattle, this);
+      this.session.off('askSleep', this.askSleep, this);
       this.controls.destroy();
       this.helm.destroy();
       this.dialogue.destroy();
@@ -142,6 +147,12 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
+  private askSleep(): void {
+    this.controls.releaseAll();
+    this.helm.releaseAll();
+    this.sleep.open();
+  }
+
   private openPause(): void {
     this.openMenus('pause');
   }
@@ -185,6 +196,7 @@ export class UIScene extends Phaser.Scene {
     this.backpack.update(g);
     this.compass.update(g);
     this.subScope.update(g, dt);
+    this.sleep.update(g);
     this.quiet = g.story.dialogue || needsStarter(g) ? 0 : this.quiet + dt;
     if (this.quiet > COACH_QUIET_SECONDS) {
       const swimming = !helm && !g.ship.aboard && !g.sub.aboard && !g.boat.aboard && !storyHoldsDiver(g);

@@ -5,6 +5,7 @@ import { PROGRESSION } from '../../data/rules';
 import { checkedBoat, checkedShip, checkedSub } from './vehicleSave';
 import { checkedTarget, type Target } from '../tracking';
 import { checkedWeather, type SavedWeather } from '../weather';
+import { checkedDay, type SavedDay } from '../dayNight';
 import { checkedNotes, type SonarNotes } from '../sonarNotes';
 import { TRACKER } from '../../data/hunts';
 import type { SavedSub } from '../submarine';
@@ -71,6 +72,7 @@ export interface SaveData {
   hunts: Record<string, { heard?: boolean; echo?: boolean; traces?: boolean }>; // the hunting diary (v16)
   huntPinned?: string | null; // the hunt you follow (added 5 ottobre; missing = none)
   weather?: SavedWeather | null; // the weather above the sea (added 9 ottobre; missing = a random start)
+  day?: SavedDay | null; // the time of day (lot N1, 13 novembre 2026; missing = the morning)
   target?: { target: Target; name: string } | null; // the beast the compass follows (part 4d; a resident only)
   trackLeft?: number | null; // its tracker's trace: seconds left (block 5a; missing = no limit)
   sonarNotes?: SonarNotes; // what the sonar taught you about each species (block 5a; missing = nothing yet)
@@ -168,6 +170,7 @@ export function validate(data: Record<string, unknown>): SaveData {
     hunts: checkedHunts(data.hunts),
     huntPinned: HUNTS.some((h) => h.id === data.huntPinned) ? (data.huntPinned as string) : null,
     ...(checkedWeather(data.weather) ? { weather: checkedWeather(data.weather) } : {}),
+    ...(checkedDay(data.day) ? { day: checkedDay(data.day) } : {}),
     ...(checkedTarget(data.target) ? { target: checkedTarget(data.target) } : {}),
     ...(checkedTarget(data.target) && typeof data.trackLeft === 'number' && data.trackLeft > 0
       ? { trackLeft: Math.min(TRACKER.seconds, data.trackLeft) }
