@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.124.1 — Il tutorial non riparte più (13 novembre 2026)
+
+- Il tutorial passo passo non ricomincia più a ogni apertura del gioco: i giri già visti restavano salvati ma il gioco, rileggendo la partita, li dimenticava. Ora li ricorda.
+- Lo stesso per i consigli di Aurelio spenti nella Guida: restano spenti anche dopo aver chiuso il gioco.
+- I salvataggi non cambiano. Su una partita già iniziata il tutorial compare un'ultima volta (i segni persi non si possono recuperare); poi non torna più.
+
 ## v0.124.0 — Il giorno e la notte (13 novembre 2026)
 
 - **Giorno e notte:** un giorno dura circa mezz'ora, 18 minuti di luce (alba compresa) e 12 di buio (tramonto compreso). L'ora è in alto, col sole o la luna.

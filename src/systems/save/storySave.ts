@@ -1,5 +1,8 @@
-// Checking the saved story (v17). Unknown steps or ids (e.g. from a newer game) are dropped.
-import { DIALOGUES, STORY_STEPS, TUTORIAL, type SavedStory } from '../../data/story';
+// Checking the saved story (v17). Unknown steps or ids (e.g. from a newer game) are dropped; the marks of the
+// step-by-step tutorial's rounds and the tips' switch are known ones (owner, 13 novembre 2026: they were dropped on
+// reading, so the tutorial came back at every opening of the app).
+import { COACH, coachSeen, type CoachRound } from '../../data/coach';
+import { DIALOGUES, STORY_STEPS, TIPS_OFF, TUTORIAL, type SavedStory } from '../../data/story';
 
 export type { SavedStory } from '../../data/story';
 
@@ -21,6 +24,11 @@ export function validateStory(raw: unknown): SavedStory | null {
     step,
     tutorial,
     count: whole(raw.count, TUTORIAL[tutorial]?.count ?? 0),
-    seen: known(raw.seen, [...Object.keys(DIALOGUES), 'starter']),
+    seen: known(raw.seen, [
+      ...Object.keys(DIALOGUES),
+      'starter',
+      TIPS_OFF,
+      ...(Object.keys(COACH) as CoachRound[]).map(coachSeen),
+    ]),
   };
 }
