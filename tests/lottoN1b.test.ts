@@ -60,3 +60,54 @@ describe('la luce segue il muso', () => {
     expect(lampAim({ sub, diver, ship: { aboard: true, face: 1, dive: 0 } })).toBe(0);
   });
 });
+
+describe('le luci attaccate ai mezzi', () => {
+  it('ogni nave, sottomarino e motoscafo ha il faro sul davanti dello scafo, non in mare', async () => {
+    const { SHIP_MODELS } = await import('../src/data/fleet');
+    const { SUB_MODELS } = await import('../src/data/submarine');
+    const { BOAT_MODELS } = await import('../src/data/boats');
+    for (const m of SHIP_MODELS) {
+      if (!m.art) continue;
+      const { lamp, keel } = m.art.picture;
+      expect(lamp.u, m.id).toBeGreaterThan(0.75);
+      expect(lamp.v, m.id).toBeLessThan(keel);
+    }
+    for (const m of [...SUB_MODELS, ...BOAT_MODELS.map((b) => ({ id: b.id, lamp: b.picture.lamp }))]) {
+      expect(m.lamp.u, m.id).toBeGreaterThan(0.75);
+      expect(m.lamp.u, m.id).toBeLessThanOrEqual(1);
+      expect(m.lamp.v, m.id).toBeGreaterThan(0);
+      expect(m.lamp.v, m.id).toBeLessThan(1);
+    }
+  });
+
+  it('il faro avanti della nave abissale parte dal suo faro dipinto', async () => {
+    const { shipPoint } = await import('../src/systems/ship/geometry');
+    const { shipPicture } = await import('../src/systems/ship/model');
+    const g = createGame(map, null, 4);
+    giveVessels(g);
+    g.ship.model = 'nightmare';
+    g.ship.dive = 100 * WORLD.unitsPerMetre;
+    const { u, v } = shipPicture(g.ship).lamp;
+    const beam = floodBeams(g.ship, 0)[0]!;
+    expect(beam.x).toBeCloseTo(shipPoint(g.ship, u, v).x);
+    expect(beam.y).toBeCloseTo(shipPoint(g.ship, u, v).y);
+  });
+
+  it('il motoscafo accende il faro sulla sua prua, dalla parte dove guarda', async () => {
+    const { boatLamp } = await import('../src/systems/boat');
+    const b = { model: 'motoscafo_eh2', x: 1000, y: 500, face: 1 as const };
+    expect(boatLamp(b).x).toBeGreaterThan(1000);
+    expect(boatLamp({ ...b, face: -1 }).x).toBeLessThan(1000);
+    expect(boatLamp(b).y).toBeLessThan(500); // above the water
+  });
+
+  it('il sub che si gira porta la lampada dall’altra parte subito, senza girare per il mare', async () => {
+    const { turnDiver } = await import('../src/systems/diver');
+    const d = { face: 1 as 1 | -1, aim: 0.2 };
+    turnDiver(d, -1);
+    expect(d.face).toBe(-1);
+    expect(d.aim).toBeCloseTo(Math.PI - 0.2);
+    turnDiver(d, -1);
+    expect(d.aim).toBeCloseTo(Math.PI - 0.2); // no turn, no change
+  });
+});

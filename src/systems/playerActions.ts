@@ -9,6 +9,7 @@ import { atPort, nearWreck, openWreck, portStart } from './economy/places';
 import { canOpen, scavengerBonus, wreckReach, wreckShown } from './specialPowers';
 import { PORT, PORTS } from '../data/economy';
 import { DIVER } from '../data/diver';
+import { turnDiver } from './diver';
 import type { GameEvent } from './events';
 import { pullTrigger } from './gun';
 import type { InputState } from './input';
@@ -96,7 +97,7 @@ export function fire(g: GameState, input: InputState, events: GameEvent[]): void
   // backwards meanwhile: no flip back the next frame, nor between two shots (owner, 19 ottobre)
   const aiming = input.fireHeld && input.aim !== null;
   if ((fired || aiming) && Math.abs(Math.cos(angle)) > 0.2) {
-    d.face = Math.cos(angle) > 0 ? 1 : -1;
+    turnDiver(d, Math.cos(angle) > 0 ? 1 : -1);
     d.faceHold = DIVER.aimHoldSeconds;
   }
 }

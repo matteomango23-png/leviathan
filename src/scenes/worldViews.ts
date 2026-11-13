@@ -108,6 +108,8 @@ export class WorldViews {
   /** The murk tinting the screen, easing towards the water's own. */
   private murkShown = NaN;
   private lampAngle: number;
+  /** Which way the diver faced last frame (his lamp mirrors with him when he turns). */
+  private lampFace: 1 | -1 = 1;
   /** The red flash of a blow, fading. */
   hurtFlash = 0;
 
@@ -246,13 +248,16 @@ export class WorldViews {
 
     // a vehicle's headlight points where its nose points, at once, turning with the hull on the waves (owner, 8
     // ottobre for the boat and 13 novembre 2026 for the ship and the submarine: no slow turns through the sea);
-    // the diver's lamp follows his aim gently
+    // the diver's lamp follows his aim gently, and turns round with him at once
     const tilt = g.sub.aboard ? (this.sub.nose?.rot ?? 0) : g.ship.aboard ? this.ship.lean : 0;
     let da = lampAim(g) - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
     while (da < -Math.PI) da += Math.PI * 2;
     if (g.boat.aboard || g.ship.aboard || g.sub.aboard) this.lampAngle = lampAim(g) + tilt;
+    else if (d.face !== this.lampFace)
+      this.lampAngle = lampAim(g); // he turned round: the lamp with him, at once
     else this.lampAngle += da * Math.min(1, dt * 6);
+    this.lampFace = d.face;
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
@@ -286,7 +291,9 @@ export class WorldViews {
       info,
       {
         ...lampOf(g, rider, murk),
+        // on the lamp painted on the hull as it rides the waves (owner, 13 novembre 2026)
         ...(g.sub.aboard && this.sub.nose ? { x: this.sub.nose.x, y: this.sub.nose.y } : {}),
+        ...(g.ship.aboard ? this.ship.lamp(g.ship) : {}),
         angle: this.lampAngle,
         face: d.face,
       },
@@ -297,7 +304,7 @@ export class WorldViews {
       sky.dim * weatherReach(info.cy),
       this.nightVision.share,
       // the floodlights under water (owner, 15 ottobre) and the light under the ship: beams (lot N1b)
-      [...this.ship.beams(g.ship, murk), ...subFloodBeams(g.sub, murk)],
+      [...this.ship.beams(g.ship, murk), ...subFloodBeams(g.sub, murk, this.sub.nose)],
     );
     this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea, night);
   }

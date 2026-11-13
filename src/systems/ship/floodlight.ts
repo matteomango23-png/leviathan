@@ -4,8 +4,8 @@
 // novembre 2026: the round lights lit the whole sea blue at night, against the rule of no circles). Pure logic.
 import { WORLD } from '../../data/worldLayout';
 import { subModel, type SubState } from '../subState';
-import { shipDraft } from './geometry';
-import { shipLength, shipModel } from './model';
+import { shipDraft, shipPoint } from './geometry';
+import { shipModel, shipPicture } from './model';
 import type { ShipState } from './ship';
 import { diveShare } from './uboat';
 
@@ -28,29 +28,34 @@ export interface Beam {
 
 const ahead = (face: 1 | -1): number => (face > 0 ? AHEAD : Math.PI - AHEAD);
 
-/** A diving U-Boat: a beam ahead from its bow and one down from its belly. */
+/** A diving U-Boat: a beam ahead from its headlight (data/fleet.ts lamp) and one down from its belly. */
 export function floodBeams(s: ShipState, murk: number): Beam[] {
   const m = shipModel(s).floodlightM;
   const dive = diveShare(s);
   if (!s.owned || !m || dive <= 0) return [];
   const len = m * WORLD.unitsPerMetre * dive * (1 - FLOOD_MURK * murk);
   const y = WORLD.surfaceY + s.dive + shipDraft(s) * 0.4;
-  const bow = s.x + s.face * shipLength(s) * 0.42;
+  const lamp = shipPicture(s).lamp;
   return [
-    { x: bow, y, angle: ahead(s.face), len, width: AHEAD_WIDTH },
+    { ...shipPoint(s, lamp.u, lamp.v), angle: ahead(s.face), len, width: AHEAD_WIDTH },
     { x: s.x, y: y + shipDraft(s) * 0.4, angle: Math.PI / 2, len: len * DOWN_SHARE, width: DOWN_WIDTH },
   ];
 }
 
-/** Your submarine under water, if its model has floodlights: a beam ahead of it. */
-export function subFloodBeams(sub: SubState, murk: number): Beam[] {
+/** Your submarine under water, if its model has floodlights: a beam ahead of it, from its headlight as the view
+ *  places it (`from`: where it is and how the hull is turned this frame), else from its middle. */
+export function subFloodBeams(
+  sub: SubState,
+  murk: number,
+  from: { x: number; y: number; rot: number } | null = null,
+): Beam[] {
   const m = subModel(sub.model).floodlightM;
   if (!sub.owned || !sub.aboard || !m || sub.y <= WORLD.surfaceY) return [];
   return [
     {
-      x: sub.x,
-      y: sub.y,
-      angle: ahead(sub.face),
+      x: from?.x ?? sub.x,
+      y: from?.y ?? sub.y,
+      angle: ahead(sub.face) + (from?.rot ?? 0),
       len: m * WORLD.unitsPerMetre * (1 - FLOOD_MURK * murk),
       width: AHEAD_WIDTH,
     },

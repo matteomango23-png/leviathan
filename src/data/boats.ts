@@ -10,6 +10,8 @@ export interface BoatPicture {
   keel: number;
   propX: number; // where the water is churned behind it
   propY: number;
+  /** Its headlight (shares): the lamp painted on it or its bow, where the beam starts (owner, 13 novembre 2026). */
+  lamp: { u: number; v: number };
 }
 
 export interface BoatModel {
@@ -55,7 +57,7 @@ export const BOAT_MODELS: BoatModel[] = [
     note: 'Il motoscafo a balena: robusto, porta tanti fusti',
     art: 'motoscafo_lanterna',
     moving: 'motoscafo_lanterna_moto',
-    picture: { aspect: 693 / 1400, waterline: 0.62, keel: 0.78, propX: 0.05, propY: 0.57 },
+    picture: { aspect: 693 / 1400, waterline: 0.62, keel: 0.78, propX: 0.05, propY: 0.57, lamp: { u: 0.965, v: 0.47 } },
   },
   {
     id: 'motoscafo_eh2',
@@ -72,7 +74,7 @@ export const BOAT_MODELS: BoatModel[] = [
     note: 'Serbatoio piccolo, velocissimo: va a prendere carburante e conchiglie all’avamposto',
     art: 'motoscafo_eh2',
     // (its picture with the jets on fire is gone, owner 9 ottobre: they smoke instead)
-    picture: { ...PICTURE, propX: 0.04, propY: 0.62 },
+    picture: { ...PICTURE, propX: 0.04, propY: 0.62, lamp: { u: 0.935, v: 0.42 } },
     // the two stern nozzles (measured on the picture, owner 9 ottobre: no smoke showed)
     reactors: [
       { u: 0.03, v: 0.39, size: 1.6 },
@@ -93,7 +95,7 @@ export const BOAT_MODELS: BoatModel[] = [
     drums: 150,
     note: 'Il motoscafo più veloce del mare',
     art: 'motoscafo_poseidon',
-    picture: { ...PICTURE, keel: 0.73, propX: 0.05, propY: 0.72 },
+    picture: { ...PICTURE, keel: 0.73, propX: 0.05, propY: 0.72, lamp: { u: 0.925, v: 0.5 } },
   },
   {
     id: 'moto_imperium',
@@ -109,7 +111,7 @@ export const BOAT_MODELS: BoatModel[] = [
     drums: 80,
     note: 'Piccola e scattante: pochi fusti, ma arriva ovunque',
     art: 'moto_imperium',
-    picture: { ...PICTURE, keel: 0.72, propX: 0.06, propY: 0.66 },
+    picture: { ...PICTURE, keel: 0.72, propX: 0.06, propY: 0.66, lamp: { u: 0.94, v: 0.56 } },
   },
 ];
 

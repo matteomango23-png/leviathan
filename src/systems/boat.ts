@@ -68,6 +68,12 @@ export interface SavedBoat {
 
 export const boatModel = (id: string): BoatModel => BOAT_MODELS.find((m) => m.id === id) ?? BOAT_MODELS[0]!;
 export const boatLength = (b: { model: string }): number => boatModel(b.model).lengthM * WORLD.unitsPerMetre;
+/** Its headlight on its picture (data/boats.ts lamp), at rest on the water. */
+export function boatLamp(b: { model: string; x: number; y: number; face: 1 | -1 }): { x: number; y: number } {
+  const p = boatModel(b.model).picture;
+  const L = boatLength(b);
+  return { x: b.x + b.face * (p.lamp.u - 0.5) * L, y: b.y + (p.lamp.v - p.waterline) * p.aspect * L };
+}
 export const boatTopSpeed = (b: { model: string }): number => boatModel(b.model).knots / HELM.knotsPerUnit;
 
 export function newBoat(saved: SavedBoat | null): BoatState {
