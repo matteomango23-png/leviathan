@@ -13,6 +13,8 @@ import { shipPicture } from './ship/model';
 import { diveShare } from './ship/uboat';
 import { storyHoldsDiver } from './story';
 import { subModel } from './subState';
+import { NIGHT } from '../data/daynight';
+import { nightness } from './dayNight';
 
 export function lampOf(
   g: GameState,
@@ -21,20 +23,23 @@ export function lampOf(
 ): { x: number; y: number; lengthMult: number; widthMult: number } {
   const b = g.boat;
   const dive = g.ship.aboard ? diveShare(g.ship) : 0;
+  // by night the ship's headlight is on afloat too, and reaches farther (lot N1b, owner 13 novembre 2026)
+  const night = g.ship.aboard ? nightness(g.day) : 0;
   const pic = shipPicture(g.ship);
   const at = b.aboard
     ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
-    : dive > 0
+    : g.ship.aboard && (dive > 0 || night > 0)
       ? shipPoint(g.ship, pic.lampU ?? pic.bowU, pic.waterline)
       : (rider ?? g.diver);
   const mods = diverModifiers(g.gear);
-  const off = storyHoldsDiver(g) || (g.ship.aboard && dive <= 0);
+  const off = storyHoldsDiver(g) || (g.ship.aboard && dive <= 0 && night < 0.2);
   // riding an Abissale, its eyes for the dark: your light reaches much farther (beasts/mountTraits.ts)
   const ridden = g.beasts.riding ? activeBeast(g) : undefined;
   const abyss = ridden && talentOf(ridden.form) === 'abissale' ? RIDE_TALENTS.abyssLampMult : 1;
   // a submarine with a headlight (the abyssal one): its beam, far longer than your lamp
   const beam = g.sub.aboard ? (subModel(g.sub.model).beam ?? 1) : 1;
   const length =
-    (g.ship.aboard ? 1.6 * dive : mods.coneMult * abyss * beam) * (1 - (1 - DELTA.murk.lampMult) * murk);
+    (g.ship.aboard ? Math.max(1.6 * dive, NIGHT.shipLamp * night) : mods.coneMult * abyss * beam) *
+    (1 - (1 - DELTA.murk.lampMult) * murk);
   return { x: at.x, y: at.y, lengthMult: off ? 0 : length, widthMult: mods.coneWidthMult };
 }

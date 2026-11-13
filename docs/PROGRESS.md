@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 13 novembre 2026, v0.125.0)
+## Dove siamo (aggiornato il 13 novembre 2026, v0.125.1)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,6 +10,11 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Ritocco della notte (13 novembre 2026) → v0.125.1
+
+- Il proprietario: "un pelo troppo nero, appena vai giù di 1 metro è nerissimo"; le lucine gialle dello scafo della nave abissale devono fare un po' di luce intorno, il faro davanti più forte e più giallo. Era frustrato perché non si trovava la quadra.
+- `nightDarkAt` ora lineare: `surfaceDark` 0,55, `deepDark` 0,9 a `blackByM` 35 m. `ShipLights.hullGlow` (`NIGHT.hullGlow`: luci morbide lungo tutto lo scafo, di notte e sott'acqua, più larghe sui modelli con fari) nelle spot della maschera (le spot ora hanno `a`). `lampOf`: di notte il faro della nave è acceso anche a galla, lungo `NIGHT.shipLamp`; cono caldo `NIGHT.lampWarm`. `haloMult` 0,85.
 
 ## Lotto N1b, una notte vera (13 novembre 2026) → v0.125.0
 

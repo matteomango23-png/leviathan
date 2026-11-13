@@ -2,6 +2,14 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.125.1 — La notte con più luce (13 novembre 2026)
+
+- Il buio sotto la superficie cresce piano: a pochi metri si vede ancora, verso i 30-40 m è buio pesto.
+- Le luci dello scafo illuminano un poco il mare intorno alla nave, di notte e sott'acqua; di più sulla nave abissale e sugli U-Boot.
+- Di notte il faro della nave è acceso anche in superficie e arriva più lontano; la luce dei fari e della lampada è più calda, un po' gialla.
+- L'alone attorno al sub di notte è un po' più largo.
+- I salvataggi non cambiano.
+
 ## v0.125.0 — Una notte vera (13 novembre 2026)
 
 - La notte è buia davvero. In superficie si vede appena: il cielo nero con le stelle, un po' più chiaro all'orizzonte, e la nave come una sagoma scura. Basta scendere di qualche metro ed è buio pesto: si vede solo dove arrivano le luci.
