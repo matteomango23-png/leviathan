@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 13 novembre 2026, v0.125.3)
+## Dove siamo (aggiornato il 13 novembre 2026, v0.125.4)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,6 +10,12 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Lo sfondo che scattava (13 novembre 2026) → v0.125.4
+
+- Il proprietario: "il fondale scatta su e giù quando vai avanti e sotto o sopra allo stesso tempo… hai sbagliato tante volte". Misurato fotogramma per fotogramma a velocità costante: le montagne (`views/seaRidges.ts`) si muovevano in verticale di 2, 1, 2 pixel (arrotondate a pixel interi dal 12 novembre per togliere la riga sottile) mentre in orizzontale scorrevano lisce. Tolto l'arrotondamento; il buio sotto le montagne ne copre il piede di `FOOT_OVERLAP` 3 pixel, così la riga non torna. Dopo: passo costante (-2,96 px a fotogramma).
+- **Regola:** mai arrotondare a pixel interi la posizione di qualcosa che scorre con la telecamera; per un problema di "scatti" misurare le posizioni fotogramma per fotogramma prima di cambiare il codice.
+- Luci di bordo di notte (`NIGHT.deckLights`): `size` 3,4 e `alpha` 0,9 (il proprietario non le vedeva). Resta da sapere se gli piacciono.
 
 ## Luci attaccate ai mezzi (13 novembre 2026) → v0.125.3
 

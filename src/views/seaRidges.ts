@@ -40,6 +40,9 @@ interface Row {
 const PAINTED_NAME = { far: 'lontano', mid: 'medio' } as const;
 const paintedName = (look: SeaLookId, kind: RidgeKind): string => `mare_${look}_${PAINTED_NAME[kind]}`;
 
+/** Screen pixels by which the dark under a row of ridges covers their foot. */
+const FOOT_OVERLAP = 3;
+
 /** Points read along a panorama's bottom edge for its colour. */
 const EDGE_SAMPLES = 24;
 
@@ -194,13 +197,15 @@ export class SeaRidges {
       if (r.b.look !== mix.b || r.b.images[0]!.texture.key !== wantB) this.show(r.b, mix.b, r.kind);
       // the next look comes in over the first half of the blend, the old one goes out over the second: never a
       // shape vanishing at once
-      // on whole pixels, the dark under them overlapping by two: a fraction of a pixel left a thin line that came
-      // and went as the view moved (owner, 12 novembre 2026: "la linea delle montagne scatta")
-      const bottom = Math.round(this.rowBottom(v, r.kind));
+      // never on whole pixels: rounded, the ridges went up and down in uneven steps (2, 1, 2 pixels a frame) while
+      // they slid smoothly sideways, and the whole backdrop jerked when you swam ahead and up or down at once
+      // (owner, 13 novembre 2026). The dark under them overlaps their foot instead (FOOT_OVERLAP), so no thin line
+      // comes and goes between the two (owner, 12 novembre 2026: "la linea delle montagne scatta")
+      const bottom = this.rowBottom(v, r.kind);
       const blending = mix.a !== mix.b;
       this.place(r.a, v, r.kind, blending ? Math.min(1, 2 * (1 - mix.t)) : 1, bottom, shade);
       this.place(r.b, v, r.kind, blending ? Math.min(1, 2 * mix.t) : 0, bottom, shade);
-      const fillTop = Math.max(0, bottom - 2);
+      const fillTop = Math.max(0, bottom - FOOT_OVERLAP);
       const ca = this.bottomColor(mix.a, r.kind);
       const cb = this.bottomColor(mix.b, r.kind);
       const m = (p: number, q: number): number => Math.round((p + (q - p) * mix.t) * dim);

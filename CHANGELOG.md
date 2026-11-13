@@ -2,6 +2,12 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.125.4 — Lo sfondo non scatta più (13 novembre 2026)
+
+- Le montagne dello sfondo non scattano più su e giù quando ti muovi in avanti e insieme sali o scendi: ora scorrono lisce in tutte le direzioni.
+- Di notte gli oblò accesi lungo lo scafo della nave e il fanale rosso a prua sono più grandi: prima quasi non si vedevano.
+- I salvataggi non cambiano.
+
 ## v0.125.3 — Luci attaccate ai mezzi (13 novembre 2026)
 
 - Il faro di ogni nave, sottomarino e motoscafo parte dalla luce disegnata sul mezzo (un faro sulla prua, la bocca della nave-balena, il muso dello squalo), non più dal vetro o dall'acqua davanti alla prua.
