@@ -50,3 +50,13 @@ describe('le luci della nave', () => {
     expect('lights' in SHIP).toBe(false);
   });
 });
+
+describe('la luce segue il muso', () => {
+  it('a bordo della nave, anche a galla, il faro punta sempre dalla parte della prua', async () => {
+    const { lampAim } = await import('../src/systems/submarine');
+    const sub = { aboard: false, face: 1 } as unknown as Parameters<typeof lampAim>[0]['sub'];
+    const diver = { aim: 1.2 }; // where the diver was aiming before boarding: not the light's way
+    expect(lampAim({ sub, diver, ship: { aboard: true, face: -1, dive: 0 } })).toBeCloseTo(Math.PI);
+    expect(lampAim({ sub, diver, ship: { aboard: true, face: 1, dive: 0 } })).toBe(0);
+  });
+});

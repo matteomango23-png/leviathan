@@ -73,6 +73,11 @@ export class ShipLights {
     dot(L.sideU, L.sideV, L.side, L.alpha, L.size * 1.3);
   }
 
+  /** How much the hull leans this frame (radians): its headlight turns with it. */
+  get rot(): number {
+    return this.lean.rot;
+  }
+
   /** A point of the light turned with the leaning hull (this.lean). */
   private turn(x: number, y: number): { x: number; y: number } {
     const { rot, x: px, y: py } = this.lean;

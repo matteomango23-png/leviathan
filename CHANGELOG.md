@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.125.2 — La luce segue il muso (13 novembre 2026)
+
+- Il faro della nave, del sottomarino e del motoscafo punta sempre dove punta il muso: quando giri, si sposta subito dall'altra parte, senza ruotare piano attraverso il mare.
+- Il faro del sottomarino parte dal muso e segue la sua inclinazione quando galleggia sulle onde in superficie.
+- Di notte anche il mare in superficie (le onde) è scuro, non più azzurro dove arriva la luce.
+- I salvataggi non cambiano.
+
 ## v0.125.1 — La notte con più luce (13 novembre 2026)
 
 - Il buio sotto la superficie cresce piano: a pochi metri si vede ancora, verso i 30-40 m è buio pesto.
