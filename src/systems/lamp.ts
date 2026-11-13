@@ -5,7 +5,7 @@ import { DELTA } from '../data/worldLayout';
 import { RIDE_TALENTS } from '../data/beasts';
 import { activeBeast } from './beastState';
 import { talentOf } from './beasts/mountTraits';
-import { boatLength } from './boat';
+import { boatLamp } from './boat';
 import { diverModifiers } from './economy/gear';
 import type { GameState } from './newGame';
 import { shipPoint } from './ship/geometry';
@@ -27,9 +27,9 @@ export function lampOf(
   const night = g.ship.aboard ? nightness(g.day) : 0;
   const pic = shipPicture(g.ship);
   const at = b.aboard
-    ? { x: b.x + b.face * boatLength(b) * 0.45, y: b.y - boatLength(b) * 0.06 }
+    ? boatLamp(b)
     : g.ship.aboard && (dive > 0 || night > 0)
-      ? shipPoint(g.ship, pic.lampU ?? pic.bowU, pic.waterline)
+      ? shipPoint(g.ship, pic.lamp.u, pic.lamp.v)
       : (rider ?? g.diver);
   const mods = diverModifiers(g.gear);
   const off = storyHoldsDiver(g) || (g.ship.aboard && dive <= 0 && night < 0.2);

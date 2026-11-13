@@ -27,6 +27,9 @@ export interface SubModel {
   scope?: { rangeM: number; classes: 2 | 3 | 4 | 5 };
   note: string;
   art: string; // its picture in public/world
+  /** Its headlight on the picture (shares, bow on the right): the lamp painted on it, where the beam starts and turns
+   *  with the hull (owner, 13 novembre 2026: on the abyssal one it came out of the glass). */
+  lamp: { u: number; v: number };
   /** The picture with the propeller turning (same box), shown while it moves. */
   moving?: string;
   /** A drone: it can also scout by itself from its ship (the Ocean's Nightmare's, systems/ship/recon.ts). */
@@ -63,6 +66,7 @@ export const SUB_MODELS: SubModel[] = [
     sonar: false,
     note: 'Vecchio e lento, ma tiene l’acqua fuori',
     art: 'sottomarino_1',
+    lamp: { u: 0.96, v: 0.56 },
   },
   {
     // the Expedition Hunter 1's (owner, 8 ottobre): the fastest of the sea, a small tank, no sonar
@@ -78,6 +82,7 @@ export const SUB_MODELS: SubModel[] = [
     sonar: false,
     note: 'Il sottomarino più veloce: consuma tanto e non ha sonar (il radar vede solo roccia e bestie vicine)',
     art: 'sottomarino_eh1',
+    lamp: { u: 0.845, v: 0.485 },
   },
   {
     // the Expedition Hunter 2's (owner, 8 ottobre): a sonar, not the best, not the fastest
@@ -95,6 +100,7 @@ export const SUB_MODELS: SubModel[] = [
     scope: { rangeM: 60, classes: 3 },
     note: 'Robusto, con il sonar: né il più veloce né il migliore',
     art: 'sottomarino_eh2',
+    lamp: { u: 0.925, v: 0.39 },
   },
   {
     // the Imperium Explorer VI's (owner, 8 ottobre): an excellent sonar
@@ -112,6 +118,7 @@ export const SUB_MODELS: SubModel[] = [
     scope: { rangeM: 90, classes: 4 },
     note: 'Ottimo sonar, veloce e profondo',
     art: 'sottomarino_imperium',
+    lamp: { u: 0.775, v: 0.33 },
     moving: 'sottomarino_imperium_moto',
   },
   {
@@ -130,6 +137,7 @@ export const SUB_MODELS: SubModel[] = [
     scope: { rangeM: 110, classes: 5 },
     note: 'Piccolo e velocissimo: fa la ricognizione da solo, o lo guidi tu fino a 500 m',
     art: 'sottomarino_drone',
+    lamp: { u: 0.88, v: 0.4 },
     recon: true,
   },
   {
@@ -149,6 +157,7 @@ export const SUB_MODELS: SubModel[] = [
     scope: { rangeM: 80, classes: 4 },
     note: 'Con le braccia: pianta il tracker a distanza, o lo guidi tu fino a 400 m',
     art: 'sottomarino_lanterna',
+    lamp: { u: 0.965, v: 0.72 },
     moving: 'sottomarino_lanterna_moto',
     remoteTracker: true,
   },
@@ -178,6 +187,7 @@ export const SUB_MODELS: SubModel[] = [
     ],
     note: 'Fino a 1000 m e mezz’ora sott’acqua: visione notturna, fari fortissimi e un cockpit tutto suo',
     art: 'sottomarino_abissale',
+    lamp: { u: 0.985, v: 0.79 },
   },
 ];
 

@@ -2,6 +2,13 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.125.3 — Luci attaccate ai mezzi (13 novembre 2026)
+
+- Il faro di ogni nave, sottomarino e motoscafo parte dalla luce disegnata sul mezzo (un faro sulla prua, la bocca della nave-balena, il muso dello squalo), non più dal vetro o dall'acqua davanti alla prua.
+- Sulle onde il faro della nave sale, scende e si inclina insieme allo scafo; anche i fari sott'acqua degli U-Boot e del sottomarino abissale.
+- Quando il sub si gira a nuoto, la lampada passa subito dall'altra parte, senza fare il giro attraverso il mare.
+- I salvataggi non cambiano.
+
 ## v0.125.2 — La luce segue il muso (13 novembre 2026)
 
 - Il faro della nave, del sottomarino e del motoscafo punta sempre dove punta il muso: quando giri, si sposta subito dall'altra parte, senza ruotare piano attraverso il mare.

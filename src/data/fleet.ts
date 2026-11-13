@@ -15,9 +15,10 @@ export interface ShipPicture {
   propY: number;
   /** Where the bow meets the water (the painted bow may stick out above it): the bow wave starts here. */
   bowU: number;
-  /** Where a diving U-Boat's headlight starts (default bowU): a little back into a blunt bow, so the beam touches
-   *  the hull (owner, 9 ottobre: on the Nightmare it floated ahead of it). */
-  lampU?: number;
+  /** Its headlight (shares of the picture): a lamp painted on it, or its bow at deck height, so the beam starts on
+   *  the hull and never in the water ahead of it (owner, 9 ottobre: on the Nightmare it floated ahead of it; 13
+   *  novembre 2026: "controlla che le luci siano attaccate bene su tutte le navi"). */
+  lamp: { u: number; v: number };
   /** A ship with a mouth (the Krill Hunter, 10 ottobre): where its light comes out (shares of the picture). */
   mouthU?: number;
   mouthV?: number;
@@ -174,6 +175,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.15,
         propY: 0.72,
         bowU: 0.96,
+        lamp: { u: 0.95, v: 0.27 },
       },
     },
   },
@@ -221,6 +223,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.12,
         propY: 0.68,
         bowU: 0.88, // the shark's jaw: its snout sticks out over the water
+        lamp: { u: 0.83, v: 0.47 },
       },
     },
   },
@@ -266,6 +269,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.08,
         propY: 0.52,
         bowU: 0.95,
+        lamp: { u: 0.94, v: 0.51 },
       },
     },
   },
@@ -325,6 +329,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.25,
         propY: 0.8,
         bowU: 0.86,
+        lamp: { u: 0.93, v: 0.48 },
       },
     },
   },
@@ -366,6 +371,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.13,
         propY: 0.7,
         bowU: 0.97,
+        lamp: { u: 0.965, v: 0.52 },
       },
     },
   },
@@ -420,6 +426,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.13,
         propY: 0.78,
         bowU: 0.86,
+        lamp: { u: 0.96, v: 0.41 },
       },
     },
   },
@@ -480,6 +487,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.06,
         propY: 0.6,
         bowU: 0.94,
+        lamp: { u: 0.92, v: 0.52 },
       },
     },
   },
@@ -544,6 +552,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.04,
         propY: 0.53,
         bowU: 0.95,
+        lamp: { u: 0.96, v: 0.44 },
         mouthU: 0.83,
         mouthV: 0.56,
         mouthFromU: 0.63,
@@ -612,7 +621,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.03,
         propY: 0.5,
         bowU: 0.96,
-        lampU: 0.88,
+        lamp: { u: 0.905, v: 0.535 },
       },
     },
   },
@@ -671,7 +680,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
         propX: 0.03,
         propY: 0.52,
         bowU: 0.98,
-        lampU: 0.95,
+        lamp: { u: 0.975, v: 0.49 },
       },
     },
   },

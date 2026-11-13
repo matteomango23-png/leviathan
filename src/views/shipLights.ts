@@ -73,6 +73,13 @@ export class ShipLights {
     dot(L.sideU, L.sideV, L.side, L.alpha, L.size * 1.3);
   }
 
+  /** Its headlight this frame (data/fleet.ts lamp), riding the waves and leaning with the hull. */
+  lamp(s: ShipState): { x: number; y: number } {
+    const { u, v } = shipPicture(s).lamp;
+    const p = at(s, this.top, u, v);
+    return this.turn(p.x, p.y);
+  }
+
   /** How much the hull leans this frame (radians): its headlight turns with it. */
   get rot(): number {
     return this.lean.rot;
@@ -157,7 +164,12 @@ export class ShipLights {
    *  still ship (down from the keel) or the Krill Hunter's (forward from its mouth). No round spots. */
   beams(s: ShipState, murk = 0): Beam[] {
     if (!s.owned) return [];
-    const out = floodBeams(s, murk);
+    // the floodlights ride the waves and lean with the hull, like its headlight
+    const out = floodBeams(s, murk).map((b) => ({
+      ...b,
+      ...this.turn(b.x, b.y + this.lift),
+      angle: b.angle + this.lean.rot,
+    }));
     const B = SHIP.underLight;
     const k = this.beamK;
     if (k < 0.05) return out;

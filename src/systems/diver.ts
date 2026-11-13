@@ -148,6 +148,14 @@ function updateOxygen(
   if (d.o2 > d.maxO2 * 0.5) d.oxygenWarned = false;
 }
 
+/** He turns round: his aim (and the lamp in his hand) mirrors at once to the other side, never sweeping through the
+ *  sea up or down to get there (owner, 13 novembre 2026: "fa un giro strano a 360"). */
+export function turnDiver(d: { face: 1 | -1; aim: number }, face: 1 | -1): void {
+  if (d.face === face) return;
+  d.face = face;
+  d.aim = Math.PI - d.aim;
+}
+
 interface DiverOptions {
   /** Where to wake up after dying (your ship, or your harbour). */
   respawnAt: { x: number; y: number };
@@ -241,7 +249,7 @@ export function stepDiver(
   if (ride) swimMount(d, ix, iy, { speed: rideSpeed, profile: ride.profile }, upPushShare(d.y, line), dt);
   else swimSelf(d, ix, iy, maxSpeed, line, dt);
   if (d.faceHold && d.faceHold > 0) d.faceHold = Math.max(0, d.faceHold - dt);
-  else if (Math.abs(ix) > 0.2) d.face = ix > 0 ? 1 : -1;
+  else if (Math.abs(ix) > 0.2) turnDiver(d, ix > 0 ? 1 : -1);
   const wantAim = Math.hypot(ix, iy) > 0.2 ? Math.atan2(iy, ix) : d.face > 0 ? 0 : Math.PI;
   let da = wantAim - d.aim;
   while (da > Math.PI) da -= Math.PI * 2;

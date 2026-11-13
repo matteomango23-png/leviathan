@@ -12,9 +12,6 @@ import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { subLength, subModel, type SubState } from '../systems/submarine';
 import { softBubble } from './bubbles';
 
-/** Where its nose is, as a share of its length from the middle: its headlight starts there. */
-const NOSE_SHARE = 0.42;
-
 /** A painting's lit red details over it, added and pulsing (shared with the drone on its round, nightmareView). */
 export function placeGlow(
   im: Phaser.GameObjects.Image,
@@ -68,7 +65,8 @@ export class SubmarineView {
     glowLayer.add(this.glow); // its red lights shine in the dark (cameraRig glow layer)
   }
 
-  /** Its nose this frame: where the headlight starts, and how much the hull is turned (radians). */
+  /** Its headlight this frame (the lamp painted on it, data/submarine.ts): where the beam starts, and how much the
+   *  hull is turned (radians). */
   nose: { x: number; y: number; rot: number } | null = null;
 
   /** @param hidden in the ship's hold behind the closed hatch */
@@ -88,10 +86,14 @@ export class SubmarineView {
     else stepRide(this.ride, s.x, s.face, L, sea, time, dt);
     const rock = Math.sin(time * 1.3) * 0.02 - s.face * this.ride.p;
     const y = s.y + Math.sin(time * 1.1) * 0.8 - this.ride.h;
-    // its nose, where its headlight starts and points, rocking with the hull (owner, 13 novembre 2026)
-    const reach = s.face * L * NOSE_SHARE;
-    this.nose = { x: s.x + Math.cos(rock) * reach, y: y + Math.sin(rock) * reach, rot: rock };
-    const { art, moving } = subModel(s.model);
+    const { art, moving, lamp } = subModel(s.model);
+    // its headlight, on the lamp painted on it, turning with the hull (owner, 13 novembre 2026: on the abyssal one it
+    // came out of the glass)
+    const pic = WORLD_ART_KEYS.includes(art) && this.img.texture.key === `world-${art}`;
+    const dx = s.face * (lamp.u - 0.5) * L;
+    const dy = (pic ? lamp.v - 0.5 : 0) * L * (pic ? this.img.height / this.img.width : 0);
+    const [c, n] = [Math.cos(rock), Math.sin(rock)];
+    this.nose = { x: s.x + dx * c - dy * n, y: y + dx * n + dy * c, rot: rock };
     const speed = Math.hypot(s.vx, s.vy);
     if (WORLD_ART_KEYS.includes(art)) {
       const key = `world-${art}`;
