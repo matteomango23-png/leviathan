@@ -6,6 +6,7 @@
 import Phaser from 'phaser';
 import { SEA } from '../data/diver';
 import { TILE, WORLD } from '../data/worldLayout';
+import { NIGHT } from '../data/daynight';
 import type { TileMap } from '../systems/world/tileMap';
 import { icebergsNear } from '../systems/world/icebergs';
 import { iceArtReady } from '../systems/world/iceSheet';
@@ -38,13 +39,20 @@ export class SeaSurfaceView {
     layer.add(this.g);
   }
 
-  update(view: Phaser.Geom.Rectangle, time: number, sea: SeaNow): void {
+  /** @param night 0 by day … 1 at night (lot N1b): the sea near-black, as the painted water under it */
+  update(view: Phaser.Geom.Rectangle, time: number, sea: SeaNow, night = 0): void {
     const g = this.g.clear();
     const y0 = WORLD.surfaceY;
     const deep = y0 + troughDepth(sea);
     if (view.y > deep + FADE.depth || view.bottom < y0 - 80) return;
-    const water = rampColor(SEA.waterByY, deep + 6);
-    const sky = Phaser.Display.Color.HexStringToColor(SEA.skyBottom);
+    const water = mixRgb(rampColor(SEA.waterByY, deep + 6), NIGHT.water, night);
+    const daySky = Phaser.Display.Color.HexStringToColor(SEA.skyBottom);
+    const nightSky = Phaser.Display.Color.IntegerToColor(NIGHT.skyBottom);
+    const sky = {
+      red: daySky.red + (nightSky.red - daySky.red) * night,
+      green: daySky.green + (nightSky.green - daySky.green) * night,
+      blue: daySky.blue + (nightSky.blue - daySky.blue) * night,
+    };
     const x0 = Math.floor(view.x / STEP) * STEP - STEP;
     const x1 = view.right + STEP;
     const rough = Math.max(0, Math.min(1, (sea.waves - 1.3) / 1.9));
@@ -77,7 +85,7 @@ export class SeaSurfaceView {
       const b = ys[i + 1]!;
       const up = Math.max(0, y0 - (a + b) / 2) / Math.max(1, troughDepth(sea));
       if (up < 0.2) continue; // only the crests: no bright rim along the whole sea (that read as a line)
-      g.fillStyle(lit, 0.4 * up * up);
+      g.fillStyle(lit, 0.4 * up * up * (1 - 0.7 * night));
       this.column(x0 + i * STEP, a, b, Math.max(a, b) + 3 + 8 * up);
     }
 
@@ -94,7 +102,7 @@ export class SeaSurfaceView {
         if (!(high && (crest || slope > 0.5))) continue;
         const x = x0 + i * STEP;
         const flicker = 0.6 + 0.4 * Math.sin(time * 9 + x * 0.37);
-        g.fillStyle(0xffffff, 0.55 * rough * flicker);
+        g.fillStyle(0xffffff, 0.55 * rough * flicker * (1 - 0.6 * night));
         g.fillEllipse(x, y + 1, 7 + 6 * rough, 2.2 + 1.5 * rough);
       }
   }

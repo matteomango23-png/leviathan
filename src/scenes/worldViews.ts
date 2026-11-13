@@ -218,7 +218,7 @@ export class WorldViews {
     this.temple.update(view, g, g.time);
     this.worldArt.update(view);
     const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
-    this.surface.update(view, g.time, sea);
+    this.surface.update(view, g.time, sea, night);
     this.ice.update(view, g.time, sea);
     this.ship.night = night;
     this.ship.update(g.ship, g.time, dt, sea, shipWaitsAtDock(g));
@@ -244,11 +244,15 @@ export class WorldViews {
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
     this.gearFx.update(g, rider ?? d, g.time);
 
+    // a vehicle's headlight points where its nose points, at once, turning with the hull on the waves (owner, 8
+    // ottobre for the boat and 13 novembre 2026 for the ship and the submarine: no slow turns through the sea);
+    // the diver's lamp follows his aim gently
+    const tilt = g.sub.aboard ? (this.sub.nose?.rot ?? 0) : g.ship.aboard ? this.ship.lean : 0;
     let da = lampAim(g) - this.lampAngle;
     while (da > Math.PI) da -= Math.PI * 2;
     while (da < -Math.PI) da += Math.PI * 2;
-    // the boat's headlight turns with it at once (owner, 8 ottobre: "direttamente"), the diver's lamp gently
-    this.lampAngle += g.boat.aboard ? da : da * Math.min(1, dt * 6);
+    if (g.boat.aboard || g.ship.aboard || g.sub.aboard) this.lampAngle = lampAim(g) + tilt;
+    else this.lampAngle += da * Math.min(1, dt * 6);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
@@ -280,7 +284,12 @@ export class WorldViews {
     this.light.setNight(night);
     this.light.update(
       info,
-      { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },
+      {
+        ...lampOf(g, rider, murk),
+        ...(g.sub.aboard && this.sub.nose ? { x: this.sub.nose.x, y: this.sub.nose.y } : {}),
+        angle: this.lampAngle,
+        face: d.face,
+      },
       Math.max(this.hurtFlash, lowO2),
       fade,
       glows,

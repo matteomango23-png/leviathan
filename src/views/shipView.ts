@@ -199,6 +199,11 @@ export class ShipView {
     return WORLD.surfaceY - shipPicture(s).waterline * shipHeight(s) + s.dive;
   }
 
+  /** How much the hull leans this frame (radians): its headlight turns with it. */
+  get lean(): number {
+    return this.lights.rot;
+  }
+
   /** The light its hull's lamps spread round it (views/lightView.ts), by night and under water. */
   hullGlow(s: ShipState): { x: number; y: number; r: number; a: number }[] {
     return this.lights.hullGlow(s, this.night);

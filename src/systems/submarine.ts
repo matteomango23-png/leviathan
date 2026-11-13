@@ -280,6 +280,7 @@ export function lampAim(g: {
 }): number {
   // in a vehicle its headlight points where it goes (owner, 8 ottobre: the boat's stayed to the right)
   if (g.boat?.aboard) return g.boat.face > 0 ? 0 : Math.PI;
-  if (g.ship?.aboard && (g.ship.dive ?? 0) > 0) return g.ship.face > 0 ? 0 : Math.PI; // a U-Boat under water
+  // the ship: afloat (its headlight by night) or a U-Boat under water (owner, 13 novembre 2026: always the bow)
+  if (g.ship?.aboard) return g.ship.face > 0 ? 0 : Math.PI;
   return g.sub.aboard ? (g.sub.face > 0 ? 0 : Math.PI) : g.diver.aim;
 }
