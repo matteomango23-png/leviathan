@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.125.0 — Una notte vera (13 novembre 2026)
+
+- La notte è buia davvero. In superficie si vede appena: il cielo nero con le stelle, un po' più chiaro all'orizzonte, e la nave come una sagoma scura. Basta scendere di qualche metro ed è buio pesto: si vede solo dove arrivano le luci.
+- Niente più "nebbia" grigia su tutto lo schermo: il buio cambia con la profondità dentro lo schermo stesso, e quando la nave scende non "esce dalla nebbia".
+- L'acqua di notte non è più azzurra: dove la lampada illumina si vedono i colori veri delle cose.
+- I fari della nave abissale e degli U-Boot sono fasci di luce in avanti e verso il basso, non più cerchi che illuminavano tutto il mare. Anche la "Luce" sotto la nave ferma è un fascio verso il fondo. Tolte le macchie tonde sotto lo scafo.
+- Di notte la nave ha piccole luci calde lungo lo scafo e il fanale rosso a prua.
+- Di notte nebbia, nuvole e pioggia sono scure, non grigie che brillano.
+- Di giorno non cambia niente. I salvataggi non cambiano.
+
 ## v0.124.1 — Il tutorial non riparte più (13 novembre 2026)
 
 - Il tutorial passo passo non ricomincia più a ogni apertura del gioco: i giri già visti restavano salvati ma il gioco, rileggendo la partita, li dimenticava. Ora li ricorda.

@@ -101,7 +101,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `tips.ts` | I consigli di Aurelio: un dialogo breve la prima volta che succede una cosa. |
 | `economy/market.ts` | Il mercato del pesce: il prezzo di un tipo scende se ne vendi tanti e risale col tempo. |
 | `economy/beastSale.ts` | La vendita delle bestie domate al Recinto del porto: prezzo per stelle, livello e versione. |
-| `ship/floodlight.ts` | I fari degli U-Boat e dei sottomarini migliori sott'acqua: punti di luce intorno allo scafo, ridotti dalla torbidità. |
+| `ship/floodlight.ts` | I fari degli U-Boat e dei sottomarini migliori sott'acqua: fasci di luce (`Beam`) in avanti e verso il basso, ridotti dalla torbidità; la maschera del buio li apre col cono della lampada. |
 | `ship/ownMarks.ts` | I tuoi mezzi in acqua (motoscafo, sottomarino, drone, sfera) per il sonar della nave. |
 | `beasts/patrol.ts` | La pattuglia dei predatori grandi: passaggi, uscita accelerata, rientro dallo stesso lato, scatto via, poi la carica. |
 | `beasts/roam.ts` | Bestie selvatiche in esplorazione: nuotano piano nel buio, si girano solo fuori dalla luce; ti puntano, ti ignorano o scivolano via secondo il carattere. |

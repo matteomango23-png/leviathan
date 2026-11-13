@@ -4,6 +4,18 @@ import Phaser from 'phaser';
 import { CAMERA } from '../data/diver';
 import { WEATHER, type WeatherLook } from '../data/weather';
 import { WORLD } from '../data/worldLayout';
+import { NIGHT } from '../data/daynight';
+
+/** Two 0xRRGGBB colours mixed (t = 0: a, 1: b). */
+const mix = (a: number, b: number, t: number): number =>
+  Phaser.Display.Color.ObjectToColor(
+    Phaser.Display.Color.Interpolate.ColorWithColor(
+      Phaser.Display.Color.IntegerToColor(a),
+      Phaser.Display.Color.IntegerToColor(b),
+      1000,
+      Math.round(t * 1000),
+    ),
+  ).color;
 import { hash2 } from '../systems/math';
 import { CALM_SEA, seaHeight, troughDepth, type SeaNow } from '../systems/sea';
 import { depthMetres } from '../systems/world/zones';
@@ -79,8 +91,14 @@ export class WeatherView {
     time: number,
     dt: number,
     sea: SeaNow = CALM_SEA,
+    night = 0,
   ): void {
     const reach = weatherReach(v.cy);
+    // by night the mist, the clouds and the rain go dark (lot N1b): no grey haze glowing over the black
+    const dark = night * NIGHT.weatherDarken;
+    this.fog.setTint(mix(WEATHER.fogColor, NIGHT.fogNight, dark));
+    for (const c of this.clouds) c.setTint(mix(WEATHER.cloudColor, NIGHT.fogNight, dark));
+    this.fall.setAlpha(1 - dark * 0.7);
     // the sky's top: where the swimming camera stops, or the top of the screen when the view is wider than that (the
     // big ships' far view: owner, 9 ottobre, the mist ended in a hard line across the sky)
     const skyTop = Math.min(0, v.h / 2 + (CAMERA.minY - v.cy) * v.zoom);

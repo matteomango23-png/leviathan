@@ -41,9 +41,6 @@ export const SHIP = {
   plane: { from: 0.55, pitch: 0.05, lift: 2.5 },
   /** Its lights (owner, 5 ottobre): lit windows and lanterns of the painting (shares of the picture, radius in
    *  units) and a floodlight under the hull shining down this far (units). Tuning. */
-  /** A soft light under the hull, like the submarine's (owner, 5 ottobre: the lit windows and the floodlight
-   *  "fanno cacare"): spots along the keel (shares of the picture) that open the dark, and a faint wash. */
-  lights: { under: { from: 0.25, to: 0.75, v: 0.8, below: 18, radius: 34, spots: 4, wash: 0.03 } },
 
   /** The light under the still ship (block 5b, owner 9 ottobre 2026): a switch at the helm, only with the ship still;
    *  it burns a little fuel. Every `pulseSeconds` the beasts in its sonar's range get a place under the hull to

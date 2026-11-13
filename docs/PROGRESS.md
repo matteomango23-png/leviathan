@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 13 novembre 2026, v0.124.1)
+## Dove siamo (aggiornato il 13 novembre 2026, v0.125.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,6 +10,14 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Lotto N1b, una notte vera (13 novembre 2026) → v0.125.0
+
+- Il proprietario (foto alle 23:40 con la nave abissale): "nebbia" in superficie, acqua blu e illuminata appena sotto, la nave che "esce dalla nebbia". Cause: buio unico per tutto lo schermo (dal centro della telecamera), 4 cerchi sotto lo scafo e 3 fari tondi che bucavano il buio, acqua azzurra dietro, nebbia grigia sopra il buio.
+- `nightDarkAt` (`systems/dayNight.ts`) e `NIGHT.skyDark`/`horizonDark`/`surfaceDark`/`deepDark`/`blackByM`: `LightView.paintNight` dipinge una colonna di righe (texture `night-grad`, 96 righe) timbrata sulla maschera dopo il buio del giorno (`setNight`). Tolto `nightDim`.
+- Fari: `floodBeams`/`subFloodBeams` (`systems/ship/floodlight.ts`, tipo `Beam`), timbrati col cono della lampada in `LightView` (`beams`); `ShipLights.beams` (fari, luce sotto la nave ferma verso il basso, bocca del Krill Hunter). Tolti `SHIP.lights` e la macchia sotto lo scafo; `ShipLights.drawDeckLights` (oblò e fanale rosso di notte, `NIGHT.deckLights`, sul livello dei bagliori).
+- Acqua di notte `NIGHT.water` (`backgroundView`), filtro verso il grigio (`NIGHT.filterShare`, `waterFilter`), nebbia/nuvole/pioggia scure (`weatherView`, `NIGHT.fogNight`), alone del sub più piccolo (`NIGHT.haloMult`). Test: `tests/lottoN1b.test.ts`, `floodlight.test.ts` aggiornato.
+- Da provare sull'iPhone: se di notte si gioca ancora (regolare `surfaceDark`, `deepDark`, `blackByM`); le luci lungo lo scafo (il 5 ottobre le finestre illuminate non erano piaciute: chiedere).
 
 ## Correzione: il tutorial che ripartiva (13 novembre 2026) → v0.124.1
 

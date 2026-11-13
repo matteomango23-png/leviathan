@@ -7,7 +7,13 @@ import { rampNumber } from '../systems/math';
 import { depthMetres } from '../systems/world/zones';
 import type { ViewInfo } from './backgroundView';
 import { CONE_TEX, HALO_TEX, TEX } from './textures';
-import { DELTA } from '../data/worldLayout';
+import { DELTA, WORLD } from '../data/worldLayout';
+import { NIGHT } from '../data/daynight';
+import { nightDarkAt } from '../systems/dayNight';
+import type { Beam } from '../systems/ship/floodlight';
+
+const NIGHT_KEY = 'night-grad';
+const NIGHT_ROWS = 96;
 
 /** Mixes two 0xRRGGBB colours (t = 0: a, 1: b). */
 function mixColor(a: number, b: number, t: number): number {
@@ -32,12 +38,18 @@ export class LightView {
   private readonly vignette: Phaser.GameObjects.Image;
   private readonly flash: Phaser.GameObjects.Rectangle;
   private maskSize = '';
+  /** 0 by day … 1 at night: the darkness row by row by depth (lot N1b), the diver's halo smaller. */
+  private night = 0;
+  private readonly nightTex: Phaser.Textures.CanvasTexture;
 
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly layer: Phaser.GameObjects.Layer,
   ) {
     this.mask = this.makeMask(64, 64);
+    this.nightTex = scene.textures.exists(NIGHT_KEY)
+      ? (scene.textures.get(NIGHT_KEY) as Phaser.Textures.CanvasTexture)
+      : scene.textures.createCanvas(NIGHT_KEY, 1, NIGHT_ROWS)!;
     this.warm = scene.add
       .image(0, 0, TEX.cone)
       .setOrigin(0, 0.5)
@@ -53,6 +65,25 @@ export class LightView {
     const rt = this.scene.add.renderTexture(0, 0, w, h).setOrigin(0, 0);
     this.layer.addAt(rt, 0);
     return rt;
+  }
+
+  /** The time of day for the next frames (systems/dayNight.ts nightness). */
+  setNight(night: number): void {
+    this.night = night;
+  }
+
+  /** The night's darkness as a column of rows down the screen (each row by its own depth), as a texture. */
+  private paintNight(v: ViewInfo, color: number): void {
+    const g = this.nightTex.context;
+    const [r, gr, b] = [(color >> 16) & 255, (color >> 8) & 255, color & 255];
+    g.clearRect(0, 0, 1, NIGHT_ROWS);
+    for (let i = 0; i < NIGHT_ROWS; i++) {
+      const wy = v.cy + (((i + 0.5) / NIGHT_ROWS) * v.h - v.h / 2) / v.zoom;
+      const a = nightDarkAt((wy - WORLD.surfaceY) / WORLD.unitsPerMetre) * this.night;
+      g.fillStyle = `rgba(${r},${gr},${b},${a.toFixed(3)})`;
+      g.fillRect(0, i, 1, 1);
+    }
+    this.nightTex.refresh();
   }
 
   /** Screen darkness (0..1) at a world depth (without the murk of the Delta). */
@@ -76,6 +107,8 @@ export class LightView {
     weatherDim = 0,
     /** The abyssal submarine's night vision (0 … 1): the darkness opens (views/nightVisionView.ts). */
     night = 0,
+    /** Floodlights and the light under the ship: beams, not round spots (lot N1b: no circles in the dark). */
+    beams: Beam[] = [],
   ): void {
     const s = LIGHT.maskScale;
     const mw = Math.ceil(v.w * s);
@@ -103,8 +136,20 @@ export class LightView {
     const rt = this.mask;
     rt.clear();
     rt.fill(color, dark);
+    // the night over it, row by row by depth (opened by the night vision as the day's darkness is)
+    if (this.night > 0.005) {
+      this.paintNight(v, color);
+      rt.stamp(NIGHT_KEY, undefined, 0, 0, {
+        originX: 0,
+        originY: 0,
+        scaleX: mw,
+        scaleY: mh / NIGHT_ROWS,
+        alpha: 1 - NIGHT_VISION.clear * night,
+      });
+    }
+    const halo = 1 - (1 - NIGHT.haloMult) * this.night;
     rt.stamp(TEX.halo, undefined, sx * s, sy * s, {
-      scale: (diverPx * LIGHT.haloRadiusDiver * s) / HALO_TEX.radius,
+      scale: (diverPx * LIGHT.haloRadiusDiver * halo * s) / HALO_TEX.radius,
       blendMode: Phaser.BlendModes.ERASE,
     });
     for (const gl of glows) {
@@ -117,6 +162,24 @@ export class LightView {
         alpha: 0.8,
         blendMode: Phaser.BlendModes.ERASE,
       });
+    }
+    for (const bm of beams) {
+      const k = (bm.len * v.zoom * s) / CONE_TEX.length;
+      rt.stamp(
+        TEX.cone,
+        undefined,
+        (v.w / 2 + (bm.x - v.cx) * v.zoom) * s,
+        (v.h / 2 + (bm.y - v.cy) * v.zoom) * s,
+        {
+          originX: 0,
+          originY: 0.5,
+          rotation: bm.angle,
+          scaleX: k,
+          scaleY: k * bm.width,
+          alpha: 0.9,
+          blendMode: Phaser.BlendModes.ERASE,
+        },
+      );
     }
     rt.stamp(TEX.cone, undefined, lx * s, ly * s, {
       originX: 0,

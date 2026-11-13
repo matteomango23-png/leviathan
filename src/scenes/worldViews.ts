@@ -11,7 +11,7 @@ import { turbidityAt } from '../systems/clarity';
 import type { GameState } from '../systems/game';
 import type { InputState } from '../systems/input';
 import { lampOf } from '../systems/lamp';
-import { subFloodSpots } from '../systems/ship/floodlight';
+import { subFloodBeams } from '../systems/ship/floodlight';
 import { reconOut } from '../systems/ship/gadgets';
 import { boatBay, subBay } from '../systems/ship/model';
 import { hatchT } from '../systems/ship/ship';
@@ -57,7 +57,7 @@ import { SmokerView } from '../views/smokerView';
 import { pierLightSpots } from '../views/pierUnder';
 import { WeatherView, weatherReach } from '../views/weatherView';
 import { NightSky } from '../views/nightSky';
-import { nightDim, nightness, timeSpeed } from '../systems/dayNight';
+import { nightness, timeSpeed } from '../systems/dayNight';
 import { NIGHT } from '../data/daynight';
 import { WorldArtView } from '../views/worldArtView';
 import { snapGulls } from './worldEvents';
@@ -220,6 +220,7 @@ export class WorldViews {
     const sea = { ...sky, water: g.water }; // the waves, and the water the hulls push (waterColumns.ts)
     this.surface.update(view, g.time, sea);
     this.ice.update(view, g.time, sea);
+    this.ship.night = night;
     this.ship.update(g.ship, g.time, dt, sea, shipWaitsAtDock(g));
     this.hunts.update(g, view, g.time);
     const boatHidden = g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6;
@@ -234,7 +235,7 @@ export class WorldViews {
     this.beasts.update(g, g.time, { murk: shapes, x: d.x, y: d.y });
     const rider = this.beasts.riderPose(g);
     this.diverView.update(d, g.harpoon, input.fireHeld ? input.aim : null, dt, g.time, rider);
-    this.waterFilter.update(view, g.time, sea, turbidityAt(d.x, d.y, g.time, sky));
+    this.waterFilter.update(view, g.time, sea, turbidityAt(d.x, d.y, g.time, sky), night);
     this.birdsView.update(this.birds, view);
     this.effects.update(g.time, dt);
     this.echo.update(dt);
@@ -267,8 +268,6 @@ export class WorldViews {
       ...this.smokers.glowSpots(), // the trenches' black smokers glow at the mouth (lot M4)
       ...this.fishView.glowSpots(g.fish, view), // and the lanternfish carry their lights
       ...pierLightSpots(view), // the lanterns of the piers and outposts in the water
-      ...this.ship.glowSpots(g.ship, murk), // with its floodlights under water (owner, 15 ottobre)
-      ...subFloodSpots(g.sub, murk),
       ...this.nightmare.glowSpots(g),
       ...this.beasts.eyeSpots(), // hunters' red eyes show in the dark
     ];
@@ -277,6 +276,7 @@ export class WorldViews {
     if (lantern > 0) glows.push({ x: d.x, y: d.y, r: lantern });
     // the abyssal submarine's night vision: green, the darkness opened, its sonar wave
     this.nightVision.update(info, nightOn(g.sub) ? { x: g.sub.x, y: g.sub.y } : null, g.time, dt);
+    this.light.setNight(night);
     this.light.update(
       info,
       { ...lampOf(g, rider, murk), angle: this.lampAngle, face: d.face },
@@ -284,9 +284,11 @@ export class WorldViews {
       fade,
       glows,
       murk,
-      sky.dim * weatherReach(info.cy) + nightDim(night, depthMetres(info.cy)),
+      sky.dim * weatherReach(info.cy),
       this.nightVision.share,
+      // the floodlights under water (owner, 15 ottobre) and the light under the ship: beams (lot N1b)
+      [...this.ship.beams(g.ship, murk), ...subFloodBeams(g.sub, murk)],
     );
-    this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea);
+    this.weatherView.update(info, sky, coldAt(info.cx), g.time, dt, sea, night);
   }
 }
