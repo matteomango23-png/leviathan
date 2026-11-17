@@ -1,29 +1,31 @@
-// One step of the turret's duel (owner, 17 novembre 2026): your ship sails at the throttle, closes or opens the
-// distance and, a U-Boat, dives; the turret turns where you drag; above the water the machine gun fires while held
+// One step of the turret's duel (owner, 17 novembre 2026): your ship sails where its bow points at the throttle,
+// the rudder turning it ("il gas per avvicinarsi non funziona bene"), and, a U-Boat, dives; the turret turns where you drag; above the water the machine gun fires while held
 // (and heats up) and the gun one shell at a time, at any depth the guided torpedo; the vessel answers (duelAi.ts);
 // the rounds (ballistics.ts), torpedoes and charges (torpedo.ts) strike hulls (duelHits.ts). It opens from the world
 // and gives it back. Pure logic.
 import { ENEMY_CLASSES, WEAPONS, type WeaponId } from '../../data/company';
 import { DUEL, MACHINE_GUN, TORPEDO_GUIDE, TURRET, UNDERWATER } from '../../data/turret';
 import { WORLD } from '../../data/worldLayout';
-import { floodSpeed, stepDamage } from '../company/hullDamage';
+import { stepDamage } from '../company/hullDamage';
 import type { EnemyVessel } from '../company/enemyState';
 import type { GameState } from '../newGame';
 import { damageShip } from '../ship/shipHull';
-import { shipModel, shipPicture, shipRates, shipTopSpeed } from '../ship/model';
+import { shipModel, shipPicture, shipRates } from '../ship/model';
 import type { DuelHull, RoundEvent } from './ballistics';
 import { fireRound, stepRounds } from './ballistics';
-import { stepFoe, type FoeEvent } from './duelAi';
+import { stepFoe, yourTop, type FoeEvent } from './duelAi';
 import { hitFoe, roundHitsYou, hitYou, sinkFoe, type EndEvent } from './duelHits';
 import { newDuel, toUnits, type DuelState } from './duelState';
 import { launchTorpedo, stepUnder, type UnderEvent } from './torpedo';
+import { enemyExtent } from './hullModels';
+import { wrapAngle } from './projection';
 
 /** What you do in the turret this frame (ui/turretControls.ts, the keyboard). */
 export interface TurretInput {
-  /** 0 … 1 of your top speed. */
+  /** −DUEL.reverse … 1 of your top speed (backwards < 0). */
   throttle: number;
-  /** −1 open the distance … 1 close it. */
-  side: number;
+  /** The rudder: −1 to the left … 1 to the right. */
+  steer: number;
   /** A U-Boat's dive lever: −1 up … 1 down. */
   dive: number;
   /** Radians to turn the turret this frame (dragged). */
@@ -37,7 +39,7 @@ export interface TurretInput {
 
 export const restingInput = (): TurretInput => ({
   throttle: 0,
-  side: 0,
+  steer: 0,
   dive: 0,
   yaw: 0,
   pitch: 0,
@@ -91,13 +93,16 @@ export function closeDuel(g: GameState, d: DuelState): void {
   const s = g.ship;
   const e = g.company.enemies.find((x) => x.id === d.foeId);
   s.x += s.face * toUnits(d.you.a - d.startA);
-  s.speed = toUnits(d.you.speed);
   s.dive = toUnits(d.you.depth);
   if (e) {
     e.x = s.x + s.face * toUnits(d.foe.a - d.you.a);
     e.face = Math.cos(d.foe.heading) >= 0 ? s.face : (-s.face as 1 | -1);
     e.speed = toUnits(Math.abs(d.foe.speed));
   }
+  // turned past across, your ship sails the other way along the line
+  const along = Math.cos(d.you.heading) * Math.sign(d.you.speed || 1);
+  if (along < 0) s.face = -s.face as 1 | -1;
+  s.speed = toUnits(Math.abs(d.you.speed * Math.cos(d.you.heading)));
   g.company.battle = null;
 }
 
@@ -131,18 +136,27 @@ export function turretPoint(d: DuelState): { a: number; s: number; z: number } {
 
 function moveYou(g: GameState, d: DuelState, input: TurretInput, dt: number): void {
   const U = WORLD.unitsPerMetre;
-  const top = (shipTopSpeed(g.ship) / U) * floodSpeed(g.company.yourDmg);
-  const want = top * Math.max(0, Math.min(1, input.throttle));
+  const want = yourTop(g) * Math.max(-DUEL.reverse, Math.min(1, input.throttle));
   const accel = (shipRates(g.ship).accel / U) * dt;
   d.you.speed += Math.max(-accel, Math.min(accel, want - d.you.speed));
-  d.you.a += d.you.speed * dt;
-  d.you.s += input.side * DUEL.sideSpeed * Math.sign(d.foe.s - d.you.s || 1) * dt;
+  // the rudder turns the bow, a little even when still, fully with way on
+  const way = 0.35 + 0.65 * Math.min(1, Math.abs(d.you.speed) / Math.max(1, yourTop(g) * 0.4));
+  d.you.heading = wrapAngle(
+    d.you.heading + Math.max(-1, Math.min(1, input.steer)) * DUEL.steerRate * way * dt,
+  );
+  d.you.a += Math.cos(d.you.heading) * d.you.speed * dt;
+  d.you.s += Math.sin(d.you.heading) * d.you.speed * dt;
   d.you.depth = Math.max(0, Math.min(yourMaxDepth(g), d.you.depth + input.dive * UNDERWATER.diveSpeed * dt));
-  // never on top of it (deep under it, it may pass over you)
-  const ds = d.foe.s - d.you.s;
+  // never on top of it (deep under it, it may pass over you): pushed back out the way you came
+  const da = d.you.a - d.foe.a;
+  const ds = d.you.s - d.foe.s;
+  const dist = Math.hypot(da, ds);
   const apart = Math.abs(d.you.depth - d.foe.depth) < UNDERWATER.periscopeM * 2;
-  if (apart && Math.hypot(d.foe.a - d.you.a, ds) < DUEL.nearM)
-    d.you.s = d.foe.s - Math.sign(ds || 1) * DUEL.nearM;
+  if (apart && dist < DUEL.nearM) {
+    const k = DUEL.nearM / Math.max(0.01, dist);
+    d.you.a = d.foe.a + (dist > 0.01 ? da * k : -DUEL.nearM);
+    d.you.s = d.foe.s + ds * k;
+  }
 }
 
 function fireYours(g: GameState, d: DuelState, input: TurretInput, dt: number, out: DuelEvent[]): void {
@@ -193,7 +207,10 @@ export function stepDuel(g: GameState, d: DuelState, input: TurretInput, dt: num
   const e = g.company.enemies.find((x) => x.id === d.foeId);
   const look = ENEMY_CLASSES[e?.cls ?? 'baleniera'].look;
   const foeHull = hullOf(look, d.foe.a, d.foe.s, d.foe.heading, d.foe.depth);
-  const youHull = hullOf(g.ship.model, d.you.a, d.you.s, 0, d.you.depth);
+  // the rounds strike its 3D model, as you see it
+  const ext = enemyExtent(e?.cls ?? 'baleniera', foeHull.length);
+  Object.assign(foeHull, { deck: ext.top - d.foe.depth, keel: ext.draft + d.foe.depth, beam: ext.beam });
+  const youHull = hullOf(g.ship.model, d.you.a, d.you.s, d.you.heading, d.you.depth);
   if (d.end || !e) {
     if (d.end) d.end.t += dt;
     if (e && e.sinkT > 0) e.sinkT += dt;

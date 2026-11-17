@@ -4,7 +4,7 @@
 // each shot and flashing; cracks where you were hit, rain running down the glass, the red flash of a blow. Screen
 // space, over everything. Look only.
 import Phaser from 'phaser';
-import { TURRET_LOOK } from '../../data/turret';
+import { TURRET, TURRET_LOOK } from '../../data/turret';
 import { SoftPuffs } from '../softPuffs';
 import { FRAME, paintFrame, paintTint, TINT, WIN } from './turretFrame';
 
@@ -97,7 +97,7 @@ export class TurretGlass {
     precip: number,
     wind: number,
     mark: { x: number; y: number; dist: number } | null,
-    bearing: { yaw: number; foe: number | null },
+    bearing: { yaw: number; bow: number; foe: number | null },
   ): void {
     const key = `${w}x${h}`;
     if (key !== this.size) {
@@ -190,7 +190,7 @@ export class TurretGlass {
     g: Phaser.GameObjects.Graphics,
     w: number,
     h: number,
-    b: { yaw: number; foe: number | null },
+    b: { yaw: number; bow: number; foe: number | null },
   ): void {
     const y = h * (WIN.top + 0.035);
     const half = w * 0.22;
@@ -204,11 +204,38 @@ export class TurretGlass {
       g.lineBetween(x, y, x, y - (deg % 90 === 0 ? 9 : deg % 30 === 0 ? 6 : 3));
     }
     g.fillStyle(TURRET_LOOK.reticle, 1).fillTriangle(w / 2, y + 2, w / 2 - 4, y + 8, w / 2 + 4, y + 8);
+    // where your bow points: a pale ship's outline under the line
+    let bow = b.bow - b.yaw;
+    bow = Math.atan2(Math.sin(bow), Math.cos(bow));
+    const bx = w / 2 + Math.max(-1, Math.min(1, bow / span)) * half;
+    g.fillStyle(0xf0e2c8, Math.abs(bow) > span ? 0.45 : 0.9).fillTriangle(
+      bx,
+      y + 4,
+      bx - 4,
+      y + 14,
+      bx + 4,
+      y + 14,
+    );
+    g.fillRect(bx - 4, y + 14, 8, 4);
     if (b.foe !== null) {
       let a = b.foe - b.yaw;
       a = Math.atan2(Math.sin(a), Math.cos(a));
       const x = w / 2 + Math.max(-1, Math.min(1, a / span)) * half;
       g.fillStyle(0xff3020, 1).fillTriangle(x, y - 11, x - 5, y - 19, x + 5, y - 19);
+      // out of the window: a red arrow at its side, so it never vanishes
+      if (Math.abs(a) > TURRET.fov / 2) {
+        const side = Math.sign(a);
+        const ax = side > 0 ? w * (1 - WIN.side) - 26 : w * WIN.side + 26;
+        const ay = h * 0.5;
+        g.fillStyle(0xff3020, 0.8).fillTriangle(
+          ax + side * 14,
+          ay,
+          ax - side * 6,
+          ay - 16,
+          ax - side * 6,
+          ay + 16,
+        );
+      }
     }
   }
 

@@ -2,6 +2,38 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.130.0 — Torretta: più dita, timone vero, navi in 3D (17 novembre 2026)
+
+- **Più dita insieme:** ogni dito fa la sua cosa. Puoi mirare trascinando mentre tieni premuto **Fuoco**, cambiare arma senza smettere di sparare, tenere il timone e il gas nello stesso momento. Un dito che scivola fuori da un pulsante non lo rilascia: smette solo quando lo alzi.
+- **Timone vero:**
+  - tolti "Avvicina" e "Allontana";
+  - a sinistra ci sono la leva del **Gas** e il **Timone** (◀ ▶): la prua gira e la nave va dove punta;
+  - la leva va anche un po' **indietro**, sotto la tacca dello stop;
+  - sulla bussola in alto la sagoma chiara mostra dove punta la prua, il segno rosso dov'è la nave nemica.
+- **La nave nemica non scappa più:**
+  - non va mai più veloce di te;
+  - se si allontana troppo torna indietro e ti gira intorno;
+  - malridotta fugge, ma piano, e la raggiungi.
+- **Non sparisce:** quando è fuori dal vetro, una **freccia rossa** al bordo indica da che parte girarsi, e sotto il vetro c'è la sua distanza con la freccia.
+- **Navi nemiche in 3D, da ogni lato** (al posto del disegno di fianco):
+  - la **baleniera** ha la prua alta, il cannone-arpione, la timoneria, il fumaiolo, l'albero col braccio e la scialuppa;
+  - la **nave da caccia** è lunga e bassa, con due torrette, il ponte a gradini, il fumaiolo e l'albero radar;
+  - l'**U-Boot** ha la torre, il cannone in coperta, i timoni di profondità e l'elica.
+- **Dettagli delle navi 3D:**
+  - carena rossa sotto l'acqua con la sua striscia;
+  - fumo nero dal fumaiolo;
+  - oblò accesi di notte;
+  - quando affonda si spezza in due pezzi 3D, con le punte che si alzano.
+- **Mitragliatrice più potente:** spara circa **8 secondi di fila** prima di scaldarsi (prima meno di 2), con una cadenza più alta e traccianti più grossi. Dove colpisce volano scintille e schegge e resta un filo di fumo. Gli scoppi del cannone sono più grandi.
+- **Il cannone** spara da solo finché tieni premuto Fuoco, appena è ricaricato.
+- I colpi prendono la nave che vedi: prima la nave da caccia contava colpi anche molto sopra il suo ponte.
+- **Corretto:**
+  - "Sali" e "Scendi" comparivano anche sulle navi che non si immergono;
+  - nel cielo coperto si vedeva una riga verticale dritta tra le nuvole.
+- Il pulsante per uscire ora si chiama **Vista esterna**.
+- Sul computer: A e D per il timone, S fino alla retromarcia, SPAZIO tenuto premuto per sparare.
+- I salvataggi non cambiano.
+
 ## v0.129.0 — La torretta sott'acqua (17 novembre 2026)
 
 - **Con un U-Boot** (Whale, Stormtrooper, Ocean's Nightmare, nave abissale) nella torretta ci sono **Sali** e **Scendi**. Scendendo passi dal periscopio a sott'acqua, con le gocce che scorrono sul vetro.

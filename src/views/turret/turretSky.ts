@@ -22,9 +22,11 @@ function paintClouds(scene: Phaser.Scene): void {
     const x = Math.random() * W;
     const y = H * (0.15 + Math.random() * 0.75);
     const r = 10 + Math.random() ** 2 * 120;
+    // the same heap in all three copies (a different one at the wrap left a straight seam)
+    const a = 0.06 + Math.random() * 0.14;
     for (const dx of [-W, 0, W]) {
       const grad = g.createRadialGradient(x + dx, y, 0, x + dx, y, r);
-      grad.addColorStop(0, `rgba(255,255,255,${0.06 + Math.random() * 0.14})`);
+      grad.addColorStop(0, `rgba(255,255,255,${a})`);
       grad.addColorStop(1, 'rgba(255,255,255,0)');
       g.fillStyle = grad;
       g.fillRect(x + dx - r, y - r, r * 2, r * 2);

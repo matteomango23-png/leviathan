@@ -1,15 +1,40 @@
 # Progressi
 
-## Dove siamo (aggiornato il 17 novembre 2026, v0.129.0)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.130.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
 - **Ultima pulizia:** v0.122.1 (12 novembre 2026); la prossima dopo altri 3 lotti. Tutti i file di codice sotto le 300 righe (i dati restano lunghi).
-- **Prossimo:** la Compagnia dell'Olio Nero (`docs/PROPOSTA-COMPAGNIA.md`, approvata il 17 novembre 2026), un'arena di prova alla volta: A1 (v0.126.0) e B1 modalità battaglia (v0.127.0) fatte; poi B2 (siluro guidato con la leva Sali/Scendi, cariche di profondità con quota, U-Boot nemico in battaglia), B3 (bestie contro navi) e B4 (la tua nave spezzata, rimorchiatore, bottino). Piano in `C:\Users\matte\.claude\plans\zippy-beaming-peacock.md` e in `docs/PROPOSTA-COMPAGNIA.md`. Poi le immagini con Gemini (`docs/GEMINI-LOTTO-10.md`, da scrivere), poi il mare vero. Restano possibili N2 e M5 la Fossa Nera.
+- **Prossimo (torretta, piano approvato il 17 novembre 2026 in `C:Usersmatte.claudeplanszippy-beaming-peacock.md`):** T3b (v0.131.0): "Armi" diventa il cambio di vista esterna/interna, con il mondo che continua; navigare dentro anche senza nemici; tutte le navi della Compagnia nel mondo, non solo una; pagina della Guida di Aurelio quando entra nel gioco vero. Poi T3c (v0.132.0): fondale 3D dalla mappa vera, pesci e bestie 2D nella vista interna, onde migliori.
+- **Compagnia, il resto:** la Compagnia dell'Olio Nero (`docs/PROPOSTA-COMPAGNIA.md`, approvata il 17 novembre 2026), un'arena di prova alla volta: A1 (v0.126.0) e B1 modalità battaglia (v0.127.0) fatte; poi B2 (siluro guidato con la leva Sali/Scendi, cariche di profondità con quota, U-Boot nemico in battaglia), B3 (bestie contro navi) e B4 (la tua nave spezzata, rimorchiatore, bottino). Piano in `C:\Users\matte\.claude\plans\zippy-beaming-peacock.md` e in `docs/PROPOSTA-COMPAGNIA.md`. Poi le immagini con Gemini (`docs/GEMINI-LOTTO-10.md`, da scrivere), poi il mare vero. Restano possibili N2 e M5 la Fossa Nera.
 - **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`), "Salta all'ora dopo" nel pannello ?prove, Arena navale (`systems/company/arena.ts`, `ui/arenaBar.ts`).
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## La torretta T3a: più dita, timone, navi 3D (17 novembre 2026) → v0.130.0
+
+- Il proprietario:
+  - "quando clicchi due pulsanti insieme non funziona bene";
+  - "il gas per avvicinarsi non funziona bene… la nave avversaria scompariva";
+  - "Preferisco che mi crei un modello tu in 3D per la nave nemica";
+  - "voglio sparare per un po'… sentirmi potente";
+  - "Armi" deve essere il passaggio da vista esterna a vista interna, con cui anche esplorare (T3b, T3c).
+- Fatto:
+  - `ui/turretTouch.ts` (`TouchRouter`): ogni dito ha il ruolo di ciò che ha toccato (`data-role` sui pulsanti, il resto è "guarda") finché si alza; `turretControls.ts` riscritto (leva del gas con retromarcia e tacca, timone ◀ ▶, `sample()` a inizio fotogramma);
+  - `duelState.you.heading` e `TurretInput.steer` (tolto `side`); `moveYou` va dove punta la prua; `closeDuel` gira `face` se la prua è oltre il traverso;
+  - `duelAi.ts`: `yourTop`, velocità al massimo `DUEL.foeSpeedShare` della tua, guinzaglio `DUEL.leashM` (oltre rallenta e torna), fuga a `DUEL.fleeShare`, rotta di attacco relativa alla tua prua;
+  - `systems/turret/hull3d.ts` (pezzi: scafo con carena e striscia, sigaro, blocchi, `splitHalves`) e `hullModels.ts` (`enemyModel`: baleniera, caccia, U-Boot con finestre, fuochi, fumaiolo; `enemyExtent` per i colpi);
+  - `views/turret/turretHull3d.ts` (colori per parte, notte, `posed` con le due metà) e `turretShip.ts` (sempre 3D, niente più immagine);
+  - `turretGlass.ts`: sagoma della prua sulla bussola, freccia rossa al bordo; `turretFx.ts`: traccianti più grossi, schegge e fumo, scoppi più grandi;
+  - dati: `DUEL`, `MACHINE_GUN` (8 s di fuoco), `HULL_3D`, `HULL_MODELS`.
+- Corretti: Sali/Scendi visibili su tutte le navi (`.turret-ui [hidden]`); riga dritta nelle nuvole (`turretSky.ts`: le tre copie di ogni nuvola avevano trasparenze diverse).
+- Test: `tests/turretT3a.test.ts` (7).
+- Nel browser:
+  - tre dita simulate insieme (mira, Fuoco, cambio arma);
+  - raffica di 7,8 s;
+  - le tre navi in 3D di giorno, di notte, sott'acqua, in tempesta, spezzate;
+  - 3,75 ms a fotogramma.
 
 ## La torretta T2, sott'acqua (17 novembre 2026) → v0.129.0
 
