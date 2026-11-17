@@ -47,6 +47,8 @@ export interface HelmInfo {
   drums?: [number, number];
   /** Ship only: its engine runs (owner, 8 ottobre: a button to switch it off). */
   engineOn?: boolean;
+  /** Ship only: Silence (the ⏻ button with the engine running; data/company.ts SILENCE). */
+  silent?: boolean;
   /** Ship only (block 5c): broken down (hull at zero). */
   broken?: boolean;
   /** Ship only (block 5b): the light under the hull, on or off. */

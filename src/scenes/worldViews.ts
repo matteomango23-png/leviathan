@@ -61,6 +61,8 @@ import { nightness, timeSpeed } from '../systems/dayNight';
 import { NIGHT } from '../data/daynight';
 import { WorldArtView } from '../views/worldArtView';
 import { snapGulls } from './worldEvents';
+import { EnemyView } from '../views/enemyView';
+import { OrdnanceView } from '../views/ordnanceView';
 
 /** How fast the murk on screen eases towards the water's own (per second). */
 const MURK_EASE = 0.8;
@@ -72,6 +74,9 @@ export class WorldViews {
   /** A Glaciale's echo in your pack (views/echoView.ts), over the darkness. */
   readonly echo: EchoView;
   readonly ship: ShipView;
+  /** The Compagnia dell'Olio Nero's vessels and the shots at sea (views/enemyView.ts, ordnanceView.ts). */
+  private readonly enemies: EnemyView;
+  readonly ordnance: OrdnanceView;
   private readonly bg: BackgroundView;
   private readonly kelp: KelpView;
   private readonly vents: VentView;
@@ -135,6 +140,7 @@ export class WorldViews {
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
     this.ice = new IceArtView(scene, L.world, map);
     L.world.add(afloat);
+    this.enemies = new EnemyView(scene, L.world, L.glow);
     this.ship = new ShipView(scene, L.world, L.glow);
     this.hunts = new HuntView(scene, L.world);
     this.boat = new BoatView(scene, L.world);
@@ -145,6 +151,7 @@ export class WorldViews {
     this.birdsView = new BirdsView(scene, L.world);
     this.diverView = new DiverView(scene, L.world);
     this.effects = new EffectsView(scene, L.world);
+    this.ordnance = new OrdnanceView(scene, L.world, L.glow);
     this.gearFx = new GearFxView(scene, L.world);
     this.waterFilter = new WaterFilter(scene, L.front); // last in the world's layers: over all of it
     this.echo = new EchoView(scene, L.glow);
@@ -176,7 +183,11 @@ export class WorldViews {
     const cut = helmView !== this.helmView;
     this.helmView = helmView;
     if (cut) this.rig.fadeCut(CAMERA.cutFadeMs);
-    const aim = cameraAim(g, g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead);
+    const aim = cameraAim(
+      g,
+      g.beasts.riding ? CAMERA.lookAhead * 2 : CAMERA.lookAhead,
+      this.rig.viewInfo().w / this.rig.viewInfo().h,
+    );
     this.rig.setView(aim.viewH, aim.minY, dt, true);
     this.rig.follow(aim.x, aim.y, dt, cut);
     const view = this.rig.worldView();
@@ -224,6 +235,8 @@ export class WorldViews {
     this.ice.update(view, g.time, sea);
     this.ship.night = night;
     this.ship.update(g.ship, g.time, dt, sea, shipWaitsAtDock(g));
+    this.enemies.update(g.company, g.time, dt, sea, info.zoom);
+    this.ordnance.update(g.company, dt);
     this.hunts.update(g, view, g.time);
     const boatHidden = g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6;
     this.boat.update(g.boat, g.time, boatHidden, sea, dt);
@@ -280,6 +293,7 @@ export class WorldViews {
       ...this.ship.hullGlow(g.ship), // its hull's lamps light a little round it (lot N1b)
       ...this.nightmare.glowSpots(g),
       ...this.beasts.eyeSpots(), // hunters' red eyes show in the dark
+      ...this.ordnance.glowSpots(), // the flashes of the guns and the bursts
     ];
     // an Abissale in your pack: a light round you (systems/pack.ts Lanterna)
     const lantern = lanternRadius(g);

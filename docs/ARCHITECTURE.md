@@ -139,11 +139,13 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | `ship/stats.ts`, `ship/bayStats.ts`, `ship/statRow.ts` | I numeri della card di una nave confrontabili con la flotta; i mezzi nei suoi portelloni; una riga della card. |
 | `save/vehicleSave.ts` | Sottomarino, motoscafo e nave controllati quando si carica un salvataggio. |
 | `beasts/lure.ts` | L'esca pregiata: a volte la bestia attirata è un alfa o un albino. |
+| `company/` | La Compagnia dell'Olio Nero (dati in `data/company.ts`, non salvata): `enemyState.ts` (navi e colpi), `detection.ts` (vista, udito, allerta), `enemyAi.ts` (pattuglia, ricerca, caccia), `ordnance.ts` (proiettili a parabola, siluri, cariche), `company.ts` (un passo: percezione, rotta, fuoco, colpi, navi che non si attraversano), `arena.ts` (l'arena navale di prova). |
 
 ## Scene (`src/scenes/`)
 
 - **Boot** (`BootScene.ts`): carica gli sprite delle bestie (e li taglia in strisce), dipinge le texture procedurali e apre il menu iniziale.
-- **Title** (`TitleScene.ts` + `ui/titleMenu.ts`, `ui/title.css`): Riprendi, Nuova partita, Carica partita (elenco con Gioca, Rinomina, Esporta, Elimina); legge la partita scelta e avvia World + UI con quella (`session.slotId`, `session.startSave`).
+- **Title** (`TitleScene.ts` + `ui/titleMenu.ts`, `ui/title.css`): Riprendi, Nuova partita, Carica partita (elenco con Gioca, Rinomina, Esporta, Elimina); legge la partita scelta e avvia World + UI con quella (`session.slotId`, `session.startSave`). Con gli strumenti di prova: Galleria di prova e Arena navale (`session.gallery`, `session.arena`: partite mai salvate).
+- **Viste della Compagnia:** `views/enemyView.ts` (le navi nemiche con le immagini delle nostre, scurite; occhio dell'allerta e scafo), `views/ordnanceView.ts` (colpi, scie, scoppi, lampi), `views/shipBreak.ts` (la nave spezzata in due dalla sua immagine).
 - **World** (`WorldScene.ts`): fa girare il gioco, salva, apre battaglie e porto, suona. Lo disegna `worldViews.ts` (tutte le viste e tre telecamere: sfondo, mondo che segue il sub, sovrapposizione col buio); `worldEvents.ts` mostra gli eventi in mare (bolle, spruzzi, scosse) e fa prendere i gabbiani al volo.
 - **UI** (`UIScene.ts`): HUD, controlli, barra della squadra, pulsante contestuale, pulsanti mossa, minigioco della domatura (HTML sopra il canvas, rispetta la safe area dell'iPhone).
 - **Menus** (`MenusScene.ts`): menu di pausa (squadra in sola lettura, esporta/importa, pannello di prova con `?prove`) e porto (Bacheca, Mercato, Conchiglie, Cure, Esche, Sub, Mezzi, Zaino, Recinto). Bestiario e scheda della bestia (stile carta).
@@ -155,6 +157,7 @@ Mappa delle cartelle e dei sistemi. Si aggiorna ogni volta che cambia la struttu
 | File | Cosa fa |
 |---|---|
 | `hud.ts` | Cuori, ossigeno, profondità, denti, messaggi, nome della zona. |
+| `fireButtons.ts`, `arenaBar.ts`, `companyMessages.ts` | Fuoco e Siluro al timone (solo con la Compagnia vicina), la barra dell'arena navale, i messaggi della Compagnia. |
 | `compass.ts`, `reconPanel.ts`, `gadgets.css` | La bussola verso la bestia seguita e il resoconto del drone dell'Ocean's Nightmare. |
 | `controls.ts` | Joystick, pulsanti touch e tastiera → comandi del gioco. |
 | `huntDiary.ts` | Il Diario di caccia (cockpit) e gli Avvistamenti della bacheca: schede, scheda completa, "Segui". |

@@ -32,7 +32,7 @@ const ahead = (face: 1 | -1): number => (face > 0 ? AHEAD : Math.PI - AHEAD);
 export function floodBeams(s: ShipState, murk: number): Beam[] {
   const m = shipModel(s).floodlightM;
   const dive = diveShare(s);
-  if (!s.owned || !m || dive <= 0) return [];
+  if (!s.owned || !m || dive <= 0 || s.silent) return []; // out in Silence (company/)
   const len = m * WORLD.unitsPerMetre * dive * (1 - FLOOD_MURK * murk);
   const y = WORLD.surfaceY + s.dive + shipDraft(s) * 0.4;
   const lamp = shipPicture(s).lamp;

@@ -42,6 +42,8 @@ export interface InputState {
     | 'tracker'
     | 'light'
     | 'night'
+    | 'fire'
+    | 'torpedo'
     | null;
   /** The Ocean's Nightmare (part 4d): the beast picked from the drone's report (its index), or -1; or the compass
    *  put away. */

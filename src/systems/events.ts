@@ -3,6 +3,7 @@
 import type { BeastForm } from './beasts/forms';
 import type { DialogueId, StoryStep } from '../data/story';
 import type { TypeId } from '../data/rules';
+import type { WeaponId } from '../data/company';
 
 export type GameEvent =
   | { type: 'hurt' }
@@ -117,6 +118,15 @@ export type GameEvent =
   | { type: 'shipHullHalf' }
   | { type: 'shipBroken' }
   | { type: 'shipRammed'; x: number; y: number }
+  // the Compagnia dell'Olio Nero (company/): a vessel's alert changed, a shot fired, burst, a vessel hit or sunk;
+  // your weapon had nothing in reach; Silence on or off (the ⏻ button)
+  | { type: 'enemyAlert'; phase: 'calm' | 'suspicious' | 'hunting' | 'lost'; x: number; y: number }
+  | { type: 'shotFired'; from: 'you' | 'enemy'; weapon: WeaponId; x: number; y: number }
+  | { type: 'shotBurst'; x: number; y: number; weapon: WeaponId; hit: boolean; water: boolean }
+  | { type: 'enemyHit'; x: number; y: number; left: number; max: number }
+  | { type: 'enemySunk'; x: number; y: number; name: string }
+  | { type: 'noTarget'; weapon: WeaponId }
+  | { type: 'silence'; on: boolean }
   | { type: 'shipMended'; points: number; by: 'parts' | 'yard' }
   | { type: 'lightOff' }
   | { type: 'lightNo' }

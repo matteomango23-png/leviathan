@@ -74,7 +74,7 @@ function moor(g: ShipyardWorld): MooredShip {
 }
 
 /** This model goes into use at the pier: its vehicles as they were (`from`), or new from the yard. */
-function bringIn(g: ShipyardWorld, m: ShipModelDef, from: MooredShip | null): void {
+export function bringIn(g: ShipyardWorld, m: ShipModelDef, from: MooredShip | null): void {
   const s = g.ship;
   Object.assign(s, {
     model: m.id,

@@ -1,15 +1,26 @@
 # Progressi
 
-## Dove siamo (aggiornato il 13 novembre 2026, v0.125.4)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.126.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
 - **Ultima pulizia:** v0.122.1 (12 novembre 2026); la prossima dopo altri 3 lotti. Tutti i file di codice sotto le 300 righe (i dati restano lunghi).
-- **Prossimo:** N2 se il proprietario lo vuole (più sagome e bestie solo notturne), oppure M5 la Fossa Nera (M4 fatto: v0.123.0; i laghi di salamoia scartati dal proprietario). Idee horror rimandate in cima a `docs/BACKLOG.md`.
-- **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`), "Salta all'ora dopo" nel pannello ?prove.
+- **Prossimo:** la Compagnia dell'Olio Nero (`docs/PROPOSTA-COMPAGNIA.md`, approvata il 17 novembre 2026), un'arena di prova alla volta: A1 fatta (v0.126.0), poi A2 (bestie contro navi: mandare una bestia, sabotaggio, danno o spezzare in base alla misura) e A3 (cariche di profondità, U-Boot nemico, siluri, la nostra nave spezzata). Poi le immagini con Gemini (`docs/GEMINI-LOTTO-10.md`, da scrivere), poi il mare vero. Restano possibili N2 e M5 la Fossa Nera.
+- **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`), "Salta all'ora dopo" nel pannello ?prove, Arena navale (`systems/company/arena.ts`, `ui/arenaBar.ts`).
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Arena navale A1, la Compagnia dell'Olio Nero (17 novembre 2026) → v0.126.0
+
+- Il proprietario (brainstorming del 17 novembre 2026): il gioco funziona ma manca qualcosa di figo; nemici in mare, battaglie navali in tempo reale, Silenzio sul ⏻, bestie grandi che spezzano le navi; prima un'arena di prova separata, poi le immagini, poi il mare vero. Scelte sue: nome "Compagnia dell'Olio Nero", zone per km (tabella nella proposta), Silenzio a 1/3, se ti affondano perdi i denti come morendo e la nave torna rotta al porto.
+- Dati: `data/company.ts` (`WEAPONS`, `ENEMY_CLASSES` con `look` = la nostra nave di cui usano l'immagine, `DETECTION`, `ENEMY_MOTION`, `SILENCE`, `ARENA`, `COMBAT_VIEW`, `HULLS_APART`, `SINKING`); `weapons` in ogni modello di `data/fleet.ts`.
+- Sistemi `systems/company/` (vedi ARCHITECTURE); `stepCompany` in `stepGame` (non fa niente senza nemici); `GameState.company` (non salvato); `helmCmd` `fire`/`torpedo`; Silenzio in `vehicles.ts` (`toggleSilence`) e `ship/sail.ts`; luci spente in Silenzio (`lamp.ts`, `floodlight.ts`, `ShipView`); `cameraAim` con la vista di combattimento; `bringIn` esportato da `shipyard.ts` per l'arena.
+- Viste: `enemyView.ts`, `ordnanceView.ts` (fumo e lampi con la texture dell'alone, `SoftPuffs`), `shipBreak.ts`; `ShipPictures` ha `tint`, `destroy`, `glowShare` e accetta `PicturePose`.
+- Test: `tests/companyA1.test.ts` (percezione, fasi, tiri, Silenzio, una battaglia intera); `block2.test.ts` aggiornato al nuovo ⏻.
+- Nel browser: la baleniera ti nota a ~100 m a motore, ti caccia e spara; col cannoncino dell'Aurelia affonda in ~25 s (l'Aurelia scende a circa metà scafo); di notte in Silenzio la Nightmare le arriva accanto senza essere vista.
+- **Da fare:** `worldViews.ts` è a 325 righe (sopra le 300): da alleggerire nella prossima pulizia. Suoni dei colpi: per ora solo l'allarme della caccia. Il fumo del camino della nave da ferma sembra a dischi (era già così): da guardare.
+- **Da provare sull'iPhone:** menu iniziale → Arena navale (strumenti di prova accesi): avvicinarsi a motore e in Silenzio, di giorno e di notte; Fuoco fino a spezzare la baleniera; i pulsanti Fuoco e Siluro non devono coprire le frecce.
 
 ## Lo sfondo che scattava (13 novembre 2026) → v0.125.4
 

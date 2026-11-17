@@ -30,6 +30,7 @@ import { newBoat, type BoatState } from './boat';
 import type { MooredShip } from './ship/shipyard';
 import { createTemples, type TempleState } from './temple';
 import { freeVehicles } from './ship/unstuck';
+import { newCompany, type CompanyState } from './company/enemyState';
 
 export interface GameState extends StoryWorld {
   time: number;
@@ -86,6 +87,8 @@ export interface GameState extends StoryWorld {
   sonarScan: ScanState;
   /** What the sonar taught you about each species (sonarNotes.ts; saved). */
   sonarNotes: SonarNotes;
+  /** The Compagnia dell'Olio Nero's vessels and the shots at sea (company/; not saved: the test arena for now). */
+  company: CompanyState;
 }
 
 function applyBrokenTiles(map: TileMap, tiles: number[]): void {
@@ -139,6 +142,7 @@ export function createGame(map: TileMap, save: SaveData | null, seed = Date.now(
     // a brand new game starts under a clear sky; a save goes on with its weather (an old one: a random start)
     weather: createWeather(undefined, s.weather, save === null),
     day: createDay(s.day), // an old save (no clock): the morning
+    company: newCompany(),
     water: newColumns(s.diver.x),
     hunts: structuredClone(s.hunts ?? {}),
     huntPinned: s.huntPinned ?? null,

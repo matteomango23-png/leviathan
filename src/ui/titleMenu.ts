@@ -28,6 +28,8 @@ interface TitleActions {
   play(id: string): string | null;
   /** The test gallery (with the test tools on). */
   gallery(): void;
+  /** The naval test arena (with the test tools on): the Compagnia dell'Olio Nero's ships (systems/company/arena.ts). */
+  arena(): void;
 }
 
 const hours = (s: number): string => {
@@ -108,6 +110,7 @@ export class TitleMenu {
     this.button(box, 'Carica partita', () => this.list());
     // every beast one after another, never saved (test tools on: 5 taps on the version in the pause menu)
     if (testMode()) this.button(box, 'Galleria di prova', () => this.actions.gallery());
+    if (testMode()) this.button(box, 'Arena navale', () => this.actions.arena());
     if (storageUse() > SLOTS.warnAt)
       this.note(box, 'La memoria del gioco è quasi piena: esporta ed elimina le partite che non usi.', true);
   }

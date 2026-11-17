@@ -8,6 +8,8 @@ import type { ShipState } from './ship/ship';
 import { shipLength, shipTopSpeed } from './ship/model';
 import { boatTopSpeed, type BoatState } from './boat';
 import { BOAT } from '../data/boats';
+import { COMBAT_VIEW } from '../data/company';
+import { WORLD } from '../data/worldLayout';
 
 interface CameraAim {
   x: number;
@@ -22,13 +24,29 @@ interface AimWorld {
   /** In the speedboat the helm's view follows it (it is fast: you see ahead). */
   boat: BoatState;
   diver: { x: number; y: number; face: 1 | -1; airborne?: boolean };
+  /** The Compagnia's vessels near you: the helm's view widens to hold them too (company/). */
+  company?: { enemies: { x: number; sinkT: number }[] };
+}
+
+/** The Compagnia's vessel nearest your ship within the combat view's reach (afloat or sinking), or null. */
+function foeNear(g: AimWorld): { x: number } | null {
+  const s = g.ship;
+  let best: { x: number } | null = null;
+  for (const e of g.company?.enemies ?? []) {
+    const d = Math.abs(e.x - s.x);
+    // (one breaking in two and sinking too: you watch it go down)
+    if (d > COMBAT_VIEW.withinM * WORLD.unitsPerMetre) continue;
+    if (!best || d < Math.abs(best.x - s.x)) best = e;
+  }
+  return best;
 }
 
 /** Which view: the helm's or the swimming one (a change cuts, behind a fade). */
 export const atHelmView = (g: AimWorld): boolean => g.ship.aboard;
 
 /** The camera's aim; `ahead` is how far the swimming view looks where you face. */
-export function cameraAim(g: AimWorld, ahead: number): CameraAim {
+/** @param aspect the screen's width / height (the combat view fits both ships across it) */
+export function cameraAim(g: AimWorld, ahead: number, aspect = 2): CameraAim {
   const s = g.ship;
   const b = g.boat;
   if (b.aboard) {
@@ -46,12 +64,18 @@ export function cameraAim(g: AimWorld, ahead: number): CameraAim {
     const C = SHIP.camera;
     // a bigger ship, a wider view, but less than the ship grows: on screen it looks bigger (owner, 8 ottobre)
     const k = Math.min(C.maxScale, Math.max(1, (shipLength(s) / C.refLength) ** C.growth));
-    return {
+    const base = {
       x: s.x + s.face * C.lookAhead * k * (s.speed / shipTopSpeed(s)),
       y: C.y * k + s.dive, // a U-Boat: the view goes down with it
       viewH: C.viewHeightUnits * k,
       minY: C.minY * k,
     };
+    // a Compagnia vessel near (owner, 17 novembre 2026): the view widens slowly to hold both ships, up to a limit
+    const foe = foeNear(g);
+    if (!foe) return base;
+    const span = Math.abs(foe.x - s.x) + shipLength(s) + COMBAT_VIEW.marginM * WORLD.unitsPerMetre * 2;
+    const viewH = Math.min(base.viewH * COMBAT_VIEW.maxScale, Math.max(base.viewH, span / aspect));
+    return { ...base, x: (s.x + foe.x) / 2, viewH, minY: base.minY * (viewH / base.viewH) };
   }
   const d = g.diver;
   // a leap out of the water on a beast (breach.ts): the view goes up with it, so it never flies out of the top

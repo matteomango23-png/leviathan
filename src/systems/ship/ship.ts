@@ -43,6 +43,9 @@ export interface ShipState {
   /** The engine runs (owner, 8 ottobre): it starts with the throttle, burns a little even still, and the button
    *  switches it off. Off, the ship coasts to a stop, silent. */
   engineOn: boolean;
+  /** Silence (owner, 17 novembre 2026; not saved): the ⏻ button with the engine running switches it to the electric
+   *  motors: lights out, the hull darker, a third of the speed, nearly no noise (data/company.ts SILENCE). */
+  silent?: boolean;
   /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
    *  the propeller picture and its bubbles follow it). */
   prop: number;
@@ -112,7 +115,7 @@ export const freshHatches = (s: { model: string }, open: readonly boolean[] = []
   shipModel(s).bays.map((_, i) => ({ t: open[i] ? 1 : 0, open: !!open[i] }));
 
 /** How open a hatch is (0…1), and whether it is opening. A bay the model lacks: shut. */
-export const hatchT = (s: ShipState, bay: number): number => s.hatches[bay]?.t ?? 0;
+export const hatchT = (s: Pick<ShipState, 'hatches'>, bay: number): number => s.hatches[bay]?.t ?? 0;
 export const hatchOpening = (s: ShipState, bay: number): boolean => s.hatches[bay]?.open ?? false;
 
 /** All its hatches shut: only then the engine drives it. */

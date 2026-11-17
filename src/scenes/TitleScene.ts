@@ -29,6 +29,7 @@ export class TitleScene extends Phaser.Scene {
     this.menu = new TitleMenu({
       play: (id) => this.play(id),
       gallery: () => this.openGallery(),
+      arena: () => this.start(null, 'arena'),
     });
     this.events.once('shutdown', () => {
       this.menu?.destroy();
@@ -44,7 +45,7 @@ export class TitleScene extends Phaser.Scene {
     }
     markPlayed(id);
     this.session.slotId = id;
-    this.start(loaded.save, false);
+    this.start(loaded.save, null);
     return null;
   }
 
@@ -54,16 +55,17 @@ export class TitleScene extends Phaser.Scene {
     for (const key of SPRITE_KEYS) loadBeastSprites(this, key);
     this.load.once('complete', () => {
       for (const key of SPRITE_KEYS) addStripFrames(this, key);
-      this.start(null, true);
+      this.start(null, 'gallery');
     });
     this.load.start();
   }
 
   /** The sea and the interface start with this game (or the test gallery's throwaway one: no slot, never saved). */
-  private start(save: SaveData | null, gallery: boolean): void {
-    if (gallery) this.session.slotId = '';
+  private start(save: SaveData | null, test: 'gallery' | 'arena' | null): void {
+    if (test) this.session.slotId = '';
     this.session.startSave = save;
-    this.session.gallery = gallery;
+    this.session.gallery = test === 'gallery';
+    this.session.arena = test === 'arena';
     this.session.sound.titleMusic(false);
     this.scene.start('World', { session: this.session });
     this.scene.launch('UI', { session: this.session });

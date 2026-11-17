@@ -21,6 +21,18 @@ import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
 import { ShipLights } from './shipLights';
 import type { Beam } from '../systems/ship/floodlight';
+import { SILENCE } from '../data/company';
+
+/** Between two colours (0 … 1). */
+const mixColor = (a: number, b: number, t: number): number => {
+  const c = Phaser.Display.Color.Interpolate.ColorWithColor(
+    Phaser.Display.Color.IntegerToColor(a),
+    Phaser.Display.Color.IntegerToColor(b),
+    1,
+    t,
+  );
+  return Phaser.Display.Color.GetColor(c.r, c.g, c.b);
+};
 
 /** A U-Boat's hull under the waves darkens fully once it has gone down this share of its floating line. */
 const UNDER_FADE = 0.5;
@@ -49,6 +61,8 @@ export class ShipView {
   private readonly jets: JetFlames;
   /** How hard its reactors burn now (eases on and off). */
   private jetPower = 0;
+  /** How far into Silence it shows (0 … 1): the hull darkened, its lights out (data/company.ts SILENCE). */
+  private silentK = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -134,7 +148,12 @@ export class ShipView {
     const afloat = diveShare(s) < 0.02;
     const seaY = (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
     if (pics) pics.place(s, s.x, top, 1, pitch * calm, wet > 0 ? seaY : null, time, wet);
-    else this.drawFallback(s, top);
+    // in Silence the hull darkens little by little, and back
+    this.silentK += ((s.silent ? 1 : 0) - this.silentK) * Math.min(1, dt * SILENCE.fade);
+    if (pics) {
+      pics.tint(mixColor(0xffffff, SILENCE.tint, this.silentK));
+      pics.glowShare = 1 - SILENCE.glowDim * this.silentK; // its runes and lamps dim too
+    } else this.drawFallback(s, top);
     this.drawJets(s, top, pitch * calm, time, dt);
     if (wet < 1) {
       const { x0, x1 } = { x0: s.x - shipLength(s) / 2, x1: s.x + shipLength(s) / 2 };
@@ -158,7 +177,16 @@ export class ShipView {
     else drawWake(this.fx, s, k, time, sea);
     this.effects.iceShards(s, dt);
     // its lights ride the waves with it (owner, 11 ottobre: the hull rocked, the light stood still) and lean with it
-    this.lights.draw(s, top, top - this.restTop(s), -s.face * pitch * calm, time, dt, this.night);
+    // in Silence its deck lights are out
+    this.lights.draw(
+      s,
+      top,
+      top - this.restTop(s),
+      -s.face * pitch * calm,
+      time,
+      dt,
+      this.night * (1 - this.silentK),
+    );
     this.drawTug(s, top, dt);
   }
 
@@ -211,7 +239,7 @@ export class ShipView {
 
   /** The light its hull's lamps spread round it (views/lightView.ts), by night and under water. */
   hullGlow(s: ShipState): { x: number; y: number; r: number; a: number }[] {
-    return this.lights.hullGlow(s, this.night);
+    return s.silent ? [] : this.lights.hullGlow(s, this.night);
   }
 
   /** The beams it opens in the darkness (views/lightView.ts): floodlights, the light under it. */
