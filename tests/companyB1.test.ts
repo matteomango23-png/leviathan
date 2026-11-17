@@ -24,7 +24,7 @@ beforeAll(() => {
 
 const arena = () => {
   const g = createGame(map, null, 4);
-  setUpArena(g, { ship: 'aurelia', enemies: 'baleniera', night: false });
+  setUpArena(g, { ship: 'aurelia', enemies: 'baleniera', night: false, weather: 'sereno', turret: false });
   return g;
 };
 /** Your ship this far from the whaler (m), still. */

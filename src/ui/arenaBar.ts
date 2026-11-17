@@ -3,7 +3,16 @@
 import type { Session } from '../scenes/session';
 import { ARENA_DEFAULT, arenaShips, type ArenaSetup } from '../systems/company/arena';
 import { el } from './dom';
+import type { WeatherId } from '../data/weather';
 import './gallery.css';
+
+const WEATHER_PICKS: [WeatherId, string][] = [
+  ['sereno', 'Sereno'],
+  ['nuvoloso', 'Nuvoloso'],
+  ['pioggia', 'Pioggia'],
+  ['tempesta', 'Tempesta'],
+  ['nebbia', 'Nebbia'],
+];
 
 const FOES: { id: ArenaSetup['enemies']; name: string }[] = [
   { id: 'baleniera', name: 'Baleniera' },
@@ -30,7 +39,18 @@ export class ArenaBar {
       o.value = f.id;
     }
     foe.value = this.set.enemies;
+    const sky = el('select', 'gallery-pick', row);
+    for (const [id, name] of WEATHER_PICKS) {
+      const o = el('option', '', sky, name);
+      o.value = id;
+    }
+    sky.value = this.set.weather;
     const acts = el('div', 'gallery-row', bar);
+    const turret = el('button', 'gallery-btn', acts, '');
+    const turretText = (): void => {
+      turret.textContent = this.set.turret ? '☑ Torretta' : '☐ Torretta';
+    };
+    turretText();
     const night = el('button', 'gallery-btn', acts, 'Giorno');
     const again = el('button', 'gallery-btn', acts, 'Ricomincia');
     el('button', 'gallery-btn exit', acts, 'Esci').addEventListener('click', () => session.emit('toTitle'));
@@ -41,6 +61,15 @@ export class ArenaBar {
     });
     foe.addEventListener('change', () => {
       this.set.enemies = foe.value as ArenaSetup['enemies'];
+      go();
+    });
+    sky.addEventListener('change', () => {
+      this.set.weather = sky.value as WeatherId;
+      go();
+    });
+    turret.addEventListener('click', () => {
+      this.set.turret = !this.set.turret;
+      turretText();
       go();
     });
     night.addEventListener('click', () => {

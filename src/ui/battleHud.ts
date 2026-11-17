@@ -10,8 +10,7 @@ import './naval.css';
 
 const ENDS = {
   victory: 'Vittoria!',
-  escaped: 'Sei fuggito',
-  fled: 'Ti è sfuggita',
+  left: 'Al timone',
   lost: 'Affondato…',
 } as const;
 

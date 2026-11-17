@@ -33,6 +33,19 @@
     box-shadow: 0 0 22px rgba(255, 90, 50, 0.85);
   }
 }
+.naval-leave {
+  pointer-events: auto;
+  touch-action: none;
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 11px;
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffe3b0;
+  background: rgba(3, 12, 19, 0.8);
+  border: 1.5px solid rgba(176, 138, 74, 0.9);
+}
 .naval-btn {
   pointer-events: auto;
   touch-action: none;

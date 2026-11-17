@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 17 novembre 2026, v0.127.0)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.128.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,6 +10,36 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## La torretta T1 (17 novembre 2026) → v0.128.0
+
+- Il proprietario sulla B1:
+  - "Ti è sfuggita" non va: nessuna nave sparisce, esci tu e la insegui;
+  - dal sottomarino è un casino;
+  - la mira e le animazioni non convincono, i siluri vanno solo dritti.
+
+  Chiede una torretta in prima persona ("un gioco nel gioco": vetro rossastro, mare col meteo del momento, notte, i botti sulla nave avversaria) **senza togliere** la modalità di lato: una spunta nell'arena. Le viste frontali serviranno solo per le navi nemiche (Gemini, più avanti).
+- **Logica, `systems/turret/`:**
+  - `projection.ts` (prospettiva, orizzonte, distanza di una riga di mare);
+  - `duelState.ts` (il duello sul piano: avanti e di lato);
+  - `duel.ts` (`openDuel` e `closeDuel` col mondo, `stepDuel`, mitragliatrice col calore `MACHINE_GUN`, cannone 2,6 volte più veloce dalla torretta, danni con `hullDamage.ts`, la mitragliatrice non apre falle e non fa saltare il deposito);
+  - `duelAi.ts` (distanza `DUEL.rangeM` con ondeggio, fuga, colpo annunciato e mirato dove eri);
+  - `ballistics.ts` (colpi in 3D, `strikes` col punto u e v sull'immagine, `landingOf` per il segno del cannone).
+- **Dati:** `data/turret.ts` (`TURRET`, `DUEL`, `MACHINE_GUN`, `TURRET_LOOK`). La mitragliatrice è di ogni nave madre (non sta in `fleet.ts`).
+- **Scena `scenes/TurretScene.ts`:** il mondo in pausa come la battaglia. Avanzano meteo e ora. Il rallentatore alla vittoria; chiusura dopo `DUEL.endSeconds` o con Timone.
+- **Viste `views/turret/`:** `turretSky`, `turretSea` (46 fasce di onde, ognuna fino alla successiva, onde lunghe e schiuma), `turretShip` (taglio alla linea di galleggiamento, tra le fasce del mare, metà che affondano), `turretFx`, `turretGlass` (vetro moltiplicato, telaio dipinto, mirino, rombo del cannone, bussola, canne, crepe, pioggia), `turretLook` (colori del momento). UI `ui/turretControls.ts` e `turret.css`. Suoni `audio/gunSound.ts` (`sound.gun`).
+- **Arena:** `ArenaSetup.turret` e `weather` (spunta e scelta del meteo nella barra). **B1:** tolte le fini per distanza, `helmCmd 'disarm'` e pulsante Timone.
+- **Test:** `tests/turretT1.test.ts` (9). Nel browser: giorno, tempesta, notte, nebbia, mitragliatrice, cannone a segno con falle, colpo nemico con crepa, affondamento e ritorno al timone. Circa 5 ms a fotogramma nel browser del computer.
+- **Da fare (T2):**
+  - siluro guidato e periscopio degli U-Boot;
+  - torretta dal sottomarino;
+  - le immagini frontali e di poppa delle navi nemiche (lotto Gemini);
+  - l'interno della torretta dipinto, se il proprietario lo vuole;
+  - `worldViews.ts` è a 311 righe.
+- **Da provare sull'iPhone:**
+  - fluidità in tempesta;
+  - il trascinamento per mirare insieme a Fuoco tenuto premuto (due dita);
+  - le leve.
 
 ## Modalità battaglia B1 (17 novembre 2026) → v0.127.0
 

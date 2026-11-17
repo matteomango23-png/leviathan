@@ -199,8 +199,6 @@ export const BATTLE = {
   weaveSeconds: [2.5, 5] as [number, number],
   /** With less than this share of its hull it runs. */
   fleeBelow: 0.25,
-  /** The battle is over when the two are this many view-widths apart. */
-  escapeShare: 1.05,
   /** Your first shot before it has seen you: × its damage. */
   surpriseMult: 2,
   /** Before its gun fires it glints red this long (s): time to see it coming. */

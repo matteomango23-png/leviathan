@@ -130,7 +130,8 @@ export type GameEvent =
   // battle stations (company/battle.ts): it begins (a surprise attack, or they hunt you) and ends; a gun glinting
   // before it fires; a hit's part: a breach, a fire on deck, the ammunition store blowing up
   | { type: 'navalBattle'; surprise: boolean }
-  | { type: 'navalBattleEnd'; result: 'victory' | 'escaped' | 'fled' | 'lost' }
+  | { type: 'navalBattleEnd'; result: 'victory' | 'left' | 'lost' }
+  | { type: 'turretOpen'; foe: number }
   | { type: 'enemyAim'; x: number; y: number }
   | { type: 'hullHit'; side: 'you' | 'enemy'; zone: 'deck' | 'waterline' | 'magazine'; x: number; y: number }
   | { type: 'shipMended'; points: number; by: 'parts' | 'yard' }

@@ -8,6 +8,7 @@ import { BattleMusic } from './battleMusic';
 import { SeaAmbience, type SeaMoment } from './seaAmbience';
 import { EngineSound } from './engineSound';
 import { SeaMusic } from './seaMusic';
+import { playGun, type GunSoundKind } from './gunSound';
 
 export class SoundEngine {
   private ctx: AudioContext | null = null;
@@ -195,6 +196,11 @@ export class SoundEngine {
     const t = this.ctx.currentTime;
     if (on) this.music?.play(t);
     else this.music?.stop(t, AUDIO.fade * 3);
+  }
+
+  /** A sea battle's shot, burst or strike (audio/gunSound.ts), `near` 0 … 1; heard over the battle music too. */
+  gun(kind: GunSoundKind, near = 1): void {
+    if (this.ctx?.state === 'running' && this.master) playGun(this.ctx, this.master, kind, near);
   }
 
   /** The sonar's ping. */

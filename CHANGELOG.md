@@ -2,6 +2,26 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.128.0 — La torretta (17 novembre 2026)
+
+- Nell'arena navale c'è la spunta **Torretta** (accesa di partenza): con la spunta, **Armi** ti porta **dentro la torretta**, in prima persona. Senza la spunta resta la battaglia di lato.
+- **Dentro la torretta:**
+  - un vetro rossastro in un telaio di metallo con i rivetti;
+  - il mirino al centro e la bussola in alto, col segno rosso della nave nemica;
+  - in basso le due canne, che rinculano e fanno il lampo a ogni colpo.
+- **Si mira trascinando il dito:** gira tutta la torretta, il mirino resta al centro.
+- **Il mare in prospettiva fino all'orizzonte** cambia col meteo e l'ora di quel momento:
+  - in tempesta l'orizzonte si inclina, sali e scendi sulle onde, le onde vicine coprono la nave nemica, piove sul vetro e c'è la schiuma;
+  - nella nebbia la nave sfuma;
+  - di notte si vedono solo le sue luci, i lampi e i traccianti.
+- **Mitragliatrice:** tieni premuto Fuoco per una raffica di traccianti, "tum tum tum". Scintille dove colpisce, schizzi in acqua dove manca. Si scalda: se spari troppo si ferma un momento.
+- **Cannone:** un rombo sul mare segna dove cadrà la granata; portalo sulla nave e spara. A segno: esplosione, fuoco, falla con la nave che si inclina, e il deposito che la fa saltare.
+- **La nave nemica risponde:** lampeggia rossa prima di sparare, il colpo arriva come un punto rosso. Se ti prende, la vista trema e il vetro si crepa. Schivi con **Gas** e **Avvicina/Allontana**.
+- Quando affonda si spezza in due e torni da solo al timone. **Timone** ti riporta indietro quando vuoi, con la nave nemica dove l'hai lasciata.
+- **Battaglia di lato:** niente più "Ti è sfuggita". Nessuna nave sparisce perché si allontana: esci con **Timone** e la insegui.
+- Nuovi suoni: la mitragliatrice, il cannone, gli scoppi.
+- I salvataggi non cambiano.
+
 ## v0.127.0 — Ai posti di combattimento! (17 novembre 2026)
 
 - **Modalità battaglia:** con una nave della Compagnia vicina compare **Armi**. Se la nemica non ti ha ancora visto è un attacco a sorpresa e il primo colpo vale doppio. Se invece ti dà la caccia, la battaglia parte da sola.

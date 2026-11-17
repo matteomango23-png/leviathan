@@ -33,6 +33,7 @@ import { lookAt } from '../systems/seaLook';
 import { showEvent } from './worldEvents';
 import { ARENA_DEFAULT, setUpArena, type ArenaSetup } from '../systems/company/arena';
 import { timeScale } from '../systems/company/battle';
+import { openDuel } from '../systems/turret/duel';
 import { WorldViews } from './worldViews';
 import type { SceneData, Session } from './session';
 
@@ -150,6 +151,16 @@ export class WorldScene extends Phaser.Scene {
     this.scene.launch('Battle', { session: this.session });
   }
 
+  /** "Armi" with the arena's tick: the turret in first person over the paused sea (scenes/TurretScene.ts). */
+  private openTurret(foeId: number): void {
+    const foe = this.state.company.enemies.find((e) => e.id === foeId);
+    if (!foe || this.session.inBattle) return;
+    this.session.inBattle = true;
+    this.session.emit('battle', true);
+    this.scene.pause();
+    this.scene.launch('Turret', { session: this.session, duel: openDuel(this.state, foe) });
+  }
+
   private handleEvents(events: GameEvent[]): void {
     const g = this.state;
     const v = this.views;
@@ -159,6 +170,7 @@ export class WorldScene extends Phaser.Scene {
       v.company.onEvent(e); // the Compagnia's guns and bursts (views/companyViews.ts)
       if (e.type === 'hurt') v.hurtFlash = 0.5;
       else if (e.type === 'battleStart') this.openBattle();
+      else if (e.type === 'turretOpen') this.openTurret(e.foe);
       else if (
         e.type === 'gateOpened' ||
         e.type === 'fishCaught' ||

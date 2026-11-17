@@ -151,7 +151,7 @@ describe('le armi delle navi', () => {
 describe('l’arena', () => {
   const arena = (night = false) => {
     const g = createGame(map, null, 4);
-    setUpArena(g, { ship: 'aurelia', enemies: 'baleniera', night });
+    setUpArena(g, { ship: 'aurelia', enemies: 'baleniera', night, weather: 'sereno', turret: false });
     return g;
   };
 
