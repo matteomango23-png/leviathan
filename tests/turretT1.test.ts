@@ -10,8 +10,9 @@ import { createGame, stepGame } from '../src/systems/game';
 import type { GameEvent } from '../src/systems/events';
 import { emptyInput } from '../src/systems/input';
 import { landingOf, lobPitch, strikes } from '../src/systems/turret/ballistics';
-import { closeDuel, hullOf, openDuel, restingInput, stepDuel } from '../src/systems/turret/duel';
-import { foeFromYou } from '../src/systems/turret/duelState';
+import { hullOf, restingInput, stepInside } from '../src/systems/turret/inside';
+import { closeInside, openInside } from '../src/systems/turret/insideWorld';
+import { foeFrom } from '../src/systems/turret/insideState';
 import { horizonY, project, seaDistanceAt, type Camera } from '../src/systems/turret/projection';
 import type { TileMap } from '../src/systems/world/tileMap';
 import { generateWorld } from '../src/systems/world/worldGen';
@@ -78,32 +79,33 @@ describe('i colpi', () => {
 describe('la mitragliatrice', () => {
   it('spara con la sua cadenza, si scalda, si ferma e poi si raffredda', () => {
     const g = arena(true);
-    const d = openDuel(g, g.company.enemies[0]!);
+    const d = openInside(g);
     const input = { ...restingInput(), firing: true };
     let shots = 0;
-    for (let i = 0; i < 20; i++) shots += stepDuel(g, d, input, 0.05).filter((e) => e.type === 'shot').length;
+    for (let i = 0; i < 20; i++)
+      shots += stepInside(g, d, input, 0.05).filter((e) => e.type === 'shot').length;
     expect(shots).toBeGreaterThanOrEqual(Math.floor(MACHINE_GUN.rate * 1) - 1);
-    for (let i = 0; i < 200 && !d.hot; i++) stepDuel(g, d, input, 0.05);
+    for (let i = 0; i < 200 && !d.hot; i++) stepInside(g, d, input, 0.05);
     expect(d.hot).toBe(true);
     const before = d.rounds.length;
-    stepDuel(g, d, input, 0.05);
+    stepInside(g, d, input, 0.05);
     expect(d.rounds.length).toBeLessThanOrEqual(before);
-    for (let i = 0; i < 200 && d.hot; i++) stepDuel(g, d, restingInput(), 0.05);
+    for (let i = 0; i < 200 && d.hot; i++) stepInside(g, d, restingInput(), 0.05);
     expect(d.hot).toBe(false);
   });
 
   it('puntata sulla nave la colpisce e la danneggia', () => {
     const g = arena(true, 80);
     const e = g.company.enemies[0]!;
-    const d = openDuel(g, e);
+    const d = openInside(g);
     const hull0 = e.hull;
     const input = { ...restingInput(), firing: true };
     for (let i = 0; i < 40; i++) {
       // keep the turret on it
-      const rel = foeFromYou(d);
+      const rel = foeFrom(d, d.foes[0]!);
       d.yaw = Math.atan2(rel.s, rel.a);
       d.pitch = -Math.atan2(TURRET.height - 3, rel.dist);
-      stepDuel(g, d, { ...input, gunShot: false }, 0.05);
+      stepInside(g, d, { ...input, gunShot: false }, 0.05);
       if (d.hot) break;
     }
     expect(e.hull).toBeLessThan(hull0);
@@ -114,25 +116,26 @@ describe('il duello e il mondo', () => {
   it('chiudendo, le navi tornano sulla linea del mare alla distanza del duello; i danni restano', () => {
     const g = arena(true, 150);
     const e = g.company.enemies[0]!;
-    const d = openDuel(g, e);
-    expect(d.foe.a).toBeCloseTo(150, 0);
+    const d = openInside(g);
+    expect(d.foes[0]!.a).toBeCloseTo(150, 0);
     e.dmg.flood = 0.5;
-    for (let i = 0; i < 100; i++) stepDuel(g, d, { ...restingInput(), throttle: 1 }, 0.05);
-    const along = d.foe.a - d.you.a;
-    closeDuel(g, d);
+    for (let i = 0; i < 100; i++) stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    const along = d.foes[0]!.a - d.you.a;
+    closeInside(g, d);
     expect((e.x - g.ship.x) / metres(1)).toBeCloseTo(along, 0);
     expect(e.dmg.flood).toBeGreaterThanOrEqual(0.5);
     expect(e.sinkT).toBe(0);
   });
 
-  it('il deposito o l’acqua piena la affondano: il duello finisce con la vittoria', () => {
+  it('il deposito o l’acqua piena la affondano: affondata, la vista resta', () => {
     const g = arena(true, 100);
     const e = g.company.enemies[0]!;
-    const d = openDuel(g, e);
+    const d = openInside(g);
     e.dmg.flood = 1 - HIT_ZONES.waterline.flood / 2;
     e.hull = 0;
-    const ev = stepDuel(g, d, restingInput(), 0.05);
-    expect(ev.some((x) => x.type === 'end' && x.result === 'victory')).toBe(true);
+    const ev = stepInside(g, d, restingInput(), 0.05);
+    expect(ev.some((x) => x.type === 'sunk' && x.foe === e.id)).toBe(true);
+    expect(d.lost).toBeNull();
     expect(e.sinkT).toBeGreaterThan(0);
     expect(ENEMY_CLASSES.baleniera.magazine).toBeDefined();
   });

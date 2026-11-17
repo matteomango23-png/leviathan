@@ -1,4 +1,5 @@
-// Battle stations at the helm (owner, 17 novembre 2026): "Armi" with a Compagnia vessel near; in battle, the gun —
+// At the helm (owner, 17 novembre 2026): "Vista interna", the first person view from your ship, always there; with the
+// arena's tick off, "Armi" with a Compagnia vessel near opens the side battle instead. In it, the gun —
 // hold its button and drag to aim (the start of the arc shows in the sea: views/aimView.ts), let go to fire — and the
 // torpedo for the ships that have one, each showing its reload. Out of battle no weapons.
 import { WEAPONS } from '../data/company';
@@ -79,6 +80,8 @@ export class BattleControls {
     this.game = g;
     const battle = !!g.company.battle && !g.company.battle.result && g.ship.aboard;
     this.arm.hidden = !canArm(g);
+    const label = g.company.turret ? 'Vista interna' : 'Armi';
+    if (this.arm.textContent !== label) this.arm.textContent = label;
     this.root.hidden = !battle && this.arm.hidden;
     const show = (b: HTMLButtonElement, kind: 'shell' | 'torpedo'): void => {
       const w = battle ? yourWeapon(g, kind) : null;

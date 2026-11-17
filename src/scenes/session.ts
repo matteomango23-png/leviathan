@@ -27,6 +27,8 @@ interface SessionEvents {
   arena: (set: ArenaSetup) => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
+  /** The inside view closed (scenes/TurretScene.ts): the sea is drawn again. */
+  insideClosed: () => void;
   /** Test panel: skip to the next kind of weather. */
   skipWeather: () => void;
   /** The diver reached the pier: open the port menu. */

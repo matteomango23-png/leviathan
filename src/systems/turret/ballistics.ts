@@ -1,4 +1,4 @@
-// The rounds of the turret's duel (owner, 17 novembre 2026: "spari con questa mitragliatrice… tum tum tum"): the
+// The rounds of the inside view (owner, 17 novembre 2026: "spari con questa mitragliatrice… tum tum tum"): the
 // machine gun's tracers, fast and nearly flat; a gun's shells, slow and falling, to be led and lifted; the enemy's
 // shells at you. Each flies in three dimensions until it strikes a hull — a thin wall along the ship, from its keel
 // to its deck — or the sea. Where it strikes the hull is given as a point of the ship's picture (u stern → bow,
@@ -6,12 +6,13 @@
 import { WEAPONS } from '../../data/company';
 import { MACHINE_GUN, TURRET } from '../../data/turret';
 import type { Rng } from '../math';
-import type { DuelState, Round } from './duelState';
+import type { InsideState, Round } from './insideState';
 import type { P3 } from './projection';
 
-/** A hull in the duel: its middle, where its bow points (radians), length and beam (m), how deep its keel and how
+/** A hull in the view (`id`: a vessel's, or 'you'): its middle, where its bow points (radians), length and beam (m), how deep its keel and how
  *  high its deck (m), and its picture's waterline (share of its height) and height (m). */
 export interface DuelHull {
+  id: number | 'you';
   a: number;
   s: number;
   heading: number;
@@ -24,7 +25,7 @@ export interface DuelHull {
 }
 
 export type RoundEvent =
-  | { type: 'hit'; target: 'foe' | 'you'; kind: Round['kind']; p: P3; u: number; v: number }
+  | { type: 'hit'; target: 'foe' | 'you'; foe: number; kind: Round['kind']; p: P3; u: number; v: number }
   | { type: 'splash'; kind: Round['kind']; p: P3 };
 
 /** A round's speed (m/s), fall (m/s²) and reach (m): your gun's shells faster from the turret. */
@@ -70,7 +71,7 @@ export function landingOf(
 /** Fires a round from p along yaw/pitch (radians), off by up to `spread` either way; `carry`: the ship's own speed
  *  along your course it adds (m/s). */
 export function fireRound(
-  d: DuelState,
+  d: InsideState,
   from: Round['from'],
   kind: Round['kind'],
   p: P3,
@@ -127,8 +128,21 @@ export function strikes(h: DuelHull, p0: P3, p1: P3): { p: P3; u: number; v: num
   return { p, u: 0.5 + at.along / h.length, v: h.waterline - p.z / h.picH };
 }
 
-/** One step of every round: what it hit, or where it fell in the sea. */
-export function stepRounds(d: DuelState, foe: DuelHull, you: DuelHull, dt: number): RoundEvent[] {
+/** The first of these hulls a step from p0 to p1 strikes, and where. */
+export function strikesAny(
+  hulls: DuelHull[],
+  p0: P3,
+  p1: P3,
+): { hull: DuelHull; p: P3; u: number; v: number } | null {
+  for (const h of hulls) {
+    const hit = strikes(h, p0, p1);
+    if (hit) return { hull: h, ...hit };
+  }
+  return null;
+}
+
+/** One step of every round: what it hit (yours strike the vessels, theirs you), or where it fell in the sea. */
+export function stepRounds(d: InsideState, foes: DuelHull[], you: DuelHull, dt: number): RoundEvent[] {
   const out: RoundEvent[] = [];
   d.rounds = d.rounds.filter((r) => {
     const p0 = { ...r.p };
@@ -137,10 +151,11 @@ export function stepRounds(d: DuelState, foe: DuelHull, you: DuelHull, dt: numbe
     r.p.s += r.v.s * dt;
     r.p.z += r.v.z * dt;
     r.left -= Math.hypot(r.p.a - p0.a, r.p.s - p0.s, r.p.z - p0.z);
-    const hull = r.from === 'you' ? foe : you;
-    const hit = strikes(hull, p0, r.p);
+    const hit = strikesAny(r.from === 'you' ? foes : [you], p0, r.p);
     if (hit) {
-      out.push({ type: 'hit', target: r.from === 'you' ? 'foe' : 'you', kind: r.kind, ...hit });
+      const { hull, ...at } = hit;
+      const foe = hull.id === 'you' ? -1 : hull.id;
+      out.push({ type: 'hit', target: r.from === 'you' ? 'foe' : 'you', foe, kind: r.kind, ...at });
       return false;
     }
     if (r.p.z <= 0) {

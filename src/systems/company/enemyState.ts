@@ -40,6 +40,8 @@ export interface EnemyVessel {
   /** In battle: how far off its distance it weaves now (units), and the seconds to its next change. */
   weave: number;
   weaveT: number;
+  /** In the inside view (systems/turret/): the view sails it, the world only shows it (not saved). */
+  inView?: boolean;
 }
 
 /** Water taken in (0 … 1: full, it sinks), a fire on deck and guns jammed (s left). */
@@ -93,8 +95,11 @@ export interface CompanyState {
   yourDmg: HullDamage;
   /** At battle stations, or null. */
   battle: BattleState | null;
-  /** "Armi" opens the turret in first person instead of the side battle (the arena's tick, owner 17 novembre 2026). */
+  /** "Armi" opens the inside view in first person instead of the side battle (on by default; the arena's tick turns
+   *  it off, owner 17 novembre 2026). */
   turret: boolean;
+  /** The inside view is open: the world runs, your ship and the vessels in it are sailed by the view. */
+  inside: boolean;
   nextId: number;
 }
 
@@ -104,7 +109,8 @@ export const newCompany = (): CompanyState => ({
   yourReload: {},
   yourDmg: freshDamage(),
   battle: null,
-  turret: false,
+  turret: true,
+  inside: false,
   nextId: 1,
 });
 

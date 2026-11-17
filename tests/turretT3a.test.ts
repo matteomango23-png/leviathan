@@ -8,9 +8,10 @@ import { DUEL } from '../src/data/turret';
 import { setUpArena } from '../src/systems/company/arena';
 import { metres } from '../src/systems/company/enemyState';
 import { createGame } from '../src/systems/game';
-import { closeDuel, openDuel, restingInput, stepDuel } from '../src/systems/turret/duel';
-import { yourTop } from '../src/systems/turret/duelAi';
-import { foeFromYou } from '../src/systems/turret/duelState';
+import { restingInput, stepInside } from '../src/systems/turret/inside';
+import { closeInside, openInside } from '../src/systems/turret/insideWorld';
+import { yourTop } from '../src/systems/turret/foeAi';
+import { foeFrom } from '../src/systems/turret/insideState';
 import { splitHalves } from '../src/systems/turret/hull3d';
 import { enemyModel } from '../src/systems/turret/hullModels';
 import type { TileMap } from '../src/systems/world/tileMap';
@@ -26,19 +27,21 @@ const arena = (ship: string, enemies: 'baleniera' | 'caccia' | 'uboot', dist = 1
   const g = createGame(map, null, 4);
   setUpArena(g, { ship, enemies, night: false, weather: 'sereno', turret: true });
   g.company.enemies[0]!.x = g.ship.x + metres(dist);
+  // hunting you (a calm vessel only patrols: turretT3b)
+  Object.assign(g.company.enemies[0]!, { phase: 'hunting', alert: 1 });
   return g;
 };
 
 describe('il timone', () => {
   it('la prua gira e la nave va dove punta', () => {
     const g = arena('aurelia', 'baleniera', 300);
-    const d = openDuel(g, g.company.enemies[0]!);
-    for (let i = 0; i < 60; i++) stepDuel(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    const d = openInside(g);
+    for (let i = 0; i < 60; i++) stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
     expect(Math.abs(d.you.s)).toBeLessThan(0.01);
-    for (let i = 0; i < 80; i++) stepDuel(g, d, { ...restingInput(), throttle: 1, steer: 1 }, 0.05);
+    for (let i = 0; i < 80; i++) stepInside(g, d, { ...restingInput(), throttle: 1, steer: 1 }, 0.05);
     expect(d.you.heading).toBeGreaterThan(0.3);
     const before = { a: d.you.a, s: d.you.s };
-    stepDuel(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
     const way = Math.atan2(d.you.s - before.s, d.you.a - before.a);
     expect(way).toBeCloseTo(d.you.heading, 2);
   });
@@ -46,14 +49,14 @@ describe('il timone', () => {
   it('girata oltre il traverso, tornando fuori la nave va dall’altra parte; il gas va anche indietro', () => {
     const g = arena('aurelia', 'baleniera', 300);
     const face = g.ship.face;
-    const d = openDuel(g, g.company.enemies[0]!);
+    const d = openInside(g);
     d.you.heading = 2.5;
     d.you.speed = 3;
-    closeDuel(g, d);
+    closeInside(g, d);
     expect(g.ship.face).toBe(-face);
     const g2 = arena('aurelia', 'baleniera', 300);
-    const d2 = openDuel(g2, g2.company.enemies[0]!);
-    for (let i = 0; i < 100; i++) stepDuel(g2, d2, { ...restingInput(), throttle: -1 }, 0.05);
+    const d2 = openInside(g2);
+    for (let i = 0; i < 100; i++) stepInside(g2, d2, { ...restingInput(), throttle: -1 }, 0.05);
     expect(d2.you.speed).toBeLessThan(0);
     expect(d2.you.speed).toBeGreaterThanOrEqual(-yourTop(g2) * DUEL.reverse - 1e-6);
   });
@@ -63,15 +66,15 @@ describe('la nave nemica non scappa', () => {
   it('mai più veloce di quanto puoi inseguirla, mai oltre il guinzaglio', () => {
     for (const cls of ['baleniera', 'caccia'] as const) {
       const g = arena('aurelia', cls, 150);
-      const d = openDuel(g, g.company.enemies[0]!);
+      const d = openInside(g);
       let far = 0;
       for (let i = 0; i < 1200; i++) {
         // (your top speed falls as you take in water: its cap is the one of that moment)
-        if (d.end) break;
+        if (d.lost !== null) break;
         const cap = yourTop(g) * DUEL.foeSpeedShare;
-        stepDuel(g, d, restingInput(), 0.05);
-        expect(Math.abs(d.foe.speed)).toBeLessThanOrEqual(cap + 1e-6);
-        far = Math.max(far, foeFromYou(d).dist);
+        stepInside(g, d, restingInput(), 0.05);
+        expect(Math.abs(d.foes[0]!.speed)).toBeLessThanOrEqual(cap + 1e-6);
+        far = Math.max(far, foeFrom(d, d.foes[0]!).dist);
       }
       expect(far).toBeLessThan(DUEL.leashM * 1.3);
     }
@@ -81,24 +84,24 @@ describe('la nave nemica non scappa', () => {
     const g = arena('aurelia', 'baleniera', 150);
     const e = g.company.enemies[0]!;
     e.hull = ENEMY_CLASSES.baleniera.hull * BATTLE.fleeBelow * 0.5;
-    const d = openDuel(g, e);
+    const d = openInside(g);
     let far = 0;
     for (let i = 0; i < 1800; i++) {
-      stepDuel(g, d, restingInput(), 0.05);
-      far = Math.max(far, foeFromYou(d).dist);
+      stepInside(g, d, restingInput(), 0.05);
+      far = Math.max(far, foeFrom(d, d.foes[0]!).dist);
     }
     expect(far).toBeLessThan(DUEL.leashM * 1.3);
-    expect(foeFromYou(d).dist).toBeLessThan(DUEL.leashM * 1.3);
+    expect(foeFrom(d, d.foes[0]!).dist).toBeLessThan(DUEL.leashM * 1.3);
   });
 });
 
 describe('la mitragliatrice potente', () => {
   it('spara almeno 7 secondi di fila prima di scaldarsi', () => {
     const g = arena('aurelia', 'baleniera', 300);
-    const d = openDuel(g, g.company.enemies[0]!);
+    const d = openInside(g);
     let t = 0;
     while (!d.hot && t < 30) {
-      stepDuel(g, d, { ...restingInput(), firing: true }, 0.05);
+      stepInside(g, d, { ...restingInput(), firing: true }, 0.05);
       t += 0.05;
     }
     expect(t).toBeGreaterThanOrEqual(7);

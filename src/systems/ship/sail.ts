@@ -32,6 +32,8 @@ export function sailShip(
 ): number[] {
   const s = g.ship;
   if (!s.owned) return [];
+  // the inside view sails it (systems/turret/insideWorld.ts)
+  if (s.inside) return [];
   s.shallowWarn = Math.max(0, s.shallowWarn - dt);
   for (const h of s.hatches)
     h.t = Math.max(0, Math.min(1, h.t + ((h.open ? 1 : -1) * dt) / SHIP.hatchSeconds));

@@ -46,6 +46,8 @@ export interface ShipState {
   /** Silence (owner, 17 novembre 2026; not saved): the ⏻ button with the engine running switches it to the electric
    *  motors: lights out, the hull darker, a third of the speed, nearly no noise (data/company.ts SILENCE). */
   silent?: boolean;
+  /** Sailed by the inside view (systems/turret/insideWorld.ts): the helm here does not move it. Not saved. */
+  inside?: boolean;
   /** In a battle with the Compagnia (company/hullDamage.ts; not saved): the water taken in (0 … 1) and seconds of a
    *  fire on deck left. The view leans it and lowers it; the water slows it. */
   flood?: number;

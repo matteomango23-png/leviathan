@@ -124,10 +124,38 @@ export const TORPEDO_GUIDE = {
   damage: 38,
   flood: 0.42,
   reload: 6,
+  /** Under the water the tube is reloaded sooner (s). */
+  underReload: 3.5,
   depthMin: 1.2,
   /** The enemy U-Boat's torpedoes: speed (m/s) and seconds between them. */
   foeSpeed: 16,
   foeReload: 9,
+};
+
+/** The harpoon gun under the water (owner, 17 novembre 2026: under the water only the torpedo worked; "non so se è
+ *  un problema"): long darts fired while held, at this rate (a second), speed (m/s) and reach (m), each taking these
+ *  hull points and letting in this much water; it heats up like the machine gun, but sooner. Tuning. */
+export const HARPOON_GUN = {
+  rate: 5,
+  speed: 70,
+  rangeM: 80,
+  spread: 0.01,
+  damage: 2.2,
+  flood: 0.012,
+  heat: 0.04,
+  cool: 0.35,
+  restartBelow: 0.45,
+};
+
+/** The inside view with the world running (owner, 17 novembre 2026: "È come se switchassi da view outside a view
+ *  inside"): the Compagnia's vessels nearer than `joinM` along the sea's line come into it, each at its own distance
+ *  to your side (m, alternating sides by its id); those that do not hunt you patrol this far each way (m) at their
+ *  patrol speed. Sunk, your view stays `lostSeconds` before it closes. Tuning. */
+export const INSIDE = {
+  joinM: 600,
+  sides: [70, 120, 160, 95],
+  patrolM: 140,
+  lostSeconds: 4,
 };
 
 /** The 3D hulls (owner, 17 novembre 2026: "Preferisco che mi crei un modello tu in 3D per la nave nemica, simile a

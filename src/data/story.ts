@@ -179,6 +179,14 @@ export const DIALOGUES = {
     { who: 'aurelio', text: 'Nel sottomarino il Gas e la leva Sali/Scendi tornano a riposo quando li lasci. Tocca il pulsante B: restano tutti e due dove li metti, così vai avanti e scendi piano anche guardando il cockpit. Toccalo di nuovo e tornano a riposo.' },
     { who: 'aurelio', text: 'Se un mezzo resta incastrato da qualche parte, nel menu di pausa c’è "Sono bloccato": ti riporta al molo di Porto Fango con la nave.' },
   ],
+  // the inside view (owner, 17 novembre 2026: "è come se switchassi da view outside a view inside"): told the first
+  // time you go in
+  tipInside: [
+    { who: 'aurelio', text: 'Dalla torretta vedi il mare con gli occhi della nave. A sinistra la leva del Gas, che sotto la tacca va indietro, e il Timone: la prua gira e la nave va dove punta. Con un U-Boot hai anche Sali e Scendi.' },
+    { who: 'aurelio', text: 'Trascina il dito per girare la torretta e tieni premuto Fuoco per sparare: puoi fare tutto insieme, con più dita. La mitragliatrice spara a lungo, poi si scalda; il cannone riparte da solo appena è carico.' },
+    { who: 'aurelio', text: 'Il siluro segue il mirino: gira la torretta e lui curva. Sott’acqua mitragliatrice e cannone sono chiusi, ma c’è il fucile ad arpioni, a raffica e da vicino, e il siluro si ricarica prima.' },
+    { who: 'aurelio', text: 'Le navi della Compagnia che non ti hanno visto non sparano: avvicinati piano, in Silenzio, o passa sotto con l’U-Boot. Il primo colpo le mette in caccia. "Vista esterna" ti riporta fuori, e il mare intanto non si è fermato.' },
+  ],
   // the abyssal ship (owner, 25 ottobre 2026): told when the first rare part is found, and in the Guida
   tipAbyss: [
     { who: 'aurelio', text: 'Un pezzo abissale! Ce ne sono sei: nei relitti più lontani e nei forzieri delle caverne delle Gallerie, uno nella Cattedrale.' },
@@ -207,7 +215,8 @@ export type TipTrigger =
   | 'battleOver'
   | 'gunEmpty'
   | 'smokerBurn'
-  | 'nightFalls';
+  | 'nightFalls'
+  | 'turretOpen';
 /** `early`: it can open during the guided first dive too. */
 export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true }[] = [
   { id: 'tipPack', title: 'Compagni e cavalcature', on: 'tamedToTeam', early: true },
@@ -231,6 +240,7 @@ export const TIPS: { id: DialogueId; title: string; on: TipTrigger; early?: true
   { id: 'tipRequests', title: 'Le richieste del mercato', on: 'portArrived' },
   { id: 'tipPlaces', title: 'Luoghi e Gallerie', on: 'landmarkFound' },
   { id: 'tipDiveLock', title: 'Le leve bloccabili e "Sono bloccato"', on: 'boarded' },
+  { id: 'tipInside', title: 'La vista interna', on: 'turretOpen' },
 ];
 /** In story.seen: the tips are switched off (the Guida in the pause menu). */
 export const TIPS_OFF = 'tips-off';

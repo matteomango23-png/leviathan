@@ -131,7 +131,7 @@ export type GameEvent =
   // before it fires; a hit's part: a breach, a fire on deck, the ammunition store blowing up
   | { type: 'navalBattle'; surprise: boolean }
   | { type: 'navalBattleEnd'; result: 'victory' | 'left' | 'lost' }
-  | { type: 'turretOpen'; foe: number }
+  | { type: 'turretOpen' }
   | { type: 'enemyAim'; x: number; y: number }
   | { type: 'hullHit'; side: 'you' | 'enemy'; zone: 'deck' | 'waterline' | 'magazine'; x: number; y: number }
   | { type: 'shipMended'; points: number; by: 'parts' | 'yard' }

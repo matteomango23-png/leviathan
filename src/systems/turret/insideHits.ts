@@ -1,38 +1,40 @@
-// What a hit does in the turret's duel (split from duel.ts, 17 novembre 2026): a round, a torpedo or a depth charge
-// strikes a part of the hull as in the side battle (company/hullDamage.ts) — the machine gun only scars the deck and
-// sometimes sets it alight, a torpedo opens a great breach — and a hull with nothing left, full of water or with its
-// store blown up ends the duel. Pure logic.
+// What a hit does in the inside view (owner, 17 novembre 2026): a round, a dart, a torpedo or a depth charge strikes
+// a part of the hull as in the side battle (company/hullDamage.ts) — the machine gun only scars the deck and
+// sometimes sets it alight, a dart opens a small breach, a torpedo a great one — and a hull with nothing left, full
+// of water or with its store blown up breaks in two and sinks; the others fight on. Struck, a vessel knows where you
+// are and hunts you. Your ship gone down, the view closes a moment later. Pure logic.
 import { ENEMY_CLASSES, HIT_ZONES, WEAPONS } from '../../data/company';
-import { MACHINE_GUN, TORPEDO_GUIDE } from '../../data/turret';
+import { HARPOON_GUN, MACHINE_GUN, TORPEDO_GUIDE } from '../../data/turret';
 import { applyHit, swamped, zoneOf } from '../company/hullDamage';
 import type { EnemyVessel } from '../company/enemyState';
 import type { GameState } from '../newGame';
 import { damageShip } from '../ship/shipHull';
 import { shipModel, shipPicture } from '../ship/model';
-import type { Round } from './duelState';
-import { toUnits, type DuelState } from './duelState';
+import type { InsideState, Round } from './insideState';
+import { toUnits } from './insideState';
 
 export type HitZone = 'deck' | 'waterline' | 'magazine';
-export type EndEvent =
-  { type: 'zone'; target: 'foe' | 'you'; zone: HitZone } | { type: 'end'; result: 'victory' | 'lost' };
+export type HitEvent =
+  | { type: 'zone'; target: 'foe' | 'you'; zone: HitZone }
+  | { type: 'sunk'; foe: number; name: string }
+  | { type: 'lost' };
 
-/** The vessel sinks: the duel is won. */
-export function sinkFoe(d: DuelState, e: EnemyVessel, out: EndEvent[]): void {
-  if (d.end) return;
+/** The vessel breaks in two and goes down (the world counts its sinking: company.ts). */
+export function sinkFoe(e: EnemyVessel, out: HitEvent[]): void {
+  if (e.sinkT > 0) return;
   Object.assign(e, { sinkT: 0.001, speed: 0, hull: 0 });
-  d.end = { result: 'victory', t: 0 };
-  out.push({ type: 'end', result: 'victory' });
+  out.push({ type: 'sunk', foe: e.id, name: ENEMY_CLASSES[e.cls].name });
 }
 
-/** The vessel struck at this point of its picture by a round of this kind, or a torpedo. */
+/** The vessel struck at this point of its picture by a round of this kind, a dart or a torpedo. */
 export function hitFoe(
   g: GameState,
-  d: DuelState,
   e: EnemyVessel,
-  kind: Round['kind'] | 'torpedo',
+  kind: Round['kind'] | 'torpedo' | 'dart',
   at: { u: number; v: number },
-  out: EndEvent[],
+  out: HitEvent[],
 ): void {
+  if (e.sinkT > 0) return;
   const pose = { model: ENEMY_CLASSES[e.cls].look };
   const m = shipModel(pose);
   const pic = shipPicture(pose);
@@ -46,47 +48,55 @@ export function hitFoe(
     zone = 'deck';
     taken = MACHINE_GUN.damage;
     if (g.rng() < MACHINE_GUN.fireChance) e.dmg.fire = Math.max(e.dmg.fire, HIT_ZONES.deck.fireSeconds);
+  } else if (kind === 'dart') {
+    // a small breach under the water
+    zone = 'waterline';
+    e.dmg.flood = Math.min(1, e.dmg.flood + HARPOON_GUN.flood);
+    taken = HARPOON_GUN.damage;
   } else if (kind === 'torpedo') {
-    // a great breach under the water
     zone = zone === 'magazine' ? 'magazine' : 'waterline';
     e.dmg.flood = Math.min(1, e.dmg.flood + TORPEDO_GUIDE.flood);
     taken = zone === 'magazine' ? Infinity : TORPEDO_GUIDE.damage;
   } else taken = applyHit(e.dmg, zone, WEAPONS[kind].damage);
   e.hull = Math.max(0, e.hull - taken);
+  // struck, it knows where you are: it hunts you
   e.alert = 1;
-  if (kind !== 'mg') out.push({ type: 'zone', target: 'foe', zone });
-  if (e.hull <= 0 || swamped(e.dmg)) sinkFoe(d, e, out);
+  e.phase = 'hunting';
+  e.unseen = 0;
+  if (kind !== 'mg' && kind !== 'dart') out.push({ type: 'zone', target: 'foe', zone });
+  if (e.hull <= 0 || swamped(e.dmg)) sinkFoe(e, out);
 }
 
 /** Your ship struck: `under` a breach (torpedo, charge, a shell at the waterline), else the deck. */
 export function hitYou(
   g: GameState,
-  d: DuelState,
+  d: InsideState,
   damage: number,
   under: boolean,
   flood: number,
-  out: EndEvent[],
+  out: HitEvent[],
 ): void {
+  if (d.lost !== null) return;
   const zone: HitZone = under ? 'waterline' : 'deck';
   const taken = flood > 0 ? damage : applyHit(g.company.yourDmg, zone, damage);
   if (flood > 0) g.company.yourDmg.flood = Math.min(1, g.company.yourDmg.flood + flood);
   damageShip(g.ship, taken, [], false);
   g.ship.flood = g.company.yourDmg.flood;
   out.push({ type: 'zone', target: 'you', zone });
-  if ((g.ship.hull <= 0 || swamped(g.company.yourDmg)) && !d.end) {
+  if (g.ship.hull <= 0 || swamped(g.company.yourDmg)) {
     g.ship.hull = 0;
-    d.end = { result: 'lost', t: 0 };
-    out.push({ type: 'end', result: 'lost' });
+    d.lost = 0;
+    out.push({ type: 'lost' });
   }
 }
 
-/** A round of the enemy's struck your ship at this point of its picture. */
+/** A round of a vessel's struck your ship at this point of its picture. */
 export function roundHitsYou(
   g: GameState,
-  d: DuelState,
+  d: InsideState,
   kind: Round['kind'],
   v: number,
-  out: EndEvent[],
+  out: HitEvent[],
 ): void {
   const pic = shipPicture(g.ship);
   const band = HIT_ZONES.waterline.bandM / (shipModel(g.ship).lengthM * pic.aspect);

@@ -33,7 +33,6 @@ import { lookAt } from '../systems/seaLook';
 import { showEvent } from './worldEvents';
 import { ARENA_DEFAULT, setUpArena, type ArenaSetup } from '../systems/company/arena';
 import { timeScale } from '../systems/company/battle';
-import { openDuel } from '../systems/turret/duel';
 import { WorldViews } from './worldViews';
 import type { SceneData, Session } from './session';
 
@@ -72,6 +71,7 @@ export class WorldScene extends Phaser.Scene {
     this.session.on('gallery', this.onGallery, this);
     this.session.on('arena', this.onArena, this);
     this.session.on('battle', this.onBattleOver, this);
+    this.session.on('insideClosed', this.onInsideClosed, this);
     this.session.on('skipWeather', this.onSkipWeather, this);
     const onHide = (): void => {
       if (document.visibilityState === 'hidden') this.save();
@@ -85,6 +85,7 @@ export class WorldScene extends Phaser.Scene {
       this.session.off('gallery', this.onGallery, this);
       this.session.off('arena', this.onArena, this);
       this.session.off('battle', this.onBattleOver, this);
+      this.session.off('insideClosed', this.onInsideClosed, this);
       this.session.off('skipWeather', this.onSkipWeather, this);
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', this.save);
@@ -151,14 +152,29 @@ export class WorldScene extends Phaser.Scene {
     this.scene.launch('Battle', { session: this.session });
   }
 
-  /** "Armi" with the arena's tick: the turret in first person over the paused sea (scenes/TurretScene.ts). */
-  private openTurret(foeId: number): void {
-    const foe = this.state.company.enemies.find((e) => e.id === foeId);
-    if (!foe || this.session.inBattle) return;
+  /** The inside view is open: the sea runs on, not drawn (scenes/TurretScene.ts draws it from inside). */
+  private inside = false;
+  /** "Vista interna" pressed the first time: Aurelio's tip first, then the view. */
+  private insideAfterTip = false;
+
+  /** "Vista interna": first person from your ship, over the world that keeps running (scenes/TurretScene.ts). */
+  private openTurret(): void {
+    if (this.session.inBattle || this.inside) return;
+    // Aurelio explains it the first time (systems/tips.ts): the view opens when he is done
+    if (this.state.story.dialogue === 'tipInside') {
+      this.insideAfterTip = true;
+      return;
+    }
+    this.inside = true;
     this.session.inBattle = true;
     this.session.emit('battle', true);
-    this.scene.pause();
-    this.scene.launch('Turret', { session: this.session, duel: openDuel(this.state, foe) });
+    this.cameras.main.setVisible(false);
+    this.scene.launch('Turret', { session: this.session });
+  }
+
+  private onInsideClosed(): void {
+    this.inside = false;
+    this.cameras.main.setVisible(true);
   }
 
   private handleEvents(events: GameEvent[]): void {
@@ -170,8 +186,12 @@ export class WorldScene extends Phaser.Scene {
       v.company.onEvent(e); // the Compagnia's guns and bursts (views/companyViews.ts)
       if (e.type === 'hurt') v.hurtFlash = 0.5;
       else if (e.type === 'battleStart') this.openBattle();
-      else if (e.type === 'turretOpen') this.openTurret(e.foe);
-      else if (
+      else if (e.type === 'turretOpen') this.openTurret();
+      else if (e.type === 'dialogueClosed' && e.id === 'tipInside' && this.insideAfterTip) {
+        this.insideAfterTip = false;
+        this.save();
+        this.openTurret();
+      } else if (
         e.type === 'gateOpened' ||
         e.type === 'fishCaught' ||
         e.type === 'tamed' ||
@@ -266,6 +286,8 @@ export class WorldScene extends Phaser.Scene {
       if (!d.dead && !g.beasts.battle && !g.boat.sinkT && !g.sub.sinkT) this.save();
     }
 
+    // inside the view the sea is drawn from the turret
+    if (this.inside) return;
     this.views.update(
       g,
       input,
