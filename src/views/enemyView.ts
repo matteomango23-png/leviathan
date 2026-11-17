@@ -3,19 +3,20 @@
 // a U-Boat seen through the water; over each, an eye that fills as it grows wary (grey calm, amber searching, red
 // hunting) and its hull once struck. Sunk, it breaks in two (views/shipBreak.ts). Look only.
 import Phaser from 'phaser';
-import { ENEMY_CLASSES } from '../data/company';
+import { ENEMY_CLASSES, HIT_ZONES } from '../data/company';
 import { SHIP_MODELS } from '../data/fleet';
 import { WORLD } from '../data/worldLayout';
 import { WORLD_ART_KEYS } from '../data/sprites.generated';
 import { enemyPose, type CompanyState, type EnemyVessel } from '../systems/company/enemyState';
 import { newRide, settleRide, stepRide, type RideState } from '../systems/ride';
 import { seaHeight, type SeaNow } from '../systems/sea';
-import { shipHeight } from '../systems/ship/geometry';
+import { shipHeight, shipPoint } from '../systems/ship/geometry';
 import { shipArt, shipLength, shipPicture } from '../systems/ship/model';
 import { freshHatches } from '../systems/ship/ship';
 import { waterOver } from './seaFx';
 import { ShipBreak } from './shipBreak';
 import { ShipPictures } from './shipPictures';
+import { deckFire, SoftPuffs } from './softPuffs';
 
 /** The eye's colours by what it is doing. */
 const EYE = { calm: 0x9aa3a8, suspicious: 0xffc23d, lost: 0xff8a2a, hunting: 0xff3b2e } as const;
@@ -33,6 +34,9 @@ export class EnemyView {
   private readonly fx: Phaser.GameObjects.Graphics;
   private readonly marks: Phaser.GameObjects.Graphics;
   private readonly breaks: ShipBreak;
+  /** Fires on their decks (in front of the hull) and the glow of the store of the one you fight (over the dark). */
+  private readonly flames: SoftPuffs;
+  private readonly glints: SoftPuffs;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -45,6 +49,8 @@ export class EnemyView {
     this.marks = scene.add.graphics();
     glowLayer.add(this.marks); // seen in the dark too
     this.breaks = new ShipBreak(scene, layer, wreck);
+    this.flames = new SoftPuffs(scene, layer, false);
+    this.glints = new SoftPuffs(scene, glowLayer, true);
   }
 
   private drawnOf(e: EnemyVessel): Drawn {
@@ -62,9 +68,19 @@ export class EnemyView {
     return d;
   }
 
-  update(c: CompanyState, time: number, dt: number, sea: SeaNow, zoom: number): void {
+  /** @param view the world on screen (the vessels off it show as an arrow at its edge, out of battle) */
+  update(
+    c: CompanyState,
+    time: number,
+    dt: number,
+    sea: SeaNow,
+    zoom: number,
+    view: Phaser.Geom.Rectangle,
+  ): void {
     this.fx.clear();
     this.marks.clear();
+    this.flames.begin();
+    this.glints.begin();
     const sinking = new Map<number, number>();
     const seaY = (wx: number): number => WORLD.surfaceY - seaHeight(wx, time, sea, sea.water);
     for (const e of c.enemies) {
@@ -76,7 +92,13 @@ export class EnemyView {
       const under = Math.min(1, e.dive / Math.max(1, H * pic.waterline));
       if (under > 0.02) settleRide(d.ride);
       else stepRide(d.ride, e.x, e.face, L, sea, time, dt);
-      d.top = WORLD.surfaceY - pic.waterline * H + e.dive - d.ride.h * (1 - under);
+      // the water it took in: lower in the sea (company/hullDamage.ts)
+      d.top =
+        WORLD.surfaceY -
+        pic.waterline * H +
+        e.dive -
+        d.ride.h * (1 - under) +
+        H * HIT_ZONES.waterline.sink * e.dmg.flood;
       if (e.sinkT > 0) {
         d.pics?.hide();
         sinking.set(e.id, e.sinkT);
@@ -100,9 +122,13 @@ export class EnemyView {
         mouthT: 0,
       };
       const wet = Math.min(1, under / 0.5);
-      d.pics?.place(look, e.x, d.top, 1, d.ride.p * (1 - under), wet > 0 ? seaY : null, time, wet);
+      // and leaning, its bow down
+      const pitch = d.ride.p * (1 - under) - HIT_ZONES.waterline.list * e.dmg.flood;
+      d.pics?.place(look, e.x, d.top, 1, pitch, wet > 0 ? seaY : null, time, wet);
+      this.drawHurt(e, time, c.battle?.foe === e.id && !c.battle.result, zoom);
       if (wet < 1) waterOver(this.fx, e.x - L / 2, e.x + L / 2, d.top + H * 1.05, time, sea, 1 - wet);
       this.drawMarks(e, e.x, d.top - MARK.gap / zoom, zoom);
+      if (!c.battle) this.drawArrow(e, view, zoom);
     }
     // the vessels gone (sunk and under), their pictures with them
     for (const [id, d] of this.drawn)
@@ -111,6 +137,33 @@ export class EnemyView {
         this.drawn.delete(id);
       }
     this.breaks.update(sinking, time, sea);
+    this.flames.end();
+    this.glints.end();
+  }
+
+  /** A fire on its deck, flickering, its smoke rising; in battle, the glow of its store (the master stroke). */
+  private drawHurt(e: EnemyVessel, time: number, foe: boolean, zoom: number): void {
+    const pose = enemyPose(e);
+    deckFire(this.flames, pose, e.dmg.fire, time);
+    if (foe) {
+      const m = ENEMY_CLASSES[e.cls].magazine;
+      const p = shipPoint(pose, m.u, m.v);
+      this.glints.puff(p.x, p.y, 10 / zoom, 0xffb040, 0.35 + 0.25 * Math.sin(time * 4));
+    }
+  }
+
+  /** Out of battle, a vessel off the screen shows as an arrow at its edge, with its eye. */
+  private drawArrow(e: EnemyVessel, view: Phaser.Geom.Rectangle, zoom: number): void {
+    const m = 22 / zoom;
+    if (e.x > view.left && e.x < view.right) return;
+    const side = e.x > view.right ? 1 : -1;
+    const x = side > 0 ? view.right - m : view.left + m;
+    const y = Math.min(view.bottom - m, Math.max(view.top + m * 2, WORLD.surfaceY - m));
+    const g = this.marks;
+    const s = 7 / zoom;
+    g.fillStyle(EYE[e.phase], 0.9);
+    g.fillTriangle(x + side * s, y, x - side * s * 0.6, y - s, x - side * s * 0.6, y + s);
+    this.drawMarks(e, x - side * s * 2.2, y - s * 2.2, zoom);
   }
 
   /** The eye of its alert over it, filling as it grows wary, and its hull once struck. */

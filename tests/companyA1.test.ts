@@ -159,7 +159,7 @@ describe('l’arena', () => {
     const g = arena();
     const input = emptyInput();
     input.helm.throttle = 1;
-    input.helm.dir = 1;
+    input.helm.dir = -1; // away from the whaler: nothing in the way
     for (let i = 0; i < 60; i++) stepGame(g, input, 0.05);
     expect(g.ship.engineOn).toBe(true);
     input.helmCmd = 'engine';

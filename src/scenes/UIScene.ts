@@ -19,7 +19,8 @@ import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
 import { GalleryBar } from '../ui/galleryBar';
 import { ArenaBar } from '../ui/arenaBar';
-import { FireButtons } from '../ui/fireButtons';
+import { BattleControls } from '../ui/battleControls';
+import { BattleHud } from '../ui/battleHud';
 import { coachDue, runCoach } from '../ui/coach';
 import { GUN } from '../data/diver';
 import { spareDarts } from '../systems/gun';
@@ -40,8 +41,9 @@ export class UIScene extends Phaser.Scene {
   /** The submarine's 360° sonar and the arrow home (block 5c). */
   private subScope!: SubScope;
   private sleep!: SleepOverlay;
-  /** Your ship's weapons at the helm, while the Compagnia is about (ui/fireButtons.ts). */
-  private fire!: FireButtons;
+  /** Sea battles: "Armi", the gun and torpedo, the two ships' bars (ui/battleControls.ts, ui/battleHud.ts). */
+  private naval!: BattleControls;
+  private navalHud!: BattleHud;
   /** Seconds the sea has been quiet (no dialogue, no picker): a tutorial round waits for it, after Aurelio's tips. */
   private quiet = 0;
 
@@ -68,7 +70,8 @@ export class UIScene extends Phaser.Scene {
     this.sleep = new SleepOverlay(this.root, this.session);
     if (this.session.gallery) new GalleryBar(this.root, this.session);
     if (this.session.arena) new ArenaBar(this.root, this.session);
-    this.fire = new FireButtons(this.root, this.session);
+    this.naval = new BattleControls(this.root, this.session);
+    this.navalHud = new BattleHud(this.root);
 
     this.session.on('gameEvents', this.onGameEvents, this);
     this.session.on('toast', this.onToast, this);
@@ -101,6 +104,7 @@ export class UIScene extends Phaser.Scene {
   private onGameEvents(events: GameEvent[]): void {
     if (!this.session.game) return;
     this.hud.onEvents(events, this.session.game);
+    this.navalHud.onEvents(events);
     // the drone's report pops up as soon as it is back (ui/reconPopup.ts)
     if (events.some((e) => e.type === 'reconDone' && e.count > 0))
       openReconPopup(this.session.game, this.session, (t) => this.hud.toast(t, 2.5));
@@ -193,7 +197,9 @@ export class UIScene extends Phaser.Scene {
     const reload = g.harpoon.reload > 0 ? 1 - g.harpoon.reload / GUN.reloadSeconds : null;
     this.controls.setGun(g.gear.activeWeapon === 'arpione', g.gear.gunMag, spareDarts(g), reload);
     this.helm.update(helm, dt);
-    this.fire.update(g);
+    this.naval.update(g);
+    this.navalHud.update(g, dt);
+    this.root.classList.toggle('in-battle', !!g.company.battle && g.ship.aboard);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);
     this.starter.setVisible(needsStarter(g) && !g.story.dialogue);

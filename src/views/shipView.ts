@@ -21,7 +21,8 @@ import { ShipFx } from './shipFx';
 import { ShipPictures } from './shipPictures';
 import { ShipLights } from './shipLights';
 import type { Beam } from '../systems/ship/floodlight';
-import { SILENCE } from '../data/company';
+import { HIT_ZONES, SILENCE } from '../data/company';
+import { deckFire, SoftPuffs } from './softPuffs';
 
 /** Between two colours (0 … 1). */
 const mixColor = (a: number, b: number, t: number): number => {
@@ -63,6 +64,8 @@ export class ShipView {
   private jetPower = 0;
   /** How far into Silence it shows (0 … 1): the hull darkened, its lights out (data/company.ts SILENCE). */
   private silentK = 0;
+  /** A fire on its deck in a sea battle (company/hullDamage.ts). */
+  private readonly flames: SoftPuffs;
 
   constructor(
     scene: Phaser.Scene,
@@ -91,6 +94,7 @@ export class ShipView {
     this.glow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.lights = new ShipLights(this.glow, this.beam);
     layer.add(this.fx);
+    this.flames = new SoftPuffs(scene, layer, false);
     glowLayer.add(this.glow);
   }
 
@@ -128,7 +132,9 @@ export class ShipView {
     const roll = s.ride.p;
     const P = shipModel(s).plane ?? SHIP.plane;
     const planing = Math.max(0, (k - P.from) / (1 - P.from));
-    const pitch = roll + planing * P.pitch;
+    // a breach in a sea battle: the water taken in leans it bow down (company/hullDamage.ts)
+    const flood = s.flood ?? 0;
+    const pitch = roll + planing * P.pitch - HIT_ZONES.waterline.list * flood;
     const lift = planing * P.lift;
     // a U-Boat diving: deeper, the swell fading little by little, the sea line climbing its picture, no wake
     const sunk = submerged(s);
@@ -139,7 +145,8 @@ export class ShipView {
       shipPicture(s).waterline * shipHeight(s) +
       s.dive +
       (heave - lift) * calm -
-      (s.hop ?? 0);
+      (s.hop ?? 0) +
+      shipHeight(s) * HIT_ZONES.waterline.sink * flood; // and lower in the sea
     const pics = this.picsOf(s);
     // afloat, the whole painting, and in front of it the sea cut by the wave itself (no straight line, owner 9
     // ottobre); diving, the hull under the waves darkens little by little (owner: it turned dark at once going
@@ -188,6 +195,9 @@ export class ShipView {
       this.night * (1 - this.silentK),
     );
     this.drawTug(s, top, dt);
+    this.flames.begin();
+    deckFire(this.flames, s, s.fire ?? 0, time);
+    this.flames.end();
   }
 
   /** Its reactors' flames (the abyssal ship): only while the engine runs, longer with the throttle. */

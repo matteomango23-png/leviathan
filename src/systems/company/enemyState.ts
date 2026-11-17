@@ -30,8 +30,43 @@ export interface EnemyVessel {
   home: number;
   /** 0 afloat; > 0 seconds since it broke in two and began to sink. */
   sinkT: number;
-  /** Its propeller fouled by a beast (seconds left at half speed: lot A2). */
+  /** Its propeller fouled by a beast (seconds left at half speed: lot B3). */
   fouled: number;
+  /** What its hull has taken (hullDamage.ts): water in, a fire on deck, its guns jammed. */
+  dmg: HullDamage;
+  /** Its gun glinting before it fires (s left) and where it aims: where you were when it began (you can dodge). */
+  aimT: number;
+  aimAt: { x: number; y: number } | null;
+  /** In battle: how far off its distance it weaves now (units), and the seconds to its next change. */
+  weave: number;
+  weaveT: number;
+}
+
+/** Water taken in (0 … 1: full, it sinks), a fire on deck and guns jammed (s left). */
+export interface HullDamage {
+  flood: number;
+  fire: number;
+  jam: number;
+}
+
+export const freshDamage = (): HullDamage => ({ flood: 0, fire: 0, jam: 0 });
+
+/** Battle stations (battle.ts): which vessel you fight, the fixed view, slow motion, how it ended. */
+export interface BattleState {
+  foe: number;
+  /** The view: its middle (world x) and width (units); it never zooms while the battle lasts. */
+  cx: number;
+  width: number;
+  /** The usual width for your ship (BATTLE.frameM): the enemy's distance is a share of it. */
+  base: number;
+  /** Your first shot before it saw you is worth more. */
+  surprise: boolean;
+  /** Seconds of slow motion left (real time). */
+  slow: number;
+  /** Set when it is over (the view holds a moment). */
+  result: 'victory' | 'escaped' | 'fled' | 'lost' | null;
+  /** Seconds since it ended. */
+  over: number;
 }
 
 /** A shell, a torpedo or a depth charge on its way. */
@@ -54,10 +89,21 @@ export interface CompanyState {
   shots: Shot[];
   /** Seconds before each of your ship's weapons fires again. */
   yourReload: Partial<Record<WeaponId, number>>;
+  /** What your ship's hull has taken in a battle (not saved). */
+  yourDmg: HullDamage;
+  /** At battle stations, or null. */
+  battle: BattleState | null;
   nextId: number;
 }
 
-export const newCompany = (): CompanyState => ({ enemies: [], shots: [], yourReload: {}, nextId: 1 });
+export const newCompany = (): CompanyState => ({
+  enemies: [],
+  shots: [],
+  yourReload: {},
+  yourDmg: freshDamage(),
+  battle: null,
+  nextId: 1,
+});
 
 /** Metres to world units, and knots to units/s. */
 export const metres = (m: number): number => m * WORLD.unitsPerMetre;
@@ -90,6 +136,11 @@ export function spawnEnemy(c: CompanyState, cls: EnemyClassId, x: number, face: 
     home: x,
     sinkT: 0,
     fouled: 0,
+    dmg: freshDamage(),
+    aimT: 0,
+    aimAt: null,
+    weave: 0,
+    weaveT: 0,
   };
   c.enemies.push(e);
   return e;

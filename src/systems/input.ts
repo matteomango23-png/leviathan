@@ -44,11 +44,16 @@ export interface InputState {
     | 'night'
     | 'fire'
     | 'torpedo'
+    | 'arm'
     | null;
   /** The Ocean's Nightmare (part 4d): the beast picked from the drone's report (its index), or -1; or the compass
    *  put away. */
   pickTarget: number;
   clearTarget: boolean;
+  /** Battle stations (company/): the gun's aim while you drag from its button (radians; null: not aiming), and the
+   *  angle it fires at when you let go (this frame only). */
+  cannonAim: number | null;
+  fireAngle: number | null;
   /** Sleeping (systems/sleep.ts): lie down until the evening or the morning, or wake up. */
   sleepCmd: 'sera' | 'mattino' | 'wake' | null;
 }
@@ -68,6 +73,8 @@ export const emptyInput = (): InputState => ({
   slot: -1,
   helm: freshHelm(),
   helmCmd: null,
+  cannonAim: null,
+  fireAngle: null,
   pickTarget: -1,
   clearTarget: false,
   sleepCmd: null,
@@ -83,6 +90,7 @@ export function consumePresses(input: InputState): void {
   input.tameTap = false;
   input.slot = -1;
   input.helmCmd = null;
+  input.fireAngle = null;
   input.sleepCmd = null;
   input.pickTarget = -1;
   input.clearTarget = false;

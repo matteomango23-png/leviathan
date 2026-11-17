@@ -46,6 +46,10 @@ export interface ShipState {
   /** Silence (owner, 17 novembre 2026; not saved): the ⏻ button with the engine running switches it to the electric
    *  motors: lights out, the hull darker, a third of the speed, nearly no noise (data/company.ts SILENCE). */
   silent?: boolean;
+  /** In a battle with the Compagnia (company/hullDamage.ts; not saved): the water taken in (0 … 1) and seconds of a
+   *  fire on deck left. The view leans it and lowers it; the water slows it. */
+  flood?: number;
+  fire?: number;
   /** How hard the propeller turns, 0…1 (not saved): the engine pushing, not the ship coasting (owner, 8 ottobre:
    *  the propeller picture and its bubbles follow it). */
   prop: number;
