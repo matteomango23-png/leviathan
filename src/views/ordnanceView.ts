@@ -4,7 +4,7 @@
 // (glowSpots for views/lightView.ts). Look only.
 import Phaser from 'phaser';
 import { WORLD } from '../data/worldLayout';
-import { HALO_TEX, TEX } from './textures';
+import { SoftPuffs } from './softPuffs';
 import type { CompanyState } from '../systems/company/enemyState';
 import type { GameEvent } from '../systems/events';
 
@@ -20,44 +20,6 @@ interface Burst {
 /** How long each burst lasts (s) and how big it is (units). Tuning. */
 const LIFE = { fire: 1.6, water: 1.4, deep: 2.2, muzzle: 0.25 };
 const SIZE = { cannoncino: 5, cannone: 7, siluro: 12, carica: 14 } as const;
-
-/** Soft rounds of smoke or light: the lamp's halo picture (a gradient to nothing), tinted, from a pool reused every
- *  frame. Never a drawn disc with an edge (the owner's rule of no circles of code). */
-class SoftPuffs {
-  private readonly pool: Phaser.GameObjects.Image[] = [];
-  private used = 0;
-
-  constructor(
-    private readonly scene: Phaser.Scene,
-    private readonly layer: Phaser.GameObjects.Layer,
-    private readonly add: boolean,
-  ) {}
-
-  begin(): void {
-    this.used = 0;
-  }
-
-  puff(x: number, y: number, r: number, color: number, alpha: number): void {
-    if (alpha <= 0.005 || r <= 0) return;
-    let im = this.pool[this.used];
-    if (!im) {
-      im = this.scene.add.image(0, 0, TEX.halo);
-      if (this.add) im.setBlendMode(Phaser.BlendModes.ADD);
-      this.layer.add(im);
-      this.pool.push(im);
-    }
-    this.used++;
-    im.setVisible(true)
-      .setPosition(x, y)
-      .setScale(r / HALO_TEX.radius)
-      .setTint(color)
-      .setAlpha(Math.min(1, alpha));
-  }
-
-  end(): void {
-    for (let i = this.used; i < this.pool.length; i++) this.pool[i]!.setVisible(false);
-  }
-}
 
 export class OrdnanceView {
   private readonly g: Phaser.GameObjects.Graphics;

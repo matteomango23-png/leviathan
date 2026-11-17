@@ -1,15 +1,25 @@
 # Progressi
 
-## Dove siamo (aggiornato il 17 novembre 2026, v0.126.0)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.127.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
 - **Ultima pulizia:** v0.122.1 (12 novembre 2026); la prossima dopo altri 3 lotti. Tutti i file di codice sotto le 300 righe (i dati restano lunghi).
-- **Prossimo:** la Compagnia dell'Olio Nero (`docs/PROPOSTA-COMPAGNIA.md`, approvata il 17 novembre 2026), un'arena di prova alla volta: A1 fatta (v0.126.0), poi A2 (bestie contro navi: mandare una bestia, sabotaggio, danno o spezzare in base alla misura) e A3 (cariche di profondità, U-Boot nemico, siluri, la nostra nave spezzata). Poi le immagini con Gemini (`docs/GEMINI-LOTTO-10.md`, da scrivere), poi il mare vero. Restano possibili N2 e M5 la Fossa Nera.
+- **Prossimo:** la Compagnia dell'Olio Nero (`docs/PROPOSTA-COMPAGNIA.md`, approvata il 17 novembre 2026), un'arena di prova alla volta: A1 (v0.126.0) e B1 modalità battaglia (v0.127.0) fatte; poi B2 (siluro guidato con la leva Sali/Scendi, cariche di profondità con quota, U-Boot nemico in battaglia), B3 (bestie contro navi) e B4 (la tua nave spezzata, rimorchiatore, bottino). Piano in `C:\Users\matte\.claude\plans\zippy-beaming-peacock.md` e in `docs/PROPOSTA-COMPAGNIA.md`. Poi le immagini con Gemini (`docs/GEMINI-LOTTO-10.md`, da scrivere), poi il mare vero. Restano possibili N2 e M5 la Fossa Nera.
 - **Strumenti di prova da togliere quando lo dice il proprietario:** 5 tocchi sulla versione in pausa, "+50.000 denti", Galleria di prova (`systems/gallery.ts`, `ui/galleryBar.ts`), "Salta all'ora dopo" nel pannello ?prove, Arena navale (`systems/company/arena.ts`, `ui/arenaBar.ts`).
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Modalità battaglia B1 (17 novembre 2026) → v0.127.0
+
+- Il proprietario sull'A1: lo zoom che si allargava e stringeva da solo faceva traslare il mare, stacco e poi "respiro" dello zoom, navi che si avvicinavano troppo e finivano una davanti all'altra, ricarica troppo lunga; chiede una modalità battaglia ("come armare la nave") con zoom largo e stabile, "fighissima", carta bianca; idea sua dei siluri guidati su e giù (B2).
+- Fatto: `systems/company/battle.ts` (Armi entro `BATTLE.armM`, partenza da sola se ti cacciano, inquadratura `{cx, width, base}` che non cambia mai larghezza e si sposta solo fuori dalla zona centrale, fine per vittoria, fuga o affondamento, rallentatore `timeScale` in `WorldScene`); `hullDamage.ts` (ponte, linea di galleggiamento con acqua, inclinazione e lentezza, deposito per classe `ENEMY_CLASSES.magazine`); `enemyFire.ts` (annuncio `aimT` e colpo dove eri); `yourFire.ts` (cannone all'angolo scelto `input.fireAngle`, mira automatica fuori battaglia); `hulls.ts`; `enemyAi.ts` duello (distanza `base × standoffShare`, ondeggio, fuga); tolto `COMBAT_VIEW` da `shipCamera.ts` (`helmScale` esportato).
+- Viste: `views/companyViews.ts` (insieme di `enemyView`, `ordnanceView`, `aimView`), `views/aimView.ts` (arco parziale, lampo rosso, segno d'arrivo), `views/softPuffs.ts` (con `deckFire`), `views/lampTurn.ts` (la lampada, tolta da worldViews), `daylightAt` in `seaLight.ts`; inclinazione e fuoco della tua nave in `ShipView` (`ship.flood`, `ship.fire`).
+- UI: `ui/battleControls.ts` (Armi, Fuoco da trascinare, Siluro), `ui/battleHud.ts` (barre e scritte), `ui/naval.css`; tolti `fireButtons.*`; `#ui.in-battle` nasconde pulsanti dei portelloni e quadranti.
+- Test: `tests/companyB1.test.ts` (9). Nel browser: zoom misurato su 60 fotogrammi dopo l'entrata, un solo valore; mira e segno d'arrivo in foto; trascinamento del pulsante simulato.
+- **Da fare:** `worldViews.ts` 310 righe (sotto le 300 nella prossima pulizia). Suoni dei colpi. Da ferma l'Aurelia resiste circa 25 s alla baleniera: se il proprietario la trova difficile, abbassare il danno o allungare la ricarica nemica (`reloadMult`).
+- **Da provare sull'iPhone:** arena → avvicinarsi → Armi; mirare trascinando, schivare i colpi annunciati, cercare il deposito (bagliore arancione), falla e inclinazione, vittoria; scappare.
 
 ## Arena navale A1, la Compagnia dell'Olio Nero (17 novembre 2026) → v0.126.0
 

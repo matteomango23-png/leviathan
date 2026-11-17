@@ -25,8 +25,9 @@ export interface WeaponDef {
 }
 
 export const WEAPONS: Record<WeaponId, WeaponDef> = {
-  cannoncino: { name: 'Cannoncino', kind: 'shell', speed: 36, rangeM: 110, damage: 9, blastM: 4, reload: 2.4, gravity: 12, spread: 0.03 },
-  cannone: { name: 'Cannone', kind: 'shell', speed: 42, rangeM: 140, damage: 16, blastM: 5, reload: 3, gravity: 12, spread: 0.025 },
+  // (battle mode, owner 17 novembre 2026: "il recoil è troppo lungo"; fast enough that a shell flies about 2 s)
+  cannoncino: { name: 'Cannoncino', kind: 'shell', speed: 58, rangeM: 200, damage: 9, blastM: 4, reload: 1.2, gravity: 14, spread: 0.03 },
+  cannone: { name: 'Cannone', kind: 'shell', speed: 64, rangeM: 240, damage: 15, blastM: 5, reload: 1.5, gravity: 14, spread: 0.025 },
   siluro: { name: 'Siluro', kind: 'torpedo', speed: 20, rangeM: 190, damage: 45, blastM: 6, reload: 6 },
   carica: { name: 'Carica di profondità', kind: 'charge', speed: 7, rangeM: 70, damage: 30, blastM: 10, reload: 5 },
 }; // tuning
@@ -54,6 +55,8 @@ export interface EnemyClass {
   hydrophone: boolean;
   /** Its crew reloads this many times slower than yours (a whaler's gunners are no navy). */
   reloadMult: number;
+  /** Its ammunition store on the picture it borrows (shares): hit there, it blows up and breaks in two at once. */
+  magazine: { u: number; v: number };
   /** The distance it keeps from you while it shoots (m). */
   holdM: number;
   /** How far it patrols each way from where it starts (m). */
@@ -71,6 +74,7 @@ export const ENEMY_CLASSES: Record<EnemyClassId, EnemyClass> = {
     depthM: 0,
     weapons: ['cannoncino'],
     reloadMult: 1.5,
+    magazine: { u: 0.62, v: 0.46 },
     sightM: 160,
     hearM: 130,
     hydrophone: false,
@@ -87,6 +91,7 @@ export const ENEMY_CLASSES: Record<EnemyClassId, EnemyClass> = {
     depthM: 0,
     weapons: ['cannone', 'carica'],
     reloadMult: 1.2,
+    magazine: { u: 0.38, v: 0.5 },
     sightM: 190,
     hearM: 160,
     hydrophone: true,
@@ -103,6 +108,7 @@ export const ENEMY_CLASSES: Record<EnemyClassId, EnemyClass> = {
     depthM: 30,
     weapons: ['siluro'],
     reloadMult: 1.3,
+    magazine: { u: 0.45, v: 0.5 },
     sightM: 70,
     hearM: 180,
     hydrophone: true,
@@ -168,12 +174,53 @@ export const ARENA = {
   spreadM: 110,
 };
 
-/** At the helm the view widens to hold a Compagnia vessel within this reach of your ship too (m), with this margin
- *  each side (m), up to this many times its usual size. Tuning. */
 /** Two hulls never pass through each other: they stop this close (share of their half-lengths added). Tuning. */
 export const HULLS_APART = 0.9;
 
-export const COMBAT_VIEW = { withinM: 220, marginM: 18, maxScale: 2.6 };
+/** Battle stations (owner, 17 novembre 2026: "una modalità tipo armare la nave… zoom out abbastanza grosso"). Tuning. */
+export const BATTLE = {
+  /** "Armi" shows with a Compagnia vessel this close (m, middle to middle); hunted this close it starts by itself. */
+  armM: 300,
+  /** The battle's view: this wide (m, × the helm's growth with the ship's size), the sea's surface this share of its
+   *  height above the middle (some sky, more sea). It never zooms while the battle lasts. */
+  frameM: 200,
+  lookDown: 0.12,
+  /** Begun farther apart, the view starts wider so both ships fit in its middle (× the distance), up to this many
+   *  times frameM; it then keeps that size until the end. */
+  fitShare: 1.6,
+  maxFrame: 1.7,
+  /** It moves only when a ship leaves this share of the view round its middle, at most this fast (share of its
+   *  width per second). */
+  deadZone: 0.72,
+  panShare: 0.35,
+  /** The enemy keeps this share of frameM from you, weaving this far either way (m) every few seconds. */
+  standoffShare: 0.58,
+  weaveM: 25,
+  weaveSeconds: [2.5, 5] as [number, number],
+  /** With less than this share of its hull it runs. */
+  fleeBelow: 0.25,
+  /** The battle is over when the two are this many view-widths apart. */
+  escapeShare: 1.05,
+  /** Your first shot before it has seen you: × its damage. */
+  surpriseMult: 2,
+  /** Before its gun fires it glints red this long (s): time to see it coming. */
+  telegraph: 0.8,
+  /** How much of your shell's arc shows while you aim (share of its flight). */
+  arcShare: 0.35,
+  /** The deciding blow in slow motion: this slow, this long (s of real time). */
+  slowmo: { scale: 0.3, seconds: 1.1 },
+};
+
+/** Where a shot strikes a hull (owner, 17 novembre 2026: "deve essere proprio fighissima"). Tuning. */
+export const HIT_ZONES = {
+  /** On the deck: a fire (s, burning this many hull points a second) and its guns jammed for a while (s). */
+  deck: { mult: 1, fireSeconds: 6, firePerSecond: 0.8, jamSeconds: 2.5 },
+  /** At the waterline (within this many metres of it) or below: a breach, taking in this much water (0 … 1 full);
+   *  the water makes it lean (radians at full), sit lower (share of its height) and slow down (share of its speed). */
+  waterline: { mult: 1.3, bandM: 2.5, flood: 0.18, list: 0.14, sink: 0.18, slow: 0.6 },
+  /** Its ammunition store: within this many metres of it, it blows up and breaks in two. */
+  magazine: { radiusM: 2.6 },
+};
 
 /** A ship sinking: how long its two halves go down (s) before it is gone. Look and logic share it. */
 export const SINKING = { seconds: 9 };

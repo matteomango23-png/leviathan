@@ -2,6 +2,21 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.127.0 — Ai posti di combattimento! (17 novembre 2026)
+
+- **Modalità battaglia:** con una nave della Compagnia vicina compare **Armi**. Se la nemica non ti ha ancora visto è un attacco a sorpresa e il primo colpo vale doppio. Se invece ti dà la caccia, la battaglia parte da sola.
+- **Inquadratura fissa e larga:** si entra con uno stacco dal nero, le due navi in vista. Per tutta la battaglia lo zoom non cambia mai e la vista si sposta piano solo se una nave esce dal centro. Niente più mare che trasla né zoom che va e viene.
+- **La nemica tiene la distanza:** resta a tiro, si sposta avanti e indietro per non farsi colpire, e quando è malridotta scappa.
+- **Mira tu:** tieni premuto Fuoco e trascina il dito nella direzione in cui vuoi sparare. Si vede solo il primo tratto dell'arco, lasci il dito e parte il colpo. Ricarica breve (1,2-1,5 s).
+- **I colpi nemici si vedono arrivare:** il cannone lampeggia rosso prima di sparare e sul mare compare il segno rosso dove cadrà il colpo. Spostati per schivarlo.
+- **Punti deboli:**
+  - sul ponte si accende un incendio e il cannone si ferma qualche secondo;
+  - sulla linea di galleggiamento si apre una falla: la nave imbarca acqua, si inclina, si abbassa e rallenta, e piena d'acqua affonda;
+  - sul deposito munizioni (il bagliore sullo scafo nemico) esplode e si spezza subito.
+- Barre in alto come in un picchiaduro (la tua nave contro la nemica, scafo e acqua), scritte "Ai posti di combattimento!" e "Vittoria!", rallentatore sul colpo finale.
+- Fuori battaglia, le navi della Compagnia fuori dallo schermo si vedono come una freccia sul bordo, con il loro occhio.
+- I salvataggi non cambiano.
+
 ## v0.126.0 — Arena navale: la Compagnia dell'Olio Nero (17 novembre 2026)
 
 - Nuova prova nel menu iniziale, con gli strumenti di prova accesi: **Arena navale**. Scegli la tua nave, il nemico (baleniera, nave da caccia, U-Boot o tutti e tre), giorno o notte. È una partita usa e getta che non si salva.

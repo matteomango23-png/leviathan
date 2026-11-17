@@ -1,8 +1,9 @@
 // The Compagnia dell'Olio Nero at sea, one step (owner, 17 novembre 2026; docs/PROPOSTA-COMPAGNIA.md): each vessel
-// perceives your ship (detection.ts), sails (enemyAi.ts) and, hunting, shoots at it; your weapons fire at the
-// nearest in reach; the shots fly and burst (ordnance.ts). A vessel with no hull left breaks in two and sinks.
-// Only where there are vessels (the test arena for now). Pure logic.
-import { DETECTION, ENEMY_CLASSES, HULLS_APART, SINKING, WEAPONS, type WeaponId } from '../../data/company';
+// perceives your ship (detection.ts), sails (enemyAi.ts) and, hunting, shoots at it (enemyFire.ts); your weapons
+// fire (yourFire.ts); battle stations (battle.ts); the shots fly and burst (ordnance.ts) and each hit strikes a
+// part of the hull (hullDamage.ts). A vessel with no hull left, full of water or with its store blown up breaks in two
+// and sinks. Only where there are vessels (the test arena for now). Pure logic.
+import { BATTLE, ENEMY_CLASSES, HULLS_APART, SINKING, type WeaponId } from '../../data/company';
 import { WORLD } from '../../data/worldLayout';
 import { nightness } from '../dayNight';
 import type { GameEvent } from '../events';
@@ -10,111 +11,16 @@ import type { InputState } from '../input';
 import type { GameState } from '../newGame';
 import { shipDraft, shipPoint } from '../ship/geometry';
 import { damageShip } from '../ship/shipHull';
-import { shipLength, shipModel, shipPicture, shipTopSpeed } from '../ship/model';
-import { perceive, stepAlert, type Quarry } from './detection';
+import { shipLength } from '../ship/model';
+import { canArm, foeInReach, slowMotion, startBattle, stepBattle } from './battle';
+import { perceive, stepAlert } from './detection';
 import { sailEnemy } from './enemyAi';
-import { afloatEnemies, enemyPose, metres, type EnemyVessel } from './enemyState';
-import { dropCharge, fireShell, fireTorpedo, stepShots, type Hittable } from './ordnance';
-
-type Pose = { x: number; face: 1 | -1; dive?: number; model: string };
-
-/** A hull's box in the world: deck to keel, nearly stern to bow. */
-export function hullBox(p: Pose): Hittable['box'] {
-  const a = shipPoint(p, 0.06, shipPicture(p).deckY);
-  const b = shipPoint(p, 0.94, 0);
-  return {
-    x0: Math.min(a.x, b.x),
-    x1: Math.max(a.x, b.x),
-    y0: a.y,
-    y1: WORLD.surfaceY + (p.dive ?? 0) + shipDraft(p),
-  };
-}
-
-const middle = (b: Hittable['box']): { x: number; y: number } => ({
-  x: (b.x0 + b.x1) / 2,
-  y: (b.y0 + b.y1) / 2,
-});
-const metresUnder = (y: number): number => Math.max(0, (y - WORLD.surfaceY) / WORLD.unitsPerMetre);
-
-/** Your ship as the Compagnia perceives it. */
-export function quarryOf(g: GameState): Quarry {
-  const s = g.ship;
-  const night = nightness(g.day);
-  const box = hullBox(s);
-  return {
-    ...middle(box),
-    depthM: metresUnder(WORLD.surfaceY + s.dive),
-    speedShare: Math.min(1, s.speed / Math.max(1, shipTopSpeed(s))),
-    engineOn: s.engineOn,
-    silent: !!s.silent,
-    // by night its deck lights and headlight shine; the light under the hull always does
-    lightsOn: !s.silent && (s.lightOn || night > 0.2),
-    halfM: shipModel(s).lengthM / 2,
-  };
-}
-
-/** Your weapon of this kind ready, at the nearest vessel in reach; an event either way. */
-function fireYours(g: GameState, kind: 'shell' | 'torpedo', events: GameEvent[]): void {
-  const c = g.company;
-  const s = g.ship;
-  const weapon = shipModel(s).weapons.find((w) => WEAPONS[w].kind === kind);
-  if (!weapon || (c.yourReload[weapon] ?? 0) > 0) return;
-  const w = WEAPONS[weapon];
-  const pic = shipPicture(s);
-  const from =
-    kind === 'shell'
-      ? shipPoint(s, 0.75, pic.deckY)
-      : shipPoint(s, pic.lamp.u, Math.min(pic.keel, pic.waterline + 0.08));
-  const reach = (e: EnemyVessel): boolean =>
-    Math.abs(e.x - s.x) <= metres(w.rangeM) &&
-    (kind === 'torpedo' ? (e.x - s.x) * s.face > 0 : e.dive < metres(DETECTION.periscopeM));
-  const target = afloatEnemies(c)
-    .filter(reach)
-    .sort((a, b) => Math.abs(a.x - s.x) - Math.abs(b.x - s.x))[0];
-  if (!target) {
-    events.push({ type: 'noTarget', weapon });
-    return;
-  }
-  const aim = middle(hullBox(enemyPose(target)));
-  if (kind === 'shell' && !fireShell(c, weapon, 'you', from, aim, () => 0.5)) {
-    events.push({ type: 'noTarget', weapon });
-    return;
-  }
-  if (kind === 'torpedo') fireTorpedo(c, 'you', from, aim, s.face);
-  c.yourReload[weapon] = w.reload;
-  events.push({ type: 'shotFired', from: 'you', weapon, ...from });
-}
-
-/** A hunting vessel's weapons at you, each when ready and in reach. */
-function enemyFires(g: GameState, e: EnemyVessel, q: Quarry, events: GameEvent[]): void {
-  const c = g.company;
-  const pose = enemyPose(e);
-  const pic = shipPicture(pose);
-  const dx = q.x - e.x;
-  for (const weapon of ENEMY_CLASSES[e.cls].weapons) {
-    if ((e.reload[weapon] ?? 0) > 0) continue;
-    const w = WEAPONS[weapon];
-    if (Math.abs(dx) > metres(w.rangeM)) continue;
-    let fired = false;
-    const at = (u: number, v: number): { x: number; y: number } => shipPoint(pose, u, v);
-    if (w.kind === 'shell' && q.depthM <= DETECTION.periscopeM && e.dive < metres(DETECTION.periscopeM))
-      fired = fireShell(c, weapon, 'enemy', at(0.7, pic.deckY), q, g.rng);
-    else if (w.kind === 'torpedo' && dx * e.face > 0) {
-      fireTorpedo(c, 'enemy', at(pic.lamp.u, pic.waterline + 0.05), q, e.face);
-      fired = true;
-    } else if (
-      w.kind === 'charge' &&
-      q.depthM > DETECTION.periscopeM &&
-      Math.abs(dx) < metres(w.blastM * 2)
-    ) {
-      dropCharge(c, 'enemy', at(0.1, pic.waterline), q.y);
-      fired = true;
-    }
-    if (!fired) continue;
-    e.reload[weapon] = w.reload * ENEMY_CLASSES[e.cls].reloadMult;
-    events.push({ type: 'shotFired', from: 'enemy', weapon, ...at(0.7, pic.deckY) });
-  }
-}
+import { enemyFires } from './enemyFire';
+import { afloatEnemies, enemyPose, type EnemyVessel } from './enemyState';
+import { applyHit, stepDamage, swamped, zoneOf } from './hullDamage';
+import { hullBox, metresUnder, middle, quarryOf } from './hulls';
+import { stepShots, type Hittable } from './ordnance';
+import { fireGun, fireYourTorpedo } from './yourFire';
 
 /** Your ship and a vessel at the same depth never sail through each other: they stop side by side. */
 function keepApart(s: GameState['ship'], e: EnemyVessel): void {
@@ -128,25 +34,93 @@ function keepApart(s: GameState['ship'], e: EnemyVessel): void {
   if (s.face === side) s.speed = 0;
 }
 
-/** One step of the Compagnia's vessels and the shots at sea; your fire buttons. */
+/** A vessel breaks in two and goes down. */
+function sink(g: GameState, e: EnemyVessel, events: GameEvent[]): void {
+  if (e.sinkT > 0) return;
+  Object.assign(e, { sinkT: 0.001, speed: 0, hull: 0 });
+  const at = middle(hullBox(enemyPose(e)));
+  events.push({ type: 'enemySunk', ...at, name: ENEMY_CLASSES[e.cls].name });
+  if (g.company.battle?.foe === e.id) slowMotion(g.company.battle);
+}
+
+/** A Compagnia vessel struck at `at`: the part it hits decides what it does. */
+function hitEnemy(
+  g: GameState,
+  e: EnemyVessel,
+  damage: number,
+  at: { x: number; y: number },
+  events: GameEvent[],
+): void {
+  if (e.sinkT > 0) return;
+  const c = g.company;
+  const pose = enemyPose(e);
+  const mag = ENEMY_CLASSES[e.cls].magazine;
+  // your first shot before it saw you
+  const b = c.battle;
+  const surprise = b?.foe === e.id && b.surprise ? BATTLE.surpriseMult : 1;
+  if (b?.foe === e.id) b.surprise = false;
+  const zone = zoneOf(at, WORLD.surfaceY + e.dive, shipPoint(pose, mag.u, mag.v));
+  const taken = applyHit(e.dmg, zone, damage * surprise);
+  e.hull = Math.max(0, e.hull - taken);
+  events.push({ type: 'hullHit', side: 'enemy', zone, ...at });
+  events.push({ type: 'enemyHit', ...at, left: e.hull, max: ENEMY_CLASSES[e.cls].hull });
+  // struck, it knows where you are
+  e.alert = 1;
+  e.lastSeen = middle(hullBox(g.ship));
+  if (e.hull <= 0 || swamped(e.dmg)) sink(g, e, events);
+}
+
+/** Your ship struck at `at`: a breach takes in water, the deck burns. */
+function hitYou(g: GameState, damage: number, at: { x: number; y: number }, events: GameEvent[]): void {
+  const s = g.ship;
+  const d = g.company.yourDmg;
+  const zone = zoneOf(at, WORLD.surfaceY + s.dive, null);
+  const taken = applyHit(d, zone, damage);
+  events.push({ type: 'hullHit', side: 'you', zone, ...at });
+  damageShip(s, taken, events);
+  s.flood = d.flood;
+  if (swamped(d)) damageShip(s, s.hull, events);
+}
+
+/** Your weapons, and "Armi". */
+function yourCommands(g: GameState, input: InputState, events: GameEvent[]): void {
+  if (input.helmCmd === 'arm' && canArm(g)) startBattle(g, foeInReach(g)!, events);
+  if (input.fireAngle !== null) fireGun(g, input.fireAngle, events);
+  else if (input.helmCmd === 'fire') fireGun(g, null, events);
+  if (input.helmCmd === 'torpedo') fireYourTorpedo(g, events);
+}
+
+/** One step of the Compagnia's vessels and the shots at sea; your weapons and battle stations. */
 export function stepCompany(g: GameState, input: InputState, dt: number, events: GameEvent[]): void {
   const c = g.company;
-  if (!c.enemies.length && !c.shots.length) return;
+  if (!c.enemies.length && !c.shots.length) {
+    c.battle = null;
+    return;
+  }
   for (const k of Object.keys(c.yourReload) as WeaponId[])
     c.yourReload[k] = Math.max(0, (c.yourReload[k] ?? 0) - dt);
-  if (g.ship.owned && g.ship.aboard && g.ship.hull > 0) {
-    if (input.helmCmd === 'fire') fireYours(g, 'shell', events);
-    if (input.helmCmd === 'torpedo') fireYours(g, 'torpedo', events);
-  }
+  const s = g.ship;
+  const yourShipThere = s.owned && s.hull > 0;
+  // your deck burning
+  const burn = stepDamage(c.yourDmg, dt);
+  if (burn > 0 && yourShipThere) damageShip(s, burn, events, false);
+  s.fire = c.yourDmg.fire;
+  if (s.aboard && yourShipThere) yourCommands(g, input, events);
   const night = nightness(g.day);
   const q = quarryOf(g);
-  const yourShipThere = g.ship.owned && g.ship.hull > 0;
+  const foeId = c.battle && !c.battle.result ? c.battle.foe : -1;
+  const standoff = (c.battle?.base ?? 0) * BATTLE.standoffShare;
   for (const e of c.enemies) {
     if (e.sinkT > 0) {
       e.sinkT += dt;
       continue;
     }
     for (const k of Object.keys(e.reload) as WeaponId[]) e.reload[k] = Math.max(0, (e.reload[k] ?? 0) - dt);
+    e.hull = Math.max(0, e.hull - stepDamage(e.dmg, dt));
+    if (e.hull <= 0) {
+      sink(g, e, events);
+      continue;
+    }
     const at = middle(hullBox(enemyPose(e)));
     const halfM = shipLength(enemyPose(e)) / 2 / WORLD.unitsPerMetre;
     const p = yourShipThere
@@ -154,29 +128,19 @@ export function stepCompany(g: GameState, input: InputState, dt: number, events:
       : 0;
     const phase = stepAlert(e, p, q, dt);
     if (phase) events.push({ type: 'enemyAlert', phase, ...at });
-    sailEnemy(e, q, dt);
-    if (e.phase === 'hunting' && yourShipThere) enemyFires(g, e, q, events);
+    const duel = e.id === foeId && e.phase === 'hunting' ? { standoff, rng: g.rng } : null;
+    sailEnemy(e, q, dt, duel);
+    if (e.phase === 'hunting' && yourShipThere) enemyFires(g, e, q, dt, events);
   }
   c.enemies = c.enemies.filter((e) => e.sinkT < SINKING.seconds);
-  if (yourShipThere) for (const e of afloatEnemies(c)) keepApart(g.ship, e);
+  if (yourShipThere) for (const e of afloatEnemies(c)) keepApart(s, e);
   const targets: Hittable[] = afloatEnemies(c).map((e) => ({
     side: 'enemy',
     box: hullBox(enemyPose(e)),
-    hit: (damage) => {
-      if (e.sinkT > 0) return;
-      e.hull = Math.max(0, e.hull - damage);
-      const at = middle(hullBox(enemyPose(e)));
-      events.push({ type: 'enemyHit', ...at, left: e.hull, max: ENEMY_CLASSES[e.cls].hull });
-      // struck, it knows where you are
-      e.alert = 1;
-      e.lastSeen = { x: q.x, y: q.y };
-      if (e.hull <= 0) {
-        Object.assign(e, { sinkT: 0.001, speed: 0 });
-        events.push({ type: 'enemySunk', ...at, name: ENEMY_CLASSES[e.cls].name });
-      }
-    },
+    hit: (damage, at) => hitEnemy(g, e, damage, at, events),
   }));
   if (yourShipThere)
-    targets.push({ side: 'you', box: hullBox(g.ship), hit: (dmg) => damageShip(g.ship, dmg, events) });
+    targets.push({ side: 'you', box: hullBox(s), hit: (dmg, at) => hitYou(g, dmg, at, events) });
   stepShots(c, targets, dt, events);
+  stepBattle(g, dt, events);
 }

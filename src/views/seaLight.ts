@@ -66,6 +66,19 @@ function makeDotTexture(scene: Phaser.Scene): void {
   c.refresh();
 }
 
+/** How much daylight reaches the water in view (0 … 1): less with depth, clouds and storms (`rays`), the night and
+ *  murky water, times the region's own light shafts (moved from worldViews.ts, 17 novembre 2026). */
+export function daylightAt(info: ViewInfo, rays: number, night: number, murk: number, look: LookMix): number {
+  const R = SEA.lightRays;
+  return (
+    (1 - Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / R.fadeY, 0, 1)) ** R.fadePower *
+    rays *
+    (1 - night) *
+    (1 - murk * R.murkShare) *
+    lookNumber(look, (l) => l.rays)
+  );
+}
+
 export class SeaLight {
   private readonly backRays: Phaser.GameObjects.Image[] = [];
   private readonly frontRays: Phaser.GameObjects.Image[] = [];

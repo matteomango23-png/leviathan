@@ -1,7 +1,7 @@
 // Sailing the ship one step (split from ship.ts in the cleanup of 19 ottobre 2026): helm, speed, fuel, ice, waves,
 // the U-Boats' dive, the hull. Pure logic.
 import { SHIP } from '../../data/ship';
-import { SILENCE } from '../../data/company';
+import { HIT_ZONES, SILENCE } from '../../data/company';
 import { settleRide, stepRide } from '../ride';
 import { CALM_SEA, currentMult, type SeaWeather } from '../sea';
 import { PORTO_FANGO } from '../../data/economy';
@@ -69,7 +69,16 @@ export function sailShip(
   const push = helm && drive && shut ? helm.throttle : 0;
   s.prop += (push - s.prop) * Math.min(1, dt * 2); // the propeller speeds up and slows down gently
   if (helm && drive && shut) {
-    const h = stepHeading(s.face, s.speed, helm, s.silent ? top * SILENCE.speedShare : top, shipRates(s), dt);
+    // the water taken in through a breach slows it down (company/hullDamage.ts)
+    const slow = 1 - (s.flood ?? 0) * HIT_ZONES.waterline.slow;
+    const h = stepHeading(
+      s.face,
+      s.speed,
+      helm,
+      (s.silent ? top * SILENCE.speedShare : top) * slow,
+      shipRates(s),
+      dt,
+    );
     s.face = h.face;
     s.speed = h.speed;
   } else s.speed = Math.max(0, s.speed - (shut ? shipRates(s).coast : shipRates(s).brake) * dt);

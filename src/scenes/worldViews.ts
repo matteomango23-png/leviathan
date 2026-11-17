@@ -4,7 +4,7 @@
 import { NightVisionView } from '../views/nightVisionView';
 import { nightOn } from '../systems/nightVision';
 import Phaser from 'phaser';
-import { CAMERA, DIVER, SEA } from '../data/diver';
+import { CAMERA, DIVER } from '../data/diver';
 import { WORLD } from '../data/worldLayout';
 import { createBirds, stepBirds, type BirdsState } from '../systems/birds';
 import { turbidityAt } from '../systems/clarity';
@@ -17,7 +17,6 @@ import { boatBay, subBay } from '../systems/ship/model';
 import { hatchT } from '../systems/ship/ship';
 import { atHelmView, cameraAim } from '../systems/shipCamera';
 import { shipWaitsAtDock, storyHoldsDiver } from '../systems/story';
-import { lampAim } from '../systems/submarine';
 import { inVehicle } from '../systems/vehicles';
 import { coldAt, stepWeather, weatherLook } from '../systems/weather';
 import type { TileMap } from '../systems/world/tileMap';
@@ -44,7 +43,7 @@ import { LightView } from '../views/lightView';
 import { NightmareView } from '../views/nightmareView';
 import { PlacesView } from '../views/placesView';
 import { wreckShown } from '../systems/specialPowers';
-import { lookAt, lookNumber } from '../systems/seaLook';
+import { lookAt } from '../systems/seaLook';
 import { SceneryView } from '../views/sceneryView';
 import { SeaSurfaceView } from '../views/seaSurfaceView';
 import { ShipView } from '../views/shipView';
@@ -61,8 +60,9 @@ import { nightness, timeSpeed } from '../systems/dayNight';
 import { NIGHT } from '../data/daynight';
 import { WorldArtView } from '../views/worldArtView';
 import { snapGulls } from './worldEvents';
-import { EnemyView } from '../views/enemyView';
-import { OrdnanceView } from '../views/ordnanceView';
+import { CompanyViews } from '../views/companyViews';
+import { daylightAt } from '../views/seaLight';
+import { LampTurn } from '../views/lampTurn';
 
 /** How fast the murk on screen eases towards the water's own (per second). */
 const MURK_EASE = 0.8;
@@ -74,9 +74,8 @@ export class WorldViews {
   /** A Glaciale's echo in your pack (views/echoView.ts), over the darkness. */
   readonly echo: EchoView;
   readonly ship: ShipView;
-  /** The Compagnia dell'Olio Nero's vessels and the shots at sea (views/enemyView.ts, ordnanceView.ts). */
-  private readonly enemies: EnemyView;
-  readonly ordnance: OrdnanceView;
+  /** The Compagnia dell'Olio Nero's vessels, the shots at sea and a battle's aim (views/companyViews.ts). */
+  readonly company: CompanyViews;
   private readonly bg: BackgroundView;
   private readonly kelp: KelpView;
   private readonly vents: VentView;
@@ -110,11 +109,10 @@ export class WorldViews {
   /** Weather and sea birds: look only, not part of the game state and not saved. */
   private readonly birds: BirdsState = createBirds();
   private helmView: boolean;
+  private battleView = false;
   /** The murk tinting the screen, easing towards the water's own. */
   private murkShown = NaN;
-  private lampAngle: number;
-  /** Which way the diver faced last frame (his lamp mirrors with him when he turns). */
-  private lampFace: 1 | -1 = 1;
+  private readonly lamp: LampTurn;
   /** The red flash of a blow, fading. */
   hurtFlash = 0;
 
@@ -140,7 +138,6 @@ export class WorldViews {
     this.surface = new SeaSurfaceView(scene, L.world, map); // behind the vehicles that ride its waves
     this.ice = new IceArtView(scene, L.world, map);
     L.world.add(afloat);
-    this.enemies = new EnemyView(scene, L.world, L.glow);
     this.ship = new ShipView(scene, L.world, L.glow);
     this.hunts = new HuntView(scene, L.world);
     this.boat = new BoatView(scene, L.world);
@@ -151,7 +148,7 @@ export class WorldViews {
     this.birdsView = new BirdsView(scene, L.world);
     this.diverView = new DiverView(scene, L.world);
     this.effects = new EffectsView(scene, L.world);
-    this.ordnance = new OrdnanceView(scene, L.world, L.glow);
+    this.company = new CompanyViews(scene, this.rig);
     this.gearFx = new GearFxView(scene, L.world);
     this.waterFilter = new WaterFilter(scene, L.front); // last in the world's layers: over all of it
     this.echo = new EchoView(scene, L.glow);
@@ -160,7 +157,7 @@ export class WorldViews {
     this.nightVision = new NightVisionView(scene, L.overlay, map); // over the darkness
     this.nightSky = new NightSky(scene, L.glow); // over the darkness
     this.weatherView = new WeatherView(scene, L.bg, L.overlay);
-    this.lampAngle = d.aim;
+    this.lamp = new LampTurn(d.aim);
     const aim0 = cameraAim(g, CAMERA.lookAhead);
     this.rig.setView(aim0.viewH, aim0.minY, 0, true);
     this.rig.follow(aim0.x, aim0.y, 0, true);
@@ -179,9 +176,12 @@ export class WorldViews {
     const d = g.diver;
     // the helm's view or yours (systems/shipCamera.ts): a change cuts at once behind a short fade, never a glide
     // (owner, 5 ottobre: any glide made the ship slide sideways)
+    // battle stations (company/battle.ts) cut to their own fixed view and back, behind the same fade
     const helmView = atHelmView(g);
-    const cut = helmView !== this.helmView;
+    const battle = !!g.company.battle;
+    const cut = helmView !== this.helmView || battle !== this.battleView;
     this.helmView = helmView;
+    this.battleView = battle;
     if (cut) this.rig.fadeCut(CAMERA.cutFadeMs);
     const aim = cameraAim(
       g,
@@ -210,16 +210,11 @@ export class WorldViews {
     this.bg.update(info, sky, look, night);
     this.nightSky.update(info, night, g.day.t, sky.clouds, g.time);
     // daylight in the water: less with depth, clouds and storms, and murky water
-    const daylight =
-      (1 - Phaser.Math.Clamp((info.cy - WORLD.surfaceY) / SEA.lightRays.fadeY, 0, 1)) **
-        SEA.lightRays.fadePower *
-      sky.rays *
-      (1 - night) *
-      (1 - turbidityAt(info.cx, info.cy, g.time, sky) * SEA.lightRays.murkShare);
+    const murkHere = turbidityAt(info.cx, info.cy, g.time, sky);
     this.seaLight.update(
       info,
       g.time,
-      daylight * lookNumber(look, (l) => l.rays),
+      daylightAt(info, sky.rays, night, murkHere, look),
       look,
       depthMetres(info.cy),
       night,
@@ -235,8 +230,7 @@ export class WorldViews {
     this.ice.update(view, g.time, sea);
     this.ship.night = night;
     this.ship.update(g.ship, g.time, dt, sea, shipWaitsAtDock(g));
-    this.enemies.update(g.company, g.time, dt, sea, info.zoom);
-    this.ordnance.update(g.company, dt);
+    this.company.update(g, this.rig, sea, input.cannonAim, dt);
     this.hunts.update(g, view, g.time);
     const boatHidden = g.boat.bay === 'docked' && hatchT(g.ship, boatBay(g.ship)) < 0.6;
     this.boat.update(g.boat, g.time, boatHidden, sea, dt);
@@ -259,18 +253,9 @@ export class WorldViews {
     this.diverView.setHidden(storyHoldsDiver(g) || inVehicle(g)); // at the helm or inside the submarine
     this.gearFx.update(g, rider ?? d, g.time);
 
-    // a vehicle's headlight points where its nose points, at once, turning with the hull on the waves (owner, 8
-    // ottobre for the boat and 13 novembre 2026 for the ship and the submarine: no slow turns through the sea);
-    // the diver's lamp follows his aim gently, and turns round with him at once
+    // the light points from the nose, or where you aim (views/lampTurn.ts)
     const tilt = g.sub.aboard ? (this.sub.nose?.rot ?? 0) : g.ship.aboard ? this.ship.lean : 0;
-    let da = lampAim(g) - this.lampAngle;
-    while (da > Math.PI) da -= Math.PI * 2;
-    while (da < -Math.PI) da += Math.PI * 2;
-    if (g.boat.aboard || g.ship.aboard || g.sub.aboard) this.lampAngle = lampAim(g) + tilt;
-    else if (d.face !== this.lampFace)
-      this.lampAngle = lampAim(g); // he turned round: the lamp with him, at once
-    else this.lampAngle += da * Math.min(1, dt * 6);
-    this.lampFace = d.face;
+    const lampAngle = this.lamp.update(g, tilt, dt);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
     const lowO2 =
       d.o2 < d.maxO2 * DIVER.oxygen.lowFraction && !d.dead ? 0.25 + 0.18 * Math.sin(g.time * 6) : 0;
@@ -293,7 +278,7 @@ export class WorldViews {
       ...this.ship.hullGlow(g.ship), // its hull's lamps light a little round it (lot N1b)
       ...this.nightmare.glowSpots(g),
       ...this.beasts.eyeSpots(), // hunters' red eyes show in the dark
-      ...this.ordnance.glowSpots(), // the flashes of the guns and the bursts
+      ...this.company.glowSpots(), // the flashes of the guns and the bursts
     ];
     // an Abissale in your pack: a light round you (systems/pack.ts Lanterna)
     const lantern = lanternRadius(g);
@@ -308,7 +293,7 @@ export class WorldViews {
         // on the lamp painted on the hull as it rides the waves (owner, 13 novembre 2026)
         ...(g.sub.aboard && this.sub.nose ? { x: this.sub.nose.x, y: this.sub.nose.y } : {}),
         ...(g.ship.aboard ? this.ship.lamp(g.ship) : {}),
-        angle: this.lampAngle,
+        angle: lampAngle,
         face: d.face,
       },
       Math.max(this.hurtFlash, lowO2),

@@ -12,7 +12,8 @@ import { metres, type CompanyState, type Shot } from './enemyState';
 export interface Hittable {
   side: 'you' | 'enemy';
   box: { x0: number; x1: number; y0: number; y1: number };
-  hit: (damage: number) => void;
+  /** Struck for this much at this point (where decides the part: hullDamage.ts). */
+  hit: (damage: number, at: { x: number; y: number }) => void;
 }
 
 /** The angle to throw a shell at speed v (units/s) under gravity g (units/s²) from a to b, the low arc; null: out of
@@ -63,6 +64,60 @@ export function fireShell(
 
 /** How steeply a torpedo may run up or down to its target (radians off the level). Tuning. */
 const TORPEDO_SLOPE = 0.35;
+
+/** Fires a shell from a at this angle (radians, screen: y down) — the aim you chose (battle mode). */
+export function fireShellAt(
+  c: CompanyState,
+  weapon: WeaponId,
+  from: Shot['from'],
+  a: { x: number; y: number },
+  angle: number,
+): void {
+  const v = metres(WEAPONS[weapon].speed);
+  c.shots.push({
+    id: c.nextId++,
+    weapon,
+    from,
+    x: a.x,
+    y: a.y,
+    vx: Math.cos(angle) * v,
+    vy: Math.sin(angle) * v,
+    left: 0,
+    fuseY: 0,
+  });
+}
+
+/** Points along a shell's arc from a at this angle, for this many seconds (the aim shown while you drag). */
+export function shellPath(
+  a: { x: number; y: number },
+  angle: number,
+  weapon: WeaponId,
+  seconds: number,
+  steps = 24,
+): { x: number; y: number }[] {
+  const v = metres(WEAPONS[weapon].speed);
+  const g = metres(WEAPONS[weapon].gravity ?? 0);
+  const out: { x: number; y: number }[] = [];
+  for (let i = 1; i <= steps; i++) {
+    const t = (seconds * i) / steps;
+    const p = { x: a.x + Math.cos(angle) * v * t, y: a.y + Math.sin(angle) * v * t + 0.5 * g * t * t };
+    out.push(p);
+    if (p.y >= WORLD.surfaceY) break;
+  }
+  return out;
+}
+
+/** Where a shell in flight will fall in the sea (world x), or null if it is not a shell going down there. */
+export function landingX(s: Shot): number | null {
+  const w = WEAPONS[s.weapon];
+  if (w.kind !== 'shell') return null;
+  const g = metres(w.gravity ?? 0);
+  const h = WORLD.surfaceY - s.y; // up to fall (> 0 above the water)
+  // y(t) = y + vy t + g t²/2 = surface → t = (−vy + √(vy² + 2 g h)) / g
+  const root = s.vy * s.vy + 2 * g * h;
+  if (root < 0 || g <= 0) return null;
+  return s.x + s.vx * ((-s.vy + Math.sqrt(root)) / g);
+}
 
 /** Fires a torpedo from a, ahead (face) and straight towards b's depth, no steeper than TORPEDO_SLOPE. */
 export function fireTorpedo(
@@ -123,7 +178,7 @@ function burst(s: Shot, targets: Hittable[], events: GameEvent[], onWater: boole
   let hit = false;
   for (const t of targets) {
     if (t.side === s.from || !inside(t.box, s.x, s.y, pad)) continue;
-    t.hit(w.damage);
+    t.hit(w.damage, { x: s.x, y: s.y });
     hit = true;
   }
   events.push({ type: 'shotBurst', x: s.x, y: s.y, weapon: s.weapon, hit, water: onWater && !hit });

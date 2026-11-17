@@ -18,6 +18,11 @@ export function companyMessage(e: GameEvent): [string, number] | null | undefine
       return e.on
         ? ['Silenzio: motore e luci spenti. Vai piano, così non ti sentono.', 3.5]
         : ['Motore acceso: ora ti sentono di nuovo.', 2.5];
+    case 'hullHit':
+      if (e.side !== 'you') return null;
+      return e.zone === 'waterline'
+        ? ['Falla nello scafo: imbarchi acqua!', 2.5]
+        : ['Incendio a bordo! Il cannone è fermo per qualche secondo.', 2.5];
     default:
       return undefined;
   }

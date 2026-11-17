@@ -32,6 +32,7 @@ import { inVehicle } from '../systems/vehicles';
 import { lookAt } from '../systems/seaLook';
 import { showEvent } from './worldEvents';
 import { ARENA_DEFAULT, setUpArena, type ArenaSetup } from '../systems/company/arena';
+import { timeScale } from '../systems/company/battle';
 import { WorldViews } from './worldViews';
 import type { SceneData, Session } from './session';
 
@@ -155,7 +156,7 @@ export class WorldScene extends Phaser.Scene {
     const looks = { effects: v.effects, echo: v.echo, rig: v.rig, terrain: v.terrain, g };
     for (const e of events) {
       showEvent(e, looks); // bubbles, spray, dust, jolts (worldEvents.ts)
-      v.ordnance.onEvent(e); // the Compagnia's guns and bursts (views/ordnanceView.ts)
+      v.company.onEvent(e); // the Compagnia's guns and bursts (views/companyViews.ts)
       if (e.type === 'hurt') v.hurtFlash = 0.5;
       else if (e.type === 'battleStart') this.openBattle();
       else if (
@@ -200,8 +201,9 @@ export class WorldScene extends Phaser.Scene {
   }
 
   override update(_time: number, deltaMs: number): void {
-    const dt = Math.min(0.05, deltaMs / 1000);
     const g = this.state;
+    // the deciding blow of a sea battle in slow motion (company/battle.ts)
+    const dt = Math.min(0.05, deltaMs / 1000) * timeScale(g);
     const input = this.session.input;
     const sound = this.session.sound;
     if (this.session.tapScreen) {

@@ -1294,3 +1294,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Distanze da scafo a scafo:** chi vede o sente misura dal bordo più vicino delle due navi, non dal centro, così le navi lunghe non diventano invisibili da vicino.
 - **Nave spezzata nel codice:** l'immagine della nave viene tagliata una volta lungo una linea frastagliata (due texture canvas), le metà si inclinano a V e affondano dietro il mare davanti; le texture si buttano a fine affondamento (memoria dell'iPhone). Nessuna immagine nuova.
 - **Lampi e fumo con la texture morbida dell'alone** (un gruppo di immagini riusate), non con cerchi disegnati: la regola del proprietario dei "cerchi di codice".
+
+## 17 novembre 2026 — Modalità battaglia navale B1 (v0.127.0)
+
+- **Inquadratura di battaglia fissa:** larga quanto serve all'inizio (fra `frameM` e `maxFrame` volte, secondo la distanza), poi non cambia più fino alla fine; si sposta solo quando una nave esce dalla zona centrale, con velocità limitata. Entrata e uscita con lo stacco dal nero già usato per il timone. Motivo: ogni cambio di zoom faceva traslare sfondo e mare (proprietario).
+- **La distanza la tiene l'IA, non una spinta:** la nemica in duello sta a `frameM × standoffShare` da te e ondeggia; `keepApart` resta solo come sicurezza.
+- **Mira manuale con arco parziale e colpi nemici annunciati:** abilità invece di mira automatica, e schivate leggibili (il segno rosso è calcolato dalla parabola vera del colpo, `landingX`).
+- **Danni per zona del punto colpito** (`hullDamage.ts`), uguali per te e per loro; il deposito è un dato per classe (sull'immagine prestata), da rifare con le immagini vere.

@@ -41,6 +41,8 @@ export function setUpArena(g: GameState, set: ArenaSetup): void {
     engineOn: false,
     silent: false,
     lightOn: false,
+    flood: 0,
+    fire: 0,
     hull: shipModel(g.ship).hull,
   });
   if (g.sub.owned) g.sub.x = x;
