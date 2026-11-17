@@ -2,7 +2,7 @@
 // drag anywhere to turn the turret, hold "Fuoco" to fire, the machine gun or the gun; "Timone" back to the helm. At
 // the top the two ships' hull and water, as in the side battle; the distance under the window; the banners.
 import type { DuelState } from '../systems/turret/duelState';
-import type { TurretInput } from '../systems/turret/duel';
+import { gunsUp, restingInput, yourMaxDepth, type TurretInput } from '../systems/turret/duel';
 import { foeFromYou } from '../systems/turret/duelState';
 import { ENEMY_CLASSES, WEAPONS } from '../data/company';
 import { TURRET } from '../data/turret';
@@ -26,7 +26,10 @@ export class TurretControls {
   private readonly banner: HTMLDivElement;
   private bannerT = 0;
   /** What the fingers do (TurretScene reads it each frame; the turning is used up then). */
-  readonly input: TurretInput = { throttle: 0, side: 0, yaw: 0, pitch: 0, firing: false, gunShot: false };
+  readonly input: TurretInput = restingInput();
+  /** A U-Boat's "Sali / Scendi" and its torpedo (hidden on the ships that have none). */
+  private readonly diveBox: HTMLDivElement;
+  private readonly torpedo: HTMLButtonElement;
   exit = false;
   weapon: 'mg' | 'gun' = 'mg';
 
@@ -77,12 +80,30 @@ export class TurretControls {
     };
     hold(el('button', 'turret-btn', side, 'Avvicina'), 1);
     hold(el('button', 'turret-btn', side, 'Allontana'), -1);
+    // a U-Boat goes up and down while held
+    this.diveBox = el('div', 'turret-dive', this.root);
+    const diveHold = (b: HTMLButtonElement, v: number): void => {
+      b.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        this.input.dive = v;
+      });
+      for (const ev of ['pointerup', 'pointerleave', 'pointercancel'] as const)
+        b.addEventListener(ev, () => this.input.dive === v && (this.input.dive = 0));
+    };
+    diveHold(el('button', 'turret-btn', this.diveBox, 'Sali'), -1);
+    diveHold(el('button', 'turret-btn', this.diveBox, 'Scendi'), 1);
     // the weapons and the trigger, on the right
     const arms = el('div', 'turret-arms', this.root);
     this.mg = el('button', 'turret-btn on', arms, 'Mitragliatrice');
     this.gun = el('button', 'turret-btn', arms, 'Cannone');
     this.mg.addEventListener('pointerdown', () => (this.weapon = 'mg'));
     this.gun.addEventListener('pointerdown', () => (this.weapon = 'gun'));
+    // the guided torpedo: it follows where you turn the turret
+    this.torpedo = el('button', 'turret-btn torpedo', arms, 'Siluro');
+    this.torpedo.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      this.input.torpedo = true;
+    });
     this.fire = el('button', 'turret-fire', this.root, 'Fuoco');
     this.heat = el('div', 'turret-heat-fill', el('div', 'turret-heat', this.root));
     this.fire.addEventListener('pointerdown', (e) => {
@@ -148,7 +169,16 @@ export class TurretControls {
     this.heat.style.width = `${Math.round(d.heat * 100)}%`;
     this.heat.parentElement!.hidden = this.weapon !== 'mg';
     const dist = Math.round(foeFromYou(d).dist);
-    const text = `${this.weapon === 'mg' ? 'Mitragliatrice' : 'Cannone'} · bersaglio a ${dist} m`;
+    const under = !gunsUp(d);
+    this.diveBox.hidden = yourMaxDepth(g) <= 0;
+    this.torpedo.hidden = !shipModel(g.ship).weapons.includes('siluro');
+    this.torpedo.classList.toggle('off', d.torpReload > 0 || d.torpedoes.some((x) => x.from === 'you'));
+    // under the water the guns are useless
+    this.mg.classList.toggle('off', under);
+    this.gun.classList.toggle('off', under);
+    const arm = under ? 'Sott’acqua: solo siluri' : this.weapon === 'mg' ? 'Mitragliatrice' : 'Cannone';
+    const depth = d.you.depth > 0.5 ? ` · quota ${Math.round(d.you.depth)} m` : '';
+    const text = `${arm} · bersaglio a ${dist} m${depth}`;
     if (this.info.textContent !== text) this.info.textContent = text;
     const e = g.company.enemies.find((x) => x.id === d.foeId);
     const set = (fills: HTMLDivElement[], hull: number, water: number): void => {
@@ -168,6 +198,7 @@ export class TurretControls {
     this.input.yaw = 0;
     this.input.pitch = 0;
     this.input.gunShot = false;
+    this.input.torpedo = false;
   }
 
   destroy(): void {

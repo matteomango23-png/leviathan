@@ -21,10 +21,30 @@ export interface Round {
   left: number;
 }
 
+/** A torpedo under the water: yours follows the turret's aim (guided), theirs runs straight. */
+export interface Torpedo {
+  id: number;
+  from: 'you' | 'foe';
+  p: P3;
+  yaw: number;
+  pitch: number;
+  left: number;
+  /** Where it has been (its wake of bubbles). */
+  trail: P3[];
+}
+
+/** A depth charge sinking to the depth it bursts at (z, m: below 0). */
+export interface Charge {
+  id: number;
+  p: P3;
+  fuse: number;
+}
+
 export interface DuelState {
   /** The vessel you fight (its id in g.company.enemies). */
   foeId: number;
-  you: { a: number; s: number; speed: number };
+  /** Your ship: where, how fast, how deep (m under the surface: a U-Boat dives). */
+  you: { a: number; s: number; speed: number; depth: number };
   foe: {
     a: number;
     s: number;
@@ -38,6 +58,10 @@ export interface DuelState {
     aimT: number;
     aimAt: P3 | null;
     reload: number;
+    /** How deep it sails (an enemy U-Boat), and its torpedoes' and charges' reloads. */
+    depth: number;
+    torpReload: number;
+    chargeReload: number;
   };
   /** Where the turret points (yaw: 0 ahead, right > 0; pitch up > 0). */
   yaw: number;
@@ -49,6 +73,10 @@ export interface DuelState {
   mgT: number;
   gunReload: number;
   rounds: Round[];
+  torpedoes: Torpedo[];
+  charges: Charge[];
+  /** Your torpedo's reload (s). */
+  torpReload: number;
   nextId: number;
   time: number;
   /** How it ended (the view holds a moment), and the seconds since. */
@@ -58,10 +86,17 @@ export interface DuelState {
 }
 
 /** A new duel with this vessel, `along` metres ahead along your course (behind < 0). */
-export function newDuel(foeId: number, along: number, foeSpeed: number, foeTowardYou: boolean): DuelState {
+export function newDuel(
+  foeId: number,
+  along: number,
+  foeSpeed: number,
+  foeTowardYou: boolean,
+  foeDepth = 0,
+  yourDepth = 0,
+): DuelState {
   return {
     foeId,
-    you: { a: 0, s: 0, speed: 0 },
+    you: { a: 0, s: 0, speed: 0, depth: yourDepth },
     foe: {
       a: along,
       s: DUEL.startSideM,
@@ -72,6 +107,9 @@ export function newDuel(foeId: number, along: number, foeSpeed: number, foeTowar
       aimT: 0,
       aimAt: null,
       reload: 1.5,
+      depth: foeDepth,
+      torpReload: 3,
+      chargeReload: 0,
     },
     // the turret turned to it at once
     yaw: Math.atan2(DUEL.startSideM, along),
@@ -82,6 +120,9 @@ export function newDuel(foeId: number, along: number, foeSpeed: number, foeTowar
     mgT: 0,
     gunReload: 0,
     rounds: [],
+    torpedoes: [],
+    charges: [],
+    torpReload: 0,
     nextId: 1,
     time: 0,
     end: null,

@@ -124,6 +124,14 @@ export class TurretSea {
     });
   }
 
+  /** Above the water only (update shows the bands it needs again). */
+  hide(): void {
+    for (const b of this.bands) {
+      b.water.setVisible(false);
+      b.foam.setVisible(false);
+    }
+  }
+
   /** How many bands are farther than d (the ship goes among them, the nearer ones over it). */
   fartherThan(d: number): number {
     return this.bands.filter((b) => b.d > d).length;
