@@ -19,6 +19,7 @@ export class BattleControls {
   private readonly arm: HTMLButtonElement;
   private readonly gun: HTMLButtonElement;
   private readonly torpedo: HTMLButtonElement;
+  private readonly leave: HTMLButtonElement;
   private drag: { id: number; x: number; y: number } | null = null;
   private lastAim: number | null = null;
   private game: GameState | null = null;
@@ -28,6 +29,12 @@ export class BattleControls {
     this.arm = el('button', 'naval-arm', this.root, 'Armi');
     this.torpedo = el('button', 'naval-btn torpedo', this.root, 'Siluro');
     this.gun = el('button', 'naval-btn gun', this.root, 'Fuoco');
+    // back to the helm's view: the vessel stays where it is, to be chased (owner, 17 novembre 2026)
+    this.leave = el('button', 'naval-leave', this.root, 'Timone');
+    this.leave.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      session.input.helmCmd = 'disarm';
+    });
     this.arm.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       session.input.helmCmd = 'arm';
@@ -81,6 +88,7 @@ export class BattleControls {
       b.style.setProperty('--ready', String(1 - Math.min(1, left / WEAPONS[w].reload)));
       b.classList.toggle('loading', left > 0);
     };
+    this.leave.hidden = !battle;
     show(this.gun, 'shell');
     show(this.torpedo, 'torpedo');
     if (!battle) this.lastAim = null;

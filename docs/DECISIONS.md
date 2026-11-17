@@ -1301,3 +1301,12 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **La distanza la tiene l'IA, non una spinta:** la nemica in duello sta a `frameM × standoffShare` da te e ondeggia; `keepApart` resta solo come sicurezza.
 - **Mira manuale con arco parziale e colpi nemici annunciati:** abilità invece di mira automatica, e schivate leggibili (il segno rosso è calcolato dalla parabola vera del colpo, `landingX`).
 - **Danni per zona del punto colpito** (`hullDamage.ts`), uguali per te e per loro; il deposito è un dato per classe (sull'immagine prestata), da rifare con le immagini vere.
+
+## 17 novembre 2026 — La torretta in prima persona T1 (v0.128.0)
+
+- **Il duello vive su un piano** (avanti lungo la rotta e di lato) solo dentro la torretta. Alla chiusura la distanza lungo la rotta torna sulla linea del mondo; i danni sono già sugli stessi oggetti (`e.hull`, `e.dmg`, `yourDmg`, `ship.hull`).
+- **La vista ruota con la torretta e il mirino resta al centro**, come nelle torrette vere: un solo gesto (trascinare) per mirare.
+- **Il mare è fatto di fasce `TileSprite` della stessa texture**, scalate per distanza e calcolate a ogni fotogramma: niente shader, leggero sull'iPhone. Ogni fascia arriva fino alla successiva, così le onde lunghe non lasciano buchi. La nave nemica è inserita tra le fasce, così le creste vicine la coprono.
+- **Il segno del cannone sul mare** (dove cadrà la granata con la mira attuale) al posto delle tacche fisse: con la prospettiva, le tacche non dicevano niente.
+- **Per ora le navi nemiche usano l'immagine di profilo**, più stretta quando girano; le viste di prua e di poppa arriveranno dal lotto Gemini.
+- **La battaglia di lato non finisce più per distanza:** si esce con "Timone" (richiesta del proprietario).

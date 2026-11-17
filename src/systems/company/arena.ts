@@ -3,6 +3,7 @@
 // the ship you pick and the Compagnia's vessels you pick wait ahead on patrol, by day or by night. Part of the test
 // tools (testTools.ts): to be removed with them once the Compagnia sails in the real sea.
 import { ARENA, type EnemyClassId } from '../../data/company';
+import type { WeatherId } from '../../data/weather';
 import { SHIP_MODELS } from '../../data/fleet';
 import { kmToX } from '../../data/regions';
 import { phaseStart } from '../dayNight';
@@ -17,9 +18,19 @@ export interface ArenaSetup {
   /** One kind of vessel, or all three. */
   enemies: EnemyClassId | 'tutti';
   night: boolean;
+  /** The weather of the whole test (it does not change by itself). */
+  weather: WeatherId;
+  /** "Armi" opens the turret in first person (owner, 17 novembre 2026). */
+  turret: boolean;
 }
 
-export const ARENA_DEFAULT: ArenaSetup = { ship: 'aurelia', enemies: 'baleniera', night: false };
+export const ARENA_DEFAULT: ArenaSetup = {
+  ship: 'aurelia',
+  enemies: 'baleniera',
+  night: false,
+  weather: 'sereno',
+  turret: true,
+};
 
 /** The ships you can take into the arena: every one with a painting and a weapon. */
 export const arenaShips = (): { id: string; name: string }[] =>
@@ -48,12 +59,13 @@ export function setUpArena(g: GameState, set: ArenaSetup): void {
   if (g.sub.owned) g.sub.x = x;
   Object.assign(g.diver, helmPoint(g.ship), { vx: 0, vy: 0, face: 1 });
   g.port = null;
-  // calm and clear, by day or by night
-  Object.assign(g.weather, { from: 'sereno', to: 'sereno', blend: 1, left: 1e9, flash: 0 });
+  // the weather chosen, held for the whole test, by day or by night
+  Object.assign(g.weather, { from: set.weather, to: set.weather, blend: 1, left: 1e9, flash: 0 });
   g.day.t = set.night ? phaseStart('notte') + 0.05 : phaseStart('giorno') + 0.05;
   g.day.sleeping = null;
   // the Compagnia ahead, on patrol, facing you
   g.company = newCompany();
+  g.company.turret = set.turret;
   const kinds: EnemyClassId[] = set.enemies === 'tutti' ? ['baleniera', 'caccia', 'uboot'] : [set.enemies];
   kinds.forEach((k, i) =>
     spawnEnemy(g.company, k, x + metres(ARENA.aheadM + i * ARENA.spreadM), i % 2 ? 1 : -1),

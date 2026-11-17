@@ -4,6 +4,7 @@ import './ui/ui.css';
 import './ui/helm.css';
 import { CAMERA } from './data/diver';
 import { BattleScene } from './scenes/BattleScene';
+import { TurretScene } from './scenes/TurretScene';
 import { BootScene } from './scenes/BootScene';
 import { MenusScene } from './scenes/MenusScene';
 import { TitleScene } from './scenes/TitleScene';
@@ -63,7 +64,7 @@ const game = new Phaser.Game({
   input: { keyboard: false, mouse: false, touch: false, gamepad: false },
   disableContextMenu: true,
   banner: false,
-  scene: [BootScene, TitleScene, WorldScene, UIScene, MenusScene, BattleScene],
+  scene: [BootScene, TitleScene, WorldScene, UIScene, MenusScene, BattleScene, TurretScene],
 });
 
 let resizeTimer = 0;

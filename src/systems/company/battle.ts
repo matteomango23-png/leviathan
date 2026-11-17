@@ -3,7 +3,7 @@
 // frame that never zooms and moves only when a ship leaves its middle; the vessel keeps its shooting distance; it
 // ends when it sinks, when one of you gets away, or when you sink. Your first shot before it saw you hits harder; the
 // deciding blow goes in slow motion. Numbers in data/company.ts BATTLE. Pure logic.
-import { BATTLE, ENEMY_CLASSES } from '../../data/company';
+import { BATTLE } from '../../data/company';
 import type { GameEvent } from '../events';
 import type { GameState } from '../newGame';
 import { helmScale } from '../shipCamera';
@@ -41,6 +41,15 @@ export function startBattle(g: GameState, foe: EnemyVessel, events: GameEvent[])
     over: 0,
   };
   events.push({ type: 'navalBattle', surprise: foe.phase !== 'hunting' });
+}
+
+/** "Timone": back to the helm's view; the vessel stays where it is. */
+export function leaveBattle(g: GameState, events: GameEvent[]): void {
+  const b = g.company.battle;
+  if (!b || b.result) return;
+  b.result = 'left';
+  b.over = 3;
+  events.push({ type: 'navalBattleEnd', result: 'left' });
 }
 
 /** The deciding blow: a moment in slow motion. */
@@ -87,12 +96,10 @@ export function stepBattle(g: GameState, dt: number, events: GameEvent[]): void 
     b.result = result;
     events.push({ type: 'navalBattleEnd', result });
   };
-  if (!s.aboard) return end('escaped');
+  if (!s.aboard) return end('left');
   if (s.hull <= 0) return end('lost');
-  if (!foe) return end('escaped');
+  if (!foe) return end('left');
   if (foe.sinkT > 0) return end('victory');
+  // (never over because it got far: no ship vanishes; you leave with "Timone" and chase it — owner, 17 novembre)
   frame(b, [s.x, foe.x], dt);
-  // apart by more than the view: you got away, or it did (running with its hull broken)
-  if (Math.abs(foe.x - s.x) > b.width * BATTLE.escapeShare)
-    end(foe.hull < ENEMY_CLASSES[foe.cls].hull * BATTLE.fleeBelow ? 'fled' : 'escaped');
 }

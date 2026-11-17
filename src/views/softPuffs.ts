@@ -13,7 +13,7 @@ export class SoftPuffs {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly layer: Phaser.GameObjects.Layer,
+    private readonly layer: Phaser.GameObjects.Layer | Phaser.GameObjects.Container,
     private readonly add: boolean,
   ) {}
 

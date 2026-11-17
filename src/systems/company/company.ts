@@ -12,7 +12,7 @@ import type { GameState } from '../newGame';
 import { shipDraft, shipPoint } from '../ship/geometry';
 import { damageShip } from '../ship/shipHull';
 import { shipLength } from '../ship/model';
-import { canArm, foeInReach, slowMotion, startBattle, stepBattle } from './battle';
+import { canArm, foeInReach, leaveBattle, slowMotion, startBattle, stepBattle } from './battle';
 import { perceive, stepAlert } from './detection';
 import { sailEnemy } from './enemyAi';
 import { enemyFires } from './enemyFire';
@@ -84,7 +84,13 @@ function hitYou(g: GameState, damage: number, at: { x: number; y: number }, even
 
 /** Your weapons, and "Armi". */
 function yourCommands(g: GameState, input: InputState, events: GameEvent[]): void {
-  if (input.helmCmd === 'arm' && canArm(g)) startBattle(g, foeInReach(g)!, events);
+  // "Armi": the side battle, or the turret in first person (the arena's tick)
+  if (input.helmCmd === 'arm' && canArm(g)) {
+    const foe = foeInReach(g)!;
+    if (g.company.turret) events.push({ type: 'turretOpen', foe: foe.id });
+    else startBattle(g, foe, events);
+  }
+  if (input.helmCmd === 'disarm') leaveBattle(g, events);
   if (input.fireAngle !== null) fireGun(g, input.fireAngle, events);
   else if (input.helmCmd === 'fire') fireGun(g, null, events);
   if (input.helmCmd === 'torpedo') fireYourTorpedo(g, events);

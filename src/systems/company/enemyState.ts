@@ -64,7 +64,7 @@ export interface BattleState {
   /** Seconds of slow motion left (real time). */
   slow: number;
   /** Set when it is over (the view holds a moment). */
-  result: 'victory' | 'escaped' | 'fled' | 'lost' | null;
+  result: 'victory' | 'left' | 'lost' | null;
   /** Seconds since it ended. */
   over: number;
 }
@@ -93,6 +93,8 @@ export interface CompanyState {
   yourDmg: HullDamage;
   /** At battle stations, or null. */
   battle: BattleState | null;
+  /** "Armi" opens the turret in first person instead of the side battle (the arena's tick, owner 17 novembre 2026). */
+  turret: boolean;
   nextId: number;
 }
 
@@ -102,6 +104,7 @@ export const newCompany = (): CompanyState => ({
   yourReload: {},
   yourDmg: freshDamage(),
   battle: null,
+  turret: false,
   nextId: 1,
 });
 

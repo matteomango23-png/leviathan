@@ -1,0 +1,154 @@
+/* The turret's controls (ui/turretControls.ts): over the turret's window and frame. The look-drag covers the screen
+   behind the buttons; the throttle and "Avvicina/Allontana" on the left, the weapons and the trigger on the right. */
+.turret-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.turret-look {
+  position: absolute;
+  inset: 0;
+}
+.turret-lever {
+  position: absolute;
+  left: calc(18px + var(--safe-l, 0px));
+  bottom: calc(18px + var(--safe-b, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.turret-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffbfa0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.turret-track {
+  position: relative;
+  width: 40px;
+  height: 150px;
+  border-radius: 20px;
+  background: linear-gradient(#2a1714, #120a09);
+  border: 2px solid #6e3a2a;
+  box-shadow: inset 0 2px 6px #000;
+}
+.turret-knob {
+  position: absolute;
+  left: 50%;
+  width: 48px;
+  height: 22px;
+  margin-left: -24px;
+  margin-bottom: -11px;
+  border-radius: 8px;
+  background: linear-gradient(#d0703e, #7a2c14);
+  border: 1.5px solid #ffb27a;
+  pointer-events: none;
+}
+.turret-side {
+  position: absolute;
+  left: calc(80px + var(--safe-l, 0px));
+  bottom: calc(18px + var(--safe-b, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.turret-btn {
+  padding: 7px 12px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffd9c2;
+  background: rgba(22, 9, 7, 0.82);
+  border: 1.5px solid rgba(214, 110, 64, 0.85);
+  -webkit-tap-highlight-color: transparent;
+}
+.turret-btn.on {
+  color: #1a0805;
+  background: linear-gradient(#ff9a5a, #c0461e);
+}
+.turret-arms {
+  position: absolute;
+  right: calc(110px + var(--safe-r, 0px));
+  bottom: calc(24px + var(--safe-b, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.turret-fire {
+  position: absolute;
+  right: calc(18px + var(--safe-r, 0px));
+  bottom: calc(18px + var(--safe-b, 0px));
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff0e0;
+  border: 3px solid #ff8a4a;
+  background:
+    conic-gradient(rgba(220, 70, 30, 0.75) calc(var(--ready, 1) * 360deg), rgba(22, 9, 7, 0.88) 0),
+    rgba(22, 9, 7, 0.88);
+  box-shadow: 0 0 16px rgba(255, 90, 40, 0.45);
+  -webkit-tap-highlight-color: transparent;
+}
+.turret-fire.hot {
+  color: #ff6a4a;
+  border-color: #ff3a1a;
+  animation: turret-hot 0.4s ease-in-out infinite alternate;
+}
+@keyframes turret-hot {
+  to {
+    box-shadow: 0 0 26px rgba(255, 40, 10, 0.85);
+  }
+}
+.turret-heat {
+  position: absolute;
+  right: calc(18px + var(--safe-r, 0px));
+  bottom: calc(108px + var(--safe-b, 0px));
+  width: 84px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(22, 9, 7, 0.85);
+  border: 1px solid #6e3a2a;
+  overflow: hidden;
+}
+.turret-heat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb060, #ff3a1a);
+}
+.turret-exit {
+  position: absolute;
+  right: calc(14px + var(--safe-r, 0px));
+  top: calc(10px + var(--safe-t, 0px));
+  padding: 6px 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffe3b0;
+  background: rgba(22, 9, 7, 0.85);
+  border: 1.5px solid rgba(176, 138, 74, 0.9);
+}
+.turret-info {
+  position: absolute;
+  left: 50%;
+  bottom: calc(10px + var(--safe-b, 0px));
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffb08a;
+  text-shadow: 0 1px 3px #000;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.turret-bars {
+  top: calc(26px + var(--safe-t, 0px));
+}
