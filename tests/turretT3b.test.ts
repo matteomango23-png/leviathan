@@ -147,6 +147,32 @@ describe('le armi sott’acqua', () => {
     expect(e.dmg.flood).toBeLessThan(HARPOON_GUN.flood * 40);
   });
 
+  it('andando forte e mirando di lato, i dardi vanno dritti dove punta il mirino', () => {
+    const { g, d } = under(300);
+    d.you.speed = 20;
+    d.you.heading = 0;
+    d.yaw = 0.8;
+    d.pitch = 0;
+    stepInside(g, d, { ...restingInput(), firing: true, throttle: 1 }, 0.05);
+    d.yaw = 0.8;
+    for (let i = 0; i < 10; i++) stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    const r = d.darts[0]!;
+    // seen from aboard: on the crosshair's line
+    expect(Math.atan2(r.p.s - d.you.s, r.p.a - d.you.a)).toBeCloseTo(0.8, 1);
+  });
+
+  it('anche sopra l’acqua i traccianti vanno dritti dove punta il mirino, a tutta forza', () => {
+    const g = arena();
+    const d = openInside(g);
+    d.you.speed = 20;
+    d.yaw = 1.2;
+    stepInside(g, d, { ...restingInput(), firing: true }, 0.05);
+    d.yaw = 1.2;
+    for (let i = 0; i < 6; i++) stepInside(g, d, restingInput(), 0.05);
+    const r = d.rounds.find((x) => x.kind === 'mg')!;
+    expect(Math.atan2(r.p.s - d.you.s, r.p.a - d.you.a)).toBeCloseTo(1.2, 1);
+  });
+
   it('oltre la sua portata non arriva', () => {
     const { g, d, e } = under(HARPOON_GUN.rangeM + 60);
     for (let i = 0; i < 40; i++) {

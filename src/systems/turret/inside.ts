@@ -12,7 +12,7 @@ import type { GameState } from '../newGame';
 import { shipModel, shipPicture, shipRates } from '../ship/model';
 import type { DuelHull, RoundEvent } from './ballistics';
 import { fireRound, stepRounds } from './ballistics';
-import { fireDart, stepDarts, type DartEvent } from './darts';
+import { fireDart, stepDarts, yourWay, type DartEvent } from './darts';
 import { stepFoe, yourTop, type FoeEvent } from './foeAi';
 import { enemyExtent } from './hullModels';
 import { hitFoe, hitYou, roundHitsYou, sinkFoe, type HitEvent } from './insideHits';
@@ -158,7 +158,8 @@ function fireRapid(g: GameState, d: InsideState, input: TurretInput, dt: number,
     const at = up ? turretPoint(d) : aimLine(d).from;
     d.mgT -= dt;
     while (d.mgT <= 0) {
-      if (up) fireRound(d, 'you', 'mg', at, d.yaw, d.pitch, MACHINE_GUN.spread, g.rng);
+      // carried by your ship's way: from aboard the tracers fly straight where you aim
+      if (up) fireRound(d, 'you', 'mg', at, d.yaw, d.pitch, MACHINE_GUN.spread, g.rng, yourWay(d));
       else fireDart(d, at, d.yaw, d.pitch, g.rng);
       out.push({ type: 'shot', kind: up ? 'mg' : 'dart', p: at });
       d.mgT += 1 / H.rate;

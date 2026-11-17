@@ -4,6 +4,7 @@
 // flash of the enemy's gun. Every effect stays where it happened at sea while you sail and turn. Look only.
 import Phaser from 'phaser';
 import { MACHINE_GUN } from '../../data/turret';
+import { yourWay } from '../../systems/turret/darts';
 import type { InsideEvent } from '../../systems/turret/inside';
 import type { InsideState } from '../../systems/turret/insideState';
 import { project, type Camera, type P3 } from '../../systems/turret/projection';
@@ -17,6 +18,23 @@ interface Fx {
   life: number;
   seed: number;
 }
+
+/** A streak's tail drawn no farther than `most` pixels from its head: just out of the barrel, right by the glass, the
+ *  perspective threw a tail across the whole view (owner, 17 novembre 2026: "spara dei colpi tutti verso destra"). */
+function shortTail(
+  head: { x: number; y: number },
+  tail: { x: number; y: number },
+  most: number,
+): { x: number; y: number } {
+  const dx = tail.x - head.x;
+  const dy = tail.y - head.y;
+  const len = Math.hypot(dx, dy);
+  if (len <= most) return tail;
+  return { x: head.x + (dx / len) * most, y: head.y + (dy / len) * most };
+}
+
+/** Darts and tracers are not drawn nearer than this to the eye (m): there they would only be a smear. Tuning. */
+const NEAR_M = 6;
 
 /** How long each lasts (s). Tuning. */
 const LIFE = { splash: 0.9, bigSplash: 1.8, sparks: 0.9, burst: 2.8, flash: 0.25, deep: 2.4, thud: 1.2 };
@@ -69,11 +87,16 @@ export class TurretFx {
       const s = project(flat, { a: p.a - d.you.a, s: p.s - d.you.s, z: p.z });
       return s && { x: s.x - cam.w / 2, y: s.y - cam.h / 2, scale: s.scale };
     };
-    // the rounds in the air
+    // the rounds in the air (your tracers streak along their way as seen from aboard)
+    const way = yourWay(d);
     for (const r of d.rounds) {
       const head = at(r.p);
-      const tail = at({ a: r.p.a - r.v.a * 0.035, s: r.p.s - r.v.s * 0.035, z: r.p.z - r.v.z * 0.035 });
-      if (!head || !tail) continue;
+      const k = r.kind === 'mg' && r.from === 'you' ? 1 : 0;
+      const rv = { a: r.v.a - way.a * k, s: r.v.s - way.s * k, z: r.v.z };
+      const back = at({ a: r.p.a - rv.a * 0.035, s: r.p.s - rv.s * 0.035, z: r.p.z - rv.z * 0.035 });
+      if (!head || !back) continue;
+      if (Math.hypot(r.p.a - d.you.a, r.p.s - d.you.s, r.p.z - cam.height) < NEAR_M) continue;
+      const tail = shortTail(head, back, Math.max(24, head.scale * 6));
       if (r.kind === 'mg') {
         // a thin glowing streak: never a slab, even just out of the barrel
         const [lo, hi] = MACHINE_GUN.tracer;
@@ -108,18 +131,21 @@ export class TurretFx {
           lights.puff(head.x, head.y, Math.max(4, Math.min(20, head.scale)), 0xff3a20, 0.5);
       }
     }
-    // the harpoon gun's darts: a steel streak and the bubbles behind it
+    // the harpoon gun's darts: a steel streak along their way as seen from aboard, and the bubbles behind it
     for (const r of d.darts) {
       const head = at(r.p);
-      const tail = at({ a: r.p.a - r.v.a * 0.04, s: r.p.s - r.v.s * 0.04, z: r.p.z - r.v.z * 0.04 });
-      if (!head || !tail) continue;
+      const rel = { a: r.v.a - way.a, s: r.v.s - way.s, z: r.v.z };
+      const back = at({ a: r.p.a - rel.a * 0.03, s: r.p.s - rel.s * 0.03, z: r.p.z - rel.z * 0.03 });
+      if (!head || !back) continue;
+      if (Math.hypot(r.p.a - d.you.a, r.p.s - d.you.s, r.p.z - cam.height) < NEAR_M) continue;
+      const tail = shortTail(head, back, Math.max(14, head.scale * 2.5));
       g.lineStyle(Math.max(1, Math.min(3, head.scale * 0.1)), 0xcfe6ea, 0.9).lineBetween(
         tail.x,
         tail.y,
         head.x,
         head.y,
       );
-      smoke.puff(tail.x, tail.y, Math.max(2, Math.min(10, tail.scale * 0.6)), 0xdcecf0, 0.35);
+      smoke.puff(tail.x, tail.y, Math.max(2, Math.min(10, back.scale * 0.6)), 0xdcecf0, 0.35);
     }
     for (const ch of d.charges) {
       const s = at(ch.p);
