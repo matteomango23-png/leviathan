@@ -111,9 +111,10 @@ export class TurretScene extends Phaser.Scene {
     if (!k.W) return;
     if (k.W.isDown) i.throttle = Math.min(1, i.throttle + dt * 0.6);
     if (k.S!.isDown) i.throttle = Math.max(-0.3, i.throttle - dt * 0.6);
-    const steer = (k.D!.isDown ? 1 : 0) - (k.A!.isDown ? 1 : 0);
-    if (steer) i.steer = steer;
-    i.yaw += ((k.RIGHT!.isDown ? 1 : 0) - (k.LEFT!.isDown ? 1 : 0)) * TURRET.keyRad * dt * 0.5;
+    // A, D and the arrows turn the turret (under way the ship follows it)
+    const right = k.RIGHT!.isDown || k.D!.isDown ? 1 : 0;
+    const left = k.LEFT!.isDown || k.A!.isDown ? 1 : 0;
+    i.yaw += (right - left) * TURRET.keyRad * dt * 0.5;
     i.pitch += ((k.UP!.isDown ? 1 : 0) - (k.DOWN!.isDown ? 1 : 0)) * TURRET.keyRad * dt * 0.3;
     if (k.SPACE!.isDown) i.firing = i.gunShot = true;
     if (Phaser.Input.Keyboard.JustDown(k.ONE!)) this.controls.weapon = 'mg';

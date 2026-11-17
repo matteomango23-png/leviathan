@@ -1331,3 +1331,8 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Percezione vera dentro:** le navi usano `perceive` e `stepAlert` del mondo con la distanza del piano. Chi non ti ha visto pattuglia e non spara; un colpo la mette subito in caccia.
 - **Arpioni sott'acqua invece di niente:** mitragliatrice e cannone restano chiusi sotto (realismo), ma c'è un'arma da vicino (fucili subacquei veri) e il siluro si ricarica prima. Motivo: il proprietario trovava strano avere solo il siluro.
 - **La Guida prima della vista:** la prima volta Aurelio spiega, poi la vista si apre, perché un dialogo ferma il mondo e chiuderebbe la vista.
+
+## 17 novembre 2026 — La nave segue il mirino (v0.131.1)
+
+- **Nella vista interna la prua segue il mirino** quando la nave è avviata (richiesta del proprietario); da ferma non gira, così ci si guarda intorno. Niente più pulsanti del timone: un solo gesto per guardare, mirare e scegliere la rotta.
+- **Entrando la torretta guarda lungo la prua:** girarla da sola verso una nave fuori dall'inquadratura esterna la faceva sembrare comparsa dal nulla.

@@ -63,6 +63,21 @@ describe('la vista interna e il mondo', () => {
     expect(hunted).toBe(true);
   });
 
+  it('entrando la torretta guarda lungo la prua, anche con una nave vicina', () => {
+    const g = arena({ enemies: 'tutti' });
+    const d = openInside(g);
+    expect(d.foes.length).toBeGreaterThan(0);
+    expect(d.yaw).toBe(0);
+  });
+
+  it('uscendo con la nave girata, il mondo lo dice', () => {
+    const g = arena();
+    const d = openInside(g);
+    d.you.heading = Math.PI;
+    closeInside(g, d);
+    expect(g.story.pending.some((e) => e.type === 'insideTurned' && e.face === -1)).toBe(true);
+  });
+
   it('il mondo continua mentre sei dentro, ma il timone di fuori non muove la nave', () => {
     const g = arena();
     openInside(g);

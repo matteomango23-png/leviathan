@@ -182,7 +182,7 @@ export const DIALOGUES = {
   // the inside view (owner, 17 novembre 2026: "è come se switchassi da view outside a view inside"): told the first
   // time you go in
   tipInside: [
-    { who: 'aurelio', text: 'Dalla torretta vedi il mare con gli occhi della nave. A sinistra la leva del Gas, che sotto la tacca va indietro, e il Timone: la prua gira e la nave va dove punta. Con un U-Boot hai anche Sali e Scendi.' },
+    { who: 'aurelio', text: 'Dalla torretta vedi il mare con gli occhi della nave. A sinistra la leva del Gas, che sotto la tacca va indietro: col gas dato la nave va dove punti il mirino, e la prua gira piano verso di lui. Per guardarti intorno senza cambiare rotta, togli il gas. Con un U-Boot hai anche Sali e Scendi.' },
     { who: 'aurelio', text: 'Trascina il dito per girare la torretta e tieni premuto Fuoco per sparare: puoi fare tutto insieme, con più dita. La mitragliatrice spara a lungo, poi si scalda; il cannone riparte da solo appena è carico.' },
     { who: 'aurelio', text: 'Il siluro segue il mirino: gira la torretta e lui curva. Sott’acqua mitragliatrice e cannone sono chiusi, ma c’è il fucile ad arpioni, a raffica e da vicino, e il siluro si ricarica prima.' },
     { who: 'aurelio', text: 'Le navi della Compagnia che non ti hanno visto non sparano: avvicinati piano, in Silenzio, o passa sotto con l’U-Boot. Il primo colpo le mette in caccia. "Vista esterna" ti riporta fuori, e il mare intanto non si è fermato.' },

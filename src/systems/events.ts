@@ -132,6 +132,8 @@ export type GameEvent =
   | { type: 'navalBattle'; surprise: boolean }
   | { type: 'navalBattleEnd'; result: 'victory' | 'left' | 'lost' }
   | { type: 'turretOpen' }
+  /** Out of the inside view with your ship turned the other way along the line. */
+  | { type: 'insideTurned'; face: 1 | -1 }
   | { type: 'enemyAim'; x: number; y: number }
   | { type: 'hullHit'; side: 'you' | 'enemy'; zone: 'deck' | 'waterline' | 'magazine'; x: number; y: number }
   | { type: 'shipMended'; points: number; by: 'parts' | 'yard' }
