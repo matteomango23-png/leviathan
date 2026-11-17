@@ -2,6 +2,26 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.131.0 — La vista interna, col mondo che continua (17 novembre 2026)
+
+- **"Vista interna"** al timone, al posto di "Armi": c'è sempre, su ogni tua nave, anche senza nemici vicini. Dentro navighi in prima persona con gas, timone e (U-Boot) Sali/Scendi; **Vista esterna** ti riporta fuori.
+- **Il mondo non si ferma più** mentre sei dentro: scorrono l'ora, il meteo, le bestie e la Compagnia. La tua nave si sposta davvero: fuori la ritrovi dove l'hai portata, girata come l'hai girata. Se fuori parte una battaglia con una bestia, o Aurelio deve parlarti, la vista interna si chiude da sola.
+- **Tutte le navi della Compagnia vicine** sono nella vista, ognuna col suo modello 3D e la sua posizione di lato.
+  - **Chi non ti ha visto non spara:** pattuglia avanti e indietro. Ti scopre come fuori: col motore, con le luci, se ti vede. In Silenzio, o sott'acqua con l'U-Boot, puoi avvicinarti o passarle sotto.
+  - Il primo colpo che la prende la mette in caccia, e compare la scritta "ti ha scoperto!".
+  - **Affondata una**, le altre restano: la vista continua.
+  - La freccia rossa e la distanza indicano la nave più vicina che ti dà la caccia (se nessuna, la più vicina).
+- **Armi sott'acqua:**
+  - con l'U-Boot sotto, il pulsante della mitragliatrice diventa **Arpioni**: dardi lunghi a raffica, con la scia di bollicine, portata di circa 80 m, piccole falle sotto la linea di galleggiamento; si scalda dopo circa 5 secondi;
+  - il cannone resta spento ("Cannone: solo in superficie");
+  - il siluro sott'acqua si ricarica prima (3,5 s invece di 6).
+- **Guida di Aurelio:** nuova pagina "La vista interna", che si apre la prima volta che entri.
+- **Corretti:**
+  - sott'acqua si vedeva una riga dritta all'orizzonte (la luce della superficie);
+  - in alto, i raggi di luce cominciavano con un bordo netto.
+- Nell'arena, la spunta "Torretta" tolta riporta "Armi" e la battaglia di lato, per confronto. "Tutte" mette in mare insieme baleniera, nave da caccia e U-Boot.
+- I salvataggi non cambiano.
+
 ## v0.130.0 — Torretta: più dita, timone vero, navi in 3D (17 novembre 2026)
 
 - **Più dita insieme:** ogni dito fa la sua cosa. Puoi mirare trascinando mentre tieni premuto **Fuoco**, cambiare arma senza smettere di sparare, tenere il timone e il gas nello stesso momento. Un dito che scivola fuori da un pulsante non lo rilascia: smette solo quando lo alzi.

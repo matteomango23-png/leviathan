@@ -84,12 +84,8 @@ function hitYou(g: GameState, damage: number, at: { x: number; y: number }, even
 
 /** Your weapons, and "Armi". */
 function yourCommands(g: GameState, input: InputState, events: GameEvent[]): void {
-  // "Armi": the side battle, or the turret in first person (the arena's tick)
-  if (input.helmCmd === 'arm' && canArm(g)) {
-    const foe = foeInReach(g)!;
-    if (g.company.turret) events.push({ type: 'turretOpen', foe: foe.id });
-    else startBattle(g, foe, events);
-  }
+  // "Armi" without the inside view (the arena's tick off): the side battle
+  if (input.helmCmd === 'arm' && !g.company.turret && canArm(g)) startBattle(g, foeInReach(g)!, events);
   if (input.helmCmd === 'disarm') leaveBattle(g, events);
   if (input.fireAngle !== null) fireGun(g, input.fireAngle, events);
   else if (input.helmCmd === 'fire') fireGun(g, null, events);
@@ -99,6 +95,8 @@ function yourCommands(g: GameState, input: InputState, events: GameEvent[]): voi
 /** One step of the Compagnia's vessels and the shots at sea; your weapons and battle stations. */
 export function stepCompany(g: GameState, input: InputState, dt: number, events: GameEvent[]): void {
   const c = g.company;
+  // "Vista interna": anywhere at the helm, with or without vessels near
+  if (input.helmCmd === 'arm' && c.turret && canArm(g)) events.push({ type: 'turretOpen' });
   if (!c.enemies.length && !c.shots.length) {
     c.battle = null;
     return;
@@ -121,6 +119,8 @@ export function stepCompany(g: GameState, input: InputState, dt: number, events:
       e.sinkT += dt;
       continue;
     }
+    // the inside view sails it, hears and sees for it, and fights it (systems/turret/)
+    if (e.inView) continue;
     for (const k of Object.keys(e.reload) as WeaponId[]) e.reload[k] = Math.max(0, (e.reload[k] ?? 0) - dt);
     e.hull = Math.max(0, e.hull - stepDamage(e.dmg, dt));
     if (e.hull <= 0) {
@@ -139,12 +139,14 @@ export function stepCompany(g: GameState, input: InputState, dt: number, events:
     if (e.phase === 'hunting' && yourShipThere) enemyFires(g, e, q, dt, events);
   }
   c.enemies = c.enemies.filter((e) => e.sinkT < SINKING.seconds);
-  if (yourShipThere) for (const e of afloatEnemies(c)) keepApart(s, e);
-  const targets: Hittable[] = afloatEnemies(c).map((e) => ({
-    side: 'enemy',
-    box: hullBox(enemyPose(e)),
-    hit: (damage, at) => hitEnemy(g, e, damage, at, events),
-  }));
+  if (yourShipThere) for (const e of afloatEnemies(c)) if (!e.inView) keepApart(s, e);
+  const targets: Hittable[] = afloatEnemies(c)
+    .filter((e) => !e.inView)
+    .map((e) => ({
+      side: 'enemy',
+      box: hullBox(enemyPose(e)),
+      hit: (damage, at) => hitEnemy(g, e, damage, at, events),
+    }));
   if (yourShipThere)
     targets.push({ side: 'you', box: hullBox(s), hit: (dmg, at) => hitYou(g, dmg, at, events) });
   stepShots(c, targets, dt, events);

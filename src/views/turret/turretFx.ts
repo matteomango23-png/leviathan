@@ -4,14 +4,14 @@
 // flash of the enemy's gun. Every effect stays where it happened at sea while you sail and turn. Look only.
 import Phaser from 'phaser';
 import { MACHINE_GUN } from '../../data/turret';
-import type { DuelEvent } from '../../systems/turret/duel';
-import type { DuelState } from '../../systems/turret/duelState';
+import type { InsideEvent } from '../../systems/turret/inside';
+import type { InsideState } from '../../systems/turret/insideState';
 import { project, type Camera, type P3 } from '../../systems/turret/projection';
 import type { SoftPuffs } from '../softPuffs';
 import { through, type TurretColours } from './turretLook';
 
 interface Fx {
-  kind: 'splash' | 'sparks' | 'burst' | 'flash' | 'bigSplash' | 'deep';
+  kind: 'splash' | 'sparks' | 'burst' | 'flash' | 'bigSplash' | 'deep' | 'thud';
   p: P3;
   t: number;
   life: number;
@@ -19,7 +19,7 @@ interface Fx {
 }
 
 /** How long each lasts (s). Tuning. */
-const LIFE = { splash: 0.9, bigSplash: 1.8, sparks: 0.9, burst: 2.8, flash: 0.25, deep: 2.4 };
+const LIFE = { splash: 0.9, bigSplash: 1.8, sparks: 0.9, burst: 2.8, flash: 0.25, deep: 2.4, thud: 1.2 };
 
 export class TurretFx {
   private fx: Fx[] = [];
@@ -35,13 +35,14 @@ export class TurretFx {
     return this.lines;
   }
 
-  onEvents(events: DuelEvent[]): void {
+  onEvents(events: InsideEvent[]): void {
     const add = (kind: Fx['kind'], p: P3): void => {
       this.fx.push({ kind, p: { ...p }, t: 0, life: LIFE[kind], seed: Math.random() * 10 });
     };
     for (const e of events) {
       if (e.type === 'splash') add(e.kind === 'mg' ? 'splash' : 'bigSplash', e.p);
       else if (e.type === 'hit' && e.target === 'foe') add(e.kind === 'mg' ? 'sparks' : 'burst', e.p);
+      else if (e.type === 'dartHit') add('thud', e.p);
       else if (e.type === 'foeFlash' || e.type === 'foeShot') add('flash', e.p);
       else if (e.type === 'torpHit') {
         add('deep', e.p);
@@ -54,7 +55,14 @@ export class TurretFx {
     }
   }
 
-  update(cam: Camera, c: TurretColours, d: DuelState, dt: number, lights: SoftPuffs, smoke: SoftPuffs): void {
+  update(
+    cam: Camera,
+    c: TurretColours,
+    d: InsideState,
+    dt: number,
+    lights: SoftPuffs,
+    smoke: SoftPuffs,
+  ): void {
     const g = this.lines.clear();
     const flat = { ...cam, roll: 0 };
     const at = (p: P3): { x: number; y: number; scale: number } | null => {
@@ -73,7 +81,7 @@ export class TurretFx {
         g.lineStyle(width, 0xffd090, 0.95).lineBetween(tail.x, tail.y, head.x, head.y);
         g.lineStyle(width * 2.6, 0xff7a2a, 0.22).lineBetween(tail.x, tail.y, head.x, head.y);
       } else {
-        const theirs = r.from === 'foe';
+        const theirs = r.from !== 'you';
         const size = Math.max(5, Math.min(16, head.scale * 1.6));
         lights.puff(head.x, head.y, size, theirs ? 0xff4a2a : 0xffd27a, 0.9);
         smoke.puff(tail.x, tail.y, size * 0.8, 0x8a8580, 0.3);
@@ -96,9 +104,22 @@ export class TurretFx {
       const head = at(tp.p);
       if (head) {
         smoke.puff(head.x, head.y, Math.max(3, Math.min(18, head.scale * 0.8)), 0x101417, 0.95);
-        if (tp.from === 'foe')
+        if (tp.from !== 'you')
           lights.puff(head.x, head.y, Math.max(4, Math.min(20, head.scale)), 0xff3a20, 0.5);
       }
+    }
+    // the harpoon gun's darts: a steel streak and the bubbles behind it
+    for (const r of d.darts) {
+      const head = at(r.p);
+      const tail = at({ a: r.p.a - r.v.a * 0.04, s: r.p.s - r.v.s * 0.04, z: r.p.z - r.v.z * 0.04 });
+      if (!head || !tail) continue;
+      g.lineStyle(Math.max(1, Math.min(3, head.scale * 0.1)), 0xcfe6ea, 0.9).lineBetween(
+        tail.x,
+        tail.y,
+        head.x,
+        head.y,
+      );
+      smoke.puff(tail.x, tail.y, Math.max(2, Math.min(10, tail.scale * 0.6)), 0xdcecf0, 0.35);
     }
     for (const ch of d.charges) {
       const s = at(ch.p);
@@ -151,6 +172,19 @@ export class TurretFx {
             0x262220,
             0.5 * (1 - k),
           );
+      } else if (f.kind === 'thud') {
+        // a dart in the hull: a puff of bubbles and a dull flash
+        lights.puff(s.x, s.y, 1.2 * m, 0xbfe4ff, 0.6 * Math.max(0, 1 - k * 4));
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2 + f.seed;
+          smoke.puff(
+            s.x + Math.cos(a) * (0.5 + k * 2) * m,
+            s.y - k * 3 * m + Math.sin(a) * m,
+            (0.5 + k) * m,
+            0xdcecf0,
+            0.5 * (1 - k),
+          );
+        }
       } else if (f.kind === 'deep') {
         // under the water: a flash, then a ball of bubbles bursting and rising
         lights.puff(s.x, s.y, 6 * m, 0xfff0c0, 0.9 * Math.max(0, 1 - k * 4));

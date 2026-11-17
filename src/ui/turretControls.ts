@@ -1,11 +1,12 @@
-// The turret's controls (owner, 17 novembre 2026): on the left the throttle lever (ahead, and a little astern under
+// The inside view's controls (owner, 17 novembre 2026): on the left the throttle lever (ahead, and a little astern under
 // its stop mark) and the rudder ◀ ▶ — the bow turns and the ship goes where it points — and a U-Boat's "Sali /
-// Scendi"; on the right the weapons and "Fuoco", held to keep firing; drag anywhere else to turn the turret. Every
+// Scendi"; on the right the weapons (under the water the machine gun is the harpoon gun) and "Fuoco", held to keep
+// firing — a ship without weapons has none; drag anywhere else to turn the turret. Every
 // finger works at once (ui/turretTouch.ts). "Vista esterna" back to the helm. At the top the two ships' hull and
-// water; under the window what you aim with and the target's distance, with an arrow when it is out of view.
-import type { DuelState } from '../systems/turret/duelState';
-import { gunsUp, restingInput, yourMaxDepth, type TurretInput } from '../systems/turret/duel';
-import { foeFromYou } from '../systems/turret/duelState';
+// water (the vessel you aim at: the nearest hunting you); under the window what you aim with and its distance, with
+// an arrow when it is out of view.
+import { armed, gunsUp, restingInput, yourMaxDepth, type TurretInput } from '../systems/turret/inside';
+import { foeFrom, type FoeInView, type InsideState } from '../systems/turret/insideState';
 import { wrapAngle, yawTo } from '../systems/turret/projection';
 import { ENEMY_CLASSES, WEAPONS } from '../data/company';
 import { DUEL, TURRET } from '../data/turret';
@@ -33,13 +34,20 @@ export class TurretControls {
   private readonly info: HTMLDivElement;
   private readonly knob: HTMLDivElement;
   private readonly track: HTMLDivElement;
-  private readonly bars: { you: HTMLDivElement[]; foe: HTMLDivElement[]; names: HTMLSpanElement[] };
+  private readonly bars: {
+    you: HTMLDivElement[];
+    foe: HTMLDivElement[];
+    names: HTMLSpanElement[];
+    foeBox: HTMLElement;
+    vs: HTMLElement;
+  };
   private readonly banner: HTMLDivElement;
   private bannerT = 0;
   /** What the fingers do (TurretScene reads it each frame; the turning is used up then). */
   readonly input: TurretInput = restingInput();
   /** A U-Boat's "Sali / Scendi" and its torpedo (hidden on the ships that have none). */
   private readonly diveBox: HTMLDivElement;
+  private readonly arms: HTMLDivElement;
   private readonly torpedo: HTMLButtonElement;
   private readonly touch: TouchRouter;
   exit = false;
@@ -93,7 +101,7 @@ export class TurretControls {
     roleBtn(this.diveBox, 'turret-btn', 'Sali', 'up');
     roleBtn(this.diveBox, 'turret-btn', 'Scendi', 'down');
     // the weapons and the trigger, on the right
-    const arms = el('div', 'turret-arms', this.root);
+    const arms = (this.arms = el('div', 'turret-arms', this.root));
     this.mg = roleBtn(arms, 'turret-btn on', 'Mitragliatrice', 'mg');
     this.gun = roleBtn(arms, 'turret-btn', 'Cannone', 'gun');
     // the guided torpedo: it follows where you turn the turret
@@ -104,17 +112,17 @@ export class TurretControls {
     this.info = el('div', 'turret-info', this.root);
     // the two ships, at the top
     const bars = el('div', 'naval-bars turret-bars', this.root);
-    const sideBox = (kind: string): { name: HTMLSpanElement; fills: HTMLDivElement[] } => {
+    const sideBox = (kind: string): { box: HTMLElement; name: HTMLSpanElement; fills: HTMLDivElement[] } => {
       const box = el('div', `naval-side ${kind}`, bars);
       const name = el('span', 'naval-name', box);
       const hull = el('div', 'naval-hull', el('div', 'naval-track', box));
       const water = el('div', 'naval-water', el('div', 'naval-track thin', box));
-      return { name, fills: [hull, water] };
+      return { box, name, fills: [hull, water] };
     };
     const you = sideBox('you');
-    el('span', 'naval-vs', bars, 'contro');
+    const vs = el('span', 'naval-vs', bars, 'contro');
     const foe = sideBox('foe');
-    this.bars = { you: you.fills, foe: foe.fills, names: [you.name, foe.name] };
+    this.bars = { you: you.fills, foe: foe.fills, names: [you.name, foe.name], foeBox: foe.box, vs };
     this.banner = el('div', 'naval-banner', this.root);
     this.banner.hidden = true;
   }
@@ -156,13 +164,16 @@ export class TurretControls {
     this.bannerT = 2.4;
   }
 
-  update(g: GameState, d: DuelState, dt: number): void {
+  update(g: GameState, d: InsideState, target: FoeInView | null, dt: number): void {
     this.bannerT = Math.max(0, this.bannerT - dt);
     if (this.bannerT <= 0) this.banner.hidden = true;
     const lever = (this.input.throttle + DUEL.reverse) / (1 + DUEL.reverse);
     this.knob.style.bottom = `${Math.round(lever * 100)}%`;
     const gunW = shipModel(g.ship).weapons.find((w) => WEAPONS[w].kind === 'shell');
+    const withArms = armed(g);
     this.gun.hidden = !gunW;
+    this.mg.hidden = !withArms;
+    this.fire.hidden = !withArms;
     if (!gunW) this.weapon = 'mg';
     this.mg.classList.toggle('on', this.weapon === 'mg');
     this.gun.classList.toggle('on', this.weapon === 'gun');
@@ -170,24 +181,38 @@ export class TurretControls {
     this.fire.style.setProperty('--ready', String(ready));
     this.fire.classList.toggle('hot', d.hot && this.weapon === 'mg');
     this.heat.style.width = `${Math.round(d.heat * 100)}%`;
-    this.heat.parentElement!.hidden = this.weapon !== 'mg';
-    const rel = foeFromYou(d);
+    this.heat.parentElement!.hidden = this.weapon !== 'mg' || !withArms;
     const under = !gunsUp(d);
     this.diveBox.hidden = yourMaxDepth(g) <= 0;
     this.torpedo.hidden = !shipModel(g.ship).weapons.includes('siluro');
     this.torpedo.classList.toggle('off', d.torpReload > 0 || d.torpedoes.some((x) => x.from === 'you'));
-    // under the water the guns are useless
-    this.mg.classList.toggle('off', under);
+    // under the water the machine gun is the harpoon gun, and the gun is shut
+    const mgName = under ? 'Arpioni' : 'Mitragliatrice';
+    if (this.mg.textContent !== mgName) this.mg.textContent = mgName;
     this.gun.classList.toggle('off', under);
-    const arm = under ? 'Sott’acqua: solo siluri' : this.weapon === 'mg' ? 'Mitragliatrice' : 'Cannone';
+    const arm = !withArms
+      ? 'Senza armi'
+      : this.weapon === 'mg'
+        ? mgName
+        : under
+          ? 'Cannone: solo in superficie'
+          : 'Cannone';
     const depth = d.you.depth > 0.5 ? ` · quota ${Math.round(d.you.depth)} m` : '';
-    // out of view: which way to turn
-    const off = wrapAngle(yawTo(rel) - d.yaw);
-    const arrow = Math.abs(off) < TURRET.fov / 2 ? '' : off > 0 ? ' ▶' : '◀ ';
     const astern = this.input.throttle < 0 ? ' · indietro' : '';
-    const text = `${arm} · ${off < 0 ? arrow : ''}bersaglio a ${Math.round(rel.dist)} m${off > 0 ? arrow : ''}${depth}${astern}`;
+    let aim = 'nessuna nave vicina';
+    if (target) {
+      const rel = foeFrom(d, target);
+      // out of view: which way to turn
+      const off = wrapAngle(yawTo(rel) - d.yaw);
+      const out = Math.abs(off) >= TURRET.fov / 2;
+      aim = `${out && off < 0 ? '◀ ' : ''}bersaglio a ${Math.round(rel.dist)} m${out && off > 0 ? ' ▶' : ''}`;
+    }
+    const text = `${arm} · ${aim}${depth}${astern}`;
     if (this.info.textContent !== text) this.info.textContent = text;
-    const e = g.company.enemies.find((x) => x.id === d.foeId);
+    this.arms.hidden = !withArms && this.torpedo.hidden;
+    const e = target ? g.company.enemies.find((x) => x.id === target.id) : undefined;
+    this.bars.foeBox.hidden = !e;
+    this.bars.vs.hidden = !e;
     const set = (fills: HTMLDivElement[], hull: number, water: number): void => {
       fills[0]!.style.width = `${Math.round(Math.max(0, Math.min(1, hull)) * 100)}%`;
       fills[1]!.style.width = `${Math.round(Math.max(0, Math.min(1, water)) * 100)}%`;

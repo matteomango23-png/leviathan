@@ -1,33 +1,39 @@
-// Under the water in the turret's duel (owner, 17 novembre 2026: "siluri… li porti su e giù"; "deve funzionare
+// Under the water in the inside view (owner, 17 novembre 2026: "siluri… li porti su e giù"; "deve funzionare
 // anche sott'acqua"): your guided torpedo turns towards where the turret points, up and down too; the enemy U-Boat's
 // run straight at where you were; the hunting ship's depth charges sink to your depth and burst there. Numbers in
 // data/turret.ts TORPEDO_GUIDE and data/company.ts WEAPONS.carica. Pure logic.
 import { WEAPONS } from '../../data/company';
 import { TORPEDO_GUIDE, UNDERWATER } from '../../data/turret';
-import { strikes, type DuelHull } from './ballistics';
-import type { DuelState, Torpedo } from './duelState';
+import { strikesAny, type DuelHull } from './ballistics';
+import type { InsideState, Torpedo } from './insideState';
 import { wrapAngle, type P3 } from './projection';
 
 export type UnderEvent =
-  | { type: 'torpHit'; target: 'foe' | 'you'; p: P3; u: number; v: number }
+  | { type: 'torpHit'; target: 'foe' | 'you'; foe: number; p: P3; u: number; v: number }
   | { type: 'torpLost'; p: P3 }
   | { type: 'chargeBurst'; p: P3; hit: boolean };
 
 /** Launches a torpedo from p along yaw/pitch. */
-export function launchTorpedo(d: DuelState, from: Torpedo['from'], p: P3, yaw: number, pitch: number): void {
+export function launchTorpedo(
+  d: InsideState,
+  from: Torpedo['from'],
+  p: P3,
+  yaw: number,
+  pitch: number,
+): void {
   d.torpedoes.push({ id: d.nextId++, from, p: { ...p }, yaw, pitch, left: TORPEDO_GUIDE.rangeM, trail: [] });
 }
 
 /** Rolls a depth charge off at p, to burst at the depth `fuse` (z below 0). */
-export function dropCharge(d: DuelState, p: P3, fuse: number): void {
+export function dropCharge(d: InsideState, p: P3, fuse: number): void {
   d.charges.push({ id: d.nextId++, p: { ...p, z: 0 }, fuse: Math.max(-UNDERWATER.maxDepthM, fuse) });
 }
 
 /** A step of every torpedo and charge: what struck what. Your torpedo keeps to the line of the turret's aim (from
  *  your eye along its yaw and pitch), like a wire-guided one: it steers to the point of that line just ahead of it. */
 export function stepUnder(
-  d: DuelState,
-  foe: DuelHull,
+  d: InsideState,
+  foes: DuelHull[],
   you: DuelHull,
   aim: { yaw: number; pitch: number; from: P3 },
   dt: number,
@@ -58,9 +64,11 @@ export function stepUnder(
     t.left -= v * dt;
     t.trail.push({ ...t.p });
     if (t.trail.length > 30) t.trail.shift();
-    const hit = strikes(t.from === 'you' ? foe : you, p0, t.p);
+    const hit = strikesAny(t.from === 'you' ? foes : [you], p0, t.p);
     if (hit) {
-      out.push({ type: 'torpHit', target: t.from === 'you' ? 'foe' : 'you', ...hit });
+      const { hull, ...at } = hit;
+      const foe = hull.id === 'you' ? -1 : hull.id;
+      out.push({ type: 'torpHit', target: t.from === 'you' ? 'foe' : 'you', foe, ...at });
       return false;
     }
     if (t.left <= 0) {

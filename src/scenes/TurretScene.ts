@@ -1,20 +1,24 @@
-// The turret in first person (owner, 17 novembre 2026: "una view in prima persona su una mitragliatrice o una
-// cannoniera… un gioco nel gioco"): opened by "Armi" with the arena's tick on, over the paused sea. It steps the duel
-// (systems/turret/), the weather and the hour, and draws the sky, the sea, the enemy, the shots and the turret's
-// glass; it sounds the guns. "Timone", or a while after the end, closes it and gives the sea back.
+// The inside view in first person (owner, 17 novembre 2026: "è come se switchassi da view outside a view inside… anche
+// semplicemente navigare ed esplorare"): opened by "Vista interna" at the helm, over the world that keeps running
+// (WorldScene steps it, hidden). It steps the view (systems/turret/), writes your ship and the vessels back into the
+// world each frame, and draws the sky, the sea or the water, every vessel near in 3D, the shots and the turret's
+// glass; it sounds the guns. "Vista esterna", your ship gone down, or the sea calling you (a beast's battle, Aurelio
+// speaking) close it.
 import Phaser from 'phaser';
-import { WEAPONS } from '../data/company';
-import { DUEL, TURRET } from '../data/turret';
-import { nightness, stepDay } from '../systems/dayNight';
-import { closeDuel, eyeHeight, stepDuel, turretPoint, type DuelEvent } from '../systems/turret/duel';
+import { ENEMY_CLASSES, WEAPONS } from '../data/company';
+import { INSIDE, TURRET } from '../data/turret';
+import { nightness } from '../systems/dayNight';
+import { eyeHeight, stepInside, turretPoint, type InsideEvent } from '../systems/turret/inside';
+import { closeInside, joinFoes, openInside, syncWorld } from '../systems/turret/insideWorld';
+import { foeFrom, type FoeInView, type InsideState } from '../systems/turret/insideState';
 import { TurretHull3d } from '../views/turret/turretHull3d';
 import { seeUnder, TurretUnder, waterAt } from '../views/turret/turretUnder';
-import { foeFromYou, type DuelState } from '../systems/turret/duelState';
 import { landingOf } from '../systems/turret/ballistics';
 import { project, yawTo, type Camera } from '../systems/turret/projection';
 import { shipModel, shipTopSpeed } from '../systems/ship/model';
 import { WORLD } from '../data/worldLayout';
-import { stepWeather, weatherLook } from '../systems/weather';
+import { weatherLook } from '../systems/weather';
+import type { GameState } from '../systems/game';
 import { TurretControls } from '../ui/turretControls';
 import { SoftPuffs } from '../views/softPuffs';
 import { TurretFx } from '../views/turret/turretFx';
@@ -27,12 +31,22 @@ import type { Session } from './session';
 
 interface TurretData {
   session: Session;
-  duel: DuelState;
+}
+
+/** How hard a blow on your ship shakes the view. Tuning. */
+const TURRET_SHAKE = 0.012;
+
+/** The vessel the arrow and the distance point at: the nearest hunting you, else the nearest afloat. */
+export function targetOf(g: GameState, d: InsideState): FoeInView | null {
+  const afloat = d.foes.filter((f) => (g.company.enemies.find((e) => e.id === f.id)?.sinkT ?? 1) <= 0);
+  const hunting = afloat.filter((f) => g.company.enemies.find((e) => e.id === f.id)?.phase === 'hunting');
+  const pick = hunting.length ? hunting : afloat;
+  return pick.sort((a, b) => foeFrom(d, a).dist - foeFrom(d, b).dist)[0] ?? null;
 }
 
 export class TurretScene extends Phaser.Scene {
   private session!: Session;
-  private duel!: DuelState;
+  private inside!: InsideState;
   private box!: Phaser.GameObjects.Container;
   private sky!: TurretSky;
   private sea!: TurretSea;
@@ -45,9 +59,12 @@ export class TurretScene extends Phaser.Scene {
   private glass!: TurretGlass;
   private controls!: TurretControls;
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
-  /** Seconds of slow motion left (the deciding blow). */
-  private slow = 0;
   private closing = false;
+  /** The eye was under the water last frame (crossing the surface splashes the glass). */
+  private wasUnder = false;
+  /** The lightning's flash last frame (a new one thunders). */
+  private lastFlash = 0;
+  private joinT = 0;
 
   constructor() {
     super('Turret');
@@ -55,12 +72,13 @@ export class TurretScene extends Phaser.Scene {
 
   init(data: TurretData): void {
     this.session = data.session;
-    this.duel = data.duel;
     this.closing = false;
-    this.slow = 0;
+    this.wasUnder = false;
   }
 
   create(): void {
+    const g = this.session.game!;
+    this.inside = openInside(g);
     this.cameras.main.setBackgroundColor(0x000000).fadeIn(260, 2, 8, 14);
     this.box = this.add.container(0, 0);
     this.under = new TurretUnder(this, this.box);
@@ -74,9 +92,8 @@ export class TurretScene extends Phaser.Scene {
     this.glows = new SoftPuffs(this, this.box, true);
     this.add.existing(this.sky.lightning.setOrigin(0, 0));
     this.glass = new TurretGlass(this);
-    const g = this.session.game!;
     const top = shipTopSpeed(g.ship) / WORLD.unitsPerMetre;
-    this.controls = new TurretControls(Math.min(1, this.duel.you.speed / Math.max(1, top)));
+    this.controls = new TurretControls(Math.min(1, this.inside.you.speed / Math.max(1, top)));
     const kb = this.input.keyboard;
     this.keys = kb
       ? (kb.addKeys('W,S,A,D,Q,E,T,UP,DOWN,LEFT,RIGHT,SPACE,ONE,TWO,ESC') as Record<
@@ -93,7 +110,7 @@ export class TurretScene extends Phaser.Scene {
     const i = this.controls.input;
     if (!k.W) return;
     if (k.W.isDown) i.throttle = Math.min(1, i.throttle + dt * 0.6);
-    if (k.S!.isDown) i.throttle = Math.max(-DUEL.reverse, i.throttle - dt * 0.6);
+    if (k.S!.isDown) i.throttle = Math.max(-0.3, i.throttle - dt * 0.6);
     const steer = (k.D!.isDown ? 1 : 0) - (k.A!.isDown ? 1 : 0);
     if (steer) i.steer = steer;
     i.yaw += ((k.RIGHT!.isDown ? 1 : 0) - (k.LEFT!.isDown ? 1 : 0)) * TURRET.keyRad * dt * 0.5;
@@ -108,23 +125,21 @@ export class TurretScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(k.T!)) i.torpedo = true;
   }
 
-  /** The eye was under the water last frame (crossing the surface splashes the glass). */
-  private wasUnder = false;
-
-  /** Sounds, flashes and cracks of what happened. */
-  private onEvents(events: DuelEvent[]): void {
+  /** Sounds, flashes, cracks and banners of what happened. */
+  private onEvents(g: GameState, events: InsideEvent[]): void {
     const sound = this.session.sound;
-    const dist = (p: { a: number; s: number }): number =>
-      Math.hypot(p.a - this.duel.you.a, p.s - this.duel.you.s);
-    const near = (p: { a: number; s: number }): number => Math.max(0, 1 - dist(p) / 500);
+    const d = this.inside;
+    const near = (p: { a: number; s: number }): number =>
+      Math.max(0, 1 - Math.hypot(p.a - d.you.a, p.s - d.you.s) / 500);
     for (const e of events) {
       if (e.type === 'shot') {
-        sound.gun(e.kind === 'mg' ? 'mg' : 'gun', 1);
-        this.glass.fired(e.kind !== 'mg');
-        if (e.kind !== 'mg') this.cameras.main.shake(140, 0.004);
+        sound.gun(e.kind === 'mg' ? 'mg' : e.kind === 'dart' ? 'clank' : 'gun', e.kind === 'dart' ? 0.5 : 1);
+        if (e.kind !== 'dart') this.glass.fired(e.kind !== 'mg');
+        if (e.kind !== 'mg' && e.kind !== 'dart') this.cameras.main.shake(160, 0.005);
       } else if (e.type === 'foeShot') sound.gun('gun', near(e.p) * 0.8);
       else if (e.type === 'hit' && e.target === 'foe')
         sound.gun(e.kind === 'mg' ? 'clank' : 'burst', near(e.p));
+      else if (e.type === 'dartHit') sound.gun('clank', near(e.p) * 0.7);
       else if (e.type === 'hit' && e.target === 'you') {
         sound.gun('burst', 1);
         this.glass.hit(this.scale.width, this.scale.height);
@@ -134,15 +149,19 @@ export class TurretScene extends Phaser.Scene {
         this.controls.show('Deposito centrato!');
       else if (e.type === 'torpHit' || (e.type === 'chargeBurst' && e.hit)) {
         sound.gun('burst', 1);
-        this.cameras.main.shake(420, e.type === 'torpHit' && e.target === 'foe' ? 0.006 : TURRET_SHAKE);
+        this.cameras.main.shake(420, e.type === 'torpHit' && e.target === 'foe' ? 0.007 : TURRET_SHAKE);
         if (e.type !== 'torpHit' || e.target === 'you') this.glass.hit(this.scale.width, this.scale.height);
       } else if (e.type === 'chargeBurst') {
         sound.gun('burst', near(e.p) * 0.7);
         this.cameras.main.shake(200, 0.004);
-      } else if (e.type === 'end') {
-        this.controls.show(e.result === 'victory' ? 'Vittoria!' : 'Affondato…');
-        if (e.result === 'victory') this.slow = 1.1;
-      }
+      } else if (e.type === 'foeAlert' && e.phase === 'hunting') {
+        const v = g.company.enemies.find((x) => x.id === e.foe);
+        sound.chargeWarn();
+        if (v) this.controls.show(`${ENEMY_CLASSES[v.cls].name}: ti ha scoperto!`);
+      } else if (e.type === 'sunk') {
+        this.controls.show(`${e.name} affondata!`);
+        this.cameras.main.shake(500, 0.006);
+      } else if (e.type === 'lost') this.controls.show('Affondato…');
     }
     this.fx.onEvents(events);
   }
@@ -150,45 +169,60 @@ export class TurretScene extends Phaser.Scene {
   /** The gun's mark on the sea: where a shell fired now would fall (with the roll, on screen), and how far. */
   private gunMark(cam: Camera): { x: number; y: number; dist: number } | null {
     const g = this.session.game!;
+    const d = this.inside;
     const gun = shipModel(g.ship).weapons.find((w) => WEAPONS[w].kind === 'shell');
-    if (this.controls.weapon !== 'gun' || !gun) return null;
-    const land = landingOf('you', gun, turretPoint(this.duel), this.duel.yaw, this.duel.pitch);
+    if (this.controls.weapon !== 'gun' || !gun || eyeHeight(d) < 0) return null;
+    const land = landingOf('you', gun, turretPoint(d), d.yaw, d.pitch);
     if (!land) return null;
-    const p = project(cam, { a: land.a - this.duel.you.a, s: land.s - this.duel.you.s, z: 0 });
-    return p && { x: p.x, y: p.y, dist: Math.hypot(land.a - this.duel.you.a, land.s - this.duel.you.s) };
+    const p = project(cam, { a: land.a - d.you.a, s: land.s - d.you.s, z: 0 });
+    return p && { x: p.x, y: p.y, dist: Math.hypot(land.a - d.you.a, land.s - d.you.s) };
   }
 
   override update(_t: number, deltaMs: number): void {
     const g = this.session.game;
     if (!g || this.closing) return;
-    const real = Math.min(0.05, deltaMs / 1000);
-    this.slow = Math.max(0, this.slow - real);
-    const dt = real * (this.slow > 0 ? 0.3 : 1);
+    // the sea calls you out: a beast's battle, Aurelio speaking
+    if (g.beasts.battle || g.story.dialogue) return this.close();
+    const dt = Math.min(0.05, deltaMs / 1000);
+    const d = this.inside;
     this.controls.sample();
-    this.keyboard(real);
+    this.keyboard(dt);
     const input = this.controls.input;
-    this.duel.weapon = this.controls.weapon;
-    const events = stepDuel(g, this.duel, input, dt);
+    d.weapon = this.controls.weapon;
+    // vessels coming near join the view
+    if ((this.joinT -= dt) <= 0) {
+      this.joinT = 1;
+      joinFoes(g, d);
+    }
+    const events = stepInside(g, d, input, dt);
+    syncWorld(g, d);
+    // the engine's sound follows your lever (WorldScene)
+    this.session.input.helm.throttle = Math.max(0, input.throttle);
     this.controls.consume();
-    if (stepWeather(g.weather, dt)) this.session.sound.thunder(1);
-    stepDay(g.day, dt, g.rng, true);
-    g.time += dt;
-    this.onEvents(events);
+    if (g.weather.flash > this.lastFlash + 0.3) this.session.sound.thunder(1);
+    this.lastFlash = g.weather.flash;
+    this.onEvents(g, events);
+    this.draw(g, dt);
+    if (this.controls.exit || (d.lost !== null && d.lost > INSIDE.lostSeconds)) this.close();
+  }
+
+  private draw(g: GameState, dt: number): void {
+    const d = this.inside;
     const w = this.scale.width;
     const h = this.scale.height;
     const look = weatherLook(g.weather);
     const t = g.time;
-    // you on the waves: the view rolls and heaves, more in a storm, leaning with the water you took in
     const waves = look.waves;
-    // under the water the waves hardly move you
-    const eye = eyeHeight(this.duel);
+    // you on the waves: the view rolls and heaves, more in a storm, leaning with the water you took in; under the
+    // water the waves hardly move you
+    const eye = eyeHeight(d);
     const underNow = eye < 0;
     const sway = underNow ? 0.15 : 1;
     const roll =
       TURRET.roll * waves * sway * Math.sin(t * TURRET.rollSpeed) + (g.company.yourDmg.flood ?? 0) * 0.08;
     const cam: Camera = {
-      yaw: this.duel.yaw,
-      pitch: this.duel.pitch + 0.006 * waves * sway * Math.sin(t * 0.8 + 1),
+      yaw: d.yaw,
+      pitch: d.pitch + 0.006 * waves * sway * Math.sin(t * 0.8 + 1),
       height: eye + (underNow ? 0 : TURRET.heave * waves * Math.sin(t * TURRET.heaveSpeed + 1.3)),
       roll,
       w,
@@ -209,48 +243,52 @@ export class TurretScene extends Phaser.Scene {
       this.under.update(cam, -eye, c.night, t, span);
     } else {
       this.sky.update(cam, c, look, g.weather.flash, t, span);
-      this.sea.update(cam, c, this.duel.you.a, this.duel.you.s, waves, t, span);
+      this.sea.update(cam, c, d.you.a, d.you.s, waves, t, span);
     }
     this.sky.lightning.setSize(w, h).setVisible(!underNow);
     this.smoke.begin();
     this.glows.begin();
-    const e = g.company.enemies.find((x) => x.id === this.duel.foeId);
+    this.hull.clear();
     const water = { on: underNow, water: waterAt(-eye, c.night), see: seeUnder(c.night) };
-    const seen = e
-      ? this.ship.update(cam, c, this.duel, e, t, this.glows, this.smoke, this.hull, water)
-      : null;
-    // the ship among the sea's bands: the nearer ones, rising in a storm, go over its hull
-    if (seen && !underNow) {
-      const k = this.sea.fartherThan(seen.dist);
+    // every vessel, the farthest first; the sea's nearer bands go over the nearest one's hull
+    let nearest = Infinity;
+    for (const f of [...d.foes].sort((a, b) => foeFrom(d, b).dist - foeFrom(d, a).dist)) {
+      const e = g.company.enemies.find((x) => x.id === f.id);
+      if (!e) continue;
+      const seen = this.ship.update(cam, c, d, f, e, t, this.glows, this.smoke, this.hull, water);
+      if (seen) nearest = Math.min(nearest, seen.dist);
+    }
+    if (nearest < Infinity && !underNow) {
+      const k = this.sea.fartherThan(nearest);
       const next = this.sea.bands[k]?.water;
       const at = next ? this.box.getIndex(next) : this.box.length;
       this.box.moveTo(this.hull.g, Math.max(0, at - 1));
     }
-    this.fx.update(cam, c, this.duel, dt, this.glows, this.smoke);
+    this.fx.update(cam, c, d, dt, this.glows, this.smoke);
     this.smoke.end();
     this.glows.end();
-    const foe = foeFromYou(this.duel);
-    this.glass.update(w, h, real, look.precip, look.wind, this.gunMark(cam), {
-      yaw: this.duel.yaw,
-      bow: this.duel.you.heading,
-      foe: e && e.sinkT <= 0 ? yawTo(foe) : null,
+    const target = targetOf(g, d);
+    this.glass.update(w, h, dt, look.precip, look.wind, this.gunMark(cam), {
+      yaw: d.yaw,
+      bow: d.you.heading,
+      foe: target ? yawTo(foeFrom(d, target)) : null,
     });
-    this.controls.update(g, this.duel, real);
-    if (this.controls.exit || (this.duel.end && this.duel.end.t > DUEL.endSeconds)) this.close();
+    this.controls.update(g, d, target, dt);
   }
 
-  /** Back to the sea: the duel gives the world its places. */
+  /** Back outside: the world has your ship and the vessels where the view left them. */
   private close(): void {
     if (this.closing) return;
     this.closing = true;
     const g = this.session.game!;
-    closeDuel(g, this.duel);
+    closeInside(g, this.inside);
+    Object.assign(this.session.input.helm, {
+      throttle: g.ship.speed > 0 ? Math.max(0, this.controls.input.throttle) : 0,
+      dir: g.ship.face,
+    });
     this.session.inBattle = false;
     this.scene.stop();
-    this.scene.resume('World');
+    this.session.emit('insideClosed');
     this.session.emit('battle', false);
   }
 }
-
-/** How hard a blow on your ship shakes the view. Tuning. */
-const TURRET_SHAKE = 0.012;

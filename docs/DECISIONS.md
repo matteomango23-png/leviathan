@@ -1323,3 +1323,11 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Timone vero al posto di "Avvicina/Allontana":** la tua nave ha una prua nel piano del duello e va dove punta. Tornando fuori conta solo la posizione lungo la linea; oltre il traverso la nave è girata (`face`).
 - **La nemica non può distanziarti:** velocità massima una quota della tua (`DUEL.foeSpeedShare`), guinzaglio (`DUEL.leashM`), fuga lenta. Motivo: "le navi tendono ad allontanarsi di brutto".
 - **Navi nemiche sempre in 3D nella torretta**, modelli fatti col codice per classe (`hullModels.ts`), al posto del disegno di fianco. I colpi usano l'ingombro del modello (`enemyExtent`), non quello del disegno prestato. Le viste di prua e di poppa con Gemini non servono più; i disegni serviranno a far somigliare i modelli.
+
+## 17 novembre 2026 — La vista interna col mondo che continua T3b (v0.131.0)
+
+- **Il mondo non va in pausa:** `WorldScene` continua a chiamare `stepGame` e smette solo di disegnare; la vista interna scrive a ogni fotogramma nel mondo la posizione lungo la linea, il verso e la quota della tua nave e delle navi nella vista. Il timone di fuori (`ship.inside`) e l'IA del mondo per quelle navi (`inView`) stanno fermi. Così uscire non deve "rimettere a posto" niente, e bestie, ora e meteo vanno avanti.
+- **Il lato esiste solo dentro:** ogni nave ha una sua distanza di lato fissa (`INSIDE.sides`), la tua parte da 0. Fuori conta solo la posizione lungo la linea.
+- **Percezione vera dentro:** le navi usano `perceive` e `stepAlert` del mondo con la distanza del piano. Chi non ti ha visto pattuglia e non spara; un colpo la mette subito in caccia.
+- **Arpioni sott'acqua invece di niente:** mitragliatrice e cannone restano chiusi sotto (realismo), ma c'è un'arma da vicino (fucili subacquei veri) e il siluro si ricarica prima. Motivo: il proprietario trovava strano avere solo il siluro.
+- **La Guida prima della vista:** la prima volta Aurelio spiega, poi la vista si apre, perché un dialogo ferma il mondo e chiuderebbe la vista.

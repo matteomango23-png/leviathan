@@ -19,8 +19,14 @@ export function foeInReach(g: GameState): EnemyVessel | null {
   return near[0] ?? null;
 }
 
-/** "Armi" can be pressed now. */
-export const canArm = (g: GameState): boolean => !g.company.battle && !!foeInReach(g);
+/** You can go into the inside view: at the helm of your ship, afloat or under (owner, 17 novembre 2026: "tu armi o
+ *  disarmi… è come se switchassi da view outside a view inside"), with or without vessels near. */
+export const canGoInside = (g: GameState): boolean =>
+  g.ship.owned && g.ship.aboard && g.ship.hull > 0 && !g.company.inside && !g.company.battle;
+
+/** "Armi" can be pressed now: the inside view, or (the arena's tick off) the side battle with a vessel near. */
+export const canArm = (g: GameState): boolean =>
+  g.company.turret ? canGoInside(g) : !g.company.battle && !!foeInReach(g);
 
 /** To battle stations against this vessel: the view frames you both. */
 export function startBattle(g: GameState, foe: EnemyVessel, events: GameEvent[]): void {

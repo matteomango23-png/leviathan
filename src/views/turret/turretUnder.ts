@@ -31,17 +31,20 @@ export function waterAt(depth: number, night: number): number {
 export const seeUnder = (night: number): number =>
   UNDERWATER.seeM + (UNDERWATER.nightSeeM - UNDERWATER.seeM) * night;
 
-/** The surface's light from beneath: nothing at the horizon, full overhead. */
+/** The surface's light from beneath: nothing at the horizon, full overhead. Its last rows are clear, and it is not
+ *  a power of two tall: such a texture repeats, and its bright top bled into its bottom edge as a line at the
+ *  horizon. */
 function paintGlow(scene: Phaser.Scene): void {
   if (scene.textures.exists(GLOW)) return;
-  const t = scene.textures.createCanvas(GLOW, 4, 128)!;
+  const t = scene.textures.createCanvas(GLOW, 4, 130)!;
   const g = t.context;
-  const grad = g.createLinearGradient(0, 0, 0, 128);
+  const grad = g.createLinearGradient(0, 0, 0, 130);
   grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(0.6, 'rgba(255,255,255,0.35)');
+  grad.addColorStop(0.55, 'rgba(255,255,255,0.35)');
+  grad.addColorStop(0.9, 'rgba(255,255,255,0)');
   grad.addColorStop(1, 'rgba(255,255,255,0)');
   g.fillStyle = grad;
-  g.fillRect(0, 0, 4, 128);
+  g.fillRect(0, 0, 4, 130);
   t.refresh();
 }
 
@@ -57,7 +60,10 @@ function paintRay(scene: Phaser.Scene): void {
   g.fillRect(0, 0, 64, 256);
   g.globalCompositeOperation = 'destination-in';
   const down = g.createLinearGradient(0, 0, 0, 256);
-  down.addColorStop(0, 'rgba(0,0,0,1)');
+  // soft at both ends: looking up, the shaft's top never shows as a straight edge
+  down.addColorStop(0, 'rgba(0,0,0,0)');
+  down.addColorStop(0.15, 'rgba(0,0,0,1)');
+  down.addColorStop(0.95, 'rgba(0,0,0,0)');
   down.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = down;
   g.fillRect(0, 0, 64, 256);

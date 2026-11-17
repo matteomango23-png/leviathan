@@ -1,4 +1,4 @@
-// The Compagnia's vessel seen from the turret (owner, 17 novembre 2026: "Preferisco che mi crei un modello tu in 3D
+// A Compagnia vessel seen from the inside view (owner, 17 novembre 2026: "Preferisco che mi crei un modello tu in 3D
 // per la nave nemica, simile a quello che sarà il suo asset 2D"): always its 3D model (systems/turret/hullModels.ts),
 // from every side, above the water and below, rocking on the waves, leaning and sitting lower with the water it took
 // in; its bow spray and wake, its windows by night, fire on its deck, smoke from its funnel, its gun flashing before
@@ -7,8 +7,8 @@
 import { ENEMY_CLASSES, HIT_ZONES } from '../../data/company';
 import { HULL_3D } from '../../data/turret';
 import type { EnemyVessel } from '../../systems/company/enemyState';
-import { foeGun } from '../../systems/turret/duelAi';
-import type { DuelState } from '../../systems/turret/duelState';
+import { foeGun } from '../../systems/turret/foeAi';
+import type { FoeInView, InsideState } from '../../systems/turret/insideState';
 import { splitHalves, type Face, type V3 } from '../../systems/turret/hull3d';
 import { enemyModel, type HullModel } from '../../systems/turret/hullModels';
 import { project, type Camera } from '../../systems/turret/projection';
@@ -25,29 +25,38 @@ export interface ShipOnScreen {
   dist: number;
 }
 
+interface Built {
+  model: HullModel;
+  halves: [Face[], Face[]];
+  Hm: number;
+}
+
 export class TurretShip {
-  private key = '';
+  private readonly built = new Map<string, Built>();
   private model!: HullModel;
   private halves!: [Face[], Face[]];
   private Hm = 0;
 
   /** The model of this vessel's class (built once per class). */
   private build(e: EnemyVessel): void {
-    if (e.cls === this.key) return;
-    this.key = e.cls;
-    const pose = { model: ENEMY_CLASSES[e.cls].look };
-    const m = shipModel(pose);
-    const pic = shipPicture(pose);
-    this.Hm = m.lengthM * pic.aspect;
-    this.model = enemyModel(e.cls, m.lengthM * 0.9);
-    this.halves = splitHalves(this.model.faces);
+    let b = this.built.get(e.cls);
+    if (!b) {
+      const pose = { model: ENEMY_CLASSES[e.cls].look };
+      const m = shipModel(pose);
+      const pic = shipPicture(pose);
+      const model = enemyModel(e.cls, m.lengthM * 0.9);
+      b = { model, halves: splitHalves(model.faces), Hm: m.lengthM * pic.aspect };
+      this.built.set(e.cls, b);
+    }
+    ({ model: this.model, halves: this.halves, Hm: this.Hm } = b);
   }
 
-  /** Draws it; returns where it is on screen (null: behind you). */
+  /** Draws it (the hull's layer cleared once a frame by the scene); returns where it is on screen (null: behind). */
   update(
     cam: Camera,
     c: TurretColours,
-    d: DuelState,
+    d: InsideState,
+    f: FoeInView,
     e: EnemyVessel,
     time: number,
     lights: SoftPuffs,
@@ -56,25 +65,24 @@ export class TurretShip {
     under: { on: boolean; water: number; see: number },
   ): ShipOnScreen | null {
     const def = ENEMY_CLASSES[e.cls];
-    hull.clear();
     this.build(e);
     const flat = { ...cam, roll: 0 };
-    const rel = { a: d.foe.a - d.you.a, s: d.foe.s - d.you.s };
+    const rel = { a: f.a - d.you.a, s: f.s - d.you.s };
     const at = project(flat, { a: rel.a, s: rel.s, z: 0 });
     if (!at) return null;
     const dist = Math.hypot(rel.a, rel.s);
     const out = { x: at.x - cam.w / 2, y: at.y - cam.h / 2, px: at.scale, dist };
     // an enemy U-Boat under the water is never seen from above it
-    const uboat = d.foe.depth > 1;
+    const uboat = f.depth > 1;
     if (!under.on && uboat) return out;
     const sinking = Math.max(0, e.sinkT);
     const rough = c.rough;
     const pose: HullPose = {
-      a: d.foe.a,
-      s: d.foe.s,
-      heading: d.foe.heading,
+      a: f.a,
+      s: f.s,
+      heading: f.heading,
       depth:
-        d.foe.depth +
+        f.depth +
         HIT_ZONES.waterline.sink * e.dmg.flood * this.Hm +
         sinking * sinking * 0.35 +
         sinking * 0.6 +
@@ -122,7 +130,7 @@ export class TurretShip {
       }
       return out;
     }
-    if (!under.on) this.details(c, d, e, out, pt, time, lights, smoke, cam);
+    if (!under.on) this.details(c, d, f, e, out, pt, time, lights, smoke, cam);
     return out;
   }
 
@@ -134,7 +142,8 @@ export class TurretShip {
   /** Its spray and wake, windows, fire, funnel smoke, gun flash and store's glow (above the water). */
   private details(
     c: TurretColours,
-    d: DuelState,
+    d: InsideState,
+    f: FoeInView,
     e: EnemyVessel,
     s: ShipOnScreen,
     pt: (v: V3) => { x: number; y: number; scale: number } | null,
@@ -145,7 +154,7 @@ export class TurretShip {
   ): void {
     const M = this.model;
     const seen = through(c, s.dist);
-    const speed = Math.min(1, Math.abs(d.foe.speed) / 8);
+    const speed = Math.min(1, Math.abs(f.speed) / 8);
     // the bow cutting the sea, the wake behind
     const bow = pt(M.bow);
     if (bow) smoke.puff(bow.x, bow.y, 3 * bow.scale * (0.5 + speed), 0xe8f2f4, 0.55 * speed * seen);
@@ -177,8 +186,8 @@ export class TurretShip {
       });
     }
     // its gun flashing red before it fires
-    if (d.foe.aimAt && d.foe.aimT > 0) {
-      const g = foeGun(d, e);
+    if (f.aimAt && f.aimT > 0) {
+      const g = foeGun(f, e);
       const gp = project({ ...cam, roll: 0 }, { a: g.a - d.you.a, s: g.s - d.you.s, z: g.z });
       if (gp)
         lights.puff(
