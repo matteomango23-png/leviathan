@@ -1,12 +1,12 @@
-// One step of the turret's duel (owner, 17 novembre 2026): your ship sails at the throttle and closes or opens the
-// distance; the turret turns where you drag; the machine gun fires while held (and heats up), the gun fires one shell
-// at a time; the vessel answers (duelAi.ts); the rounds strike hulls or the sea (ballistics.ts) and each hit strikes
-// a part of the hull as in the side battle (company/hullDamage.ts). It opens from the world and gives it back.
-// Pure logic.
-import { ENEMY_CLASSES, HIT_ZONES, WEAPONS, type WeaponId } from '../../data/company';
-import { DUEL, MACHINE_GUN, TURRET } from '../../data/turret';
+// One step of the turret's duel (owner, 17 novembre 2026): your ship sails at the throttle, closes or opens the
+// distance and, a U-Boat, dives; the turret turns where you drag; above the water the machine gun fires while held
+// (and heats up) and the gun one shell at a time, at any depth the guided torpedo; the vessel answers (duelAi.ts);
+// the rounds (ballistics.ts), torpedoes and charges (torpedo.ts) strike hulls (duelHits.ts). It opens from the world
+// and gives it back. Pure logic.
+import { ENEMY_CLASSES, WEAPONS, type WeaponId } from '../../data/company';
+import { DUEL, MACHINE_GUN, TORPEDO_GUIDE, TURRET, UNDERWATER } from '../../data/turret';
 import { WORLD } from '../../data/worldLayout';
-import { applyHit, floodSpeed, stepDamage, swamped, zoneOf } from '../company/hullDamage';
+import { floodSpeed, stepDamage } from '../company/hullDamage';
 import type { EnemyVessel } from '../company/enemyState';
 import type { GameState } from '../newGame';
 import { damageShip } from '../ship/shipHull';
@@ -14,7 +14,9 @@ import { shipModel, shipPicture, shipRates, shipTopSpeed } from '../ship/model';
 import type { DuelHull, RoundEvent } from './ballistics';
 import { fireRound, stepRounds } from './ballistics';
 import { stepFoe, type FoeEvent } from './duelAi';
+import { hitFoe, roundHitsYou, hitYou, sinkFoe, type EndEvent } from './duelHits';
 import { newDuel, toUnits, type DuelState } from './duelState';
+import { launchTorpedo, stepUnder, type UnderEvent } from './torpedo';
 
 /** What you do in the turret this frame (ui/turretControls.ts, the keyboard). */
 export interface TurretInput {
@@ -22,32 +24,37 @@ export interface TurretInput {
   throttle: number;
   /** −1 open the distance … 1 close it. */
   side: number;
+  /** A U-Boat's dive lever: −1 up … 1 down. */
+  dive: number;
   /** Radians to turn the turret this frame (dragged). */
   yaw: number;
   pitch: number;
   firing: boolean;
-  /** The gun's button pressed this frame. */
+  /** The gun's and the torpedo's buttons pressed this frame. */
   gunShot: boolean;
+  torpedo: boolean;
 }
 
 export const restingInput = (): TurretInput => ({
   throttle: 0,
   side: 0,
+  dive: 0,
   yaw: 0,
   pitch: 0,
   firing: false,
   gunShot: false,
+  torpedo: false,
 });
 
 export type DuelEvent =
   | RoundEvent
   | FoeEvent
-  | { type: 'shot'; kind: 'mg' | WeaponId; p: { a: number; s: number; z: number } }
-  | { type: 'zone'; target: 'foe' | 'you'; zone: 'deck' | 'waterline' | 'magazine' }
-  | { type: 'end'; result: 'victory' | 'lost' };
+  | UnderEvent
+  | EndEvent
+  | { type: 'shot'; kind: 'mg' | WeaponId; p: { a: number; s: number; z: number } };
 
-/** Its hull for the rounds, from the picture it borrows. */
-export function hullOf(model: string, a: number, s: number, heading: number): DuelHull {
+/** A hull for the rounds, from the picture it borrows, its waterline `depth` metres under the surface. */
+export function hullOf(model: string, a: number, s: number, heading: number, depth = 0): DuelHull {
   const m = shipModel({ model });
   const pic = shipPicture({ model });
   const H = m.lengthM * pic.aspect;
@@ -57,29 +64,35 @@ export function hullOf(model: string, a: number, s: number, heading: number): Du
     heading,
     length: m.lengthM * 0.9,
     beam: m.lengthM * 0.16,
-    keel: (pic.keel - pic.waterline) * H,
+    keel: (pic.keel - pic.waterline) * H + depth,
     // its superstructure counts: most of the picture above the water
-    deck: pic.waterline * H * 0.85,
+    deck: pic.waterline * H * 0.85 - depth,
     waterline: pic.waterline,
     picH: H,
   };
 }
 
+/** Your ship can dive in the duel (a U-Boat), and how deep. */
+export const yourMaxDepth = (g: GameState): number =>
+  Math.min(UNDERWATER.maxDepthM, shipModel(g.ship).dive?.maxDepthM ?? 0);
+
 /** The duel with this vessel, from where both are on the sea's line. */
 export function openDuel(g: GameState, e: EnemyVessel): DuelState {
   const s = g.ship;
-  const along = ((e.x - s.x) * s.face) / WORLD.unitsPerMetre;
-  const d = newDuel(e.id, along, e.speed / WORLD.unitsPerMetre, e.face !== s.face);
-  d.you.speed = s.speed / WORLD.unitsPerMetre;
+  const U = WORLD.unitsPerMetre;
+  const along = ((e.x - s.x) * s.face) / U;
+  const d = newDuel(e.id, along, e.speed / U, e.face !== s.face, e.dive / U, s.dive / U);
+  d.you.speed = s.speed / U;
   return d;
 }
 
-/** Back to the sea's line: your ship's travel, the vessel's place and way. */
+/** Back to the sea's line: your ship's travel and depth, the vessel's place and way. */
 export function closeDuel(g: GameState, d: DuelState): void {
   const s = g.ship;
   const e = g.company.enemies.find((x) => x.id === d.foeId);
   s.x += s.face * toUnits(d.you.a - d.startA);
   s.speed = toUnits(d.you.speed);
+  s.dive = toUnits(d.you.depth);
   if (e) {
     e.x = s.x + s.face * toUnits(d.foe.a - d.you.a);
     e.face = Math.cos(d.foe.heading) >= 0 ? s.face : (-s.face as 1 | -1);
@@ -88,13 +101,31 @@ export function closeDuel(g: GameState, d: DuelState): void {
   g.company.battle = null;
 }
 
-/** Where the rounds leave: the barrels' ends, ahead of the turret where you sit (m). */
+/** How high the turret's eye is (m above the surface; under it < 0): the U-Boat's periscope, then under. */
+export function eyeHeight(d: DuelState): number {
+  const k = Math.min(1, d.you.depth / UNDERWATER.periscopeM);
+  return TURRET.height + (-d.you.depth - TURRET.height) * k;
+}
+
+/** The turret's aim as a line from your eye: the guided torpedo keeps to it. */
+const aimLine = (
+  d: DuelState,
+): { yaw: number; pitch: number; from: { a: number; s: number; z: number } } => ({
+  yaw: d.yaw,
+  pitch: d.pitch,
+  from: { a: d.you.a, s: d.you.s, z: eyeHeight(d) },
+});
+
+/** The guns work only with the turret's eye above the water. */
+export const gunsUp = (d: DuelState): boolean => d.you.depth < UNDERWATER.periscopeM;
+
+/** Where the rounds leave: the barrels' ends, ahead of your eye (m). */
 export function turretPoint(d: DuelState): { a: number; s: number; z: number } {
-  const reach = 3; // the barrels' ends, ahead of your eye (m)
+  const reach = 3;
   return {
     a: d.you.a + Math.cos(d.yaw) * reach,
     s: d.you.s + Math.sin(d.yaw) * reach,
-    z: TURRET.height - 1.2,
+    z: eyeHeight(d) - 1.2,
   };
 }
 
@@ -106,15 +137,19 @@ function moveYou(g: GameState, d: DuelState, input: TurretInput, dt: number): vo
   d.you.speed += Math.max(-accel, Math.min(accel, want - d.you.speed));
   d.you.a += d.you.speed * dt;
   d.you.s += input.side * DUEL.sideSpeed * Math.sign(d.foe.s - d.you.s || 1) * dt;
-  // never on top of it
+  d.you.depth = Math.max(0, Math.min(yourMaxDepth(g), d.you.depth + input.dive * UNDERWATER.diveSpeed * dt));
+  // never on top of it (deep under it, it may pass over you)
   const ds = d.foe.s - d.you.s;
-  if (Math.hypot(d.foe.a - d.you.a, ds) < DUEL.nearM) d.you.s = d.foe.s - Math.sign(ds || 1) * DUEL.nearM;
+  const apart = Math.abs(d.you.depth - d.foe.depth) < UNDERWATER.periscopeM * 2;
+  if (apart && Math.hypot(d.foe.a - d.you.a, ds) < DUEL.nearM)
+    d.you.s = d.foe.s - Math.sign(ds || 1) * DUEL.nearM;
 }
 
 function fireYours(g: GameState, d: DuelState, input: TurretInput, dt: number, out: DuelEvent[]): void {
   const at = turretPoint(d);
+  const up = gunsUp(d);
   // the machine gun: while held, until it is too hot
-  if (input.firing && !d.hot && d.weapon === 'mg') {
+  if (input.firing && !d.hot && d.weapon === 'mg' && up) {
     d.mgT -= dt;
     while (d.mgT <= 0) {
       fireRound(d, 'you', 'mg', at, d.yaw, d.pitch, MACHINE_GUN.spread, g.rng);
@@ -130,67 +165,24 @@ function fireYours(g: GameState, d: DuelState, input: TurretInput, dt: number, o
   }
   d.gunReload = Math.max(0, d.gunReload - dt);
   const gun = shipModel(g.ship).weapons.find((w) => WEAPONS[w].kind === 'shell');
-  if (input.gunShot && d.weapon === 'gun' && gun && d.gunReload <= 0 && g.company.yourDmg.jam <= 0) {
+  if (input.gunShot && d.weapon === 'gun' && gun && up && d.gunReload <= 0 && g.company.yourDmg.jam <= 0) {
     fireRound(d, 'you', gun, at, d.yaw, d.pitch, WEAPONS[gun].spread ?? 0, g.rng);
     d.gunReload = WEAPONS[gun].reload;
     out.push({ type: 'shot', kind: gun, p: at });
   }
-}
-
-/** A round struck the vessel at this picture point. */
-function hitFoe(
-  g: GameState,
-  d: DuelState,
-  e: EnemyVessel,
-  ev: Extract<RoundEvent, { type: 'hit' }>,
-  out: DuelEvent[],
-): void {
-  const pose = { model: ENEMY_CLASSES[e.cls].look };
-  const m = shipModel(pose);
-  const pic = shipPicture(pose);
-  const L = toUnits(m.lengthM);
-  const H = toUnits(m.lengthM * pic.aspect);
-  const mag = ENEMY_CLASSES[e.cls].magazine;
-  const at = { x: ev.u * L, y: ev.v * H };
-  let zone = zoneOf(at, pic.waterline * H, { x: mag.u * L, y: mag.v * H });
-  let taken: number;
-  if (ev.kind === 'mg') {
-    // the machine gun scars and sometimes sets the deck alight, but never breaches the hull nor blows the store
-    zone = 'deck';
-    taken = MACHINE_GUN.damage;
-    if (g.rng() < MACHINE_GUN.fireChance) e.dmg.fire = Math.max(e.dmg.fire, HIT_ZONES.deck.fireSeconds);
-  } else taken = applyHit(e.dmg, zone, WEAPONS[ev.kind].damage);
-  e.hull = Math.max(0, e.hull - taken);
-  e.alert = 1;
-  if (ev.kind !== 'mg') out.push({ type: 'zone', target: 'foe', zone });
-  if ((e.hull <= 0 || swamped(e.dmg)) && !d.end) {
-    Object.assign(e, { sinkT: 0.001, speed: 0, hull: 0 });
-    d.end = { result: 'victory', t: 0 };
-    out.push({ type: 'end', result: 'victory' });
-  }
-}
-
-/** A round struck your ship. */
-function hitYou(
-  g: GameState,
-  d: DuelState,
-  ev: Extract<RoundEvent, { type: 'hit' }>,
-  out: DuelEvent[],
-): void {
-  const pic = shipPicture(g.ship);
-  const zone =
-    ev.v >= pic.waterline - HIT_ZONES.waterline.bandM / (shipModel(g.ship).lengthM * pic.aspect)
-      ? 'waterline'
-      : 'deck';
-  const dmg = ev.kind === 'mg' ? MACHINE_GUN.damage : WEAPONS[ev.kind].damage;
-  const taken = applyHit(g.company.yourDmg, zone, dmg);
-  damageShip(g.ship, taken, [], false);
-  g.ship.flood = g.company.yourDmg.flood;
-  out.push({ type: 'zone', target: 'you', zone });
-  if ((g.ship.hull <= 0 || swamped(g.company.yourDmg)) && !d.end) {
-    g.ship.hull = 0;
-    d.end = { result: 'lost', t: 0 };
-    out.push({ type: 'end', result: 'lost' });
+  // the guided torpedo, one at a time, from under your bow
+  d.torpReload = Math.max(0, d.torpReload - dt);
+  const hasTorpedo = shipModel(g.ship).weapons.includes('siluro');
+  const running = d.torpedoes.some((t) => t.from === 'you');
+  if (input.torpedo && hasTorpedo && !running && d.torpReload <= 0) {
+    const p = {
+      a: d.you.a + Math.cos(d.yaw) * 6,
+      s: d.you.s + Math.sin(d.yaw) * 6,
+      z: -(d.you.depth + TORPEDO_GUIDE.depthMin + 1),
+    };
+    launchTorpedo(d, 'you', p, d.yaw, Math.max(-0.4, Math.min(0.4, d.pitch)));
+    d.torpReload = TORPEDO_GUIDE.reload;
+    out.push({ type: 'shot', kind: 'siluro', p });
   }
 }
 
@@ -199,19 +191,21 @@ export function stepDuel(g: GameState, d: DuelState, input: TurretInput, dt: num
   const out: DuelEvent[] = [];
   d.time += dt;
   const e = g.company.enemies.find((x) => x.id === d.foeId);
+  const look = ENEMY_CLASSES[e?.cls ?? 'baleniera'].look;
+  const foeHull = hullOf(look, d.foe.a, d.foe.s, d.foe.heading, d.foe.depth);
+  const youHull = hullOf(g.ship.model, d.you.a, d.you.s, 0, d.you.depth);
   if (d.end || !e) {
     if (d.end) d.end.t += dt;
     if (e && e.sinkT > 0) e.sinkT += dt;
-    stepRounds(
-      d,
-      hullOf(ENEMY_CLASSES[e?.cls ?? 'baleniera'].look, d.foe.a, d.foe.s, d.foe.heading),
-      hullOf(g.ship.model, d.you.a, d.you.s, 0),
-      dt,
-    );
+    stepRounds(d, foeHull, youHull, dt);
+    stepUnder(d, foeHull, youHull, aimLine(d), dt);
     return out;
   }
   d.yaw += input.yaw;
-  d.pitch = Math.max(TURRET.pitchMin, Math.min(TURRET.pitchMax, d.pitch + input.pitch));
+  const under = !gunsUp(d);
+  const lo = under ? UNDERWATER.pitchMin : TURRET.pitchMin;
+  const hi = under ? UNDERWATER.pitchMax : TURRET.pitchMax;
+  d.pitch = Math.max(lo, Math.min(hi, d.pitch + input.pitch));
   moveYou(g, d, input, dt);
   fireYours(g, d, input, dt, out);
   out.push(...stepFoe(g, d, e, dt));
@@ -220,17 +214,20 @@ export function stepDuel(g: GameState, d: DuelState, input: TurretInput, dt: num
   const burn = stepDamage(g.company.yourDmg, dt);
   if (burn > 0) damageShip(g.ship, burn, [], false);
   g.ship.fire = g.company.yourDmg.fire;
-  const foeHull = hullOf(ENEMY_CLASSES[e.cls].look, d.foe.a, d.foe.s, d.foe.heading);
-  for (const ev of stepRounds(d, foeHull, hullOf(g.ship.model, d.you.a, d.you.s, 0), dt)) {
+  const ends: EndEvent[] = [];
+  for (const ev of stepRounds(d, foeHull, youHull, dt)) {
     out.push(ev);
     if (ev.type !== 'hit') continue;
-    if (ev.target === 'foe') hitFoe(g, d, e, ev, out);
-    else hitYou(g, d, ev, out);
+    if (ev.target === 'foe') hitFoe(g, d, e, ev.kind, ev, ends);
+    else roundHitsYou(g, d, ev.kind, ev.v, ends);
   }
-  if (e.hull <= 0 && !d.end) {
-    Object.assign(e, { sinkT: 0.001, speed: 0 });
-    d.end = { result: 'victory', t: 0 };
-    out.push({ type: 'end', result: 'victory' });
+  for (const ev of stepUnder(d, foeHull, youHull, aimLine(d), dt)) {
+    out.push(ev);
+    if (ev.type === 'torpHit' && ev.target === 'foe') hitFoe(g, d, e, 'torpedo', ev, ends);
+    else if (ev.type === 'torpHit') hitYou(g, d, TORPEDO_GUIDE.damage, true, TORPEDO_GUIDE.flood, ends);
+    else if (ev.type === 'chargeBurst' && ev.hit) hitYou(g, d, WEAPONS.carica.damage, true, 0, ends);
   }
+  if (e.hull <= 0) sinkFoe(d, e, ends);
+  out.push(...ends);
   return out;
 }

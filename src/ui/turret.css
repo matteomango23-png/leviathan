@@ -152,3 +152,17 @@
 .turret-bars {
   top: calc(26px + var(--safe-t, 0px));
 }
+.turret-dive {
+  position: absolute;
+  left: calc(80px + var(--safe-l, 0px));
+  bottom: calc(110px + var(--safe-b, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.turret-btn.torpedo {
+  border-color: rgba(96, 170, 214, 0.95);
+}
+.turret-btn.off {
+  opacity: 0.4;
+}

@@ -2,6 +2,23 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.129.0 — La torretta sott'acqua (17 novembre 2026)
+
+- **Con un U-Boot** (Whale, Stormtrooper, Ocean's Nightmare, nave abissale) nella torretta ci sono **Sali** e **Scendi**. Scendendo passi dal periscopio a sott'acqua, con le gocce che scorrono sul vetro.
+- **Sott'acqua:**
+  - l'acqua è più chiara verso la superficie e nera in basso, più scura in profondità e di notte;
+  - la superficie si vede da sotto, luminosa, con i raggi di luce di giorno e le particelle che scorrono;
+  - si vede la **carena delle navi da sotto**, scura contro la luce, e l'**U-Boot nemico** alla sua quota.
+- **Scafi in 3D sommario:** sott'acqua le navi sono modelli 3D semplici (scafo, chiglia, ponte, sovrastruttura). Sopra l'acqua resta il dipinto di fianco; quando la nave ti punta la prua o la poppa si vede il 3D.
+- **Siluro guidato:** pulsante **Siluro**. Il siluro segue la linea del mirino: giri la torretta e lui curva verso dove punti, anche su e giù. A segno apre una grande falla. Uno alla volta.
+- **Il nemico sott'acqua:**
+  - la baleniera non ti vede e non ti spara sotto i 4 m;
+  - la nave da caccia ti passa sopra e sgancia le cariche di profondità, che scoppiano alla tua quota: cambia quota per schivarle;
+  - l'U-Boot nemico ti lancia siluri (scia con un bagliore rosso).
+- Sott'acqua mitragliatrice e cannone sono spenti: restano il siluro e le manovre.
+- Sul computer: Q e E per salire e scendere, T per il siluro.
+- I salvataggi non cambiano.
+
 ## v0.128.0 — La torretta (17 novembre 2026)
 
 - Nell'arena navale c'è la spunta **Torretta** (accesa di partenza): con la spunta, **Armi** ti porta **dentro la torretta**, in prima persona. Senza la spunta resta la battaglia di lato.

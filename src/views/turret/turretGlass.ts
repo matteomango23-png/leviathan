@@ -6,95 +6,7 @@
 import Phaser from 'phaser';
 import { TURRET_LOOK } from '../../data/turret';
 import { SoftPuffs } from '../softPuffs';
-
-const FRAME = 'turret-frame';
-const TINT = 'turret-tint';
-
-/** The window in the frame (share of the screen): its edges, the console under it. Tuning. */
-const WIN = { top: 0.07, side: 0.035, bottom: 0.2, chamfer: 0.05 };
-
-function windowPath(g: CanvasRenderingContext2D, w: number, h: number): void {
-  const t = h * WIN.top;
-  const s = w * WIN.side;
-  const b = h * (1 - WIN.bottom);
-  const c = h * WIN.chamfer;
-  g.beginPath();
-  g.moveTo(s + c, t);
-  g.lineTo(w - s - c, t);
-  g.lineTo(w - s, t + c);
-  g.lineTo(w - s, b - c);
-  g.lineTo(w - s - c, b);
-  g.lineTo(s + c, b);
-  g.lineTo(s, b - c);
-  g.lineTo(s, t + c);
-  g.closePath();
-}
-
-function paintFrame(scene: Phaser.Scene, w: number, h: number): void {
-  if (scene.textures.exists(FRAME)) scene.textures.remove(FRAME);
-  const t = scene.textures.createCanvas(FRAME, w, h)!;
-  const g = t.context;
-  const metal = g.createLinearGradient(0, 0, 0, h);
-  metal.addColorStop(0, '#2b2420');
-  metal.addColorStop(0.5, '#191512');
-  metal.addColorStop(1, '#0d0b0a');
-  g.fillStyle = metal;
-  g.fillRect(0, 0, w, h);
-  // the console under the window: darker, with a worn edge
-  const cons = g.createLinearGradient(0, h * (1 - WIN.bottom), 0, h);
-  cons.addColorStop(0, '#3a2f28');
-  cons.addColorStop(0.08, '#14110f');
-  cons.addColorStop(1, '#070606');
-  g.fillStyle = cons;
-  g.fillRect(0, h * (1 - WIN.bottom), w, h * WIN.bottom);
-  // the window: cut out, with a bevel of light above and shadow below
-  g.save();
-  windowPath(g, w, h);
-  g.globalCompositeOperation = 'destination-out';
-  g.fill();
-  g.restore();
-  g.save();
-  windowPath(g, w, h);
-  g.lineWidth = 6;
-  g.strokeStyle = 'rgba(120,96,78,0.55)';
-  g.stroke();
-  g.lineWidth = 2;
-  g.strokeStyle = 'rgba(0,0,0,0.9)';
-  g.stroke();
-  g.restore();
-  // rivets round the window
-  const rivet = (x: number, y: number): void => {
-    const r = Math.max(2, h * 0.007);
-    const grad = g.createRadialGradient(x - r * 0.3, y - r * 0.3, 0, x, y, r);
-    grad.addColorStop(0, '#8a7666');
-    grad.addColorStop(1, '#1a1412');
-    g.fillStyle = grad;
-    g.beginPath();
-    g.arc(x, y, r, 0, Math.PI * 2);
-    g.fill();
-  };
-  for (let i = 0; i <= 16; i++) {
-    rivet(w * (0.06 + 0.88 * (i / 16)), h * WIN.top * 0.5);
-    rivet(w * (0.06 + 0.88 * (i / 16)), h * (1 - WIN.bottom * 0.82));
-  }
-  for (let i = 0; i <= 6; i++) {
-    rivet(w * WIN.side * 0.45, h * (0.12 + 0.6 * (i / 6)));
-    rivet(w * (1 - WIN.side * 0.45), h * (0.12 + 0.6 * (i / 6)));
-  }
-  t.refresh();
-}
-
-function paintTint(scene: Phaser.Scene): void {
-  if (scene.textures.exists(TINT)) return;
-  const t = scene.textures.createCanvas(TINT, 256, 256)!;
-  const g = t.context;
-  const grad = g.createRadialGradient(128, 128, 30, 128, 128, 180);
-  grad.addColorStop(0, 'rgba(255,255,255,0.35)');
-  grad.addColorStop(1, 'rgba(255,255,255,1)');
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 256, 256);
-  t.refresh();
-}
+import { FRAME, paintFrame, paintTint, TINT, WIN } from './turretFrame';
 
 /** A filled four-sided shape (two triangles). */
 function quad(
@@ -140,6 +52,14 @@ export class TurretGlass {
     this.red = scene.add.rectangle(0, 0, 10, 10, 0xc01808, 0).setOrigin(0, 0);
     this.frame = scene.add.image(0, 0, '__WHITE').setOrigin(0, 0);
   }
+
+  /** The eye goes under the water (or comes out): water runs down the glass; the pane turns blue-green under. */
+  dunk(under: boolean): void {
+    this.dunkT = 1.4;
+    this.pane.setFillStyle(under ? TURRET_LOOK.paneUnder : TURRET_LOOK.pane, 1);
+  }
+
+  private dunkT = 0;
 
   /** A shot of yours: the barrels kick back. */
   fired(heavy: boolean): void {
@@ -191,7 +111,9 @@ export class TurretGlass {
     this.hitT = Math.max(0, this.hitT - dt);
     this.red.setSize(w, h).setFillStyle(0xc01808, (this.hitT / TURRET_LOOK.hitFlash) * 0.45);
     const g = this.g.clear();
-    this.rain(g, w, h, dt, precip, wind);
+    this.rain(g, w, h, dt, Math.max(precip, this.dunkT > 0 ? 1 : 0), wind);
+    // just through the surface: a burst of drops runs down the glass
+    this.dunkT = Math.max(0, this.dunkT - dt);
     this.reticle(g, w, h, mark);
     this.tape(g, w, h, bearing);
     this.flare.begin();

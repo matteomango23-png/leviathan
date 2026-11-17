@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 17 novembre 2026, v0.128.0)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.129.0)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -10,6 +10,35 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## La torretta T2, sott'acqua (17 novembre 2026) → v0.129.0
+
+- Il proprietario: "deve funzionare anche sott'acqua… si vede lo scafo da sotto della nave o dell'U-Boot… fallo adesso anche in modo abbastanza sommario 3D".
+- Fatto:
+  - `systems/turret/hull3d.ts`: scafo a sezioni, sovrastruttura a blocco, sigaro per gli U-Boot;
+  - `torpedo.ts`: siluro filoguidato sulla linea del mirino, siluri nemici dritti, cariche che scoppiano alla quota;
+  - `duelHits.ts` (separato da `duel.ts`);
+  - quote `you.depth`/`foe.depth`, `eyeHeight`, `gunsUp`, `yourMaxDepth` (al massimo `UNDERWATER.maxDepthM`);
+  - IA: la nave da caccia ti passa sopra e sgancia; l'U-Boot nemico lancia siluri; niente cannone su chi è sotto;
+  - `keepApart` del duello solo a quote vicine.
+- Viste:
+  - `views/turret/turretHull3d.ts` (facce proiettate, ordinate dalla più lontana, luce dall'alto, nebbia e acqua);
+  - `turretUnder.ts` (acqua per quota, luce della superficie, raggi, particelle);
+  - `turretShip.ts` (3D sott'acqua e di prua o di poppa sopra, `HULL_3D.sideBelow`);
+  - `turretFx.ts` (scie dei siluri, cariche, scoppi sott'acqua);
+  - `turretGlass.ts` (`dunk`, vetro blu-verde sotto; telaio spostato in `turretFrame.ts`).
+- UI: Sali/Scendi e Siluro in `ui/turretControls.ts`, quota nella riga sotto il vetro.
+- Dati: `UNDERWATER`, `TORPEDO_GUIDE`, `HULL_3D` in `data/turret.ts`.
+- Test: `tests/turretT2.test.ts` (10).
+- Nel browser:
+  - carena della baleniera da sotto;
+  - siluro guidato a segno (falla 0,42, scafo da 70 a 32);
+  - cariche della nave da caccia;
+  - U-Boot nemico visto sott'acqua;
+  - nave di prua in 3D sopra l'acqua;
+  - 3,5 ms a fotogramma.
+- **Scartato:** l'increspatura della superficie vista da sotto (fasce o texture ripetuta): si vedeva una griglia.
+- **Da fare:** le viste di prua e di poppa dipinte delle navi nemiche (Gemini); lo scafo 3D da vicino è a facce piatte; di notte sott'acqua si vede quasi solo il buio.
 
 ## La torretta T1 (17 novembre 2026) → v0.128.0
 

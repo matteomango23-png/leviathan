@@ -10,7 +10,7 @@ import type { SoftPuffs } from '../softPuffs';
 import { through, type TurretColours } from './turretLook';
 
 interface Fx {
-  kind: 'splash' | 'sparks' | 'burst' | 'flash' | 'bigSplash';
+  kind: 'splash' | 'sparks' | 'burst' | 'flash' | 'bigSplash' | 'deep';
   p: P3;
   t: number;
   life: number;
@@ -18,7 +18,7 @@ interface Fx {
 }
 
 /** How long each lasts (s). Tuning. */
-const LIFE = { splash: 0.9, bigSplash: 1.6, sparks: 0.35, burst: 2.2, flash: 0.25 };
+const LIFE = { splash: 0.9, bigSplash: 1.6, sparks: 0.35, burst: 2.2, flash: 0.25, deep: 2.4 };
 
 export class TurretFx {
   private fx: Fx[] = [];
@@ -42,6 +42,14 @@ export class TurretFx {
       if (e.type === 'splash') add(e.kind === 'mg' ? 'splash' : 'bigSplash', e.p);
       else if (e.type === 'hit' && e.target === 'foe') add(e.kind === 'mg' ? 'sparks' : 'burst', e.p);
       else if (e.type === 'foeFlash' || e.type === 'foeShot') add('flash', e.p);
+      else if (e.type === 'torpHit') {
+        add('deep', e.p);
+        add('bigSplash', { ...e.p, z: 0 });
+      } else if (e.type === 'chargeBurst') {
+        add('deep', e.p);
+        // a shallow charge throws up a dome of sea
+        if (e.p.z > -30) add('bigSplash', { ...e.p, z: 0 });
+      }
     }
   }
 
@@ -68,6 +76,31 @@ export class TurretFx {
         lights.puff(head.x, head.y, size, theirs ? 0xff4a2a : 0xffd27a, 0.9);
         smoke.puff(tail.x, tail.y, size * 0.8, 0x8a8580, 0.3);
       }
+    }
+    // torpedoes and their wakes of bubbles; charges sinking
+    for (const tp of d.torpedoes) {
+      tp.trail.forEach((q, i) => {
+        if (i % 3) return;
+        const s = at(q);
+        if (s)
+          smoke.puff(
+            s.x,
+            s.y,
+            Math.max(2, Math.min(14, s.scale * 0.9)),
+            0xdcecf0,
+            0.45 * (i / tp.trail.length),
+          );
+      });
+      const head = at(tp.p);
+      if (head) {
+        smoke.puff(head.x, head.y, Math.max(3, Math.min(18, head.scale * 0.8)), 0x101417, 0.95);
+        if (tp.from === 'foe')
+          lights.puff(head.x, head.y, Math.max(4, Math.min(20, head.scale)), 0xff3a20, 0.5);
+      }
+    }
+    for (const ch of d.charges) {
+      const s = at(ch.p);
+      if (s) smoke.puff(s.x, s.y, Math.max(3, Math.min(16, s.scale * 0.9)), 0x15120f, 0.95);
     }
     this.fx = this.fx.filter((f) => (f.t += dt) < f.life);
     for (const f of this.fx) {
@@ -112,6 +145,20 @@ export class TurretFx {
             0x262220,
             0.5 * (1 - k),
           );
+      } else if (f.kind === 'deep') {
+        // under the water: a flash, then a ball of bubbles bursting and rising
+        lights.puff(s.x, s.y, 6 * m, 0xfff0c0, 0.9 * Math.max(0, 1 - k * 4));
+        for (let i = 0; i < 10; i++) {
+          const a = (i / 10) * Math.PI * 2 + f.seed;
+          const r = (2 + k * 9) * m;
+          smoke.puff(
+            s.x + Math.cos(a) * r,
+            s.y + Math.sin(a) * r - k * 6 * m,
+            (1 + k * 2) * m,
+            0xdcecf0,
+            0.6 * (1 - k),
+          );
+        }
       } else lights.puff(s.x, s.y, 4 * m, 0xffc060, 0.95 * (1 - k));
     }
   }

@@ -65,6 +65,8 @@ export const MACHINE_GUN = {
 export const TURRET_LOOK = {
   /** The glass: the whole view through a reddish pane (multiplied), darker red at its edges. */
   pane: 0xffc8b8,
+  /** Under the water the pane looks blue-green. */
+  paneUnder: 0xb8e0e4,
   glass: 0x5a0d0a,
   glassAlpha: 0.4,
   rim: 0x1c1512,
@@ -75,4 +77,60 @@ export const TURRET_LOOK = {
   crackSeconds: 9,
   hitFlash: 0.35,
   shake: 7,
+};
+
+/** Under the water in the turret (owner, 17 novembre 2026: "deve funzionare anche sott'acqua… si vede lo scafo da
+ *  sotto"). A U-Boat dives in the duel at `diveSpeed` (m/s) up to its own depth (data/fleet.ts dive); deeper than
+ *  `periscopeM` the turret's eye is under the water and only torpedoes work. The water's colour by depth (m), how
+ *  far one sees (m) by day and by night, the snow of particles. Tuning. */
+export const UNDERWATER = {
+  diveSpeed: 4,
+  periscopeM: 4,
+  /** The deepest a duel goes, whatever the U-Boat (m): the fight stays near the ships. */
+  maxDepthM: 60,
+  colours: [
+    [0, 0x2c6a7c],
+    [25, 0x103a4a],
+    [70, 0x061820],
+    [150, 0x020608],
+  ] as [number, number][],
+  surfaceLight: 0x9fd6e0,
+  seeM: 150,
+  nightSeeM: 45,
+  snow: 70,
+  /** The turret looks further up and down under the water (radians). */
+  pitchMin: -0.7,
+  pitchMax: 0.75,
+};
+
+/** The guided torpedo (owner, 8 ottobre idea, 17 novembre 2026: "siluri… li porti su e giù"): it runs at a set speed
+ *  (m/s) and turns towards where the turret points, at most this fast (rad/s); it stays under the water, gets lost
+ *  past its reach (m); a hit takes these hull points and lets in this much water; one at a time, then a reload (s).
+ *  The enemy's run straight at where you were. Tuning. */
+export const TORPEDO_GUIDE = {
+  speed: 24,
+  turn: 0.7,
+  rangeM: 420,
+  damage: 38,
+  flood: 0.42,
+  reload: 6,
+  depthMin: 1.2,
+  /** The enemy U-Boat's torpedoes: speed (m/s) and seconds between them. */
+  foeSpeed: 16,
+  foeReload: 9,
+};
+
+/** The rough 3D hulls (owner: "anche in modo abbastanza sommario 3D"): beam and draft as shares of the length, the
+ *  height of the deck above the water and of the superstructure (shares of the picture's height above the water),
+ *  the stations along the hull; the colours of the bottom and the deck. A U-Boat is a cigar this thick. Tuning. */
+export const HULL_3D = {
+  beam: 0.16,
+  stations: 12,
+  superstructure: { from: -0.22, to: 0.12, width: 0.62, height: 0.55 },
+  bottom: 0x2a1f1b,
+  deck: 0x5a524a,
+  cigar: 0.09,
+  /** Above the water the painted side view shows while the ship is broadside; the 3D one when it points its bow
+   *  or stern at you this much (|sin| below). */
+  sideBelow: 0.45,
 };

@@ -1310,3 +1310,9 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **Il segno del cannone sul mare** (dove cadrà la granata con la mira attuale) al posto delle tacche fisse: con la prospettiva, le tacche non dicevano niente.
 - **Per ora le navi nemiche usano l'immagine di profilo**, più stretta quando girano; le viste di prua e di poppa arriveranno dal lotto Gemini.
 - **La battaglia di lato non finisce più per distanza:** si esce con "Timone" (richiesta del proprietario).
+
+## 17 novembre 2026 — La torretta sott'acqua T2 (v0.129.0)
+
+- **3D sommario disegnato a mano:** gli scafi sono poche decine di facce proiettate con la stessa prospettiva della torretta e riempite con `Graphics`, dalla più lontana alla più vicina. Nessuna libreria 3D: basta per una carena vista da sotto, ed è leggero sull'iPhone.
+- **Il siluro è filoguidato sulla linea del mirino** (dall'occhio lungo yaw e pitch), non parallelo alla mira: così va dove guardi anche partendo da un punto diverso.
+- **Sott'acqua niente texture ripetute in grande** per la superficie vista da sotto: facevano una griglia. Restano una luce sfumata, i raggi e le particelle.

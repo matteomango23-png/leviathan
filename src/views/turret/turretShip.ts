@@ -6,6 +6,8 @@
 // the angle. Look only.
 import Phaser from 'phaser';
 import { ENEMY_CLASSES } from '../../data/company';
+import { HULL_3D } from '../../data/turret';
+import type { TurretHull3d } from './turretHull3d';
 import { HIT_ZONES } from '../../data/company';
 import type { EnemyVessel } from '../../systems/company/enemyState';
 import { foeGun } from '../../systems/turret/duelAi';
@@ -43,8 +45,11 @@ export class TurretShip {
     time: number,
     lights: SoftPuffs,
     smoke: SoftPuffs,
+    hull: TurretHull3d,
+    under: { on: boolean; water: number; see: number },
   ): ShipOnScreen | null {
     const def = ENEMY_CLASSES[e.cls];
+    hull.clear();
     const pose = { model: def.look };
     const m = shipModel(pose);
     const pic = shipPicture(pose);
@@ -62,6 +67,48 @@ export class TurretShip {
       return null;
     }
     const dist = Math.hypot(rel.a, rel.s);
+    // the rough 3D hull: always under the water (seen from beneath), and above it when the ship points its bow or
+    // stern at you (no painting of those sides yet); an enemy U-Boat under the water is never seen from above
+    const sideOn = Math.abs(Math.sin(d.foe.heading - Math.atan2(rel.s, rel.a)));
+    const uboat = d.foe.depth > 1;
+    if (under.on || uboat || sideOn < HULL_3D.sideBelow) {
+      for (const im of all) im.setVisible(false);
+      if (!under.on && uboat) return { x: at.x - cam.w / 2, y: at.y - cam.h / 2, px: at.scale, dist };
+      const Hm = m.lengthM * pic.aspect;
+      hull.shape(
+        `${def.look}-${uboat}`,
+        m.lengthM * 0.9,
+        (pic.waterline - pic.deckY) * Hm,
+        (pic.keel - pic.waterline) * Hm,
+        uboat,
+      );
+      const sinking = Math.max(0, e.sinkT);
+      const tint = mix(def.tint, 0x06090c, under.on ? 0 : c.night * 0.8);
+      const fog = under.on ? under.water : c.mist;
+      const fade = under.on
+        ? (x: number): number => Math.exp(-((x / under.see) ** 1.5) * 1.2)
+        : (x: number): number => through(c, x);
+      hull.draw(
+        cam,
+        { a: d.you.a, s: d.you.s },
+        {
+          a: d.foe.a,
+          s: d.foe.s,
+          heading: d.foe.heading,
+          depth:
+            d.foe.depth +
+            HIT_ZONES.waterline.sink * e.dmg.flood * Hm +
+            sinking * sinking * 0.35 +
+            sinking * 0.6,
+          list: HIT_ZONES.waterline.list * e.dmg.flood + Math.min(0.5, sinking * 0.1),
+        },
+        tint,
+        fog,
+        fade,
+        under.on,
+      );
+      return { x: at.x - cam.w / 2, y: at.y - cam.h / 2, px: at.scale, dist };
+    }
     const px = at.scale;
     const W = this.img.width;
     const H = this.img.height;

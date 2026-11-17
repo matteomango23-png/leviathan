@@ -84,6 +84,11 @@ export class TurretSky {
     box.add([this.sky, this.stars, this.clouds]);
   }
 
+  /** Above the water only. */
+  setVisible(on: boolean): void {
+    for (const o of [this.sky, this.stars, this.clouds, this.haze]) o.setVisible(on);
+  }
+
   /** The gradient, painted again only when its colours change. */
   private paint(c: TurretColours): void {
     const key = `${c.skyTop}-${c.skyHorizon}`;
