@@ -64,7 +64,9 @@ export function showEvent(e: GameEvent, v: EventLooks): void {
   else if (e.type === 'hatchMoved') rig.shake(0.15);
   else if (e.type === 'boatBumped')
     rig.shake(0.6); // the speedboat into the ice
-  else if (e.type === 'shipDamaged') rig.shake(0.5); // a blow to the ship's hull (block 5c)
+  else if (e.type === 'shipDamaged')
+    rig.shake(0.5); // a blow to the ship's hull (block 5c)
+  else if (e.type === 'enemySunk') rig.shake(0.35); // a Compagnia vessel breaking in two (company/)
 }
 
 /** On a leap out of the water the beast snaps up the gulls in front of its jaws (owner, 16 ottobre): the events go

@@ -31,6 +31,7 @@ import { beepEvery, obstacleAhead } from '../systems/ship/radar';
 import { inVehicle } from '../systems/vehicles';
 import { lookAt } from '../systems/seaLook';
 import { showEvent } from './worldEvents';
+import { ARENA_DEFAULT, setUpArena, type ArenaSetup } from '../systems/company/arena';
 import { WorldViews } from './worldViews';
 import type { SceneData, Session } from './session';
 
@@ -58,6 +59,7 @@ export class WorldScene extends Phaser.Scene {
     this.state = createGame(map, saved);
     // the test gallery: in open water with a strong beast, no story; otherwise a brand new game begins on Aurelio's boat
     if (this.session.gallery) setUpGallery(this.state);
+    else if (this.session.arena) setUpArena(this.state, ARENA_DEFAULT);
     else if (!saved) startNewGame(this.state);
     this.session.game = this.state;
     this.views = new WorldViews(this, map, this.state);
@@ -66,6 +68,7 @@ export class WorldScene extends Phaser.Scene {
     this.session.on('saveNow', this.save, this);
     this.session.on('toTitle', this.onToTitle, this);
     this.session.on('gallery', this.onGallery, this);
+    this.session.on('arena', this.onArena, this);
     this.session.on('battle', this.onBattleOver, this);
     this.session.on('skipWeather', this.onSkipWeather, this);
     const onHide = (): void => {
@@ -78,6 +81,7 @@ export class WorldScene extends Phaser.Scene {
       this.session.off('saveNow', this.save, this);
       this.session.off('toTitle', this.onToTitle, this);
       this.session.off('gallery', this.onGallery, this);
+      this.session.off('arena', this.onArena, this);
       this.session.off('battle', this.onBattleOver, this);
       this.session.off('skipWeather', this.onSkipWeather, this);
       document.removeEventListener('visibilitychange', onHide);
@@ -117,6 +121,12 @@ export class WorldScene extends Phaser.Scene {
     this.handleEvents(events);
   }
 
+  /** The naval arena's bar: it starts again with this setup (systems/company/arena.ts). */
+  private onArena(set: ArenaSetup): void {
+    setUpArena(this.state, set);
+    Object.assign(this.session.input.helm, { throttle: 0, dir: 1 });
+  }
+
   /** In the test gallery every battle ends with the team healed. */
   private onBattleOver(on: boolean): void {
     if (!on && this.session.gallery) healAll(this.state);
@@ -145,6 +155,7 @@ export class WorldScene extends Phaser.Scene {
     const looks = { effects: v.effects, echo: v.echo, rig: v.rig, terrain: v.terrain, g };
     for (const e of events) {
       showEvent(e, looks); // bubbles, spray, dust, jolts (worldEvents.ts)
+      v.ordnance.onEvent(e); // the Compagnia's guns and bursts (views/ordnanceView.ts)
       if (e.type === 'hurt') v.hurtFlash = 0.5;
       else if (e.type === 'battleStart') this.openBattle();
       else if (
@@ -167,6 +178,8 @@ export class WorldScene extends Phaser.Scene {
       } else if (e.type === 'respawned') v.rig.follow(g.diver.x, g.diver.y, 0, true);
       else if (e.type === 'sonarPing') this.session.sound.sonarPing();
       else if (e.type === 'chargeWarn') this.session.sound.chargeWarn();
+      // the Compagnia hunting you: the same alarm as a charging beast (company/)
+      else if (e.type === 'enemyAlert' && e.phase === 'hunting') this.session.sound.chargeWarn();
       else if (e.type === 'engineStarted' || e.type === 'engineStopped') {
         const near =
           e.vehicle === 'boat'

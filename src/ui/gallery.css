@@ -35,3 +35,7 @@
 .gallery-btn.exit {
   color: #ff8a80;
 }
+/* the naval arena's bar (ui/arenaBar.ts): under the helm's dials, never on them */
+.gallery-bar.arena-bar {
+  top: calc(92px + var(--safe-t));
+}

@@ -32,7 +32,8 @@ export function lampOf(
       ? shipPoint(g.ship, pic.lamp.u, pic.lamp.v)
       : (rider ?? g.diver);
   const mods = diverModifiers(g.gear);
-  const off = storyHoldsDiver(g) || (g.ship.aboard && dive <= 0 && night < 0.2);
+  // in Silence the ship's lights are out (company/, owner 17 novembre 2026)
+  const off = storyHoldsDiver(g) || (g.ship.aboard && ((dive <= 0 && night < 0.2) || !!g.ship.silent));
   // riding an Abissale, its eyes for the dark: your light reaches much farther (beasts/mountTraits.ts)
   const ridden = g.beasts.riding ? activeBeast(g) : undefined;
   const abyss = ridden && talentOf(ridden.form) === 'abissale' ? RIDE_TALENTS.abyssLampMult : 1;

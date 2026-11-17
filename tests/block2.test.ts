@@ -85,7 +85,9 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
     expect(off.ship.fuel).toBe(100);
   });
 
-  it('the throttle starts it; the button switches it off and the throttle goes back to zero', () => {
+  // since 17 novembre 2026 the button with the engine running switches to Silence (owner): the engine off, the
+  // throttle kept, the electric motors drive it slowly (tests/companyA1.test.ts)
+  it('the throttle starts it; the button switches it off into Silence, the throttle kept', () => {
     const w = still(false);
     sailShip(w, helm(0.5), 0.1, [], () => false);
     expect(w.ship.engineOn).toBe(true);
@@ -97,7 +99,8 @@ describe('the engine of the ship (owner: in neutral it burnt fuel, and nothing s
     input.helm.throttle = 0.7;
     stepGame(g, input, DT);
     expect(g.ship.engineOn).toBe(false);
-    expect(input.helm.throttle).toBe(0);
+    expect(g.ship.silent).toBe(true);
+    expect(input.helm.throttle).toBe(0.7);
   });
 
   it('it is saved; an older save has it off', () => {

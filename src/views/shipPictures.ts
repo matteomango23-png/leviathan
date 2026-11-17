@@ -12,6 +12,9 @@ const UNDERWATER_TINT = 0x6f97a6;
  *  (owner, 9 ottobre: it darkened along a straight line under uneven waves). */
 const STRIPS = 40;
 
+/** What the pictures need of a ship: yours, or a Compagnia vessel borrowing a picture (views/enemyView.ts). */
+export type PicturePose = Pick<ShipState, 'model' | 'face' | 'hatches' | 'prop' | 'mouthT'>;
+
 interface Part {
   /** The whole picture, as it is. */
   full: Phaser.GameObjects.Image;
@@ -29,6 +32,8 @@ export class ShipPictures {
   private readonly roles: ('closed' | number | 'all' | 'moving' | 'mouth' | 'mouthMoving')[] = [];
   /** Its lit red parts, added on top and pulsing (art.glow). */
   private readonly glow: Phaser.GameObjects.Image | null;
+  /** How bright its lit parts glow (1; less in Silence: data/company.ts SILENCE). */
+  glowShare = 1;
   /** The Krill Hunter: its closed head alone, fading out while the open mouth (its head alone too) fades in over
    *  whatever the rest shows (hatches open or not; owner, 10 ottobre: the closed jaw showed under the open one). */
   private readonly headClosed: Phaser.GameObjects.Image | null = null;
@@ -83,6 +88,21 @@ export class ShipPictures {
     if (this.glow) glowLayer.add(this.glow);
   }
 
+  /** Tints every picture (Silence darkening your hull, a Compagnia vessel's rust); white: as painted. */
+  tint(color: number): void {
+    for (const p of this.parts) p.full.setTint(color);
+    this.headClosed?.setTint(color);
+    this.sternClosed?.setTint(color);
+  }
+
+  /** Gone for good (a Compagnia vessel sunk): its pictures thrown away. */
+  destroy(): void {
+    for (const p of this.parts) for (const im of [p.full, ...p.under]) im.destroy();
+    this.glow?.destroy();
+    this.headClosed?.destroy();
+    this.sternClosed?.destroy();
+  }
+
   hide(): void {
     for (const p of this.parts) for (const im of [p.full, ...p.under]) im.setVisible(false);
     this.glow?.setVisible(false);
@@ -92,7 +112,7 @@ export class ShipPictures {
 
   /** How much a picture shows: each open hatch fades in over the closed one, both open over both; the turning
    *  propeller over all while it pushes. */
-  private alphaOf(s: ShipState, role: (typeof this.roles)[number]): number {
+  private alphaOf(s: PicturePose, role: (typeof this.roles)[number]): number {
     if (role === 'closed') return 1;
     if (typeof role === 'number') return hatchT(s, role);
     const most = Math.max(0, ...s.hatches.map((h) => h.t));
@@ -111,7 +131,7 @@ export class ShipPictures {
    * part under the waves is tinted (0 … 1), growing as it goes down.
    */
   place(
-    s: ShipState,
+    s: PicturePose,
     x: number,
     top: number,
     scale: number,
@@ -133,7 +153,7 @@ export class ShipPictures {
         .setPosition(x, cy)
         .setScale(sc * s.face, sc)
         .setRotation(rot)
-        .setAlpha(0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6)));
+        .setAlpha((0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * Math.PI * 1.6))) * this.glowShare);
     }
     // the mouth open (even a little): the body from the pictures, the head from the mouth's
     const head = !!this.headClosed && s.mouthT > 0;

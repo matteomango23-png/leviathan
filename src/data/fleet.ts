@@ -3,6 +3,7 @@
 // (bigger ones slow to speed up and to stop, the Poseidon quick; the advanced sonars hear at higher speeds).
 // Only the `ready` ones sail yet: the others show in the shipyard as "In cantiere" (parts 4c–4d).
 // Values marked "tuning" are a first pass: change them here, never in systems.
+import type { WeaponId } from './company';
 
 /** Where things are on a ship's picture (bow on the right), as shares of its width and height. */
 export interface ShipPicture {
@@ -84,6 +85,9 @@ export interface ShipModelDef {
   tank: number; // litres
   /** Hull points (block 5c, owner 10 ottobre): it wears in storms, a U-Boat bumping the floor, giants ramming it. */
   hull: number;
+  /** Its weapons against the Compagnia's ships (owner, 17 novembre 2026: almost every mother ship armed, weaker or
+   *  stronger; the submarines and boats it carries never). data/company.ts WEAPONS. */
+  weapons: WeaponId[];
   perKm: number; // litres per km at full throttle
   /** The sonar: how far it hears (× the base range), up to which speed (knots), and how many sizes of echo it
    *  tells apart (2 … 5, data/hunts.ts SONAR). */
@@ -143,6 +147,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 60,
     tank: 300,
     hull: 100, // its hull points (block 5c)
+    weapons: ['cannoncino'],
     perKm: 10,
     sonar: { range: 1, maxKnots: 10, name: 'debole', classes: 2 },
     pool: 1, // owner, 15 ottobre: on the first ship the team never healed
@@ -193,6 +198,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 42,
     tank: 600,
     hull: 140, // its hull points (block 5c)
+    weapons: ['cannone'],
     perKm: 14,
     sonar: { range: 1.2, maxKnots: 10, name: 'normale', classes: 3 },
     pool: 2,
@@ -241,6 +247,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 75,
     tank: 400,
     hull: 160, // its hull points (block 5c)
+    weapons: ['siluro'],
     perKm: 8,
     sonar: { range: 1, maxKnots: 10, name: 'di prossimità, a 360°', classes: 3 },
     pool: 1,
@@ -287,6 +294,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 55,
     tank: 900,
     hull: 180, // its hull points (block 5c)
+    weapons: ['cannone'],
     perKm: 15,
     sonar: { range: 1.6, maxKnots: 16, name: 'ottimo', classes: 4 },
     pool: 3,
@@ -347,6 +355,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 38,
     tank: 1200,
     hull: 260, // its hull points (block 5c)
+    weapons: ['cannone', 'siluro'],
     perKm: 16,
     sonar: { range: 1.6, maxKnots: 14, name: 'a 360°, forte', classes: 4 },
     pool: 3,
@@ -389,6 +398,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 90,
     tank: 1000,
     hull: 150, // its hull points (block 5c)
+    weapons: ['cannone'],
     perKm: 20,
     sonar: { range: 1.3, maxKnots: 12, name: 'medio', classes: 3 },
     pool: 2,
@@ -444,6 +454,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 30,
     tank: 2000,
     hull: 220, // its hull points (block 5c)
+    weapons: ['cannone', 'carica'],
     perKm: 25,
     sonar: { range: 1.6, maxKnots: 14, name: 'buono', classes: 4 },
     pool: 4,
@@ -507,6 +518,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 32,
     tank: 2200,
     hull: 260, // its hull points (block 5c)
+    weapons: ['cannone'],
     perKm: 24,
     sonar: { range: 1.8, maxKnots: 16, name: 'ottimo', classes: 4 },
     pool: 4,
@@ -574,6 +586,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 24,
     tank: 2500,
     hull: 300, // its hull points (block 5c)
+    weapons: ['cannone', 'siluro'],
     perKm: 28,
     sonar: { range: 2, maxKnots: 18, name: 'il migliore', classes: 5 },
     pool: 5,
@@ -642,6 +655,7 @@ export const SHIP_MODELS: ShipModelDef[] = [
     brake: 24, // …and stops slowly (owner: "pesante quando frena")
     tank: 3000,
     hull: 340,
+    weapons: ['cannone', 'siluro'],
     perKm: 22,
     sonar: { range: 1.8, maxKnots: 20, name: 'abissale, a 360°', classes: 5 },
     pool: 4,

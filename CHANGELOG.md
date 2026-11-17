@@ -2,6 +2,17 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.126.0 — Arena navale: la Compagnia dell'Olio Nero (17 novembre 2026)
+
+- Nuova prova nel menu iniziale, con gli strumenti di prova accesi: **Arena navale**. Scegli la tua nave, il nemico (baleniera, nave da caccia, U-Boot o tutti e tre), giorno o notte. È una partita usa e getta che non si salva.
+- Le navi della Compagnia pattugliano. Sopra ognuna c'è un **occhio**: grigio tranquillo, giallo quando ha notato qualcosa, rosso quando ti dà la caccia. Ti vedono e ti sentono di più se sei vicino, vai veloce, hai le luci accese o è giorno.
+- **Silenzio:** col motore acceso il pulsante ⏻ spegne motore e luci e scurisce lo scafo; col gas vai a un terzo della velocità, quasi senza rumore. Premilo di nuovo per riaccendere.
+- **Fuoco e Siluro** al timone, quando la Compagnia è vicina: ogni nave madre ha la sua arma (l'Aurelia un cannoncino, le navi un cannone, gli U-Boot i siluri).
+- Quando una nave nemica è vicina la vista si allarga piano per tenerle in vista tutte e due.
+- La nave affondata **si spezza in due**: le metà si inclinano e vanno giù, con bolle, rottami e olio nero.
+- Fuori dall'arena l'unico cambiamento è il ⏻: ora porta al Silenzio invece di spegnere tutto e azzerare il gas.
+- I salvataggi non cambiano.
+
 ## v0.125.4 — Lo sfondo non scatta più (13 novembre 2026)
 
 - Le montagne dello sfondo non scattano più su e giù quando ti muovi in avanti e insieme sali o scendi: ora scorrono lisce in tutte le direzioni.

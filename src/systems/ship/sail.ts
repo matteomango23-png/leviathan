@@ -1,6 +1,7 @@
 // Sailing the ship one step (split from ship.ts in the cleanup of 19 ottobre 2026): helm, speed, fuel, ice, waves,
 // the U-Boats' dive, the hull. Pure logic.
 import { SHIP } from '../../data/ship';
+import { SILENCE } from '../../data/company';
 import { settleRide, stepRide } from '../ride';
 import { CALM_SEA, currentMult, type SeaWeather } from '../sea';
 import { PORTO_FANGO } from '../../data/economy';
@@ -53,7 +54,9 @@ export function sailShip(
   const top =
     s.fuel <= 0 || s.hull <= 0 ? 0 : shipTopSpeed(s) * (icy ? SHIP.iceMult : 1) * currentMult('ship', sea);
   // the throttle off zero starts the engine; dry, it stops (owner, 8 ottobre)
-  if (helm && helm.throttle > 0 && s.fuel > 0 && s.hull > 0 && !s.engineOn) {
+  // (in Silence the throttle drives the electric motors instead: company/, data/company.ts SILENCE)
+  if (s.fuel <= 0 || s.hull <= 0) s.silent = false;
+  if (helm && helm.throttle > 0 && s.fuel > 0 && s.hull > 0 && !s.engineOn && !s.silent) {
     s.engineOn = true;
     events.push({ type: 'engineStarted' });
   }
@@ -62,10 +65,11 @@ export function sailShip(
     events.push({ type: 'engineStopped' });
   }
   const shut = hatchesShut(s);
-  const push = helm && s.engineOn && shut ? helm.throttle : 0;
+  const drive = s.engineOn || !!s.silent;
+  const push = helm && drive && shut ? helm.throttle : 0;
   s.prop += (push - s.prop) * Math.min(1, dt * 2); // the propeller speeds up and slows down gently
-  if (helm && s.engineOn && shut) {
-    const h = stepHeading(s.face, s.speed, helm, top, shipRates(s), dt);
+  if (helm && drive && shut) {
+    const h = stepHeading(s.face, s.speed, helm, s.silent ? top * SILENCE.speedShare : top, shipRates(s), dt);
     s.face = h.face;
     s.speed = h.speed;
   } else s.speed = Math.max(0, s.speed - (shut ? shipRates(s).coast : shipRates(s).brake) * dt);

@@ -257,6 +257,13 @@
   border-color: var(--lamp);
   box-shadow: 0 0 8px rgba(255, 200, 120, 0.45);
 }
+/* Silence (data/company.ts SILENCE): the engine off, the electric motors on, dark blue */
+.helm-power.silent {
+  color: #bfe3ff;
+  background: #16324a;
+  border-color: #5fa8d8;
+  box-shadow: 0 0 8px rgba(95, 168, 216, 0.5);
+}
 /* the buttons that work only with the ship still fade out under way and back in (owner, 9 ottobre) */
 .helm-still {
   /* at most three buttons a column, the next column to their left (owner, 9 ottobre: with the Nightmare's hatches

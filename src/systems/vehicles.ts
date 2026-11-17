@@ -71,6 +71,21 @@ export const onRamp = (g: VehicleWorld): boolean =>
  * One step of the helm buttons, the ship, the ramp and the submarine. Returns true while a vehicle moves you.
  * Returns also the tiles that changed (ice broken or frozen again) through a 'tilesChanged' event.
  */
+/** The ship's ⏻ button (owner, 8 ottobre; Silence from 17 novembre 2026): running, it switches to Silence (the engine
+ *  off, the electric motors on: the throttle keeps working, at a third of the speed); in Silence or stopped, it starts
+ *  the engine again. */
+function toggleSilence(ship: VehicleWorld['ship'], events: GameEvent[]): void {
+  if (ship.engineOn) {
+    Object.assign(ship, { engineOn: false, silent: true, lightOn: false });
+    events.push({ type: 'engineStopped' }, { type: 'silence', on: true });
+  } else if (ship.fuel > 0 && ship.hull > 0) {
+    const was = !!ship.silent;
+    Object.assign(ship, { engineOn: true, silent: false });
+    events.push({ type: 'engineStarted' });
+    if (was) events.push({ type: 'silence', on: false });
+  }
+}
+
 export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, events: GameEvent[]): boolean {
   const ship = g.ship;
   // into a vehicle: its levers start at rest, pointing where it points (owner, 8 ottobre: the levers kept the last
@@ -95,13 +110,7 @@ export function stepVehicles(g: VehicleWorld, input: InputState, dt: number, eve
   } else if (input.helmCmd === 'dive' && boat.aboard) diveFromBoat(g, events);
   else if (input.helmCmd === 'dive') diveFromShip(g, events);
   else if (input.helmCmd === 'sonar' && ship.aboard) ship.sonarOn = !ship.sonarOn;
-  else if (input.helmCmd === 'engine' && ship.aboard) {
-    // the engine button (owner, 8 ottobre): off, the throttle goes back to zero; on, it idles
-    const was = ship.engineOn;
-    ship.engineOn = !ship.engineOn && ship.fuel > 0;
-    if (!ship.engineOn) input.helm.throttle = 0;
-    if (ship.engineOn !== was) events.push({ type: ship.engineOn ? 'engineStarted' : 'engineStopped' });
-  }
+  else if (input.helmCmd === 'engine' && ship.aboard) toggleSilence(ship, events);
   // the broken ice freezes again only far from you and the ship, and never while the speedboat or the submarine is
   // out of the hold: its way back stays open (owner, 11 ottobre: the speedboat got shut out by the ice)
   const vehicleOut = (g.boat.owned && g.boat.bay !== 'docked') || (g.sub.owned && ship.bay !== 'docked');

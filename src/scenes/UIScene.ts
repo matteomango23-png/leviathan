@@ -18,6 +18,8 @@ import { Compass } from '../ui/compass';
 import { SubScope } from '../ui/subScope';
 import type { SceneData, Session } from './session';
 import { GalleryBar } from '../ui/galleryBar';
+import { ArenaBar } from '../ui/arenaBar';
+import { FireButtons } from '../ui/fireButtons';
 import { coachDue, runCoach } from '../ui/coach';
 import { GUN } from '../data/diver';
 import { spareDarts } from '../systems/gun';
@@ -38,6 +40,8 @@ export class UIScene extends Phaser.Scene {
   /** The submarine's 360° sonar and the arrow home (block 5c). */
   private subScope!: SubScope;
   private sleep!: SleepOverlay;
+  /** Your ship's weapons at the helm, while the Compagnia is about (ui/fireButtons.ts). */
+  private fire!: FireButtons;
   /** Seconds the sea has been quiet (no dialogue, no picker): a tutorial round waits for it, after Aurelio's tips. */
   private quiet = 0;
 
@@ -63,6 +67,8 @@ export class UIScene extends Phaser.Scene {
     this.subScope = new SubScope(this.root);
     this.sleep = new SleepOverlay(this.root, this.session);
     if (this.session.gallery) new GalleryBar(this.root, this.session);
+    if (this.session.arena) new ArenaBar(this.root, this.session);
+    this.fire = new FireButtons(this.root, this.session);
 
     this.session.on('gameEvents', this.onGameEvents, this);
     this.session.on('toast', this.onToast, this);
@@ -187,6 +193,7 @@ export class UIScene extends Phaser.Scene {
     const reload = g.harpoon.reload > 0 ? 1 - g.harpoon.reload / GUN.reloadSeconds : null;
     this.controls.setGun(g.gear.activeWeapon === 'arpione', g.gear.gunMag, spareDarts(g), reload);
     this.helm.update(helm, dt);
+    this.fire.update(g);
     this.hud.update(g, dt);
     this.dialogue.update(g, dt);
     this.starter.setVisible(needsStarter(g) && !g.story.dialogue);

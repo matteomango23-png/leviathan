@@ -7,6 +7,7 @@ import { emptyInput, type InputState } from '../systems/input';
 import type { BeastForm } from '../systems/beasts/forms';
 import type { SaveData } from '../systems/save/saveData';
 import { SoundEngine } from '../audio/soundEngine';
+import type { ArenaSetup } from '../systems/company/arena';
 
 interface SessionEvents {
   /** Game events of the last step (World → UI). */
@@ -22,6 +23,8 @@ interface SessionEvents {
   toTitle: () => void;
   /** The test gallery's buttons (ui/galleryBar.ts): this form in the sea, as an opponent, as a companion. */
   gallery: (act: 'sea' | 'fight' | 'companion' | 'ride' | 'withIt', form: BeastForm) => void;
+  /** The naval arena's bar (ui/arenaBar.ts): start it again with this setup. */
+  arena: (set: ArenaSetup) => void;
   /** A battle opens (true) or ends (false): the sea's controls hide meanwhile. */
   battle: (on: boolean) => void;
   /** Test panel: skip to the next kind of weather. */
@@ -46,6 +49,8 @@ export class Session {
   startSave: SaveData | null = null;
   /** The test gallery's throwaway game (systems/gallery.ts): never saved. */
   gallery = false;
+  /** The naval test arena's throwaway game (systems/company/arena.ts): never saved. */
+  arena = false;
   paused = false;
   /** The ship's cockpit is open: the sea goes on under it (owner, 5 ottobre: sail slowly watching the sonar). */
   inCockpit = false;

@@ -268,7 +268,12 @@ export class HelmControls {
     const boatLabel = `Cala ${info.boatName ?? 'motoscafo'}`;
     if (this.launchBoatBtn.textContent !== boatLabel) this.launchBoatBtn.textContent = boatLabel;
     this.engineBtn.classList.toggle('on', !!info.engineOn);
-    this.engineBtn.title = info.engineOn ? 'Spegni il motore' : 'Accendi il motore';
+    this.engineBtn.classList.toggle('silent', !!info.silent);
+    this.engineBtn.title = info.engineOn
+      ? 'Silenzio'
+      : info.silent
+        ? 'Riaccendi il motore'
+        : 'Accendi il motore';
     // dry or broken down (block 5c); the boat crawls on its reserve
     this.rescueBtn.hidden = (info.fuel > 0 && !info.broken) || info.mode === 'boat';
   }

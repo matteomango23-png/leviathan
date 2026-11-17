@@ -13,6 +13,7 @@ import type { GameState } from '../systems/game';
 import { formName } from '../systems/beasts/forms';
 import { canRide } from '../systems/beastPlay';
 import { vehicleMessage } from './vehicleMessages';
+import { companyMessage } from './companyMessages';
 
 const fishName = (id: string): string =>
   FISH.find((f) => f.id === id)?.name ??
@@ -25,6 +26,8 @@ const weaponName = (id: string): string => WEAPONS.find((w) => w.id === id)?.nam
 export function messageFor(e: GameEvent, g: GameState): [string, number] | null {
   const vehicle = vehicleMessage(e, g); // the boat, the submarine, the ship, the hunts (vehicleMessages.ts)
   if (vehicle !== undefined) return vehicle;
+  const company = companyMessage(e); // the Compagnia dell'Olio Nero (companyMessages.ts)
+  if (company !== undefined) return company;
   const tamed = (uid: string) => g.beasts.team.find((b) => b.uid === uid);
   switch (e.type) {
     case 'creatureSeen':

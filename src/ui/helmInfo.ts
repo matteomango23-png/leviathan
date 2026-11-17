@@ -124,6 +124,7 @@ export function helmInfo(g: GameState, throttle = 1): HelmInfo | null {
         .replace(/^(Il|La) /, '')
         .toLowerCase(),
       engineOn: s.engineOn,
+      silent: !!s.silent,
       ...(shipModel(s).dive
         ? {
             canDive: true,
