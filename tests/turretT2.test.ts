@@ -6,7 +6,8 @@ import { TORPEDO_GUIDE, TURRET, UNDERWATER } from '../src/data/turret';
 import { setUpArena } from '../src/systems/company/arena';
 import { metres } from '../src/systems/company/enemyState';
 import { createGame } from '../src/systems/game';
-import { cigar3d, placeV3, shipHull3d } from '../src/systems/turret/hull3d';
+import { placeV3, shipHull3d } from '../src/systems/turret/hull3d';
+import { enemyModel } from '../src/systems/turret/hullModels';
 import {
   eyeHeight,
   gunsUp,
@@ -47,7 +48,7 @@ describe('gli scafi in 3D', () => {
   });
 
   it('l’U-Boot è tutto sott’acqua alla sua quota', () => {
-    const faces = cigar3d(70);
+    const faces = enemyModel('uboot', 70).faces;
     const zs = faces.flatMap((f) => f.pts.map((v) => placeV3(v, 0, 0, 0, 30).z));
     expect(Math.max(...zs)).toBeLessThan(0);
   });

@@ -29,36 +29,46 @@ export const TURRET = {
   swell: { height: 1.1, length: 38, speed: 6 },
 };
 
-/** Moving in the duel: your ship along its course at the throttle's share of its top speed; "Accosta" closes or opens
- *  the distance to the side at this speed (m/s); the whole duel never goes nearer than nearM. Tuning. */
+/** Moving in the duel (owner, 17 novembre 2026: "il gas per avvicinarsi non funziona… la nave scompariva"): your
+ *  ship goes where its bow points, at the throttle's share of its top speed (backwards at most `reverse` of it), the
+ *  rudder turning the bow at `steerRate` (rad/s); never nearer than nearM. The vessel is never faster than
+ *  `foeSpeedShare` of your top speed, never farther than `leashM` (past it, it circles back), and broken it runs at
+ *  only `fleeShare` of that. Tuning. */
 export const DUEL = {
   /** The vessel starts this far to your side (m). */
   startSideM: 110,
-  sideSpeed: 9,
+  reverse: 0.3,
+  steerRate: 0.32,
   nearM: 35,
   /** The enemy's fighting distance (m), its weaving (degrees off it, seconds between changes) and turning speed. */
   rangeM: 150,
   weaveDeg: 55,
   weaveSeconds: [3, 6] as [number, number],
   turnRate: 0.35,
+  foeSpeedShare: 0.8,
+  leashM: 260,
+  fleeShare: 0.55,
   /** After the end (sunk, or you sunk) the view stays this long before going back to the helm. */
   endSeconds: 4,
 };
 
-/** The turret's machine gun (owner: "tum tum tum"): rounds a second, speed (m/s), fall (m/s²), how far off each round
+/** The turret's machine gun (owner: "tum tum tum"; "voglio sparare per un po'… sentirmi potente": about eight
+ *  seconds of fire before it is too hot): rounds a second, speed (m/s), fall (m/s²), how far off each round
  *  goes, how far a tracer flies before it burns out, hull points per hit, the heat each round adds (1 = it stops),
  *  how fast it cools (per second) and how cool it must be to fire again; a hit's chance of a fire on deck. Tuning. */
 export const MACHINE_GUN = {
-  rate: 9,
+  rate: 11,
   speed: 260,
   gravity: 9.8,
   spread: 0.007,
   rangeM: 480,
   damage: 1.2,
-  heat: 0.055,
-  cool: 0.32,
+  heat: 0.0115,
+  cool: 0.3,
   restartBelow: 0.45,
   fireChance: 0.04,
+  /** The tracer's width on screen (px): at least, at most. */
+  tracer: [1.5, 4] as [number, number],
 };
 
 /** The turret's look (colours, sizes on screen in CSS-ish pixels). Tuning. */
@@ -120,17 +130,59 @@ export const TORPEDO_GUIDE = {
   foeReload: 9,
 };
 
-/** The rough 3D hulls (owner: "anche in modo abbastanza sommario 3D"): beam and draft as shares of the length, the
- *  height of the deck above the water and of the superstructure (shares of the picture's height above the water),
- *  the stations along the hull; the colours of the bottom and the deck. A U-Boat is a cigar this thick. Tuning. */
+/** The 3D hulls (owner, 17 novembre 2026: "Preferisco che mi crei un modello tu in 3D per la nave nemica, simile a
+ *  quello che sarà il suo asset 2D"): the stations along a hull, the colours of its parts (the side takes the class's
+ *  tint), a U-Boat's thickness (share of its length). Tuning. */
 export const HULL_3D = {
-  beam: 0.16,
-  stations: 12,
-  superstructure: { from: -0.22, to: 0.12, width: 0.62, height: 0.55 },
-  bottom: 0x2a1f1b,
-  deck: 0x5a524a,
-  cigar: 0.09,
-  /** Above the water the painted side view shows while the ship is broadside; the 3D one when it points its bow
-   *  or stern at you this much (|sin| below). */
-  sideBelow: 0.45,
+  stations: 14,
+  cigar: 0.085,
+  colours: {
+    /** Under the waterline: the red of the antifouling, darkened by the sea. */
+    bottom: 0x5a1e16,
+    /** The waterline's stripe. */
+    boot: 0x8a2a1c,
+    deck: 0x4e4842,
+    top: 0x8a8378,
+    metal: 0x2a2826,
+    funnel: 0x1e1a18,
+    /** The funnel's band: the Compagnia's black oil on rust red. */
+    band: 0x7a2416,
+  },
+  /** Its portholes and windows, lit by night. */
+  window: 0xffd27a,
+};
+
+/** The three models of the Compagnia (shares of the length; heights in metres): beam, the deck's height above the
+ *  water and the keel's depth under it (shares of the length), how much the bow rises (share of the deck's height),
+ *  and where the parts sit along the hull (−0.5 stern … 0.5 bow). Tuning. */
+export const HULL_MODELS = {
+  baleniera: {
+    beam: 0.2,
+    freeboard: 0.075,
+    draft: 0.09,
+    bowRise: 0.7,
+    /** The wheelhouse: from … to along it, its width (share of the beam), height (m). */
+    house: { from: -0.3, to: -0.06, width: 0.72, height: 3.2 },
+    funnel: { at: -0.2, width: 0.1, height: 5.2 },
+    mast: { at: 0.18, height: 9 },
+    harpoon: { at: 0.44 },
+    boat: { at: -0.36 },
+  },
+  caccia: {
+    beam: 0.12,
+    freeboard: 0.05,
+    draft: 0.055,
+    bowRise: 0.45,
+    /** The stepped bridge: two blocks, the upper smaller. */
+    house: { from: -0.06, to: 0.14, width: 0.7, height: 3 },
+    funnel: { at: -0.12, width: 0.11, height: 4.6 },
+    mast: { at: 0.06, height: 11 },
+    /** Its two gun turrets. */
+    turrets: [0.3, -0.32],
+  },
+  uboot: {
+    /** The tower: where, how long (share of the length), how tall above the hull (m). */
+    tower: { at: 0.06, length: 0.13, height: 3.2 },
+    gun: { at: 0.2 },
+  },
 };

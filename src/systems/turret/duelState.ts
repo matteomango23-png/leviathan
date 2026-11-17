@@ -43,15 +43,16 @@ export interface Charge {
 export interface DuelState {
   /** The vessel you fight (its id in g.company.enemies). */
   foeId: number;
-  /** Your ship: where, how fast, how deep (m under the surface: a U-Boat dives). */
-  you: { a: number; s: number; speed: number; depth: number };
+  /** Your ship: where, where its bow points (radians: 0 your course on the sea's line, right > 0), how fast (m/s,
+   *  backwards < 0), how deep (m under the surface: a U-Boat dives). */
+  you: { a: number; s: number; heading: number; speed: number; depth: number };
   foe: {
     a: number;
     s: number;
     /** Where it sails (radians: 0 your way, right > 0) and how fast (m/s). */
     heading: number;
     speed: number;
-    /** Its weaving: the bearing it wants from you (radians off your course) and the seconds to the next change. */
+    /** Its weaving: the bearing it wants from you (radians off your bow) and the seconds to the next change. */
     bearing: number;
     weaveT: number;
     /** Its gun's flash before it fires (s left) and the point it aims at; seconds to reload. */
@@ -96,7 +97,7 @@ export function newDuel(
 ): DuelState {
   return {
     foeId,
-    you: { a: 0, s: 0, speed: 0, depth: yourDepth },
+    you: { a: 0, s: 0, heading: 0, speed: 0, depth: yourDepth },
     foe: {
       a: along,
       s: DUEL.startSideM,

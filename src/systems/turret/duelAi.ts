@@ -1,5 +1,7 @@
 // The Compagnia's vessel in the turret's duel (owner, 17 novembre 2026): it keeps a fighting distance, weaving to a
-// new bearing from you every few seconds so it is never still in your sights; broken, it runs, but it never vanishes.
+// new bearing from you every few seconds so it is never still in your sights; it is never faster than you can chase
+// ("le navi tendono ad allontanarsi di brutto"), and never farther than its leash: broken, it runs, but slowly, and
+// past the leash it circles back. It never vanishes.
 // Its gun flashes, then its shell flies at where you were: change speed or distance to dodge. Numbers in
 // data/turret.ts DUEL and data/company.ts. Pure logic.
 import { BATTLE, ENEMY_CLASSES, WEAPONS } from '../../data/company';
@@ -9,7 +11,7 @@ import { WORLD } from '../../data/worldLayout';
 import { floodSpeed } from '../company/hullDamage';
 import type { EnemyVessel } from '../company/enemyState';
 import type { GameState } from '../newGame';
-import { shipModel, shipPicture } from '../ship/model';
+import { shipModel, shipPicture, shipTopSpeed } from '../ship/model';
 import { fireRound, lobPitch } from './ballistics';
 import { foeFromYou, type DuelState } from './duelState';
 import { dropCharge, launchTorpedo } from './torpedo';
@@ -18,6 +20,10 @@ import { wrapAngle, type P3 } from './projection';
 export type FoeEvent = { type: 'foeFlash'; p: P3 } | { type: 'foeShot'; p: P3 };
 
 const knots = (k: number): number => k / HELM.knotsPerUnit / WORLD.unitsPerMetre;
+
+/** Your ship's top speed in the duel now (m/s): slower with water in the hull. */
+export const yourTop = (g: GameState): number =>
+  (shipTopSpeed(g.ship) / WORLD.unitsPerMetre) * floodSpeed(g.company.yourDmg);
 
 /** Where its gun is (m). */
 export function foeGun(d: DuelState, e: EnemyVessel): P3 {
@@ -36,29 +42,37 @@ function sail(g: GameState, d: DuelState, e: EnemyVessel, dt: number): void {
   const def = ENEMY_CLASSES[e.cls];
   const f = d.foe;
   const rel = foeFromYou(d);
-  const running = e.hull < def.hull * BATTLE.fleeBelow;
-  // a new bearing from you now and then: on its side of you, a little ahead or behind
+  const leashed = rel.dist > DUEL.leashM;
+  const running = e.hull < def.hull * BATTLE.fleeBelow && !leashed;
+  // a new bearing from you now and then: on its side of your bow, a little ahead or behind
   f.weaveT -= dt;
   if (f.weaveT <= 0) {
     const [a, b] = DUEL.weaveSeconds;
     f.weaveT = a + g.rng() * (b - a);
-    const side = Math.sign(rel.s || 1);
+    const side = Math.sign(wrapAngle(Math.atan2(rel.s, rel.a) - d.you.heading) || 1);
     f.bearing = side * (Math.PI / 2 + ((g.rng() * 2 - 1) * DUEL.weaveDeg * Math.PI) / 180);
   }
   // you deep under it: a hunting ship comes over you to drop its charges; the others keep their distance
   const overYou = deep(d) && def.weapons.includes('carica');
+  const b = d.you.heading + f.bearing;
   const target = running
     ? { a: f.a + rel.a * 4, s: f.s + rel.s * 4 }
     : overYou
       ? { a: d.you.a, s: d.you.s }
-      : { a: d.you.a + Math.cos(f.bearing) * DUEL.rangeM, s: d.you.s + Math.sin(f.bearing) * DUEL.rangeM };
+      : { a: d.you.a + Math.cos(b) * DUEL.rangeM, s: d.you.s + Math.sin(b) * DUEL.rangeM };
   const want = Math.atan2(target.s - f.s, target.a - f.a);
   const turn = wrapAngle(want - f.heading);
   f.heading = wrapAngle(f.heading + Math.max(-DUEL.turnRate * dt, Math.min(DUEL.turnRate * dt, turn)));
   const far = Math.hypot(target.a - f.a, target.s - f.s);
-  const top = knots(def.huntKnots) * floodSpeed(e.dmg);
-  const speed = running || far > 30 ? top : Math.min(top, Math.max(knots(def.patrolKnots), d.you.speed));
+  // never faster than you can chase it; running broken, slower still
+  const cap = Math.max(knots(def.patrolKnots) * 0.5, yourTop(g) * DUEL.foeSpeedShare);
+  // past the leash it slows as it turns back to you
+  const top =
+    Math.min(knots(def.huntKnots) * floodSpeed(e.dmg), cap) * (running ? DUEL.fleeShare : leashed ? 0.5 : 1);
+  const speed =
+    running || far > 30 ? top : Math.min(top, Math.max(knots(def.patrolKnots), Math.abs(d.you.speed)));
   f.speed += Math.max(-1.5 * dt, Math.min(1.5 * dt, speed - f.speed));
+  f.speed = Math.min(f.speed, cap);
   f.a += Math.cos(f.heading) * f.speed * dt;
   f.s += Math.sin(f.heading) * f.speed * dt;
 }

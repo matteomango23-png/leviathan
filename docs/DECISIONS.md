@@ -1316,3 +1316,10 @@ Dopo 25 minuti di gioco il proprietario ha finito tutti i contenuti: livellare e
 - **3D sommario disegnato a mano:** gli scafi sono poche decine di facce proiettate con la stessa prospettiva della torretta e riempite con `Graphics`, dalla più lontana alla più vicina. Nessuna libreria 3D: basta per una carena vista da sotto, ed è leggero sull'iPhone.
 - **Il siluro è filoguidato sulla linea del mirino** (dall'occhio lungo yaw e pitch), non parallelo alla mira: così va dove guardi anche partendo da un punto diverso.
 - **Sott'acqua niente texture ripetute in grande** per la superficie vista da sotto: facevano una griglia. Restano una luce sfumata, i raggi e le particelle.
+
+## 17 novembre 2026 — Torretta T3a: più dita, timone, navi 3D (v0.130.0)
+
+- **Un ruolo per ogni dito** (`ui/turretTouch.ts`): il dito prende il ruolo di ciò che tocca per primo (pulsante con `data-role`, altrimenti "guarda") e lo tiene finché si alza, anche se scivola fuori. Niente più `pointerleave`, che rilasciava i pulsanti, e niente più un solo puntatore per il trascinamento. Motivo: il proprietario non riusciva a mirare e sparare insieme.
+- **Timone vero al posto di "Avvicina/Allontana":** la tua nave ha una prua nel piano del duello e va dove punta. Tornando fuori conta solo la posizione lungo la linea; oltre il traverso la nave è girata (`face`).
+- **La nemica non può distanziarti:** velocità massima una quota della tua (`DUEL.foeSpeedShare`), guinzaglio (`DUEL.leashM`), fuga lenta. Motivo: "le navi tendono ad allontanarsi di brutto".
+- **Navi nemiche sempre in 3D nella torretta**, modelli fatti col codice per classe (`hullModels.ts`), al posto del disegno di fianco. I colpi usano l'ingombro del modello (`enemyExtent`), non quello del disegno prestato. Le viste di prua e di poppa con Gemini non servono più; i disegni serviranno a far somigliare i modelli.

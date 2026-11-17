@@ -67,7 +67,7 @@ export class TurretScene extends Phaser.Scene {
     this.sky = new TurretSky(this, this.box);
     this.sea = new TurretSea(this, this.box);
     this.box.add(this.sky.haze);
-    this.ship = new TurretShip(this, this.box);
+    this.ship = new TurretShip();
     this.hull = new TurretHull3d(this, this.box);
     this.smoke = new SoftPuffs(this, this.box, false);
     this.fx = new TurretFx(this, this.box);
@@ -93,30 +93,21 @@ export class TurretScene extends Phaser.Scene {
     const i = this.controls.input;
     if (!k.W) return;
     if (k.W.isDown) i.throttle = Math.min(1, i.throttle + dt * 0.6);
-    if (k.S!.isDown) i.throttle = Math.max(0, i.throttle - dt * 0.6);
-    const side = (k.D!.isDown ? 1 : 0) - (k.A!.isDown ? 1 : 0);
-    if (side) i.side = side;
-    else if (this.keySide) i.side = 0;
-    this.keySide = side !== 0;
+    if (k.S!.isDown) i.throttle = Math.max(-DUEL.reverse, i.throttle - dt * 0.6);
+    const steer = (k.D!.isDown ? 1 : 0) - (k.A!.isDown ? 1 : 0);
+    if (steer) i.steer = steer;
     i.yaw += ((k.RIGHT!.isDown ? 1 : 0) - (k.LEFT!.isDown ? 1 : 0)) * TURRET.keyRad * dt * 0.5;
     i.pitch += ((k.UP!.isDown ? 1 : 0) - (k.DOWN!.isDown ? 1 : 0)) * TURRET.keyRad * dt * 0.3;
-    if (Phaser.Input.Keyboard.JustDown(k.SPACE!)) i.gunShot = true;
-    if (k.SPACE!.isDown) i.firing = true;
-    else if (Phaser.Input.Keyboard.JustUp(k.SPACE!)) i.firing = false;
+    if (k.SPACE!.isDown) i.firing = i.gunShot = true;
     if (Phaser.Input.Keyboard.JustDown(k.ONE!)) this.controls.weapon = 'mg';
     if (Phaser.Input.Keyboard.JustDown(k.TWO!)) this.controls.weapon = 'gun';
     if (Phaser.Input.Keyboard.JustDown(k.ESC!)) this.controls.exit = true;
     // a U-Boat: Q up, E down, T a torpedo
     const dive = (k.E!.isDown ? 1 : 0) - (k.Q!.isDown ? 1 : 0);
     if (dive) i.dive = dive;
-    else if (this.keyDive) i.dive = 0;
-    this.keyDive = dive !== 0;
     if (Phaser.Input.Keyboard.JustDown(k.T!)) i.torpedo = true;
   }
 
-  /** "Avvicina/Allontana" held on the keyboard (let go, it stops). */
-  private keySide = false;
-  private keyDive = false;
   /** The eye was under the water last frame (crossing the surface splashes the glass). */
   private wasUnder = false;
 
@@ -173,6 +164,7 @@ export class TurretScene extends Phaser.Scene {
     const real = Math.min(0.05, deltaMs / 1000);
     this.slow = Math.max(0, this.slow - real);
     const dt = real * (this.slow > 0 ? 0.3 : 1);
+    this.controls.sample();
     this.keyboard(real);
     const input = this.controls.input;
     this.duel.weapon = this.controls.weapon;
@@ -232,8 +224,7 @@ export class TurretScene extends Phaser.Scene {
       const k = this.sea.fartherThan(seen.dist);
       const next = this.sea.bands[k]?.water;
       const at = next ? this.box.getIndex(next) : this.box.length;
-      for (const im of [this.ship.img, ...this.ship.halves, this.hull.g])
-        this.box.moveTo(im, Math.max(0, at - 1));
+      this.box.moveTo(this.hull.g, Math.max(0, at - 1));
     }
     this.fx.update(cam, c, this.duel, dt, this.glows, this.smoke);
     this.smoke.end();
@@ -241,6 +232,7 @@ export class TurretScene extends Phaser.Scene {
     const foe = foeFromYou(this.duel);
     this.glass.update(w, h, real, look.precip, look.wind, this.gunMark(cam), {
       yaw: this.duel.yaw,
+      bow: this.duel.you.heading,
       foe: e && e.sinkT <= 0 ? yawTo(foe) : null,
     });
     this.controls.update(g, this.duel, real);

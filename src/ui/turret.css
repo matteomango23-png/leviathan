@@ -1,5 +1,5 @@
-/* The turret's controls (ui/turretControls.ts): over the turret's window and frame. The look-drag covers the screen
-   behind the buttons; the throttle and "Avvicina/Allontana" on the left, the weapons and the trigger on the right. */
+/* The turret's controls (ui/turretControls.ts): over the turret's window and frame. Touching anywhere but a button
+   turns the turret; the throttle and the rudder on the left, the weapons and the trigger on the right. */
 .turret-ui {
   position: fixed;
   inset: 0;
@@ -8,10 +8,6 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
-}
-.turret-look {
-  position: absolute;
-  inset: 0;
 }
 .turret-lever {
   position: absolute;
@@ -50,15 +46,31 @@
   border: 1.5px solid #ffb27a;
   pointer-events: none;
 }
-.turret-side {
+.turret-stop {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  height: 2px;
+  background: #ffbfa0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.turret-rudder {
   position: absolute;
   left: calc(80px + var(--safe-l, 0px));
   bottom: calc(18px + var(--safe-b, 0px));
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+}
+.turret-btn.big {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  font-size: 22px;
 }
 .turret-btn {
+  touch-action: none;
   padding: 7px 12px;
   border-radius: 12px;
   font: inherit;
@@ -155,7 +167,7 @@
 .turret-dive {
   position: absolute;
   left: calc(80px + var(--safe-l, 0px));
-  bottom: calc(110px + var(--safe-b, 0px));
+  bottom: calc(86px + var(--safe-b, 0px));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -165,4 +177,8 @@
 }
 .turret-btn.off {
   opacity: 0.4;
+}
+/* a hidden control stays hidden, whatever its own display (a ship that cannot dive has no "Sali / Scendi") */
+.turret-ui [hidden] {
+  display: none !important;
 }

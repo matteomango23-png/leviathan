@@ -3,6 +3,7 @@
 // columns of sea where they fall, sparks where the bullets strike, fire and smoke where a shell bursts on a hull, the
 // flash of the enemy's gun. Every effect stays where it happened at sea while you sail and turn. Look only.
 import Phaser from 'phaser';
+import { MACHINE_GUN } from '../../data/turret';
 import type { DuelEvent } from '../../systems/turret/duel';
 import type { DuelState } from '../../systems/turret/duelState';
 import { project, type Camera, type P3 } from '../../systems/turret/projection';
@@ -18,7 +19,7 @@ interface Fx {
 }
 
 /** How long each lasts (s). Tuning. */
-const LIFE = { splash: 0.9, bigSplash: 1.6, sparks: 0.35, burst: 2.2, flash: 0.25, deep: 2.4 };
+const LIFE = { splash: 0.9, bigSplash: 1.8, sparks: 0.9, burst: 2.8, flash: 0.25, deep: 2.4 };
 
 export class TurretFx {
   private fx: Fx[] = [];
@@ -67,7 +68,8 @@ export class TurretFx {
       if (!head || !tail) continue;
       if (r.kind === 'mg') {
         // a thin glowing streak: never a slab, even just out of the barrel
-        const width = Math.max(1, Math.min(3, head.scale * 0.12));
+        const [lo, hi] = MACHINE_GUN.tracer;
+        const width = Math.max(lo, Math.min(hi, head.scale * 0.16));
         g.lineStyle(width, 0xffd090, 0.95).lineBetween(tail.x, tail.y, head.x, head.y);
         g.lineStyle(width * 2.6, 0xff7a2a, 0.22).lineBetween(tail.x, tail.y, head.x, head.y);
       } else {
@@ -123,21 +125,25 @@ export class TurretFx {
             0.65 * (1 - k) * seen,
           );
       } else if (f.kind === 'sparks') {
-        for (let i = 0; i < 4; i++) {
-          const a = f.seed + i * 1.7;
-          const r = (0.4 + k * 1.6) * m;
-          g.lineStyle(Math.max(1, m * 0.12), 0xffd890, 1 - k).lineBetween(
-            s.x,
-            s.y,
+        // sparks and splinters flying off, falling; a little smoke stays where it struck
+        const fly = Math.min(1, k * 2.5);
+        for (let i = 0; i < 6; i++) {
+          const a = f.seed + i * 1.1;
+          const r = (0.5 + fly * 2.2) * m;
+          const fall = fly * fly * 1.6 * m;
+          g.lineStyle(Math.max(1, m * 0.12), i % 2 ? 0xffd890 : 0xfff2c8, Math.max(0, 1 - fly)).lineBetween(
+            s.x + Math.cos(a) * r * 0.6,
+            s.y + Math.sin(a) * r * 0.6 - m * 0.5 + fall,
             s.x + Math.cos(a) * r,
-            s.y + Math.sin(a) * r - k * m,
+            s.y + Math.sin(a) * r - m * 0.5 + fall,
           );
         }
-        lights.puff(s.x, s.y, 1.5 * m, 0xffb060, 0.8 * (1 - k));
+        lights.puff(s.x, s.y, 2 * m, 0xffb060, 0.9 * Math.max(0, 1 - k * 3));
+        smoke.puff(s.x, s.y - k * 2.5 * m, (0.8 + k * 1.8) * m, 0x2a2622, 0.4 * (1 - k) * seen);
       } else if (f.kind === 'burst') {
-        lights.puff(s.x, s.y, 5 * m * (0.6 + k), 0xff9a40, 0.95 * Math.max(0, 1 - k * 2));
-        lights.puff(s.x, s.y, 2.4 * m, 0xfff0c0, 0.9 * Math.max(0, 1 - k * 5));
-        for (let i = 0; i < 4; i++)
+        lights.puff(s.x, s.y, 7 * m * (0.6 + k), 0xff9a40, 0.95 * Math.max(0, 1 - k * 2));
+        lights.puff(s.x, s.y, 3.4 * m, 0xfff0c0, 0.9 * Math.max(0, 1 - k * 5));
+        for (let i = 0; i < 6; i++)
           smoke.puff(
             s.x + Math.sin(f.seed + i) * 2 * m,
             s.y - k * 9 * m - i * m,
