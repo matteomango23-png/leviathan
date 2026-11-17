@@ -79,6 +79,7 @@ export function fireRound(
   pitch: number,
   spread: number,
   rng: Rng,
+  carry: { a: number; s: number } = { a: 0, s: 0 },
 ): void {
   const b = ballisticsOf(kind, from);
   const y = yaw + (rng() * 2 - 1) * spread;
@@ -89,7 +90,11 @@ export function fireRound(
     from,
     kind,
     p: { ...p },
-    v: { a: Math.cos(t) * Math.cos(y) * v, s: Math.cos(t) * Math.sin(y) * v, z: Math.sin(t) * v },
+    v: {
+      a: Math.cos(t) * Math.cos(y) * v + carry.a,
+      s: Math.cos(t) * Math.sin(y) * v + carry.s,
+      z: Math.sin(t) * v,
+    },
     left: b.range,
   });
 }

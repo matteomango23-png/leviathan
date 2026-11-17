@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.131.2 — Arpioni e traccianti dritti nel mirino (17 novembre 2026)
+
+- **Sott'acqua i dardi degli arpioni andavano tutti di lato.** Due cause:
+  - i dardi non si portavano dietro la velocità della nave: andando forte e mirando di lato restavano indietro e piegavano;
+  - appena usciti dalla canna, vicinissimi al vetro, la loro scia si disegnava come una lunga riga storta.
+
+  Ora partono con la velocità della nave e vanno dritti dove punti, e la scia è corta e non si disegna nei primi metri.
+- Lo stesso per i traccianti della mitragliatrice sopra l'acqua: a tutta forza deviavano un poco, ora vanno dritti nel mirino.
+- I salvataggi non cambiano.
+
 ## v0.131.1 — Vista interna: la nave segue il mirino (17 novembre 2026)
 
 - **La nave va dove punti il mirino:** col gas dato la prua gira piano verso il mirino (le navi grandi più lente) e poi va dritta dove guardi. Da ferma non gira: per guardarti intorno senza cambiare rotta, togli il gas.

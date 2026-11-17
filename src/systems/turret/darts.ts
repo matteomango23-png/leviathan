@@ -9,17 +9,25 @@ import type { P3 } from './projection';
 
 export type DartEvent = { type: 'dartHit'; foe: number; p: P3; u: number; v: number };
 
-/** Fires a dart from p along yaw/pitch, a little off. */
+/** Your ship's own way (m/s along the plane): a dart leaves with it, so from aboard it flies straight where you aim
+ *  (owner, 17 novembre 2026: without it, sailing fast, the slow darts fell back and all seemed to veer aside). */
+export const yourWay = (d: InsideState): { a: number; s: number } => ({
+  a: Math.cos(d.you.heading) * d.you.speed,
+  s: Math.sin(d.you.heading) * d.you.speed,
+});
+
+/** Fires a dart from p along yaw/pitch, a little off, carried by your ship's way. */
 export function fireDart(d: InsideState, p: P3, yaw: number, pitch: number, rng: Rng): void {
   const H = HARPOON_GUN;
   const y = yaw + (rng() * 2 - 1) * H.spread;
   const t = pitch + (rng() * 2 - 1) * H.spread;
+  const way = yourWay(d);
   d.darts.push({
     id: d.nextId++,
     p: { ...p },
     v: {
-      a: Math.cos(t) * Math.cos(y) * H.speed,
-      s: Math.cos(t) * Math.sin(y) * H.speed,
+      a: Math.cos(t) * Math.cos(y) * H.speed + way.a,
+      s: Math.cos(t) * Math.sin(y) * H.speed + way.s,
       z: Math.sin(t) * H.speed,
     },
     left: H.rangeM,
@@ -34,7 +42,7 @@ export function stepDarts(d: InsideState, foes: DuelHull[], dt: number): DartEve
     r.p.a += r.v.a * dt;
     r.p.s += r.v.s * dt;
     r.p.z += r.v.z * dt;
-    r.left -= Math.hypot(r.v.a, r.v.s, r.v.z) * dt;
+    r.left -= Math.hypot(r.p.a - p0.a, r.p.s - p0.s, r.p.z - p0.z);
     const hit = strikesAny(foes, p0, r.p);
     if (hit && hit.hull.id !== 'you') {
       out.push({ type: 'dartHit', foe: hit.hull.id, p: hit.p, u: hit.u, v: hit.v });
