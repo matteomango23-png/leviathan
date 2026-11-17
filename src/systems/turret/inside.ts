@@ -1,5 +1,5 @@
 // One step of the inside view (owner, 17 novembre 2026): your ship sails where its bow points at the throttle, the
-// rudder turning it, and a U-Boat dives; the turret turns where you drag. An armed ship fires: above the water the
+// bow following the crosshair under way, and a U-Boat dives; the turret turns where you drag. An armed ship fires: above the water the
 // machine gun while held (it heats up) and its gun, under the water the harpoon gun; the guided torpedo at any depth,
 // reloaded sooner under the water. Every Compagnia vessel in the view perceives, sails and fights (foeAi.ts); what
 // flies (ballistics.ts, torpedo.ts, darts.ts) strikes hulls (insideHits.ts). Pure logic.
@@ -24,8 +24,6 @@ import { wrapAngle, type P3 } from './projection';
 export interface TurretInput {
   /** −DUEL.reverse … 1 of your top speed (backwards < 0). */
   throttle: number;
-  /** The rudder: −1 to the left … 1 to the right. */
-  steer: number;
   /** A U-Boat's dive lever: −1 up … 1 down. */
   dive: number;
   /** Radians to turn the turret this frame (dragged). */
@@ -39,7 +37,6 @@ export interface TurretInput {
 
 export const restingInput = (): TurretInput => ({
   throttle: 0,
-  steer: 0,
   dive: 0,
   yaw: 0,
   pitch: 0,
@@ -128,11 +125,15 @@ function moveYou(g: GameState, d: InsideState, input: TurretInput, dt: number): 
   const want = yourTop(g) * Math.max(-DUEL.reverse, Math.min(1, input.throttle));
   const accel = (shipRates(g.ship).accel / U) * dt;
   d.you.speed += Math.max(-accel, Math.min(accel, want - d.you.speed));
-  // the rudder turns the bow, a little even when still, fully with way on
-  const way = 0.35 + 0.65 * Math.min(1, Math.abs(d.you.speed) / Math.max(1, yourTop(g) * 0.4));
-  d.you.heading = wrapAngle(
-    d.you.heading + Math.max(-1, Math.min(1, input.steer)) * DUEL.steerRate * way * dt,
-  );
+  // under way the bow turns towards the crosshair (owner: "la nave dovrebbe seguire dove punto il mirino"); still,
+  // it does not: you look round freely. Going astern it backs the other way, its bow still towards the crosshair.
+  if (Math.abs(d.you.speed) >= DUEL.followMinSpeed) {
+    const way = Math.min(1, Math.abs(d.you.speed) / Math.max(1, yourTop(g) * 0.4));
+    const most = DUEL.steerRate * way * dt;
+    d.you.heading = wrapAngle(
+      d.you.heading + Math.max(-most, Math.min(most, wrapAngle(d.yaw - d.you.heading))),
+    );
+  }
   d.you.a += Math.cos(d.you.heading) * d.you.speed * dt;
   d.you.s += Math.sin(d.you.heading) * d.you.speed * dt;
   d.you.depth = Math.max(0, Math.min(yourMaxDepth(g), d.you.depth + input.dive * UNDERWATER.diveSpeed * dt));

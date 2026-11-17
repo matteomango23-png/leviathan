@@ -2,6 +2,16 @@
 
 Cosa cambia per chi gioca, versione per versione. Ogni versione ha un'etichetta in git (`v0.1.0`, `v0.2.0`...) a cui si può sempre tornare.
 
+## v0.131.1 — Vista interna: la nave segue il mirino (17 novembre 2026)
+
+- **La nave va dove punti il mirino:** col gas dato la prua gira piano verso il mirino (le navi grandi più lente) e poi va dritta dove guardi. Da ferma non gira: per guardarti intorno senza cambiare rotta, togli il gas.
+- **Tolti i pulsanti ◀ ▶ del timone**, che non si capivano. Sulla bussola la sagoma bianca della prua va verso il mirino mentre la nave gira; sotto il vetro la scritta dice "rotta: segue il mirino", "rotta: dritta" o "ferma".
+- **Entrando guardi davanti alla prua**, come fuori. Prima la torretta si girava da sola verso la nave nemica più vicina, e una nave lontana (fuori dall'inquadratura esterna) sembrava comparire dal nulla.
+- **Uscendo con la nave girata** dall'altra parte, una scritta lo dice ("La nave è girata: ora va verso ovest"), così fuori non ti perdi.
+- Sul computer A e D girano la torretta, come le frecce.
+- Guida di Aurelio aggiornata.
+- I salvataggi non cambiano.
+
 ## v0.131.0 — La vista interna, col mondo che continua (17 novembre 2026)
 
 - **"Vista interna"** al timone, al posto di "Armi": c'è sempre, su ogni tua nave, anche senza nemici vicini. Dentro navighi in prima persona con gas, timone e (U-Boot) Sali/Scendi; **Vista esterna** ti riporta fuori.

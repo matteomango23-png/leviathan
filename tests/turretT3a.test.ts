@@ -32,18 +32,31 @@ const arena = (ship: string, enemies: 'baleniera' | 'caccia' | 'uboot', dist = 1
   return g;
 };
 
-describe('il timone', () => {
-  it('la prua gira e la nave va dove punta', () => {
+describe('la nave segue il mirino', () => {
+  it('col gas la prua gira verso il mirino, non più svelta di quanto può, e la nave va dove punta', () => {
     const g = arena('aurelia', 'baleniera', 300);
     const d = openInside(g);
     for (let i = 0; i < 60; i++) stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
     expect(Math.abs(d.you.s)).toBeLessThan(0.01);
-    for (let i = 0; i < 80; i++) stepInside(g, d, { ...restingInput(), throttle: 1, steer: 1 }, 0.05);
-    expect(d.you.heading).toBeGreaterThan(0.3);
+    d.yaw = 0.6;
+    const h0 = d.you.heading;
+    stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    expect(d.you.heading - h0).toBeGreaterThan(0);
+    expect(d.you.heading - h0).toBeLessThanOrEqual(DUEL.steerRate * 0.05 + 1e-9);
+    for (let i = 0; i < 200; i++) stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
+    expect(d.you.heading).toBeCloseTo(0.6, 2);
     const before = { a: d.you.a, s: d.you.s };
     stepInside(g, d, { ...restingInput(), throttle: 1 }, 0.05);
     const way = Math.atan2(d.you.s - before.s, d.you.a - before.a);
     expect(way).toBeCloseTo(d.you.heading, 2);
+  });
+
+  it('da ferma la prua non gira: ci si guarda intorno', () => {
+    const g = arena('aurelia', 'baleniera', 300);
+    const d = openInside(g);
+    d.yaw = 1.2;
+    for (let i = 0; i < 100; i++) stepInside(g, d, restingInput(), 0.05);
+    expect(d.you.heading).toBe(0);
   });
 
   it('girata oltre il traverso, tornando fuori la nave va dall’altra parte; il gas va anche indietro', () => {

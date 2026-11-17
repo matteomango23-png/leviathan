@@ -1,5 +1,6 @@
 /* The turret's controls (ui/turretControls.ts): over the turret's window and frame. Touching anywhere but a button
-   turns the turret; the throttle and the rudder on the left, the weapons and the trigger on the right. */
+   turns the turret (under way the ship follows it); the throttle on the left, the weapons and the trigger on the
+   right. */
 .turret-ui {
   position: fixed;
   inset: 0;
@@ -55,20 +56,7 @@
   opacity: 0.7;
   pointer-events: none;
 }
-.turret-rudder {
-  position: absolute;
-  left: calc(80px + var(--safe-l, 0px));
-  bottom: calc(18px + var(--safe-b, 0px));
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.turret-btn.big {
-  width: 54px;
-  height: 54px;
-  padding: 0;
-  font-size: 22px;
-}
+
 .turret-btn {
   touch-action: none;
   padding: 7px 12px;
@@ -167,7 +155,7 @@
 .turret-dive {
   position: absolute;
   left: calc(80px + var(--safe-l, 0px));
-  bottom: calc(86px + var(--safe-b, 0px));
+  bottom: calc(18px + var(--safe-b, 0px));
   display: flex;
   flex-direction: column;
   gap: 8px;

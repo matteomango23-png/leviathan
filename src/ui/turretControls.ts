@@ -1,6 +1,6 @@
 // The inside view's controls (owner, 17 novembre 2026): on the left the throttle lever (ahead, and a little astern under
-// its stop mark) and the rudder ◀ ▶ — the bow turns and the ship goes where it points — and a U-Boat's "Sali /
-// Scendi"; on the right the weapons (under the water the machine gun is the harpoon gun) and "Fuoco", held to keep
+// its stop mark) — under way the ship follows the crosshair ("la nave dovrebbe seguire dove punto il mirino") — and
+// a U-Boat's "Sali / Scendi"; on the right the weapons (under the water the machine gun is the harpoon gun) and "Fuoco", held to keep
 // firing — a ship without weapons has none; drag anywhere else to turn the turret. Every
 // finger works at once (ui/turretTouch.ts). "Vista esterna" back to the helm. At the top the two ships' hull and
 // water (the vessel you aim at: the nearest hunting you); under the window what you aim with and its distance, with
@@ -91,11 +91,6 @@ export class TurretControls {
     this.track = el('div', 'turret-track', lever);
     el('div', 'turret-stop', this.track).style.bottom = `${(DUEL.reverse / (1 + DUEL.reverse)) * 100}%`;
     this.knob = el('div', 'turret-knob', this.track);
-    // the rudder
-    const rudder = el('div', 'turret-rudder', this.root);
-    roleBtn(rudder, 'turret-btn big', '◀', 'left');
-    el('div', 'turret-label', rudder, 'Timone');
-    roleBtn(rudder, 'turret-btn big', '▶', 'right');
     // a U-Boat goes up and down while held
     this.diveBox = el('div', 'turret-dive', this.root);
     roleBtn(this.diveBox, 'turret-btn', 'Sali', 'up');
@@ -151,7 +146,6 @@ export class TurretControls {
     this.input.firing = h('fire') > 0;
     // the gun fires again by itself while held, as soon as it has reloaded
     this.input.gunShot ||= this.input.firing;
-    this.input.steer = h('right') - h('left');
     this.input.dive = h('down') - h('up');
   }
 
@@ -199,6 +193,16 @@ export class TurretControls {
           : 'Cannone';
     const depth = d.you.depth > 0.5 ? ` · quota ${Math.round(d.you.depth)} m` : '';
     const astern = this.input.throttle < 0 ? ' · indietro' : '';
+    // where the ship goes: towards the crosshair under way
+    const off = Math.abs(wrapAngle(d.yaw - d.you.heading));
+    const course =
+      Math.abs(d.you.speed) < DUEL.followMinSpeed
+        ? this.input.throttle !== 0
+          ? ' · rotta: verso il mirino'
+          : ' · ferma'
+        : off > DUEL.alignedRad
+          ? ' · rotta: segue il mirino'
+          : ' · rotta: dritta';
     let aim = 'nessuna nave vicina';
     if (target) {
       const rel = foeFrom(d, target);
@@ -207,7 +211,7 @@ export class TurretControls {
       const out = Math.abs(off) >= TURRET.fov / 2;
       aim = `${out && off < 0 ? '◀ ' : ''}bersaglio a ${Math.round(rel.dist)} m${out && off > 0 ? ' ▶' : ''}`;
     }
-    const text = `${arm} · ${aim}${depth}${astern}`;
+    const text = `${arm} · ${aim}${depth}${course}${astern}`;
     if (this.info.textContent !== text) this.info.textContent = text;
     this.arms.hidden = !withArms && this.torpedo.hidden;
     const e = target ? g.company.enemies.find((x) => x.id === target.id) : undefined;

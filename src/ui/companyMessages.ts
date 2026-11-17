@@ -10,6 +10,8 @@ export function companyMessage(e: GameEvent): [string, number] | null | undefine
       if (e.phase === 'hunting') return ['Ti hanno visto! La Compagnia ti dà la caccia.', 3];
       if (e.phase === 'lost') return ['Ti hanno perso di vista: cercano dove eri.', 3];
       return null;
+    case 'insideTurned':
+      return [`La nave è girata: ora va verso ${e.face > 0 ? 'est' : 'ovest'}.`, 3.5];
     case 'enemySunk':
       return [`${e.name} spezzata in due: affonda!`, 3.5];
     case 'noTarget':

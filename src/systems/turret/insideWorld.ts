@@ -44,15 +44,14 @@ export function joinFoes(g: GameState, d: InsideState): void {
   }
 }
 
-/** Into the inside view: your ship sailed by it from now on, the turret turned to the nearest vessel. */
+/** Into the inside view: your ship sailed by it from now on, the turret looking along your bow, as outside (it
+ *  never turns by itself to a vessel: one far ahead seemed to come out of nowhere, owner 17 novembre 2026). */
 export function openInside(g: GameState): InsideState {
   const s = g.ship;
   const d = newInside({ x: s.x, face: s.face }, s.dive / U, s.speed / U);
   g.company.inside = true;
   s.inside = true;
   joinFoes(g, d);
-  const near = [...d.foes].sort((x, y) => Math.hypot(x.a, x.s) - Math.hypot(y.a, y.s))[0];
-  if (near) d.yaw = Math.atan2(near.s, near.a);
   return d;
 }
 
@@ -83,6 +82,8 @@ export function closeInside(g: GameState, d: InsideState): void {
   const s = g.ship;
   // going astern the world's ship stops: it only sails ahead
   if (d.you.speed < 0) s.speed = 0;
+  // turned round in here: out there it goes the other way now — say so (ui/companyMessages.ts)
+  if (s.face !== d.origin.face) g.story.pending.push({ type: 'insideTurned', face: s.face });
   s.inside = false;
   g.company.inside = false;
   for (const e of g.company.enemies) e.inView = false;

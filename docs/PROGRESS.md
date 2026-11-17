@@ -1,6 +1,6 @@
 # Progressi
 
-## Dove siamo (aggiornato il 17 novembre 2026, v0.131.0)
+## Dove siamo (aggiornato il 17 novembre 2026, v0.131.1)
 
 - **Gioco:** mare in tre zone (baia, Delta, mare aperto infinito), 34 bestie con albini, alfa, forme finali e uniche, battaglie a turni con mosse e domatura, flotta (navi, U-Boot, sottomarini, motoscafi, mezzi abissali), porti con bacheca (taglie, leggendari), mercato (richieste, Baratto), cantiere, riparazioni, sonar e cacce, Gallerie, meteo, suoni e musiche. Tutorial passo passo e consigli di Aurelio; fucile a raffica con munizioni; giorno e notte (30 minuti) con Dormi.
 - **Salvataggi:** menu iniziale con più partite (`systems/save/slots.ts`); una partita illeggibile non si sovrascrive mai. Dire sempre al proprietario quando un lotto tocca i salvataggi.
@@ -11,6 +11,13 @@
 - **Immagini attese:** la luna (`art-inbox/luna.jpg`, tipo world: il codice la mostra appena c'è, `NIGHT.moonArt`); il Leviatano (ricordarglielo); lotto 8 (`docs/GEMINI-LOTTO-8.md`): `squalo_balena_back` e i 6 dei coccodrilli; Kraken, calamaro colossale, serpente di mare hanno ancora il disegno provvisorio; conchiglie (`docs/GEMINI-LOTTO-7.md`); sfondo del menu iniziale. **Blocco 8 (immagini) rimandato** finché il proprietario non lo dice.
 - **Storia:** `docs/PROGRESS-ARCHIVIO.md` ha le sessioni fino al 23 ottobre; qui sotto le ultime.
 - **Per vedere il gioco quando il pannello del browser è nascosto:** `renderer.snapshot` più `node scripts/snap-server.mjs <cartella>` (memoria browser-snapshot).
+
+## Vista interna: la nave segue il mirino (17 novembre 2026) → v0.131.1
+
+- Il proprietario: entrando "è comparsa una nave" che fuori non c'era; "non è chiaro in che direzione sto andando con il timone. La nave dovrebbe seguire dove punto il mirino".
+- Causa, riprodotta nell'arena: la nave nemica parte 280 m avanti, fuori dall'inquadratura esterna (circa 80 m), e `openInside` girava la torretta verso di lei; il timone ◀ ▶ poteva girare la nave senza che si capisse, e fuori andava dall'altra parte.
+- Fatto: in `moveYou` (`inside.ts`) la prua segue `d.yaw` sopra `DUEL.followMinSpeed`, al massimo `steerRate`; tolto `TurretInput.steer` e il timone in `ui/turretControls.ts` (scritta della rotta); `openInside` guarda lungo la prua; `closeInside` mette in `story.pending` l'evento `insideTurned` (messaggio in `ui/companyMessages.ts`); A e D girano la torretta; testo di `tipInside`.
+- Test: T3a (segue il mirino, da ferma non gira), T3b (entrando guarda avanti, avviso di nave girata).
 
 ## La vista interna T3b, col mondo che continua (17 novembre 2026) → v0.131.0
 

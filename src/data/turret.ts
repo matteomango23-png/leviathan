@@ -29,9 +29,10 @@ export const TURRET = {
   swell: { height: 1.1, length: 38, speed: 6 },
 };
 
-/** Moving in the duel (owner, 17 novembre 2026: "il gas per avvicinarsi non funziona… la nave scompariva"): your
- *  ship goes where its bow points, at the throttle's share of its top speed (backwards at most `reverse` of it), the
- *  rudder turning the bow at `steerRate` (rad/s); never nearer than nearM. The vessel is never faster than
+/** Moving in the view (owner, 17 novembre 2026: "il gas per avvicinarsi non funziona… la nave scompariva"; "la nave
+ *  dovrebbe seguire dove punto il mirino"): your ship goes where its bow points, at the throttle's share of its top
+ *  speed (backwards at most `reverse` of it); under way its bow turns towards the crosshair at `steerRate` (rad/s),
+ *  slower than `followMinSpeed` (m/s) it does not turn (look round freely); never nearer than nearM. The vessel is never faster than
  *  `foeSpeedShare` of your top speed, never farther than `leashM` (past it, it circles back), and broken it runs at
  *  only `fleeShare` of that. Tuning. */
 export const DUEL = {
@@ -39,6 +40,9 @@ export const DUEL = {
   startSideM: 110,
   reverse: 0.3,
   steerRate: 0.32,
+  followMinSpeed: 0.8,
+  /** The bow within this of the crosshair (radians): "dritta". */
+  alignedRad: 0.05,
   nearM: 35,
   /** The enemy's fighting distance (m), its weaving (degrees off it, seconds between changes) and turning speed. */
   rangeM: 150,
